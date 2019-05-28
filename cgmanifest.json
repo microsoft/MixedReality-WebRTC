@@ -1,0 +1,382 @@
+{"Registrations":[
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://chromium.googlesource.com/external/webrtc", 
+         "commitHash": "baa89682df1ab891ae274a1cb2d9be3b1ee7e20b" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-uwp-sdk", 
+         "commitHash": "c6fdf8c33637b7f1e07aa2b5b0fe375dbcbbb088" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/AppRTC", 
+         "commitHash": "74fc5eaf4aaf3911c281a92a09395aee61a9b8bc" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/PeerCC", 
+         "commitHash": "693ec8637846ef23f3a26a397d20d1beffe2683b" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-uwp.github.io", 
+         "commitHash": "1b0f4576f9c8896f25cd367298ef30b877ac910f" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-scripts", 
+         "commitHash": "3f2eb87b1baa3f49c6341d144e0b3c3be11c78ae" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-apple", 
+         "commitHash": "499806dc47426854bae3c9ec8541467201d40c38" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-linux", 
+         "commitHash": "cf1bac9b636e0500fd9e9397398cf324badc68e9" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-windows", 
+         "commitHash": "1bb3fea09316ac8d087fe7b009686ca374dde9c9" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/boringssl", 
+         "commitHash": "d8c300c8a90abe2cbe9c19c55089ef9e0d0248c2" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/buildtools", 
+         "commitHash": "2dff9c9c74e9d732e6fe57c84ef7fd044cc45d96" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/chromium-base", 
+         "commitHash": "26cace9e8cd6357d6b382f9bd47dbed8829904e8" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/chromium-build", 
+         "commitHash": "ce61deb53143460c96b3ee2750f536114293dde5" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/chromium-testing", 
+         "commitHash": "2e9ce4a97ca90752d388b84490733e4d76058e97" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/chromium-third_party", 
+         "commitHash": "2aa1a8c73e731254fe4bca76cd8a78d8e80494a8" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/chromium-tools", 
+         "commitHash": "3bdc7572c1e2d635d5e50e753df6ce35001a9027" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/cryptopp", 
+         "commitHash": "b8f35b6ab15911654835a287c7e6fce86ad45fc7" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/depot_tools", 
+         "commitHash": "baf09271514cf3d535865e16ece89654220149cb" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/gflags", 
+         "commitHash": "a5d2e5688b511bfb314de7c1c0b6c153142bbd83" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/gflags-build", 
+         "commitHash": "a700d798c05493a44afc2b8f6521c9f95a094c37" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/googlemock", 
+         "commitHash": "98e2c1c9c69a99e228e73ebf40e42f71e0465762" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/googletest", 
+         "commitHash": "ef47423c96657c90913d6a8dae2a6662ee03e80c" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/gyp", 
+         "commitHash": "5063eb9af1511d025112468b3c306322dbdfdb3b" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/icu", 
+         "commitHash": "d888fd2a1be890f4d35e43f68d6d79f42519a357" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/jsoncpp", 
+         "commitHash": "210552246d4725664efc0be311bf120963b11350" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/libjpeg_turbo", 
+         "commitHash": "efcf55ff0e457a10aee8c6b6293dd74d778ef82d" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/libsrtp", 
+         "commitHash": "33892f46ff9a78e5d326f5b5cd78fcf0f825acc9" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/libvpx", 
+         "commitHash": "04ce135db1823c8eaf3491e65aa43df7b35b6b96" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/libyuv", 
+         "commitHash": "f1e39df1a6ffc965a1743622632cc79e9f927286" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/libcxx", 
+         "commitHash": "85a7702b4cc5d69402791fe685f151cf3076be71" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/libcxxabi", 
+         "commitHash": "05a73941f3fb177c4a891d4ff2a4ed5785e3b80c" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/openmax", 
+         "commitHash": "61d626d98fdea52f013b2a9937d2034567851970" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/opus", 
+         "commitHash": "8c245d3efddbce87d15015bc8f752d76841820a7" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/templates", 
+         "commitHash": "345bac675ddc01f47bc7cd7e1e71e5362b194131" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/usrsctp", 
+         "commitHash": "08d2db5c0fb4cc25034d65fbf18159d3a3416748" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/webrtc", 
+         "commitHash": "baa89682df1ab891ae274a1cb2d9be3b1ee7e20b" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-apis", 
+         "commitHash": "0d303d62f7e6483cf4b57c24ef295c487b0c28dd" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/winsdk_samples_v71", 
+         "commitHash": "a59391ef795986633735a1695caa97622a9bfd56" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/yasm-binaries", 
+         "commitHash": "52f9b3f4b0aa06da24ef8b123058bb61ee468881" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/yasm-patched-yasm", 
+         "commitHash": "720b70524a4424b15fc57e82263568c8ba0496ad" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/zsLib", 
+         "commitHash": "86ca02ff3effa26eaf4cbe3783fe79b00a5fd217" 
+         }
+       }
+    },
+    {
+      "component": { 
+       "type": "git", 
+       "git": { 
+         "repositoryUrl": "https://github.com/webrtc-uwp/zsLib-eventing", 
+         "commitHash": "9d4abb9779508aabdaf9867c938b82e9040abd0f" 
+         }
+       }
+    }
+ ],
+ "Version": 1
+}
