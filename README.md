@@ -18,24 +18,11 @@ MixedReality-WebRTC is a set of libraries building upon each other to deliver a 
 
 MixedReality-WebRTC is available for Windows Desktop and UWP (x86, x64, ARM32, ARM64), iOS and Android.
 
-<!--  
-| Component | Namespace | Library |
-|-|-|-|
-| C++ library | Microsoft::MixedReality::WebRTC | Microsoft.MixedReality.WebRTC.Native.dll |
-| C# library | Microsoft.MixedReality.WebRTC | Microsoft.MixedReality.WebRTC.dll |
-| Unity3D integration | Microsoft.MixedReality.WebRTC.Unity |  | -->
-
 ## Getting Started
 
 MixedReality-WebRTC is currently under development, and precompiled packages are not yet available. See [Building MixedReality-WebRTC](Building-MixedReality-WebRTC) below for compiling the libraries from sources.
 
 The current development branch is `dev`.
-
-<!-- TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references -->
 
 ## Documentation
 
