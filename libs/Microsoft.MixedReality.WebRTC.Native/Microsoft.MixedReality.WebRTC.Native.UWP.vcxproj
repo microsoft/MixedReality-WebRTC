@@ -98,6 +98,12 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\$(PlatformTarget)\$(Configuration);$(WebRTCCoreRepoPath)webrtc\windows\solutions\Build\Output\Org.WebRtc.WrapperGlue\$(Configuration)\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Message>Copying C++ and C# DLLs to Unity plugins folder...</Message>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Command>..\..\tools\copy_unity_plugins.bat WSA $(PlatformTarget) $(Configuration)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include/api.h" />

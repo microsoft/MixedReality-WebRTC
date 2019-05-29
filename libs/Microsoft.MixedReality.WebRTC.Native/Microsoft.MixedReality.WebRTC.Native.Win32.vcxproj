@@ -87,6 +87,12 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <PostBuildEvent>
+      <Message>Copying C++ DLLs to Unity plugins folder...</Message>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Command>..\..\tools\copy_unity_plugins.bat CPP Win32 $(PlatformTarget) $(Configuration)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
