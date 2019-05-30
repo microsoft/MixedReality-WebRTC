@@ -84,7 +84,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\abseil-cpp\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\zsLib\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\zsLib-eventing\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\abseil-cpp\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\zsLib\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\zsLib-eventing\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
@@ -96,13 +96,13 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalDependencies>Ole32.lib;Evr.lib;mf.lib;mfuuid.lib;mfplat.lib;webrtc.lib;WindowsApp.lib;Org.WebRtc.WrapperGlue.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\$(PlatformTarget)\$(Configuration);$(WebRTCCoreRepoPath)webrtc\windows\solutions\Build\Output\Org.WebRtc.WrapperGlue\$(Configuration)\$(PlatformTarget)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>include\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\$(PlatformTarget)\$(Configuration);$(WebRTCCoreRepoPath)webrtc\windows\solutions\Build\Output\Org.WebRtc.WrapperGlue\$(Configuration)\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Message>Copying C++ and C# DLLs to Unity plugins folder...</Message>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Command>..\..\tools\copy_unity_plugins.bat WSA $(PlatformTarget) $(Configuration)</Command>
+      <Command>..\..\tools\copy_unity_plugins.bat CPP WSA $(PlatformTarget) $(Configuration)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
