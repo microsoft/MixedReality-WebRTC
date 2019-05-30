@@ -11,11 +11,18 @@ if %1==CPP (
         xcopy /Y /Q ..\..\bin\%2\x64\%4\Microsoft.MixedReality.WebRTC.Native.dll ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\x86_64\
         xcopy /Y /Q ..\..\bin\%2\x64\%4\Microsoft.MixedReality.WebRTC.Native.pdb ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\x86_64\
     ) else (
-        xcopy /Y /Q ..\..\bin\%2\%3\%4\Microsoft.MixedReality.WebRTC.Native.dll ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\%3\
-        xcopy /Y /Q ..\..\bin\%2\%3\%4\Microsoft.MixedReality.WebRTC.Native.pdb ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\%3\
+        if %2==WSA (
+            REM UWP (MSVC) becomes WSA (Unity)
+            xcopy /Y /Q ..\..\bin\UWP\%3\%4\Microsoft.MixedReality.WebRTC.Native.dll ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\%3\
+            xcopy /Y /Q ..\..\bin\UWP\%3\%4\Microsoft.MixedReality.WebRTC.Native.pdb ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\%3\
+        ) else (
+            xcopy /Y /Q ..\..\bin\%2\%3\%4\Microsoft.MixedReality.WebRTC.Native.dll ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\%3\
+            xcopy /Y /Q ..\..\bin\%2\%3\%4\Microsoft.MixedReality.WebRTC.Native.pdb ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\%3\
+        )
     )
 ) else (
-    REM C# assemblies are AnyCPU (architecture-independent)
-    xcopy /Y /Q ..\..\bin\%3\%4\Microsoft.MixedReality.WebRTC.dll ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\
-    xcopy /Y /Q ..\..\bin\%3\%4\Microsoft.MixedReality.WebRTC.pdb ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\
+    REM C# assemblies are AnyCPU (architecture-independent) - just need a single copy for all architectures
+    REM But the Unity Editor doesn't like DLLs in multiple directories, so copy them in Win32\x86_64 where it's looking
+    xcopy /Y /Q ..\..\bin\%3\%4\Microsoft.MixedReality.WebRTC.dll ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86_64\
+    xcopy /Y /Q ..\..\bin\%3\%4\Microsoft.MixedReality.WebRTC.pdb ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86_64\
 )
