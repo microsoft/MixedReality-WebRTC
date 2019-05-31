@@ -1123,7 +1123,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4483042933794200}
   - component: {fileID: 114452439610826054}
-  - component: {fileID: 114711765838475790}
+  - component: {fileID: 8734329137356271696}
   - component: {fileID: 114041515294989332}
   m_Layer: 0
   m_Name: PeerConnection
@@ -1160,7 +1160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64dff3d25ffa2ee4f907d396ed9c1ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Signaler: {fileID: 114129059573521262}
+  Signaler: {fileID: 8734329137356271696}
   AutoInitializeOnStart: 1
   AutoLogErrorsToUnityConsole: 1
   IceServers:
@@ -1170,18 +1170,7 @@ MonoBehaviour:
   IceCredential: 
   OnInitialized:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 114711765838475790}
-        m_MethodName: OnInitialized
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   OnShutdown:
@@ -1194,7 +1183,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Microsoft.MixedReality.WebRTC.Unity.WebRTCErrorEvent, Microsoft.MixedReality.WebRTC.Unity,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
---- !u!114 &114711765838475790
+--- !u!114 &8734329137356271696
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1203,50 +1192,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1732322252212784}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd2f034ef0650394b96ba1a728ce3a85, type: 3}
+  m_Script: {fileID: 11500000, guid: 6f59b5937dc35994c87e058b9edfe08a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   AutoLogErrors: 1
-  OnPeerReady:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  OnDataFromDataChannelReady:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.PeerEvents+StringEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-  OnFailure:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.PeerEvents+StringEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-  OnIceCandiateReadyToSend:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.PeerEvents+IceCandidateReadyToSendEvent,
-      Microsoft.MixedReality.WebRTC.Unity, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-  OnLocalDataChannelReady:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  OnLocalSdpReadyToSend:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.PeerEvents+LocalSdpReadyToSendEvent,
-      Microsoft.MixedReality.WebRTC.Unity, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-  OnSdpOfferReadyToSend:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.PeerEvents+StringEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-  OnSdpAnswerReadyToSend:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.PeerEvents+StringEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  RemotePeerId: 
+  HttpServerAddress: http://127.0.0.1:3000/
+  PollTimeMs: 500
 --- !u!114 &114041515294989332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1277,10 +1229,9 @@ GameObject:
   - component: {fileID: 223899471443708644}
   - component: {fileID: 114151148814654588}
   - component: {fileID: 114460245628877720}
-  - component: {fileID: 114129059573521262}
   - component: {fileID: 114186919318900850}
   m_Layer: 5
-  m_Name: NodeDssSignaler
+  m_Name: NodeDssSignalerControls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1368,26 +1319,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &114129059573521262
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1754267790574398}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f59b5937dc35994c87e058b9edfe08a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PeerEventsInstance: {fileID: 114711765838475790}
-  DeviceNameLabel: {fileID: 114070876977189030}
-  DeviceNameLabel2: {fileID: 0}
-  TargetIdField: {fileID: 114259858479715936}
-  CreateOfferButton: {fileID: 114751637186518168}
-  HttpServerAddress: http://localhost:3000/
-  PollTimeMs: 5
-  AutoLogErrors: 0
 --- !u!114 &114186919318900850
 MonoBehaviour:
   m_ObjectHideFlags: 0
