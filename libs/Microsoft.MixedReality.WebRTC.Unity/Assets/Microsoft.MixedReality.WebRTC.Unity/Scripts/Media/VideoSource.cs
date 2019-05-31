@@ -25,7 +25,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Instance of a local video player which will have frame data written to it.
         /// </summary>
         [Tooltip("Video player instance that local stream data will be written to")]
-        public VideoPlayer LocalPlayer;
+        public VideoTrackPlayer LocalPlayer;
 
         /// <summary>
         /// Automatically start sending the local video feed when the peer connection is ready.
@@ -46,7 +46,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Instance of a remote video player which will have frame data written to it.
         /// </summary>
         [Tooltip("Video player instance that remote stream data will be written to")]
-        public VideoPlayer RemotePlayer;
+        public VideoTrackPlayer RemotePlayer;
 
         /// <summary>
         /// The underlying peer
