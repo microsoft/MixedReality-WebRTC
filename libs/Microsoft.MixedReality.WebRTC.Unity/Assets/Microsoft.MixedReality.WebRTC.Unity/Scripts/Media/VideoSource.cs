@@ -15,10 +15,32 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public PeerConnection PeerConnection;
 
         /// <summary>
+        /// Enable the local video feed, which enables sending a locally captured video feed to the
+        /// remote peer as well as displaying it locally if a video player is available.
+        /// </summary>
+        [Tooltip("Enable the local video feed, which adds a video track sent to the remote peer")]
+        public bool LocalFeedEnabled = true;
+
+        /// <summary>
         /// Instance of a local video player which will have frame data written to it.
         /// </summary>
         [Tooltip("Video player instance that local stream data will be written to")]
         public VideoPlayer LocalPlayer;
+
+        /// <summary>
+        /// Automatically start sending the local video feed when the peer connection is ready.
+        /// </summary>
+        [Tooltip("Automatically start sending the local video feed when the peer connection is ready")]
+        public bool AutoStartLocalFeed = true;
+
+        /// <summary>
+        /// Enable the remote video feed, which displays the video track received from the remote peer.
+        /// The remote video track is controlled by the remote peer. The local peer cannot decide not
+        /// to received it, but can only ignore it and not display it on reception, which is what this
+        /// option controls.
+        /// </summary>
+        [Tooltip("Enable the remote video feed, which displays the video track received from the remote peer")]
+        public bool RemoteFeedEnabled = true;
 
         /// <summary>
         /// Instance of a remote video player which will have frame data written to it.
@@ -74,8 +96,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _nativePeer = GetComponent<PeerConnection>().Peer;
 
             // Register the video frame callbacks
-            _nativePeer.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
-            _nativePeer.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
+            if (LocalFeedEnabled)
+            {
+                _nativePeer.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
+                if (AutoStartLocalFeed)
+                {
+                    _nativePeer.AddLocalAudioTrackAsync(); //< TODO - Audio here?
+                    _nativePeer.AddLocalVideoTrackAsync();
+                }
+            }
+            if (RemoteFeedEnabled)
+            {
+                _nativePeer.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
+            }
         }
 
         private void OnPeerShutdown()

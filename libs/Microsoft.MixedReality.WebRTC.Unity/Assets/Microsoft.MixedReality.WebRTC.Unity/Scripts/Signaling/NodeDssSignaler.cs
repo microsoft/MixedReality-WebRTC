@@ -12,18 +12,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// This is based on https://github.com/bengreenier/node-dss
     /// and SHOULD NOT BE USED FOR PRODUCTION.
     /// </summary>
-    public class NodeDssSignaler : MonoBehaviour
+    public class NodeDssSignaler : Signaler
     {
         /// <summary>
         /// The id of the <see cref="PlayerPrefs"/> key that we cache the last connected target id under
         /// </summary>
         private const string kLastTargetId = "lastTargetId";
-
-        /// <summary>
-        /// The peer event frontend instance that we will control
-        /// </summary>
-        [Tooltip("The peer event frontend instance to control")]
-        public PeerEvents PeerEventsInstance;
 
         /// <summary>
         /// The text field in which we display the device name
@@ -77,11 +71,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private void Start()
         {
-            if (PeerEventsInstance == null)
-            {
-                throw new ArgumentNullException("PeerEventsInstance");
-            }
-
             if (string.IsNullOrEmpty(HttpServerAddress))
             {
                 throw new ArgumentNullException("HttpServerAddress");
@@ -118,49 +107,56 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     // cache the targetId in PlayerPrefs so we can autofill it in the future
                     PlayerPrefs.SetString(kLastTargetId, TargetIdField.text);
 
-                    PeerEventsInstance.CreateOffer();
+                    _nativePeer.CreateOffer();
                 }
             });
+        }
 
-            // When the WebRTC plugin and peer connection have been initialize,
-            // start the local audio and video streams immediately, even if not
-            // starting any connection to a remote peer.
-            PeerEventsInstance.OnPeerReady.AddListener(() =>
+        /// <summary>
+        /// Callback fired when an ICE candidate message has been generated and is ready to
+        /// be sent to the remote peer by the signaling object.
+        /// </summary>
+        /// <param name="candidate"></param>
+        /// <param name="sdpMlineIndex"></param>
+        /// <param name="sdpMid"></param>
+        protected override void OnIceCandiateReadyToSend(string candidate, int sdpMlineIndex, string sdpMid)
+        {
+            StartCoroutine(PostToServer(new SignalerMessage()
             {
-                PeerEventsInstance.AddLocalAudioTrackAsync();
-                PeerEventsInstance.AddLocalVideoTrackAsync();
-            });
+                MessageType = SignalerMessage.WireMessageType.Ice,
+                Data = $"{candidate}|{sdpMlineIndex}|{sdpMid}",
+                IceDataSeparator = "|"
+            }));
+        }
 
-            // bind our handler so when an offer is ready we can write it to signalling
-            PeerEventsInstance.OnSdpOfferReadyToSend.AddListener((string offer) =>
+        /// <summary>
+        /// Callback fired when a local SDP offer has been generated and is ready to
+        /// be sent to the remote peer by the signaling object.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="sdp"></param>
+        protected override void OnSdpOfferReadyToSend(string offer)
+        {
+            StartCoroutine(PostToServer(new SignalerMessage()
             {
-                StartCoroutine(PostToServer(new SignalerMessage()
-                {
-                    MessageType = SignalerMessage.WireMessageType.Offer,
-                    Data = offer
-                }));
-            });
+                MessageType = SignalerMessage.WireMessageType.Offer,
+                Data = offer
+            }));
+        }
 
-            // bind our handler so when an answer is ready we can write it to signalling
-            PeerEventsInstance.OnSdpAnswerReadyToSend.AddListener((string answer) =>
+        /// <summary>
+        /// Callback fired when a local SDP answer has been generated and is ready to
+        /// be sent to the remote peer by the signaling object.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="sdp"></param>
+        protected override void OnSdpAnswerReadyToSend(string answer)
+        {
+            StartCoroutine(PostToServer(new SignalerMessage()
             {
-                StartCoroutine(PostToServer(new SignalerMessage()
-                {
-                    MessageType = SignalerMessage.WireMessageType.Answer,
-                    Data = answer,
-                }));
-            });
-
-            // bind our handler so when an ice message is ready we can to signalling
-            PeerEventsInstance.OnIceCandiateReadyToSend.AddListener((string candidate, int sdpMlineindex, string sdpMid) =>
-            {
-                StartCoroutine(PostToServer(new SignalerMessage()
-                {
-                    MessageType = SignalerMessage.WireMessageType.Ice,
-                    Data = candidate + "|" + sdpMlineindex + "|" + sdpMid,
-                    IceDataSeparator = "|"
-                }));
-            });
+                MessageType = SignalerMessage.WireMessageType.Answer,
+                Data = answer,
+            }));
         }
 
         /// <summary>
@@ -206,17 +202,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     switch (msg.MessageType)
                     {
                         case SignalerMessage.WireMessageType.Offer:
-                            PeerEventsInstance.SetRemoteDescription("offer", msg.Data);
+                            _nativePeer.SetRemoteDescription("offer", msg.Data);
                             // if we get an offer, we immediately send an answer
-                            PeerEventsInstance.CreateAnswer();
+                            _nativePeer.CreateAnswer();
                             break;
                         case SignalerMessage.WireMessageType.Answer:
-                            PeerEventsInstance.SetRemoteDescription("answer", msg.Data);
+                            _nativePeer.SetRemoteDescription("answer", msg.Data);
                             break;
                         case SignalerMessage.WireMessageType.Ice:
                             // this "parts" protocol is defined above, in PeerEventsInstance.OnIceCandiateReadyToSend listener
                             var parts = msg.Data.Split(new string[] { msg.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                            PeerEventsInstance.AddIceCandidate(parts[0], int.Parse(parts[1]), parts[2]);
+                            _nativePeer.AddIceCandidate(parts[0], int.Parse(parts[1]), parts[2]);
                             break;
                         case SignalerMessage.WireMessageType.SetPeer:
                             // this allows a remote peer to set our text target peer id

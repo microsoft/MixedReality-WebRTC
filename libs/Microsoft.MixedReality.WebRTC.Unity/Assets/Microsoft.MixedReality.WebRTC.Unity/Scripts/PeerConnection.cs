@@ -110,6 +110,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
+
+        #region Signaling
+
+        /// <summary>
+        /// Signaler to use to establish the connection.
+        /// </summary>
+        [Tooltip("Signaler to use to establish the connection")]
+        public Signaler Signaler;
+
+        #endregion
+
+
+        #region Behavior settings
+
         /// <summary>
         /// Flag to initialize the peer connection on <see cref="Start"/>.
         /// </summary>
@@ -122,6 +136,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         [Tooltip("Automatically log all errors to the Unity console")]
         public bool AutoLogErrorsToUnityConsole = true;
+
+        #endregion
 
 
         #region Interactive Connectivity Establishment (ICE)
@@ -277,6 +293,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (_nativePeer.Initialized)
             {
+                Signaler.OnPeerUninitializing(this);
+
                 // Close the connection and release native resources.
                 _nativePeer.Dispose();
             }
@@ -411,6 +429,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 _mainThreadWorkQueue.Enqueue(() =>
                 {
                     Debug.Log("WebRTC plugin initialized successfully.");
+                    Signaler.OnPeerInitialized(this);
                     OnInitialized.Invoke();
                 });
             }, token);
