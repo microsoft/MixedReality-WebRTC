@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
-using Microsoft.MixedReality.WebRTC;
 using System.Collections.Concurrent;
 
 #if UNITY_WSA && !UNITY_EDITOR
@@ -19,79 +18,80 @@ using Windows.ApplicationModel.Core;
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// High-level wrapper for Unity WebRTC functionality
+    /// Different Ice server types
+    /// </summary>
+    public enum IceType
+    {
+        /// <summary>
+        /// Indicates there is no Ice information
+        /// </summary>
+        /// <remarks>
+        /// Under normal use, this should not be used
+        /// </remarks>
+        None = 0,
+
+        /// <summary>
+        /// Indicates Ice information is of type STUN
+        /// </summary>
+        /// <remarks>
+        /// https://en.wikipedia.org/wiki/STUN
+        /// </remarks>
+        Stun,
+
+        /// <summary>
+        /// Indicates Ice information is of type TURN
+        /// </summary>
+        /// <remarks>
+        /// https://en.wikipedia.org/wiki/Traversal_Using_Relays_around_NAT
+        /// </remarks>
+        Turn
+    }
+
+    /// <summary>
+    /// Represents an Ice server in a simple way that allows configuration from the unity inspector
+    /// </summary>
+    [Serializable]
+    public struct ConfigurableIceServer
+    {
+        /// <summary>
+        /// The type of the server
+        /// </summary>
+        [Tooltip("Type of ICE server")]
+        public IceType Type;
+
+        /// <summary>
+        /// The unqualified uri of the server
+        /// </summary>
+        /// <remarks>
+        /// You should not prefix this with "stun:" or "turn:"
+        /// </remarks>
+        [Tooltip("ICE server URI, without any stun: or turn: prefix.")]
+        public string Uri;
+
+        /// <summary>
+        /// Convert the server to the representation the underlying libraries use
+        /// </summary>
+        /// <returns>stringified server information</returns>
+        public override string ToString()
+        {
+            return string.Format("{0}: {1}", Type.ToString().ToLower(), Uri);
+        }
+    }
+
+    /// <summary>
+    /// A <see cref="UnityEvent"/> that represents a WebRTC error event.
+    /// </summary>
+    [Serializable]
+    public class WebRTCErrorEvent : UnityEvent<string>
+    {
+    }
+
+    /// <summary>
+    /// High-level wrapper for Unity WebRTC functionalities.
+    /// This is the API entry point for establishing a connection with a remote peer.
     /// </summary>
     public class PeerConnection : MonoBehaviour
     {
-        /// <summary>
-        /// Different Ice server types
-        /// </summary>
-        public enum IceType
-        {
-            /// <summary>
-            /// Indicates there is no Ice information
-            /// </summary>
-            /// <remarks>
-            /// Under normal use, this should not be used
-            /// </remarks>
-            None = 0,
-
-            /// <summary>
-            /// Indicates Ice information is of type STUN
-            /// </summary>
-            /// <remarks>
-            /// https://en.wikipedia.org/wiki/STUN
-            /// </remarks>
-            Stun,
-
-            /// <summary>
-            /// Indicates Ice information is of type TURN
-            /// </summary>
-            /// <remarks>
-            /// https://en.wikipedia.org/wiki/Traversal_Using_Relays_around_NAT
-            /// </remarks>
-            Turn
-        }
-
-        /// <summary>
-        /// Represents an Ice server in a simple way that allows configuration from the unity inspector
-        /// </summary>
-        [Serializable]
-        public struct ConfigurableIceServer
-        {
-            /// <summary>
-            /// The type of the server
-            /// </summary>
-            [Tooltip("Type of ICE server")]
-            public IceType Type;
-
-            /// <summary>
-            /// The unqualified uri of the server
-            /// </summary>
-            /// <remarks>
-            /// You should not prefix this with "stun:" or "turn:"
-            /// </remarks>
-            [Tooltip("ICE server URI, without any stun: or turn: prefix.")]
-            public string Uri;
-
-            /// <summary>
-            /// Convert the server to the representation the underlying libraries use
-            /// </summary>
-            /// <returns>stringified server information</returns>
-            public override string ToString()
-            {
-                return string.Format("{0}: {1}", Type.ToString().ToLower(), Uri);
-            }
-        }
-
-        /// <summary>
-        /// A UnityEvent that represents error events
-        /// </summary>
-        [Serializable]
-        public class WebrtcErrorEvent : UnityEvent<string>
-        {
-        }
-
         /// <summary>
         /// Retrieves the underlying peer connection object.
         /// </summary>
@@ -115,16 +115,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         [Header("Behavior settings")]
         [Tooltip("Automatically initialize the peer connection on Start()")]
-        public bool AutoInitialize = true;
+        public bool AutoInitializeOnStart = true;
 
         /// <summary>
         /// Flag to log all errors to the Unity console automatically.
         /// </summary>
         [Tooltip("Automatically log all errors to the Unity console")]
-        public bool AutoLogErrors = true;
+        public bool AutoLogErrorsToUnityConsole = true;
+
+
+        #region Interactive Connectivity Establishment (ICE)
 
         /// <summary>
-        /// Set of ICE servers.
+        /// Set of ICE servers the WebRTC library will use to try to establish a connection.
         /// </summary>
         [Header("ICE servers")]
         [Tooltip("Optional set of ICE servers (STUN and/or TURN)")]
@@ -138,16 +141,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         };
 
         /// <summary>
-        /// Optional username for ICE connections.
+        /// Optional username for the ICE servers.
         /// </summary>
-        [Tooltip("Optional username for ICE connections")]
+        [Tooltip("Optional username for the ICE servers")]
         public string IceUsername;
 
         /// <summary>
-        /// Optional credential for ICE connections.
+        /// Optional credential for the ICE servers.
         /// </summary>
-        [Tooltip("Optional credential for ICE connections")]
+        [Tooltip("Optional credential for the ICE servers")]
         public string IceCredential;
+
+        #endregion
+
+
+        #region Events
 
         /// <summary>
         /// Event fired after the peer connection is initialized and ready for use.
@@ -166,7 +174,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Event that occurs when a WebRTC error occurs
         /// </summary>
         [Tooltip("Event that occurs when a WebRTC error occurs")]
-        public WebrtcErrorEvent OnError = new WebrtcErrorEvent();
+        public WebRTCErrorEvent OnError = new WebRTCErrorEvent();
+
+        #endregion
+
+
+        #region Private variables
 
         /// <summary>
         /// Internal queue used to marshal work back to the main unity thread
@@ -182,62 +195,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private WebRTC.PeerConnection _nativePeer = new WebRTC.PeerConnection();
 
-        /// <summary>
-        /// Unity Engine Start() hook
-        /// </summary>
-        /// <remarks>
-        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html
-        /// </remarks>
-        private void Start()
-        {
-            if (AutoLogErrors)
-            {
-                OnError.AddListener(new UnityAction<string>(OnError_Listener));
-            }
+        #endregion
 
-            GetVideoCaptureDevicesAsync().ContinueWith((prevTask) =>
-            {
-                var devices = prevTask.Result;
-                _mainThreadWorkQueue.Enqueue(() =>
-                {
-                    foreach (var device in devices)
-                    {
-                        Debug.Log($"Video capture device {device.name} (id:{device.id}).");
-                    }
-                });
-            });
 
-            if (AutoInitialize)
-            {
-                InitializeAsync();
-            }
-        }
-
-        /// <summary>
-        /// Unity Engine Update() hook
-        /// </summary>
-        /// <remarks>
-        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html
-        /// </remarks>
-        private void Update()
-        {
-            // Execute any pending work enqueued by background tasks
-            while (_mainThreadWorkQueue.TryDequeue(out Action workload))
-            {
-                workload();
-            }
-        }
-
-        /// <summary>
-        /// Unity Engine OnDestroy() hook
-        /// </summary>
-        /// <remarks>
-        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDestroy.html
-        /// </remarks>
-        private void OnDestroy()
-        {
-            Uninitialize();
-        }
+        #region Public methods
 
         /// <summary>
         /// Enumerate the video capture devices available as a WebRTC local video feed source.
@@ -322,6 +283,74 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             OnShutdown.Invoke();
         }
 
+        #endregion
+
+
+        #region Unity MonoBehaviour methods
+
+        /// <summary>
+        /// Unity Engine Start() hook
+        /// </summary>
+        /// <remarks>
+        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html
+        /// </remarks>
+        private void Start()
+        {
+            if (AutoLogErrorsToUnityConsole)
+            {
+                OnError.AddListener(OnError_Listener);
+            }
+
+            GetVideoCaptureDevicesAsync().ContinueWith((prevTask) =>
+            {
+                var devices = prevTask.Result;
+                _mainThreadWorkQueue.Enqueue(() =>
+                {
+                    foreach (var device in devices)
+                    {
+                        Debug.Log($"Video capture device {device.name} (id:{device.id}).");
+                    }
+                });
+            });
+
+            if (AutoInitializeOnStart)
+            {
+                InitializeAsync();
+            }
+        }
+
+        /// <summary>
+        /// Unity Engine Update() hook
+        /// </summary>
+        /// <remarks>
+        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html
+        /// </remarks>
+        private void Update()
+        {
+            // Execute any pending work enqueued by background tasks
+            while (_mainThreadWorkQueue.TryDequeue(out Action workload))
+            {
+                workload();
+            }
+        }
+
+        /// <summary>
+        /// Unity Engine OnDestroy() hook
+        /// </summary>
+        /// <remarks>
+        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDestroy.html
+        /// </remarks>
+        private void OnDestroy()
+        {
+            Uninitialize();
+            OnError.RemoveListener(OnError_Listener);
+        }
+
+        #endregion
+
+
+        #region Private implementation
+
         /// <summary>
         /// Internal helper to ensure device access and continue initialization.
         /// </summary>
@@ -388,12 +417,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Internal handler for on-error, if <see cref="AutoLogErrors"/> is <c>true</c>
+        /// Internal handler for on-error, if <see cref="AutoLogErrorsToUnityConsole"/> is <c>true</c>
         /// </summary>
         /// <param name="error">The error message</param>
         private void OnError_Listener(string error)
         {
             Debug.LogError(error);
         }
+
+        #endregion
     }
 }
