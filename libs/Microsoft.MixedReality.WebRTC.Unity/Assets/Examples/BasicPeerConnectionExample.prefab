@@ -1160,8 +1160,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64dff3d25ffa2ee4f907d396ed9c1ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AutoInitialize: 1
-  AutoLogErrors: 1
+  Signaler: {fileID: 114129059573521262}
+  AutoInitializeOnStart: 1
+  AutoLogErrorsToUnityConsole: 1
   IceServers:
   - Type: 1
     Uri: stun.l.google.com:19302
@@ -1191,8 +1192,8 @@ MonoBehaviour:
   OnError:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection+WebrtcErrorEvent,
-      Microsoft.MixedReality.WebRTC.Unity, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.WebRTCErrorEvent, Microsoft.MixedReality.WebRTC.Unity,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &114711765838475790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1259,7 +1260,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PeerConnection: {fileID: 114452439610826054}
+  LocalFeedEnabled: 1
   LocalPlayer: {fileID: 114829255533042158}
+  AutoStartLocalFeed: 1
+  RemoteFeedEnabled: 1
   RemotePlayer: {fileID: 114601036757887320}
 --- !u!1 &1754267790574398
 GameObject:

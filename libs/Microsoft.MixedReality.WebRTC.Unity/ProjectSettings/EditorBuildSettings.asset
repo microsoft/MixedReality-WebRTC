@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/WebrtcBasicSignalExample.unity
+    path: Assets/Examples/BasicPeerConnectionExample.unity
     guid: d3b2f1f0ebd44dc4aaf677c227320d9c
   m_configObjects: {}
