@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
-using Microsoft.MixedReality.WebRTC;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
@@ -216,8 +214,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html
         /// </remarks>
-        private void Update()
+        protected override void Update()
         {
+            // Do not forget to call the base class Update(), which processes events from background
+            // threads to fire the callbacks implemented in this class.
+            base.Update();
+
             // if we have not reached our PollTimeMs value...
             if (timeSincePollMs <= PollTimeMs)
             {

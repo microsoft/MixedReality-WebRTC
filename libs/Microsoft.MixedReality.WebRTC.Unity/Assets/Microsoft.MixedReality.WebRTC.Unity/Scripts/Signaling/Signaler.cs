@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -24,6 +25,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         protected WebRTC.PeerConnection _nativePeer;
 
+
+        private ConcurrentQueue<Action> _mainThreadQueue = new ConcurrentQueue<Action>();
+
         /// <summary>
         /// Callback fired from the <see cref="PeerConnection"/> when it finished
         /// initializing, to subscribe to signaling-related events.
@@ -35,7 +39,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _nativePeer = peer.Peer;
 
             // Register handlers for the SDP events
-            _nativePeer.IceCandidateReadytoSend += OnIceCandiateReadyToSend;
+            _nativePeer.IceCandidateReadytoSend += OnIceCandiateReadyToSend_Listener;
             _nativePeer.LocalSdpReadytoSend += OnLocalSdpReadyToSend_Listener;
         }
 
@@ -47,8 +51,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public void OnPeerUninitializing(PeerConnection peer)
         {
             // Unregister handlers for the SDP events
-            _nativePeer.IceCandidateReadytoSend -= OnIceCandiateReadyToSend;
+            _nativePeer.IceCandidateReadytoSend -= OnIceCandiateReadyToSend_Listener;
             _nativePeer.LocalSdpReadytoSend -= OnLocalSdpReadyToSend_Listener;
+        }
+
+        private void OnIceCandiateReadyToSend_Listener(string candidate, int sdpMlineIndex, string sdpMid)
+        {
+            _mainThreadQueue.Enqueue(() => OnIceCandiateReadyToSend(candidate, sdpMlineIndex, sdpMid));
         }
 
         /// <summary>
@@ -60,11 +69,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
             {
-                OnSdpOfferReadyToSend(sdp);
+                _mainThreadQueue.Enqueue(() => OnSdpOfferReadyToSend(sdp));
             }
             else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
             {
-                OnSdpAnswerReadyToSend(sdp);
+                _mainThreadQueue.Enqueue(() => OnSdpAnswerReadyToSend(sdp));
+            }
+        }
+
+        protected virtual void Update()
+        {
+            // Process workloads queued from background threads
+            while (_mainThreadQueue.TryDequeue(out Action action))
+            {
+                action();
             }
         }
 

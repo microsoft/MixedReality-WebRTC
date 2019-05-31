@@ -1226,6 +1226,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 224978097846601102}
+  - component: {fileID: 8844783484497184051}
   - component: {fileID: 223899471443708644}
   - component: {fileID: 114151148814654588}
   - component: {fileID: 114460245628877720}
@@ -1259,6 +1260,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &8844783484497184051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1754267790574398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13f22b3a20b284443a5755c838806e17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeDssSignaler: {fileID: 8734329137356271696}
+  DeviceNameLabel: {fileID: 114070876977189030}
+  DeviceNameLabel2: {fileID: 0}
+  RemotePeerId: {fileID: 114259858479715936}
+  CreateOfferButton: {fileID: 114751637186518168}
 --- !u!223 &223899471443708644
 Canvas:
   m_ObjectHideFlags: 0

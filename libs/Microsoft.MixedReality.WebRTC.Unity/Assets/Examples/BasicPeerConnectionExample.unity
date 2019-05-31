@@ -495,6 +495,16 @@ PrefabInstance:
       propertyPath: AutoLogErrors
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8734329137356271696, guid: 94759df28537c86408a84858950de05a,
+        type: 3}
+      propertyPath: RemotePeerId
+      value: cc937a60143e2a5d4dbb2b2003b3f0177a49d337
+      objectReference: {fileID: 0}
+    - target: {fileID: 8844783484497184051, guid: 94759df28537c86408a84858950de05a,
+        type: 3}
+      propertyPath: DeviceNameLabel2
+      value: 
+      objectReference: {fileID: 2135570854}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 94759df28537c86408a84858950de05a, type: 3}
 --- !u!1 &2135570853
