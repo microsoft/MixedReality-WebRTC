@@ -369,7 +369,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1274745582922182, guid: 94759df28537c86408a84858950de05a, type: 3}
       propertyPath: m_Name
-      value: WebrtcBasicSignalExample
+      value: BasicPeerConnectionExample
       objectReference: {fileID: 0}
     - target: {fileID: 4037275511003170, guid: 94759df28537c86408a84858950de05a, type: 3}
       propertyPath: m_LocalPosition.x
