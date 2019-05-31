@@ -173,9 +173,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                             _nativePeer.SetRemoteDescription("answer", msg.Data);
                             break;
                         case SignalerMessage.WireMessageType.Ice:
-                            // this "parts" protocol is defined above, in PeerEventsInstance.OnIceCandiateReadyToSend listener
+                            // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
                             var parts = msg.Data.Split(new string[] { msg.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                            _nativePeer.AddIceCandidate(parts[0], int.Parse(parts[1]), parts[2]);
+                            // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                            _nativePeer.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
                             break;
                         //case SignalerMessage.WireMessageType.SetPeer:
                         //    // this allows a remote peer to set our text target peer id
