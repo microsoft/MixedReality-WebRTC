@@ -7,6 +7,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
     [CanEditMultipleObjects]
     public class VideoSourceEditor : UnityEditor.Editor
     {
+        SerializedProperty peerConnection;
+
         SerializedProperty localEnabled;
         SerializedProperty localPlayer;
         SerializedProperty autoStartLocalFeed;
@@ -17,6 +19,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
         void OnEnable()
         {
+            peerConnection = serializedObject.FindProperty("PeerConnection");
+
             localEnabled = serializedObject.FindProperty("LocalFeedEnabled");
             localPlayer = serializedObject.FindProperty("LocalPlayer");
             autoStartLocalFeed = serializedObject.FindProperty("AutoStartLocalFeed");
@@ -30,6 +34,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             serializedObject.Update();
 
             GUILayout.Space(10);
+            EditorGUILayout.PropertyField(peerConnection);
             if (!localEnabled.boolValue && !remoteEnabled.boolValue)
             {
                 EditorGUILayout.HelpBox("Video source without any feed enabled. Consider removing the component if not used. You can ignore this message if one or more feeds are enabled at runtime dynamically.", MessageType.Warning);
