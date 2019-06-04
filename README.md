@@ -61,34 +61,19 @@ For UWP support, open `external\webrtc-uwp-sdk\webrtc\windows\solution\WebRtc.Un
 
 ### Build the MixedReality-WebRTC libraries
 
-Open `MixedReality-WebRTC.sln` and build it.
+Open `Microsoft.MixedReality.WebRTC.sln` and build it.
 
 On successful build, the relevant DLLs will be copied to `libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\` for Unity to consume them.
-
-### Optionally test the install
-
-Test the install by _e.g._ opening the Unity project at `libs\Microsoft.MixedReality.WebRTC.Unity`, loading the `Assets\Examples\BasicPeerConnectionExample` scene and pressing Play. After a few seconds the left video track player should display the video feed from the local webcam. The Unity console should also display a message about the WebRTC library being initialized successfully.
-
----
-
-There are 2 steps involved in building MixedReality-WebRTC:
-1. Build the underlying `webrtc.lib` library (with UWP fixes if targetting UWP).
-2. Build the MixedReality-WebRTC libraries.
-
-The first step corresponds to building the [WebRTC UWP SDK](https://github.com/webrtc-uwp/webrtc-uwp-sdk) project, which conveniently provides a Visual Studio solution wrapping the original build scripts. Full instructions are available from [the official README](https://github.com/webrtc-uwp/webrtc-uwp-sdk/blob/master/README.md), and can be summarized as:
-- `git clone --recursive https://github.com/webrtc-uwp/webrtc-uwp-sdk`
-- Open the Visual Studio solution `webrtc\windows\solutions\WebRtc.Win32.sln` and compile it
-- Open the Visual Studio solution `webrtc\windows\solutions\WebRtc.Universal.sln` and compile it
-
-For the second step:
-- Open `libs\Microsoft.MixedReality.WebRTC.Native\project.props` and point the `WebRTCCoreRepoPath` property to the folder where the WebRTC UWP SDK was cloned in the first step.
-- Open the `Microsoft.MixedReality.WebRTC.sln` solution in Visual Studio and compile it.
 
 The `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution contains several projects:
 - The native C++ library, which can be compiled for Desktop (`Microsoft.MixedReality.WebRTC.Native.Win32` project) or UWP (`Microsoft.MixedReality.WebRTC.Native.UWP` project).
 - The C# library project `Microsoft.MixedReality.WebRTC`.
 - A C# unit tests project `Microsoft.MixedReality.WebRTC.Tests`.
 - A UWP C# sample app project `Microsoft.MixedReality.WebRTC.TestAppUWP` based on WPF and XAML.
+
+### Optionally test the install
+
+Test the install by _e.g._ opening the Unity project at `libs\Microsoft.MixedReality.WebRTC.Unity`, loading the `Assets\Examples\BasicPeerConnectionExample` scene and pressing Play. After a few seconds the left video track player should display the video feed from the local webcam. The Unity console should also display a message about the WebRTC library being initialized successfully.
 
 ## Contributing
 
