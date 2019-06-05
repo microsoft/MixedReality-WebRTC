@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Microsoft
-  productName: WebRTCUnityIntegration
+  productName: Microsoft.MixedReality.WebRTC.Unity
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -541,16 +541,16 @@ PlayerSettings:
     Metro: 6
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: WebRTCUnityIntegration
-  metroPackageVersion: 1.0.0.0
+  metroPackageName: Microsoft.MixedReality.WebRTC.Unity
+  metroPackageVersion: 0.1.0.0
   metroCertificatePath: Assets\WSATestCertificate.pfx
   metroCertificatePassword: 
   metroCertificateSubject: DefaultCompany
   metroCertificateIssuer: DefaultCompany
   metroCertificateNotAfter: 804ed8454e29d601
-  metroApplicationDescription: WebRTCUnityIntegration
+  metroApplicationDescription: Microsoft.MixedReality.WebRTC.Unity
   wsaImages: {}
-  metroTileShortName: WebRTCUnityIntegration
+  metroTileShortName: Microsoft.MixedReality.WebRTC.Unity
   metroTileShowName: 0
   metroMediumTileShowName: 0
   metroLargeTileShowName: 0
@@ -588,7 +588,7 @@ PlayerSettings:
       PhoneCallHistoryPublic: False
       PicturesLibrary: False
       PointOfService: False
-      PrivateNetworkClientServer: False
+      PrivateNetworkClientServer: True
       Proximity: False
       RecordedCallsFolder: False
       RemoteSystem: False
