@@ -1159,14 +1159,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64dff3d25ffa2ee4f907d396ed9c1ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Signaler: {fileID: 8734329137356271696}
   AutoInitializeOnStart: 1
   AutoLogErrorsToUnityConsole: 1
+  Signaler: {fileID: 8734329137356271696}
   IceServers:
   - Type: 1
     Uri: stun.l.google.com:19302
   IceUsername: 
   IceCredential: 
+  LocalAudioEnabled: 1
+  AutoStartLocalAudio: 1
   LocalVideoEnabled: 1
   LocalVideoPlayer: {fileID: 114829255533042158}
   AutoStartLocalVideo: 1
@@ -1298,7 +1300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_UiScaleMode: 0
-  m_ReferencePixelsPerUnit: 100
+  m_ReferencePixelsPerUnit: 16
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
   m_ScreenMatchMode: 0
