@@ -86,6 +86,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>src/exports.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Message>Copying C++ DLLs to Unity plugins folder...</Message>
