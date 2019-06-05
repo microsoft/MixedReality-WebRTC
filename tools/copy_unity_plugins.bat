@@ -7,9 +7,16 @@ REM %4 Build config (Debug / Release)
 
 if %1==CPP (
     if %3==x64 (
-        REM x64 becomes x86_64
-        xcopy /Y /Q ..\..\bin\%2\x64\%4\Microsoft.MixedReality.WebRTC.Native.dll ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\x86_64\
-        xcopy /Y /Q ..\..\bin\%2\x64\%4\Microsoft.MixedReality.WebRTC.Native.pdb ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\x86_64\
+        if %2==WSA (
+            REM UWP (MSVC) becomes WSA (Unity)
+            REM x64 (MSVC) becomes x86_64 (Unity)
+            xcopy /Y /Q ..\..\bin\UWP\x64\%4\Microsoft.MixedReality.WebRTC.Native.dll ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\x86_64\
+            xcopy /Y /Q ..\..\bin\UWP\x64\%4\Microsoft.MixedReality.WebRTC.Native.pdb ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\x86_64\
+        ) else (
+            REM x64 (MSVC) becomes x86_64 (Unity)
+            xcopy /Y /Q ..\..\bin\%2\x64\%4\Microsoft.MixedReality.WebRTC.Native.dll ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\x86_64\
+            xcopy /Y /Q ..\..\bin\%2\x64\%4\Microsoft.MixedReality.WebRTC.Native.pdb ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\%2\x86_64\
+        )
     ) else (
         if %2==WSA (
             REM UWP (MSVC) becomes WSA (Unity)
