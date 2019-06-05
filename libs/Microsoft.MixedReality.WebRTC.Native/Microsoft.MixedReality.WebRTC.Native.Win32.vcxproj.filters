@@ -21,6 +21,5 @@
   <ItemGroup>
     <None Include="docs/design.md" />
     <None Include="src/exports.def" />
-    <None Include="README.md" />
   </ItemGroup>
 </Project>
