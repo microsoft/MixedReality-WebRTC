@@ -16,8 +16,8 @@ struct Callback {
   using callback_type = void (*)(void*, Args...);
   callback_type callback_{nullptr};
   void* user_data_{nullptr};
-  inline operator bool() const noexcept { return (callback_ != nullptr); }
-  inline void operator()(Args... args) const noexcept {
+  explicit operator bool() const noexcept { return (callback_ != nullptr); }
+  void operator()(Args... args) const noexcept {
     if (callback_ != nullptr) {
       (*callback_)(user_data_, std::forward<Args>(args)...);
     }
