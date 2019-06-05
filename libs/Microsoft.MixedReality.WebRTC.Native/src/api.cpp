@@ -19,7 +19,7 @@ struct mrsEnumerator {
 namespace {
 
 std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
-    const char* video_device_id) noexcept(kNoExceptFalseOnUWP) {
+    const char* video_device_id, bool enable_mrc = false) noexcept(kNoExceptFalseOnUWP) {
 #if defined(WINUWP)
   // Check for calls from main UI thread; this is not supported (will deadlock)
   auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
@@ -54,13 +54,23 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     auto id = devInfo.Id().c_str();
 
     auto vcd =
-        wrapper::impl::org::webRtc::VideoCapturer::create(name, id, false);
+        wrapper::impl::org::webRtc::VideoCapturer::create(name, id, enable_mrc);
 
     if (vcd != nullptr) {
       auto nativeVcd = wrapper::impl::org::webRtc::VideoCapturer::toNative(vcd);
 
-      RTC_LOG(LS_INFO) << "Using video capture device '" << name
-                       << "' (id=" << id << ")";
+      RTC_LOG(LS_INFO) << "Using video capture device '" << rtc::ToUtf8(name).c_str()
+                       << "' (id=" << rtc::ToUtf8(id).c_str() << ")";
+
+	  //// HACK - Force max size to prevent high-res HoloLens 2 camera, which also disables MRC
+	  //// https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture-for-developers#enabling-mrc-in-your-app
+	  //// "MRC on HoloLens 2 supports videos up to 1080p and photos up to 4K resolution"
+	  //cricket::VideoFormat max_format{};
+   //   max_format.width = 1920;
+   //   max_format.height = 1080;
+   //   max_format.interval = cricket::VideoFormat::FpsToInterval(30);
+   //   nativeVcd->set_enable_camera_list(true); //< needed to enable filtering
+	  //nativeVcd->ConstrainSupportedFormats(max_format);
 
       if (auto supportedFormats = nativeVcd->GetSupportedFormats()) {
         RTC_LOG(LS_INFO) << "Supported video formats:";
@@ -396,7 +406,8 @@ void mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
 }
 
 bool mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
-                                         const char* video_device_id)
+                                         const char* video_device_id,
+                                         bool enable_mrc)
 #if defined(WINUWP)
     noexcept(false)
 #else
@@ -408,7 +419,7 @@ bool mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
       return false;
     }
     std::unique_ptr<cricket::VideoCapturer> video_capturer =
-        OpenVideoCaptureDevice(video_device_id);
+        OpenVideoCaptureDevice(video_device_id, enable_mrc);
     if (!video_capturer) {
       return false;
     }

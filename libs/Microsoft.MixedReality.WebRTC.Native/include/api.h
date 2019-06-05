@@ -191,14 +191,16 @@ MRS_API void mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
 
 /// Add a local video track from a local video capture device (webcam) to
 /// the collection of tracks to send to the remote peer.
-/// |video_device_index| specifies the 0-based index of a video capture
-/// device to open, or -1 for any device. This is an experimental feature
-/// for debugging to allow multi-webcam use on a single machine.
-/// On UWP this must be invoked from another thread than the main UI thread.
-MRS_API
-bool mrsPeerConnectionAddLocalVideoTrack(
+/// |video_device_id| specifies the unique identifier of a video capture
+/// device to open, as obtained by enumerating devices with
+/// mrsEnumVideoCaptureDevicesAsync(), or null for any device.
+/// |enable_mrc| allows enabling Mixed Reality Capture on HoloLens devices, and
+/// is otherwise ignored for other video capture devices. On UWP this must be
+/// invoked from another thread than the main UI thread.
+MRS_API bool mrsPeerConnectionAddLocalVideoTrack(
     PeerConnectionHandle peerHandle,
-    const char* video_device_id) noexcept(kNoExceptFalseOnUWP);
+    const char* video_device_id,
+    bool enable_mrc) noexcept(kNoExceptFalseOnUWP);
 
 /// Add a local audio track from a local audio capture device (microphone) to
 /// the collection of tracks to send to the remote peer.

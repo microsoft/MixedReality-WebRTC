@@ -102,7 +102,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 if (AutoStartLocalFeed)
                 {
                     _nativePeer.AddLocalAudioTrackAsync(); //< TODO - Audio here?
-                    _nativePeer.AddLocalVideoTrackAsync();
+                    _nativePeer.AddLocalVideoTrackAsync(default, enableMrc: true);
                 }
             }
             if (RemoteFeedEnabled)

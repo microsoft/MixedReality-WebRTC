@@ -284,9 +284,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             return _nativePeer?.AddLocalAudioTrackAsync();
         }
 
-        public Task AddLocalVideoTrackAsync(WebRTC.PeerConnection.VideoCaptureDevice device = default(WebRTC.PeerConnection.VideoCaptureDevice))
+        public Task AddLocalVideoTrackAsync(WebRTC.PeerConnection.VideoCaptureDevice device = default(WebRTC.PeerConnection.VideoCaptureDevice), bool enableMrc = false)
         {
-            return _nativePeer?.AddLocalVideoTrackAsync(device);
+            return _nativePeer?.AddLocalVideoTrackAsync(device, enableMrc);
         }
 
         public void ClosePeerConnection()
