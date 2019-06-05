@@ -43,20 +43,19 @@ class DataChannelObserver : public webrtc::DataChannelObserver {
  public:
   DataChannelObserver(
       rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) noexcept;
-  ~DataChannelObserver() noexcept override = default;
-  inline webrtc::DataChannelInterface* data_channel() const {
+  webrtc::DataChannelInterface* data_channel() const {
     return data_channel_.get();
   }
-  inline void setMessageCallback(DataChannelMessageCallback callback) noexcept {
+  void SetMessageCallback(DataChannelMessageCallback callback) noexcept {
     auto lock = std::lock_guard{mutex_};
     message_callback_ = callback;
   }
-  inline void setBufferingCallback(
+  void SetBufferingCallback(
       DataChannelBufferingCallback callback) noexcept {
     auto lock = std::lock_guard{mutex_};
     buffering_callback_ = callback;
   }
-  inline void setStateCallback(DataChannelStateCallback callback) noexcept {
+  void SetStateCallback(DataChannelStateCallback callback) noexcept {
     auto lock = std::lock_guard{mutex_};
     state_callback_ = callback;
   }

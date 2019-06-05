@@ -10,7 +10,7 @@ namespace mrtk {
 namespace net {
 namespace webrtc_impl {
 
-void AudioFrameObserver::setCallback(
+void AudioFrameObserver::SetCallback(
     AudioFrameReadyCallback callback) noexcept {
   auto lock = std::lock_guard{mutex_};
   callback_ = callback;

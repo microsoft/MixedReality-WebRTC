@@ -60,8 +60,8 @@ PeerConnection::PeerConnection() = default;
 PeerConnection::~PeerConnection() noexcept {
   // Ensure that observers (sinks) are removed, otherwise the media pipelines
   // will continue to try to feed them with data after they're destroyed
-  removeLocalVideoTrack();
-  removeLocalAudioTrack();
+  RemoveLocalVideoTrack();
+  RemoveLocalAudioTrack();
   for (auto stream : remote_streams_) {
     if (auto* sink = remote_video_observer_.get()) {
       for (auto&& video_track : stream->GetVideoTracks()) {
@@ -76,7 +76,7 @@ PeerConnection::~PeerConnection() noexcept {
   }
 }
 
-void PeerConnection::setPeerImpl(
+void PeerConnection::SetPeerImpl(
     rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer) noexcept {
   peer_ = std::move(peer);
   local_video_observer_.reset(new VideoFrameObserver());
@@ -85,7 +85,7 @@ void PeerConnection::setPeerImpl(
   remote_audio_observer_.reset(new AudioFrameObserver());
 }
 
-bool PeerConnection::addLocalVideoTrack(
+bool PeerConnection::AddLocalVideoTrack(
     rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept {
   if (local_video_track_) {
     return false;
@@ -104,7 +104,7 @@ bool PeerConnection::addLocalVideoTrack(
   return false;
 }
 
-void PeerConnection::removeLocalVideoTrack() noexcept {
+void PeerConnection::RemoveLocalVideoTrack() noexcept {
   if (!local_video_track_)
     return;
   if (auto* sink = local_video_observer_.get()) {
@@ -115,7 +115,7 @@ void PeerConnection::removeLocalVideoTrack() noexcept {
   local_video_sender_ = nullptr;
 }
 
-bool PeerConnection::addLocalAudioTrack(
+bool PeerConnection::AddLocalAudioTrack(
     rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track) noexcept {
   if (local_audio_track_) {
     return false;
@@ -132,7 +132,7 @@ bool PeerConnection::addLocalAudioTrack(
   return false;
 }
 
-void PeerConnection::removeLocalAudioTrack() noexcept {
+void PeerConnection::RemoveLocalAudioTrack() noexcept {
   if (!local_audio_track_)
     return;
   if (auto* sink = local_audio_observer_.get()) {
@@ -143,7 +143,7 @@ void PeerConnection::removeLocalAudioTrack() noexcept {
   local_audio_sender_ = nullptr;
 }
 
-bool PeerConnection::addDataChannel(
+bool PeerConnection::AddDataChannel(
     int id,
     const char* label,
     bool ordered,
@@ -172,9 +172,9 @@ bool PeerConnection::addDataChannel(
   if (dataChannel) {
     std::shared_ptr<DataChannelObserver> observer{
         new DataChannelObserver(dataChannel)};
-    observer->setMessageCallback(message_callback);
-    observer->setBufferingCallback(buffering_callback);
-    observer->setStateCallback(state_callback);
+    observer->SetMessageCallback(message_callback);
+    observer->SetBufferingCallback(buffering_callback);
+    observer->SetStateCallback(state_callback);
     dataChannel->RegisterObserver(observer.get());
     if (!labelString.empty()) {
       data_channel_from_label_.emplace(
@@ -188,7 +188,7 @@ bool PeerConnection::addDataChannel(
   return false;
 }
 
-bool PeerConnection::removeDataChannel(int id) noexcept {
+bool PeerConnection::RemoveDataChannel(int id) noexcept {
   if (id < 0)
     return false;
   auto it_id = data_channel_from_id_.find(id);
@@ -207,7 +207,7 @@ bool PeerConnection::removeDataChannel(int id) noexcept {
   return true;
 }
 
-bool PeerConnection::removeDataChannel(const char* label) noexcept {
+bool PeerConnection::RemoveDataChannel(const char* label) noexcept {
   if (!label)
     return false;
   std::string labelString(label);
@@ -229,7 +229,7 @@ bool PeerConnection::removeDataChannel(const char* label) noexcept {
   return true;
 }
 
-bool PeerConnection::sendDataChannelMessage(int id,
+bool PeerConnection::SendDataChannelMessage(int id,
                                             const void* data,
                                             uint64_t size) noexcept {
   if (id < 0)
@@ -249,7 +249,7 @@ bool PeerConnection::sendDataChannelMessage(int id,
   return false;
 }
 
-bool PeerConnection::addIceCandidate(const char* sdp_mid,
+bool PeerConnection::AddIceCandidate(const char* sdp_mid,
                                      const int sdp_mline_index,
                                      const char* candidate) noexcept {
   if (!peer_)
@@ -264,7 +264,7 @@ bool PeerConnection::addIceCandidate(const char* sdp_mid,
   return true;
 }
 
-bool PeerConnection::createOffer() noexcept {
+bool PeerConnection::CreateOffer() noexcept {
   if (!peer_)
     return false;
   webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options;
@@ -277,7 +277,7 @@ bool PeerConnection::createOffer() noexcept {
   return true;
 }
 
-bool PeerConnection::createAnswer() noexcept {
+bool PeerConnection::CreateAnswer() noexcept {
   if (!peer_)
     return false;
   webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options;
@@ -290,7 +290,7 @@ bool PeerConnection::createAnswer() noexcept {
   return true;
 }
 
-bool PeerConnection::setRemoteDescription(const char* type,
+bool PeerConnection::SetRemoteDescription(const char* type,
                                           const char* sdp) noexcept {
   if (!peer_)
     return false;

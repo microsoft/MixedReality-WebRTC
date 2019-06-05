@@ -321,7 +321,7 @@ PeerConnectionHandle mrsPeerConnectionCreate(
                                                       std::move(dependencies));
   if (peer_connection.get() == nullptr)
     return {};
-  peer->setPeerImpl(peer_connection);
+  peer->SetPeerImpl(peer_connection);
   const PeerConnectionHandle handle{peer.get()};
   g_peer_connection_map.insert({handle, std::move(peer)});
   return handle;
@@ -332,7 +332,7 @@ void mrsPeerConnectionRegisterConnectedCallback(
     PeerConnectionConnectedCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->registerConnectedCallback(Callback<>{callback, user_data});
+    peer->RegisterConnectedCallback(Callback<>{callback, user_data});
   }
 }
 
@@ -341,7 +341,7 @@ void mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(
     PeerConnectionLocalSdpReadytoSendCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->registerLocalSdpReadytoSendCallback(
+    peer->RegisterLocalSdpReadytoSendCallback(
         Callback<const char*, const char*>{callback, user_data});
   }
 }
@@ -351,7 +351,7 @@ void mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(
     PeerConnectionIceCandidateReadytoSendCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->registerIceCandidateReadytoSendCallback(
+    peer->RegisterIceCandidateReadytoSendCallback(
         Callback<const char*, int, const char*>{callback, user_data});
   }
 }
@@ -361,7 +361,7 @@ void mrsPeerConnectionRegisterRenegotiationNeededCallback(
     PeerConnectionRenegotiationNeededCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->registerRenegotiationNeededCallback(Callback<>{callback, user_data});
+    peer->RegisterRenegotiationNeededCallback(Callback<>{callback, user_data});
   }
 }
 
@@ -370,7 +370,7 @@ void mrsPeerConnectionRegisterI420LocalVideoFrameCallback(
     PeerConnectionI420VideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->registerLocalVideoFrameCallback(
+    peer->RegisterLocalVideoFrameCallback(
         I420FrameReadyCallback{callback, user_data});
   }
 }
@@ -380,7 +380,7 @@ void mrsPeerConnectionRegisterARGBLocalVideoFrameCallback(
     PeerConnectionARGBVideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->registerLocalVideoFrameCallback(
+    peer->RegisterLocalVideoFrameCallback(
         ARGBFrameReadyCallback{callback, user_data});
   }
 }
@@ -390,7 +390,7 @@ void mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(
     PeerConnectionI420VideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->registerRemoteVideoFrameCallback(
+    peer->RegisterRemoteVideoFrameCallback(
         I420FrameReadyCallback{callback, user_data});
   }
 }
@@ -400,7 +400,7 @@ void mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
     PeerConnectionARGBVideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->registerRemoteVideoFrameCallback(
+    peer->RegisterRemoteVideoFrameCallback(
         ARGBFrameReadyCallback{callback, user_data});
   }
 }
@@ -434,7 +434,7 @@ bool mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
     if (!video_track) {
       return false;
     }
-    return peer->addLocalVideoTrack(std::move(video_track));
+    return peer->AddLocalVideoTrack(std::move(video_track));
   }
   return false;
 }
@@ -456,7 +456,7 @@ bool mrsPeerConnectionAddLocalAudioTrack(
     if (!audio_track) {
       return false;
     }
-    return peer->addLocalAudioTrack(std::move(audio_track));
+    return peer->AddLocalAudioTrack(std::move(audio_track));
   }
   return false;
 }
@@ -476,7 +476,7 @@ bool mrsPeerConnectionAddDataChannel(
 
 {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->addDataChannel(
+    return peer->AddDataChannel(
         id, label, ordered, reliable,
         DataChannelMessageCallback{message_callback, message_user_data},
         DataChannelBufferingCallback{buffering_callback, buffering_user_data},
@@ -488,21 +488,21 @@ bool mrsPeerConnectionAddDataChannel(
 void mrsPeerConnectionRemoveLocalVideoTrack(
     PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->removeLocalVideoTrack();
+    peer->RemoveLocalVideoTrack();
   }
 }
 
 void mrsPeerConnectionRemoveLocalAudioTrack(
     PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->removeLocalAudioTrack();
+    peer->RemoveLocalAudioTrack();
   }
 }
 
 bool mrsPeerConnectionRemoveDataChannelById(PeerConnectionHandle peerHandle,
                                             int id) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->removeDataChannel(id);
+    return peer->RemoveDataChannel(id);
   }
   return false;
 }
@@ -510,7 +510,7 @@ bool mrsPeerConnectionRemoveDataChannelById(PeerConnectionHandle peerHandle,
 bool mrsPeerConnectionRemoveDataChannelByLabel(PeerConnectionHandle peerHandle,
                                                const char* label) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->removeDataChannel(label);
+    return peer->RemoveDataChannel(label);
   }
   return false;
 }
@@ -520,7 +520,7 @@ bool mrsPeerConnectionSendDataChannelMessage(PeerConnectionHandle peerHandle,
                                              const void* data,
                                              uint64_t size) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->sendDataChannelMessage(id, data, size);
+    return peer->SendDataChannelMessage(id, data, size);
   }
   return false;
 }
@@ -530,21 +530,21 @@ bool mrsPeerConnectionAddIceCandidate(PeerConnectionHandle peerHandle,
                                       const int sdp_mline_index,
                                       const char* sdp_mid) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->addIceCandidate(sdp, sdp_mline_index, sdp_mid);
+    return peer->AddIceCandidate(sdp, sdp_mline_index, sdp_mid);
   }
   return false;
 }
 
 bool mrsPeerConnectionCreateOffer(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->createOffer();
+    return peer->CreateOffer();
   }
   return false;
 }
 
 bool mrsPeerConnectionCreateAnswer(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->createAnswer();
+    return peer->CreateAnswer();
   }
   return false;
 }
@@ -553,7 +553,7 @@ bool mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
                                            const char* type,
                                            const char* sdp) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->setRemoteDescription(type, sdp);
+    return peer->SetRemoteDescription(type, sdp);
   }
   return false;
 }

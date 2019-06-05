@@ -41,12 +41,12 @@ ArgbBuffer::ToI420() {
   return i420_buffer;
 }
 
-void VideoFrameObserver::setCallback(I420FrameReadyCallback callback) noexcept {
+void VideoFrameObserver::SetCallback(I420FrameReadyCallback callback) noexcept {
   auto lock = std::lock_guard{mutex_};
   i420_callback_ = callback;
 }
 
-void VideoFrameObserver::setCallback(ARGBFrameReadyCallback callback) noexcept {
+void VideoFrameObserver::SetCallback(ARGBFrameReadyCallback callback) noexcept {
   auto lock = std::lock_guard{mutex_};
   argb_callback_ = callback;
 }

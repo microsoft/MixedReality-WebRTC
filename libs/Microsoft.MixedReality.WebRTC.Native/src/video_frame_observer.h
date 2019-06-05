@@ -87,18 +87,15 @@ class ArgbBuffer : public webrtc::VideoFrameBuffer {
 /// Video frame observer to get notified of newly available video frames.
 class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
  public:
-  inline VideoFrameObserver() noexcept {}
-  ~VideoFrameObserver() noexcept override = default;
-
   /// Register a callback to get notified on frame available,
   /// and received that frame as a I420-encoded buffer.
   /// This is not exclusive and can be used along another ARGB callback.
-  void setCallback(I420FrameReadyCallback callback) noexcept;
+  void SetCallback(I420FrameReadyCallback callback) noexcept;
 
   /// Register a callback to get notified on frame available,
   /// and received that frame as a raw decoded ARGB buffer.
   /// This is not exclusive and can be used along another I420 callback.
-  void setCallback(ARGBFrameReadyCallback callback) noexcept;
+  void SetCallback(ARGBFrameReadyCallback callback) noexcept;
 
  protected:
   ArgbBuffer* GetArgbScratchBuffer(int width, int height);

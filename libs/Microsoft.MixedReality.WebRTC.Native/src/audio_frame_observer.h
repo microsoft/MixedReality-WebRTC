@@ -21,9 +21,7 @@ using AudioFrameReadyCallback =
 /// Video frame observer to get notified of newly available video frames.
 class AudioFrameObserver : public webrtc::AudioTrackSinkInterface {
  public:
-  AudioFrameObserver() noexcept = default;
-  ~AudioFrameObserver() noexcept override = default;
-  void setCallback(AudioFrameReadyCallback callback) noexcept;
+  void SetCallback(AudioFrameReadyCallback callback) noexcept;
 
  protected:
   // AudioTrackSinkInterface interface

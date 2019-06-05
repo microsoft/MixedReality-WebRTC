@@ -22,17 +22,17 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
  public:
   PeerConnection();
   ~PeerConnection() noexcept override;
-  void setPeerImpl(
+  void SetPeerImpl(
       rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer) noexcept;
 
   using ConnectedCallback = Callback<>;
-  inline void registerConnectedCallback(ConnectedCallback&& callback) noexcept {
+  void RegisterConnectedCallback(ConnectedCallback&& callback) noexcept {
     auto lock = std::lock_guard{connected_callback_mutex_};
     connected_callback_ = std::move(callback);
   }
 
   using LocalSdpReadytoSendCallback = Callback<const char*, const char*>;
-  inline void registerLocalSdpReadytoSendCallback(
+  void RegisterLocalSdpReadytoSendCallback(
       LocalSdpReadytoSendCallback&& callback) noexcept {
     auto lock = std::lock_guard{local_sdp_ready_to_send_callback_mutex_};
     local_sdp_ready_to_send_callback_ = std::move(callback);
@@ -40,71 +40,71 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
 
   using IceCandidateReadytoSendCallback =
       Callback<const char*, int, const char*>;
-  inline void registerIceCandidateReadytoSendCallback(
+  void RegisterIceCandidateReadytoSendCallback(
       IceCandidateReadytoSendCallback&& callback) noexcept {
     auto lock = std::lock_guard{ice_candidate_ready_to_send_callback_mutex_};
     ice_candidate_ready_to_send_callback_ = std::move(callback);
   }
 
   using RenegotiationNeededCallback = Callback<>;
-  inline void registerRenegotiationNeededCallback(
+  void RegisterRenegotiationNeededCallback(
       RenegotiationNeededCallback&& callback) noexcept {
     auto lock = std::lock_guard{renegotiation_needed_callback_mutex_};
     renegotiation_needed_callback_ = std::move(callback);
   }
 
-  inline void registerLocalVideoFrameCallback(
+  void RegisterLocalVideoFrameCallback(
       I420FrameReadyCallback callback) noexcept {
     if (local_video_observer_) {
-      local_video_observer_->setCallback(std::move(callback));
+      local_video_observer_->SetCallback(std::move(callback));
     }
   }
 
-  inline void registerLocalVideoFrameCallback(
+  void RegisterLocalVideoFrameCallback(
       ARGBFrameReadyCallback callback) noexcept {
     if (local_video_observer_) {
-      local_video_observer_->setCallback(std::move(callback));
+      local_video_observer_->SetCallback(std::move(callback));
     }
   }
 
-  inline void registerRemoteVideoFrameCallback(
+  void RegisterRemoteVideoFrameCallback(
       I420FrameReadyCallback callback) noexcept {
     if (remote_video_observer_) {
-      remote_video_observer_->setCallback(std::move(callback));
+      remote_video_observer_->SetCallback(std::move(callback));
     }
   }
 
-  inline void registerRemoteVideoFrameCallback(
+  void RegisterRemoteVideoFrameCallback(
       ARGBFrameReadyCallback callback) noexcept {
     if (remote_video_observer_) {
-      remote_video_observer_->setCallback(std::move(callback));
+      remote_video_observer_->SetCallback(std::move(callback));
     }
   }
 
-  bool addLocalVideoTrack(
+  bool AddLocalVideoTrack(
       rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept;
-  void removeLocalVideoTrack() noexcept;
-  bool addLocalAudioTrack(
+  void RemoveLocalVideoTrack() noexcept;
+  bool AddLocalAudioTrack(
       rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track) noexcept;
-  void removeLocalAudioTrack() noexcept;
-  bool addDataChannel(int id,
+  void RemoveLocalAudioTrack() noexcept;
+  bool AddDataChannel(int id,
                       const char* label,
                       bool ordered,
                       bool reliable,
                       DataChannelMessageCallback message_callback,
                       DataChannelBufferingCallback buffering_callback,
                       DataChannelStateCallback state_callback) noexcept;
-  bool removeDataChannel(int id) noexcept;
-  bool removeDataChannel(const char* label) noexcept;
+  bool RemoveDataChannel(int id) noexcept;
+  bool RemoveDataChannel(const char* label) noexcept;
 
-  bool sendDataChannelMessage(int id, const void* data, uint64_t size) noexcept;
+  bool SendDataChannelMessage(int id, const void* data, uint64_t size) noexcept;
 
-  bool addIceCandidate(const char* sdp_mid,
+  bool AddIceCandidate(const char* sdp_mid,
                        const int sdp_mline_index,
                        const char* candidate) noexcept;
-  bool createOffer() noexcept;
-  bool createAnswer() noexcept;
-  bool setRemoteDescription(const char* type, const char* sdp) noexcept;
+  bool CreateOffer() noexcept;
+  bool CreateAnswer() noexcept;
+  bool SetRemoteDescription(const char* type, const char* sdp) noexcept;
 
  protected:
   // PeerConnectionObserver interface
