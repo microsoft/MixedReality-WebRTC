@@ -35,7 +35,7 @@ class AudioFrameObserver : public webrtc::AudioTrackSinkInterface {
 
  private:
   AudioFrameReadyCallback callback_;
-  std::mutex mutex;
+  std::mutex mutex_;
 };
 
 }  // namespace webrtc_impl

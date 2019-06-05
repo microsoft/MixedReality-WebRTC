@@ -321,7 +321,7 @@ void PeerConnection::OnSignalingChange(
       // but this callback would not be invoked then because there's no
       // transition.
       {
-        std::lock_guard lock(connected_callback_mutex_);
+        auto lock = std::lock_guard{connected_callback_mutex_};
         connected_callback_();
       }
       break;
@@ -399,7 +399,7 @@ void PeerConnection::OnDataChannel(
 }  // namespace webrtc_impl
 
 void PeerConnection::OnRenegotiationNeeded() noexcept {
-  std::lock_guard lock(renegotiation_needed_callback_mutex_);
+  auto lock = std::lock_guard{renegotiation_needed_callback_mutex_};
   auto cb = renegotiation_needed_callback_;
   if (cb) {
     cb();
@@ -408,7 +408,7 @@ void PeerConnection::OnRenegotiationNeeded() noexcept {
 
 void PeerConnection::OnIceCandidate(
     const webrtc::IceCandidateInterface* candidate) noexcept {
-  std::lock_guard lock(ice_candidate_ready_to_send_callback_mutex_);
+  auto lock = std::lock_guard{ice_candidate_ready_to_send_callback_mutex_};
   auto cb = ice_candidate_ready_to_send_callback_;
   if (cb) {
     std::string sdp;
@@ -423,7 +423,7 @@ void PeerConnection::OnIceCandidate(
 
 void PeerConnection::OnSuccess(
     webrtc::SessionDescriptionInterface* desc) noexcept {
-  std::lock_guard lock(local_sdp_ready_to_send_callback_mutex_);
+  auto lock = std::lock_guard{local_sdp_ready_to_send_callback_mutex_};
   auto cb = local_sdp_ready_to_send_callback_;
   rtc::scoped_refptr<webrtc::SetSessionDescriptionObserver> observer;
   if (cb) {

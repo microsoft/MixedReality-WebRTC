@@ -27,14 +27,14 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
 
   using ConnectedCallback = Callback<>;
   inline void registerConnectedCallback(ConnectedCallback&& callback) noexcept {
-    std::lock_guard lock(connected_callback_mutex_);
+    auto lock = std::lock_guard{connected_callback_mutex_};
     connected_callback_ = std::move(callback);
   }
 
   using LocalSdpReadytoSendCallback = Callback<const char*, const char*>;
   inline void registerLocalSdpReadytoSendCallback(
       LocalSdpReadytoSendCallback&& callback) noexcept {
-    std::lock_guard lock(local_sdp_ready_to_send_callback_mutex_);
+    auto lock = std::lock_guard{local_sdp_ready_to_send_callback_mutex_};
     local_sdp_ready_to_send_callback_ = std::move(callback);
   }
 
@@ -42,14 +42,14 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
       Callback<const char*, int, const char*>;
   inline void registerIceCandidateReadytoSendCallback(
       IceCandidateReadytoSendCallback&& callback) noexcept {
-    std::lock_guard lock(ice_candidate_ready_to_send_callback_mutex_);
+    auto lock = std::lock_guard{ice_candidate_ready_to_send_callback_mutex_};
     ice_candidate_ready_to_send_callback_ = std::move(callback);
   }
 
   using RenegotiationNeededCallback = Callback<>;
   inline void registerRenegotiationNeededCallback(
       RenegotiationNeededCallback&& callback) noexcept {
-    std::lock_guard lock(renegotiation_needed_callback_mutex_);
+    auto lock = std::lock_guard{renegotiation_needed_callback_mutex_};
     renegotiation_needed_callback_ = std::move(callback);
   }
 

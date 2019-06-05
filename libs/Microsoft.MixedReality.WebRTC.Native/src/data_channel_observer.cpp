@@ -30,7 +30,7 @@ DataChannelObserver::DataChannelObserver(
     : data_channel_(std::move(data_channel)) {}
 
 void DataChannelObserver::OnStateChange() noexcept {
-  std::lock_guard<std::mutex> lock(mutex);
+  auto lock = std::lock_guard{mutex_};
   if (!state_callback_)
     return;
   auto apiState = apiStateFromRtcState(data_channel_->state());
@@ -38,15 +38,15 @@ void DataChannelObserver::OnStateChange() noexcept {
 }
 
 void DataChannelObserver::OnMessage(const webrtc::DataBuffer& buffer) noexcept {
-  std::lock_guard<std::mutex> lock(mutex);
+  auto lock = std::lock_guard{mutex_};
   if (!message_callback_)
     return;
   message_callback_(buffer.data.data(), buffer.data.size());
 }
 
 void DataChannelObserver::OnBufferedAmountChange(
-	uint64_t previous_amount) noexcept {
-  std::lock_guard<std::mutex> lock(mutex);
+    uint64_t previous_amount) noexcept {
+  auto lock = std::lock_guard{mutex_};
   if (!buffering_callback_)
     return;
   uint64_t current_amount = data_channel_->buffered_amount();

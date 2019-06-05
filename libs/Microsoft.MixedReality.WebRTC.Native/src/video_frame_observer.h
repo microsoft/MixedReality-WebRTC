@@ -114,7 +114,7 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   ARGBFrameReadyCallback argb_callback_;
 
   /// Mutex protecting all callbacks.
-  std::mutex mutex;
+  std::mutex mutex_;
 
   /// Reusable ARGB scratch buffer to avoid per-frame allocation.
   rtc::scoped_refptr<ArgbBuffer> argb_scratch_buffer_;

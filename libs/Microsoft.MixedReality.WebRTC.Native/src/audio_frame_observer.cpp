@@ -12,7 +12,7 @@ namespace webrtc_impl {
 
 void AudioFrameObserver::setCallback(
     AudioFrameReadyCallback callback) noexcept {
-  std::lock_guard<std::mutex> lock(mutex);
+  auto lock = std::lock_guard{mutex_};
   callback_ = callback;
 }
 
@@ -21,7 +21,7 @@ void AudioFrameObserver::OnData(const void* audio_data,
                                 int sample_rate,
                                 size_t number_of_channels,
                                 size_t number_of_frames) noexcept {
-  std::lock_guard<std::mutex> lock(mutex);
+  auto lock = std::lock_guard{mutex_};
   if (!callback_)
     return;
   callback_(audio_data, bits_per_sample, sample_rate, number_of_frames,

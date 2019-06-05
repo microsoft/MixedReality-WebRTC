@@ -48,16 +48,16 @@ class DataChannelObserver : public webrtc::DataChannelObserver {
     return data_channel_.get();
   }
   inline void setMessageCallback(DataChannelMessageCallback callback) noexcept {
-    std::lock_guard<std::mutex> lock(mutex);
+    auto lock = std::lock_guard{mutex_};
     message_callback_ = callback;
   }
   inline void setBufferingCallback(
       DataChannelBufferingCallback callback) noexcept {
-    std::lock_guard<std::mutex> lock(mutex);
+    auto lock = std::lock_guard{mutex_};
     buffering_callback_ = callback;
   }
   inline void setStateCallback(DataChannelStateCallback callback) noexcept {
-    std::lock_guard<std::mutex> lock(mutex);
+    auto lock = std::lock_guard{mutex_};
     state_callback_ = callback;
   }
 
@@ -76,7 +76,7 @@ class DataChannelObserver : public webrtc::DataChannelObserver {
   DataChannelMessageCallback message_callback_;
   DataChannelBufferingCallback buffering_callback_;
   DataChannelStateCallback state_callback_;
-  std::mutex mutex;
+  std::mutex mutex_;
 };
 
 }  // namespace webrtc_impl
