@@ -111,17 +111,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
 
-        #region Signaling
-
-        /// <summary>
-        /// Signaler to use to establish the connection.
-        /// </summary>
-        [Tooltip("Signaler to use to establish the connection")]
-        public Signaler Signaler;
-
-        #endregion
-
-
         #region Behavior settings
 
         /// <summary>
@@ -136,6 +125,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         [Tooltip("Automatically log all errors to the Unity console")]
         public bool AutoLogErrorsToUnityConsole = true;
+
+        #endregion
+
+
+        #region Signaling
+
+        /// <summary>
+        /// Signaler to use to establish the connection.
+        /// </summary>
+        [Header("Signaling")]
+        [Tooltip("Signaler to use to establish the connection")]
+        public Signaler Signaler;
 
         #endregion
 
@@ -167,6 +168,72 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         [Tooltip("Optional credential for the ICE servers")]
         public string IceCredential;
+
+        #endregion
+
+
+        #region Audio
+
+        /// <summary>
+        /// Enable the local audio feed, which enables sending a locally captured audio feed to the
+        /// remote peer as well as rendering it locally if a media player is available.
+        /// </summary>
+        [Header("Audio")]
+        [Tooltip("Enable the local audio feed, which adds an audio track sent to the remote peer")]
+        public bool LocalAudioEnabled = true;
+
+        /// <summary>
+        /// Automatically start sending the local audio feed when the peer connection is ready.
+        /// </summary>
+        [Tooltip("Automatically start sending the local audio feed when the peer connection is ready")]
+        public bool AutoStartLocalAudio = true;
+
+        #endregion
+
+
+        #region Video
+
+        /// <summary>
+        /// Enable the local video feed, which enables sending a locally captured video feed to the
+        /// remote peer as well as displaying it locally if a video player is available.
+        /// </summary>
+        [Header("Video")]
+        [Tooltip("Enable the local video feed, which adds a video track sent to the remote peer")]
+        public bool LocalVideoEnabled = true;
+
+        /// <summary>
+        /// Instance of a local video player which will have frame data written to it.
+        /// </summary>
+        [Tooltip("Video player instance that local stream data will be written to")]
+        public VideoTrackPlayer LocalVideoPlayer;
+
+        /// <summary>
+        /// Automatically start sending the local video feed when the peer connection is ready.
+        /// </summary>
+        [Tooltip("Automatically start sending the local video feed when the peer connection is ready")]
+        public bool AutoStartLocalVideo = true;
+
+        /// <summary>
+        /// Enable Mixed Reality Capture (MRC) if available, which blends the webcam video with hologram rendering.
+        /// If Mixed Reality Capture is not available on the video capture device, this has no effect.
+        /// </summary>
+        [Tooltip("Enable Mixed Reality Capture (MRC) if available, which blends the webcam video with hologram rendering")]
+        public bool EnableMixedRealityCapture = true;
+
+        /// <summary>
+        /// Enable the remote video feed, which displays the video track received from the remote peer.
+        /// The remote video track is controlled by the remote peer. The local peer cannot decide not
+        /// to received it, but can only ignore it and not display it on reception, which is what this
+        /// option controls.
+        /// </summary>
+        [Tooltip("Enable the remote video feed, which displays the video track received from the remote peer")]
+        public bool RemoteVideoEnabled = true;
+
+        /// <summary>
+        /// Instance of a remote video player which will have frame data written to it.
+        /// </summary>
+        [Tooltip("Video player instance that remote stream data will be written to")]
+        public VideoTrackPlayer RemoteVideoPlayer;
 
         #endregion
 
@@ -210,6 +277,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// but can be an uninitialized peer.
         /// </remarks>
         private WebRTC.PeerConnection _nativePeer = new WebRTC.PeerConnection();
+
+        /// <summary>
+        /// Internal queue used for storing and processing local video frames
+        /// </summary>
+        private VideoFrameQueue<I420VideoFrameStorage> localFrameQueue = new VideoFrameQueue<I420VideoFrameStorage>(3);
+
+        /// <summary>
+        /// Internal queue used for storing and processing remote video frames
+        /// </summary>
+        private VideoFrameQueue<I420VideoFrameStorage> remoteFrameQueue = new VideoFrameQueue<I420VideoFrameStorage>(5);
 
         #endregion
 
@@ -291,6 +368,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public void Uninitialize()
         {
+            _nativePeer.I420LocalVideoFrameReady -= Peer_LocalI420FrameReady;
+            _nativePeer.I420RemoteVideoFrameReady -= Peer_RemoteI420FrameReady;
+
             if (_nativePeer.Initialized)
             {
                 Signaler.OnPeerUninitializing(this);
@@ -317,6 +397,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (AutoLogErrorsToUnityConsole)
             {
                 OnError.AddListener(OnError_Listener);
+            }
+
+            if (LocalVideoEnabled)
+            {
+                if (LocalVideoPlayer != null)
+                {
+                    LocalVideoPlayer.FrameQueue = localFrameQueue;
+                }
+
+                _nativePeer.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
+            }
+            if (RemoteVideoEnabled)
+            {
+                if (RemoteVideoPlayer != null)
+                {
+                    RemoteVideoPlayer.FrameQueue = remoteFrameQueue;
+                }
+
+                _nativePeer.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
             }
 
             GetVideoCaptureDevicesAsync().ContinueWith((prevTask) =>
@@ -429,10 +528,36 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 _mainThreadWorkQueue.Enqueue(() =>
                 {
                     Debug.Log("WebRTC plugin initialized successfully.");
+                    OnPostInitialize();
                     Signaler.OnPeerInitialized(this);
                     OnInitialized.Invoke();
                 });
             }, token);
+        }
+
+        /// <summary>
+        /// Callback fired on the main UI thread once the WebRTC plugin was initialized successfully.
+        /// </summary>
+        private void OnPostInitialize()
+        {
+            if (LocalAudioEnabled && AutoStartLocalAudio)
+            {
+                _nativePeer.AddLocalAudioTrackAsync();
+            }
+            if (LocalVideoEnabled && AutoStartLocalVideo)
+            {
+                _nativePeer.AddLocalVideoTrackAsync(default, EnableMixedRealityCapture);
+            }
+        }
+
+        private void Peer_LocalI420FrameReady(I420AVideoFrame frame)
+        {
+            localFrameQueue.Enqueue(frame);
+        }
+
+        private void Peer_RemoteI420FrameReady(I420AVideoFrame frame)
+        {
+            remoteFrameQueue.Enqueue(frame);
         }
 
         /// <summary>

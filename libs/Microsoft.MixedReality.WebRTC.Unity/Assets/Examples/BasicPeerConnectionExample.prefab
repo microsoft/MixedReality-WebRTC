@@ -1124,7 +1124,6 @@ GameObject:
   - component: {fileID: 4483042933794200}
   - component: {fileID: 114452439610826054}
   - component: {fileID: 8734329137356271696}
-  - component: {fileID: 114041515294989332}
   m_Layer: 0
   m_Name: PeerConnection
   m_TagString: Untagged
@@ -1168,6 +1167,12 @@ MonoBehaviour:
     Uri: stun.l.google.com:19302
   IceUsername: 
   IceCredential: 
+  LocalVideoEnabled: 1
+  LocalVideoPlayer: {fileID: 114829255533042158}
+  AutoStartLocalVideo: 1
+  EnableMixedRealityCapture: 1
+  RemoteVideoEnabled: 1
+  RemoteVideoPlayer: {fileID: 114601036757887320}
   OnInitialized:
     m_PersistentCalls:
       m_Calls: []
@@ -1199,24 +1204,6 @@ MonoBehaviour:
   RemotePeerId: 
   HttpServerAddress: http://127.0.0.1:3000/
   PollTimeMs: 500
---- !u!114 &114041515294989332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1732322252212784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac841482739c12d4ba7fd0cdb9dd70d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PeerConnection: {fileID: 114452439610826054}
-  LocalFeedEnabled: 1
-  LocalPlayer: {fileID: 114829255533042158}
-  AutoStartLocalFeed: 1
-  RemoteFeedEnabled: 1
-  RemotePlayer: {fileID: 114601036757887320}
 --- !u!1 &1754267790574398
 GameObject:
   m_ObjectHideFlags: 0

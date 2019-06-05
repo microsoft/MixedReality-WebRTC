@@ -5,10 +5,10 @@ using Unity.Profiling;
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// Play video frames received from a WebRTC video track via a <see cref="VideoSource"/>.
+    /// Play video frames received from a WebRTC video track.
     /// </summary>
     /// <remarks>
-    /// This component writes to the attached Material, via the attached Renderer
+    /// This component writes to the attached <see cref="Material"/>, via the attached <see cref="Renderer"/>.
     /// </remarks>
     [RequireComponent(typeof(Renderer))]
     public class VideoTrackPlayer : MonoBehaviour
