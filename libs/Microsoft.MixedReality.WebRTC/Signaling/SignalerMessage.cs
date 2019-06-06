@@ -34,12 +34,7 @@ namespace Microsoft.MixedReality.WebRTC
             /// <summary>
             /// A trickle-ice or ice message
             /// </summary>
-            Ice,
-            /// <summary>
-            /// A built-in protocol extension message for adjusting target
-            /// peer id remotely
-            /// </summary>
-            SetPeer
+            Ice
         }
 
         /// <summary>
