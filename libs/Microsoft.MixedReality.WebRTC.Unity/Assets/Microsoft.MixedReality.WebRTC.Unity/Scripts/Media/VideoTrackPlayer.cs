@@ -13,6 +13,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     [RequireComponent(typeof(Renderer))]
     public class VideoTrackPlayer : MonoBehaviour
     {
+        [Header("Source")]
+        public VideoSource VideoSource;
+
         [Tooltip("Max video playback framerate, in frames per second")]
         [Range(0.001f, 120f)]
         public float MaxFramerate = 30f;
@@ -99,6 +102,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             videoMaterial.SetTexture("_VPlane", _textureV);
 
             _minUpdateDelay = 1f / Mathf.Max(0.001f, MaxFramerate);
+        }
+
+        private void OnEnable()
+        {
+            FrameQueue = VideoSource?.FrameQueue;
+        }
+
+        private void OnDestroy()
+        {
+            FrameQueue = null;
         }
 
         /// <summary>

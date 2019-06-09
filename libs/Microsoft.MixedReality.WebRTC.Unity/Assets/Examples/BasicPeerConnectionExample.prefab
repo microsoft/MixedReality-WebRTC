@@ -636,6 +636,7 @@ GameObject:
   - component: {fileID: 4015235064495816}
   - component: {fileID: 33721620907696210}
   - component: {fileID: 23064724790437022}
+  - component: {fileID: 1033234611068025754}
   - component: {fileID: 114601036757887320}
   m_Layer: 0
   m_Name: RemoteVideoPlayer
@@ -707,6 +708,19 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &1033234611068025754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1163591822001396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5c8b8e916d2cbf40a9dd142c021c4d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PeerConnection: {fileID: 114452439610826054}
 --- !u!114 &114601036757887320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -719,6 +733,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  VideoSource: {fileID: 1033234611068025754}
   MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 364157899}
@@ -1025,6 +1040,7 @@ GameObject:
   - component: {fileID: 4624258585744826}
   - component: {fileID: 33989696121107170}
   - component: {fileID: 23723616376933370}
+  - component: {fileID: 6724212155761435517}
   - component: {fileID: 114829255533042158}
   m_Layer: 0
   m_Name: LocalVideoPlayer
@@ -1096,6 +1112,22 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &6724212155761435517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563972014424348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a3a632a87fbf1e4db435c4abae3ac33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AutoStartCapture: 1
+  EnableMixedRealityCapture: 1
+  PeerConnection: {fileID: 114452439610826054}
+  AutoAddTrack: 1
 --- !u!114 &114829255533042158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1108,6 +1140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  VideoSource: {fileID: 6724212155761435517}
   MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 308947673}
