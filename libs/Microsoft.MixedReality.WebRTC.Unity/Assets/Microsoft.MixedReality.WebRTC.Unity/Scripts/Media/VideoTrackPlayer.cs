@@ -122,6 +122,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private void Update()
         {
+            //< TODO - don't poll
+            if (FrameQueue == null)
+            {
+                FrameQueue = VideoSource?.FrameQueue;
+            }
+
             if (FrameQueue != null)
             {
 #if UNITY_EDITOR

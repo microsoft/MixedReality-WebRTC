@@ -42,6 +42,26 @@ namespace Microsoft.MixedReality.WebRTC
         public delegate void VideoCaptureDeviceEnumCallback(string id, string name);
 
         /// <summary>
+        /// Signaler implementation used by this peer connection, as specified in the constructor.
+        /// </summary>
+        public ISignaler Signaler { get; }
+
+        /// <summary>
+        /// List of TURN and/or STUN servers to use for NAT bypass, in order of preference.
+        /// </summary>
+        public List<string> Servers;
+
+        /// <summary>
+        /// Optional TURN server username.
+        /// </summary>
+        public string UserName;
+
+        /// <summary>
+        /// Optional TURN server credentials.
+        /// </summary>
+        public string Credentials;
+
+        /// <summary>
         /// Boolean property indicating whether the peer connection has been initialized.
         /// </summary>
         public bool Initialized
@@ -341,18 +361,26 @@ namespace Microsoft.MixedReality.WebRTC
         #region Initializing and shutdown
 
         /// <summary>
+        /// Construct an uninitialized peer connection object which will delegate to the given
+        /// <see cref="ISignaler"/> implementation for its WebRTC signaling needs.
+        /// </summary>
+        /// <param name="signaler">The signaling implementation to use.</param>
+        public PeerConnection(ISignaler signaler)
+        {
+            Signaler = signaler;
+        }
+
+        /// <summary>
         /// Initialize the current peer connection object asynchronously.
         /// </summary>
-        /// <param name="servers">List of STUN and TURN servers</param>
-        /// <param name="username">Optional user name for server connection</param>
-        /// <param name="credentials">Optional credentials for server connection</param>
+        /// <param name="token">Optional cancellation token for the initialize task. This is only used if
+        /// the singleton task was created by this call, and not a prior call.</param>
         /// <returns>The singleton task used to initialize the underlying native peer connection.</returns>
         /// <remarks>This method is multi-thread safe, and will always return the same task object
         /// from the first call to it until the peer connection object is deinitialized. This allows
         /// multiple callers to all execute some action following the initialization, without the need
         /// to force a single caller and to synchronize with it.</remarks>
-        public Task InitializeAsync(List<string> servers, string username,
-            string credentials, CancellationToken token = default)
+        public Task InitializeAsync(CancellationToken token = default)
         {
             lock (_openCloseLock)
             {
@@ -389,6 +417,12 @@ namespace Microsoft.MixedReality.WebRTC
                     ARGBLocalVideoFrameCallback = CallbacksWrappers.ARGBLocalVideoFrameCallback,
                     ARGBRemoteVideoFrameCallback = CallbacksWrappers.ARGBRemoteVideoFrameCallback
                 };
+
+                // Cache values in local variables before starting async task, to avoid any
+                // subsequent external change from affecting that task.
+                var servers = Servers;
+                var username = UserName;
+                var credentials = Credentials;
 
                 // On UWP PeerConnectionCreate() fails on main UI thread, so always initialize the native peer
                 // connection asynchronously from a background worker thread.

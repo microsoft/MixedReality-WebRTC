@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -50,6 +51,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Internal last poll response status flag
         /// </summary>
         private bool lastGetComplete = true;
+
+
+        #region ISignaler interface
+
+        public override Task SendMessageAsync(SignalerMessage message)
+        {
+            return Task.Run(() => PostToServerAndWait(message));
+        }
+
+        #endregion
+
 
         /// <summary>
         /// Unity Engine Start() hook
@@ -123,7 +135,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Internal helper for sending http data to the dss server using POST
+        /// Internal helper for sending HTTP data to the node-dss server using POST
         /// </summary>
         /// <param name="msg">the message to send</param>
         private IEnumerator PostToServer(SignalerMessage msg)
@@ -138,6 +150,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 Debug.Log("Failure sending message: " + www.error);
             }
+        }
+
+        /// <summary>
+        /// Internal helper to wrap a coroutine into a synchronous call
+        /// for use inside a <see cref="Task"/> object.
+        /// </summary>
+        /// <param name="msg">the message to send</param>
+        private IEnumerator PostToServerAndWait(SignalerMessage message)
+        {
+            // Start the coroutine and wait for it to finish
+            yield return StartCoroutine(PostToServer(message));
         }
 
         /// <summary>

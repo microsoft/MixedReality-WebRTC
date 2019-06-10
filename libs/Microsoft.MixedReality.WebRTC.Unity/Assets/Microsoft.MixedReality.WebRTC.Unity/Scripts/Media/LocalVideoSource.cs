@@ -46,52 +46,32 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected void OnDestroy()
         {
-            PeerConnection.Peer.I420LocalVideoFrameReady -= I420LocalVideoFrameReady;
             PeerConnection.OnInitialized.RemoveListener(OnPeerInitialized);
             PeerConnection.OnShutdown.RemoveListener(OnPeerShutdown);
         }
 
-        protected void OnEnable()
+        private void OnPeerInitialized()
         {
+            var nativePeer = PeerConnection.Peer;
+
             if (AutoStartCapture)
             {
+                nativePeer.I420LocalVideoFrameReady += I420LocalVideoFrameReady;
+
                 // TODO - Currently AddLocalVideoTrackAsync() both open the capture device AND add a video track
             }
 
             if (AutoAddTrack)
             {
-                var nativePeer = PeerConnection.Peer;
-                if (nativePeer.Initialized)
-                {
-                    nativePeer.AddLocalVideoTrackAsync(default, EnableMixedRealityCapture);
-                }
-                else
-                {
-                    //< TODO - Race condition here if PeerConnection finished intializing after the if() test above
-                    PeerConnection.OnInitialized.AddListener(() =>
-                    {
-                        PeerConnection.Peer.AddLocalVideoTrackAsync(default, EnableMixedRealityCapture);
-                    });
-                }
-            }
-        }
-
-        protected void OnDisable()
-        {
-            PeerConnection.Peer.RemoveLocalVideoTrack();
-        }
-
-        private void OnPeerInitialized()
-        {
-            if (AutoStartCapture)
-            {
-                PeerConnection.Peer.I420LocalVideoFrameReady += I420LocalVideoFrameReady;
+                nativePeer.AddLocalVideoTrackAsync(default, EnableMixedRealityCapture);
             }
         }
 
         private void OnPeerShutdown()
         {
-            PeerConnection.Peer.I420LocalVideoFrameReady -= I420LocalVideoFrameReady;
+            var nativePeer = PeerConnection.Peer;
+            nativePeer.RemoveLocalVideoTrack();
+            nativePeer.I420LocalVideoFrameReady -= I420LocalVideoFrameReady;
         }
 
         private void I420LocalVideoFrameReady(I420AVideoFrame frame)

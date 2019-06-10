@@ -49,7 +49,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected void OnDestroy()
         {
-            PeerConnection.Peer.I420RemoteVideoFrameReady -= I420RemoteVideoFrameReady;
             PeerConnection.OnInitialized.RemoveListener(OnPeerInitialized);
             PeerConnection.OnShutdown.RemoveListener(OnPeerShutdown);
         }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -10,7 +11,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <summary>
     /// Base class for WebRTC signaling implementations in Unity.
     /// </summary>
-    public abstract class Signaler : MonoBehaviour
+    public abstract class Signaler : MonoBehaviour, ISignaler
     {
         /// <summary>
         /// The <see cref="PeerConnection"/> this signaler is attached to, or <c>null</c>
@@ -18,6 +19,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// finished initializing.
         /// </summary>
         public PeerConnection PeerConnection { get; private set; }
+
+        #region ISignaler interface
+
+        public event Action OnConnect;
+        public event Action OnDisconnect;
+        public event Action<SignalerMessage> OnMessage;
+        public event Action<Exception> OnFailure;
+
+        public abstract Task SendMessageAsync(SignalerMessage message);
+
+        #endregion
 
         /// <summary>
         /// Native peer connection, available once the peer has been initialized and the

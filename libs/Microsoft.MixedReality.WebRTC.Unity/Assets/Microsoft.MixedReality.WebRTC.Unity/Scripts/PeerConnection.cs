@@ -231,17 +231,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Unlike the public <see cref="Peer"/> property, this is never <c>NULL</c>,
         /// but can be an uninitialized peer.
         /// </remarks>
-        private WebRTC.PeerConnection _nativePeer = new WebRTC.PeerConnection();
-
-        /// <summary>
-        /// Internal queue used for storing and processing local video frames
-        /// </summary>
-        private VideoFrameQueue<I420VideoFrameStorage> localFrameQueue = new VideoFrameQueue<I420VideoFrameStorage>(3);
-
-        /// <summary>
-        /// Internal queue used for storing and processing remote video frames
-        /// </summary>
-        private VideoFrameQueue<I420VideoFrameStorage> remoteFrameQueue = new VideoFrameQueue<I420VideoFrameStorage>(5);
+        private WebRTC.PeerConnection _nativePeer;
 
         #endregion
 
@@ -323,23 +313,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public void Uninitialize()
         {
-            _nativePeer.I420LocalVideoFrameReady -= Peer_LocalI420FrameReady;
-            _nativePeer.I420RemoteVideoFrameReady -= Peer_RemoteI420FrameReady;
-
             if (_nativePeer.Initialized)
             {
+                OnShutdown.Invoke();
                 Signaler.OnPeerUninitializing(this);
 
                 // Close the connection and release native resources.
                 _nativePeer.Dispose();
             }
-            OnShutdown.Invoke();
         }
 
         #endregion
 
 
         #region Unity MonoBehaviour methods
+
+        private void Awake()
+        {
+            _nativePeer = new WebRTC.PeerConnection(Signaler);
+        }
 
         /// <summary>
         /// Unity Engine Start() hook
@@ -413,12 +405,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private Task RequestAccessAndInitAsync(CancellationToken token)
         {
 #if UNITY_WSA && !UNITY_EDITOR
+            // On UWP the app must have the "webcam" capability, and the user must allow webcam
+            // access. So check that access before trying to initialize the WebRTC library, as this
+            // may result in a popup window being displayed the first time, which needs to be accepted
+            // before the camera can be accessed by WebRTC.
             var mediaAccessRequester = new MediaCapture();
             var mediaSettings = new MediaCaptureInitializationSettings();
             mediaSettings.AudioDeviceId = "";
             mediaSettings.VideoDeviceId = "";
             mediaSettings.StreamingCaptureMode = StreamingCaptureMode.AudioAndVideo;
             mediaSettings.PhotoCaptureSource = PhotoCaptureSource.VideoPreview;
+            mediaSettings.SharingMode = MediaCaptureSharingMode.SharedReadOnly; // for MRC and lower res camera
             var accessTask = mediaAccessRequester.InitializeAsync(mediaSettings).AsTask(token);
             return accessTask.ContinueWith(prevTask =>
             {
@@ -447,8 +444,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private Task InitializePluginAsync(CancellationToken token)
         {
             Debug.Log("Initializing WebRTC plugin...");
-            List<string> servers = IceServers.Select(i => i.ToString()).ToList();
-            return _nativePeer.InitializeAsync(servers, IceUsername, IceCredential, token).ContinueWith((initTask) =>
+            _nativePeer.Servers = IceServers.Select(i => i.ToString()).ToList();
+            _nativePeer.UserName = IceUsername;
+            _nativePeer.Credentials = IceCredential;
+            return _nativePeer.InitializeAsync(token).ContinueWith((initTask) =>
             {
                 token.ThrowIfCancellationRequested();
 
@@ -481,16 +480,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 _nativePeer.AddLocalAudioTrackAsync();
             }
-        }
-
-        private void Peer_LocalI420FrameReady(I420AVideoFrame frame)
-        {
-            localFrameQueue.Enqueue(frame);
-        }
-
-        private void Peer_RemoteI420FrameReady(I420AVideoFrame frame)
-        {
-            remoteFrameQueue.Enqueue(frame);
         }
 
         /// <summary>
