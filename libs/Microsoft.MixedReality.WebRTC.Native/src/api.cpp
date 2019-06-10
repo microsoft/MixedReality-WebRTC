@@ -59,18 +59,9 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     if (vcd != nullptr) {
       auto nativeVcd = wrapper::impl::org::webRtc::VideoCapturer::toNative(vcd);
 
-      RTC_LOG(LS_INFO) << "Using video capture device '" << rtc::ToUtf8(name).c_str()
+      RTC_LOG(LS_INFO) << "Using video capture device '"
+                       << rtc::ToUtf8(devInfo.Name().c_str()).c_str()
                        << "' (id=" << rtc::ToUtf8(id).c_str() << ")";
-
-	  //// HACK - Force max size to prevent high-res HoloLens 2 camera, which also disables MRC
-	  //// https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture-for-developers#enabling-mrc-in-your-app
-	  //// "MRC on HoloLens 2 supports videos up to 1080p and photos up to 4K resolution"
-	  //cricket::VideoFormat max_format{};
-   //   max_format.width = 1920;
-   //   max_format.height = 1080;
-   //   max_format.interval = cricket::VideoFormat::FpsToInterval(30);
-   //   nativeVcd->set_enable_camera_list(true); //< needed to enable filtering
-	  //nativeVcd->ConstrainSupportedFormats(max_format);
 
       if (auto supportedFormats = nativeVcd->GetSupportedFormats()) {
         RTC_LOG(LS_INFO) << "Supported video formats:";
@@ -423,6 +414,25 @@ bool mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
     if (!video_capturer) {
       return false;
     }
+
+    //// HACK - Force max size to prevent high-res HoloLens 2 camera, which also disables MRC
+    //// https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture-for-developers#enabling-mrc-in-your-app
+    //// "MRC on HoloLens 2 supports videos up to 1080p and photos up to 4K resolution"
+    //cricket::VideoFormat max_format{};
+    //max_format.width = 1920;
+    //max_format.height = 1080;
+    //max_format.interval = cricket::VideoFormat::FpsToInterval(30);
+    //video_capturer->set_enable_camera_list(
+    //    true);  //< needed to enable filtering
+    //video_capturer->ConstrainSupportedFormats(max_format);
+
+//#if defined(WINUWP)
+//    //MediaConstraints videoConstraints = new MediaConstraints();
+//    //new wrapper::impl::org::webRtc::MediaConstraints(mandatory, optional);
+//    auto ptr = wrapper::org::webRtc::MediaConstraints::wrapper_create();
+//    ptr->get_mandatory()->emplace_back(new wrapper::org::webRtc::Constraint());
+//#endif
+
     rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
         g_peer_connection_factory->CreateVideoSource(std::move(video_capturer));
     if (!video_source) {
