@@ -11,7 +11,7 @@ namespace Microsoft::MixedReality::WebRTC {
 void AudioFrameObserver::SetCallback(
     AudioFrameReadyCallback callback) noexcept {
   auto lock = std::lock_guard{mutex_};
-  callback_ = callback;
+  callback_ = std::move(callback);
 }
 
 void AudioFrameObserver::OnData(const void* audio_data,
