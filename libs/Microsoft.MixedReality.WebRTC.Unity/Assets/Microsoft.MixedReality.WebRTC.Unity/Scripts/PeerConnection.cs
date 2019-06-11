@@ -93,22 +93,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     public class PeerConnection : MonoBehaviour
     {
         /// <summary>
-        /// Retrieves the underlying peer connection object.
+        /// Retrieves the underlying peer connection object once initialized.
         /// </summary>
         /// <remarks>
         /// If <see cref="OnInitialized"/> has not fired, this will be <c>null</c>.
         /// </remarks>
-        public WebRTC.PeerConnection Peer
-        {
-            get
-            {
-                if (_nativePeer.Initialized)
-                {
-                    return _nativePeer;
-                }
-                return null;
-            }
-        }
+        public WebRTC.PeerConnection Peer { get; private set; } = null;
 
 
         #region Behavior settings
@@ -168,27 +158,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         [Tooltip("Optional credential for the ICE servers")]
         public string IceCredential;
-
-        #endregion
-
-
-        #region Audio
-
-        //< TODO - Remove
-
-        /// <summary>
-        /// Enable the local audio feed, which enables sending a locally captured audio feed to the
-        /// remote peer as well as rendering it locally if a media player is available.
-        /// </summary>
-        [Header("Audio")]
-        [Tooltip("Enable the local audio feed, which adds an audio track sent to the remote peer")]
-        public bool LocalAudioEnabled = true;
-
-        /// <summary>
-        /// Automatically start sending the local audio feed when the peer connection is ready.
-        /// </summary>
-        [Tooltip("Automatically start sending the local audio feed when the peer connection is ready")]
-        public bool AutoStartLocalAudio = true;
 
         #endregion
 
@@ -315,8 +284,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (_nativePeer.Initialized)
             {
+                // Fire signals before doing anything else to allow listeners to clean-up,
+                // including un-registering any callback and remove any track from the connection.
                 OnShutdown.Invoke();
                 Signaler.OnPeerUninitializing(this);
+
+                // Prevent publicly accessing the native peer after it has been deinitialized.
+                // This does not prevent systems caching a reference from accessing it, but it
+                // is their responsibility to check that the peer is initialized.
+                Peer = null;
 
                 // Close the connection and release native resources.
                 _nativePeer.Dispose();
@@ -460,13 +436,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     throw initTask.Exception;
                 }
 
-                _mainThreadWorkQueue.Enqueue(() =>
-                {
-                    Debug.Log("WebRTC plugin initialized successfully.");
-                    OnPostInitialize(); //< TODO - Remove
-                    Signaler.OnPeerInitialized(this);
-                    OnInitialized.Invoke();
-                });
+                _mainThreadWorkQueue.Enqueue(OnPostInitialize);
             }, token);
         }
 
@@ -475,11 +445,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private void OnPostInitialize()
         {
-            //< TODO - Remove
-            if (LocalAudioEnabled && AutoStartLocalAudio)
-            {
-                _nativePeer.AddLocalAudioTrackAsync();
-            }
+            Debug.Log("WebRTC plugin initialized successfully.");
+
+            // Once the peer is initialized, it becomes publicly accessible.
+            // This prevent scripts from accessing it before it is initialized,
+            // or worse before it is constructed in Awake(). This happens because
+            // some scripts try to access Peer in OnEnabled(), which won't work
+            // if Unity decided to initialize that script before the current one.
+            // However subsequent calls will (and should) work as expected.
+            Peer = _nativePeer;
+
+            Signaler.OnPeerInitialized(this);
+            OnInitialized.Invoke();
         }
 
         /// <summary>

@@ -1,10 +1,15 @@
-Shader "Video/YUVFeedShader (standard lit)" {
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+Shader "Video/YUVFeedShader (standard lit)"
+{
 	Properties
 	{
 		[HideInEditor] _YPlane("Y plane", 2D) = "white" {}
 		[HideInEditor] _UPlane("U plane", 2D) = "white" {}
 		[HideInEditor] _VPlane("V plane", 2D) = "white" {}
 	}
+
 	SubShader
 	{
 		Tags { "RenderType" = "Opaque" }
@@ -47,5 +52,6 @@ Shader "Video/YUVFeedShader (standard lit)" {
 
 		ENDCG
 	}
+
 	Fallback "Diffuse"
 }

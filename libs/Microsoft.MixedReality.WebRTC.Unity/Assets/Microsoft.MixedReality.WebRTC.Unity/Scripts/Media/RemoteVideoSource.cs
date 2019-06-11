@@ -1,17 +1,12 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
-    [Serializable]
-    public class VideoTrackAddedEvent : UnityEvent
-    {};
-
-    [Serializable]
-    public class VideoTrackRemovedEvent : UnityEvent
-    { };
-
     /// <summary>
     /// This component represents a remote video source added as a video track to an
     /// existing WebRTC peer connection by a remote peer and received locally.
@@ -29,16 +24,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Automatically play the remote video track when it is added.
         /// </summary>
         public bool AutoPlayOnAdded = true;
-
-        /// <summary>
-        /// Event triggered when a remote video track is added remotely and received locally.
-        /// </summary>
-        public VideoTrackAddedEvent VideoTrackAdded = new VideoTrackAddedEvent();
-
-        /// <summary>
-        /// Event triggered when a remote video track is removed remotely and stops begin received locally.
-        /// </summary>
-        public VideoTrackRemovedEvent VideoTrackRemoved = new VideoTrackRemovedEvent();
 
         protected void Awake()
         {

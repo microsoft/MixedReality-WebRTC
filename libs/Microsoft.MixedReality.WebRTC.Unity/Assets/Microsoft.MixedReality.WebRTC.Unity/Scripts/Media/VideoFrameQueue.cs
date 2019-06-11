@@ -1,7 +1,7 @@
-using System.Collections;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using UnityEngine;
 using Unity.Collections.LowLevel.Unsafe;
 
 namespace Microsoft.MixedReality.WebRTC.Unity

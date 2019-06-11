@@ -1,5 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using UnityEngine;
-using Microsoft.MixedReality.WebRTC;
 using Unity.Profiling;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -11,14 +13,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// This component writes to the attached <see cref="Material"/>, via the attached <see cref="Renderer"/>.
     /// </remarks>
     [RequireComponent(typeof(Renderer))]
-    public class VideoTrackPlayer : MonoBehaviour
+    public class MediaPlayer : MonoBehaviour
     {
         [Header("Source")]
+        [Tooltip("Audio source providing the audio data used by this player")]
+        public AudioSource AudioSource;
+
+        [Tooltip("Video source providing the video frames rendered by this player")]
         public VideoSource VideoSource;
 
         [Tooltip("Max video playback framerate, in frames per second")]
         [Range(0.001f, 120f)]
-        public float MaxFramerate = 30f;
+        public float MaxVideoFramerate = 30f;
 
         [Header("Statistics")]
         public bool EnableStatistics = true;
@@ -77,11 +83,53 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private ProfilerMarker loadTextureDataMarker = new ProfilerMarker("LoadTextureData");
         private ProfilerMarker uploadTextureToGpuMarker = new ProfilerMarker("UploadTextureToGPU");
 
-        // Use this for initialization
         private void Start()
         {
-            // Create a default blue checkboard texture which visually indicates
-            // that no data has been uploaded yet. This is useful for debugging.
+            CreateEmptyVideoTextures();
+
+            _minUpdateDelay = 1f / Mathf.Max(0.001f, MaxVideoFramerate);
+
+            AudioSource.AudioStreamStarted.AddListener(AudioStreamStarted);
+            AudioSource.AudioStreamStopped.AddListener(AudioStreamStopped);
+            VideoSource.VideoStreamStarted.AddListener(VideoStreamStarted);
+            VideoSource.VideoStreamStopped.AddListener(VideoStreamStopped);
+        }
+
+        private void OnDestroy()
+        {
+            AudioSource.AudioStreamStarted.RemoveListener(AudioStreamStarted);
+            AudioSource.AudioStreamStopped.RemoveListener(AudioStreamStopped);
+            VideoSource.VideoStreamStarted.RemoveListener(VideoStreamStarted);
+            VideoSource.VideoStreamStopped.RemoveListener(VideoStreamStopped);
+        }
+
+        private void AudioStreamStarted()
+        {
+        }
+
+        private void AudioStreamStopped()
+        {
+        }
+
+        private void VideoStreamStarted()
+        {
+            FrameQueue = VideoSource.FrameQueue;
+        }
+
+        private void VideoStreamStopped()
+        {
+            FrameQueue = null;
+
+            // Clear the video display to not confuse the user who could otherwise
+            // think that the video is still playing but is lagging.
+            CreateEmptyVideoTextures();
+        }
+
+        private void CreateEmptyVideoTextures()
+        {
+            // Create a default checkboard texture which visually indicates
+            // that no data is available. This is useful for debugging and
+            // for the user to know about the state of the video.
             _textureY = new Texture2D(2, 2);
             _textureY.SetPixel(0, 0, Color.blue);
             _textureY.SetPixel(1, 1, Color.blue);
@@ -100,18 +148,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             videoMaterial.SetTexture("_YPlane", _textureY);
             videoMaterial.SetTexture("_UPlane", _textureU);
             videoMaterial.SetTexture("_VPlane", _textureV);
-
-            _minUpdateDelay = 1f / Mathf.Max(0.001f, MaxFramerate);
-        }
-
-        private void OnEnable()
-        {
-            FrameQueue = VideoSource?.FrameQueue;
-        }
-
-        private void OnDestroy()
-        {
-            FrameQueue = null;
         }
 
         /// <summary>
@@ -122,18 +158,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private void Update()
         {
-            //< TODO - don't poll
-            if (FrameQueue == null)
-            {
-                FrameQueue = VideoSource?.FrameQueue;
-            }
-
             if (FrameQueue != null)
             {
 #if UNITY_EDITOR
                 // Inside the Editor, constantly update _minUpdateDelay to
                 // react to user changes to MaxFramerate.
-                _minUpdateDelay = 1f / Mathf.Max(0.001f, MaxFramerate);
+                _minUpdateDelay = 1f / Mathf.Max(0.001f, MaxVideoFramerate);
 #endif
                 var curTime = Time.time;
                 if (curTime - lastUpdateTime >= _minUpdateDelay)
