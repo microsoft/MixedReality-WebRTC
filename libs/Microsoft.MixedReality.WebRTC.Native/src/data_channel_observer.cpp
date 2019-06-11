@@ -12,11 +12,11 @@ using ApiDataState = Microsoft::MixedReality::WebRTC::DataChannelState;
 inline ApiDataState apiStateFromRtcState(RtcDataState rtcState) {
   // API values have been chosen to match the current WebRTC values. If the
   // later change, this helper must be updated, as API values cannot change.
-  static_assert((int)RtcDataState::kOpen == (int)ApiDataState::kOpen, "");
-  static_assert(
-      (int)RtcDataState::kConnecting == (int)ApiDataState::kConnecting, "");
-  static_assert((int)RtcDataState::kClosing == (int)ApiDataState::kClosing, "");
-  static_assert((int)RtcDataState::kClosed == (int)ApiDataState::kClosed, "");
+  static_assert((int)RtcDataState::kOpen == (int)ApiDataState::kOpen);
+  static_assert((int)RtcDataState::kConnecting ==
+                (int)ApiDataState::kConnecting);
+  static_assert((int)RtcDataState::kClosing == (int)ApiDataState::kClosing);
+  static_assert((int)RtcDataState::kClosed == (int)ApiDataState::kClosed);
   return (ApiDataState)rtcState;
 }
 }  // namespace
@@ -48,7 +48,8 @@ void DataChannelObserver::OnBufferedAmountChange(
   if (!buffering_callback_)
     return;
   uint64_t current_amount = data_channel_->buffered_amount();
-  constexpr uint64_t max_capacity = 0x1000000; // 16MB, see DataChannelInterface
+  constexpr uint64_t max_capacity =
+      0x1000000;  // 16MB, see DataChannelInterface
   buffering_callback_(previous_amount, current_amount, max_capacity);
 }
 
