@@ -51,9 +51,7 @@ void ensureNullTerminatedCString(std::string& str) {
 
 }  // namespace
 
-namespace mrtk {
-namespace net {
-namespace webrtc_impl {
+namespace Microsoft::MixedReality::WebRTC {
 
 PeerConnection::PeerConnection() = default;
 
@@ -445,6 +443,4 @@ void PeerConnection::OnSuccess(
   peer_->SetLocalDescription(observer, desc);
 }
 
-}  // namespace webrtc_impl
-}  // namespace net
-}  // namespace mrtk
+}  // namespace Microsoft::MixedReality::WebRTC

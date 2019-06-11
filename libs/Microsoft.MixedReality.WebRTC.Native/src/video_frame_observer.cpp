@@ -13,9 +13,7 @@ constexpr int kBufferAlignment = 64;
 
 }  // namespace
 
-namespace mrtk {
-namespace net {
-namespace webrtc_impl {
+namespace Microsoft::MixedReality::WebRTC {
 
 ArgbBuffer::ArgbBuffer(int width, int height, int stride) noexcept
     : width_(width),
@@ -126,6 +124,4 @@ void VideoFrameObserver::OnFrame(const webrtc::VideoFrame& frame) noexcept {
   }
 }
 
-}  // namespace webrtc_impl
-}  // namespace net
-}  // namespace mrtk
+}  // namespace Microsoft::MixedReality::WebRTC

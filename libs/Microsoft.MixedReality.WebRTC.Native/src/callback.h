@@ -6,9 +6,7 @@
 
 #include "pch.h"
 
-namespace mrtk {
-namespace net {
-namespace webrtc_impl {
+namespace Microsoft::MixedReality::WebRTC {
 
 /// Wrapper for a static callback with user data.
 template <typename... Args>
@@ -24,6 +22,4 @@ struct Callback {
   }
 };
 
-}  // namespace webrtc_impl
-}  // namespace net
-}  // namespace mrtk
+}  // namespace Microsoft::MixedReality::WebRTC

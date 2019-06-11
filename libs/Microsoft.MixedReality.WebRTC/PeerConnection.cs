@@ -331,7 +331,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Handle to the native PeerConnection object.
         /// </summary>
         /// <remarks>
-        /// In native land this is a <code>mrtk::net::webrtc_impl::PeerConnectionHandle</code>.
+        /// In native land this is a <code>Microsoft::MixedReality::WebRTC::PeerConnectionHandle</code>.
         /// </remarks>
         private IntPtr _nativePeerhandle = IntPtr.Zero;
 

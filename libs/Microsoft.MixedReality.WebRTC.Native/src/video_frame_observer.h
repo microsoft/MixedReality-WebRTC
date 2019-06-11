@@ -11,9 +11,7 @@
 
 #include "callback.h"
 
-namespace mrtk {
-namespace net {
-namespace webrtc_impl {
+namespace Microsoft::MixedReality::WebRTC {
 
 /// Callback fired on newly available video frame, encoded as I420.
 /// The first 4 pointers are buffers for the YUVA planes (in that order),
@@ -117,6 +115,4 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   rtc::scoped_refptr<ArgbBuffer> argb_scratch_buffer_;
 };
 
-}  // namespace webrtc_impl
-}  // namespace net
-}  // namespace mrtk
+}  // namespace Microsoft::MixedReality::WebRTC

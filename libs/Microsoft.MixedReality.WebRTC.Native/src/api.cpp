@@ -9,7 +9,7 @@
 #include "api.h"
 #include "peer_connection.h"
 
-using namespace mrtk::net::webrtc_impl;
+using namespace Microsoft::MixedReality::WebRTC;
 
 struct mrsEnumerator {
   virtual ~mrsEnumerator() = default;
@@ -136,7 +136,7 @@ std::unique_ptr<rtc::Thread> g_signaling_thread;
 
 /// Collection of all peer connection objects alive.
 std::unordered_map<PeerConnectionHandle,
-                   rtc::scoped_refptr<mrtk::net::webrtc_impl::PeerConnection>>
+    rtc::scoped_refptr<Microsoft::MixedReality::WebRTC::PeerConnection>>
     g_peer_connection_map;
 
 /// Predefined name of the local video track.

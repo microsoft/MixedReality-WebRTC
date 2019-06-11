@@ -8,7 +8,7 @@
 
 namespace {
 using RtcDataState = webrtc::DataChannelInterface::DataState;
-using ApiDataState = mrtk::net::webrtc_impl::DataChannelState;
+using ApiDataState = Microsoft::MixedReality::WebRTC::DataChannelState;
 inline ApiDataState apiStateFromRtcState(RtcDataState rtcState) {
   // API values have been chosen to match the current WebRTC values. If the
   // later change, this helper must be updated, as API values cannot change.
@@ -21,9 +21,7 @@ inline ApiDataState apiStateFromRtcState(RtcDataState rtcState) {
 }
 }  // namespace
 
-namespace mrtk {
-namespace net {
-namespace webrtc_impl {
+namespace Microsoft::MixedReality::WebRTC {
 
 DataChannelObserver::DataChannelObserver(
     rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) noexcept
@@ -54,6 +52,4 @@ void DataChannelObserver::OnBufferedAmountChange(
   buffering_callback_(previous_amount, current_amount, max_capacity);
 }
 
-}  // namespace webrtc_impl
-}  // namespace net
-}  // namespace mrtk
+}  // namespace Microsoft::MixedReality::WebRTC

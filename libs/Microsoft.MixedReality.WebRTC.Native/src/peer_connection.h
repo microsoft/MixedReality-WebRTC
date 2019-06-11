@@ -11,9 +11,7 @@
 #include "data_channel_observer.h"
 #include "video_frame_observer.h"
 
-namespace mrtk {
-namespace net {
-namespace webrtc_impl {
+namespace Microsoft::MixedReality::WebRTC {
 
 class PeerConnection;
 
@@ -207,6 +205,4 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   PeerConnection& operator=(const PeerConnection&) = delete;
 };
 
-}  // namespace webrtc_impl
-}  // namespace net
-}  // namespace mrtk
+}  // namespace Microsoft::MixedReality::WebRTC

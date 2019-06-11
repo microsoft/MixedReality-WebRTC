@@ -10,9 +10,7 @@
 
 #include "callback.h"
 
-namespace mrtk {
-namespace net {
-namespace webrtc_impl {
+namespace Microsoft::MixedReality::WebRTC {
 
 /// Data channel state as marshaled through the public API.
 enum class DataChannelState : int {
@@ -78,6 +76,4 @@ class DataChannelObserver : public webrtc::DataChannelObserver {
   std::mutex mutex_;
 };
 
-}  // namespace webrtc_impl
-}  // namespace net
-}  // namespace mrtk
+}  // namespace Microsoft::MixedReality::WebRTC
