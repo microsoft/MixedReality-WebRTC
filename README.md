@@ -3,7 +3,7 @@
 [![Licensed under the MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/microsoft/MixedReality-WebRTC/blob/master/LICENSE)
 ![Under active development](https://img.shields.io/badge/status-public_preview-red.svg)
 
-**⚠ This repository currently contains a public preview under active development, intended for early adopters and to gather feedback. Expect frequent and unexpected breaking changes in the API interfaces. See the Known Issues section for details.**
+**⚠ This repository currently contains a public preview under active development, intended for early adopters and to gather feedback. While in preview, the API is expected to be unstable and breaking changes will occur. See also the Known Issues section for details.**
 
 MixedReality-WebRTC is a collection of components to help mixed reality app developers to integrate peer-to-peer audio and video streaming into their application and improve their collaborative experience.
 
@@ -64,9 +64,11 @@ tools/             Utility scripts
 
 The following softwares are officially supported. Other versions might work, but were not tested.
 
-| [![Windows SDK 18362+](docs/MRTK170802_Short_17.png)](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk) [Windows SDK 18362+](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk)| [![Visual Studio 2019](docs/MRTK170802_Short_19.png)](http://dev.windows.com/downloads) [Visual Studio 2019](http://dev.windows.com/downloads)| [![Unity](docs/MRTK170802_Short_18.png)](https://unity3d.com/get-unity/download/archive) [Unity 2019.1.x](https://unity3d.com/get-unity/download/archive)|
+| | | |
 | :--- | :--- | :--- |
-| To develop apps for Windows Mixed Reality headsets, you need the Windows 10 Fall Creators Update | Visual Studio is used for code editing, and deploying and building UWP app packages | The Unity 3D engine provides support for building mixed reality projects in Windows 10, and version 2019.1 adds support for UWP ARM64 for HoloLens 2 |
+| [![Windows SDK 18362+](docs/MRTK170802_Short_17.png)](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk) | [Windows SDK 18362+](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk) | To develop apps for Windows Mixed Reality headsets, you need the Windows 10 Fall Creators Update |
+| [![Visual Studio 2019](docs/MRTK170802_Short_19.png)](http://dev.windows.com/downloads) | [Visual Studio 2019](http://dev.windows.com/downloads) | Visual Studio is used for code editing, and deploying and building UWP app packages |
+| [![Unity](docs/MRTK170802_Short_18.png)](https://unity3d.com/get-unity/download/archive) | [Unity 2019.1.x](https://unity3d.com/get-unity/download/archive) | The Unity 3D engine provides support for building mixed reality projects in Windows 10, and version 2019.1 adds support for UWP ARM64 for HoloLens 2 |
 
 ## Documentation
 
