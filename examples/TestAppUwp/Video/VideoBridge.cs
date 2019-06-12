@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.MixedReality.Toolkit.Networking;
-using Microsoft.MixedReality.Toolkit.Networking.WebRTC.Marshaling;
+using Microsoft.MixedReality.WebRTC;
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Media.Core;
@@ -22,8 +22,8 @@ namespace TestAppUwp.Video
         private MediaStreamSourceSampleRequest _request = null;
         private MediaStreamSourceSampleRequestDeferral _deferral = null;
         private long _frameCount = 0;
-        private FrameQueue _frameQueue;
-        private FrameQueueStat _lateFrameStat = new FrameQueueStat(100);
+        private VideoFrameQueue<I420VideoFrameStorage> _frameQueue;
+        private float _lateFrameStat = 0f; // new FrameQueueStat(100);
 
         /// <summary>
         /// Statistics for loaded frames.
@@ -31,9 +31,9 @@ namespace TestAppUwp.Video
         /// should ideally be equal to <see cref="FramePresent"/>  in an optimal
         /// pipeline scenario.
         /// </summary>
-        public IReadonlyFrameQueueStat FrameLoad
+        public float FrameLoad
         {
-            get { return _frameQueue.FrameLoad; }
+            get { return _frameQueue.QueuedFramesPerSecond; }
         }
 
         /// <summary>
@@ -41,9 +41,9 @@ namespace TestAppUwp.Video
         /// This represents frames being popped for rendering, and should ideally be
         /// equal to <see cref="FrameLoad"/> in an optimal pipeline scenario.
         /// </summary>
-        public IReadonlyFrameQueueStat FramePresent
+        public float FramePresent
         {
-            get { return _frameQueue.FramePresent; }
+            get { return _frameQueue.DequeuedFramesPerSecond; }
         }
 
         /// <summary>
@@ -54,9 +54,9 @@ namespace TestAppUwp.Video
         /// <remarks>
         /// This is the difference between <see cref="FrameLoad"/> and <see cref="FramePresent"/>.
         /// </remarks>
-        public IReadonlyFrameQueueStat FrameSkip
+        public float FrameSkip
         {
-            get { return _frameQueue.FrameSkip; }
+            get { return _frameQueue.DroppedFramesPerSecond; }
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace TestAppUwp.Video
         /// sends data downstream to sink) while Media Foundation uses a pull model
         /// (sink actively requests data from upstream), which makes the two difficult
         /// to synchronize.
-        public IReadonlyFrameQueueStat LateFrame
+        public float LateFrame
         {
             get { return _lateFrameStat; }
         }
@@ -83,7 +83,7 @@ namespace TestAppUwp.Video
         /// <param name="queueCapacity">Video frame queue initial capacity</param>
         public VideoBridge(int queueCapacity)
         {
-            _frameQueue = new FrameQueue(queueCapacity);
+            _frameQueue = new VideoFrameQueue<I420VideoFrameStorage>(queueCapacity);
         }
 
         /// <summary>
@@ -93,32 +93,20 @@ namespace TestAppUwp.Video
         /// <param name="frame">The incoming video frame</param>
         public void HandleIncomingVideoFrame(I420AVideoFrame frame)
         {
-            // Create a new packet with the incoming data
-            FramePacket packet = _frameQueue.GetDataBufferWithoutContents((int)(frame.width * frame.height * 4));
-            if (packet == null)
-            {
-                return;
-            }
-            packet._size = YuvUtils.CopyI420FrameToI420Buffer(frame.dataY, frame.dataU, frame.dataV,
-                frame.strideY, frame.strideU, frame.strideV, frame.width, frame.height, packet.Buffer);
-            packet.width = (int)frame.width;
-            packet.height = (int)frame.height;
-
+            // If any pending request, serve it immediately
             lock (_deferralLock)
             {
-                // If any pending request, serve it
                 if (_deferral != null)
                 {
-                    _frameQueue.FrameLoad.Track();
-                    _frameQueue.FramePresent.Track();
-                    MakeSampleForPendingRequest(packet);
-                    _frameQueue.Pool(packet);
+                    //_frameQueue.FrameLoad.Track();
+                    //_frameQueue.FramePresent.Track();
+                    MakeSampleForPendingRequest(frame);
                     return;
                 }
-
-                // Otherwise queue frame for later pulling by the MediaFoundation framework
-                _frameQueue.Push(packet);
             }
+
+            // Otherwise queue frame for later pulling by the MediaFoundation framework
+            _frameQueue.Enqueue(frame);
         }
 
         /// <summary>
@@ -138,19 +126,18 @@ namespace TestAppUwp.Video
             }
 
             // Try to read the next available frame packet
-            FramePacket framePacket;
+            I420VideoFrameStorage frameStorage;
             lock (_deferralLock)
             {
-                framePacket = _frameQueue.Pop();
-                if (framePacket == null)
+                if (!_frameQueue.TryDequeue(out frameStorage))
                 {
                     // Not available yet, wait for it
-                    _lateFrameStat.Track();
+                    //_lateFrameStat.Track();
                     if (_deferral != null)
                     {
                         // Already a frame pending, and now another one.
                         // The earlier one will be skipped (we don't keep track of it for simplicity).
-                        _frameQueue.FrameSkip.Track();
+                        //_frameQueue.FrameSkip.Track();
                     }
                     args.Request.ReportSampleProgress(0);
                     _request = args.Request;
@@ -164,18 +151,18 @@ namespace TestAppUwp.Video
             ++_frameCount;
 
             // Get a sample
-            uint pixelSize = (uint)(framePacket.width * framePacket.height);
+            uint pixelSize = frameStorage.Width * frameStorage.Height;
             uint byteSize = (pixelSize / 2 * 3); // I420 = 12 bits per pixel
-            Debug.Assert(byteSize == framePacket.Size);
+            //Debug.Assert(byteSize == frame.Size);
             var sample = _streamSamplePool.Pop(byteSize, timestamp);
             sample.Duration = TimeSpan.FromSeconds(1.0 / 30.0);
 
             // Copy the frame data into the sample's buffer
-            framePacket.Buffer.CopyTo(0, sample.Buffer, 0, (int)framePacket.Size);
-            sample.Buffer.Length = framePacket.Size; // Somewhat surprisingly, this is not automatic
+            frameStorage.Buffer.CopyTo(0, sample.Buffer, 0, (int)frameStorage.Capacity);
+            sample.Buffer.Length = (uint)frameStorage.Capacity; // Somewhat surprisingly, this is not automatic
 
-            // Recycle the framePacket itself
-            _frameQueue.Pool(framePacket);
+            // Recycle the frame storage itself
+            _frameQueue.RecycleStorage(frameStorage);
 
             // Return the requested sample
             args.Request.Sample = sample;
@@ -189,21 +176,27 @@ namespace TestAppUwp.Video
         /// <remarks>
         /// This must be called with the <see cref="_deferralLock"/> acquired.
         /// </remarks>
-        private void MakeSampleForPendingRequest(FramePacket framePacket)
+        private void MakeSampleForPendingRequest(I420AVideoFrame frame)
         {
             // Calculate frame timestamp
             TimeSpan timestamp = TimeSpan.FromSeconds(_frameCount / 30.0);
             ++_frameCount;
 
             // Get a sample
-            uint pixelSize = (uint)(framePacket.width * framePacket.height);
+            // FIXME - There are some wrong assumptions around strides here, see MemCpyStride
+            uint pixelSize = frame.width * frame.height;
             uint byteSize = (pixelSize / 2 * 3); // I420 = 12 bits per pixel
-            Debug.Assert(byteSize == framePacket.Size);
+            //Debug.Assert(byteSize == frame.Size);
             var sample = _streamSamplePool.Pop(byteSize, timestamp);
             sample.Duration = TimeSpan.FromSeconds(1.0 / 30.0);
 
-            // Copy the frame data into the sample's buffer
-            framePacket.Buffer.CopyTo(0, sample.Buffer, 0, (int)framePacket.Size);
+            // Copy the frame data into the sample's buffer.
+            // Unfortunately the C# interface to Windows.Storage.Streams.Buffer seems to
+            // only offer a copy from a byte[] buffer, so need to copy first into a temporary
+            // one (packed YUV) before copying into the sample's Buffer object.
+            byte[] buffer = new byte[byteSize];
+            frame.CopyTo(buffer);
+            buffer.CopyTo(0, sample.Buffer, 0, (int)byteSize);
 
             // Assign the sample
             _request.Sample = sample;

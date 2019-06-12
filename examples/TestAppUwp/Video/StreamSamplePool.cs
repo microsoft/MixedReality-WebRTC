@@ -36,7 +36,7 @@ namespace TestAppUwp.Video
         /// calls, all earlier buffers are also removed, so order of the buffers
         /// in the queue reflects the chronology and matters.
         /// </remarks>
-        Deque<Buffer> _usedBuffers;
+        Queue<Buffer> _usedBuffers;
 
         /// <summary>
         /// Stack of free buffers available for recycling by a new sample.
@@ -54,7 +54,7 @@ namespace TestAppUwp.Video
         /// <param name="capacity">Initial capacity of both the used and free collections of buffers</param>
         public StreamSamplePool(int capacity)
         {
-            this._usedBuffers = new Deque<Buffer>(capacity);
+            this._usedBuffers = new Queue<Buffer>(capacity);
             this._freeBuffers = new Stack<Buffer>(capacity);
         }
 
@@ -87,7 +87,7 @@ namespace TestAppUwp.Video
                 {
                     buffer = new Buffer(byteSize);
                 }
-                _usedBuffers.AddBack(buffer);
+                _usedBuffers.Enqueue(buffer);
 
                 // This must be set before calling CreateFromBuffer() below otherwise
                 // the Media Foundation pipeline throws an exception.
@@ -114,19 +114,19 @@ namespace TestAppUwp.Video
                 // This does a linear search from front, which generally finds
                 // the first object (oldest) or at worse one very close to front,
                 // so is optimal anyway.
-                int index = _usedBuffers.IndexOf(sample.Buffer);
-                if (index < 0)
-                {
-                    return;
-                }
-
                 // Remove this sample and all earlier ones too. Some users report that
                 // the Processed event is not always reported for earlier samples, which
                 // would result in memory leaks. This may be due to out-of-order reporting.
-                _usedBuffers.RemoveRange(0, index + 1);
+                while (_usedBuffers.TryDequeue(out Buffer buffer))
+                {
+                    // Save the buffer for later reuse
+                    _freeBuffers.Push(buffer);
 
-                // Save the buffer for later reuse
-                _freeBuffers.Push(sample.Buffer);
+                    if (buffer == sample.Buffer)
+                    {
+                        break;
+                    }
+                }
             }
         }
     }

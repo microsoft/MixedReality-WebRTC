@@ -138,12 +138,12 @@
     <None Include="TestAppUwp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\build\UWP\$(Platform)\$(Configuration)\Microsoft.MixedReality.Toolkit.Networking.WebRtc.Native.dll">
-      <Link>Microsoft.MixedReality.Toolkit.Networking.WebRtc.Native.dll</Link>
+    <Content Include="..\..\bin\UWP\$(Platform)\$(Configuration)\Microsoft.MixedReality.WebRTC.Native.dll">
+      <Link>Microsoft.MixedReality.WebRTC.Native.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\build\UWP\$(Platform)\$(Configuration)\Microsoft.MixedReality.Toolkit.Networking.WebRtc.Native.pdb">
-      <Link>Microsoft.MixedReality.Toolkit.Networking.WebRtc.Native.pdb</Link>
+    <Content Include="..\..\bin\UWP\$(Platform)\$(Configuration)\Microsoft.MixedReality.WebRTC.Native.pdb">
+      <Link>Microsoft.MixedReality.WebRTC.Native.pdb</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

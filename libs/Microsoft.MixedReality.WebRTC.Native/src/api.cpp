@@ -19,7 +19,8 @@ struct mrsEnumerator {
 namespace {
 
 std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
-    const char* video_device_id, bool enable_mrc = false) noexcept(kNoExceptFalseOnUWP) {
+    const char* video_device_id,
+    bool enable_mrc = false) noexcept(kNoExceptFalseOnUWP) {
 #if defined(WINUWP)
   // Check for calls from main UI thread; this is not supported (will deadlock)
   auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
@@ -135,7 +136,8 @@ std::unique_ptr<rtc::Thread> g_signaling_thread;
 #endif
 
 /// Collection of all peer connection objects alive.
-std::unordered_map<PeerConnectionHandle,
+std::unordered_map<
+    PeerConnectionHandle,
     rtc::scoped_refptr<Microsoft::MixedReality::WebRTC::PeerConnection>>
     g_peer_connection_map;
 
@@ -415,23 +417,27 @@ bool mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
       return false;
     }
 
-    //// HACK - Force max size to prevent high-res HoloLens 2 camera, which also disables MRC
-    //// https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture-for-developers#enabling-mrc-in-your-app
-    //// "MRC on HoloLens 2 supports videos up to 1080p and photos up to 4K resolution"
-    //cricket::VideoFormat max_format{};
-    //max_format.width = 1920;
-    //max_format.height = 1080;
-    //max_format.interval = cricket::VideoFormat::FpsToInterval(30);
-    //video_capturer->set_enable_camera_list(
+    //// HACK - Force max size to prevent high-res HoloLens 2 camera, which also
+    /// disables MRC /
+    /// https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture-for-developers#enabling-mrc-in-your-app
+    //// "MRC on HoloLens 2 supports videos up to 1080p and photos up to 4K
+    /// resolution"
+    // cricket::VideoFormat max_format{};
+    // max_format.width = 1920;
+    // max_format.height = 1080;
+    // max_format.interval = cricket::VideoFormat::FpsToInterval(30);
+    // video_capturer->set_enable_camera_list(
     //    true);  //< needed to enable filtering
-    //video_capturer->ConstrainSupportedFormats(max_format);
+    // video_capturer->ConstrainSupportedFormats(max_format);
 
-//#if defined(WINUWP)
-//    //MediaConstraints videoConstraints = new MediaConstraints();
-//    //new wrapper::impl::org::webRtc::MediaConstraints(mandatory, optional);
-//    auto ptr = wrapper::org::webRtc::MediaConstraints::wrapper_create();
-//    ptr->get_mandatory()->emplace_back(new wrapper::org::webRtc::Constraint());
-//#endif
+    //#if defined(WINUWP)
+    //    //MediaConstraints videoConstraints = new MediaConstraints();
+    //    //new wrapper::impl::org::webRtc::MediaConstraints(mandatory,
+    //    optional); auto ptr =
+    //    wrapper::org::webRtc::MediaConstraints::wrapper_create();
+    //    ptr->get_mandatory()->emplace_back(new
+    //    wrapper::org::webRtc::Constraint());
+    //#endif
 
     rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
         g_peer_connection_factory->CreateVideoSource(std::move(video_capturer));
@@ -593,5 +599,18 @@ void mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
       }
     }
     *peerHandlePtr = nullptr;
+  }
+}
+
+void mrsMemCpyStride(void* dst,
+                     int dst_stride,
+                     const void* src,
+                     int src_stride,
+                     int elem_size,
+                     int elem_count) {
+  for (int i = 0; i < elem_count; ++i) {
+    memcpy(dst, src, elem_size);
+    dst = (char*)dst + dst_stride;
+    src = (const char*)src + src_stride;
   }
 }

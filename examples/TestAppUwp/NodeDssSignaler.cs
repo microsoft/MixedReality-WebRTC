@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.MixedReality.Toolkit.Networking.WebRTC.Signaling //< TODO - namespace?
+namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
     /// A signaler implementation for reference and prototyping.

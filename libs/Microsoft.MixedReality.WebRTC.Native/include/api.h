@@ -278,4 +278,12 @@ MRS_API bool mrsPeerConnectionSetRemoteDescription(
 
 /// Close a peer connection and free all resources associated with it.
 MRS_API void mrsPeerConnectionClose(PeerConnectionHandle* peerHandle) noexcept;
+
+/// Optimized helper to copy a block of memory with source and destination stride.
+MRS_API void mrsMemCpyStride(void* dst,
+                             int dst_stride,
+                             const void* src,
+                             int src_stride,
+                             int elem_size,
+                             int elem_count);
 }

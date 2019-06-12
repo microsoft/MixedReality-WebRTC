@@ -49,17 +49,17 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// List of TURN and/or STUN servers to use for NAT bypass, in order of preference.
         /// </summary>
-        public List<string> Servers;
+        public List<string> Servers = new List<string>();
 
         /// <summary>
         /// Optional TURN server username.
         /// </summary>
-        public string UserName;
+        public string UserName = string.Empty;
 
         /// <summary>
         /// Optional TURN server credentials.
         /// </summary>
-        public string Credentials;
+        public string Credentials = string.Empty;
 
         /// <summary>
         /// Boolean property indicating whether the peer connection has been initialized.
@@ -423,6 +423,22 @@ namespace Microsoft.MixedReality.WebRTC
                 var servers = Servers;
                 var username = UserName;
                 var credentials = Credentials;
+                if (servers == null)
+                {
+                    throw new ArgumentNullException("Servers");
+                }
+                if (servers.Count == 0)
+                {
+                    throw new ArgumentException("Servers list is empty");
+                }
+                if (username == null)
+                {
+                    throw new ArgumentNullException("UserName");
+                }
+                if (credentials == null)
+                {
+                    throw new ArgumentNullException("Credentials");
+                }
 
                 // On UWP PeerConnectionCreate() fails on main UI thread, so always initialize the native peer
                 // connection asynchronously from a background worker thread.
@@ -918,6 +934,10 @@ namespace Microsoft.MixedReality.WebRTC
                 EntryPoint = "mrsPeerConnectionClose")]
             public static extern void PeerConnectionClose(ref IntPtr peerHandle);
 
+            [DllImport(dllPath, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi,
+                EntryPoint = "mrsMemCpyStride")]
+            public static unsafe extern void MemCpyStride(void* dst, int dst_stride, void* src, int src_stride, int elem_size, int elem_count);
+
             #endregion
         }
 
@@ -973,6 +993,11 @@ namespace Microsoft.MixedReality.WebRTC
 
                 return devices;
             });
+        }
+
+        public static unsafe void MemCpyStride(void* dst, int dst_stride, void* src, int src_stride, int elem_size, int elem_count)
+        {
+            NativeMethods.MemCpyStride(dst, dst_stride, src, src_stride, elem_size, elem_count);
         }
     }
 }

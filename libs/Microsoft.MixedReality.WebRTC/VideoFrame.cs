@@ -7,17 +7,11 @@ namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
     /// Single video frame encoded in I420A format (triplanar YUV + alpha, 18 bits per pixel).
-    /// See https://wiki.videolan.org/YUV/#I420 for details.
+    /// See e.g. https://wiki.videolan.org/YUV/#I420 for details.
     /// </summary>
-    /// 
     /// <remarks>
-    /// Note: ref struct is C# 7.2, available from .NET Core 2.1 (apparently).
-    /// And MRTK supports Unity 2018.3 which comes with the Roslyn compiler
-    /// and C# 7.3 support.
-    /// https://blogs.unity3d.com/2018/12/13/introducing-unity-2018-3/
-    /// This is an optimization to avoid heap allocation on each frame while
-    /// having a nicer-to-use container for a frame. It can probably be removed
-    /// and/or refactored out if this is an issue.
+    /// The use of ref struct is an optimization to avoid heap allocation on each frame while
+    /// having a nicer-to-use container for a frame.
     /// </remarks>
     public ref struct I420AVideoFrame
     {
@@ -31,6 +25,33 @@ namespace Microsoft.MixedReality.WebRTC
         public int strideU;
         public int strideV;
         public int strideA;
+
+        public void CopyTo(byte[] buffer)
+        {
+            unsafe
+            {
+                fixed (void* ptr = buffer)
+                {
+                    // Note : System.Buffer.MemoryCopy() essentially does the same (without stride), but gets transpiled by IL2CPP
+                    // into the C++ corresponding to the IL instead of a single memcpy() call. This results in a large overhead,
+                    // especially in Debug config where one can lose 5-10 FPS just because of this.
+                    void* dst = ptr;
+                    ulong sizeY = (ulong)strideY * height;
+                    PeerConnection.MemCpyStride(dst, strideY, (void*)dataY, strideY, (int)width, (int)height);
+                    dst = (void*)((ulong)dst + sizeY);
+                    ulong sizeU = (ulong)strideU * height / 2;
+                    PeerConnection.MemCpyStride(dst, strideU, (void*)dataU, strideU, (int)width / 2, (int)height / 2);
+                    dst = (void*)((ulong)dst + sizeU);
+                    ulong sizeV = (ulong)strideV * height / 2;
+                    PeerConnection.MemCpyStride(dst, strideV, (void*)dataV, strideV, (int)width / 2, (int)height / 2);
+                    if (dataA.ToPointer() != null)
+                    {
+                        dst = (void*)((ulong)dst + sizeV);
+                        PeerConnection.MemCpyStride(dst, strideA, (void*)dataA, strideA, (int)width, (int)height);
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -43,6 +64,10 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Single video frame encoded in ARGB interleaved format (32 bits per pixel).
     /// </summary>
+    /// <remarks>
+    /// The use of ref struct is an optimization to avoid heap allocation on each frame while
+    /// having a nicer-to-use container for a frame.
+    /// </remarks>
     public ref struct ARGBVideoFrame
     {
         public uint width;

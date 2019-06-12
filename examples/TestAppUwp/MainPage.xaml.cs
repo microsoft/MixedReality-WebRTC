@@ -7,10 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.MixedReality.Toolkit.Networking;
-using Microsoft.MixedReality.Toolkit.Networking.WebRTC;
-using Microsoft.MixedReality.Toolkit.Networking.WebRTC.Marshaling;
-using Microsoft.MixedReality.Toolkit.Networking.WebRTC.Signaling;
+using Microsoft.MixedReality.WebRTC;
 using TestAppUwp.Video;
 using Windows.ApplicationModel;
 using Windows.Media.Capture;
@@ -54,9 +51,8 @@ namespace TestAppUwp
         private bool _isRemoteVideoPlaying = false;
         private object _isRemoteVideoPlayingLock = new object();
 
-        private WebRTCNetworkSession _networkSession;
-        private INetworkVideoChannel _localVideoChannel = null;
-        private INetworkDataChannel _chatDataChannel = null;
+        private PeerConnection _peerConnection;
+        //private INetworkDataChannel _chatDataChannel = null;
 
         private const int ChatChannelID = 2;
 
@@ -103,11 +99,10 @@ namespace TestAppUwp
 
             dssStatsTimer.Tick += OnDssStatsTimerTick;
 
-            _networkSession = new WebRTCNetworkSession(dssSignaler);
-            _networkSession.ParticipantJoined += SessionParticipantJoined;
-            _networkSession.ParticipantLeft += SessionParticipantLeft;
-            _networkSession.SessionJoined += SessionJoined;
-            _networkSession.RemoteVideoFrameReceived += Peer_RemoteI420FrameReady;
+            _peerConnection = new PeerConnection(dssSignaler);
+            _peerConnection.Connected += OnPeerConnected;
+            _peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
+            _peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
 
             //Window.Current.Closed += Shutdown; // doesn't work
 
@@ -130,34 +125,46 @@ namespace TestAppUwp
             {
                 // Use a local list accessible from a background thread
                 List<VideoCaptureDevice> vcds = new List<VideoCaptureDevice>(4);
-                WebRTCNativePeer.EnumVideoCaptureDevicesAsync(
-                    (string id, string name) => // On enumerated item
+                PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((prevTask) =>
+                {
+                    if (prevTask.Exception != null)
+                    {
+                        throw prevTask.Exception;
+                    }
+
+                    var devices = prevTask.Result;
+                    vcds.Capacity = devices.Count;
+                    foreach (var device in devices)
                     {
                         vcds.Add(new VideoCaptureDevice()
                         {
-                            Id = id,
-                            DisplayName = name,
+                            Id = device.id,
+                            DisplayName = device.name,
                             Symbol = Symbol.Video
                         });
-                    },
-                    () => // On completed
+                    }
+
+                    // Assign on main UI thread because of XAML binding; otherwise it fails.
+                    RunOnMainThread(() =>
                     {
-                        // Assign on main UI thread because of XAML binding; otherwise it fails.
-                        RunOnMainThread(() =>
+                        VideoCaptureDevices.Clear();
+                        foreach (var vcd in vcds)
                         {
-                            VideoCaptureDevices.Clear();
-                            foreach (var vcd in vcds)
-                            {
-                                VideoCaptureDevices.Add(vcd);
-                                LogMessage($"VCD id={vcd.Id} name={vcd.DisplayName}");
-                            }
-                        });
+                            VideoCaptureDevices.Add(vcd);
+                            LogMessage($"VCD id={vcd.Id} name={vcd.DisplayName}");
+                        }
                     });
+
+                });
             }
 
             //localVideo.TransportControls = localVideoControls;
 
             PluginInitialized = false;
+
+            // Assign STUN server(s) before calling InitializeAsync()
+            _peerConnection.Servers.Clear(); // We use only one server in this demo
+            _peerConnection.Servers.Add("stun:" + stunServer.Text);
 
             // Ensure that the UWP app was authorized to capture audio (cap:microphone)
             // and video (cap:webcam), otherwise the native plugin will fail.
@@ -180,7 +187,7 @@ namespace TestAppUwp
                             LogMessage($"Access to A/V denied, check app permissions: {accessTask.Exception.Message}");
                             throw accessTask.Exception;
                         }
-                        return _networkSession.InitializeAsync();
+                        return _peerConnection.InitializeAsync();
                     })
                     .ContinueWith((initTask) =>
                     {
@@ -215,50 +222,27 @@ namespace TestAppUwp
         //    webRTCNativePlugin.Uninitialize();
         //}
 
-        private void SessionParticipantJoined(INetworkParticipant participant)
-        {
-            // This will throw an exception if not run on UI thread
-            RunOnMainThread(() =>
-            {
-                NavLinks.Add(new NavLink()
-                {
-                    Id = participant.Id,
-                    Label = participant.DisplayName,
-                    Symbol = Symbol.Globe
-                });
-            });
-        }
-
-        private void SessionParticipantLeft(INetworkParticipant participant)
-        {
-            // This will throw an exception if not run on UI thread
-            RunOnMainThread(() =>
-            {
-                NavLinks.Remove(NavLinks.First((navLink) => navLink.Id == participant.Id));
-            });
-        }
-
-        private void SessionJoined(INetworkSession obj)
+        private void OnPeerConnected()
         {
             RunOnMainThread(() =>
             {
                 sessionStatusText.Text = "(session joined)";
                 chatTextBox.IsEnabled = true;
-                _networkSession.TryOpenDataChannel(ChatChannelID, "chat", true, true).ContinueWith((prevTask) =>
-                {
-                    if (prevTask.Exception != null)
-                    {
-                        throw prevTask.Exception;
-                    }
-                    var newDataChannel = prevTask.Result;
-                    RunOnMainThread(() =>
-                    {
-                        _chatDataChannel = newDataChannel;
-                        _chatDataChannel.MessageReceived += ChatMessageReceived;
-                        chatInputBox.IsEnabled = true;
-                        chatSendButton.IsEnabled = true;
-                    });
-                });
+                //_peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true).ContinueWith((prevTask) =>
+                //{
+                //    if (prevTask.Exception != null)
+                //    {
+                //        throw prevTask.Exception;
+                //    }
+                //    var newDataChannel = prevTask.Result;
+                //    RunOnMainThread(() =>
+                //    {
+                //        _chatDataChannel = newDataChannel;
+                //        _chatDataChannel.MessageReceived += ChatMessageReceived;
+                //        chatInputBox.IsEnabled = true;
+                //        chatSendButton.IsEnabled = true;
+                //    });
+                //});
             });
         }
 
@@ -502,8 +486,7 @@ namespace TestAppUwp
                 if (_isLocalVideoPlaying)
                 {
                     localVideo.MediaPlayer.Pause();
-                    _localVideoChannel.Close();
-                    _localVideoChannel = null;
+                    _peerConnection.RemoveLocalVideoTrack();
                     _isLocalVideoPlaying = false;
                 }
             }
@@ -561,34 +544,10 @@ namespace TestAppUwp
                 LogMessage("Opening local A/V stream...");
 
                 // TODO - HACK: support multi-webcams locally for testing
-                _networkSession.HACK_VideoDeviceIndex = HACK_GetVideoDeviceIndex();
+                //_peerConnection.HACK_VideoDeviceIndex = HACK_GetVideoDeviceIndex();
 
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                INetworkVideoChannel localVideoChannel = null;
-                RunOnWorkerThread(() =>
-                {
-                    // On UWP those calls need to be from a non-UI thread
-
-                    //if (_networkSession.TryOpenAudioChannel(out INetworkAudioChannel audioChannel))
-                    //{
-                    //    //audioChannel.AudioDataReceived += 
-                    //}
-                    //else
-                    //{
-                    //    throw new Exception("Failed to open local audio stream.");
-                    //}
-
-                    if (_networkSession.TryOpenVideoChannel(out INetworkVideoChannel videoChannel))
-                    {
-                        localVideoChannel = videoChannel;
-                        videoChannel.VideoFrameReceived += Peer_LocalI420FrameReady;
-                    }
-                    else
-                    {
-                        throw new Exception("Failed to open local video stream.");
-                    }
-
-                }).ContinueWith(prevTask =>
+                _peerConnection.AddLocalVideoTrackAsync().ContinueWith(prevTask =>
                 {
                     // Continue inside UI thread here
                     if (prevTask.Exception != null)
@@ -606,7 +565,6 @@ namespace TestAppUwp
                     localVideo.MediaPlayer.Play();
                     lock (_isLocalVideoPlayingLock)
                     {
-                        _localVideoChannel = localVideoChannel;
                         _isLocalVideoPlaying = true;
                     }
                 }, uiThreadScheduler);
@@ -615,21 +573,21 @@ namespace TestAppUwp
 
         private void OnDssStatsTimerTick(object sender, object e)
         {
-            localLoadText.Text = $"Load: {localVideoBridge.FrameLoad.Value:F2}";
-            localPresentText.Text = $"Present: {localVideoBridge.FramePresent.Value:F2}";
-            localSkipText.Text = $"Skip: {localVideoBridge.FrameSkip.Value:F2}";
-            localLateText.Text = $"Late: {localVideoBridge.LateFrame.Value:F2}";
+            //localLoadText.Text = $"Load: {localVideoBridge.FrameLoad.Value:F2}";
+            //localPresentText.Text = $"Present: {localVideoBridge.FramePresent.Value:F2}";
+            //localSkipText.Text = $"Skip: {localVideoBridge.FrameSkip.Value:F2}";
+            //localLateText.Text = $"Late: {localVideoBridge.LateFrame.Value:F2}";
 
-            remoteLoadText.Text = $"Load: {remoteVideoBridge.FrameLoad.Value:F2}";
-            remotePresentText.Text = $"Present: {remoteVideoBridge.FramePresent.Value:F2}";
-            remoteSkipText.Text = $"Skip: {remoteVideoBridge.FrameSkip.Value:F2}";
-            remoteLateText.Text = $"Late: {remoteVideoBridge.LateFrame.Value:F2}";
+            //remoteLoadText.Text = $"Load: {remoteVideoBridge.FrameLoad.Value:F2}";
+            //remotePresentText.Text = $"Present: {remoteVideoBridge.FramePresent.Value:F2}";
+            //remoteSkipText.Text = $"Skip: {remoteVideoBridge.FrameSkip.Value:F2}";
+            //remoteLateText.Text = $"Late: {remoteVideoBridge.LateFrame.Value:F2}";
         }
 
         private void StunServerTextChanged(object sender, TextChangedEventArgs e)
         {
-            _networkSession.ServerList.Clear(); // We use only one server in this demo
-            _networkSession.ServerList.Add("stun:" + stunServer.Text);
+            _peerConnection.Servers.Clear(); // We use only one server in this demo
+            _peerConnection.Servers.Add("stun:" + stunServer.Text);
         }
 
         private void CreateOfferButtonClicked(object sender, RoutedEventArgs e)
@@ -642,8 +600,7 @@ namespace TestAppUwp
             createOfferButton.IsEnabled = false;
             createOfferButton.Content = "Joining...";
 
-            //var cts = new CancellationTokenSource();
-            _networkSession.TryJoinAsync(/*cts.Token*/);
+            _peerConnection.CreateOffer();
         }
 
         /// <summary>
@@ -694,7 +651,7 @@ namespace TestAppUwp
             dssSignaler.LocalId = localPeerUidTextBox.Text;
             dssSignaler.PollTimeMs = pollTimeMs;
             remotePeerId = remotePeerUidTextBox.Text;
-            _networkSession.SetRemotePeerId(remotePeerId);
+            //_peerConnection.SetRemotePeerId(remotePeerId);
 
             if (dssSignaler.StartPollingAsync())
             {
@@ -710,39 +667,39 @@ namespace TestAppUwp
 
         private void SendSetPeerButton_Click(object sender, RoutedEventArgs e)
         {
-            var msg = new SignalerMessage()
-            {
-                MessageType = SignalerMessage.WireMessageType.SetPeer,
-                TargetId = remotePeerUidTextBox.Text,
-                Data = localPeerUidTextBox.Text
-            };
-            dssSignaler.SendMessageAsync(msg);
+            //var msg = new SignalerMessage()
+            //{
+            //    MessageType = SignalerMessage.WireMessageType.SetPeer,
+            //    TargetId = remotePeerUidTextBox.Text,
+            //    Data = localPeerUidTextBox.Text
+            //};
+            //dssSignaler.SendMessageAsync(msg);
         }
 
         private void ChatSendButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(chatInputBox.Text))
-                return;
-            byte[] chatMessage = System.Text.Encoding.UTF8.GetBytes(chatInputBox.Text);
-            _chatDataChannel.WriteMessageAsync(chatMessage);
-            chatTextBox.Text += $"[local] {chatInputBox.Text}\n";
-            chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
-                chatScrollViewer.ScrollableHeight,
-                chatScrollViewer.ZoomFactor); // scroll to end
-            chatInputBox.Text = string.Empty;
+            //if (string.IsNullOrWhiteSpace(chatInputBox.Text))
+            //    return;
+            //byte[] chatMessage = System.Text.Encoding.UTF8.GetBytes(chatInputBox.Text);
+            //_chatDataChannel.WriteMessageAsync(chatMessage);
+            //chatTextBox.Text += $"[local] {chatInputBox.Text}\n";
+            //chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
+            //    chatScrollViewer.ScrollableHeight,
+            //    chatScrollViewer.ZoomFactor); // scroll to end
+            //chatInputBox.Text = string.Empty;
         }
 
-        private void ChatMessageReceived(INetworkDataChannel channel, INetworkParticipant participant, byte[] message)
-        {
-            string text = System.Text.Encoding.UTF8.GetString(message);
-            RunOnMainThread(() =>
-            {
-                chatTextBox.Text += $"[remote] {text}\n";
-                chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
-                    chatScrollViewer.ScrollableHeight,
-                    chatScrollViewer.ZoomFactor); // scroll to end
-            });
-        }
+        //private void ChatMessageReceived(INetworkDataChannel channel, INetworkParticipant participant, byte[] message)
+        //{
+        //    string text = System.Text.Encoding.UTF8.GetString(message);
+        //    RunOnMainThread(() =>
+        //    {
+        //        chatTextBox.Text += $"[remote] {text}\n";
+        //        chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
+        //            chatScrollViewer.ScrollableHeight,
+        //            chatScrollViewer.ZoomFactor); // scroll to end
+        //    });
+        //}
 
         private void OnChatKeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
