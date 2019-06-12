@@ -73,8 +73,8 @@
   <PropertyGroup>
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)bin\UWP\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)build\UWP\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>..\..\bin\UWP\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>..\..\build\UWP\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Microsoft.MixedReality.WebRTC.Native</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>

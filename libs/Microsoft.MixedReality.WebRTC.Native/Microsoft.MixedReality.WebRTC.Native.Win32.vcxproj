@@ -72,8 +72,8 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup>
-    <OutDir>$(SolutionDir)bin\Win32\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)build\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>..\..\bin\Win32\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>..\..\build\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Microsoft.MixedReality.WebRTC.Native</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>
