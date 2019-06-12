@@ -1,0 +1,29 @@
+<Project>
+
+  <!-- This needs to go first, before Microsoft.Common.props is imported  -->
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>..\..\build\Microsoft.MixedReality.WebRTC\$(Platform)\$(Configuration)</BaseIntermediateOutputPath>
+    <OutputPath>..\..\bin\$(Platform)\$(Configuration)</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <Company>Microsoft</Company>
+    <Authors>Mixed Reality Sharing Team</Authors>
+    <DefineConstants Condition="'$(Configuration)'=='Debug'">TRACE</DefineConstants>
+    <DefineConstants>MR_SHARING_WIN</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="..\..\tools\copy_unity_plugins.bat CS dummy $(Platform) $(Configuration)" />
+  </Target>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+</Project>

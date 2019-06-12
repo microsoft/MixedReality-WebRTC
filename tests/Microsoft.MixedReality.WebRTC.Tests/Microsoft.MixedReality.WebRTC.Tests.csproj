@@ -1,0 +1,40 @@
+﻿<Project>
+
+  <!-- This needs to go first, before Microsoft.Common.props is imported  -->
+  <PropertyGroup>
+  <!-- TEMP - This breaks NuGET (of course...) -->
+    <!-- <BaseIntermediateOutputPath>..\..\build\Microsoft.MixedReality.WebRTC\UWP\$(Platform)\$(Configuration)</BaseIntermediateOutputPath>
+    <OutputPath>..\..\bin\UWP\$(Platform)\$(Configuration)</OutputPath> -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <Company>Microsoft</Company>
+    <Authors>Mixed Reality Sharing Team</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)'=='AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.0" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\libs\Microsoft.MixedReality.WebRTC\Microsoft.MixedReality.WebRTC.csproj" />
+    <!-- <PackageReference Include="nunit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.0" /> -->
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+</Project>
