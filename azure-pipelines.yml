@@ -1,0 +1,58 @@
+
+#trigger:
+#- build
+
+pool:
+  vmImage: 'Hosted VS2017'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'x86|x64|ARM'
+  buildConfiguration: 'Release'
+  appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+
+steps:
+- task: UsePythonVersion@0
+  displayName: 'Use Python 2.7.16 x64 for Google GN'
+  inputs:
+    versionSpec: 2.7.16
+  timeoutInMinutes: 5
+
+- task: MSBuild@1
+  displayName: 'Build webrtc.lib (UWP-x64-Release)'
+  inputs:
+    solution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/WebRtc.UWP.Native.Builder/WebRtc.UWP.Native.Builder.vcxproj'
+    msbuildVersion: '15.0'
+    msbuildArchitecture: x64
+    platform: x64
+    configuration: Release
+  timeoutInMinutes: 90
+
+- task: MSBuild@1
+  displayName: 'Build Org.WebRTC WinRT wrappers (UWP-x64-Release)'
+  inputs:
+    solution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Org.WebRtc.vcxproj'
+    msbuildVersion: '15.0'
+    msbuildArchitecture: x64
+    platform: x64
+    configuration: Release
+  timeoutInMinutes: 90
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish webrtc.lib (UWP-x64-Release)'
+  inputs:
+    artifactName: 'webrtc.lib_UWP-x64-Release'
+    targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/winuwp/x64/release/webrtc.lib'
+  timeoutInMinutes: 15
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish generated WinRT headers'
+  inputs:
+    artifactName: 'winrt_headers_UWP-x64-Release'
+    targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper/generated'
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish WinRT wrappers (UWP-x64-Release)'
+  inputs:
+    artifactName: 'winrt_wrappers_UWP-x64-Release'
+    targetPath: 'external/webrtc-uwp-sdk/webrtc/windows/solutions/Build/Output/Org.WebRtc/Release/x64'
