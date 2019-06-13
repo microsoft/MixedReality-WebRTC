@@ -27,7 +27,7 @@ jobs:
       platform: ${{parameters.arch}}
       configuration: ${{parameters.buildConfig}}
     timeoutInMinutes: 90
-  - task: NuGetCommand@2
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
     displayName: 'Restore NuGet packages for Org.WebRtc'
     inputs:
       command: restore
