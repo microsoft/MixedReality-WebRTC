@@ -1,0 +1,20 @@
+# MixedReality-WebRTC build pipeline for CI
+
+name: 'mr-webrtc-libwebrtc-ci'
+
+jobs:
+# - template: templates/libwebrtc.yaml
+#   parameters:
+#     platform: 'Win32'
+#     arch: 'x64'
+#     buildConfig: 'Release'
+- template: templates/libwebrtc.yaml
+  parameters:
+    platform: 'UWP'
+    arch: 'x64'
+    buildConfig: 'Release'
+# - template: templates/libwebrtc.yaml
+#   parameters:
+#     platform: 'UWP'
+#     arch: 'ARM'
+#     buildConfig: 'Release'
