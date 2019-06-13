@@ -30,6 +30,7 @@ jobs:
   - task: NuGetCommand@2
     displayName: 'Restore NuGet packages for Org.WebRtc'
     inputs:
+      command: restore
       restoreSolution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/packages.config'
       restoreDirectory: ../../../solutions/packages
     timeoutInMinutes: 10
