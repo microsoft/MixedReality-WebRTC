@@ -6,7 +6,7 @@ parameters:
   buildConfig: '' # Debug|Release
 
 jobs:
-- job: 'Build webrtc.lib (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
+- job: libwebrtc
   timeoutInMinutes: 90
   pool:
     vmImage: 'vs2017-win2016' # Hosted VS2017
