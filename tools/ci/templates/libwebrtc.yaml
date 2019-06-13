@@ -27,6 +27,12 @@ jobs:
       platform: ${{parameters.arch}}
       configuration: ${{parameters.buildConfig}}
     timeoutInMinutes: 90
+  - task: NuGetCommand@2
+    displayName: 'Restore NuGet packages for Org.WebRtc'
+    inputs:
+      restoreSolution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/packages.config'
+      restoreDirectory: ../../../solutions/packages
+    timeoutInMinutes: 10
   - task: MSBuild@1
     displayName: 'Build Org.WebRTC WinRT wrappers (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
     inputs:
@@ -35,7 +41,7 @@ jobs:
       msbuildArchitecture: x64
       platform: ${{parameters.arch}}
       configuration: ${{parameters.buildConfig}}
-    timeoutInMinutes: 90
+    timeoutInMinutes: 180
   - task: PublishPipelineArtifact@0
     displayName: 'Publish webrtc.lib (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
     inputs:
@@ -47,8 +53,10 @@ jobs:
     inputs:
       artifactName: 'winrt_headers_${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}}'
       targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper/generated'
+    timeoutInMinutes: 15
   - task: PublishPipelineArtifact@0
     displayName: 'Publish WinRT wrappers (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
     inputs:
       artifactName: 'winrt_wrappers_${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}}'
       targetPath: 'external/webrtc-uwp-sdk/webrtc/windows/solutions/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.arch}}'
+    timeoutInMinutes: 15
