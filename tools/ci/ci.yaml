@@ -1,6 +1,7 @@
 # MixedReality-WebRTC build pipeline for CI
 
-name: 'mr-webrtc-libwebrtc-ci'
+# Give a unique name to the build each time it runs
+name: mr-webrtc-libwebrtc-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:.r)
 
 jobs:
 # - template: templates/libwebrtc.yaml
