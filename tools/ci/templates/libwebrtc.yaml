@@ -11,6 +11,8 @@ jobs:
   pool:
     vmImage: 'vs2017-win2016' # Hosted VS2017
   steps:
+  - checkout: self
+    submodules: recursive
   - task: UsePythonVersion@0
     displayName: 'Use Python 2.7.16 x64 for Google GN'
     inputs:
