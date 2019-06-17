@@ -47,6 +47,12 @@ namespace Microsoft.MixedReality.WebRTC
         public ISignaler Signaler { get; }
 
         /// <summary>
+        /// Identifier of the remote peer for signaling. This must be sent before the connection starts
+        /// to send messages via the <see cref="Signaler"/>.
+        /// </summary>
+        public string RemotePeerId;
+
+        /// <summary>
         /// List of TURN and/or STUN servers to use for NAT bypass, in order of preference.
         /// </summary>
         public List<string> Servers = new List<string>();
@@ -206,14 +212,14 @@ namespace Microsoft.MixedReality.WebRTC
             public static void LocalSdpReadytoSendCallback(IntPtr userData, string type, string sdp)
             {
                 var peer = FromIntPtr(userData);
-                peer.LocalSdpReadytoSend?.Invoke(type, sdp);
+                peer.OnLocalSdpReadytoSend(type, sdp);
             }
 
             [MonoPInvokeCallback(typeof(IceCandidateReadytoSendDelegate))]
             public static void IceCandidateReadytoSendCallback(IntPtr userData, string candidate, int sdpMlineindex, string sdpMid)
             {
                 var peer = FromIntPtr(userData);
-                peer.IceCandidateReadytoSend?.Invoke(candidate, sdpMlineindex, sdpMid);
+                peer.OnIceCandidateReadytoSend(candidate, sdpMlineindex, sdpMid);
             }
 
             [MonoPInvokeCallback(typeof(RenegotiationNeededDelegate))]
@@ -368,6 +374,34 @@ namespace Microsoft.MixedReality.WebRTC
         public PeerConnection(ISignaler signaler)
         {
             Signaler = signaler;
+            Signaler.OnMessage += Signaler_OnMessage;
+        }
+
+        private void Signaler_OnMessage(SignalerMessage message)
+        {
+            switch (message.MessageType)
+            {
+            case SignalerMessage.WireMessageType.Offer:
+                SetRemoteDescription("offer", message.Data);
+                // If we get an offer, we immediately send an answer back
+                CreateAnswer();
+                break;
+
+            case SignalerMessage.WireMessageType.Answer:
+                SetRemoteDescription("answer", message.Data);
+                break;
+
+            case SignalerMessage.WireMessageType.Ice:
+                // TODO - This is NodeDSS-specific
+                // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
+            }
         }
 
         /// <summary>
@@ -956,6 +990,47 @@ namespace Microsoft.MixedReality.WebRTC
             /// Friendly device name.
             /// </summary>
             public string name;
+        }
+
+        private SignalerMessage.WireMessageType MessageTypeFromString(string type)
+        {
+            if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
+            {
+                return SignalerMessage.WireMessageType.Offer;
+            }
+            else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
+            {
+                return SignalerMessage.WireMessageType.Answer;
+            }
+            throw new ArgumentException($"Unkown signaler message type '{type}'");
+        }
+
+        private void OnLocalSdpReadytoSend(string type, string sdp)
+        {
+            var msg = new SignalerMessage()
+            {
+                MessageType = MessageTypeFromString(type),
+                Data = sdp,
+                IceDataSeparator = "|",
+                TargetId = RemotePeerId
+            };
+            Signaler?.SendMessageAsync(msg);
+
+            LocalSdpReadytoSend?.Invoke(type, sdp);
+        }
+
+        private void OnIceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
+        {
+            var msg = new SignalerMessage()
+            {
+                MessageType = SignalerMessage.WireMessageType.Ice,
+                Data = $"{candidate}|{sdpMlineindex}|{sdpMid}",
+                IceDataSeparator = "|",
+                TargetId = RemotePeerId
+            };
+            Signaler?.SendMessageAsync(msg);
+
+            IceCandidateReadytoSend?.Invoke(candidate, sdpMlineindex, sdpMid);
         }
 
         /// <summary>
