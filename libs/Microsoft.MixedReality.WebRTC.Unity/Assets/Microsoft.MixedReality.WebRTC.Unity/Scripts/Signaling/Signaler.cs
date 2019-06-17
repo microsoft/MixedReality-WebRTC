@@ -51,8 +51,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _nativePeer = peer.Peer;
 
             // Register handlers for the SDP events
-            _nativePeer.IceCandidateReadytoSend += OnIceCandiateReadyToSend_Listener;
-            _nativePeer.LocalSdpReadytoSend += OnLocalSdpReadyToSend_Listener;
+            //_nativePeer.IceCandidateReadytoSend += OnIceCandiateReadyToSend_Listener;
+            //_nativePeer.LocalSdpReadytoSend += OnLocalSdpReadyToSend_Listener;
         }
 
         /// <summary>
@@ -63,31 +63,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public void OnPeerUninitializing(PeerConnection peer)
         {
             // Unregister handlers for the SDP events
-            _nativePeer.IceCandidateReadytoSend -= OnIceCandiateReadyToSend_Listener;
-            _nativePeer.LocalSdpReadytoSend -= OnLocalSdpReadyToSend_Listener;
+            //_nativePeer.IceCandidateReadytoSend -= OnIceCandiateReadyToSend_Listener;
+            //_nativePeer.LocalSdpReadytoSend -= OnLocalSdpReadyToSend_Listener;
         }
 
-        private void OnIceCandiateReadyToSend_Listener(string candidate, int sdpMlineIndex, string sdpMid)
-        {
-            _mainThreadQueue.Enqueue(() => OnIceCandiateReadyToSend(candidate, sdpMlineIndex, sdpMid));
-        }
+        //private void OnIceCandiateReadyToSend_Listener(string candidate, int sdpMlineIndex, string sdpMid)
+        //{
+        //    _mainThreadQueue.Enqueue(() => OnIceCandiateReadyToSend(candidate, sdpMlineIndex, sdpMid));
+        //}
 
-        /// <summary>
-        /// Helper to split SDP offer and answer messages and dispatch to the appropriate handler.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="sdp"></param>
-        private void OnLocalSdpReadyToSend_Listener(string type, string sdp)
-        {
-            if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
-            {
-                _mainThreadQueue.Enqueue(() => OnSdpOfferReadyToSend(sdp));
-            }
-            else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
-            {
-                _mainThreadQueue.Enqueue(() => OnSdpAnswerReadyToSend(sdp));
-            }
-        }
+        ///// <summary>
+        ///// Helper to split SDP offer and answer messages and dispatch to the appropriate handler.
+        ///// </summary>
+        ///// <param name="type"></param>
+        ///// <param name="sdp"></param>
+        //private void OnLocalSdpReadyToSend_Listener(string type, string sdp)
+        //{
+        //    if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        _mainThreadQueue.Enqueue(() => OnSdpOfferReadyToSend(sdp));
+        //    }
+        //    else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        _mainThreadQueue.Enqueue(() => OnSdpAnswerReadyToSend(sdp));
+        //    }
+        //}
 
         protected virtual void Update()
         {
