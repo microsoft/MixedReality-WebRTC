@@ -7,7 +7,7 @@ parameters:
 
 jobs:
 - job: libwebrtc
-  timeoutInMinutes: 90
+  timeoutInMinutes: 360
   pool:
     vmImage: 'vs2017-win2016' # Hosted VS2017
   steps:
@@ -34,6 +34,9 @@ jobs:
       restoreSolution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/packages.config'
       restoreDirectory: ../../../solutions/packages
     timeoutInMinutes: 10
+  - powershell: 'Get-ChildItem -Recurse | select FullName,Length | Format-Table -HideTableHeaders'
+    errorActionPreference: continue
+    displayName: '[DEBUG] List all files with sizes'
   - task: MSBuild@1
     displayName: 'Build Org.WebRTC WinRT wrappers (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
     inputs:
