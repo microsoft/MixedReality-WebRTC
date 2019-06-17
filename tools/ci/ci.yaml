@@ -1,5 +1,9 @@
 # MixedReality-WebRTC build pipeline for CI
 
+# Disable branch and PR triggers
+trigger: none
+pr: none
+
 # Give a unique name to the build each time it runs
 name: mr-webrtc-libwebrtc-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:.r)
 
