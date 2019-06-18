@@ -113,7 +113,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void VideoStreamStarted()
         {
-            FrameQueue = VideoSource.FrameQueue;
+            FrameQueue = VideoSource?.FrameQueue;
         }
 
         private void VideoStreamStopped()
