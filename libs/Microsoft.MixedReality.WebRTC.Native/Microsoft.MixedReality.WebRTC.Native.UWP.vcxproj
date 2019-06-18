@@ -42,8 +42,8 @@
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformMinVersion>10.0.18362.0</WindowsTargetPlatformMinVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
     <ProjectName>Microsoft.MixedReality.WebRTC.Native.UWP</ProjectName>
   </PropertyGroup>
@@ -73,8 +73,8 @@
   <PropertyGroup>
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)bin\UWP\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)build\UWP\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>..\..\bin\UWP\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>..\..\build\UWP\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Microsoft.MixedReality.WebRTC.Native</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -84,7 +84,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>include\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\abseil-cpp\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\zsLib\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\zsLib-eventing\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
