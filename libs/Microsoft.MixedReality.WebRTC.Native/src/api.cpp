@@ -358,6 +358,24 @@ void mrsPeerConnectionRegisterRenegotiationNeededCallback(
   }
 }
 
+void mrsPeerConnectionRegisterTrackAddedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionTrackAddedCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterTrackAddedCallback(Callback<>{callback, user_data});
+  }
+}
+
+void mrsPeerConnectionRegisterTrackRemovedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionTrackRemovedCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterTrackRemovedCallback(Callback<>{callback, user_data});
+  }
+}
+
 void mrsPeerConnectionRegisterI420LocalVideoFrameCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionI420VideoFrameCallback callback,

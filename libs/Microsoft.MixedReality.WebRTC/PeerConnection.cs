@@ -105,6 +105,16 @@ namespace Microsoft.MixedReality.WebRTC
         public event Action RenegotiationNeeded;
 
         /// <summary>
+        /// Event that occurs when a remote track is added to the current connection.
+        /// </summary>
+        public event Action TrackAdded;
+
+        /// <summary>
+        /// Event that occurs when a remote track is removed from the current connection.
+        /// </summary>
+        public event Action TrackRemoved;
+
+        /// <summary>
         /// Event that occurs when a video frame from a local track has been
         /// produced locally and is available for render.
         /// </summary>
@@ -139,6 +149,8 @@ namespace Microsoft.MixedReality.WebRTC
             private delegate void LocalSdpReadytoSendDelegate(IntPtr peer, string type, string sdp);
             private delegate void IceCandidateReadytoSendDelegate(IntPtr peer, string candidate, int sdpMlineindex, string sdpMid);
             private delegate void RenegotiationNeededDelegate(IntPtr peer);
+            private delegate void TrackAddedDelegate(IntPtr peer);
+            private delegate void TrackRemovedDelegate(IntPtr peer);
             private delegate void DataChannelMessageDelegate(IntPtr peer, IntPtr data, ulong size);
             private delegate void DataChannelBufferingDelegate(IntPtr peer, ulong previous, ulong current, ulong limit);
             private delegate void DataChannelStateDelegate(IntPtr peer, int state, int id);
@@ -180,6 +192,8 @@ namespace Microsoft.MixedReality.WebRTC
                 public NativeMethods.PeerConnectionLocalSdpReadytoSendCallback LocalSdpReadytoSendCallback;
                 public NativeMethods.PeerConnectionIceCandidateReadytoSendCallback IceCandidateReadytoSendCallback;
                 public NativeMethods.PeerConnectionRenegotiationNeededCallback RenegotiationNeededCallback;
+                public NativeMethods.PeerConnectionTrackAddedCallback TrackAddedCallback;
+                public NativeMethods.PeerConnectionTrackRemovedCallback TrackRemovedCallback;
                 public NativeMethods.PeerConnectionI420VideoFrameCallback I420LocalVideoFrameCallback;
                 public NativeMethods.PeerConnectionI420VideoFrameCallback I420RemoteVideoFrameCallback;
                 public NativeMethods.PeerConnectionARGBVideoFrameCallback ARGBLocalVideoFrameCallback;
@@ -227,6 +241,20 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 var peer = FromIntPtr(userData);
                 peer.RenegotiationNeeded?.Invoke();
+            }
+
+            [MonoPInvokeCallback(typeof(TrackAddedDelegate))]
+            public static void TrackAddedCallback(IntPtr userData)
+            {
+                var peer = FromIntPtr(userData);
+                peer.TrackAdded?.Invoke();
+            }
+
+            [MonoPInvokeCallback(typeof(TrackRemovedDelegate))]
+            public static void TrackRemovedCallback(IntPtr userData)
+            {
+                var peer = FromIntPtr(userData);
+                peer.TrackRemoved?.Invoke();
             }
 
             [MonoPInvokeCallback(typeof(I420VideoFrameDelegate))]
@@ -446,6 +474,8 @@ namespace Microsoft.MixedReality.WebRTC
                     LocalSdpReadytoSendCallback = CallbacksWrappers.LocalSdpReadytoSendCallback,
                     IceCandidateReadytoSendCallback = CallbacksWrappers.IceCandidateReadytoSendCallback,
                     RenegotiationNeededCallback = CallbacksWrappers.RenegotiationNeededCallback,
+                    TrackAddedCallback = CallbacksWrappers.TrackAddedCallback,
+                    TrackRemovedCallback = CallbacksWrappers.TrackRemovedCallback,
                     I420LocalVideoFrameCallback = CallbacksWrappers.I420LocalVideoFrameCallback,
                     I420RemoteVideoFrameCallback = CallbacksWrappers.I420RemoteVideoFrameCallback,
                     ARGBLocalVideoFrameCallback = CallbacksWrappers.ARGBLocalVideoFrameCallback,
@@ -520,6 +550,10 @@ namespace Microsoft.MixedReality.WebRTC
                             _nativePeerhandle, _peerCallbackArgs.IceCandidateReadytoSendCallback, self);
                         NativeMethods.PeerConnectionRegisterRenegotiationNeededCallback(
                             _nativePeerhandle, _peerCallbackArgs.RenegotiationNeededCallback, self);
+                        NativeMethods.PeerConnectionRegisterTrackAddedCallback(
+                            _nativePeerhandle, _peerCallbackArgs.TrackAddedCallback, self);
+                        NativeMethods.PeerConnectionRegisterTrackRemovedCallback(
+                            _nativePeerhandle, _peerCallbackArgs.TrackRemovedCallback, self);
                         NativeMethods.PeerConnectionRegisterI420LocalVideoFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.I420LocalVideoFrameCallback, self);
                         NativeMethods.PeerConnectionRegisterI420RemoteVideoFrameCallback(
@@ -570,6 +604,8 @@ namespace Microsoft.MixedReality.WebRTC
                     NativeMethods.PeerConnectionRegisterLocalSdpReadytoSendCallback(_nativePeerhandle, null, IntPtr.Zero);
                     NativeMethods.PeerConnectionRegisterIceCandidateReadytoSendCallback(_nativePeerhandle, null, IntPtr.Zero);
                     NativeMethods.PeerConnectionRegisterRenegotiationNeededCallback(_nativePeerhandle, null, IntPtr.Zero);
+                    NativeMethods.PeerConnectionRegisterTrackAddedCallback(_nativePeerhandle, null, IntPtr.Zero);
+                    NativeMethods.PeerConnectionRegisterTrackRemovedCallback(_nativePeerhandle, null, IntPtr.Zero);
                     NativeMethods.PeerConnectionRegisterI420LocalVideoFrameCallback(_nativePeerhandle, null, IntPtr.Zero);
                     NativeMethods.PeerConnectionRegisterI420RemoteVideoFrameCallback(_nativePeerhandle, null, IntPtr.Zero);
                     NativeMethods.PeerConnectionRegisterARGBLocalVideoFrameCallback(_nativePeerhandle, null, IntPtr.Zero);
@@ -837,6 +873,12 @@ namespace Microsoft.MixedReality.WebRTC
             public delegate void PeerConnectionRenegotiationNeededCallback(IntPtr userData);
 
             [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+            public delegate void PeerConnectionTrackAddedCallback(IntPtr userData);
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+            public delegate void PeerConnectionTrackRemovedCallback(IntPtr userData);
+
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
             public delegate void PeerConnectionI420VideoFrameCallback(IntPtr userData,
                 IntPtr ydata, IntPtr udata, IntPtr vdata, IntPtr adata,
                 int ystride, int ustride, int vstride, int astride,
@@ -889,6 +931,16 @@ namespace Microsoft.MixedReality.WebRTC
                 EntryPoint = "mrsPeerConnectionRegisterRenegotiationNeededCallback")]
             public static extern void PeerConnectionRegisterRenegotiationNeededCallback(IntPtr peerHandle,
                 PeerConnectionRenegotiationNeededCallback callback, IntPtr userData);
+
+            [DllImport(dllPath, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi,
+                EntryPoint = "mrsPeerConnectionRegisterTrackAddedCallback")]
+            public static extern void PeerConnectionRegisterTrackAddedCallback(IntPtr peerHandle,
+                PeerConnectionTrackAddedCallback callback, IntPtr userData);
+
+            [DllImport(dllPath, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi,
+                EntryPoint = "mrsPeerConnectionRegisterTrackRemovedCallback")]
+            public static extern void PeerConnectionRegisterTrackRemovedCallback(IntPtr peerHandle,
+                PeerConnectionTrackRemovedCallback callback, IntPtr userData);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionRegisterI420LocalVideoFrameCallback")]

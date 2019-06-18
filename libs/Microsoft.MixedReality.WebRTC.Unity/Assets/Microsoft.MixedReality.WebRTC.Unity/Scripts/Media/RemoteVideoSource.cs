@@ -42,8 +42,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (AutoPlayOnAdded)
             {
+                PeerConnection.Peer.TrackAdded += TrackAdded;
+                PeerConnection.Peer.TrackRemoved += TrackRemoved;
                 PeerConnection.Peer.I420RemoteVideoFrameReady += I420RemoteVideoFrameReady;
             }
+        }
+
+        private void TrackAdded()
+        {
+            VideoStreamStarted.Invoke();
+        }
+
+        private void TrackRemoved()
+        {
+            VideoStreamStopped.Invoke();
         }
 
         private void OnPeerShutdown()

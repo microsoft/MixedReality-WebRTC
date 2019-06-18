@@ -83,6 +83,12 @@ using PeerConnectionIceCandidateReadytoSendCallback =
 /// account for new parameters (e.g. added or removed tracks).
 using PeerConnectionRenegotiationNeededCallback = void (*)(void* user_data);
 
+/// Callback fired when a remote track is added to a connection.
+using PeerConnectionTrackAddedCallback = void (*)(void* user_data);
+
+/// Callback fired when a remote track is removed from a connection.
+using PeerConnectionTrackRemovedCallback = void (*)(void* user_data);
+
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 using PeerConnectionI420VideoFrameCallback =
@@ -159,6 +165,20 @@ MRS_API void mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(
 MRS_API void mrsPeerConnectionRegisterRenegotiationNeededCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionRenegotiationNeededCallback callback,
+    void* user_data) noexcept;
+
+/// Register a callback fired when a remote track is added to the current peer
+/// connection.
+MRS_API void mrsPeerConnectionRegisterTrackAddedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionTrackAddedCallback callback,
+    void* user_data) noexcept;
+
+/// Register a callback fired when a remote track is removed from the current
+/// peer connection.
+MRS_API void mrsPeerConnectionRegisterTrackRemovedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionTrackRemovedCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a video frame is available from a local video
