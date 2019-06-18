@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Concurrent;
+using System.Text;
 
 #if UNITY_WSA && !UNITY_EDITOR
 using Windows.UI.Core;
@@ -282,7 +283,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public void Uninitialize()
         {
-            if (_nativePeer.Initialized)
+            if ((_nativePeer != null) && _nativePeer.Initialized)
             {
                 // Fire signals before doing anything else to allow listeners to clean-up,
                 // including un-registering any callback and remove any track from the connection.
@@ -431,7 +432,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     _mainThreadWorkQueue.Enqueue(() =>
                     {
-                        OnError.Invoke($"WebRTC plugin initializing failed : {initTask.Exception.Message}.");
+                        var errorMessage = new StringBuilder();
+                        errorMessage.Append("WebRTC plugin initializing failed. See full log for exception details.\n");
+                        Exception ex = initTask.Exception;
+                        while (ex is AggregateException ae)
+                        {
+                            errorMessage.Append($"AggregationException: {ae.Message}\n");
+                            ex = ae.InnerException;
+                        }
+                        errorMessage.Append($"Exception: {ex.Message}");
+                        OnError.Invoke(errorMessage.ToString());
                     });
                     throw initTask.Exception;
                 }
