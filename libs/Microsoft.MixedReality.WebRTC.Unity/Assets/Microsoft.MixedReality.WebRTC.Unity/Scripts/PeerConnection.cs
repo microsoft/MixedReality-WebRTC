@@ -326,6 +326,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 OnError.AddListener(OnError_Listener);
             }
 
+            // List video capture devices to Unity console
             GetVideoCaptureDevicesAsync().ContinueWith((prevTask) =>
             {
                 var devices = prevTask.Result;
@@ -333,7 +334,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     foreach (var device in devices)
                     {
-                        Debug.Log($"Video capture device {device.name} (id:{device.id}).");
+                        Debug.Log($"Found video capture device '{device.name}' (id:{device.id}).");
                     }
                 });
             });

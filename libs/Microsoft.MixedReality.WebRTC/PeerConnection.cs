@@ -175,7 +175,6 @@ namespace Microsoft.MixedReality.WebRTC
                 var handle = GCHandle.FromIntPtr(userData);
                 var wrapper = (handle.Target as EnumVideoCaptureWrapper);
                 wrapper.completedCallback?.Invoke(); // this is optional, allows to be null
-                handle.Free();
             }
 
             /// <summary>
@@ -1105,7 +1104,10 @@ namespace Microsoft.MixedReality.WebRTC
                     eventWaitHandle.Set();
                 }
             };
+
+            // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
             IntPtr handle = GCHandle.ToIntPtr(GCHandle.Alloc(wrapper, GCHandleType.Normal));
+
             return Task.Run(() =>
             {
                 // Execute the native async callback
@@ -1115,7 +1117,7 @@ namespace Microsoft.MixedReality.WebRTC
                 // Wait for end of enumerating
                 eventWaitHandle.WaitOne();
 
-                // Clean-up
+                // Clean-up and release the wrapper delegates
                 GCHandle.FromIntPtr(handle).Free();
 
                 return devices;
