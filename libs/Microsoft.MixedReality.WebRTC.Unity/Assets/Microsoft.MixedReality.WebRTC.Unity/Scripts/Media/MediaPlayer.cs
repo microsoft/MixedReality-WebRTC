@@ -87,7 +87,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             CreateEmptyVideoTextures();
 
-            _minUpdateDelay = 1f / Mathf.Max(0.001f, MaxVideoFramerate);
+            // Leave 3ms of margin, otherwise it misses 1 frame and drops to ~20 FPS
+            // when Unity is running at 60 FPS.
+            _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxVideoFramerate) - 0.003f);
 
             AudioSource.AudioStreamStarted.AddListener(AudioStreamStarted);
             AudioSource.AudioStreamStopped.AddListener(AudioStreamStopped);
@@ -163,7 +165,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 #if UNITY_EDITOR
                 // Inside the Editor, constantly update _minUpdateDelay to
                 // react to user changes to MaxFramerate.
-                _minUpdateDelay = 1f / Mathf.Max(0.001f, MaxVideoFramerate);
+
+                // Leave 3ms of margin, otherwise it misses 1 frame and drops to ~20 FPS
+                // when Unity is running at 60 FPS.
+                _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxVideoFramerate) - 0.003f);
 #endif
                 var curTime = Time.time;
                 if (curTime - lastUpdateTime >= _minUpdateDelay)

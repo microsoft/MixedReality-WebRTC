@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Microsoft.MixedReality.WebRTC
 {
@@ -49,9 +51,9 @@ namespace Microsoft.MixedReality.WebRTC
     public class VideoFrameQueue<T> : IVideoFrameQueue
         where T : class, IVideoFrameStorage, new()
     {
-        public float QueuedFramesPerSecond { get { return 0f; } }
-        public float DequeuedFramesPerSecond { get { return 0f; } }
-        public float DroppedFramesPerSecond { get { return 0f; } }
+        public float QueuedFramesPerSecond => _queuedFrameTimeAverage.Average;
+        public float DequeuedFramesPerSecond => _dequeuedFrameTimeAverage.Average;
+        public float DroppedFramesPerSecond => _droppedFrameTimeAverage.Average;
 
         /// <summary>
         /// Queue of frames pending delivery to sink.
@@ -68,6 +70,20 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private int _maxQueueLength = 3;
 
+
+        #region Statistics
+
+        private Stopwatch _stopwatch = new Stopwatch();
+        private double _lastQueuedTime = 0f;
+        private double _lastDequeuedTime = 0f;
+        private double _lastDroppedTime = 0f;
+        private MovingAverage _queuedFrameTimeAverage = new MovingAverage(30);
+        private MovingAverage _dequeuedFrameTimeAverage = new MovingAverage(30);
+        private MovingAverage _droppedFrameTimeAverage = new MovingAverage(30);
+
+        #endregion
+
+
         /// <summary>
         /// Create a new queue with a maximum frame length.
         /// </summary>
@@ -75,6 +91,7 @@ namespace Microsoft.MixedReality.WebRTC
         public VideoFrameQueue(int maxQueueLength)
         {
             _maxQueueLength = maxQueueLength;
+            _stopwatch.Start();
         }
 
         /// <summary>
@@ -84,17 +101,29 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="frame">The new video frame from the video source</param>
         public bool Enqueue(I420AVideoFrame frame)
         {
+            double curTime = _stopwatch.Elapsed.TotalMilliseconds;
+
+            // Always update queued time, which refers to calling Enqueue, even
+            // if the queue is full and the frame is dropped.
+            float queuedDt = (float)(curTime - _lastQueuedTime);
+            _lastQueuedTime = curTime;
+
             ulong byteSize = (ulong)(frame.strideY + frame.strideA) * frame.height + (ulong)(frame.strideU + frame.strideV) * frame.height / 2;
             T storage = GetStorageFor(byteSize);
             if (storage == null)
             {
                 // Too many frames in queue, drop the current one
+                float droppedDt = (float)(curTime - _lastDroppedTime);
+                _lastDroppedTime = curTime;
+                _droppedFrameTimeAverage.Push(1000f / droppedDt);
                 return false;
             }
             frame.CopyTo(storage.Buffer);
             storage.Width = frame.width;
             storage.Height = frame.height;
             _frameQueue.Enqueue(storage);
+            _queuedFrameTimeAverage.Push(1000f / queuedDt);
+            _droppedFrameTimeAverage.Push(0f);
             return true;
         }
 
@@ -133,6 +162,10 @@ namespace Microsoft.MixedReality.WebRTC
         /// <returns>Return true on success or false if no frame is available</returns>
         public bool TryDequeue(out T frame)
         {
+            double curTime = _stopwatch.Elapsed.TotalMilliseconds;
+            float dequeuedDt = (float)(curTime - _lastDequeuedTime);
+            _lastDequeuedTime = curTime;
+            _dequeuedFrameTimeAverage.Push(1000f / dequeuedDt);
             return _frameQueue.TryDequeue(out frame);
         }
 
