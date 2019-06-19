@@ -25,16 +25,7 @@
         </DataTemplate>
     </Page.Resources>
     <Grid x:Name="LayoutRoot" Margin="0,0,0,12">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Source="/Assets/webrtc-logo-vert-retro-255x305.png" HorizontalAlignment="Right" VerticalAlignment="Top" Stretch="None" Margin="0,20,20,0" Grid.RowSpan="2" Grid.Column="1" />
-        <Pivot Grid.RowSpan="2" Grid.ColumnSpan="2" SelectedIndex="0">
+        <Pivot SelectedIndex="0">
             <PivotItem Header="Signaling" Margin="12,12,12,0">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -95,7 +86,7 @@
                     <ListView Grid.Row="4" Margin="12,0,0,0" ItemsSource="{x:Bind NavLinks}" ItemTemplate="{StaticResource NavLinkItemTemplate}" />
                     <Button Name="createOfferButton" IsEnabled="False" Content="Create offer" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.511,0.634" Click="CreateOfferButtonClicked" Width="125" Grid.Row="5" Margin="0,6,0,6"/>
                     <TextBlock Text="Video capture devices" FontWeight="Bold" Grid.Row="3" Margin="0,12,0,0" FontFamily="Segoe UI" Grid.Column="2" />
-                    <ListView Grid.Row="4" Grid.Column="2" ItemsSource="{x:Bind VideoCaptureDevices}" ItemTemplate="{StaticResource VideoCaptureDeviceTemplate}" MinHeight="120" MinWidth="120" BorderBrush="Red" />
+                    <ListView Grid.Row="4" Grid.Column="2" ItemsSource="{x:Bind VideoCaptureDevices}" ItemTemplate="{StaticResource VideoCaptureDeviceTemplate}" MinHeight="120" MinWidth="120" />
                 </Grid>
             </PivotItem>
             <PivotItem Header="Channels">
