@@ -35,6 +35,8 @@ Note that in the following and elsewhere in this repository the term "Win32" is 
 
 MixedReality-WebRTC is under active development. The current development branch is [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) and uses the [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) release of WebRTC.
 
+### C++ library `Microsoft.MixedReality.WebRTC.Native.dll`
+
 | Branch | WebRTC | Platform | Architecture | Build Status |
 |---|---|---|---|---|
 | [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows Desktop | x86 | - |
@@ -45,6 +47,14 @@ MixedReality-WebRTC is under active development. The current development branch 
 | [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows UWP | x86_64 | - |
 | [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows UWP | ARM | - |
 | [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows UWP | ARM64 | - |
+
+### C# Library `Microsoft.MixedReality.WebRTC.dll`
+
+The C# library is platform and architecture independent (.NET Standard 2.0).
+
+| Branch | WebRTC | Build Status |
+|---|---|---|---|---|
+| [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | [![Build status](https://microsoft.visualstudio.com/Analog/_apis/build/status/internal/middleware/mixedreality-webrtc/mr-webrtc-cs)](https://microsoft.visualstudio.com/Analog/_build/latest?definitionId=40611) |
 
 ## Getting Started
 

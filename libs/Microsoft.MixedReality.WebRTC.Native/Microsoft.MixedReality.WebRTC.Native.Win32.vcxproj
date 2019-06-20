@@ -39,7 +39,7 @@
     <ProjectGuid>{928899BC-F131-4343-A1AB-72F3A5787E41}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>MicrosoftMixedRealityToolkitNetworkingWebRtcNativeWin32</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <ProjectName>Microsoft.MixedReality.WebRTC.Native.Win32</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,8 +72,8 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup>
-    <OutDir>$(SolutionDir)bin\Win32\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)build\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>..\..\bin\Win32\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>..\..\build\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Microsoft.MixedReality.WebRTC.Native</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -99,7 +99,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;UNICODE;_WINDLL;MR_SHARING_WIN;WIN32;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\abseil-cpp\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\zsLib\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\zsLib-eventing\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\libyuv\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -117,7 +117,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;UNICODE;_WINDLL;MR_SHARING_WIN;WIN32;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>include\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\abseil-cpp\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\zsLib\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl\zsLib-eventing\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\libyuv\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>

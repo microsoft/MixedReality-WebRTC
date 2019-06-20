@@ -1,0 +1,66 @@
+# [TEMPLATE] Compile webrtc.lib
+
+parameters: 
+  platform: ''    # Win32|UWP
+  arch: ''        # x86|x64|ARM|ARM64
+  buildConfig: '' # Debug|Release
+
+jobs:
+- job: libwebrtc
+  timeoutInMinutes: 360
+  pool:
+    vmImage: 'vs2017-win2016' # Hosted VS2017
+  steps:
+  - checkout: self
+    submodules: recursive
+  - task: UsePythonVersion@0
+    displayName: 'Use Python 2.7.16 x64 for Google GN'
+    inputs:
+      versionSpec: 2.7.16
+    timeoutInMinutes: 5
+  - task: MSBuild@1
+    displayName: 'Build webrtc.lib (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
+    inputs:
+      solution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/WebRtc.UWP.Native.Builder/WebRtc.UWP.Native.Builder.vcxproj'
+      msbuildVersion: '15.0'
+      msbuildArchitecture: x64
+      platform: ${{parameters.arch}}
+      configuration: ${{parameters.buildConfig}}
+    timeoutInMinutes: 90
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'Restore NuGet packages for Org.WebRtc'
+    inputs:
+      command: restore
+      restoreSolution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/packages.config'
+      restoreDirectory: ../../../solutions/packages
+    timeoutInMinutes: 10
+  - powershell: 'Get-ChildItem -Recurse | select FullName,Length | Format-Table -HideTableHeaders'
+    errorActionPreference: continue
+    displayName: '[DEBUG] List all files with sizes'
+  - task: MSBuild@1
+    displayName: 'Build Org.WebRTC WinRT wrappers (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
+    inputs:
+      solution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Org.WebRtc.vcxproj'
+      msbuildVersion: '15.0'
+      msbuildArchitecture: x64
+      platform: ${{parameters.arch}}
+      configuration: ${{parameters.buildConfig}}
+    timeoutInMinutes: 180
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish webrtc.lib (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
+    inputs:
+      artifactName: 'webrtc.lib_${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}}'
+      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/winuwp/${{parameters.arch}}/${{parameters.buildConfig}}/webrtc.lib'
+    timeoutInMinutes: 15
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish generated WinRT headers'
+    inputs:
+      artifactName: 'winrt_headers_${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}}'
+      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper/generated'
+    timeoutInMinutes: 15
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish WinRT wrappers (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
+    inputs:
+      artifactName: 'winrt_wrappers_${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}}'
+      targetPath: 'external/webrtc-uwp-sdk/webrtc/windows/solutions/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.arch}}'
+    timeoutInMinutes: 15

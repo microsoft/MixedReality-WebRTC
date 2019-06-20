@@ -2,8 +2,8 @@
 
   <!-- This needs to go first, before Microsoft.Common.props is imported  -->
   <PropertyGroup>
-    <BaseIntermediateOutputPath>..\..\build\Microsoft.MixedReality.WebRTC\$(Platform)\$(Configuration)</BaseIntermediateOutputPath>
-    <OutputPath>..\..\bin\$(Platform)\$(Configuration)</OutputPath>
+    <BaseIntermediateOutputPath>..\..\build\Microsoft.MixedReality.WebRTC\$(Configuration)</BaseIntermediateOutputPath>
+    <OutputPath>..\..\bin\$(Configuration)</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="..\..\tools\copy_unity_plugins.bat CS dummy $(Platform) $(Configuration)" />
+    <Exec Command="..\..\tools\copy_unity_plugins.bat CS dummy dummy $(Configuration)" />
   </Target>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
