@@ -158,7 +158,7 @@ rtc::Thread* UnsafeGetWorkerThread() {
 }
 #endif
 
-void mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {
+void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {
   if (handleRef) {
     if (auto& handle = *handleRef) {
       handle->dispose();
@@ -168,7 +168,7 @@ void mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {
   }
 }
 
-void mrsEnumVideoCaptureDevicesAsync(
+void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     mrsVideoCaptureDeviceEnumCallback callback,
     void* userData,
     mrsVideoCaptureDeviceEnumCompletedCallback completedCallback,
@@ -217,7 +217,7 @@ void mrsEnumVideoCaptureDevicesAsync(
 #endif
 }
 
-PeerConnectionHandle mrsPeerConnectionCreate(
+PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
     const char** turn_urls,
     const int no_of_urls,
     const char* username,
@@ -320,7 +320,7 @@ PeerConnectionHandle mrsPeerConnectionCreate(
   return handle;
 }
 
-void mrsPeerConnectionRegisterConnectedCallback(
+void MRS_CALL mrsPeerConnectionRegisterConnectedCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionConnectedCallback callback,
     void* user_data) noexcept {
@@ -329,7 +329,7 @@ void mrsPeerConnectionRegisterConnectedCallback(
   }
 }
 
-void mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(
+void MRS_CALL mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionLocalSdpReadytoSendCallback callback,
     void* user_data) noexcept {
@@ -339,7 +339,7 @@ void mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(
   }
 }
 
-void mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(
+void MRS_CALL mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionIceCandidateReadytoSendCallback callback,
     void* user_data) noexcept {
@@ -349,7 +349,7 @@ void mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(
   }
 }
 
-void mrsPeerConnectionRegisterRenegotiationNeededCallback(
+void MRS_CALL mrsPeerConnectionRegisterRenegotiationNeededCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionRenegotiationNeededCallback callback,
     void* user_data) noexcept {
@@ -358,7 +358,7 @@ void mrsPeerConnectionRegisterRenegotiationNeededCallback(
   }
 }
 
-void mrsPeerConnectionRegisterTrackAddedCallback(
+void MRS_CALL mrsPeerConnectionRegisterTrackAddedCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionTrackAddedCallback callback,
     void* user_data) noexcept {
@@ -367,7 +367,7 @@ void mrsPeerConnectionRegisterTrackAddedCallback(
   }
 }
 
-void mrsPeerConnectionRegisterTrackRemovedCallback(
+void MRS_CALL mrsPeerConnectionRegisterTrackRemovedCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionTrackRemovedCallback callback,
     void* user_data) noexcept {
@@ -376,7 +376,7 @@ void mrsPeerConnectionRegisterTrackRemovedCallback(
   }
 }
 
-void mrsPeerConnectionRegisterI420LocalVideoFrameCallback(
+void MRS_CALL mrsPeerConnectionRegisterI420LocalVideoFrameCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionI420VideoFrameCallback callback,
     void* user_data) noexcept {
@@ -386,7 +386,7 @@ void mrsPeerConnectionRegisterI420LocalVideoFrameCallback(
   }
 }
 
-void mrsPeerConnectionRegisterARGBLocalVideoFrameCallback(
+void MRS_CALL mrsPeerConnectionRegisterARGBLocalVideoFrameCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionARGBVideoFrameCallback callback,
     void* user_data) noexcept {
@@ -396,7 +396,7 @@ void mrsPeerConnectionRegisterARGBLocalVideoFrameCallback(
   }
 }
 
-void mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(
+void MRS_CALL mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionI420VideoFrameCallback callback,
     void* user_data) noexcept {
@@ -406,7 +406,7 @@ void mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(
   }
 }
 
-void mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
+void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionARGBVideoFrameCallback callback,
     void* user_data) noexcept {
@@ -416,9 +416,10 @@ void mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
   }
 }
 
-bool mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
-                                         const char* video_device_id,
-                                         bool enable_mrc)
+bool MRS_CALL
+mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
+                                    const char* video_device_id,
+                                    bool enable_mrc)
 #if defined(WINUWP)
     noexcept(false)
 #else
@@ -473,8 +474,8 @@ bool mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
   return false;
 }
 
-bool mrsPeerConnectionAddLocalAudioTrack(
-    PeerConnectionHandle peerHandle) noexcept {
+bool MRS_CALL
+mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     if (!g_peer_connection_factory) {
       return false;
@@ -495,7 +496,7 @@ bool mrsPeerConnectionAddLocalAudioTrack(
   return false;
 }
 
-bool mrsPeerConnectionAddDataChannel(
+bool MRS_CALL mrsPeerConnectionAddDataChannel(
     PeerConnectionHandle peerHandle,
     int id,
     const char* label,
@@ -519,80 +520,87 @@ bool mrsPeerConnectionAddDataChannel(
   return false;
 }
 
-void mrsPeerConnectionRemoveLocalVideoTrack(
+void MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
     PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RemoveLocalVideoTrack();
   }
 }
 
-void mrsPeerConnectionRemoveLocalAudioTrack(
+void MRS_CALL mrsPeerConnectionRemoveLocalAudioTrack(
     PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RemoveLocalAudioTrack();
   }
 }
 
-bool mrsPeerConnectionRemoveDataChannelById(PeerConnectionHandle peerHandle,
-                                            int id) noexcept {
+bool MRS_CALL
+mrsPeerConnectionRemoveDataChannelById(PeerConnectionHandle peerHandle,
+                                       int id) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     return peer->RemoveDataChannel(id);
   }
   return false;
 }
 
-bool mrsPeerConnectionRemoveDataChannelByLabel(PeerConnectionHandle peerHandle,
-                                               const char* label) noexcept {
+bool MRS_CALL
+mrsPeerConnectionRemoveDataChannelByLabel(PeerConnectionHandle peerHandle,
+                                          const char* label) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     return peer->RemoveDataChannel(label);
   }
   return false;
 }
 
-bool mrsPeerConnectionSendDataChannelMessage(PeerConnectionHandle peerHandle,
-                                             int id,
-                                             const void* data,
-                                             uint64_t size) noexcept {
+bool MRS_CALL
+mrsPeerConnectionSendDataChannelMessage(PeerConnectionHandle peerHandle,
+                                        int id,
+                                        const void* data,
+                                        uint64_t size) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     return peer->SendDataChannelMessage(id, data, size);
   }
   return false;
 }
 
-bool mrsPeerConnectionAddIceCandidate(PeerConnectionHandle peerHandle,
-                                      const char* sdp,
-                                      const int sdp_mline_index,
-                                      const char* sdp_mid) noexcept {
+bool MRS_CALL mrsPeerConnectionAddIceCandidate(PeerConnectionHandle peerHandle,
+                                               const char* sdp,
+                                               const int sdp_mline_index,
+                                               const char* sdp_mid) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     return peer->AddIceCandidate(sdp, sdp_mline_index, sdp_mid);
   }
   return false;
 }
 
-bool mrsPeerConnectionCreateOffer(PeerConnectionHandle peerHandle) noexcept {
+bool MRS_CALL
+mrsPeerConnectionCreateOffer(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     return peer->CreateOffer();
   }
   return false;
 }
 
-bool mrsPeerConnectionCreateAnswer(PeerConnectionHandle peerHandle) noexcept {
+bool MRS_CALL
+mrsPeerConnectionCreateAnswer(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     return peer->CreateAnswer();
   }
   return false;
 }
 
-bool mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
-                                           const char* type,
-                                           const char* sdp) noexcept {
+bool MRS_CALL
+mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
+                                      const char* type,
+                                      const char* sdp) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     return peer->SetRemoteDescription(type, sdp);
   }
   return false;
 }
 
-void mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
+void MRS_CALL
+mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
   if (peerHandlePtr) {
     if (auto peer = static_cast<PeerConnection*>(*peerHandlePtr)) {
       auto it = g_peer_connection_map.find(peer);
@@ -620,12 +628,12 @@ void mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
   }
 }
 
-void mrsMemCpyStride(void* dst,
-                     int dst_stride,
-                     const void* src,
-                     int src_stride,
-                     int elem_size,
-                     int elem_count) {
+void MRS_CALL mrsMemCpyStride(void* dst,
+                              int dst_stride,
+                              const void* src,
+                              int src_stride,
+                              int elem_size,
+                              int elem_count) {
   for (int i = 0; i < elem_count; ++i) {
     memcpy(dst, src, elem_size);
     dst = (char*)dst + dst_stride;
