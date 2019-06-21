@@ -4,7 +4,7 @@
       // generate meta data for api docs
       "src": [
         {
-          "files": [ "**/*.csproj", "**/*.cs" ],
+          "files": [ "**/*.csproj"]
           "src": "../libs/Microsoft.MixedReality.WebRTC"
         },
         {
