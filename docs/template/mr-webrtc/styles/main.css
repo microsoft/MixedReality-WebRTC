@@ -1,0 +1,32 @@
+
+article h2 {
+  clear: left;
+  padding-top: 30px;
+}
+
+article h2 + ul {
+  padding-left: 20px;
+}
+
+article li {
+  font-weight: normal;
+  font-size: 14px;
+}
+
+article h2 + ul > li {
+  float: left;
+  width: 300px;
+  font-size: 18px;
+  font-weight: bold;
+  list-style-type: none;
+}
+
+article h2 + ul > li > ul {
+  padding-left: 15px;
+  list-style-type: disc;
+}
+
+article h2 + ul > li > ul > li > ul {
+  padding-left: 15px;
+  list-style-type: circle;
+}

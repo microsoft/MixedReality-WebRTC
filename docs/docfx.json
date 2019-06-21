@@ -1,0 +1,59 @@
+{
+  "metadata": [
+    {
+      // generate meta data for api docs
+      "src": [
+        {
+          "files": [ "**/*.csproj", "**/*.cs" ],
+          "src": "../libs/Microsoft.MixedReality.WebRTC"
+        },
+        {
+          "files": [ "**/*.cs" ],
+          "src": "../libs/Microsoft.MixedReality.WebRTC.Unity/Assets"
+        }
+      ],
+      "dest": "api"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        // generate html for api docs
+        "files": [ "**/*.yml"],
+        "src": "../build/docs/api", // temp meta data folder from previous step
+        "dest": "api"
+      },
+      {
+        // generate html for conceptual docs
+        "files": ["**/*.md", "**/*.yml"]
+      }
+    ],
+    "resource": [
+      // resource files that will be copied over without modifications
+      {
+        "files": ["**/*.png"]
+      }
+    ],
+    "template": [
+        // gets default template (html/css/jscript) from docfx and copies subsequent templates on top
+        "default",
+        "template/mr-webrtc"
+    ],
+    "globalMetadata": {
+      // global docfx config - see docfx documentation for more config params (https://dotnet.github.io/docfx/tutorial/docfx.exe_user_manual.html)
+      "_appTitle": "MixedReality-WebRTC Documentation",
+      "_enableSearch": true,
+      "_disableNavbar": false,
+      "_appLogoPath": "mr-webrtc_icon.png",
+      "_appFaviconPath": "mr-webrtc_icon.png"
+      // re-add this section if you want to publish a version of the docs that keeps the "improve this doc" link pointing to mrtk_development branch
+      //"_gitContribute": {
+      //  "repo": "https://github.com/Microsoft/MixedReality-WebRTC",
+      //  "branch": "mrtk_development"
+      //}
+    },
+    "markdownEngineName": "markdig",
+    "dest": "generated",
+    "xrefService": [ "https://xref.docs.microsoft.com/query?uid={uid}" ] //msdn xref service for resolving crefs
+  }
+}
