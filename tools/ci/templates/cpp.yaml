@@ -1,0 +1,109 @@
+# [TEMPLATE] Compile C++ library Microsoft.MixedReality.WebRTC.Native.dll
+
+parameters: 
+  buildPlatform: ''    # Win32|UWP
+  buildArch: ''        # x86|x64|ARM|ARM64
+  buildConfig: ''      # Debug|Release
+ 
+jobs:
+
+# Compile Microsoft.MixedReality.WebRTC.Native.dll
+- job: cpp_${{parameters.buildPlatform}}_${{parameters.buildArch}}_${{parameters.buildConfig}}
+  timeoutInMinutes: 360
+  pool:
+    vmImage: 'vs2017-win2016' # Hosted VS2017
+    demands: msbuild
+  variables:
+    buildTriple: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
+  steps:
+  - checkout: self
+    submodules: recursive
+
+  # Map build* variables to script* ones
+  - task: PowerShell@2
+    displayName: Map script variables
+    inputs:
+      targetType: filePath
+      filePath: tools/ci/mapVariables.ps1
+
+  # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
+  - task: UsePythonVersion@0
+    displayName: 'Use Python 2.7.16 x64 for Google GN'
+    inputs:
+      versionSpec: 2.7.16
+    timeoutInMinutes: 5
+
+  # Prepare the environment with the setup script from Google
+  - task: PythonScript@0
+    displayName: 'Prepare WebRTC env ($(scriptPlatform)-$(scriptArch)-$(scriptConfig))'
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a prepare -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig)'
+    timeoutInMinutes: 10
+
+  # Download webrtc.lib built by another agent
+  - task: DownloadPipelineArtifact@1
+    displayName: 'Download webrtc.lib ($(buildTriple))'
+    inputs:
+      buildType: specific
+      project: '5610c425-4799-474c-b133-d95d78fb63b1'
+      definition: 23
+      artifactName: 'libwebrtc_$(buildTriple)'
+      # Download back exactly where it would have been otherwise compiled inside the source folder
+      targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/$(scriptArch)/$(scriptConfig)'
+    timeoutInMinutes: 15
+
+  # Download the C++/WinRT generated headers used as #include inside C++ headers
+  - task: DownloadPipelineArtifact@1
+    condition: eq('${{parameters.buildPlatform}}', 'UWP')
+    displayName: 'Download generated WinRT headers ($(buildTriple))'
+    inputs:
+      buildType: specific
+      project: '5610c425-4799-474c-b133-d95d78fb63b1'
+      definition: 23
+      artifactName: 'orgwebrtc_winrthpp_$(buildTriple)'
+      targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
+    timeoutInMinutes: 15
+
+  # Download the prebuilt WinRT wrapper Org.WebRtc.dll
+  - task: DownloadPipelineArtifact@1
+    condition: eq('${{parameters.buildPlatform}}', 'UWP')
+    displayName: 'Download WinRT wrappers ($(buildTriple))'
+    inputs:
+      buildType: specific
+      project: '5610c425-4799-474c-b133-d95d78fb63b1'
+      definition: 23
+      artifactName: 'orgwebrtc_$(buildTriple)'
+      targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+    timeoutInMinutes: 15
+
+  # Download the prebuilt WinRT wrapper glue Org.WebRtc.WrapperGlue.lib
+  - task: DownloadPipelineArtifact@1
+    condition: eq('${{parameters.buildPlatform}}', 'UWP')
+    displayName: 'Download WinRT glue wrappers ($(buildTriple))'
+    inputs:
+      buildType: specific
+      project: '5610c425-4799-474c-b133-d95d78fb63b1'
+      definition: 23
+      artifactName: 'orgwebrtc_glue_$(buildTriple)'
+      targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/windows/solutions/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+    timeoutInMinutes: 15
+
+  # Build Microsoft.MixedReality.WebRTC.Native.dll
+  - task: MSBuild@1
+    displayName: 'Build C++ WebRTC lib ($(buildTriple))'
+    inputs:
+      solution: libs/Microsoft.MixedReality.WebRTC.Native/Microsoft.MixedReality.WebRTC.Native.${{parameters.buildPlatform}}.vcxproj
+      msbuildVersion: 15.0
+      msbuildArchitecture: x64
+      platform: ${{parameters.buildArch}}
+      configuration: ${{parameters.buildConfig}}
+    timeoutInMinutes: 20
+
+  # Publish Microsoft.MixedReality.WebRTC.Native.dll and associated files (PDB, ...)
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish C++ WebRTC lib ($(buildTriple))'
+    inputs:
+      artifactName: 'Microsoft.MixedReality.WebRTC.Native_$(buildTriple)'
+      targetPath: bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}

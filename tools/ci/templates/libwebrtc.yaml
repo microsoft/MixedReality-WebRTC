@@ -90,7 +90,7 @@ jobs:
 
   # Prepare the environment with the setup script from Google
   - task: PythonScript@0
-    displayName: 'Prepare WebRTC env ($(scriptArch)-$(scriptConfig))'
+    displayName: 'Prepare WebRTC env ($(scriptPlatform)-$(scriptArch)-$(scriptConfig))'
     inputs:
       scriptSource: 'filePath'
       scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
