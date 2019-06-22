@@ -4,10 +4,6 @@ parameters:
   buildPlatform: ''    # Win32|UWP
   buildArch: ''        # x86|x64|ARM|ARM64
   buildConfig: ''      # Debug|Release
-
-variables:
-  buildTriple: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
-  projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
  
 jobs:
 
@@ -17,6 +13,9 @@ jobs:
   pool:
     vmImage: 'vs2017-win2016' # Hosted VS2017
     demands: msbuild
+  variables:
+    buildTriple: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
+    projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
   steps:
   - checkout: self
     submodules: recursive
@@ -78,6 +77,9 @@ jobs:
   pool:
     vmImage: 'vs2017-win2016' # Hosted VS2017
     demands: msbuild
+  variables:
+    buildTriple: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
+    projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
   steps:
   - checkout: self
     submodules: recursive
