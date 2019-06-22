@@ -1,66 +1,169 @@
-# [TEMPLATE] Compile webrtc.lib
+# [TEMPLATE] Compile WebRTC
 
 parameters: 
-  platform: ''    # Win32|UWP
-  arch: ''        # x86|x64|ARM|ARM64
-  buildConfig: '' # Debug|Release
+  buildPlatform: ''    # Win32|UWP
+  buildArch: ''        # x86|x64|ARM|ARM64
+  buildConfig: ''      # Debug|Release
 
+variables:
+  buildTriple: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
+  projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
+ 
 jobs:
+
+# Compile webrtc.lib (core Google implementation)
 - job: libwebrtc
   timeoutInMinutes: 360
   pool:
     vmImage: 'vs2017-win2016' # Hosted VS2017
+    demands: msbuild
   steps:
   - checkout: self
     submodules: recursive
+
+  # Map build* variables to script* variables
+  #   build* variables are for MSVC and use uppercase : ARM(64), Debug|Release, Win32|UWP
+  #   script* variables are for the Google Python scripts and use lowercase: arm(64), debug|release, win|winuwp
+  # See https://github.com/webrtc-uwp/webrtc-scripts/blob/3f2eb87b1baa3f49c6341d144e0b3c3be11c78ae/defaults.py#L17
+  - powershell: |
+     if ($env:BUILDPLATFORM -eq "Win32") {
+       Write-Host "##vso[task.setvariable variable=scriptPlatform;]win"
+     } else {
+       Write-Host "##vso[task.setvariable variable=scriptPlatform;]winuwp"
+     }
+     if ($env:BUILDARCH -eq "ARM") {
+       Write-Host "##vso[task.setvariable variable=scriptArch;]arm"
+     } elseif ($env:BUILDARCH -eq "ARM64") {
+       Write-Host "##vso[task.setvariable variable=scriptArch;]arm64"
+     } else {
+       Write-Host "##vso[task.setvariable variable=scriptArch;]$env:BUILDARCH"
+     }
+     if ($env:BUILDCONFIG -eq "Debug") {
+       Write-Host "##vso[task.setvariable variable=scriptConfig;]debug"
+     } else {
+       Write-Host "##vso[task.setvariable variable=scriptConfig;]release"
+     }
+
+  # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
   - task: UsePythonVersion@0
     displayName: 'Use Python 2.7.16 x64 for Google GN'
     inputs:
       versionSpec: 2.7.16
     timeoutInMinutes: 5
+
+  # Compile webrtc.lib
   - task: MSBuild@1
-    displayName: 'Build webrtc.lib (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
+    displayName: 'Build webrtc.lib ($(buildTriple))'
     inputs:
-      solution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/WebRtc.UWP.Native.Builder/WebRtc.UWP.Native.Builder.vcxproj'
+      solution: '$(projectRoot)WebRtc.${{parameters.buildPlatform}}.Native.Builder/WebRtc.${{parameters.buildPlatform}}.Native.Builder.vcxproj'
       msbuildVersion: '15.0'
       msbuildArchitecture: x64
       platform: ${{parameters.arch}}
       configuration: ${{parameters.buildConfig}}
-    timeoutInMinutes: 90
+    timeoutInMinutes: 120
+
+  # Publish webrtc.lib alone
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish webrtc.lib ($(buildTriple))'
+    inputs:
+      artifactName: 'libwebrtc_$(buildTriple)'
+      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.arch}}/${{parameters.buildConfig}}/webrtc.lib'
+    timeoutInMinutes: 15
+
+# Compile the UWP wrappers from the WebRTC UWP project
+# - Org.WebRtc.WrapperGlue.lib
+# - Org.WebRtc.dll
+- job: orgwebrtc
+  timeoutInMinutes: 360
+  pool:
+    vmImage: 'vs2017-win2016' # Hosted VS2017
+    demands: msbuild
+  steps:
+  - checkout: self
+    submodules: recursive
+
+  # Map build* variables to script* variables
+  #   build* variables are for MSVC and use uppercase : ARM(64), Debug|Release, Win32|UWP
+  #   script* variables are for the Google Python scripts and use lowercase: arm(64), debug|release, win|winuwp
+  # See https://github.com/webrtc-uwp/webrtc-scripts/blob/3f2eb87b1baa3f49c6341d144e0b3c3be11c78ae/defaults.py#L17
+  - powershell: |
+     if ($env:BUILDPLATFORM -eq "Win32") {
+       Write-Host "##vso[task.setvariable variable=scriptPlatform;]win"
+     } else {
+       Write-Host "##vso[task.setvariable variable=scriptPlatform;]winuwp"
+     }
+     if ($env:BUILDARCH -eq "ARM") {
+       Write-Host "##vso[task.setvariable variable=scriptArch;]arm"
+     } elseif ($env:BUILDARCH -eq "ARM64") {
+       Write-Host "##vso[task.setvariable variable=scriptArch;]arm64"
+     } else {
+       Write-Host "##vso[task.setvariable variable=scriptArch;]$env:BUILDARCH"
+     }
+     if ($env:BUILDCONFIG -eq "Debug") {
+       Write-Host "##vso[task.setvariable variable=scriptConfig;]debug"
+     } else {
+       Write-Host "##vso[task.setvariable variable=scriptConfig;]release"
+     }
+
+  # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
+  - task: UsePythonVersion@0
+    displayName: 'Use Python 2.7.16 x64 for Google GN'
+    inputs:
+      versionSpec: 2.7.16
+    timeoutInMinutes: 5
+
+  # Prepare the environment with the setup script from Google
+  - task: stevedower.python.PythonScript.PythonScript@1
+    displayName: 'Prepare WebRTC env ($(scriptArch)-$(scriptConfig))'
+    inputs:
+      script: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a prepare -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig)'
+    timeoutInMinutes: 5
+
+  # Download webrtc.lib built by another agent via the previous job
+  - task: DownloadPipelineArtifact@1
+    displayName: 'Download webrtc.lib ($(buildTriple))'
+    inputs:
+      buildType: specific
+      project: '8115054f-1c74-4928-a9ab-de4769e7d6ae'
+      pipeline: 40773
+      artifactName: 'libwebrtc_$(buildTriple)'
+      # Download back exactly where it would have been otherwise compiled inside the source folder
+      targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/$(scriptArch)/$(scriptConfig)'
+    timeoutInMinutes: 10
+
+  # Restore any NuGet package (C++/WinRT, ...)
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
     displayName: 'Restore NuGet packages for Org.WebRtc'
     inputs:
       command: restore
-      restoreSolution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/packages.config'
+      restoreSolution: '$(wrapperProjectRoot)Org.WebRtc.Universal/packages.config'
       restoreDirectory: ../../../solutions/packages
     timeoutInMinutes: 10
-  - powershell: 'Get-ChildItem -Recurse | select FullName,Length | Format-Table -HideTableHeaders'
-    errorActionPreference: continue
-    displayName: '[DEBUG] List all files with sizes'
+
+  # Do the actual build
   - task: MSBuild@1
-    displayName: 'Build Org.WebRTC WinRT wrappers (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
+    displayName: 'Build Org.WebRTC WinRT wrappers ($(buildTriple))'
     inputs:
-      solution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Org.WebRtc.vcxproj'
+      solution: '$(wrapperProjectRoot)Org.WebRtc.Universal/Org.WebRtc.vcxproj'
       msbuildVersion: '15.0'
       msbuildArchitecture: x64
-      platform: ${{parameters.arch}}
+      platform: ${{parameters.buildArch}}
       configuration: ${{parameters.buildConfig}}
     timeoutInMinutes: 180
+
+  # Publish Org.WebRtc.dll and associated (PDB, ...)
   - task: PublishPipelineArtifact@0
-    displayName: 'Publish webrtc.lib (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
+    displayName: 'Publish WinRT wrappers ($(buildTriple))'
     inputs:
-      artifactName: 'webrtc.lib_${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}}'
-      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/winuwp/${{parameters.arch}}/${{parameters.buildConfig}}/webrtc.lib'
+      artifactName: 'orgwebrtc_$(buildTriple)'
+      targetPath: '$(wrapperProjectRoot)Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
     timeoutInMinutes: 15
+
+  # Publish Org.WebRtc.WrapperGlue.lib and associated (PDB, ...)
   - task: PublishPipelineArtifact@0
-    displayName: 'Publish generated WinRT headers'
+    displayName: 'Publish WinRT glue wrappers ($(buildTriple))'
     inputs:
-      artifactName: 'winrt_headers_${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}}'
-      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper/generated'
-    timeoutInMinutes: 15
-  - task: PublishPipelineArtifact@0
-    displayName: 'Publish WinRT wrappers (${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}})'
-    inputs:
-      artifactName: 'winrt_wrappers_${{parameters.platform}}-${{parameters.arch}}-${{parameters.buildConfig}}'
-      targetPath: 'external/webrtc-uwp-sdk/webrtc/windows/solutions/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.arch}}'
+      artifactName: 'orgwebrtc_glue_$(buildTriple)'
+      targetPath: '$(wrapperProjectRoot)Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
     timeoutInMinutes: 15
