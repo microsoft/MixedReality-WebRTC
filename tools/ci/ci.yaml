@@ -5,21 +5,21 @@ trigger: none
 pr: none
 
 # Give a unique name to the build each time it runs
-name: mr-webrtc-libwebrtc-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:.r)
+name: libwebrtc-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 jobs:
-# - template: templates/libwebrtc.yaml
-#   parameters:
-#     platform: 'Win32'
-#     arch: 'x64'
-#     buildConfig: 'Release'
 - template: templates/libwebrtc.yaml
   parameters:
-    platform: 'UWP'
-    arch: 'x64'
+    buildPlatform: 'Win32'
+    buildArch: 'x64'
+    buildConfig: 'Release'
+- template: templates/libwebrtc.yaml
+  parameters:
+    buildPlatform: 'UWP'
+    buildArch: 'x64'
     buildConfig: 'Release'
 # - template: templates/libwebrtc.yaml
 #   parameters:
-#     platform: 'UWP'
-#     arch: 'ARM'
+#     buildPlatform: 'UWP'
+#     buildArch: 'ARM'
 #     buildConfig: 'Release'
