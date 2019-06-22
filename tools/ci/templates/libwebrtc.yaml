@@ -115,10 +115,11 @@ jobs:
     timeoutInMinutes: 5
 
   # Prepare the environment with the setup script from Google
-  - task: stevedower.python.PythonScript.PythonScript@1
+  - task: PythonScript@0
     displayName: 'Prepare WebRTC env ($(scriptArch)-$(scriptConfig))'
     inputs:
-      script: 'external/webrtc-uwp-sdk/scripts/run.py'
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
       arguments: '-a prepare -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig)'
     timeoutInMinutes: 5
 
