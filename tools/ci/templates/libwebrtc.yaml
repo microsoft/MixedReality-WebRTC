@@ -77,7 +77,7 @@ jobs:
   condition: |
     and(
       succeeded(),
-      eq(${{parameters.buildPlatform}}, 'UWP')
+      eq('${{parameters.buildPlatform}}', 'UWP')
     )
   timeoutInMinutes: 360
   pool:
