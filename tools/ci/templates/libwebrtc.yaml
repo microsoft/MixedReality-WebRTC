@@ -57,7 +57,7 @@ jobs:
       solution: '$(projectRoot)WebRtc.${{parameters.buildPlatform}}.Native.Builder/WebRtc.${{parameters.buildPlatform}}.Native.Builder.vcxproj'
       msbuildVersion: '15.0'
       msbuildArchitecture: x64
-      platform: ${{parameters.arch}}
+      platform: ${{parameters.buildArch}}
       configuration: ${{parameters.buildConfig}}
     timeoutInMinutes: 120
 
@@ -66,7 +66,7 @@ jobs:
     displayName: 'Publish webrtc.lib ($(buildTriple))'
     inputs:
       artifactName: 'libwebrtc_$(buildTriple)'
-      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.arch}}/${{parameters.buildConfig}}/webrtc.lib'
+      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/webrtc.lib'
     timeoutInMinutes: 15
 
 # Compile the UWP wrappers from the WebRTC UWP project
