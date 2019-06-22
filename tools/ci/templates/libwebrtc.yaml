@@ -1,4 +1,4 @@
-# [TEMPLATE] Compile WebRTC
+# [TEMPLATE] Compile WebRTC Core
 
 parameters: 
   buildPlatform: ''    # Win32|UWP
@@ -127,19 +127,19 @@ jobs:
       scriptSource: 'filePath'
       scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
       arguments: '-a prepare -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig)'
-    timeoutInMinutes: 5
+    timeoutInMinutes: 10
 
   # Download webrtc.lib built by another agent via the previous job
   - task: DownloadPipelineArtifact@1
     displayName: 'Download webrtc.lib ($(buildTriple))'
     inputs:
       buildType: specific
-      project: '8115054f-1c74-4928-a9ab-de4769e7d6ae'
-      pipeline: 40773
+      project: '5610c425-4799-474c-b133-d95d78fb63b1'
+      definition: 23
       artifactName: 'libwebrtc_$(buildTriple)'
       # Download back exactly where it would have been otherwise compiled inside the source folder
       targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/$(scriptArch)/$(scriptConfig)'
-    timeoutInMinutes: 10
+    timeoutInMinutes: 15
 
   # Restore any NuGet package (C++/WinRT, ...)
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
@@ -160,6 +160,14 @@ jobs:
       platform: ${{parameters.buildArch}}
       configuration: ${{parameters.buildConfig}}
     timeoutInMinutes: 180
+
+  # Publish the generated C++/WinRT headers
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish WinRT headers ($(buildTriple))'
+    inputs:
+      artifactName: 'orgwebrtc_winrthpp_$(buildTriple)'
+      targetPath: '$(wrapperProjectRoot)Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+    timeoutInMinutes: 15
 
   # Publish Org.WebRtc.dll and associated (PDB, ...)
   - task: PublishPipelineArtifact@0
