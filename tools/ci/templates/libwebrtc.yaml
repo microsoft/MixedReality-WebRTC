@@ -8,7 +8,7 @@ parameters:
 jobs:
 
 # Compile webrtc.lib (core Google implementation)
-- job: libwebrtc_${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
+- job: libwebrtc_${{parameters.buildPlatform}}_${{parameters.buildArch}}_${{parameters.buildConfig}}
   timeoutInMinutes: 360
   pool:
     vmImage: 'vs2017-win2016' # Hosted VS2017
@@ -72,8 +72,8 @@ jobs:
 # Compile the UWP wrappers from the WebRTC UWP project
 # - Org.WebRtc.WrapperGlue.lib
 # - Org.WebRtc.dll
-- job: orgwebrtc_${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
-  dependsOn: libwebrtc_${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
+- job: orgwebrtc_${{parameters.buildPlatform}}_${{parameters.buildArch}}_${{parameters.buildConfig}}
+  dependsOn: libwebrtc_${{parameters.buildPlatform}}_${{parameters.buildArch}}_${{parameters.buildConfig}}
   condition: |
     and(
       succeeded(),
