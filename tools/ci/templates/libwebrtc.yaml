@@ -20,28 +20,12 @@ jobs:
   - checkout: self
     submodules: recursive
 
-  # Map build* variables to script* variables
-  #   build* variables are for MSVC and use uppercase : ARM(64), Debug|Release, Win32|UWP
-  #   script* variables are for the Google Python scripts and use lowercase: arm(64), debug|release, win|winuwp
-  # See https://github.com/webrtc-uwp/webrtc-scripts/blob/3f2eb87b1baa3f49c6341d144e0b3c3be11c78ae/defaults.py#L17
-  - powershell: |
-     if ($env:BUILDPLATFORM -eq "Win32") {
-       Write-Host "##vso[task.setvariable variable=scriptPlatform;]win"
-     } else {
-       Write-Host "##vso[task.setvariable variable=scriptPlatform;]winuwp"
-     }
-     if ($env:BUILDARCH -eq "ARM") {
-       Write-Host "##vso[task.setvariable variable=scriptArch;]arm"
-     } elseif ($env:BUILDARCH -eq "ARM64") {
-       Write-Host "##vso[task.setvariable variable=scriptArch;]arm64"
-     } else {
-       Write-Host "##vso[task.setvariable variable=scriptArch;]$env:BUILDARCH"
-     }
-     if ($env:BUILDCONFIG -eq "Debug") {
-       Write-Host "##vso[task.setvariable variable=scriptConfig;]debug"
-     } else {
-       Write-Host "##vso[task.setvariable variable=scriptConfig;]release"
-     }
+  # Map build* variables to script* ones
+  - task: PowerShell@2
+    displayName: Map script variables
+    inputs:
+      targetType: filePath
+      filePath: tools/ci/mapVariables.ps1
 
   # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
   - task: UsePythonVersion@0
@@ -90,28 +74,12 @@ jobs:
   - checkout: self
     submodules: recursive
 
-  # Map build* variables to script* variables
-  #   build* variables are for MSVC and use uppercase : ARM(64), Debug|Release, Win32|UWP
-  #   script* variables are for the Google Python scripts and use lowercase: arm(64), debug|release, win|winuwp
-  # See https://github.com/webrtc-uwp/webrtc-scripts/blob/3f2eb87b1baa3f49c6341d144e0b3c3be11c78ae/defaults.py#L17
-  - powershell: |
-     if ($env:BUILDPLATFORM -eq "Win32") {
-       Write-Host "##vso[task.setvariable variable=scriptPlatform;]win"
-     } else {
-       Write-Host "##vso[task.setvariable variable=scriptPlatform;]winuwp"
-     }
-     if ($env:BUILDARCH -eq "ARM") {
-       Write-Host "##vso[task.setvariable variable=scriptArch;]arm"
-     } elseif ($env:BUILDARCH -eq "ARM64") {
-       Write-Host "##vso[task.setvariable variable=scriptArch;]arm64"
-     } else {
-       Write-Host "##vso[task.setvariable variable=scriptArch;]$env:BUILDARCH"
-     }
-     if ($env:BUILDCONFIG -eq "Debug") {
-       Write-Host "##vso[task.setvariable variable=scriptConfig;]debug"
-     } else {
-       Write-Host "##vso[task.setvariable variable=scriptConfig;]release"
-     }
+  # Map build* variables to script* ones
+  - task: PowerShell@2
+    displayName: Map script variables
+    inputs:
+      targetType: filePath
+      filePath: tools/ci/mapVariables.ps1
 
   # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
   - task: UsePythonVersion@0
