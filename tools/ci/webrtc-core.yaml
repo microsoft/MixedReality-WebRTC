@@ -9,7 +9,7 @@ trigger: none
 pr: none
 
 # Give a unique name to the build each time it runs
-name: libwebrtc-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+name: core-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 jobs:
 - template: templates/libwebrtc.yaml
