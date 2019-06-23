@@ -29,7 +29,7 @@ git config --global user.name ${env:GITHUB_NAME}
 # use the remote one from the 'origin' remote.
 Write-Host "Resolve source branch commit SHA1"
 $output = ""
-Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/$SourceBranch^{commit}`"" 2>&1 | Tee-Object -Variable output | Out-Null
+Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/$SourceBranch^{commit}`" 2>&1" | Tee-Object -Variable output | Out-Null
 if (-not $output)
 {
     Write-Host "Unknown branch '$SourceBranch'"
@@ -53,7 +53,7 @@ Remove-Item ".\_docs" -Force -Recurse -ErrorAction Ignore
 # contains only generated documentation-related files, and not the code.
 $DestBranch = "docs/$SourceBranch"
 $output = ""
-Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/$DestBranch^{commit}`"" 2>&1 | Tee-Object -Variable output | Out-Null
+Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/$DestBranch^{commit}`" 2>&1" | Tee-Object -Variable output | Out-Null
 if ($output)
 {
     # Clone the destination branch locally in a temporary folder.
