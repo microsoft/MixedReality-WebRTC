@@ -5,13 +5,9 @@
 # Note that trigger:none is not enough, because it is not enforced when
 # a new YAML file is pushed.
 trigger:
-  branches:
-    exclude: *
   paths:
     exclude: *
 pr:
-  branches:
-    exclude: *
   paths:
     exclude: *
 
