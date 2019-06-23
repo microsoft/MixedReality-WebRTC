@@ -43,34 +43,43 @@ Remove-Item ".\_docs" -Force -Recurse -ErrorAction Ignore
 
 # Create or clone destination branch
 $DestBranch = "docs/$SourceBranch"
-$output = Invoke-Expression "git branch --no-color --list $DestBranch"
-if ($output -match "$DestBranch")
+$output = ""
+Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/$DestBranch^{commit}`"" | Tee-Object -Variable output | Write-Host
+if ($output)
 {
-    # Clone the destination branch locally in a temporary folder
+    # Clone the destination branch locally in a temporary folder.
+    # Note that this creates a second copy of the repository inside itself.
+    # This is fine as long as we stay out of the _docs directory to keep using
+    # the outer repository and its config we set above.
     Write-Host "Clone the generated docs branch"
     git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch $DestBranch ".\_docs"
+    
+    # Delete all the files in this folder, so that files deleted in the new version
+    # of the documentation are effectively deleted in the commit.
+    Write-Host "Delete currently committed version"
+    Get-ChildItem ".\_docs" -Recurse | Remove-Item -Force -Recurse
 }
 else
 {
-    # Create the destination branch and checkout locally in a temporary folder
+    # Create the destination branch and checkout locally in a temporary folder.
+    # Note that the orphan branch is created inside the main repository,
+    # and unlike the case above there's no inner repository created.
     Write-Host "Creating new destination branch $DestBranch"
-    New-Item ".\_docs"
-    Set-Location -Path ".\_docs"
+    New-Item ".\_docs" -ItemType Directory
     git checkout --orphan "$DestBranch"
-    Set-Location -Path "..\"
 }
-
-# Delete all the files in this folder, so that files deleted in the new version
-# of the documentation are effectively deleted in the commit.
-Write-Host "Delete currently committed version"
-Get-ChildItem ".\_docs" -Recurse | Remove-Item -Force -Recurse
 
 # Because the _docs folder is now empty, always re-generate the README.md
 # This could be skipped if existing, but allows upgrading to a newer template if needed
-Write-Host "Commit README.md"
+Write-Host "Generate README.md:"
 (Get-Content -Path docs/README.template.md -Encoding UTF8) -Replace '\$branchname',"$SourceBranch" | Set-Content -Path _docs/README.md -Encoding UTF8
+Write-Host "--------------------"
+Get-Content -Path _docs/README.md -Encoding UTF8 | Write-Host
+Write-Host "--------------------"
+Write-Host "Commit README.md"
 git add _docs/README.md
 git commit -m "Add README.md for generated branch $DestBranch"
+git log -1 --format=full
 
 # Get info about last change associated with the new generated docs
 Write-Host "Get the SHA1 and title of the most recent commit"
