@@ -25,8 +25,7 @@ git config --global user.name ${env:GITHUB_NAME}
 
 # Check that source branch exists
 Write-Host "Check that source branch exists"
-git branch --no-color --list $SourceBranch
-$output = Invoke-Expression "git branch --no-color --list $SourceBranch"
+$output = Invoke-Expression "git branch --no-color --list $SourceBranch" | Out-String
 Write-Host "Output: '$output'"
 if (-not ($output -match "$SourceBranch"))
 {
