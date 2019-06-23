@@ -58,3 +58,6 @@ jobs:
       arguments: '-SourceBranch $(Build.SourceBranch)'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      GITHUB_USER: $(GitHub.User)
+      GITHUB_NAME: $(GitHub.Name)
+      GITHUB_PAT: $(GitHub.PAT)

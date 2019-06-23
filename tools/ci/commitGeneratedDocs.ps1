@@ -13,14 +13,14 @@ $SourceBranch = ($SourceBranch -Replace "^refs/heads/","")
 
 # Create some authentication tokens to be able to connect to Azure DevOps to get changes and to GitHub to push changes
 Write-Host "Create auth tokens to connect to GitHub and Azure DevOps"
-$Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('$(GitHub.User):$(GitHub.PAT)'))
+$Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${env:GITHUB_USER}:${env:GITHUB_PAT}"))
 git config --global --add "http.https://github.com/.extraheader" "AUTHORIZATION: $Authorization"
 git config --global --add "http.https://microsoft.visualstudio.com.extraheader" "AUTHORIZATION: Bearer $env:SYSTEM_ACCESSTOKEN"
 
 # Set common git configs for new commits
-Write-Host "Set commit author to '$(GitHub.Name) <$(GitHub.User)>'"
-git config --global user.email $(GitHub.User)
-git config --global user.name $(GitHub.Name)
+Write-Host "Set commit author to '${env:GITHUB_NAME} <${env:GITHUB_USER}>'"
+git config --global user.email ${env:GITHUB_USER}
+git config --global user.name ${env:GITHUB_NAME}
 
 # Check that source branch exists
 $output = Invoke-Expression "git branch --no-color --list $SourceBranch"
