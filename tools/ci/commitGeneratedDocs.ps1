@@ -31,11 +31,11 @@ Write-Host "Check that source branch exists"
 $output = ""
 Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/$SourceBranch^{commit}`"" | Tee-Object -Variable output | Write-Host
 Write-Host "Output: '$output'"
-if (-not ($output -match "$SourceBranch"))
+if (-not $output)
 {
     Write-Host "Unknown branch '$SourceBranch'"
     Write-Host "##vso[task.complete result=Failed;]Unknown branch $SourceBranch."
-    exit 2
+    exit 1
 }
 
 # Clean the _docs/ folder to avoid any interaction with a previous build if the agent is not clean
