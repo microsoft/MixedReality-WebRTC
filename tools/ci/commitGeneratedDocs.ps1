@@ -11,9 +11,6 @@ param(
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#build-variables
 $SourceBranch = ($SourceBranch -Replace "^refs/heads/","")
 Write-Host "Source branch: '$SourceBranch'"
-git log -1
-git branch --no-color --list $SourceBranch
-git log -1
 
 # Create some authentication tokens to be able to connect to Azure DevOps to get changes and to GitHub to push changes
 Write-Host "Create auth tokens to connect to GitHub and Azure DevOps"
@@ -27,9 +24,12 @@ git config --global user.email ${env:GITHUB_USER}
 git config --global user.name ${env:GITHUB_NAME}
 
 # Check that source branch exists
+# Note that the Azure DevOps checkout is a specific commit not a branch,
+# so the local repository is in detached HEAD. To test if the branch exists,
+# use the remote one from the 'origin' remote.
 Write-Host "Check that source branch exists"
 $output = ""
-Invoke-Expression "git branch --no-color --list $SourceBranch" | Tee-Object -Variable output | Write-Host
+Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/$SourceBranch^{commit}`"" | Tee-Object -Variable output | Write-Host
 Write-Host "Output: '$output'"
 if (-not ($output -match "$SourceBranch"))
 {
