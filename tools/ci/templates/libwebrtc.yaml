@@ -26,6 +26,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: tools/ci/mapVariables.ps1
+      arguments: '${{parameters.buildPlatform}} ${{parameters.buildArch}} ${{parameters.buildConfig}}'
 
   # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
   - task: UsePythonVersion@0
@@ -80,6 +81,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: tools/ci/mapVariables.ps1
+      arguments: '${{parameters.buildPlatform}} ${{parameters.buildArch}} ${{parameters.buildConfig}}'
 
   # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
   - task: UsePythonVersion@0
