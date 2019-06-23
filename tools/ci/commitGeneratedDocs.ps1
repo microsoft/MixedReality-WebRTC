@@ -71,8 +71,8 @@ if ($output)
 else
 {
     # Create the destination branch and checkout locally in a temporary folder.
-    Write-Host "Creating new destination branch $DestBranch"
-    New-Item ".\_docs" -ItemType Directory
+    Write-Host "Creating new destination branch $DestBranch" -ForegroundColor Yellow
+    New-Item ".\_docs" -ItemType Directory | Out-Null # be quiet
     Set-Location ".\_docs"
     git init
     git remote add origin https://github.com/microsoft/MixedReality-WebRTC
@@ -81,11 +81,11 @@ else
 
 # Because the _docs folder is now empty, always re-generate the README.md
 # This could be skipped if existing, but allows upgrading to a newer template if needed
-Write-Host "Generate README.md:"
+Write-Host "Generate README.md from template:"
 (Get-Content -Path ../docs/README.template.md -Encoding UTF8) -Replace '\$branchname',"$SourceBranch" | Set-Content -Path README.md -Encoding UTF8
-Write-Host "--------------------"
+Write-Host "--------------------" -ForegroundColor DarkGreen
 Get-Content -Path README.md -Encoding UTF8 | Write-Host
-Write-Host "--------------------"
+Write-Host "--------------------" -ForegroundColor DarkGreen
 Write-Host "Commit README.md"
 git add README.md
 git commit -m "Add README.md for generated branch $DestBranch"
@@ -99,9 +99,12 @@ Copy-Item "..\build\docs\generated\*" -Destination ".\" -Force -Recurse
 Write-Host "Check for changes"
 if (git status --short)
 {
+  # Add everything. Because the current directory is _docs, this is everything from
+  # the point of view of the sub-repo inside _docs, so this ignores all changes outside
+  # this directory and retain only generated docs changes, which is exactly what we want.
   git add --all
-  git commit -m "Docs for commit $commitSha ($commitTitle)"
-  #git push origin $DestBranch
+  git commit -m "Generated docs for commit $commitSha ($commitTitle)"
+  #git push origin $DestBranch # TEMP -- For now just a dry run (don't push to GitHub)
   Write-Host "Docs changes committed"
 }
 else
