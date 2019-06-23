@@ -27,8 +27,10 @@ git config --global user.name ${env:GITHUB_NAME}
 Write-Host "Check that source branch exists"
 git branch --no-color --list $SourceBranch
 $output = Invoke-Expression "git branch --no-color --list $SourceBranch"
+Write-Host "Output: '$output'"
 if (-not ($output -match "$SourceBranch"))
 {
+    Write-Host "Unknown branch '$SourceBranch'"
     Write-Host "##vso[task.complete result=Failed;]Unknown branch $SourceBranch."
     exit 2
 }
