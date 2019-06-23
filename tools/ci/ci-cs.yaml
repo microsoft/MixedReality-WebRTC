@@ -2,8 +2,18 @@
 # Build the project's libraries as needed and run tests
 
 # TEMP - Disable branch and PR triggers
-trigger: none
-pr: none
+# Note that trigger:none is not enough, because it is not enforced when
+# a new YAML file is pushed.
+trigger:
+  branches:
+    exclude: *
+  paths:
+    exclude: *
+pr:
+  branches:
+    exclude: *
+  paths:
+    exclude: *
 
 # Give a unique name to the build each time it runs
 name: ci-cs-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)

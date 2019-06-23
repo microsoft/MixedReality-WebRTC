@@ -5,8 +5,18 @@
 # when upgrading to a more recent version from Google, which is quite
 # infrequent. Also this pipeline is very long (several hours) so should
 # be triggered manually only when needed.
-trigger: none
-pr: none
+# Note that trigger:none is not enough, because it is not enforced when
+# a new YAML file is pushed.
+trigger:
+  branches:
+    exclude: *
+  paths:
+    exclude: *
+pr:
+  branches:
+    exclude: *
+  paths:
+    exclude: *
 
 # Give a unique name to the build each time it runs
 name: core-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
