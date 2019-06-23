@@ -71,7 +71,7 @@ if ($output)
 else
 {
     # Create the destination branch and checkout locally in a temporary folder.
-    Write-Host "Creating new destination branch $DestBranch" -ForegroundColor Yellow
+    Write-Host "Creating new destination branch $DestBranch"
     New-Item ".\_docs" -ItemType Directory | Out-Null # be quiet
     Set-Location ".\_docs"
     git init
@@ -83,9 +83,9 @@ else
 # This could be skipped if existing, but allows upgrading to a newer template if needed
 Write-Host "Generate README.md from template:"
 (Get-Content -Path ../docs/README.template.md -Encoding UTF8) -Replace '\$branchname',"$SourceBranch" | Set-Content -Path README.md -Encoding UTF8
-Write-Host "--------------------" -ForegroundColor DarkGreen
+Write-Host "##[section]--------------------"
 Get-Content -Path README.md -Encoding UTF8 | Write-Host
-Write-Host "--------------------" -ForegroundColor DarkGreen
+Write-Host "##[section]--------------------"
 Write-Host "Commit README.md"
 git add README.md
 git commit -m "Add README.md for generated branch $DestBranch"
