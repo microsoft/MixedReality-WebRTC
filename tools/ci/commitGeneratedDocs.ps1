@@ -10,6 +10,7 @@ param(
 # Build.SourceBranchName cannot be used because it strips also the subfolders.
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#build-variables
 $SourceBranch = ($SourceBranch -Replace "^refs/heads/","")
+Write-Host "Source branch: '$SourceBranch'"
 
 # Create some authentication tokens to be able to connect to Azure DevOps to get changes and to GitHub to push changes
 Write-Host "Create auth tokens to connect to GitHub and Azure DevOps"
@@ -23,11 +24,13 @@ git config --global user.email ${env:GITHUB_USER}
 git config --global user.name ${env:GITHUB_NAME}
 
 # Check that source branch exists
+Write-Host "Check that source branch exists"
+git branch --no-color --list $SourceBranch
 $output = Invoke-Expression "git branch --no-color --list $SourceBranch"
 if (-not ($output -match "$SourceBranch"))
 {
     Write-Host "##vso[task.complete result=Failed;]Unknown branch $SourceBranch."
-    exit 1
+    exit 2
 }
 
 # Clean the _docs/ folder to avoid any interaction with a previous build if the agent is not clean
