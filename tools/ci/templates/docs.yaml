@@ -32,16 +32,16 @@ jobs:
       $output = ""
       Invoke-Expression "$($DocFxDir.FullName)\tools\docfx.exe docs\docfx.json --intermediateFolder build\docs\obj -o build\docs -f" | Tee-Object -Variable output | Write-Host
 
-      # Check the console output stored in $output for any error or warning message,
-      # and force the task to fail if there is any.
-      $results = $output | Out-String
-      if ($results -match "(?<warningCount>\d*) Warning\(s\)\s*(?<errorCount>\d*) Error\(s\)")
-      {
-        if ($Matches.errorCount -gt 0 -or $Matches.warningCount -gt 0)
-        {
-          Write-Host "##vso[task.complete result=Failed;]DONE"
-        }
-      }
+      # # Check the console output stored in $output for any error or warning message,
+      # # and force the task to fail if there is any.
+      # $results = $output | Out-String
+      # if ($results -match "(?<warningCount>\d*) Warning\(s\)\s*(?<errorCount>\d*) Error\(s\)")
+      # {
+      #   if ($Matches.errorCount -gt 0 -or $Matches.warningCount -gt 0)
+      #   {
+      #     Write-Host "##vso[task.complete result=Failed;]DONE"
+      #   }
+      # }
     displayName: 'Generate docs'
 
   - task: PowerShell@2
