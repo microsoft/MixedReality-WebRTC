@@ -55,6 +55,6 @@ jobs:
     inputs:
       targetType: filePath
       filePath: tools/ci/commitGeneratedDocs.ps1
-      arguments: '-SourceBranch $(variables['Build.SourceBranch'])'
+      arguments: '-SourceBranch $(Build.SourceBranch)'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
