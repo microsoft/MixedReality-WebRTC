@@ -27,10 +27,9 @@ git config --global user.name ${env:GITHUB_NAME}
 # Note that the Azure DevOps checkout is a specific commit not a branch,
 # so the local repository is in detached HEAD. To test if the branch exists,
 # use the remote one from the 'origin' remote.
-Write-Host "Check that source branch exists"
+Write-Host "Resolve source branch commit SHA1"
 $output = ""
 Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/$SourceBranch^{commit}`"" | Tee-Object -Variable output | Write-Host
-Write-Host "Output: '$output'"
 if (-not $output)
 {
     Write-Host "Unknown branch '$SourceBranch'"
@@ -55,6 +54,7 @@ else
 {
     # Create the destination branch and checkout locally in a temporary folder
     Write-Host "Creating new destination branch $DestBranch"
+    New-Item ".\_docs"
     Set-Location -Path ".\_docs"
     git checkout --orphan "$DestBranch"
     Set-Location -Path "..\"
