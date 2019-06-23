@@ -11,6 +11,7 @@ param(
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#build-variables
 $SourceBranch = ($SourceBranch -Replace "^refs/heads/","")
 Write-Host "Source branch: '$SourceBranch'"
+git log -5
 
 # Create some authentication tokens to be able to connect to Azure DevOps to get changes and to GitHub to push changes
 Write-Host "Create auth tokens to connect to GitHub and Azure DevOps"

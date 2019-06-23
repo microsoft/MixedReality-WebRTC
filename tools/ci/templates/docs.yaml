@@ -56,6 +56,7 @@ jobs:
       targetType: filePath
       filePath: tools/ci/commitGeneratedDocs.ps1
       arguments: '-SourceBranch $(Build.SourceBranch)'
+      failOnStderr: false
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       GITHUB_USER: $(GitHub.User)
