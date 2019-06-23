@@ -1,0 +1,63 @@
+# [TEMPLATE] Compile C# library Microsoft.MixedReality.WebRTC.dll and run tests
+
+parameters: 
+  # Build platform is irrelevant
+  # Build arch is always AnyCPU
+  buildConfig: ''      # Debug|Release
+  testConfig: ''       # Debug|Release
+ 
+jobs:
+
+# Compile Microsoft.MixedReality.WebRTC.Native.dll
+- job: cs_${{parameters.buildConfig}}_test_${{parameters.testConfig}}
+  timeoutInMinutes: 60
+  pool:
+    vmImage: 'vs2017-win2016' # Hosted VS2017
+    demands: vstest
+  steps:
+  - checkout: self
+
+  # Build Microsoft.MixedReality.WebRTC (Debug, incremental build)
+  - task: DotNetCoreCLI@2
+    displayName: 'Build C# WebRTC lib (AnyCPU-Debug) [incremental]'
+    inputs:
+      projects: libs/Microsoft.MixedReality.WebRTC/Microsoft.MixedReality.WebRTC.csproj
+      arguments: '-f netstandard2.0 -c Debug'
+      workingDirectory: libs/Microsoft.MixedReality.WebRTC/
+
+  # Build Microsoft.MixedReality.WebRTC (Release, full build)
+  - task: DotNetCoreCLI@2
+    condition: succeededOrFailed() # Build even if Debug failed
+    displayName: 'Build C# WebRTC lib (AnyCPU-Release) [full build]'
+    inputs:
+      projects: libs/Microsoft.MixedReality.WebRTC/Microsoft.MixedReality.WebRTC.csproj
+      arguments: '-f netstandard2.0 --no-incremental -c Release'
+      workingDirectory: libs/Microsoft.MixedReality.WebRTC/
+
+  # Build C# tests
+  - task: DotNetCoreCLI@2
+    displayName: 'Build C# Tests (AnyCPU-${{parameters.testConfig}}) [incremental]'
+    inputs:
+      projects: tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Tests.csproj
+      arguments: '-c ${{parameters.testConfig}}'
+      workingDirectory: tests/Microsoft.MixedReality.WebRTC.Tests/
+
+  # Download Microsoft.MixedReality.WebRTC.Native.dll (Win32-x64-Release)
+  - task: DownloadPipelineArtifact@1
+    displayName: 'Download C++ WebRTC lib (Win32-x64-Release)'
+    inputs:
+      buildType: specific
+      project: '8115054f-1c74-4928-a9ab-de4769e7d6ae'
+      pipeline: 40615
+      artifactName: 'Microsoft.MixedReality.WebRTC.Native_Win32-x64-Release'
+      targetPath: '$(Build.SourcesDirectory)/bin/Win32/x64/Release'
+    enabled: false
+
+  # Run tests (Win32-x64-Release)
+  - task: VSTest@2
+    displayName: 'C# Testing (C++ Win32-x64-Release / C# ${{parameters.testConfig}})'
+    inputs:
+      testAssemblyVer2: Microsoft.MixedReality.WebRTC.Tests.dll
+      searchFolder: tests/Microsoft.MixedReality.WebRTC.Tests/bin/${{parameters.testConfig}}/
+      runOnlyImpactedTests: false
+

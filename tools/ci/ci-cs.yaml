@@ -1,0 +1,15 @@
+# MixedReality-WebRTC build pipeline for C# CI
+# Build the project's libraries as needed and run tests
+
+# TEMP - Disable branch and PR triggers
+trigger: none
+pr: none
+
+# Give a unique name to the build each time it runs
+name: ci-cs-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+
+jobs:
+- template: templates/cs.yaml
+  parameters:
+    buildConfig: 'Debug'
+    testConfig: 'Debug'
