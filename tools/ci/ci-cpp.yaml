@@ -1,15 +1,20 @@
 # MixedReality-WebRTC build pipeline for CI
 # Build the project's libraries as needed
 
-# TEMP - Disable branch and PR triggers
-# Note that trigger:none is not enough, because it is not enforced when
-# a new YAML file is pushed.
+# Trigger CI on push changes
 trigger:
+  branches:
+    include:
+    - master
+    - dev
+    exclude:
+    - docs/*
   paths:
-    exclude: *
-pr:
-  paths:
-    exclude: *
+    include:
+    - libs/Microsoft.MixedReality.WebRTC.Native/*
+
+# Do not trigger CI on PRs
+pr: none
 
 # Give a unique name to the build each time it runs
 name: ci-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
