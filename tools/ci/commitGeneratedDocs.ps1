@@ -49,14 +49,13 @@ Write-Host "${commitSha}: $commitTitle"
 Write-Host "Clean output folder '_docs/' if it exists"
 Remove-Item ".\_docs" -Force -Recurse -ErrorAction Ignore
 
-# Create or clone destination branch.
-# Note that this creates a second copy of the repository inside itself.
-# This will be used to only commit changes to that gh-pages branch which
-# contains only generated documentation-related files, and not the code.
+# Compute the source and destination folders
+$SourceFolder = "../../../build/docs/generated/*"
 $DestFolder = "_docs/versions/$SourceBranch"
 if ($SourceBranch -eq "master")
 {
     # The master branch is the default version at the root of the website
+    $SourceFolder = "../build/docs/generated/*"
     $DestFolder = "_docs"
 }
 $output = ""
@@ -67,10 +66,15 @@ if (-not $output)
     Write-Host "##vso[task.complete result=Failed;]Missing docs branch 'gh-pages'."
     exit 1
 }
+Write-Host "Source folder: $SourceFolder"
+Write-Host "Desination folder: $DestFolder"
 
 # Clone the destination branch locally in a temporary folder.
+# Note that this creates a second copy of the repository inside itself.
+# This will be used to only commit changes to that gh-pages branch which
+# contains only generated documentation-related files, and not the code.
 Write-Host "Clone the generated docs branch"
-git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch gh-pages "$DestFolder"
+git clone --branch gh-pages -- https://github.com/Microsoft/MixedReality-WebRTC.git "$DestFolder"
 
 # Delete all the files in this folder, so that files deleted in the new version
 # of the documentation are effectively deleted in the commit.
@@ -82,7 +86,7 @@ Set-Location "$DestFolder"
 
 # Copy the newly-generated version of the docs
 Write-Host "Copy new generated version"
-Copy-Item "..\build\docs\generated\*" -Destination ".\" -Force -Recurse
+Copy-Item "$SourceFolder" -Destination ".\" -Force -Recurse
 
 # Check for any change compared to previous version (if any)
 Write-Host "Check for changes"
