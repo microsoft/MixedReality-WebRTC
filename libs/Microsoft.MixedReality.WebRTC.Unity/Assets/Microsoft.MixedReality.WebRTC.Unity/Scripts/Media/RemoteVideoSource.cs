@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Concurrent;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
