@@ -83,7 +83,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     }
 
     /// <summary>
-    /// A <a href="https://docs.unity3d.com/ScriptReference/Events.UnityEvent.html"/>UnityEvent</a> that represents a WebRTC error event.
+    /// A <a href="https://docs.unity3d.com/ScriptReference/Events.UnityEvent.html">UnityEvent</a> that represents a WebRTC error event.
     /// </summary>
     [Serializable]
     public class WebRTCErrorEvent : UnityEvent<string>
