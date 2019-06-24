@@ -1,4 +1,13 @@
-param([switch]$serve=$false)
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
+# Script to generate the docs into build/docs/generated/ for local iteration.
+
+param(
+    # Serve the generated docs on a temporary web server @ localhost
+    # The docs are not completely static, so will not work if not served.
+    [switch]$serve = $false
+)
 
 # Clear output dir
 Write-Host "Clear previous version from build/docs"
