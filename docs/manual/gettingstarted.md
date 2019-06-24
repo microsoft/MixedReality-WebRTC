@@ -1,0 +1,16 @@
+# Getting started
+
+The MixedReality-WebRTC project is comprised of several components:
+
+- A **C++ library** to integrate into a native C++ application
+- A **C# library** to integrate into a C# application
+- A **Unity integration** to help integrate into an existing Unity application
+
+Not all components are required for all use cases, but each component builds upon the previous one. This means that for use in a C++ application only the C++ library needs to be installed. But the Unity integration will require installing also the C# and C++ libraries.
+
+A note on terminology: in this documentation the term _component_ refers to one of the libraries mentioned above. This has no relation with a _Unity component_, which is a C# class deriving from MonoBehaviour.
+
+In this chapter we discuss:
+- [**Installation**](installation.md) : How to install the various components.
+- [**Hello, C# world!**](helloworld-cs.md) : Your first C# application based on the C# library.
+- [**Hello, Unity world!**](helloworld-unity.md) : Your first Unity application based on the Unity integration.
