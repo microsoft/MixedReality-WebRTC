@@ -50,13 +50,13 @@ Write-Host "Clean output folder '_docs/' if it exists"
 Remove-Item ".\_docs" -Force -Recurse -ErrorAction Ignore
 
 # Compute the source and destination folders
-$SourceFolder = "../../../build/docs/generated/*"
-$DestFolder = "_docs/versions/$SourceBranch"
+$SourceFolder = "..\..\..\build\docs\generated\*"
+$DestFolder = ".\_docs\versions\$SourceBranch\"
 if ($SourceBranch -eq "master")
 {
     # The master branch is the default version at the root of the website
-    $SourceFolder = "../build/docs/generated/*"
-    $DestFolder = "_docs"
+    $SourceFolder = "..\build\docs\generated\*"
+    $DestFolder = ".\_docs\"
 }
 $output = ""
 Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/gh-pages^{commit}`"" | Tee-Object -Variable output | Out-Null
@@ -74,7 +74,7 @@ Write-Host "Desination folder: $DestFolder"
 # This will be used to only commit changes to that gh-pages branch which
 # contains only generated documentation-related files, and not the code.
 Write-Host "Clone the generated docs branch"
-git clone --branch gh-pages -- https://github.com/Microsoft/MixedReality-WebRTC.git "$DestFolder"
+git clone --branch "gh-pages" -- https://github.com/Microsoft/MixedReality-WebRTC.git "$DestFolder"
 
 # Delete all the files in this folder, so that files deleted in the new version
 # of the documentation are effectively deleted in the commit.
