@@ -57,15 +57,24 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private bool lastGetComplete = true;
 
+        /// <summary>
+        /// Work queue used to defer any work which requires access to the main Unity thread,
+        /// as most methods in the Unity API are not free-threaded, but the WebRTC C# library is.
+        /// </summary>
         private ConcurrentQueue<Action> _mainThreadWorkQueue = new ConcurrentQueue<Action>();
 
 
         #region ISignaler interface
 
+        /// <inheritdoc/>
         public override Task SendMessageAsync(SignalerMessage message)
         {
+            // This method needs to return a Task object which gets completed once the signaler message
+            // has been sent. Because the implementation uses a Unity coroutine, use a reset event to
+            // signal the task to complete from the coroutine after the message is sent.
+            // Note that the coroutine is a Unity object so needs to be started from the main Unity thread.
             var mre = new ManualResetEvent(false);
-            _mainThreadWorkQueue.Enqueue(() => StartCoroutine(PostToServerAndWait(message, mre))); // TODO - Enqueue to main thread
+            _mainThreadWorkQueue.Enqueue(() => StartCoroutine(PostToServerAndWait(message, mre)));
             return Task.Run(() => mre.WaitOne());
         }
 

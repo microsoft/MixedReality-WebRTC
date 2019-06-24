@@ -15,10 +15,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     {
         /// <summary>
         /// The <see cref="PeerConnection"/> this signaler is attached to, or <c>null</c>
-        /// if not attached yet to any connection. This is updated once the peer connection
-        /// finished initializing.
+        /// if not attached yet to any connection. This is updated automatically by the peer
+        /// connection once it finished initializing.
         /// </summary>
         public PeerConnection PeerConnection { get; private set; }
+
 
         #region ISignaler interface
 
@@ -27,13 +28,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public event Action<SignalerMessage> OnMessage;
         public event Action<Exception> OnFailure;
 
+        /// <summary>
+        /// Asynchronously send a signaling message to the remote peer.
+        /// </summary>
+        /// <param name="message">The signaling message to send to the remote peer.</param>
+        /// <returns>
+        /// A <see cref="Task"/> object completed once the message has been sent,
+        /// but not necessarily delivered.
+        /// </returns>
         public abstract Task SendMessageAsync(SignalerMessage message);
 
         #endregion
 
+
         /// <summary>
-        /// Native peer connection, available once the peer has been initialized and the
-        /// signaler is attached to it.
+        /// Native <xref href="Microsoft.MixedReality.WebRTC.PeerConnection"/> object from the underlying WebRTC C# library, available once
+        /// the peer has been initialized and the signaler is attached to it.
         /// </summary>
         protected WebRTC.PeerConnection _nativePeer;
 
