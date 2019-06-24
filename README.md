@@ -1,6 +1,6 @@
 # Generated documentation branch
 
-This branch `gh-pages` is an orphan branch for the generated documentation of MixedReality-WebRTC. **This branch cannot be committed to manually**.
+This branch `gh-pages` is an orphan branch for [the generated documentation of MixedReality-WebRTC](https://microsoft.github.io/MixedReality-WebRTC/). **This branch cannot be committed to manually**.
 
 To edit the documentation of a branch:
 
