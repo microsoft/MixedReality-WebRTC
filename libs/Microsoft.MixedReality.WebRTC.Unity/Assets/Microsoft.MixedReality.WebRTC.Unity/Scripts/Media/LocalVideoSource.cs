@@ -11,7 +11,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <summary>
     /// This component represents a local video source added as a video track to an
     /// existing WebRTC peer connection and sent to the remote peer. The video track
-    /// can optionally be displayed locally with a <see cref="VideoTrackPlayer"/>.
+    /// can optionally be displayed locally with a <see cref="MediaPlayer"/>.
     /// </summary>
     public class LocalVideoSource : VideoSource
     {
@@ -40,7 +40,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         /// <remarks>
         /// If this is <c>false</c> then the user needs to manually call
-        /// <see cref="WebRTC.PeerConnection.AddLocalVideoTrackAsync"/> to add a video
+        /// <see cref="WebRTC.PeerConnection.AddLocalVideoTrackAsync()"/> to add a video
         /// track to the peer connection and start sending video data to the remote peer.
         /// </remarks>
         public bool AutoAddTrack = true;

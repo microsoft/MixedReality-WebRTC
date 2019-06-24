@@ -10,7 +10,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// Play video frames received from a WebRTC video track.
     /// </summary>
     /// <remarks>
-    /// This component writes to the attached <see cref="Material"/>, via the attached <see cref="Renderer"/>.
+    /// This component writes to the attached <a href="https://docs.unity3d.com/ScriptReference/Material.html">Material</a>,
+    /// via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html">Renderer</a>.
     /// </remarks>
     [RequireComponent(typeof(Renderer))]
     public class MediaPlayer : MonoBehaviour
@@ -57,11 +58,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public TextMesh FrameSkipStatHolder;
 
         /// <summary>
-        /// The frame queue from which frames will be "played"
+        /// The frame queue from which frames will be rendered.
         /// </summary>
-        /// <remarks>
-        /// TODO(bengreenier): Currently this is allocated and managed by <see cref="WebrtcPeerVideo"/>
-        /// </remarks>
         public VideoFrameQueue<I420VideoFrameStorage> FrameQueue = null;
 
         /// <summary>

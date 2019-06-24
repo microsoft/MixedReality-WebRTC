@@ -651,10 +651,13 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="device">Optional device to use, defaults to first available one.</param>
         /// <returns>Asynchronous task completed once the device is capturing and the track is added.</returns>
-        /// <remarks>On UWP this requires the "webcam" capability.
-        /// See <see cref="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
-        /// for more details.</remarks>
-        /// <remarks>This method throws an exception if the peer connection is not initialized.</remarks>
+        /// <remarks>
+        /// On UWP this requires the "webcam" capability.
+        /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
+        /// for more details.
+        /// 
+        /// This method throws an exception if the peer connection is not initialized.
+        /// </remarks>
         public Task AddLocalVideoTrackAsync(VideoCaptureDevice device = default(VideoCaptureDevice), bool enableMrc = false)
         {
             ThrowIfConnectionNotOpen();
@@ -683,10 +686,13 @@ namespace Microsoft.MixedReality.WebRTC
         /// Add to the current connection an audio track from a local audio capture device (microphone).
         /// </summary>
         /// <returns>Asynchronous task completed once the device is capturing and the track is added.</returns>
-        /// <remarks>On UWP this requires the "microphone" capability.
-        /// See <see cref="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
-        /// for more details.</remarks>
-        /// <remarks>This method throws an exception if the peer connection is not initialized.</remarks>
+        /// <remarks>
+        /// On UWP this requires the "microphone" capability.
+        /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
+        /// for more details.
+        /// 
+        /// This method throws an exception if the peer connection is not initialized.
+        /// </remarks>
         public Task AddLocalAudioTrackAsync()
         {
             ThrowIfConnectionNotOpen();

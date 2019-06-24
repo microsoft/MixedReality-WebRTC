@@ -46,9 +46,9 @@ namespace Microsoft.MixedReality.WebRTC
 
 
         /// <summary>
-        /// Prevents <see cref="TaskCanceledException"/> or <see cref="OperationCanceledException"/> from trickling up.
+        /// Prevents <see xref="TaskCanceledException"/> or <see xref="OperationCanceledException"/> from trickling up.
         /// </summary>
-        /// <param name="task">The task to ignore exceptions for./param>
+        /// <param name="task">The task to ignore exceptions for.</param>
         /// <returns>A wrapping task for the given task.</returns>
         public static Task IgnoreCancellation(this Task task)
         {
@@ -63,10 +63,10 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Prevents <see cref="TaskCanceledException"/> or <see cref="OperationCanceledException"/> from trickling up.
+        /// Prevents <see xref="TaskCanceledException"/> or <see xref="OperationCanceledException"/> from trickling up.
         /// </summary>
         /// <typeparam name="T">The result type of the Task.</typeparam>
-        /// <param name="task">The task to ignore exceptions for./param>
+        /// <param name="task">The task to ignore exceptions for.</param>
         /// <param name="defaultCancellationReturn">The default value to return in case the task is cancelled.</param>
         /// <returns>A wrapping task for the given task.</returns>
         public static Task<T> IgnoreCancellation<T>(this Task<T> task, T defaultCancellationReturn = default(T))
@@ -85,9 +85,9 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// A simple helper to enable "awaiting" a <see cref="CancellationToken"/> by creating a task wrapping it.
+        /// A simple helper to enable "awaiting" a <see xref="CancellationToken"/> by creating a task wrapping it.
         /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to await.</param>
+        /// <param name="cancellationToken">The <see xref="CancellationToken"/> to await.</param>
         /// <returns>The task that can be awaited.</returns>
         public static Task AsTask(this CancellationToken cancellationToken) => Task.Delay(-1, cancellationToken);
 

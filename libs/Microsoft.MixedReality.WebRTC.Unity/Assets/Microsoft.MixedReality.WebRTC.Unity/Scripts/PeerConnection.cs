@@ -83,7 +83,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     }
 
     /// <summary>
-    /// A <see cref="UnityEvent"/> that represents a WebRTC error event.
+    /// A <a href="https://docs.unity3d.com/ScriptReference/Events.UnityEvent.html"/>UnityEvent</a> that represents a WebRTC error event.
     /// </summary>
     [Serializable]
     public class WebRTCErrorEvent : UnityEvent<string>
@@ -108,7 +108,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #region Behavior settings
 
         /// <summary>
-        /// Flag to initialize the peer connection on <see cref="Start"/>.
+        /// Flag to initialize the peer connection on <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
         /// </summary>
         [Header("Behavior settings")]
         [Tooltip("Automatically initialize the peer connection on Start()")]
@@ -317,7 +317,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Unity Engine Start() hook
         /// </summary>
         /// <remarks>
-        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html
+        /// See <see href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html"/>
         /// </remarks>
         private void Start()
         {
