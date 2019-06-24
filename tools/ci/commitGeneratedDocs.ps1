@@ -50,12 +50,10 @@ Write-Host "Clean output folder '_docs/' if it exists"
 Remove-Item ".\_docs" -Force -Recurse -ErrorAction Ignore
 
 # Compute the source and destination folders
-$SourceFolder = "..\..\..\build\docs\generated\*"
 $DestFolder = ".\_docs\versions\$SourceBranch\"
 if ($SourceBranch -eq "master")
 {
     # The master branch is the default version at the root of the website
-    $SourceFolder = "..\build\docs\generated\*"
     $DestFolder = ".\_docs\"
 }
 $output = ""
@@ -66,27 +64,26 @@ if (-not $output)
     Write-Host "##vso[task.complete result=Failed;]Missing docs branch 'gh-pages'."
     exit 1
 }
-Write-Host "Source folder: $SourceFolder"
-Write-Host "Desination folder: $DestFolder"
+Write-Host "Destination folder: $DestFolder"
 
 # Clone the destination branch locally in a temporary folder.
 # Note that this creates a second copy of the repository inside itself.
 # This will be used to only commit changes to that gh-pages branch which
 # contains only generated documentation-related files, and not the code.
 Write-Host "Clone the generated docs branch"
-git clone --branch "gh-pages" -- https://github.com/Microsoft/MixedReality-WebRTC.git "$DestFolder"
+git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch gh-pages "$DestFolder"
 
 # Delete all the files in this folder, so that files deleted in the new version
 # of the documentation are effectively deleted in the commit.
 Write-Host "Delete currently committed version"
 Get-ChildItem "$DestFolder" -Recurse | Remove-Item -Force -Recurse
 
-# Move inside the target folder
-Set-Location "$DestFolder"
-
 # Copy the newly-generated version of the docs
 Write-Host "Copy new generated version"
-Copy-Item "$SourceFolder" -Destination ".\" -Force -Recurse
+Copy-Item ".\build\docs\generated\*" -Destination "$DestFolder" -Force -Recurse
+
+# Move inside the target folder
+Set-Location "$DestFolder"
 
 # Check for any change compared to previous version (if any)
 Write-Host "Check for changes"
