@@ -1,4 +1,6 @@
-# Commit a generated documentation to its docs/* branch
+# Commit a generated documentation to the gh-pages documentation branch
+# For the master branch, this commits the documentation at the root of
+# the branch. For other branches, this commits it under the verions/ folder.
 
 param(
     [Parameter(Position=0)]
@@ -49,47 +51,34 @@ Remove-Item ".\_docs" -Force -Recurse -ErrorAction Ignore
 
 # Create or clone destination branch.
 # Note that this creates a second copy of the repository inside itself.
-# This will be used to only commit changes to that docs/* branch which
+# This will be used to only commit changes to that gh-pages branch which
 # contains only generated documentation-related files, and not the code.
-$DestBranch = "docs/$SourceBranch"
-$output = ""
-Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/$DestBranch^{commit}`"" | Tee-Object -Variable output | Out-Null
-if ($output)
+$DestFolder = "_docs/versions/$SourceBranch"
+if ($SourceBranch -eq "master")
 {
-    # Clone the destination branch locally in a temporary folder.
-    Write-Host "Clone the generated docs branch"
-    git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch $DestBranch ".\_docs"
-    
-    # Delete all the files in this folder, so that files deleted in the new version
-    # of the documentation are effectively deleted in the commit.
-    Write-Host "Delete currently committed version"
-    Get-ChildItem ".\_docs" -Recurse | Remove-Item -Force -Recurse
-    
-    # Move inside sub-repository
-    Set-Location ".\_docs"
+    # The master branch is the default version at the root of the website
+    $DestFolder = "_docs"
 }
-else
+$output = ""
+Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/gh-pages^{commit}`"" | Tee-Object -Variable output | Out-Null
+if (-not $output)
 {
-    # Create the destination branch and checkout locally in a temporary folder.
-    Write-Host "Creating new destination branch $DestBranch"
-    New-Item ".\_docs" -ItemType Directory | Out-Null # be quiet
-    Set-Location ".\_docs"
-    git init
-    git remote add origin https://github.com/microsoft/MixedReality-WebRTC
-    git checkout --orphan "$DestBranch"
+    Write-Host "Missing docs branch 'gh-pages'"
+    Write-Host "##vso[task.complete result=Failed;]Missing docs branch 'gh-pages'."
+    exit 1
 }
 
-# Because the _docs folder is now empty, always re-generate the README.md
-# This could be skipped if existing, but allows upgrading to a newer template if needed
-Write-Host "Generate README.md from template:"
-(Get-Content -Path ../docs/README.template.md -Encoding UTF8) -Replace '\$branchname',"$SourceBranch" | Set-Content -Path README.md -Encoding UTF8
-Write-Host "##[section]--------------------"
-Get-Content -Path README.md -Encoding UTF8 | Write-Host
-Write-Host "##[section]--------------------"
-Write-Host "Commit README.md"
-git add README.md
-git commit -m "Add README.md for generated branch $DestBranch"
-git log -1 --format=full
+# Clone the destination branch locally in a temporary folder.
+Write-Host "Clone the generated docs branch"
+git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch gh-pages "$DestFolder"
+
+# Delete all the files in this folder, so that files deleted in the new version
+# of the documentation are effectively deleted in the commit.
+Write-Host "Delete currently committed version"
+Get-ChildItem "$DestFolder" -Recurse | Remove-Item -Force -Recurse
+
+# Move inside the target folder
+Set-Location "$DestFolder"
 
 # Copy the newly-generated version of the docs
 Write-Host "Copy new generated version"
