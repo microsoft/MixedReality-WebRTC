@@ -10,22 +10,67 @@ namespace Microsoft.MixedReality.WebRTC
     /// See e.g. https://wiki.videolan.org/YUV/#I420 for details.
     /// </summary>
     /// <remarks>
-    /// The use of ref struct is an optimization to avoid heap allocation on each frame while
-    /// having a nicer-to-use container for a frame.
+    /// The use of <c>ref struct</c> is an optimization to avoid heap allocation on each frame while
+    /// having a nicer-to-use container to pass a frame accross methods.
     /// </remarks>
     public ref struct I420AVideoFrame
     {
+        /// <summary>
+        /// Frame width, in pixels.
+        /// </summary>
         public uint width;
+
+        /// <summary>
+        /// Frame height, in pixels.
+        /// </summary>
         public uint height;
+
+        /// <summary>
+        /// Pointer to the Y plane buffer.
+        /// </summary>
         public IntPtr dataY;
+
+        /// <summary>
+        /// Pointer to the U plane buffer.
+        /// </summary>
         public IntPtr dataU;
+
+        /// <summary>
+        /// Pointer to the V plane buffer.
+        /// </summary>
         public IntPtr dataV;
+
+        /// <summary>
+        /// Optional pointer to the alpha plane buffer, if any, or <c>null</c> if the frame has no alpha plane.
+        /// </summary>
         public IntPtr dataA;
+
+        /// <summary>
+        /// Stride in bytes between rows of the Y plane.
+        /// </summary>
         public int strideY;
+
+        /// <summary>
+        /// Stride in bytes between rows of the U plane.
+        /// </summary>
         public int strideU;
+
+        /// <summary>
+        /// Stride in bytes between rows of the V plane.
+        /// </summary>
         public int strideV;
+
+        /// <summary>
+        /// Stride in bytes between rows of the A plane, if present.
+        /// </summary>
         public int strideA;
 
+        /// <summary>
+        /// Copy the frame content to a <xref href="System.Byte"/>[] buffer as a contiguous block of memory
+        /// containing the Y, U, and V planes one after another, and the alpha plane at the end if
+        /// present.
+        /// </summary>
+        /// <param name="buffer">The destination buffer to copy the frame to.</param>
         public void CopyTo(byte[] buffer)
         {
             unsafe
@@ -65,14 +110,29 @@ namespace Microsoft.MixedReality.WebRTC
     /// Single video frame encoded in ARGB interleaved format (32 bits per pixel).
     /// </summary>
     /// <remarks>
-    /// The use of ref struct is an optimization to avoid heap allocation on each frame while
-    /// having a nicer-to-use container for a frame.
+    /// The use of <c>ref struct</c> is an optimization to avoid heap allocation on each frame while
+    /// having a nicer-to-use container to pass a frame accross methods.
     /// </remarks>
     public ref struct ARGBVideoFrame
     {
+        /// <summary>
+        /// Frame width, in pixels.
+        /// </summary>
         public uint width;
+
+        /// <summary>
+        /// Frame height, in pixels.
+        /// </summary>
         public uint height;
+
+        /// <summary>
+        /// Pointer to the data buffer containing the ARBG data for each pixel.
+        /// </summary>
         public IntPtr data;
+
+        /// <summary>
+        /// Stride in bytes between the ARGB rows.
+        /// </summary>
         public int stride;
     }
 

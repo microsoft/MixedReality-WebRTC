@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -55,12 +57,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private bool lastGetComplete = true;
 
+        /// <summary>
+        /// Work queue used to defer any work which requires access to the main Unity thread,
+        /// as most methods in the Unity API are not free-threaded, but the WebRTC C# library is.
+        /// </summary>
+        private ConcurrentQueue<Action> _mainThreadWorkQueue = new ConcurrentQueue<Action>();
+
 
         #region ISignaler interface
 
+        /// <inheritdoc/>
         public override Task SendMessageAsync(SignalerMessage message)
         {
-            return Task.Run(() => PostToServerAndWait(message));
+            // This method needs to return a Task object which gets completed once the signaler message
+            // has been sent. Because the implementation uses a Unity coroutine, use a reset event to
+            // signal the task to complete from the coroutine after the message is sent.
+            // Note that the coroutine is a Unity object so needs to be started from the main Unity thread.
+            var mre = new ManualResetEvent(false);
+            _mainThreadWorkQueue.Enqueue(() => StartCoroutine(PostToServerAndWait(message, mre)));
+            return Task.Run(() => mre.WaitOne());
         }
 
         #endregion
@@ -160,10 +175,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// for use inside a <see cref="Task"/> object.
         /// </summary>
         /// <param name="msg">the message to send</param>
-        private IEnumerator PostToServerAndWait(SignalerMessage message)
+        private IEnumerator PostToServerAndWait(SignalerMessage message, ManualResetEvent mre)
         {
             // Start the coroutine and wait for it to finish
             yield return StartCoroutine(PostToServer(message));
+            mre.Set();
         }
 
         /// <summary>
@@ -246,6 +262,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Do not forget to call the base class Update(), which processes events from background
             // threads to fire the callbacks implemented in this class.
             base.Update();
+
+            // Execute any pending work enqueued by background tasks
+            while (_mainThreadWorkQueue.TryDequeue(out Action workload))
+            {
+                workload();
+            }
 
             // if we have not reached our PollTimeMs value...
             if (timeSincePollMs <= PollTimeMs)

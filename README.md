@@ -27,7 +27,9 @@ MixedReality-WebRTC is a set of individual components in the form of C++ and C# 
 | `Microsoft.MixedReality.WebRTC.Unity` | C# 7.3 | Unity3D integration - a set of Unity `MonoBehaviour` components with almost no required setup, to enable rapid prototyping and simplify integration into an existing app. |
 | `Microsoft.MixedReality.WebRTC.Unity.Examples` | C# 7.3 | Unity3D samples showcasing typical use scenarios like a video chat app. |
 
-MixedReality-WebRTC is currently available for Windows Desktop (Win32) and Windows UWP, with planned support for iOS and Android.
+MixedReality-WebRTC is currently available for Windows 10 Desktop and UWP (18362+), with or without Unity, with planned support for Unity deployment on iOS and Android.
+
+Note that in the following and elsewhere in this repository the term "Win32" is used as a synonym for "Windows Desktop", and in opposition to "Windows UWP". However Microsoft Windows versions older than Windows 10 with Windows SDK 18362+ (May 2019 Update, 1903) are not officially supported. See _Required Softwares_ below for more information.
 
 ## Build Status
 
@@ -37,12 +39,12 @@ MixedReality-WebRTC is under active development. The current development branch 
 
 | Branch | WebRTC | Platform | Architecture | Build Status |
 |---|---|---|---|---|
-| [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows Win32 | x86 | - |
-| [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows Win32 | x86_64 | [![Build status](https://microsoft.visualstudio.com/Analog/_apis/build/status/internal/middleware/mixedreality-webrtc/mr-webrtc-cpp-win32-x64)](https://microsoft.visualstudio.com/Analog/_build/latest?definitionId=40615) |
-| [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows Win32 | ARM | - |
-| [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows Win32 | ARM64 | - |
+| [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows Desktop | x86 | - |
+| [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows Desktop | x86_64 | [![Build status](https://microsoft.visualstudio.com/Analog/_apis/build/status/internal/middleware/mixedreality-webrtc/mr-webrtc-cs)](https://microsoft.visualstudio.com/Analog/_build/latest?definitionId=40611) |
+| [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows Desktop | ARM | - |
+| [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows Desktop | ARM64 | - |
 | [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows UWP | x86 | - |
-| [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows UWP | x86_64 | [![Build status](https://microsoft.visualstudio.com/Analog/_apis/build/status/internal/middleware/mixedreality-webrtc/mr-webrtc-cpp-uwp-x64)](https://microsoft.visualstudio.com/Analog/_build/latest?definitionId=40776) |
+| [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows UWP | x86_64 | - |
 | [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows UWP | ARM | - |
 | [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Windows UWP | ARM64 | - |
 
@@ -51,7 +53,7 @@ MixedReality-WebRTC is under active development. The current development branch 
 The C# library is platform and architecture independent (.NET Standard 2.0).
 
 | Branch | WebRTC | Build Status |
-|---|---|---|---|---|
+|---|---|---|
 | [`dev`](https://github.com/microsoft/MixedReality-WebRTC/tree/dev) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | [![Build status](https://microsoft.visualstudio.com/Analog/_apis/build/status/internal/middleware/mixedreality-webrtc/mr-webrtc-cs)](https://microsoft.visualstudio.com/Analog/_build/latest?definitionId=40611) |
 
 ## Getting Started
@@ -76,9 +78,9 @@ The following softwares are officially supported. Other versions might work, but
 
 | | | |
 | :--- | :--- | :--- |
-| [![Windows SDK 18362+](docs/MRTK170802_Short_17.png)](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk) | [Windows SDK 18362+](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk) | To develop apps for Windows Mixed Reality headsets, you need the Windows 10 Fall Creators Update |
-| [![Visual Studio 2019](docs/MRTK170802_Short_19.png)](http://dev.windows.com/downloads) | [Visual Studio 2019](http://dev.windows.com/downloads) | Visual Studio is used for code editing, and deploying and building UWP app packages |
-| [![Unity](docs/MRTK170802_Short_18.png)](https://unity3d.com/get-unity/download/archive) | [Unity 2019.1.x](https://unity3d.com/get-unity/download/archive) | The Unity 3D engine provides support for building mixed reality projects in Windows 10, and version 2019.1 adds support for UWP ARM64 for HoloLens 2 |
+| [![Windows SDK 18362+](docs/manual/MRTK170802_Short_17.png)](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk) | [Windows SDK 18362+](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk) | To develop apps for Windows Mixed Reality headsets, you need the Windows 10 Fall Creators Update |
+| [![Visual Studio 2019](docs/manual/MRTK170802_Short_19.png)](http://dev.windows.com/downloads) | [Visual Studio 2019](http://dev.windows.com/downloads) | Visual Studio is used for code editing, and deploying and building UWP app packages |
+| [![Unity](docs/manual/MRTK170802_Short_18.png)](https://unity3d.com/get-unity/download/archive) | [Unity 2019.1.x](https://unity3d.com/get-unity/download/archive) | The Unity 3D engine provides support for building mixed reality projects in Windows 10, and version 2019.1 adds support for UWP ARM64 for HoloLens 2 |
 
 ## Documentation
 
@@ -86,7 +88,7 @@ The API documentation is not available yet.
 
 The overall architecture of the components is as follow:
 
-![MixedReality-WebRTC architecture](docs/architecture.png)
+![MixedReality-WebRTC architecture](docs/manual/architecture.png)
 
 ## Building MixedReality-WebRTC
 
@@ -107,7 +109,7 @@ git submodule update --init --recursive
 
 ### Build the WebRTC UWP SDK libraries:
 
-For Win32 (Desktop) support:
+For Windows Desktop support:
 
 - Open the **`WebRtc.Win32.sln`** Visual Studio solution located in `external\webrtc-uwp-sdk\webrtc\windows\solution\`
 - In the menu bar, select the relevant solution platform and solution configuration. For the Unity editor, the **x64** binaries are required.
@@ -128,7 +130,7 @@ On successful build, the binaries will be generated in a sub-directory under `bi
 
 The `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution contains several projects:
 - The native C++ library, which can be compiled:
-  - for Win32 (Desktop) with the `Microsoft.MixedReality.WebRTC.Native.Win32` project
+  - for Windows Desktop with the `Microsoft.MixedReality.WebRTC.Native.Win32` project
   - for UWP with the `Microsoft.MixedReality.WebRTC.Native.UWP` project
 - The C# library project `Microsoft.MixedReality.WebRTC`
 - A C# unit tests project `Microsoft.MixedReality.WebRTC.Tests`

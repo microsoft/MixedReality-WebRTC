@@ -51,6 +51,18 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
     renegotiation_needed_callback_ = std::move(callback);
   }
 
+  using TrackAddedCallback = Callback<>;
+  void RegisterTrackAddedCallback(TrackAddedCallback&& callback) noexcept {
+    auto lock = std::lock_guard{track_added_callback_mutex_};
+    track_added_callback_ = std::move(callback);
+  }
+
+  using TrackRemovedCallback = Callback<>;
+  void RegisterTrackRemovedCallback(TrackRemovedCallback&& callback) noexcept {
+    auto lock = std::lock_guard{track_removed_callback_mutex_};
+    track_removed_callback_ = std::move(callback);
+  }
+
   void RegisterLocalVideoFrameCallback(
       I420FrameReadyCallback callback) noexcept {
     if (local_video_observer_) {
@@ -140,15 +152,24 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   // seconds, not 30, and this actually represents a combination ICE + DTLS
   // state, so it may be "failed" if DTLS fails while ICE succeeds.
   void OnIceConnectionChange(webrtc::PeerConnectionInterface::IceConnectionState
-                                 /*new_state*/) noexcept override {}
+                             /*new_state*/) noexcept override {}
 
   // Called any time the IceGatheringState changes.
   void OnIceGatheringChange(webrtc::PeerConnectionInterface::IceGatheringState
-                                /*new_state*/) noexcept override {}
+                            /*new_state*/) noexcept override {}
 
   // A new ICE candidate has been gathered.
   void OnIceCandidate(
       const webrtc::IceCandidateInterface* candidate) noexcept override;
+
+  // Callback on track added.
+  void OnAddTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
+      const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>&
+                      streams) noexcept override;
+
+  // Callback on track removed.
+  void OnRemoveTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface>
+                         receiver) noexcept override;
 
  protected:
   // CreateSessionDescriptionObserver interface
@@ -173,10 +194,14 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   LocalSdpReadytoSendCallback local_sdp_ready_to_send_callback_;
   IceCandidateReadytoSendCallback ice_candidate_ready_to_send_callback_;
   RenegotiationNeededCallback renegotiation_needed_callback_;
+  TrackAddedCallback track_added_callback_;
+  TrackRemovedCallback track_removed_callback_;
   std::mutex connected_callback_mutex_;
   std::mutex local_sdp_ready_to_send_callback_mutex_;
   std::mutex ice_candidate_ready_to_send_callback_mutex_;
   std::mutex renegotiation_needed_callback_mutex_;
+  std::mutex track_added_callback_mutex_;
+  std::mutex track_removed_callback_mutex_;
   rtc::scoped_refptr<webrtc::VideoTrackInterface> local_video_track_;
   rtc::scoped_refptr<webrtc::AudioTrackInterface> local_audio_track_;
   rtc::scoped_refptr<webrtc::RtpSenderInterface> local_video_sender_;

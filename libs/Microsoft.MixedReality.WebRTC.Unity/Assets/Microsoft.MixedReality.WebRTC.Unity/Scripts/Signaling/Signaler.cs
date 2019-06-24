@@ -15,10 +15,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     {
         /// <summary>
         /// The <see cref="PeerConnection"/> this signaler is attached to, or <c>null</c>
-        /// if not attached yet to any connection. This is updated once the peer connection
-        /// finished initializing.
+        /// if not attached yet to any connection. This is updated automatically by the peer
+        /// connection once it finished initializing.
         /// </summary>
         public PeerConnection PeerConnection { get; private set; }
+
 
         #region ISignaler interface
 
@@ -27,13 +28,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public event Action<SignalerMessage> OnMessage;
         public event Action<Exception> OnFailure;
 
+        /// <summary>
+        /// Asynchronously send a signaling message to the remote peer.
+        /// </summary>
+        /// <param name="message">The signaling message to send to the remote peer.</param>
+        /// <returns>
+        /// A <see cref="Task"/> object completed once the message has been sent,
+        /// but not necessarily delivered.
+        /// </returns>
         public abstract Task SendMessageAsync(SignalerMessage message);
 
         #endregion
 
+
         /// <summary>
-        /// Native peer connection, available once the peer has been initialized and the
-        /// signaler is attached to it.
+        /// Native <xref href="Microsoft.MixedReality.WebRTC.PeerConnection"/> object from the underlying WebRTC C# library, available once
+        /// the peer has been initialized and the signaler is attached to it.
         /// </summary>
         protected WebRTC.PeerConnection _nativePeer;
 
@@ -51,8 +61,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _nativePeer = peer.Peer;
 
             // Register handlers for the SDP events
-            _nativePeer.IceCandidateReadytoSend += OnIceCandiateReadyToSend_Listener;
-            _nativePeer.LocalSdpReadytoSend += OnLocalSdpReadyToSend_Listener;
+            //_nativePeer.IceCandidateReadytoSend += OnIceCandiateReadyToSend_Listener;
+            //_nativePeer.LocalSdpReadytoSend += OnLocalSdpReadyToSend_Listener;
         }
 
         /// <summary>
@@ -63,31 +73,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public void OnPeerUninitializing(PeerConnection peer)
         {
             // Unregister handlers for the SDP events
-            _nativePeer.IceCandidateReadytoSend -= OnIceCandiateReadyToSend_Listener;
-            _nativePeer.LocalSdpReadytoSend -= OnLocalSdpReadyToSend_Listener;
+            //_nativePeer.IceCandidateReadytoSend -= OnIceCandiateReadyToSend_Listener;
+            //_nativePeer.LocalSdpReadytoSend -= OnLocalSdpReadyToSend_Listener;
         }
 
-        private void OnIceCandiateReadyToSend_Listener(string candidate, int sdpMlineIndex, string sdpMid)
-        {
-            _mainThreadQueue.Enqueue(() => OnIceCandiateReadyToSend(candidate, sdpMlineIndex, sdpMid));
-        }
+        //private void OnIceCandiateReadyToSend_Listener(string candidate, int sdpMlineIndex, string sdpMid)
+        //{
+        //    _mainThreadQueue.Enqueue(() => OnIceCandiateReadyToSend(candidate, sdpMlineIndex, sdpMid));
+        //}
 
-        /// <summary>
-        /// Helper to split SDP offer and answer messages and dispatch to the appropriate handler.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="sdp"></param>
-        private void OnLocalSdpReadyToSend_Listener(string type, string sdp)
-        {
-            if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
-            {
-                _mainThreadQueue.Enqueue(() => OnSdpOfferReadyToSend(sdp));
-            }
-            else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
-            {
-                _mainThreadQueue.Enqueue(() => OnSdpAnswerReadyToSend(sdp));
-            }
-        }
+        ///// <summary>
+        ///// Helper to split SDP offer and answer messages and dispatch to the appropriate handler.
+        ///// </summary>
+        ///// <param name="type"></param>
+        ///// <param name="sdp"></param>
+        //private void OnLocalSdpReadyToSend_Listener(string type, string sdp)
+        //{
+        //    if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        _mainThreadQueue.Enqueue(() => OnSdpOfferReadyToSend(sdp));
+        //    }
+        //    else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        _mainThreadQueue.Enqueue(() => OnSdpAnswerReadyToSend(sdp));
+        //    }
+        //}
 
         protected virtual void Update()
         {

@@ -11,7 +11,7 @@ namespace Microsoft::MixedReality::WebRTC {
 /// Wrapper for a static callback with user data.
 template <typename... Args>
 struct Callback {
-  using callback_type = void (*)(void*, Args...);
+  using callback_type = void (MRS_CALL *)(void*, Args...);
   callback_type callback_{nullptr};
   void* user_data_{nullptr};
   explicit operator bool() const noexcept { return (callback_ != nullptr); }

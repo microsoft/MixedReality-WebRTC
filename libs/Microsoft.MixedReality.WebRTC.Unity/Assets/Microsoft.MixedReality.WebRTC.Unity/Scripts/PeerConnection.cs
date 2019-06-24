@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +9,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Concurrent;
+using System.Text;
 
 #if UNITY_WSA && !UNITY_EDITOR
 using Windows.UI.Core;
@@ -79,7 +83,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     }
 
     /// <summary>
-    /// A <see cref="UnityEvent"/> that represents a WebRTC error event.
+    /// A <a href="https://docs.unity3d.com/ScriptReference/Events.UnityEvent.html">UnityEvent</a> that represents a WebRTC error event.
     /// </summary>
     [Serializable]
     public class WebRTCErrorEvent : UnityEvent<string>
@@ -104,7 +108,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #region Behavior settings
 
         /// <summary>
-        /// Flag to initialize the peer connection on <see cref="Start"/>.
+        /// Flag to initialize the peer connection on <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
         /// </summary>
         [Header("Behavior settings")]
         [Tooltip("Automatically initialize the peer connection on Start()")]
@@ -189,7 +193,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #region Private variables
 
         /// <summary>
-        /// Internal queue used to marshal work back to the main unity thread
+        /// Internal queue used to marshal work back to the main Unity thread.
         /// </summary>
         private ConcurrentQueue<Action> _mainThreadWorkQueue = new ConcurrentQueue<Action>();
 
@@ -282,7 +286,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public void Uninitialize()
         {
-            if (_nativePeer.Initialized)
+            if ((_nativePeer != null) && _nativePeer.Initialized)
             {
                 // Fire signals before doing anything else to allow listeners to clean-up,
                 // including un-registering any callback and remove any track from the connection.
@@ -313,7 +317,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Unity Engine Start() hook
         /// </summary>
         /// <remarks>
-        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html
+        /// See <see href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html"/>
         /// </remarks>
         private void Start()
         {
@@ -322,6 +326,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 OnError.AddListener(OnError_Listener);
             }
 
+            // List video capture devices to Unity console
             GetVideoCaptureDevicesAsync().ContinueWith((prevTask) =>
             {
                 var devices = prevTask.Result;
@@ -329,7 +334,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     foreach (var device in devices)
                     {
-                        Debug.Log($"Video capture device {device.name} (id:{device.id}).");
+                        Debug.Log($"Found video capture device '{device.name}' (id:{device.id}).");
                     }
                 });
             });
@@ -431,7 +436,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     _mainThreadWorkQueue.Enqueue(() =>
                     {
-                        OnError.Invoke($"WebRTC plugin initializing failed : {initTask.Exception.Message}.");
+                        var errorMessage = new StringBuilder();
+                        errorMessage.Append("WebRTC plugin initializing failed. See full log for exception details.\n");
+                        Exception ex = initTask.Exception;
+                        while (ex is AggregateException ae)
+                        {
+                            errorMessage.Append($"AggregationException: {ae.Message}\n");
+                            ex = ae.InnerException;
+                        }
+                        errorMessage.Append($"Exception: {ex.Message}");
+                        OnError.Invoke(errorMessage.ToString());
                     });
                     throw initTask.Exception;
                 }

@@ -419,6 +419,26 @@ void PeerConnection::OnIceCandidate(
   }
 }
 
+void PeerConnection::OnAddTrack(
+    rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
+    const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>&
+        streams) noexcept {
+  auto lock = std::lock_guard{track_added_callback_mutex_};
+  auto cb = track_added_callback_;
+  if (cb) {
+    cb();
+  }
+}
+
+void PeerConnection::OnRemoveTrack(
+    rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) noexcept {
+  auto lock = std::lock_guard{track_removed_callback_mutex_};
+  auto cb = track_removed_callback_;
+  if (cb) {
+    cb();
+  }
+}
+
 void PeerConnection::OnSuccess(
     webrtc::SessionDescriptionInterface* desc) noexcept {
   auto lock = std::lock_guard{local_sdp_ready_to_send_callback_mutex_};
