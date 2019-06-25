@@ -72,18 +72,22 @@ Write-Host "Destination folder: $DestFolder"
 # contains only generated documentation-related files, and not the code.
 Write-Host "Clone the generated docs branch"
 git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch gh-pages-private "$DestFolder"
+Get-ChildItem -Recurse | ForEach-Object { $_.FullName }
 
 # Delete all the files in this folder, so that files deleted in the new version
 # of the documentation are effectively deleted in the commit.
 Write-Host "Delete currently committed version"
 Get-ChildItem "$DestFolder" -Recurse | Remove-Item -Force -Recurse
+Get-ChildItem -Recurse | ForEach-Object { $_.FullName }
 
 # Copy the newly-generated version of the docs
 Write-Host "Copy new generated version"
 Copy-Item ".\build\docs\generated\*" -Destination "$DestFolder" -Force -Recurse
+Get-ChildItem -Recurse | ForEach-Object { $_.FullName }
 
 # Move inside the target folder
 Set-Location "$DestFolder"
+Get-ChildItem -Recurse | ForEach-Object { $_.FullName }
 
 # Check for any change compared to previous version (if any)
 Write-Host "Check for changes"
