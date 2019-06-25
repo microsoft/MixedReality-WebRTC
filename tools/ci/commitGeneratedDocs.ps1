@@ -94,7 +94,7 @@ if (git status --short)
   # this directory and retain only generated docs changes, which is exactly what we want.
   git add --all
   git commit -m "Generated docs for commit $commitSha ($commitTitle)"
-  #git push origin $DestBranch # TEMP -- For now just a dry run (don't push to GitHub)
+  git push origin $DestBranch
   Write-Host "Docs changes committed"
 }
 else
