@@ -20,10 +20,10 @@ $Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encodi
 git config --global --add "http.https://github.com/.extraheader" "AUTHORIZATION: $Authorization"
 git config --global --add "http.https://microsoft.visualstudio.com.extraheader" "AUTHORIZATION: Bearer $env:SYSTEM_ACCESSTOKEN"
 
-# Set common git configs for new commits
-Write-Host "Set commit author to '${env:GITHUB_NAME} <${env:GITHUB_USER}>'"
-git config --global user.email ${env:GITHUB_USER}
+# Set author for the generated docs commit
+Write-Host "Set docs commit author to '${env:GITHUB_NAME} <${env:GITHUB_EMAIL}>'"
 git config --global user.name ${env:GITHUB_NAME}
+git config --global user.email ${env:GITHUB_EMAIL}
 
 # Check that source branch exists
 # Note that the Azure DevOps checkout is a specific commit not a branch,
@@ -71,7 +71,7 @@ Write-Host "Destination folder: $DestFolder"
 # This will be used to only commit changes to that gh-pages branch which
 # contains only generated documentation-related files, and not the code.
 Write-Host "Clone the generated docs branch"
-git clone https://github.com/microsoft/MixedReality-WebRTC.git --branch gh-pages-private "$DestFolder"
+git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch gh-pages-private "$DestFolder"
 
 # Delete all the files in this folder, so that files deleted in the new version
 # of the documentation are effectively deleted in the commit.
