@@ -78,7 +78,14 @@ git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch gh-pages
 # Delete all the files in this folder, so that files deleted in the new version
 # of the documentation are effectively deleted in the commit.
 Write-Host "Delete currently committed version"
-Get-ChildItem "$DestFolder" -Recurse | Remove-Item -Force -Recurse
+if (Test-Path "$DestFolder")
+{
+    Get-ChildItem "$DestFolder" -Recurse | Remove-Item -Force -Recurse
+}
+else
+{
+    New-Item "$DestFolder" -ItemType Directory
+}
 
 # Copy the newly-generated version of the docs
 Write-Host "Copy new generated version"
@@ -92,15 +99,15 @@ Set-Location ".\_docs"
 Write-Host "Check for changes"
 if (git status --short)
 {
-  # Add everything. Because the current directory is _docs, this is everything from
-  # the point of view of the sub-repo inside _docs, so this ignores all changes outside
-  # this directory and retain only generated docs changes, which is exactly what we want.
-  git add --all
-  git commit -m "Generated docs for commit $commitSha ($commitTitle)"
-  git push origin "$DestBranch"
-  Write-Host "Docs changes committed"
+    # Add everything. Because the current directory is _docs, this is everything from
+    # the point of view of the sub-repo inside _docs, so this ignores all changes outside
+    # this directory and retain only generated docs changes, which is exactly what we want.
+    git add --all
+    git commit -m "Generated docs for commit $commitSha ($commitTitle)"
+    git push origin "$DestBranch"
+    Write-Host "Docs changes committed"
 }
 else
 {
-  Write-Host "Docs are up to date"
+    Write-Host "Docs are up to date"
 }
