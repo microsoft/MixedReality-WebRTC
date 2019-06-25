@@ -1,0 +1,64 @@
+# [TEMPLATE] Build the project documentation
+
+# parameters: 
+#   buildPlatform: ''    # Win32|UWP
+#   buildArch: ''        # x86|x64|ARM|ARM64
+#   buildConfig: ''      # Debug|Release
+ 
+jobs:
+
+# Build the documentation with DocFX
+- job: docs
+  timeoutInMinutes: 120
+  pool:
+    vmImage: 'vs2017-win2016' # Hosted VS2017
+  steps:
+  - checkout: self
+
+  # Install the DocFX nuget package
+  - task: NuGetCommand@2
+    displayName: 'Install DocFX'
+    inputs:
+      command: custom
+      arguments: 'install docfx.console'
+
+  # Run DocFX to generate the user manual and API reference
+  - powershell: |
+      # Find the folder where DocFX was installed; the path depends on the version
+      $DocFxDir = Get-ChildItem | Where-Object {$_.PSIsContainer -eq $true -and $_.Name -match "docfx"} | Select-Object -first 1
+      Write-Host "Using DocFX from '$DocFxDir/'."
+      
+      # Invoke docfx.exe to build the docs, and output both to console and to a variable $output
+      $output = ""
+      Invoke-Expression "$($DocFxDir.FullName)\tools\docfx.exe docs\docfx.json --intermediateFolder build\docs\obj -o build\docs -f" | Tee-Object -Variable output | Write-Host
+
+      # # Check the console output stored in $output for any error or warning message,
+      # # and force the task to fail if there is any.
+      # $results = $output | Out-String
+      # if ($results -match "(?<warningCount>\d*) Warning\(s\)\s*(?<errorCount>\d*) Error\(s\)")
+      # {
+      #   if ($Matches.errorCount -gt 0 -or $Matches.warningCount -gt 0)
+      #   {
+      #     Write-Host "##vso[task.complete result=Failed;]DONE"
+      #   }
+      # }
+    displayName: 'Generate docs'
+
+  - task: PowerShell@2
+    displayName: 'Push docs to git if needed'
+    # Push docs if build step succeeded and was not triggered by a PR
+    condition: |
+      and(
+        succeeded(),
+        not(eq(variables['Build.Reason'], 'PullRequest'))
+      )
+    inputs:
+      targetType: filePath
+      filePath: tools/ci/commitGeneratedDocs.ps1
+      arguments: '-SourceBranch $(Build.SourceBranch)'
+      failOnStderr: false
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      GITHUB_USER: $(GitHub.User)
+      GITHUB_NAME: $(GitHub.Name)
+      GITHUB_PAT: $(GitHub.PAT)

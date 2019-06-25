@@ -1,0 +1,29 @@
+# MixedReality-WebRTC build pipeline for CI
+# Build the core WebRTC implementation and the UWP wrappers
+
+# Disable branch and PR triggers, the core implementation only changes
+# when upgrading to a more recent version from Google, which is quite
+# infrequent. Also this pipeline is very long (several hours) so should
+# be triggered manually only when needed.
+trigger: none
+pr: none
+
+# Give a unique name to the build each time it runs
+name: core-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+
+jobs:
+- template: templates/libwebrtc.yaml
+  parameters:
+    buildPlatform: 'Win32'
+    buildArch: 'x64'
+    buildConfig: 'Release'
+- template: templates/libwebrtc.yaml
+  parameters:
+    buildPlatform: 'UWP'
+    buildArch: 'x64'
+    buildConfig: 'Release'
+# - template: templates/libwebrtc.yaml
+#   parameters:
+#     buildPlatform: 'UWP'
+#     buildArch: 'ARM'
+#     buildConfig: 'Release'
