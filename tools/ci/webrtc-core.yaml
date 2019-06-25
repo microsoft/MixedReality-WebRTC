@@ -12,17 +12,17 @@ pr: none
 name: core-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 jobs:
-- template: templates/libwebrtc.yaml
+- template: templates/jobs-libwebrtc.yaml
   parameters:
     buildPlatform: 'Win32'
     buildArch: 'x64'
     buildConfig: 'Release'
-- template: templates/libwebrtc.yaml
+- template: templates/jobs-libwebrtc.yaml
   parameters:
     buildPlatform: 'UWP'
     buildArch: 'x64'
     buildConfig: 'Release'
-# - template: templates/libwebrtc.yaml
+# - template: templates/jobs-libwebrtc.yaml
 #   parameters:
 #     buildPlatform: 'UWP'
 #     buildArch: 'ARM'
