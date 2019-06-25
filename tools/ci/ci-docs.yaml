@@ -20,4 +20,4 @@ pr: none
 name: ci-docs-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 jobs:
-- template: templates/docs.yaml
+- template: templates/jobs-docs.yaml

@@ -20,7 +20,7 @@ pr: none
 name: ci-cs-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 jobs:
-- template: templates/cs.yaml
+- template: templates/jobs-cs.yaml
   parameters:
     buildConfig: 'Debug'
     testConfig: 'Debug'
