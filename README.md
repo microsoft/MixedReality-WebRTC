@@ -89,10 +89,13 @@ cd external\webrtc-uwp-sdk
 git submodule update --init --recursive
 ```
 
-### Build the WebRTC UWP SDK libraries:
+### Build the WebRTC UWP SDK libraries
 
-For Windows Desktop support:
+The WebRTC UWP project has [specific requirements](https://github.com/webrtc-uwp/webrtc-uwp-sdk/blob/master/README.md). In particular it needs Python 2.7.x installed **as default**, that is calling `python` from a shell without specifying a path launches that Python 2.7.x version.
 
+For Windows Desktop support (also called "Win32"):
+
+- At the moment **the Win32 variant requires some manual patching to force the use of C++17** due to [issue #163](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/163) in the WebRTC UWP project. See the link for the patches to apply and the associated pending PRs aiming at fixing that issue upstream.
 - Open the **`WebRtc.Win32.sln`** Visual Studio solution located in `external\webrtc-uwp-sdk\webrtc\windows\solution\`
 - In the menu bar, select the relevant solution platform and solution configuration. For the Unity editor, the **x64** binaries are required.
 - Build the solution with F7 or **Build > Build Solution**
@@ -101,7 +104,8 @@ For UWP support:
 
 - Open the **`WebRtc.Universal.sln`** Visual Studio solution located in `external\webrtc-uwp-sdk\webrtc\windows\solution\`
 - In the menu bar, select the relevant solution platform and solution configuration. For HoloLens, the **x86** binaries are required. For HoloLens 2, the **ARM** binaries are required (ARM64 is not supported yet).
-- Build the solution with F7 or **Build > Build Solution**
+- **Build first the `WebRtc.Win32.Native.Builder` project alone**, which generates some files needed by some of the other projects in the solution, by right-clicking on that project > **Build**
+- Build the rest of the solution with F7 or **Build > Build Solution**
 
 ### Build the MixedReality-WebRTC libraries
 
@@ -111,6 +115,7 @@ For UWP support:
 On successful build, the binaries will be generated in a sub-directory under `bin/`, and the relevant DLLs will be copied by a post-build script to `libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\` for Unity to consume them.
 
 The `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution contains several projects:
+
 - The native C++ library, which can be compiled:
   - for Windows Desktop with the `Microsoft.MixedReality.WebRTC.Native.Win32` project
   - for UWP with the `Microsoft.MixedReality.WebRTC.Native.UWP` project
