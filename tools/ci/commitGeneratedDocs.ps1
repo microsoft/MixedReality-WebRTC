@@ -71,7 +71,7 @@ Write-Host "Destination folder: $DestFolder"
 # This will be used to only commit changes to that gh-pages branch which
 # contains only generated documentation-related files, and not the code.
 Write-Host "Clone the generated docs branch"
-git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch gh-pages "$DestFolder"
+git clone https://github.com/microsoft/MixedReality-WebRTC.git --branch gh-pages-private "$DestFolder"
 
 # Delete all the files in this folder, so that files deleted in the new version
 # of the documentation are effectively deleted in the commit.
