@@ -70,24 +70,23 @@ Write-Host "Destination folder: $DestFolder"
 # Note that this creates a second copy of the repository inside itself.
 # This will be used to only commit changes to that gh-pages branch which
 # contains only generated documentation-related files, and not the code.
+# Note that we always clone into ".\_docs", which is the repository root,
+# even if the destination folder is a sub-folder.
 Write-Host "Clone the generated docs branch"
-git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch gh-pages-private "$DestFolder"
-Get-ChildItem -Recurse | ForEach-Object { $_.FullName }
+git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch gh-pages-private ".\_docs" # TEMP - gh-pages-private for testing
 
 # Delete all the files in this folder, so that files deleted in the new version
 # of the documentation are effectively deleted in the commit.
 Write-Host "Delete currently committed version"
 Get-ChildItem "$DestFolder" -Recurse | Remove-Item -Force -Recurse
-Get-ChildItem -Recurse | ForEach-Object { $_.FullName }
 
 # Copy the newly-generated version of the docs
 Write-Host "Copy new generated version"
 Copy-Item ".\build\docs\generated\*" -Destination "$DestFolder" -Force -Recurse
-Get-ChildItem -Recurse | ForEach-Object { $_.FullName }
 
-# Move inside the target folder
-Set-Location "$DestFolder"
-Get-ChildItem -Recurse | ForEach-Object { $_.FullName }
+# Move inside the generated docs repository, so that subsequent git commands
+# apply to this repo/branch and not the global one with the source code.
+Set-Location ".\_docs"
 
 # Check for any change compared to previous version (if any)
 Write-Host "Check for changes"
@@ -98,7 +97,7 @@ if (git status --short)
   # this directory and retain only generated docs changes, which is exactly what we want.
   git add --all
   git commit -m "Generated docs for commit $commitSha ($commitTitle)"
-  git push origin $DestBranch
+  git push origin "$DestBranch"
   Write-Host "Docs changes committed"
 }
 else
