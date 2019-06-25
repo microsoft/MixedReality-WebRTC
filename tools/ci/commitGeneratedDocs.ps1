@@ -16,7 +16,7 @@ Write-Host "Source branch: '$SourceBranch'"
 
 # Create some authentication tokens to be able to connect to Azure DevOps to get changes and to GitHub to push changes
 Write-Host "Create auth tokens to connect to GitHub and Azure DevOps"
-$Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${env:GITHUB_USER}:${env:GITHUB_PAT}"))
+$Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${env:GITHUB_EMAIL}:${env:GITHUB_PAT}"))
 git config --global --add "http.https://github.com/.extraheader" "AUTHORIZATION: $Authorization"
 git config --global --add "http.https://microsoft.visualstudio.com.extraheader" "AUTHORIZATION: Bearer $env:SYSTEM_ACCESSTOKEN"
 
