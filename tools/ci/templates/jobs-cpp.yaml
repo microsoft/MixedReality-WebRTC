@@ -1,6 +1,7 @@
 # [TEMPLATE] Compile C++ library Microsoft.MixedReality.WebRTC.Native.dll
 
-parameters: 
+parameters:
+  buildAgent: ''
   buildPlatform: ''    # Win32|UWP
   buildArch: ''        # x86|x64|ARM|ARM64
   buildConfig: ''      # Debug|Release
@@ -11,7 +12,7 @@ jobs:
 - job: cpp_${{parameters.buildPlatform}}_${{parameters.buildArch}}_${{parameters.buildConfig}}
   timeoutInMinutes: 360
   pool:
-    vmImage: 'vs2017-win2016' # Hosted VS2017
+    name: ${{buildAgent}}
     demands: msbuild
   variables:
     buildTriple: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}

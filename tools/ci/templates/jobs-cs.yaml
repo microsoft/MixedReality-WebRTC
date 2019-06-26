@@ -1,6 +1,7 @@
 # [TEMPLATE] Compile C# library Microsoft.MixedReality.WebRTC.dll and run tests
 
 parameters: 
+  buildAgent: ''
   # Build platform is irrelevant
   # Build arch is always AnyCPU
   buildConfig: ''      # Debug|Release
@@ -12,7 +13,7 @@ jobs:
 - job: cs_${{parameters.buildConfig}}_test_${{parameters.testConfig}}
   timeoutInMinutes: 60
   pool:
-    vmImage: 'vs2017-win2016' # Hosted VS2017
+    name: ${{buildAgent}}
     demands: vstest
   steps:
   - checkout: self

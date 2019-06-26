@@ -14,16 +14,19 @@ name: core-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 jobs:
 - template: templates/jobs-libwebrtc.yaml
   parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
     buildPlatform: 'Win32'
     buildArch: 'x64'
     buildConfig: 'Release'
 - template: templates/jobs-libwebrtc.yaml
   parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
     buildPlatform: 'UWP'
     buildArch: 'x64'
     buildConfig: 'Release'
 # - template: templates/jobs-libwebrtc.yaml
 #   parameters:
+#     buildAgent: 'Hosted VS2017' # vs2017-win2016
 #     buildPlatform: 'UWP'
 #     buildArch: 'ARM'
 #     buildConfig: 'Release'
