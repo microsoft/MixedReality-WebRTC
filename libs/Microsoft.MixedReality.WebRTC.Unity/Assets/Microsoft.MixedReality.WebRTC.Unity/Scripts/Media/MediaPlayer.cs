@@ -14,6 +14,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html">Renderer</a>.
     /// </remarks>
     [RequireComponent(typeof(Renderer))]
+    [AddComponentMenu("MixedReality-WebRTC/Media Player")]
     public class MediaPlayer : MonoBehaviour
     {
         [Header("Source")]

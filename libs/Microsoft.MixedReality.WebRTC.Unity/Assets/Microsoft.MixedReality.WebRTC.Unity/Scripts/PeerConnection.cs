@@ -94,6 +94,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// High-level wrapper for Unity WebRTC functionalities.
     /// This is the API entry point for establishing a connection with a remote peer.
     /// </summary>
+    [AddComponentMenu("MixedReality-WebRTC/Peer Connection")]
     public class PeerConnection : MonoBehaviour
     {
         /// <summary>
