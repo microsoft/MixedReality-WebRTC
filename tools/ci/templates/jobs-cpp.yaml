@@ -63,7 +63,7 @@ jobs:
       buildType: specific
       project: '5610c425-4799-474c-b133-d95d78fb63b1'
       definition: 23
-      artifactName: 'orgwebrtc_winrthpp_$(buildTriple)'
+      artifactName: 'orgwebrtc_winrt_hpp_$(buildTriple)'
       targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
     timeoutInMinutes: 15
 
