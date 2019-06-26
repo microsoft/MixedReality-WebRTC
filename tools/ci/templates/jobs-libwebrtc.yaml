@@ -12,7 +12,7 @@ jobs:
 - job: libwebrtc_${{parameters.buildPlatform}}_${{parameters.buildArch}}_${{parameters.buildConfig}}
   timeoutInMinutes: 360
   pool:
-    name: ${{buildAgent}}
+    name: ${{parameters.buildAgent}}
     demands: msbuild
   variables:
     buildTriple: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
@@ -79,7 +79,7 @@ jobs:
     )
   timeoutInMinutes: 360
   pool:
-    name: ${{buildAgent}}
+    name: ${{parameters.buildAgent}}
     demands: msbuild
   variables:
     buildTriple: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}

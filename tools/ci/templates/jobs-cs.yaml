@@ -13,7 +13,7 @@ jobs:
 - job: cs_${{parameters.buildConfig}}_test_${{parameters.testConfig}}
   timeoutInMinutes: 60
   pool:
-    name: ${{buildAgent}}
+    name: ${{parameters.buildAgent}}
     demands: vstest
   steps:
   - checkout: self
