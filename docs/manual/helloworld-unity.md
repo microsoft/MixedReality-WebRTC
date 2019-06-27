@@ -7,3 +7,5 @@ In this tutorial we will create a simple Unity application based on the [MixedRe
 - [Creating a peer connection](helloworld-unity-peerconnection.md)
 - [Creating a signaler](helloworld-unity-signaler.md)
 - [Adding local video](helloworld-unity-localvideo.md)
+- [Adding remote video](helloworld-unity-remotevideo.md)
+- [Establishing a connection](helloworld-unity-connection.md)

@@ -11,10 +11,11 @@ Both cases however are covered by the [`LocalVideoSource`](xref:Microsoft.MixedR
 
 ## Adding a local video source
 
-Because there is generally a single local video source, there is no need to create a new game object, and in this tutorial for simplicity we will add a [`LocalVideoSource`](xref:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource) component to the same game object as the peer connection:
+For clarity we will create a new game object and add a [`LocalVideoSource`](xref:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource) component. It may sound superfluous at the moment to create a new game object, as we could add the local video source to the same game object already owning the peer connection component, but this will prove more clear and easy to manipulate later.
 
-- In the **Hierarchy** window, select the game object with the peer connection component
-- In the **Inspector** window, press the **Add Component** button at the bottom of the window, and select **MixedReality-WebRTC** > **LocalVideoSource**
+- In the **Hierarchy** window, select **Create** > **Create Empty**.
+- In the **Inspector** window, rename the newly-created game object to something memorable like "LocalMediaPlayer".
+- Press the **Add Component** button at the bottom of the window, and select **MixedReality-WebRTC** > **LocalVideoSource**.
 - This component needs to know which peer connection to use. Once again, use the asset selection window to assign our peer connection to the **Peer Connection** property.
 
 ![Create a local video source assigned to our peer connection](helloworld-unity-8.png)
@@ -33,9 +34,8 @@ We said before that the [`LocalVideoSource`](xref:Microsoft.MixedReality.WebRTC.
 
 In order to render the video frames of the local video capture device, MixedReality-WebRTC offers a simple [`MediaPlayer`](xref:Microsoft.MixedReality.WebRTC.Unity.MediaPlayer) component which uses a Unity [`Texture2D`](https://docs.unity3d.com/ScriptReference/Texture2D.html) object and renders the video frames to it. This texture is then applied to the material of a [`Renderer`](https://docs.unity3d.com/ScriptReference/Renderer.html) component to be displayed in Unity on a mesh.
 
-Let's create a new game object with a [`MediaPlayer`](xref:Microsoft.MixedReality.WebRTC.Unity.MediaPlayer) component on it. As usual:
+Let's add a [`MediaPlayer`](xref:Microsoft.MixedReality.WebRTC.Unity.MediaPlayer) component on our game object:
 
-- In the **Hierarchy** window, select **Create** > **Create empty** to add a new [`GameObject`](https://docs.unity3d.com/ScriptReference/GameObject.html) to the scene. You can rename this object in the **Hierarchy** window directly (for example by pressing **F2** when selected), or by selecting it and going to the top of the **Inspector** window.
 - In the **Inspector** window, press the **Add Component** button at the bottom of the window, and select **MixedReality-WebRTC** > **MediaPlayer**
 
 This time however Unity will not create the component, and instead display a somewhat complex error message:
@@ -52,10 +52,10 @@ So for each component, in the **Inspector** window, press the **Add Component** 
 
 After that, set the component properties as follow:
 
-- In the **Mesh Filter** component, set the **Mesh** property to the built-in Unity **Quad** mesh. This is a simple sqaure mesh on which the texture containing the video feed will be applied.
+- In the **Mesh Filter** component, set the **Mesh** property to the built-in Unity **Quad** mesh. This is a simple square mesh on which the texture containing the video feed will be applied.
 - The built-in **Quad** mesh size is quite small for rendering a video, so go to the **Transform** component and increase the scale to `(5,5,1)`.
 - In the **Mesh Renderer** component, expand the **Materials** array and set the first material **Element 0** to the  `YUVFeedMaterial` material located in the `Assets/Microsoft.MixedReality.WebRTC.Unity/Materials` folder. This instructs Unity to use that special material and its associated shader to render the video texture on the quad mesh. More on that later.
-- In the **Media Player** component, set the **Video Source** property to the local video source component previously added to the game object of the peer connection. This instructs the media player to connect to the local video source for retrieving the video frames that it will copy to the video texture for rendering.
+- In the **Media Player** component, set the **Video Source** property to the local video source component previously added to the same game object. This instructs the media player to connect to the local video source for retrieving the video frames that it will copy to the video texture for rendering.
 
 This should result in a setup looking like this:
 
@@ -67,13 +67,10 @@ And the **Game** view should display a pink square, which materializes the quad 
 
 A word on the `YUVFeedMaterial` material here. The video frames coming from the local video source are encoded using the I420 format. Unity on the other hand, and more specifically the GPU it abstracts, generally don't support directly rendering I420-encoded textures. So the `YUVFeedMaterial` material is using a custom shader called `YUVFeedShader (Unlit)` to load the I420-encoded video frame from the video texture, and convert it to ARGB on the fly before rendering the quad. This GPU-based conversion is very efficient and avoids any software processing on the CPU before uploading the video texture to the GPU. This is how `LocalVideoSource` is able to directly copy the I420-encoded video frames coming from the WebRTC core implementation into a texture without further processing, and `MediaPlayer` is able to render them on a quad mesh.
 
-## Test the video
+## Test the local video
 
 At this point the local audio source and the media player are configured to open the local video capture device (webcam) of the local machine the Unity Editor is running on, and display the video feed to that quad mesh in the scene.
 
 Press the **Play** button in the Unity Editor. After a few seconds (depending on the device) the video should appear over the quad mesh.
 
 ![Local video feed rendering in the Unity editor](helloworld-unity-12.png)
-
-
-

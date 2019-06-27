@@ -8,6 +8,8 @@
 ### [Creating a peer connection](helloworld-unity-peerconnection.md)
 ### [Creating a signaler](helloworld-unity-signaler.md)
 ### [Adding local video](helloworld-unity-localvideo.md)
+### [Adding remote video](helloworld-unity-remotevideo.md)
+### [Establishing a connection](helloworld-unity-connection.md)
 # [PeerConnection](peerconnection.md)
 # [Signaling](signaling.md)
 # [Audio and video playback](avplayback.md)

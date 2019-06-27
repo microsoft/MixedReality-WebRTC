@@ -4,8 +4,9 @@ From this point we start building the scene. Because the MixedReality-WebRTC com
 
 Create a new [`GameObject`](https://docs.unity3d.com/ScriptReference/GameObject.html) with a [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) component:
 
-- In [the **Hierarchy** window](https://docs.unity3d.com/Manual/Hierarchy.html), select **Create** > **Create empty** to add a new [`GameObject`](https://docs.unity3d.com/ScriptReference/GameObject.html) to the scene.
+- In [the **Hierarchy** window](https://docs.unity3d.com/Manual/Hierarchy.html), select **Create** > **Create Empty** to add a new [`GameObject`](https://docs.unity3d.com/ScriptReference/GameObject.html) to the scene.
 - In [the **Inspector** window](https://docs.unity3d.com/Manual/UsingTheInspector.html), select **Add Component** > **MixedReality-WebRTC** > **PeerConnection** to add a [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) component to that new object.
+- At the top of the **Inspector** window, rename the newly-created game object to something memorable like "MyPeerConnection". You can also rename this object in the **Hierarchy** window directly (for example by pressing **F2** when selected).
 
 ![Create a new GameObject with a PeerConnection component](helloworld-unity-5.png)
 
