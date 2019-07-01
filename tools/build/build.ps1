@@ -107,7 +107,12 @@ function Build-CoreWebRTC
     )
     $cmd = "python ..\..\external\webrtc-uwp-sdk\scripts\run.py -a prepare build -t webrtc"
     $cmd = "$cmd -p $ScriptPlatform --cpus $BuildArch -c $BuildConfig --noColor --noWrapper --cpp17"
-    Invoke-Expression $cmd
+    Invoke-Expression $cmd | Tee-Object -Variable output
+    if (Select-String -Pattern "=================== Failed" -InputObject $output -SimpleMatch -CaseSensitive -Quiet)
+    {
+        Write-Host "Aborting build due to error while building core WebRTC" -ForegroundColor Red
+        exit 1
+    }
 }
 
 function Build-UWPWrappers
