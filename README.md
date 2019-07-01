@@ -58,7 +58,7 @@ tools/             Utility scripts
 
 ### Core WebRTC
 
-[**Visual Studio 2017**](https://visualstudio.microsoft.com/) is required to compile the core WebRTC implementation from Google. Having the MSVC v141 toolchain installed inside another version of Visual Studio is unfortunately not enough, the actual IDE needs to be installed for the detection script to work. This is a limitation of the Google build scripts. Selecting the **C++ Workload** alone is enough.
+[**Visual Studio 2017**](https://visualstudio.microsoft.com/) is required to compile the core WebRTC implementation from Google. Having the MSVC v141 toolchain installed inside another version of Visual Studio is unfortunately not enough, the actual IDE needs to be installed for the detection script to work. This is a limitation of the Google build scripts. Selecting the **C++ Workload** alone is enough. If compiling for ARM or ARM64 architecture though, check the **Visual C++ compilers and libraries for ARM(64)** optional individual component.
 
 The **Windows SDK 10.0.17134** (also called 1803, or April 2018) is required to compile the Google WebRTC core implementation ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
