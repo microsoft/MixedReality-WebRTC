@@ -155,13 +155,13 @@ Test the install by _e.g._ opening the Unity project at `libs\Microsoft.MixedRea
 The current version is a public preview under active development, which contains known issues being addressed:
 
 - Mixed Reality Capture (MRC) currently does not work on HoloLens 2 out of the box. Enabling MRC silently fails, and falls back to a video stream without hologram rendering. This is due to a combination of things:
-  - **MRC only works up to 1080p** (see the [Mixed reality capture for developers](https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture-for-developers) documentation), but the default resolution of the webcam on HoloLens2 is 2272x1278 (see the [Locatable Camera](https://docs.microsoft.com/en-us/windows/mixed-reality/locatable-camera) documentation). In order to access different resolutions, one need to use video profiles, which are not currently exposed by the WebRTC UWP SDK project.
+  - **MRC only works up to 1080p** (see the [Mixed reality capture for developers](https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture-for-developers) documentation), but the default resolution of the webcam on HoloLens2 is 2272x1278 (see the [Locatable Camera](https://docs.microsoft.com/en-us/windows/mixed-reality/locatable-camera) documentation). In order to access different resolutions, one need to use video profiles, which are not currently exposed by the WebRTC UWP SDK project. See [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/170) for details.
   - **MRC requires special permission** to record the content of the screen:
     - For shared apps (2D slates), this corresponds to the `screenDuplication` [restricted capability](https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations#restricted-capabilities), which **cannot be obtained by third-party applications**.
     - For exclusive-mode apps (fullscreen), there is no particular UWP capability, but the recorded content is limited to the application's own content.
 - HoloLens 2 exhibits performance issues due to:
   - The [missing support (#157)](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157) for SIMD-accelerated YUV conversion in WebRTC UWP SDK.
-  - The use of the highest available video resolution when opening the webcam with the default video profile. Support for selecting a different video profile is not available yet in WebRTC UWP SDK.
+  - The use of the highest available video resolution when opening the webcam with the default video profile. Support for selecting a different video profile is not available yet in WebRTC UWP SDK. See [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/170) for details.
   - The use by default of the VP8 video codec, which is fairly CPU intensive.
 - Some less powerful devices (_e.g._ laptop) may exhibit performance issues similar to HoloLens 2 when using multiple video tracks, for example one local and one remote (video chat), due to the same CPU intensive VP8 codec. This problem is amplified if audio is also used at the same time, which can be CPU intensive too.
 
