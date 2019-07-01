@@ -77,7 +77,10 @@ jobs:
   dependsOn: libwebrtc_${{parameters.buildPlatform}}_${{parameters.buildArch}}_${{parameters.buildConfig}}
   condition: |
     and(
-      succeeded(),
+      or(
+        succeeded(),
+        ${{parameters.skipCoreCpp}}
+      ),
       eq('${{parameters.buildPlatform}}', 'UWP'),
       not(${{parameters.skipUwpWrappers}})
     )
