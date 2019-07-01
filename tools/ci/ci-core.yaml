@@ -18,15 +18,18 @@ jobs:
     buildPlatform: 'Win32'
     buildArch: 'x64'
     buildConfig: 'Release'
+    skipUwpWrappers: true
 - template: templates/jobs-libwebrtc.yaml
   parameters:
     buildAgent: 'Hosted VS2017' # vs2017-win2016
     buildPlatform: 'UWP'
     buildArch: 'x64'
     buildConfig: 'Release'
+    skipUwpWrappers: true
 # - template: templates/jobs-libwebrtc.yaml
 #   parameters:
 #     buildAgent: 'Hosted VS2017' # vs2017-win2016
 #     buildPlatform: 'UWP'
 #     buildArch: 'ARM'
 #     buildConfig: 'Release'
+#     skipUwpWrappers: true
