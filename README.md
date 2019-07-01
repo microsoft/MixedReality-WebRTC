@@ -40,7 +40,7 @@ Note that in the following and elsewhere in this repository the term "Win32" is 
 
 ## Getting Started
 
-MixedReality-WebRTC is currently under development, and precompiled packages are not yet available. See the _Building MixedReality-WebRTC_ section below for compiling the libraries from sources.
+MixedReality-WebRTC is currently under development, and precompiled packages are not yet available. See the _Prerequisites_ and _Building MixedReality-WebRTC_ sections below for compiling the libraries from sources.
 
 This repository follows the [Pitchfork Layout](https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs) in an attempt to standardize its hierarchy:
 
@@ -54,11 +54,11 @@ tests/             Source code for unit tests
 tools/             Utility scripts
 ```
 
-## Required Softwares
+## Prerequisites
 
 ### Core WebRTC
 
-[**Visual Studio 2017**](https://visualstudio.microsoft.com/) is required to compile the core WebRTC implementation from Google. Having the MSVC v141 toolchain installed inside another version of Visual Studio is unfortunately not enough, the actual IDE needs to be installed for the detection script to work. This is a limitation of the Google build scripts. Selecting the **C++ Workload** alone is enough. If compiling for ARM or ARM64 architecture though, check the **Visual C++ compilers and libraries for ARM(64)** optional individual component.
+[**Visual Studio 2017**](http://dev.windows.com/downloads) is required to compile the core WebRTC implementation from Google. Having the MSVC v141 toolchain installed inside another version of Visual Studio is unfortunately not enough, the actual IDE needs to be installed for the detection script to work. This is a limitation of the Google build scripts. Selecting the **C++ Workload** alone is enough. If compiling for ARM or ARM64 architecture though, check the **Visual C++ compilers and libraries for ARM(64)** optional individual component.
 
 The **Windows SDK 10.0.17134** (also called 1803, or April 2018) is required to compile the Google WebRTC core implementation ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
@@ -66,23 +66,22 @@ The **Windows SDK 10.0.17134** (also called 1803, or April 2018) is required to 
 
 The **Windows SDK 10.0.17763** (also called 1809, or October 2018) is required to compile the UWP wrappers provided by the WebRTC UWP team ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
-The UWP wrappers also require the v141 platform toolset for UWP, either from the **Universal Windows Platform development** workload in Visual Studio 2017, or from the optional component **C++ (v141) Universal Windows Platform tools** in Visual Studio 2019.
+The UWP wrappers also require the v141 platform toolset for UWP, either from the **Universal Windows Platform development** workload in Visual Studio 2017, or from the optional component **C++ (v141) Universal Windows Platform tools** in [**Visual Studio 2019**](http://dev.windows.com/downloads).
 
 ### MixedReality-WebRTC C++ library
 
 The **MSVC v142 - VS 2019 C++ x64/x86 build tools** toolchain is required to build the C++17 library of MixedReality-WebRTC. This is installed by default with the **Desktop development with C++** workload on Visual Studio 2019.
 
-<!-- The following softwares are officially supported. Other versions might work, but were not tested.
+### Unity integration
 
-| | | |
-| :--- | :--- | :--- |
-| [![Windows SDK 18362+](docs/manual/MRTK170802_Short_17.png)](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk) | [Windows SDK 18362+](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk) | To develop apps for Windows Mixed Reality headsets, you need the Windows 10 Fall Creators Update |
-| [![Visual Studio 2019](docs/manual/MRTK170802_Short_19.png)](http://dev.windows.com/downloads) | [Visual Studio 2019](http://dev.windows.com/downloads) | Visual Studio is used for code editing, and deploying and building UWP app packages |
-| [![Unity](docs/manual/MRTK170802_Short_18.png)](https://unity3d.com/get-unity/download/archive) | [Unity 2019.1.x](https://unity3d.com/get-unity/download/archive) | The Unity 3D engine provides support for building mixed reality projects in Windows 10, and version 2019.1 adds support for UWP ARM64 for HoloLens 2 | -->
+The Unity integration has been tested on [Unity](https://unity3d.com/get-unity/download) **2018.3.x** and **2019.1.x**. Versions earlier than 2018.3.x are not officially supported.
 
 ## Documentation
 
-The API documentation is not available yet.
+The official documentation is hosted at https://microsoft.github.io/MixedReality-WebRTC/.
+
+- The [User Manual](https://microsoft.github.io/MixedReality-WebRTC/manual/) contains a general overview and some tutorials.
+- An [API reference](https://microsoft.github.io/MixedReality-WebRTC/api/) is also available for the C# library and the Unity integration.
 
 The overall architecture of the components is as follow:
 
@@ -107,11 +106,18 @@ git submodule update --init --recursive
 
 ### Build the WebRTC UWP SDK libraries
 
+In order to simplify building, a PowerShell **build script** is available. Simply run for example:
+
+```
+tools/build/build.ps1 -BuildConfig Debug -BuildArch x64 -BuildPlatform Win32
+```
+
+The manual steps are details below and can be skipped if running the build script. The dependencies still need to be installed manually.
+
 The WebRTC UWP project has [specific requirements](https://github.com/webrtc-uwp/webrtc-uwp-sdk/blob/master/README.md). In particular it needs Python 2.7.x installed **as default**, that is calling `python` from a shell without specifying a path launches that Python 2.7.x version.
 
 For Windows Desktop support (also called "Win32"):
 
-- At the moment **the Win32 variant requires some manual patching to force the use of C++17** due to [issue #163](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/163) in the WebRTC UWP project. See the link for the patches to apply and the associated pending PRs aiming at fixing that issue upstream.
 - Open the **`WebRtc.Win32.sln`** Visual Studio solution located in `external\webrtc-uwp-sdk\webrtc\windows\solution\`
 - In the menu bar, select the relevant solution platform and solution configuration. For the Unity editor, the **x64** binaries are required.
 - **Build first the `WebRtc.Win32.Native.Builder` project alone**, which generates some files needed by some of the other projects in the solution, by right-clicking on that project > **Build**
