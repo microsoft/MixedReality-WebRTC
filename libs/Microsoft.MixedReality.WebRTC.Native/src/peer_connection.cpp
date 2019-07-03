@@ -422,7 +422,7 @@ void PeerConnection::OnIceCandidate(
 void PeerConnection::OnAddTrack(
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
     const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>&
-        streams) noexcept {
+        /*streams*/) noexcept {
   auto lock = std::lock_guard{track_added_callback_mutex_};
   auto cb = track_added_callback_;
   if (cb) {

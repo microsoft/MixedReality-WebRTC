@@ -22,8 +22,9 @@ void AudioFrameObserver::OnData(const void* audio_data,
   auto lock = std::lock_guard{mutex_};
   if (!callback_)
     return;
-  callback_(audio_data, bits_per_sample, sample_rate, number_of_frames,
-            number_of_frames);
+  callback_(audio_data, bits_per_sample, sample_rate,
+            static_cast<int>(number_of_channels),
+            static_cast<int>(number_of_frames));
 }
 
 }  // namespace Microsoft::MixedReality::WebRTC
