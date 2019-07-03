@@ -38,7 +38,6 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{928899BC-F131-4343-A1AB-72F3A5787E41}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>MicrosoftMixedRealityToolkitNetworkingWebRtcNativeWin32</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <ProjectName>Microsoft.MixedReality.WebRTC.Native.Win32</ProjectName>
   </PropertyGroup>
@@ -73,7 +72,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <OutDir>..\..\bin\Win32\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>..\..\build\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <IntDir>..\..\build\Microsoft.MixedReality.WebRTC.Native\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Microsoft.MixedReality.WebRTC.Native</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -138,6 +137,7 @@
     <ClInclude Include="src/peer_connection.h" />
     <ClInclude Include="src/targetver.h" />
     <ClInclude Include="src/video_frame_observer.h" />
+    <ClInclude Include="src\sdp_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src/api.cpp" />
@@ -149,6 +149,7 @@
     </ClCompile>
     <ClCompile Include="src/peer_connection.cpp" />
     <ClCompile Include="src/video_frame_observer.cpp" />
+    <ClCompile Include="src\sdp_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="docs/design.md" />

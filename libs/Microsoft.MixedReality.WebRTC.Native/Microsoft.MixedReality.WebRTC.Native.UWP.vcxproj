@@ -74,7 +74,7 @@
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <OutDir>..\..\bin\UWP\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>..\..\build\UWP\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <IntDir>..\..\build\Microsoft.MixedReality.WebRTC.Native.UWP\UWP\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Microsoft.MixedReality.WebRTC.Native</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -114,6 +114,7 @@
     <ClInclude Include="src/peer_connection.h" />
     <ClInclude Include="src/targetver.h" />
     <ClInclude Include="src/video_frame_observer.h" />
+    <ClInclude Include="src\sdp_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src/api.cpp" />
@@ -124,6 +125,7 @@
     </ClCompile>
     <ClCompile Include="src/peer_connection.cpp" />
     <ClCompile Include="src/video_frame_observer.cpp" />
+    <ClCompile Include="src\sdp_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="docs/design.md" />

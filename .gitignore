@@ -13,6 +13,9 @@ obj
 # UWP packages
 /examples/TestAppUwp/AppPackages
 
+# Nuget C++ packages
+/packages
+
 # Unity artifacts
 /libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Plugins
 /libs/Microsoft.MixedReality.WebRTC.Unity/Builds

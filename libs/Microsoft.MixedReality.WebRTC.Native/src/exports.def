@@ -25,4 +25,5 @@ EXPORTS
 	mrsPeerConnectionCreateAnswer
 	mrsPeerConnectionSetRemoteDescription
 	mrsPeerConnectionClose
+	mrsSdpForceCodecs
 	mrsMemCpyStride
