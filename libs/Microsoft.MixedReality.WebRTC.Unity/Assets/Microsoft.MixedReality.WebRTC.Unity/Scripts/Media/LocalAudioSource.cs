@@ -21,6 +21,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public bool AutoStartCapture = true;
 
         /// <summary>
+        /// Name of the preferred audio codec, or empty to let WebRTC decide.
+        /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
+        /// </summary>
+        [Tooltip("SDP name of the preferred audio codec to use if supported")]
+        public string PreferredAudioCodec = string.Empty;
+
+        /// <summary>
         /// Peer connection this local audio source will add an audio track to.
         /// </summary>
         [Header("Video track")]
@@ -69,6 +76,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private void OnPeerInitialized()
         {
             var nativePeer = PeerConnection.Peer;
+
+            nativePeer.PreferredAudioCodec = PreferredAudioCodec;
 
             if (AutoStartCapture)
             {
