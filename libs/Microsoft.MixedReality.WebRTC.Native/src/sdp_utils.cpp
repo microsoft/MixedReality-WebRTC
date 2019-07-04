@@ -12,29 +12,6 @@
 
 namespace Microsoft::MixedReality::WebRTC {
 
-namespace {
-
-// SDP media types - https://tools.ietf.org/html/rfc4566#section-5.14
-constexpr const char kMediaTypeAudio[] = "audio";
-constexpr const char kMediaTypeVideo[] = "video";
-constexpr const char kMediaTypeData[] = "application";
-
-/// Map a media type string to the corresponding MediaType enum.
-cricket::MediaType MediaTypeFromSdpMid(const std::string& sdp_mid) {
-  if (sdp_mid == kMediaTypeAudio) {
-    return cricket::MediaType::MEDIA_TYPE_AUDIO;
-  }
-  if (sdp_mid == kMediaTypeVideo) {
-    return cricket::MediaType::MEDIA_TYPE_VIDEO;
-  }
-  if (sdp_mid == kMediaTypeData) {
-    return cricket::MediaType::MEDIA_TYPE_DATA;
-  }
-  RTC_CHECK(false);  // invalid case
-}
-
-}  // namespace
-
 std::string SdpForceCodecs(const std::string& message,
                            const std::string& audio_codec_name,
                            const std::string& video_codec_name) {

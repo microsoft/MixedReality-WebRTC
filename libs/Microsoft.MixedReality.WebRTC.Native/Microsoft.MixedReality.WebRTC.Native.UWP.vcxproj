@@ -96,7 +96,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalDependencies>Ole32.lib;Evr.lib;mf.lib;mfuuid.lib;mfplat.lib;webrtc.lib;WindowsApp.lib;Org.WebRtc.WrapperGlue.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>src/exports.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>include\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\$(PlatformTarget)\$(Configuration);$(WebRTCCoreRepoPath)webrtc\windows\solutions\Build\Output\Org.WebRtc.WrapperGlue\$(Configuration)\$(PlatformTarget)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\$(PlatformTarget)\$(Configuration);$(WebRTCCoreRepoPath)webrtc\windows\solutions\Build\Output\Org.WebRtc.WrapperGlue\$(Configuration)\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Message>Copying C++ and C# DLLs to Unity plugins folder...</Message>
@@ -114,7 +114,7 @@
     <ClInclude Include="src/peer_connection.h" />
     <ClInclude Include="src/targetver.h" />
     <ClInclude Include="src/video_frame_observer.h" />
-    <ClInclude Include="src\sdp_utils.h" />
+    <ClInclude Include="src/sdp_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src/api.cpp" />
@@ -125,7 +125,7 @@
     </ClCompile>
     <ClCompile Include="src/peer_connection.cpp" />
     <ClCompile Include="src/video_frame_observer.cpp" />
-    <ClCompile Include="src\sdp_utils.cpp" />
+    <ClCompile Include="src/sdp_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="docs/design.md" />
