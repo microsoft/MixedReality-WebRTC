@@ -5,7 +5,7 @@ Now that we have a both local and remote video players, we can attempt to establ
 There are a few requirements for this:
 
 - We need 2 instances of the application running at the same time. Unfortunately the Unity Editor cannot be opened twice with the same project. As a workaround, we can build and deploy the app on a device, even locally on the developer machine. Alternatively, we can use a second computer running another instance of the Unity Editor with an exact copy of this Unity project. The later is easier because we can still modify the project.
-- The `NodeDssSignaler` component needs to be configured to know which remote peer to expect. This is due to the fact that this is a simple, easy, and **not production-ready** solution which does not offer any functionality to discover and select a remote peer. Instead it uses strings to identify the two peers. We can chose any two different string.
+- The `NodeDssSignaler` component needs to be configured to know which remote peer to expect. This is due to the fact that this is a simple, easy, and **not production-ready** solution which does not offer any functionality to discover and select a remote peer. Instead it uses strings to identify the two peers. We can chose any two different strings.
 
 ## Configuring the `NodeDssSignaler`
 
