@@ -9,7 +9,7 @@ trigger: none
 pr: none
 
 # Give a unique name to the build each time it runs
-name: core-uwp-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+name: ci-core-uwp-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 jobs:
 - template: templates/jobs-libwebrtc.yaml

@@ -17,7 +17,7 @@ trigger:
 pr: none
 
 # Give a unique name to the build each time it runs
-name: ci-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+name: ci-cpp-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 jobs:
 - template: templates/jobs-cpp.yaml
