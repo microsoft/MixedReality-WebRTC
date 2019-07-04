@@ -85,8 +85,8 @@ std::string SdpForceCodecs(const std::string& message,
                 video_desc->codecs();
             auto it = std::find_if(
                 codecs.begin(), codecs.end(),
-                [&audio_codec_name](const cricket::VideoCodec& codec) {
-                  return (codec.name == audio_codec_name);
+                [&video_codec_name](const cricket::VideoCodec& codec) {
+                  return (codec.name == video_codec_name);
                 });
             if (it == codecs.end()) {
               break;
