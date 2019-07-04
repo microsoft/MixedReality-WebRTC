@@ -89,8 +89,11 @@ jobs:
     name: ${{parameters.buildAgent}}
     demands: msbuild
   variables:
-    buildTriple: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
-    projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
+  - group: MixedReality-WebRTC-ArtifactConfig
+  - name: buildTriple
+    value: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
+  - name: projectRoot
+    value: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
   steps:
   - checkout: self
     submodules: recursive
@@ -124,8 +127,8 @@ jobs:
     displayName: 'Download webrtc.lib ($(buildTriple))'
     inputs:
       buildType: specific
-      project: '5610c425-4799-474c-b133-d95d78fb63b1'
-      definition: 23
+      project: $(ArtifactConfig.Project)
+      definition: $(ArtifactConfig.CoreDefinitionId)
       artifactName: 'libwebrtc_$(buildTriple)'
       # Download back exactly where it would have been otherwise compiled inside the source folder
       targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/$(scriptArch)/$(scriptConfig)'
@@ -136,8 +139,8 @@ jobs:
     displayName: 'Download WinRT generated headers ($(buildTriple))'
     inputs:
       buildType: specific
-      project: '5610c425-4799-474c-b133-d95d78fb63b1'
-      definition: 23
+      project: $(ArtifactConfig.Project)
+      definition: $(ArtifactConfig.CoreDefinitionId)
       artifactName: 'orgwebrtc_winrt_hpp_$(buildTriple)'
       # Download back exactly where they would have been otherwise generated inside the source folder
       targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'

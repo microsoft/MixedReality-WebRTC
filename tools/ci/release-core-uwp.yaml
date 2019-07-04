@@ -1,5 +1,5 @@
 # MixedReality-WebRTC build pipeline for Release
-# Build the core WebRTC implementation and the UWP wrappers
+# Build the UWP wrappers for the core WebRTC implementation
 
 # Disable branch and PR triggers, the core implementation only changes
 # when upgrading to a more recent version from Google, which is quite
@@ -9,27 +9,20 @@ trigger: none
 pr: none
 
 # Give a unique name to the build each time it runs
-name: release-core-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+name: release-core-uwp-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 jobs:
 - template: templates/jobs-libwebrtc.yaml
   parameters:
     buildAgent: 'Hosted VS2017' #'Analog On-Prem'
-    buildPlatform: 'Win32'
+    buildPlatform: 'UWP'
     buildArch: 'x64'
     buildConfig: 'Release'
-    skipUwpWrappers: true
-# - template: templates/jobs-libwebrtc.yaml
-#   parameters:
-#     buildAgent: 'Analog On-Prem'
-#     buildPlatform: 'UWP'
-#     buildArch: 'x64'
-#     buildConfig: 'Release'
-#     skipUwpWrappers: true
+    skipCoreCpp: true
 # - template: templates/jobs-libwebrtc.yaml
 #   parameters:
 #     buildAgent: 'Analog On-Prem'
 #     buildPlatform: 'UWP'
 #     buildArch: 'ARM'
 #     buildConfig: 'Release'
-#     skipUwpWrappers: true
+#     skipCoreCpp: true
