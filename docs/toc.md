@@ -1,2 +1,2 @@
-# [User Manual](manual/index.md)
+# [User Manual](manual/)
 # [API Documentation](xref:Microsoft.MixedReality.WebRTC)

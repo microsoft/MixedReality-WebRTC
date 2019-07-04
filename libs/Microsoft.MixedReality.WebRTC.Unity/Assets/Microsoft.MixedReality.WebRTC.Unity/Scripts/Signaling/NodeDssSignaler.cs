@@ -15,6 +15,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// Simple signaler for debug and testing.
     /// This is based on https://github.com/bengreenier/node-dss and SHOULD NOT BE USED FOR PRODUCTION.
     /// </summary>
+    [AddComponentMenu("MixedReality-WebRTC/NodeDSS Signaler")]
     public class NodeDssSignaler : Signaler
     {
         /// <summary>

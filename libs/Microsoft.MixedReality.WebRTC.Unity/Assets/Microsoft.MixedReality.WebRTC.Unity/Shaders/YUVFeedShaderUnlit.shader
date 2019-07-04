@@ -5,21 +5,19 @@ Shader "Video/YUVFeedShader (unlit)"
 {
     Properties
     {
-		[HideInEditor] _YPlane("Y plane", 2D) = "white" {}
-		[HideInEditor] _UPlane("U plane", 2D) = "white" {}
-		[HideInEditor] _VPlane("V plane", 2D) = "white" {}
+		[Toggle(MIRROR)] _Mirror("Horizontal Mirror", Float) = 0
+		[HideInEditor][NoScaleOffset] _YPlane("Y plane", 2D) = "white" {}
+		[HideInEditor][NoScaleOffset] _UPlane("U plane", 2D) = "white" {}
+		[HideInEditor][NoScaleOffset] _VPlane("V plane", 2D) = "white" {}
     }
     SubShader
     {
-        Cull Off
-		ZWrite Off
-		ZTest Always
-
         Pass
         {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+			#pragma multi_compile __ MIRROR
 
             #include "UnityCG.cginc"
 
@@ -40,6 +38,12 @@ Shader "Video/YUVFeedShader (unlit)"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
+#if UNITY_UV_STARTS_AT_TOP
+				o.uv.y = 1 - v.uv.y;
+#endif
+#ifdef MIRROR
+				o.uv.x = 1 - v.uv.x;
+#endif
                 return o;
             }
 

@@ -14,6 +14,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html">Renderer</a>.
     /// </remarks>
     [RequireComponent(typeof(Renderer))]
+    [AddComponentMenu("MixedReality-WebRTC/Media Player")]
     public class MediaPlayer : MonoBehaviour
     {
         [Header("Source")]
@@ -89,18 +90,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // when Unity is running at 60 FPS.
             _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxVideoFramerate) - 0.003f);
 
-            AudioSource.AudioStreamStarted.AddListener(AudioStreamStarted);
-            AudioSource.AudioStreamStopped.AddListener(AudioStreamStopped);
-            VideoSource.VideoStreamStarted.AddListener(VideoStreamStarted);
-            VideoSource.VideoStreamStopped.AddListener(VideoStreamStopped);
+            AudioSource?.AudioStreamStarted.AddListener(AudioStreamStarted);
+            AudioSource?.AudioStreamStopped.AddListener(AudioStreamStopped);
+            VideoSource?.VideoStreamStarted.AddListener(VideoStreamStarted);
+            VideoSource?.VideoStreamStopped.AddListener(VideoStreamStopped);
         }
 
         private void OnDestroy()
         {
-            AudioSource.AudioStreamStarted.RemoveListener(AudioStreamStarted);
-            AudioSource.AudioStreamStopped.RemoveListener(AudioStreamStopped);
-            VideoSource.VideoStreamStarted.RemoveListener(VideoStreamStarted);
-            VideoSource.VideoStreamStopped.RemoveListener(VideoStreamStopped);
+            AudioSource?.AudioStreamStarted.RemoveListener(AudioStreamStarted);
+            AudioSource?.AudioStreamStopped.RemoveListener(AudioStreamStopped);
+            VideoSource?.VideoStreamStarted.RemoveListener(VideoStreamStarted);
+            VideoSource?.VideoStreamStopped.RemoveListener(VideoStreamStopped);
         }
 
         private void AudioStreamStarted()
@@ -113,7 +114,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void VideoStreamStarted()
         {
-            FrameQueue = VideoSource?.FrameQueue;
+            FrameQueue = VideoSource.FrameQueue;
         }
 
         private void VideoStreamStopped()

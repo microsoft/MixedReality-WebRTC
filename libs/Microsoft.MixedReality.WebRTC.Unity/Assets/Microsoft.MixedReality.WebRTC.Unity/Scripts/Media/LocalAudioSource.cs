@@ -10,6 +10,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// existing WebRTC peer connection and sent to the remote peer. The audio track
     /// can optionally be rendered locally with a <see cref="MediaPlayer"/>.
     /// </summary>
+    [AddComponentMenu("MixedReality-WebRTC/Local Audio Source")]
     public class LocalAudioSource : AudioSource
     {
         /// <summary>

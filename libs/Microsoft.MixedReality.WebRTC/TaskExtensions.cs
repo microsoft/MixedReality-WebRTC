@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.MixedReality.WebRTC
 {
+    /// <summary>
+    /// Collection of extension methods for <xref href="System.Threading.Tasks.Task"/>.
+    /// </summary>
     public static class TaskExtensions
     {
         ///// <summary>

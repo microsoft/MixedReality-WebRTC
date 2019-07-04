@@ -31,7 +31,7 @@
     "resource": [
       // resource files that will be copied over without modifications
       {
-        "files": ["**/*.png"]
+        "files": ["**/*.png", "**/*.svg"]
       }
     ],
     "template": [
@@ -45,7 +45,7 @@
       "_enableSearch": true,
       "_disableNavbar": false,
       "_appLogoPath": "mr-webrtc_icon.png",
-      "_appFaviconPath": "mr-webrtc_icon.png"
+      "_appFaviconPath": "mr-webrtc_icon.svg"
       // re-add this section if you want to publish a version of the docs that keeps the "improve this doc" link pointing to mrtk_development branch
       //"_gitContribute": {
       //  "repo": "https://github.com/Microsoft/MixedReality-WebRTC",

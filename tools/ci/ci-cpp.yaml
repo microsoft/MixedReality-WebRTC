@@ -1,0 +1,40 @@
+# MixedReality-WebRTC build pipeline for CI
+# Build the project's libraries as needed
+
+# Trigger CI on push changes
+trigger:
+  branches:
+    include:
+    - master
+    - dev
+    exclude:
+    - docs/*
+  paths:
+    include:
+    - libs/Microsoft.MixedReality.WebRTC.Native/*
+
+# Do not trigger CI on PRs
+pr: none
+
+# Give a unique name to the build each time it runs
+name: ci-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+
+jobs:
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'Win32'
+    buildArch: 'x64'
+    buildConfig: 'Release'
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
+    buildArch: 'x64'
+    buildConfig: 'Release'
+# - template: templates/jobs-cpp.yaml
+#   parameters:
+#     buildAgent: 'Hosted VS2017' # vs2017-win2016
+#     buildPlatform: 'UWP'
+#     buildArch: 'ARM'
+#     buildConfig: 'Release'

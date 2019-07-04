@@ -1,10 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
@@ -13,6 +10,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// existing WebRTC peer connection and sent to the remote peer. The video track
     /// can optionally be displayed locally with a <see cref="MediaPlayer"/>.
     /// </summary>
+    [AddComponentMenu("MixedReality-WebRTC/Local Video Source")]
     public class LocalVideoSource : VideoSource
     {
         /// <summary>

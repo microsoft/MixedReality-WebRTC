@@ -7,10 +7,18 @@ using UnityEngine.Events;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
+    /// <summary>
+    /// Unity event corresponding to a new audio track added to the current connection
+    /// by the remote peer.
+    /// </summary>
     [Serializable]
     public class AudioTrackAddedEvent : UnityEvent
     { };
 
+    /// <summary>
+    /// Unity event corresponding to an existing audio track removed from the current connection
+    /// by the remote peer.
+    /// </summary>
     [Serializable]
     public class AudioTrackRemovedEvent : UnityEvent
     { };
@@ -20,6 +28,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// existing WebRTC peer connection by a remote peer and received locally.
     /// The audio track can optionally be displayed locally with a <see cref="MediaPlayer"/>.
     /// </summary>
+    [AddComponentMenu("MixedReality-WebRTC/Remote Audio Source")]
     public class RemoteAudioSource : AudioSource
     {
         /// <summary>

@@ -22,12 +22,12 @@ using Windows.ApplicationModel.Core;
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// Different Ice server types
+    /// Enumeration of the different types of ICE servers.
     /// </summary>
     public enum IceType
     {
         /// <summary>
-        /// Indicates there is no Ice information
+        /// Indicates there is no ICE information
         /// </summary>
         /// <remarks>
         /// Under normal use, this should not be used
@@ -35,7 +35,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         None = 0,
 
         /// <summary>
-        /// Indicates Ice information is of type STUN
+        /// Indicates ICE information is of type STUN
         /// </summary>
         /// <remarks>
         /// https://en.wikipedia.org/wiki/STUN
@@ -43,7 +43,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         Stun,
 
         /// <summary>
-        /// Indicates Ice information is of type TURN
+        /// Indicates ICE information is of type TURN
         /// </summary>
         /// <remarks>
         /// https://en.wikipedia.org/wiki/Traversal_Using_Relays_around_NAT
@@ -94,6 +94,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// High-level wrapper for Unity WebRTC functionalities.
     /// This is the API entry point for establishing a connection with a remote peer.
     /// </summary>
+    [AddComponentMenu("MixedReality-WebRTC/Peer Connection")]
     public class PeerConnection : MonoBehaviour
     {
         /// <summary>

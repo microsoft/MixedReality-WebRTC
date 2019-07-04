@@ -5,9 +5,10 @@ Shader "Video/YUVFeedShader (standard lit)"
 {
 	Properties
 	{
-		[HideInEditor] _YPlane("Y plane", 2D) = "white" {}
-		[HideInEditor] _UPlane("U plane", 2D) = "white" {}
-		[HideInEditor] _VPlane("V plane", 2D) = "white" {}
+		[Toggle(MIRROR)] _Mirror("Horizontal Mirror", Float) = 0
+		[HideInEditor][NoScaleOffset] _YPlane("Y plane", 2D) = "white" {}
+		[HideInEditor][NoScaleOffset] _UPlane("U plane", 2D) = "white" {}
+		[HideInEditor][NoScaleOffset] _VPlane("V plane", 2D) = "white" {}
 	}
 
 	SubShader
@@ -16,12 +17,11 @@ Shader "Video/YUVFeedShader (standard lit)"
 		CGPROGRAM
 
 		#pragma surface surf Lambert //alpha
+		#pragma multi_compile __ MIRROR
 
 		struct Input
 	    {
 			float2 uv_YPlane;
-			float2 uv_UPlane;
-			float2 uv_VPlane;
 		};
 
 		sampler2D _YPlane;
@@ -44,9 +44,15 @@ Shader "Video/YUVFeedShader (standard lit)"
 		void surf(Input IN, inout SurfaceOutput o)
 		{
 			float3 yuv;
+#if UNITY_UV_STARTS_AT_TOP
+			IN.uv_YPlane.y = 1 - IN.uv_YPlane.y;
+#endif
+#ifdef MIRROR
+			IN.uv_YPlane.x = 1 - IN.uv_YPlane.x;
+#endif
 			yuv.x = tex2D(_YPlane, IN.uv_YPlane).r;
-			yuv.y = tex2D(_UPlane, IN.uv_UPlane).r;
-			yuv.z = tex2D(_VPlane, IN.uv_VPlane).r;
+			yuv.y = tex2D(_UPlane, IN.uv_YPlane).r;
+			yuv.z = tex2D(_VPlane, IN.uv_YPlane).r;
 			o.Albedo = yuv2rgb(yuv);
 		}
 
