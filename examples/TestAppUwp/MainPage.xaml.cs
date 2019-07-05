@@ -101,12 +101,23 @@ namespace TestAppUwp
 
             _peerConnection = new PeerConnection(dssSignaler);
             _peerConnection.Connected += OnPeerConnected;
+            _peerConnection.RenegotiationNeeded += OnPeerRenegotiationNeeded;
             _peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
             _peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
 
             //Window.Current.Closed += Shutdown; // doesn't work
 
             this.Loaded += OnLoaded;
+        }
+
+        private void OnPeerRenegotiationNeeded()
+        {
+            // If already connected, update the connection on the fly.
+            // If not, wait for user action and don't automatically connect.
+            if (_peerConnection.IsConnected)
+            {
+                _peerConnection.CreateOffer();
+            }
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)

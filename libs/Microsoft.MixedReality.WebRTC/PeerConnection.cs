@@ -100,6 +100,8 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
+        public bool IsConnected { get; private set; } = false;
+
         /// <summary>
         /// Event fired when a connection is established.
         /// </summary>
@@ -237,6 +239,7 @@ namespace Microsoft.MixedReality.WebRTC
             public static void ConnectedCallback(IntPtr userData)
             {
                 var peer = FromIntPtr(userData);
+                peer.IsConnected = true;
                 peer.Connected?.Invoke();
             }
 
@@ -642,6 +645,7 @@ namespace Microsoft.MixedReality.WebRTC
                 }
 
                 _isClosing = false;
+                IsConnected = false;
             }
         }
 
