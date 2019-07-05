@@ -162,6 +162,11 @@ bool PeerConnection::AddDataChannel(
     // Valid IDs are 0-65535 (16 bits)
     return false;
   }
+  if (!sctp_negotiated_) {
+    // Don't try to create a data channel without SCTP negotiation, it will get
+    // stuck in the kConnecting state forever.
+    return false;
+  }
   std::string labelString;
   if (label)
     labelString = label;
@@ -270,6 +275,9 @@ bool PeerConnection::CreateOffer() noexcept {
     options.offer_to_receive_audio = true;
     options.offer_to_receive_video = true;
   }
+  if (!data_channel_from_id_.empty()) {
+    sctp_negotiated_ = true;
+  }
   peer_->CreateOffer(this, options);
   return true;
 }
@@ -377,6 +385,10 @@ void PeerConnection::OnDataChannel(
     noexcept
 #endif
 {
+  // If receiving a new data channel, then obviously SCTP has been negotiated so
+  // it is safe to create other ones.
+  sctp_negotiated_ = true;
+
   std::string label = data_channel->label();
   std::shared_ptr<DataChannelObserver> observer{
       new DataChannelObserver(data_channel)};
@@ -421,7 +433,7 @@ void PeerConnection::OnIceCandidate(
 void PeerConnection::OnAddTrack(
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
     const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>&
-        /*streams*/) noexcept {
+    /*streams*/) noexcept {
   auto lock = std::lock_guard{track_added_callback_mutex_};
   auto cb = track_added_callback_;
   if (cb) {
