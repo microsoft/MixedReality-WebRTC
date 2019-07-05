@@ -660,6 +660,10 @@ bool MRS_CALL mrsSdpForceCodecs(const char* message,
   return true;
 }
 
+void MRS_CALL mrsMemCpy(void* dst, const void* src, size_t size) {
+  memcpy(dst, src, size);
+}
+
 void MRS_CALL mrsMemCpyStride(void* dst,
                               int dst_stride,
                               const void* src,

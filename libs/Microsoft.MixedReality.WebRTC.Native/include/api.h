@@ -240,7 +240,7 @@ mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept;
 /// selected by the WebRTC implementation itself, and will be available later.
 /// In that case the channel is announced to the remote peer for it to create a
 /// channel with the same ID.
-/// - If id >= 0, then it adss a new out-of-band negotiated channel with the
+/// - If id >= 0, then it adds a new out-of-band negotiated channel with the
 /// given ID, and it is the responsibility of the app to create a channel with
 /// the same ID on the remote peer to be able to use the channel.
 MRS_API bool MRS_CALL mrsPeerConnectionAddDataChannel(
@@ -351,6 +351,10 @@ MRS_API bool MRS_CALL mrsSdpForceCodecs(const char* message,
 //
 // Generic utilities
 //
+
+/// Optimized helper to copy a contiguous block of memory.
+/// This is equivalent to the standard malloc() function.
+MRS_API void MRS_CALL mrsMemCpy(void* dst, const void* src, size_t size);
 
 /// Optimized helper to copy a block of memory with source and destination
 /// stride.
