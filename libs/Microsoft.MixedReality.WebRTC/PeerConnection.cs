@@ -756,7 +756,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        public async Task<DataChannel> AddDataChannelAsync(int id, string label, bool ordered, bool reliable)
+        public async Task<DataChannel> AddDataChannelAsync(ushort id, string label, bool ordered, bool reliable)
         {
             if (id < 0)
             {
@@ -791,11 +791,13 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Add a new in-band or out-of-band data channel.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="label"></param>
-        /// <param name="ordered"></param>
-        /// <param name="reliable"></param>
-        /// <returns></returns>
+        /// <param name="id">Identifier in [0:65535] of the out-of-band data channel, or <c>-1</c> for in-band.</param>
+        /// <param name="label">The data channel name.</param>
+        /// <param name="ordered">Indicates whether data channel messages are ordered (see
+        /// <see cref="DataChannel.Ordered"/>).</param>
+        /// <param name="reliable">Indicates whether data channel messages are reliably delivered
+        /// (see <see cref="DataChannel.Reliable"/>).</param>
+        /// <returns>Returns a task which completes once the data channel is created.</returns>
         private async Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable)
         {
             // Preconditions
