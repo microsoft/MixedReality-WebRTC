@@ -14,7 +14,7 @@ name: release-core-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 jobs:
 - template: templates/jobs-libwebrtc.yaml
   parameters:
-    buildAgent: 'Hosted VS2017' #'Analog On-Prem'
+    buildAgent: 'Analog Build Validation'
     buildPlatform: 'Win32'
     buildArch: 'x64'
     buildConfig: 'Release'
