@@ -165,3 +165,23 @@ TEST(SdpUtils, ForceCodecs) {
   ASSERT_EQ(sizeof(kSdpForcedAudioOpus), len);
   ASSERT_EQ(0, memcmp(kSdpForcedAudioOpus, buffer._data, len));
 }
+
+// No-op if codecs are not supported
+TEST(SdpUtils, ForceCodecsNotSupported) {
+  size_t len = sizeof(kSdpFullString) * 2;
+  RaiiBuffer buffer(len);
+  ASSERT_NE(nullptr, buffer._data);
+  mrsSdpForceCodecs(kSdpFullString, "random_non_existing_audio_codec",
+                    "random_non_existing_video_codec", buffer._data, &len);
+  ASSERT_EQ(sizeof(kSdpFullString), len);
+  ASSERT_EQ(0, memcmp(kSdpFullString, buffer._data, len));
+}
+
+// Buffer too small
+TEST(SdpUtils, ForceCodecsShortBuffer) {
+  size_t len = 32;  // too short on purpose
+  char buffer[32];
+  ASSERT_EQ(false,
+            mrsSdpForceCodecs(kSdpFullString, "opus", "h264", buffer, &len));
+  ASSERT_EQ(sizeof(kSdpForcedAudioOpus), len);
+}

@@ -1046,7 +1046,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsSdpForceCodecs")]
-            public static unsafe extern void SdpForceCodecs(string message, string audioCodecName, string videoCodecName, StringBuilder messageOut, ref int messageOutLength);
+            public static unsafe extern bool SdpForceCodecs(string message, string audioCodecName, string videoCodecName, StringBuilder messageOut, ref ulong messageOutLength);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsMemCpyStride")]
@@ -1092,10 +1092,12 @@ namespace Microsoft.MixedReality.WebRTC
             if ((PreferredAudioCodec.Length > 0) || (PreferredVideoCodec.Length > 0))
             {
                 var builder = new StringBuilder(sdp.Length);
-                int lengthInOut = builder.Capacity;
-                NativeMethods.SdpForceCodecs(sdp, PreferredAudioCodec, PreferredVideoCodec, builder, ref lengthInOut);
-                builder.Length = lengthInOut;
-                sdp = builder.ToString();
+                ulong lengthInOut = (ulong)builder.Capacity;
+                if (NativeMethods.SdpForceCodecs(sdp, PreferredAudioCodec, PreferredVideoCodec, builder, ref lengthInOut))
+                {
+                    builder.Length = (int)lengthInOut;
+                    sdp = builder.ToString();
+                }
             }
 
             var msg = new SignalerMessage()

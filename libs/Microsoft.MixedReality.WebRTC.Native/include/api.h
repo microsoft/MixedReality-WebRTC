@@ -312,26 +312,41 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandle) noexcept;
 // SDP utilities
 //
 
-/// Force audio and video codecs when advertizing capabilities in an SDP offer.
+/// Force audio and video codecs when advertizing capabilities in an SDP offer.#
+///
 /// This is a workaround for the lack of access to codec selection. Instead of
 /// selecting codecs in code, this can be used to intercept a generated SDP
 /// offer before it is sent to the remote peer, and modify it by removing the
 /// codecs the user does not want.
+///
 /// Codec names are compared to the list of supported codecs in the input
 /// message string, and if found then other codecs are pruned out. If the codec
 /// name is not found, the codec is assumed to be unsupported, so codecs for
 /// that type are not modified.
+///
+/// On return the SDP offer message string to be sent via the signaler is stored
+/// into the output buffer pointed to by |buffer|.
+///
+/// Note that because this function always return a message shorter or equal to
+/// the input message, one way to ensure this function doesn't fail is to pass
+/// an output buffer as large as the input message.
+///
 /// |message| SDP message string to deserialize.
-/// |audio_codec_name| Optional SDP name of the audio codec to force if
-/// supported, or nullptr or empty string to leave unmodified.
+/// |audio_codec_name| Optional SDP name of the audio codec to
+/// force if supported, or nullptr or empty string to leave unmodified.
 /// |video_codec_name| Optional SDP name of the video codec to force if
-/// supported, or nullptr or empty string to leave unmodified. Returns the new
-/// Returns the SDP offer message string to be sent via the signaler.
-MRS_API void MRS_CALL mrsSdpForceCodecs(const char* message,
+/// supported, or nullptr or empty string to leave unmodified.
+/// |buffer| Output buffer of capacity *|buffer_size|.
+/// |buffer_size| Pointer to the buffer capacity on input, modified on output
+/// with the actual size of the null-terminated string, including the null
+/// terminator, so the size of the used part of the buffer, in bytes.
+/// Returns true on success or false if the buffer is not large enough to
+/// contain the new SDP message.
+MRS_API bool MRS_CALL mrsSdpForceCodecs(const char* message,
                                         const char* audio_codec_name,
                                         const char* video_codec_name,
                                         char* buffer,
-                                        size_t* length);
+                                        size_t* buffer_size);
 
 //
 // Generic utilities

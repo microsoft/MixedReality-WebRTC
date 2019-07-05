@@ -78,7 +78,7 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   }
   return nullptr;
 #else
-  (void)enable_mrc; // No MRC on non-UWP
+  (void)enable_mrc;  // No MRC on non-UWP
   std::vector<std::string> device_names;
   {
     std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
@@ -630,13 +630,14 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
   }
 }
 
-void MRS_CALL mrsSdpForceCodecs(const char* message,
+bool MRS_CALL mrsSdpForceCodecs(const char* message,
                                 const char* audio_codec_name,
                                 const char* video_codec_name,
                                 char* buffer,
-                                size_t* length) {
+                                size_t* buffer_size) {
   RTC_CHECK(message);
   RTC_CHECK(buffer);
+  RTC_CHECK(buffer_size);
   std::string message_str(message);
   std::string audio_codec_name_str;
   std::string video_codec_name_str;
@@ -648,9 +649,15 @@ void MRS_CALL mrsSdpForceCodecs(const char* message,
   }
   std::string out_message =
       SdpForceCodecs(message_str, audio_codec_name_str, video_codec_name_str);
-  *length = std::min(out_message.size(), *length);
-  memcpy(buffer, out_message.c_str(), *length);
-  buffer[(*length)++] = '\0';
+  const size_t capacity = *buffer_size;
+  const size_t size = out_message.size();
+  *buffer_size = size + 1;
+  if (capacity < size + 1) {
+    return false;
+  }
+  memcpy(buffer, out_message.c_str(), size);
+  buffer[size] = '\0';
+  return true;
 }
 
 void MRS_CALL mrsMemCpyStride(void* dst,
