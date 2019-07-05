@@ -741,12 +741,21 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Add a new out-of-band data channel with the given ID.
+        /// 
+        /// A data channel is negotiated out-of-band when the peers agree on an identifier by any mean
+        /// not known to WebRTC, and both open a data channel with that ID. The WebRTC will match the
+        /// incoming and outgoing pipes by this ID to allow sending and receiving through that channel.
+        /// 
+        /// This requires some external mechanism to agree on an available identifier not otherwise taken
+        /// by another channel, and also requires to ensure that both peers explicitly open that channel.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="label"></param>
-        /// <param name="ordered"></param>
-        /// <param name="reliable"></param>
-        /// <returns></returns>
+        /// <param name="id">The unique data channel identifier to use.</param>
+        /// <param name="label">The data channel name.</param>
+        /// <param name="ordered">Indicates whether data channel messages are ordered (see
+        /// <see cref="DataChannel.Ordered"/>).</param>
+        /// <param name="reliable">Indicates whether data channel messages are reliably delivered
+        /// (see <see cref="DataChannel.Reliable"/>).</param>
+        /// <returns>Returns a task which completes once the data channel is created.</returns>
         public async Task<DataChannel> AddDataChannelAsync(int id, string label, bool ordered, bool reliable)
         {
             if (id < 0)
@@ -758,11 +767,22 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Add a new in-band data channel whose ID will be determined by the implementation.
+        /// 
+        /// A data channel is negotiated in-band when one peer requests its creation to the WebRTC core,
+        /// and the implementation negotiates with the remote peer an appropriate ID by sending some
+        /// SDP offer message. In that case once accepted the other peer will automatically create the
+        /// appropriate data channel on its side with that negotiated ID, and the ID will be returned on
+        /// both sides to the user for information.
+        /// 
+        /// Compares to out-of-band messages, this requires exchanging some SDP messages, but avoids having
+        /// to determine a common unused ID and having to explicitly open the data channel on both sides.
         /// </summary>
-        /// <param name="label"></param>
-        /// <param name="ordered"></param>
-        /// <param name="reliable"></param>
-        /// <returns></returns>
+        /// <param name="label">The data channel name.</param>
+        /// <param name="ordered">Indicates whether data channel messages are ordered (see
+        /// <see cref="DataChannel.Ordered"/>).</param>
+        /// <param name="reliable">Indicates whether data channel messages are reliably delivered
+        /// (see <see cref="DataChannel.Reliable"/>).</param>
+        /// <returns>Returns a task which completes once the data channel is created.</returns>
         public async Task<DataChannel> AddDataChannelAsync(string label, bool ordered, bool reliable)
         {
             return await AddDataChannelAsyncImpl(-1, label, ordered, reliable);

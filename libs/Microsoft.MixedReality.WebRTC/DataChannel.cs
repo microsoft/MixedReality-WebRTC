@@ -15,7 +15,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// 
     /// https://tools.ietf.org/wg/rtcweb/
     /// 
-    /// An instance of <see cref="DataChannel"/> is created by calling <see cref="PeerConnection.AddDataChannel"/>
+    /// An instance of <see cref="DataChannel"/> is created by calling <see cref="PeerConnection.AddDataChannelAsync"/>
     /// or one of its variants. <see cref="DataChannel"/> cannot be instantiated directly.
     /// </summary>
     public class DataChannel : IDisposable
