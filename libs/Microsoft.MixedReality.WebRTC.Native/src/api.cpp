@@ -666,9 +666,20 @@ void MRS_CALL mrsMemCpyStride(void* dst,
                               int src_stride,
                               int elem_size,
                               int elem_count) {
-  for (int i = 0; i < elem_count; ++i) {
-    memcpy(dst, src, elem_size);
-    dst = (char*)dst + dst_stride;
-    src = (const char*)src + src_stride;
+  RTC_CHECK(dst);
+  RTC_CHECK(dst_stride >= elem_size);
+  RTC_CHECK(src);
+  RTC_CHECK(src_stride >= elem_size);
+  if ((dst_stride == elem_size) && (src_stride == elem_size)) {
+    // If tightly packed, do a single memcpy() for performance
+    const size_t total_size = (size_t)elem_size * elem_count;
+    memcpy(dst, src, total_size);
+  } else {
+    // Otherwise, copy row by row
+    for (int i = 0; i < elem_count; ++i) {
+      memcpy(dst, src, elem_size);
+      dst = (char*)dst + dst_stride;
+      src = (const char*)src + src_stride;
+    }
   }
 }
