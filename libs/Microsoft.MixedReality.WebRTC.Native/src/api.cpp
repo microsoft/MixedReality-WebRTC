@@ -8,6 +8,7 @@
 
 #include "api.h"
 #include "peer_connection.h"
+#include "sdp_utils.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
@@ -77,6 +78,7 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   }
   return nullptr;
 #else
+  (void)enable_mrc;  // No MRC on non-UWP
   std::vector<std::string> device_names;
   {
     std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
@@ -626,6 +628,36 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
     }
     *peerHandlePtr = nullptr;
   }
+}
+
+bool MRS_CALL mrsSdpForceCodecs(const char* message,
+                                const char* audio_codec_name,
+                                const char* video_codec_name,
+                                char* buffer,
+                                size_t* buffer_size) {
+  RTC_CHECK(message);
+  RTC_CHECK(buffer);
+  RTC_CHECK(buffer_size);
+  std::string message_str(message);
+  std::string audio_codec_name_str;
+  std::string video_codec_name_str;
+  if (audio_codec_name) {
+    audio_codec_name_str.assign(audio_codec_name);
+  }
+  if (video_codec_name) {
+    video_codec_name_str.assign(video_codec_name);
+  }
+  std::string out_message =
+      SdpForceCodecs(message_str, audio_codec_name_str, video_codec_name_str);
+  const size_t capacity = *buffer_size;
+  const size_t size = out_message.size();
+  *buffer_size = size + 1;
+  if (capacity < size + 1) {
+    return false;
+  }
+  memcpy(buffer, out_message.c_str(), size);
+  buffer[size] = '\0';
+  return true;
 }
 
 void MRS_CALL mrsMemCpyStride(void* dst,

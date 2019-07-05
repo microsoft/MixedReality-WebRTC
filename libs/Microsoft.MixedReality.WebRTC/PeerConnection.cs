@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -72,6 +73,18 @@ namespace Microsoft.MixedReality.WebRTC
         /// Optional TURN server credentials.
         /// </summary>
         public string Credentials = string.Empty;
+
+        /// <summary>
+        /// Name of the preferred audio codec, or empty to let WebRTC decide.
+        /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
+        /// </summary>
+        public string PreferredAudioCodec = string.Empty;
+
+        /// <summary>
+        /// Name of the preferred video codec, or empty to let WebRTC decide.
+        /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
+        /// </summary>
+        public string PreferredVideoCodec = string.Empty;
 
         /// <summary>
         /// Boolean property indicating whether the peer connection has been initialized.
@@ -1032,6 +1045,10 @@ namespace Microsoft.MixedReality.WebRTC
             public static extern void PeerConnectionClose(ref IntPtr peerHandle);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+                EntryPoint = "mrsSdpForceCodecs")]
+            public static unsafe extern bool SdpForceCodecs(string message, string audioCodecName, string videoCodecName, StringBuilder messageOut, ref ulong messageOutLength);
+
+            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsMemCpyStride")]
             public static unsafe extern void MemCpyStride(void* dst, int dst_stride, void* src, int src_stride, int elem_size, int elem_count);
 
@@ -1070,6 +1087,19 @@ namespace Microsoft.MixedReality.WebRTC
 
         private void OnLocalSdpReadytoSend(string type, string sdp)
         {
+            // If the user specified a preferred audio or video codec, manipulate the SDP message
+            // to exclude other codecs if the preferred one is supported.
+            if ((PreferredAudioCodec.Length > 0) || (PreferredVideoCodec.Length > 0))
+            {
+                var builder = new StringBuilder(sdp.Length);
+                ulong lengthInOut = (ulong)builder.Capacity;
+                if (NativeMethods.SdpForceCodecs(sdp, PreferredAudioCodec, PreferredVideoCodec, builder, ref lengthInOut))
+                {
+                    builder.Length = (int)lengthInOut;
+                    sdp = builder.ToString();
+                }
+            }
+
             var msg = new SignalerMessage()
             {
                 MessageType = MessageTypeFromString(type),
