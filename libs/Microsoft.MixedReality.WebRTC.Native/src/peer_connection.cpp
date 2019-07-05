@@ -241,8 +241,7 @@ bool PeerConnection::SendDataChannelMessage(int id,
     }
     rtc::CopyOnWriteBuffer bufferStorage((const char*)data, (size_t)size);
     webrtc::DataBuffer buffer(bufferStorage, true);  // always binary
-    data_channel->Send(buffer);
-    return true;
+    return data_channel->Send(buffer);
   }
   return false;
 }

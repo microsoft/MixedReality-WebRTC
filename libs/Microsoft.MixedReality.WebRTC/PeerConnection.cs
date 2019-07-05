@@ -743,13 +743,13 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="ordered"></param>
         /// <param name="reliable"></param>
         /// <returns></returns>
-        public async Task<DataChannel> AddDataChannel(int id, string label, bool ordered, bool reliable)
+        public async Task<DataChannel> AddDataChannelAsync(int id, string label, bool ordered, bool reliable)
         {
             if (id < 0)
             {
                 throw new ArgumentOutOfRangeException("id", id, "Data channel ID must be greater than or equal to zero.");
             }
-            return await AddDataChannelImpl(id, label, ordered, reliable);
+            return await AddDataChannelAsyncImpl(id, label, ordered, reliable);
         }
 
         /// <summary>
@@ -759,9 +759,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="ordered"></param>
         /// <param name="reliable"></param>
         /// <returns></returns>
-        public async Task<DataChannel> AddDataChannel(string label, bool ordered, bool reliable)
+        public async Task<DataChannel> AddDataChannelAsync(string label, bool ordered, bool reliable)
         {
-            return await AddDataChannelImpl(-1, label, ordered, reliable);
+            return await AddDataChannelAsyncImpl(-1, label, ordered, reliable);
         }
 
         /// <summary>
@@ -772,7 +772,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="ordered"></param>
         /// <param name="reliable"></param>
         /// <returns></returns>
-        private async Task<DataChannel> AddDataChannelImpl(int id, string label, bool ordered, bool reliable)
+        private async Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable)
         {
             // Preconditions
             ThrowIfConnectionNotOpen();
