@@ -755,6 +755,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
         /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         public async Task<DataChannel> AddDataChannelAsync(ushort id, string label, bool ordered, bool reliable)
         {
             if (id < 0)
@@ -783,6 +785,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
         /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         public async Task<DataChannel> AddDataChannelAsync(string label, bool ordered, bool reliable)
         {
             return await AddDataChannelAsyncImpl(-1, label, ordered, reliable);
@@ -799,6 +803,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
         /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         private async Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable)
         {
             // Preconditions
