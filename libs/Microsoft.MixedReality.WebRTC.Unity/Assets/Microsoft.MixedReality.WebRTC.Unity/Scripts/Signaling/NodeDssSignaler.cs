@@ -64,6 +64,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private ConcurrentQueue<Action> _mainThreadWorkQueue = new ConcurrentQueue<Action>();
 
+        /// <summary>
+        /// Flag to indicate that at least one message was received from the node-dss server, which
+        /// represents a connected state, for lack of an actual one in the node-dss protocol.
+        /// </summary>
+        private bool isFirstMessage_ = true;
+
 
         #region ISignaler interface
 
@@ -104,6 +110,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 LocalPeerId = SystemInfo.deviceUniqueIdentifier;
             }
+        }
+
+        /// <summary>
+        /// Unity Engine OnEnable() hook
+        /// </summary>
+        /// <remarks>
+        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnEnable.html
+        /// </remarks>
+        public void OnEnable()
+        {
+            isFirstMessage_ = true;
         }
 
         /// <summary>
@@ -193,6 +210,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             var www = UnityWebRequest.Get($"{HttpServerAddress}data/{LocalPeerId}");
             yield return www.SendWebRequest();
 
+            // node-dss doesn't have a concept of connection, so as a best-effort invoke the Connected
+            // event when the first connection is detected via a received message.
+            if (!www.isNetworkError && isFirstMessage_)
+            {
+                OnConnected();
+                isFirstMessage_ = false;
+            }
+
             if (!www.isNetworkError && !www.isHttpError)
             {
                 var json = www.downloadHandler.text;
@@ -221,27 +246,29 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                             // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
                             _nativePeer.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
                             break;
-                        //case SignalerMessage.WireMessageType.SetPeer:
-                        //    // this allows a remote peer to set our text target peer id
-                        //    // it is primarily useful when one device does not support keyboard input
-                        //    //
-                        //    // note: when running this sample on HoloLens (for example) we may use postman or a similar
-                        //    // tool to use this message type to set the target peer. This is NOT a production-quality solution.
-                        //    TargetIdField.text = msg.Data;
-                        //    break;
                         default:
                             Debug.Log("Unknown message: " + msg.MessageType + ": " + msg.Data);
                             break;
                     }
                 }
-                else if (AutoLogErrors)
+                else
                 {
-                    Debug.LogError($"Failed to deserialize JSON message : {json}");
+                    string errorMessage = $"Failed to deserialize JSON message : {json}";
+                    if (AutoLogErrors)
+                    {
+                        Debug.LogError(errorMessage);
+                    }
+                    OnFailureOccurred(new Exception(errorMessage));
                 }
             }
-            else if (AutoLogErrors && www.isNetworkError)
+            else if (www.isNetworkError)
             {
-                Debug.LogError($"Network error trying to send data to {HttpServerAddress}: {www.error}");
+                string errorMessage = $"Network error trying to send data to {HttpServerAddress}: {www.error}";
+                if (AutoLogErrors)
+                {
+                    Debug.LogError(errorMessage);
+                }
+                OnFailureOccurred(new Exception(errorMessage));
             }
             else
             {

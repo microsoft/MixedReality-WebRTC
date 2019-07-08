@@ -423,10 +423,10 @@ namespace Microsoft.MixedReality.WebRTC
         public PeerConnection(ISignaler signaler)
         {
             Signaler = signaler;
-            Signaler.OnMessage += Signaler_OnMessage;
+            Signaler.MessageReceived += Signaler_MessageReceived;
         }
 
-        private void Signaler_OnMessage(SignalerMessage message)
+        private void Signaler_MessageReceived(SignalerMessage message)
         {
             switch (message.MessageType)
             {

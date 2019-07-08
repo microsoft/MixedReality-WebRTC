@@ -18,23 +18,23 @@ namespace Microsoft.MixedReality.WebRTC
         /// implementation should fire this event when it has confirmed that some message can
         /// be sent to the remote peer, even if none has been so far.
         /// </summary>
-        event Action OnConnect;
+        event Action Connected;
 
         /// <summary>
         /// Event that occurs when signaling is disconnected.
         /// This may not fire if the implementation is connection-less.
         /// </summary>
-        event Action OnDisconnect;
+        event Action Disconnected;
 
         /// <summary>
         /// Event that occurs when the signaler receives a new message for the local peer from a remote peer.
         /// </summary>
-        event Action<SignalerMessage> OnMessage;
+        event Action<SignalerMessage> MessageReceived;
 
         /// <summary>
         /// Event that occurs when the signaler experiences some failure.
         /// </summary>
-        event Action<Exception> OnFailure;
+        event Action<Exception> FailureOccurred;
 
         /// <summary>
         /// Send a message to the remote peer.

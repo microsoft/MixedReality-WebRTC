@@ -23,10 +23,30 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         #region ISignaler interface
 
-        public event Action OnConnect;
-        public event Action OnDisconnect;
-        public event Action<SignalerMessage> OnMessage;
-        public event Action<Exception> OnFailure;
+        public event Action Connected;
+        public event Action Disconnected;
+        public event Action<SignalerMessage> MessageReceived;
+        public event Action<Exception> FailureOccurred;
+
+        protected virtual void OnConnected()
+        {
+            Connected?.Invoke();
+        }
+
+        protected virtual void OnDisconnected()
+        {
+            Disconnected?.Invoke();
+        }
+
+        protected virtual void OnMessageReceived(SignalerMessage message)
+        {
+            MessageReceived?.Invoke(message);
+        }
+
+        protected virtual void OnFailureOccurred(Exception ex)
+        {
+            FailureOccurred?.Invoke(ex);
+        }
 
         /// <summary>
         /// Asynchronously send a signaling message to the remote peer.
