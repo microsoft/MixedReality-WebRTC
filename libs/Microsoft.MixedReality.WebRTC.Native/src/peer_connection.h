@@ -163,9 +163,10 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
       const webrtc::IceCandidateInterface* candidate) noexcept override;
 
   // Callback on track added.
-  void OnAddTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
+  void OnAddTrack(
+      rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
       const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>&
-                      streams) noexcept override;
+          streams) noexcept override;
 
   // Callback on track removed.
   void OnRemoveTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface>
@@ -224,6 +225,14 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   std::unique_ptr<AudioFrameObserver> remote_audio_observer_;
   std::unique_ptr<VideoFrameObserver> local_video_observer_;
   std::unique_ptr<VideoFrameObserver> remote_video_observer_;
+
+  /// Flag to indicate if SCTP was negotiated during the initial SDP handshake
+  /// (m=application), which allows subsequently to use data channels. If this
+  /// is false then data channels will never connnect. This is set to true if a
+  /// data channel is created before the connection is established, which will
+  /// force the connection to negotiate the necessary SCTP information. See
+  /// https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
+  bool sctp_negotiated_ = false;
 
  private:
   PeerConnection(const PeerConnection&) = delete;
