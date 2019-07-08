@@ -31,3 +31,4 @@ obj
 
 # MRTK (for samples)
 /libs/Microsoft.MixedReality.WebRTC.Unity/Assets/MixedRealityToolkit*
+/libs/Microsoft.MixedReality.WebRTC.Unity/Assets/TextMesh Pro*
