@@ -94,7 +94,7 @@ namespace TestAppUwp
             localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx);
             remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx));
 
-            dssSignaler.OnFailure += DssSignaler_OnFailure;
+            dssSignaler.FailureOccurred += DssSignaler_OnFailure;
             dssSignaler.OnPollingDone += DssSignaler_OnPollingDone;
 
             dssStatsTimer.Tick += OnDssStatsTimerTick;

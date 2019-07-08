@@ -90,24 +90,26 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Event that occurs when signaling is connected.
         /// </summary>
-        public event Action OnConnect;
+        public event Action Connected;
 
         /// <summary>
         /// Event that occurs when signaling is disconnected.
+        /// The node-dss protocol doesn't have a concept of connection, so this is never invoked.
+        /// A production-ready signaling solution would invoke that event as expected.
         /// </summary>
-//#pragma warning disable 67
-        public event Action OnDisconnect;
-//#pragma warning restore 67
+#pragma warning disable 67
+        public event Action Disconnected;
+#pragma warning restore 67
 
         /// <summary>
         /// Event that occurs when the signaler receives a new message.
         /// </summary>
-        public event Action<SignalerMessage> OnMessage;
+        public event Action<SignalerMessage> MessageReceived;
 
         /// <summary>
         /// Event that occurs when the signaler experiences some failure.
         /// </summary>
-        public event Action<Exception> OnFailure;
+        public event Action<Exception> FailureOccurred;
 
         /// <summary>
         /// Property storage of the <c>node-dss</c> server HTTP address.
@@ -121,7 +123,7 @@ namespace Microsoft.MixedReality.WebRTC
         private HttpClient _httpClient = new HttpClient();
 
         /// <summary>
-        /// Atomic boolean indicating whether the <see cref="OnConnect"/> event was fired.
+        /// Atomic boolean indicating whether the <see cref="Connected"/> event was fired.
         /// Because <c>node-dss</c> does not have a concept of connection, the event
         /// is fired on the first successfully transmitted message.
         /// </summary>
@@ -173,7 +175,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 if (postTask.Exception != null)
                 {
-                    OnFailure?.Invoke(postTask.Exception);
+                    FailureOccurred?.Invoke(postTask.Exception);
                 }
             });
 
@@ -188,7 +190,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 if (prevTask.Exception != null)
                 {
-                    OnFailure?.Invoke(prevTask.Exception);
+                    FailureOccurred?.Invoke(prevTask.Exception);
                 }
 
                 if (prevTask.IsCompletedSuccessfully)
@@ -197,7 +199,7 @@ namespace Microsoft.MixedReality.WebRTC
                     // another task may have completed faster in the meantime and already invoked.
                     if (0 == Interlocked.Exchange(ref _connectedEventFired, 1))
                     {
-                        OnConnect?.Invoke();
+                        Connected?.Invoke();
                     }
                 }
             });
@@ -262,7 +264,7 @@ namespace Microsoft.MixedReality.WebRTC
                 {
                     if (getTask.Exception != null)
                     {
-                        OnFailure?.Invoke(getTask.Exception);
+                        FailureOccurred?.Invoke(getTask.Exception);
                         return;
                     }
 
@@ -275,7 +277,7 @@ namespace Microsoft.MixedReality.WebRTC
                         {
                             if (readTask.Exception != null)
                             {
-                                OnFailure?.Invoke(readTask.Exception);
+                                FailureOccurred?.Invoke(readTask.Exception);
                                 return;
                             }
 
@@ -285,11 +287,11 @@ namespace Microsoft.MixedReality.WebRTC
                             var msg = JsonConvert.DeserializeObject<SignalerMessage>(jsonMsg);
                             if (msg != null)
                             {
-                                OnMessage?.Invoke(msg);
+                                MessageReceived?.Invoke(msg);
                             }
                             else
                             {
-                                OnFailure?.Invoke(new Exception($"Failed to deserialize SignalerMessage object from JSON."));
+                                FailureOccurred?.Invoke(new Exception($"Failed to deserialize SignalerMessage object from JSON."));
                             }
                         });
                     }
