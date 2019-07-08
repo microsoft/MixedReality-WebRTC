@@ -160,12 +160,12 @@ bool PeerConnection::AddDataChannel(
     config.id = id;
   } else {
     // Valid IDs are 0-65535 (16 bits)
-    return false;
+    return MRS_E_INVALID_DATA_CHANNEL_ID;
   }
   if (!sctp_negotiated_) {
     // Don't try to create a data channel without SCTP negotiation, it will get
     // stuck in the kConnecting state forever.
-    return false;
+    return MRS_E_SCTP_NOT_NEGOTIATED;
   }
   std::string labelString;
   if (label)

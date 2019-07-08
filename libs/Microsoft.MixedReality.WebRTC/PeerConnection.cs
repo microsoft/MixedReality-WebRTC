@@ -822,12 +822,21 @@ namespace Microsoft.MixedReality.WebRTC
             // Create the native channel
             return await Task.Run(() =>
             {
-                if (NativeMethods.PeerConnectionAddDataChannel(_nativePeerhandle, id, label, ordered, reliable,
-                args.MessageCallback, userData, args.BufferingCallback, userData, args.StateCallback, userData))
+                uint res = NativeMethods.PeerConnectionAddDataChannel(_nativePeerhandle, id, label, ordered, reliable,
+                args.MessageCallback, userData, args.BufferingCallback, userData, args.StateCallback, userData);
+                if (res == 0)
                 {
                     return dataChannel;
                 }
                 handle.Free();
+                if (res == 0x80000301) // MRS_E_SCTP_NOT_NEGOTIATED
+                {
+                    throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
+                }
+                if (res == 0x80000302) // MRS_E_INVALID_DATA_CHANNEL_ID
+                {
+                    throw new ArgumentOutOfRangeException("id", id, "Invalid ID passed to AddDataChannelAsync().");
+                }
                 throw new Exception("AddDataChannelAsync() failed.");
             });
         }
@@ -1066,7 +1075,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddDataChannel")]
-            public static extern bool PeerConnectionAddDataChannel(IntPtr peerHandle, int id, string label,
+            public static extern uint PeerConnectionAddDataChannel(IntPtr peerHandle, int id, string label,
                 bool ordered, bool reliable, PeerConnectionDataChannelMessageCallback messageCallback,
                 IntPtr messageUserData, PeerConnectionDataChannelBufferingCallback bufferingCallback,
                 IntPtr bufferingUserData, PeerConnectionDataChannelStateCallback stateCallback,
