@@ -8,7 +8,7 @@
           "src": "../libs/Microsoft.MixedReality.WebRTC"
         },
         {
-          "files": [ "**/*.cs" ],
+          "files": [ "Microsoft.MixedReality.WebRTC.Unity*/**/*.cs" ],
           "src": "../libs/Microsoft.MixedReality.WebRTC.Unity/Assets"
         }
       ],
