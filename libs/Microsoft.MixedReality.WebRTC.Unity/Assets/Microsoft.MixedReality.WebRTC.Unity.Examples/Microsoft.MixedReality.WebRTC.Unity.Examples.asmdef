@@ -1,7 +1,8 @@
 {
     "name": "Microsoft.MixedReality.WebRTC.Unity.Examples",
     "references": [
-        "Microsoft.MixedReality.WebRTC.Unity"
+        "Microsoft.MixedReality.WebRTC.Unity",
+        "Unity.TextMeshPro"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
