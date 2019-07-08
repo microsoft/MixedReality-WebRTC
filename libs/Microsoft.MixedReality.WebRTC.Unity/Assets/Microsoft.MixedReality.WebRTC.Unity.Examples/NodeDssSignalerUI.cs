@@ -19,7 +19,6 @@ public class NodeDssSignalerUI : MonoBehaviour
     /// </summary>
     [Tooltip("The text field in which we display the device name")]
     public Text DeviceNameLabel;
-    public TextMesh DeviceNameLabel2;
 
     /// <summary>
     /// The text input field in which we accept the target device name
@@ -38,7 +37,6 @@ public class NodeDssSignalerUI : MonoBehaviour
         // Show device label (local peer ID)
         string localPeerId = NodeDssSignaler.LocalPeerId;
         DeviceNameLabel.text = localPeerId;
-        DeviceNameLabel2.text = localPeerId;
         Debug.Log($"NodeDSS local peer ID : {localPeerId}");
 
         if (!string.IsNullOrEmpty(NodeDssSignaler.RemotePeerId))
