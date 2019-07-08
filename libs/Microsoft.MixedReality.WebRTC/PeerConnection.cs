@@ -827,7 +827,7 @@ namespace Microsoft.MixedReality.WebRTC
                     return dataChannel;
                 }
                 handle.Free();
-                return null;
+                throw new Exception("AddDataChannelAsync() failed.");
             });
         }
 

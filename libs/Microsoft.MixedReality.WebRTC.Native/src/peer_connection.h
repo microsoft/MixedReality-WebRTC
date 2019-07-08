@@ -232,7 +232,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// data channel is created before the connection is established, which will
   /// force the connection to negotiate the necessary SCTP information. See
   /// https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
-  bool sctp_negotiated_ = false;
+  bool sctp_negotiated_ = true;
 
  private:
   PeerConnection(const PeerConnection&) = delete;
