@@ -38,7 +38,7 @@ Shader "Video/YUVFeedShader (unlit)"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
-#if UNITY_UV_STARTS_AT_TOP
+#if !UNITY_UV_STARTS_AT_TOP
 				o.uv.y = 1 - v.uv.y;
 #endif
 #ifdef MIRROR
