@@ -28,3 +28,6 @@ obj
 # Certificates
 *.pfx
 *.pfx.meta
+
+# MRTK (for samples)
+/libs/Microsoft.MixedReality.WebRTC.Unity/Assets/MixedRealityToolkit*
