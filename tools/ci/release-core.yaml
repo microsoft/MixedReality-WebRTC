@@ -14,7 +14,7 @@ name: release-core-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 jobs:
 - template: templates/jobs-libwebrtc.yaml
   parameters:
-    buildAgent: 'Analog Build Validation'
+    buildAgent: 'MR Sharing On-Prem' #'Analog Build Validation'
     buildPlatform: 'Win32'
     buildArch: 'x64'
     buildConfig: 'Release'
