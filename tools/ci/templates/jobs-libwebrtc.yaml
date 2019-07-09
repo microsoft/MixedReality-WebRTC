@@ -26,8 +26,7 @@ jobs:
     submodules: recursive
 
   # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
-  - template: steps-prepare-python27.yaml
-    condition: not(${{parameters.skipPython27}})
+  #- template: steps-prepare-python27.yaml
 
   # Map build* variables to script* ones
   - task: PowerShell@2
@@ -105,8 +104,7 @@ jobs:
       arguments: '${{parameters.buildPlatform}} ${{parameters.buildArch}} ${{parameters.buildConfig}}'
 
   # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
-  - template: steps-prepare-python27.yaml
-    condition: not(${{parameters.skipPython27}})
+  #- template: steps-prepare-python27.yaml
 
   # Prepare the environment with the setup script from Google
   - task: PythonScript@0
