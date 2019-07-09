@@ -498,7 +498,7 @@ mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept {
   return false;
 }
 
-bool MRS_CALL mrsPeerConnectionAddDataChannel(
+mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     PeerConnectionHandle peerHandle,
     int id,
     const char* label,
@@ -519,7 +519,7 @@ bool MRS_CALL mrsPeerConnectionAddDataChannel(
         DataChannelBufferingCallback{buffering_callback, buffering_user_data},
         DataChannelStateCallback{state_callback, state_user_data});
   }
-  return false;
+  return MRS_E_INVALID_PEER_HANDLE;
 }
 
 void MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(

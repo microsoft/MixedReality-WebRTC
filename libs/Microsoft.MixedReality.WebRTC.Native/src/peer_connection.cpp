@@ -160,12 +160,12 @@ bool PeerConnection::AddDataChannel(
     config.id = id;
   } else {
     // Valid IDs are 0-65535 (16 bits)
-    return false;
+    return MRS_E_INVALID_DATA_CHANNEL_ID;
   }
   if (!sctp_negotiated_) {
     // Don't try to create a data channel without SCTP negotiation, it will get
     // stuck in the kConnecting state forever.
-    return false;
+    return MRS_E_SCTP_NOT_NEGOTIATED;
   }
   std::string labelString;
   if (label)
@@ -275,8 +275,8 @@ bool PeerConnection::CreateOffer() noexcept {
     options.offer_to_receive_audio = true;
     options.offer_to_receive_video = true;
   }
-  if (!data_channel_from_id_.empty()) {
-    sctp_negotiated_ = true;
+  if (data_channel_from_id_.empty()) {
+    sctp_negotiated_ = false;
   }
   peer_->CreateOffer(this, options);
   return true;
@@ -299,6 +299,9 @@ bool PeerConnection::SetRemoteDescription(const char* type,
                                           const char* sdp) noexcept {
   if (!peer_)
     return false;
+  if (data_channel_from_id_.empty()) {
+    sctp_negotiated_ = false;
+  }
   std::string sdp_type_str(type);
   auto sdp_type = webrtc::SdpTypeFromString(sdp_type_str);
   if (!sdp_type.has_value())

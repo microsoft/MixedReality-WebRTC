@@ -25,6 +25,22 @@ rtc::Thread* UnsafeGetWorkerThread();
 extern "C" {
 
 //
+// Errors
+//
+
+using mrsResult = std::uint32_t;
+
+constexpr const mrsResult MRS_SUCCESS{0};
+
+// Peer conection (0x0xx)
+constexpr const mrsResult MRS_E_INVALID_PEER_HANDLE{0x8000001};
+constexpr const mrsResult MRS_E_PEER_NOT_INITIALIZED{0x8000002};
+
+// Data (0x3xx)
+constexpr const mrsResult MRS_E_SCTP_NOT_NEGOTIATED{0x8000301};
+constexpr const mrsResult MRS_E_INVALID_DATA_CHANNEL_ID{0x8000302};
+
+//
 // Generic utilities
 //
 
@@ -243,7 +259,7 @@ mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept;
 /// - If id >= 0, then it adds a new out-of-band negotiated channel with the
 /// given ID, and it is the responsibility of the app to create a channel with
 /// the same ID on the remote peer to be able to use the channel.
-MRS_API bool MRS_CALL mrsPeerConnectionAddDataChannel(
+MRS_API mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     PeerConnectionHandle peerHandle,
     int id,             // -1 for auto, >=0 for negotiated
     const char* label,  // optional, can be null or empty string
