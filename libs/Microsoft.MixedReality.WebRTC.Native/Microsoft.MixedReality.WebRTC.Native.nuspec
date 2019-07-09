@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <!-- Required elements-->
         <id>Microsoft.MixedReality.WebRTC.Native</id>
-        <version>0.1.0-beta</version>
-        <description>Native C++ libraries of Microsoft.MixedReality.WebRTC</description>
+        <version>0.1.0-publicpreview</version>
         <authors>Microsoft Mixed Reality Sharing Team</authors>
-        <!-- <product>Microsoft.MixedReality.WebRTC</product> -->
-
-        <!-- Optional elements -->
+        <owners>Mixed Reality Sharing Team</owners>
+        <description>Native C++ libraries of Microsoft.MixedReality.WebRTC</description>
         <title>Microsoft.MixedReality.WebRTC.Native</title>
         <projectUrl>https://github.com/microsoft/MixedReality-WebRTC</projectUrl>
         <license type="expression">MIT</license>
@@ -16,8 +13,6 @@
         <tags>native webrtc cpp video audio streaming</tags>
         <summary>Native C++ libraries of Microsoft.MixedReality.WebRTC</summary>
     </metadata>
-
-    <!-- Optional 'files' node -->
     <files>
         <file src="include\*.h" target="include" />
         <file src="$bin$\Win32\x86\$configuration$\Microsoft.MixedReality.WebRTC.Native.dll" target="runtimes\win10-x86\native" />
