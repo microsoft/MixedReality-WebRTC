@@ -7,7 +7,8 @@ parameters:
   buildConfig: ''      # Debug|Release
   skipCoreCpp: false
   skipUwpWrappers: false
- 
+  skipPython27: false
+
 jobs:
 
 # Compile webrtc.lib (core Google implementation)
@@ -26,6 +27,7 @@ jobs:
 
   # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
   - template: steps-prepare-python27.yaml
+    condition: not(${{parameters.skipPython27}})
 
   # Map build* variables to script* ones
   - task: PowerShell@2
@@ -104,6 +106,7 @@ jobs:
 
   # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
   - template: steps-prepare-python27.yaml
+    condition: not(${{parameters.skipPython27}})
 
   # Prepare the environment with the setup script from Google
   - task: PythonScript@0

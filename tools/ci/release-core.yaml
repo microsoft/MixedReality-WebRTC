@@ -19,6 +19,7 @@ jobs:
     buildArch: 'x64'
     buildConfig: 'Release'
     skipUwpWrappers: true
+    skipPython27: true
 # - template: templates/jobs-libwebrtc.yaml
 #   parameters:
 #     buildAgent: 'Analog On-Prem'
