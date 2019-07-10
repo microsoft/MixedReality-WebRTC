@@ -23,14 +23,11 @@ stages:
 #       buildConfig: 'Release'
 #       skipUwpWrappers: true
 #       skipPython27: true
-  - template: templates/jobs-libwebrtc.yaml
+  - template: templates/jobs-libwebrtc-uwp.yaml
     parameters:
       buildAgent: 'MR Sharing On-Prem'
-      buildPlatform: 'UWP'
       buildArch: 'x64'
       buildConfig: 'Release'
-      skipUwpWrappers: false
-      skipPython27: true
 #   - template: templates/jobs-libwebrtc.yaml
 #     parameters:
 #       buildAgent: 'MR Sharing On-Prem'
