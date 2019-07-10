@@ -1,0 +1,27 @@
+# [TEMPLATE] Pack WebRTC Core
+
+parameters:
+  buildAgent: ''
+
+jobs:
+
+# Pack webrtc.lib into Microsoft.MixedReality.WebRTC.Native.Core NuGet package
+- job: libwebrtc_nuget
+  timeoutInMinutes: 20
+  pool:
+    name: ${{parameters.buildAgent}}
+    demands: msbuild
+  variables:
+    projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
+  steps:
+  - checkout: none
+  - task: NuGetCommand@2
+    displayName: 'NuGet pack'
+    inputs:
+      command: pack
+      packagesToPack: libs/Microsoft.MixedReality.WebRTC.Native.Core/Microsoft.MixedReality.WebRTC.Native.Core.nuspec
+      packDestination: '$(Build.ArtifactStagingDirectory)/NuGet/'
+      includeSymbols: true
+      buildProperties: 'bin=bin'
+      basePath: '$(Build.SourcesDirectory)'
+

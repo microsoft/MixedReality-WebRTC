@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Microsoft.MixedReality.WebRTC.Native.Core</id>
+        <version>0.1.0-publicpreview</version>
+        <authors>Microsoft Mixed Reality Sharing Team</authors>
+        <owners>Mixed Reality Sharing Team</owners>
+        <description>Core WebRTC implementation consumed by the C++ libraries of Microsoft.MixedReality.WebRTC</description>
+        <title>Microsoft.MixedReality.WebRTC.Native.Core</title>
+        <projectUrl>https://github.com/microsoft/MixedReality-WebRTC</projectUrl>
+        <license type="expression">MIT</license>
+        <iconUrl>https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/mr-webrtc_icon.png</iconUrl>
+        <tags>native webrtc cpp video audio streaming</tags>
+        <summary>Core WebRTC implementation consumed by the C++ libraries of Microsoft.MixedReality.WebRTC</summary>
+    </metadata>
+    <files>
+        <!-- <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\win\x86\Debug\webrtc.lib" target="lib\native\lib\win10\x86\debug" />
+        <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\win\x86\Release\webrtc.lib" target="lib\native\lib\win10\x86\release" />
+        <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\win\x64\Debug\webrtc.lib" target="lib\native\lib\win10\x64\debug" /> -->
+        <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\win\x64\Release\webrtc.lib" target="lib\native\lib\win10\x64\release" />
+        <!-- <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\x86\Debug\webrtc.lib" target="lib\native\lib\uap10.0\x86\debug" />
+        <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\x86\Release\webrtc.lib" target="lib\native\lib\uap10.0\x86\release" />
+        <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\x64\Debug\webrtc.lib" target="lib\native\lib\uap10.0\x64\debug" />
+        <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\x64\Release\webrtc.lib" target="lib\native\lib\uap10.0\x64\release" />
+        <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\arm\Debug\webrtc.lib" target="lib\native\lib\uap10.0\arm\debug" />
+        <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\arm\Release\webrtc.lib" target="lib\native\lib\uap10.0\arm\release" />
+        <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\arm64\Debug\webrtc.lib" target="lib\native\lib\uap10.0\arm64\debug" />
+        <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\arm64\Release\webrtc.lib" target="lib\native\lib\uap10.0\arm64\release" /> -->
+    </files>
+</package>
