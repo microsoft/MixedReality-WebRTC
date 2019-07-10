@@ -15,6 +15,10 @@ jobs:
     projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
   steps:
   - checkout: none
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 4.9.2'
+    inputs:
+      versionSpec: 4.9.2
   - task: NuGetCommand@2
     displayName: 'NuGet pack'
     inputs:
