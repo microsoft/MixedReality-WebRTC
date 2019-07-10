@@ -159,14 +159,6 @@ jobs:
       configuration: ${{parameters.buildConfig}}
     timeoutInMinutes: 180
 
-  # Publish the generated C++/WinRT headers
-  - task: PublishPipelineArtifact@0
-    displayName: 'Publish WinRT headers ($(buildTriple))'
-    inputs:
-      artifactName: 'orgwebrtc_winrt_hpp_$(buildTriple)'
-      targetPath: '$(projectRoot)Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
-    timeoutInMinutes: 15
-
   # Publish Org.WebRtc.dll and associated (PDB, ...)
   - task: PublishPipelineArtifact@0
     displayName: 'Publish WinRT wrappers ($(buildTriple))'

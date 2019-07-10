@@ -15,28 +15,30 @@ stages:
 - stage: build
   displayName: Build webrtc.lib
   jobs:
+#   - template: templates/jobs-libwebrtc.yaml
+#     parameters:
+#       buildAgent: 'MR Sharing On-Prem'
+#       buildPlatform: 'Win32'
+#       buildArch: 'x64'
+#       buildConfig: 'Release'
+#       skipUwpWrappers: true
+#       skipPython27: true
   - template: templates/jobs-libwebrtc.yaml
     parameters:
       buildAgent: 'MR Sharing On-Prem'
-      buildPlatform: 'Win32'
+      buildPlatform: 'UWP'
       buildArch: 'x64'
       buildConfig: 'Release'
       skipUwpWrappers: true
       skipPython27: true
-  # - template: templates/jobs-libwebrtc.yaml
-  #   parameters:
-  #     buildAgent: 'MR Sharing On-Prem'
-  #     buildPlatform: 'UWP'
-  #     buildArch: 'x64'
-  #     buildConfig: 'Release'
-  #     skipUwpWrappers: true
-  # - template: templates/jobs-libwebrtc.yaml
-  #   parameters:
-  #     buildAgent: 'MR Sharing On-Prem'
-  #     buildPlatform: 'UWP'
-  #     buildArch: 'ARM'
-  #     buildConfig: 'Release'
-  #     skipUwpWrappers: true
+#   - template: templates/jobs-libwebrtc.yaml
+#     parameters:
+#       buildAgent: 'MR Sharing On-Prem'
+#       buildPlatform: 'UWP'
+#       buildArch: 'ARM'
+#       buildConfig: 'Release'
+#       skipUwpWrappers: true
+#       skipPython27: true
 
 - stage: pack
   displayName: Create NuGet package
