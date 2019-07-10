@@ -67,7 +67,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="project.props" />
+    <Import Project="Microsoft.MixedReality.WebRTC.Native.targets" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
