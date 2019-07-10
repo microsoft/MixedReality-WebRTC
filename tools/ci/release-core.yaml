@@ -29,7 +29,7 @@ stages:
       buildPlatform: 'UWP'
       buildArch: 'x64'
       buildConfig: 'Release'
-      skipUwpWrappers: true
+      skipUwpWrappers: false
       skipPython27: true
 #   - template: templates/jobs-libwebrtc.yaml
 #     parameters:
