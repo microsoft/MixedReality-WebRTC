@@ -15,10 +15,13 @@ jobs:
     projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
   steps:
   - checkout: none
+
+  # Generate the NuGet packages
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet 4.9.2'
     inputs:
       versionSpec: 4.9.2
+    timeoutInMinutes: 5
   - task: NuGetCommand@2
     displayName: 'NuGet pack'
     inputs:
@@ -28,4 +31,13 @@ jobs:
       includeSymbols: true
       buildProperties: 'bin=bin'
       basePath: '$(Build.SourcesDirectory)'
+    timeoutInMinutes: 15
+
+  # Publish the NuGet packages
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish core NuGet packages'
+    inputs:
+      artifactName: 'nuget_core'
+      targetPath: '$(Build.ArtifactStagingDirectory)/NuGet'
+    timeoutInMinutes: 15
 
