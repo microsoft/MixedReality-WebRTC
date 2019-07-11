@@ -12,8 +12,8 @@ pr: none
 name: release-core-nosign-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 variables:
-  MRWebRTCVersion: 2.0.0  # Major.Minor.Patch
-  MRWebRTCReleaseTag: ''  # Final version component, e.g. 'RC2.1' or empty string
+  MRWebRTCVersion: 0.0.1  # Major.Minor.Patch
+  MRWebRTCReleaseTag: '-alpha'  # Final version component, e.g. 'RC2.1' or empty string
 
 stages:
 
