@@ -31,7 +31,7 @@ jobs:
       packagesToPack: libs/Microsoft.MixedReality.WebRTC.Native.Core/Microsoft.MixedReality.WebRTC.Native.Core.nuspec
       packDestination: '$(Build.ArtifactStagingDirectory)/NuGet/'
       includeSymbols: true
-      buildProperties: 'bin=bin'
+      buildProperties: 'bin=bin;version=$(MRWebRTCVersion)-$(Build.BuildNumber)'
       basePath: '$(Build.SourcesDirectory)'
     timeoutInMinutes: 15
 

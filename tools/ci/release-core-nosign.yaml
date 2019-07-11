@@ -11,6 +11,10 @@ pr: none
 # Give a unique name to the build each time it runs
 name: release-core-nosign-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
+variables:
+  MRWebRTCVersion: 2.0.0  # Major.Minor.Patch
+  MRWebRTCReleaseTag: ''  # Final version component, e.g. 'RC2.1' or empty string
+
 stages:
 
 # Compile all platform/architecture/config variants as separate jobs
