@@ -4,14 +4,12 @@ parameters:
   buildAgent: ''
   buildArch: ''        # x86|x64|ARM|ARM64
   buildConfig: ''      # Debug|Release
-  skipCoreCpp: false
 
 jobs:
 
 # Compile webrtc.lib (core Google implementation)
 - job: libwebrtc_UWP_${{parameters.buildArch}}_${{parameters.buildConfig}}
   timeoutInMinutes: 360
-  condition: not(${{parameters.skipCoreCpp}})
   pool:
     name: ${{parameters.buildAgent}}
     demands: msbuild
