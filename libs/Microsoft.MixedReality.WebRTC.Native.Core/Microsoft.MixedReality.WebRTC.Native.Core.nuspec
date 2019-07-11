@@ -32,9 +32,9 @@
         <!-- <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\**" target="lib\native\src\winrt\generated" /> -->
 
         <!-- UWP wrapper libraries -->
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.dll" target="lib\native\bin\uap10.0\x64\release">
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.winmd" target="lib\native\bin\uap10.0\x64\release">
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.WrapperGlue.Universal\Build\Output\Org.WebRtc.WrapperGlue\Release\x64\Org.WebRtc.WrapperGlue.lib" target="lib\native\lib\uap10.0\x64\release">
+        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.dll" target="lib\native\bin\uap10.0\x64\release" />
+        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.winmd" target="lib\native\bin\uap10.0\x64\release" />
+        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.WrapperGlue.Universal\Build\Output\Org.WebRtc.WrapperGlue\Release\x64\Org.WebRtc.WrapperGlue.lib" target="lib\native\lib\uap10.0\x64\release" />
 
         <!-- ETW events -->
         <!-- <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\sdk\windows\wrapper\Org.WebRtc.Glue.events.h" target="lib\native\src\winrt" />
