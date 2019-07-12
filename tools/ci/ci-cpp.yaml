@@ -22,19 +22,19 @@ name: ci-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 jobs:
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted Windows 2019 with VS 2019' # windows-2019
+    buildAgent: 'Hosted Windows 2019 with VS2019' # windows-2019
     buildPlatform: 'Win32'
     buildArch: 'x64'
     buildConfig: 'Release'
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted Windows 2019 with VS 2019' # windows-2019
+    buildAgent: 'Hosted Windows 2019 with VS2019' # windows-2019
     buildPlatform: 'UWP'
     buildArch: 'x64'
     buildConfig: 'Release'
 # - template: templates/jobs-cpp.yaml
 #   parameters:
-#     buildAgent: 'Hosted Windows 2019 with VS 2019' # windows-2019
+#     buildAgent: 'Hosted Windows 2019 with VS2019' # windows-2019
 #     buildPlatform: 'UWP'
 #     buildArch: 'ARM'
 #     buildConfig: 'Release'
