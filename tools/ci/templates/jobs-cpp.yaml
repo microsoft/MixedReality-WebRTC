@@ -28,16 +28,16 @@ jobs:
       filePath: tools/ci/mapVariables.ps1
       arguments: '${{parameters.buildPlatform}} ${{parameters.buildArch}} ${{parameters.buildConfig}}'
 
-  # Ensure that Python 2.7.14 is the default; the Google scripts don't work with Python 3.x
+  # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
   - task: UsePythonVersion@0
-    displayName: 'Use Python 2.7.14 x64 for Google GN'
+    displayName: 'Use Python 2.7.16 x64 for Google GN'
     inputs:
-      versionSpec: 2.7.14
+      versionSpec: 2.7.16
     timeoutInMinutes: 5
 
   # Prepare the environment with the setup script from Google
   - task: PythonScript@0
-    displayName: format('Prepare WebRTC env ({0}-{1}-{2})', $(scriptPlatform), $(scriptArch), $(scriptConfig))
+    displayName: 'Prepare WebRTC env'
     inputs:
       scriptSource: 'filePath'
       scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
