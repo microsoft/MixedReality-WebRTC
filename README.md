@@ -58,7 +58,7 @@ tools/             Utility scripts
 
 ### Core WebRTC
 
-[**Visual Studio 2017**](http://dev.windows.com/downloads) is required to compile the core WebRTC implementation from Google. Having the MSVC v141 toolchain installed inside another version of Visual Studio is unfortunately not enough, the actual IDE needs to be installed for the detection script to work. This is a limitation of the Google build scripts. Selecting the **C++ Workload** alone is enough. If compiling for ARM or ARM64 architecture though, check the **Visual C++ compilers and libraries for ARM(64)** optional individual component.
+[**Visual Studio 2017**](http://dev.windows.com/downloads) is required to compile the core WebRTC implementation from Google. Having the MSVC v141 toolchain installed inside another version of Visual Studio is unfortunately not enough (see [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/175)), the actual IDE needs to be installed for the detection script to work. Selecting the **C++ Workload** alone is enough. If compiling for ARM or ARM64 architecture though, check the **Visual C++ compilers and libraries for ARM(64)** optional individual component.
 
 The **Windows SDK 10.0.17134** (also called 1803, or April 2018) is required to compile the Google WebRTC core implementation ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
@@ -71,6 +71,8 @@ The UWP wrappers also require the v141 platform toolset for UWP, either from the
 ### MixedReality-WebRTC C++ library
 
 The **MSVC v142 - VS 2019 C++ x64/x86 build tools** toolchain is required to build the C++17 library of MixedReality-WebRTC. This is installed by default with the **Desktop development with C++** workload on Visual Studio 2019.
+
+Note - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually.
 
 ### Unity integration
 
@@ -114,7 +116,11 @@ tools/build/build.ps1 -BuildConfig Debug -BuildArch x64 -BuildPlatform Win32
 
 The manual steps are details below and can be skipped if running the build script. The dependencies still need to be installed manually.
 
-The WebRTC UWP project has [specific requirements](https://github.com/webrtc-uwp/webrtc-uwp-sdk/blob/master/README.md). In particular it needs Python 2.7.x installed **as default**, that is calling `python` from a shell without specifying a path launches that Python 2.7.x version.
+The WebRTC UWP project has [specific requirements](https://github.com/webrtc-uwp/webrtc-uwp-sdk/blob/master/README.md). In particular it needs Python 2.7.15+ installed **as default**, that is calling `python` from a shell without specifying a path launches that Python 2.7.15+ version.
+
+Note - Currently the Azure hosted agents with VS 2017 have Python 2.7.14 installed, but this is discouraged by the WebRTC UWP team as some spurious build errors might occur. The new VS 2019 build agents have Python 2.7.16 installed, and will be used eventually.
+
+Note - Currently the `libyuv` external dependency is incorrectly compiled with Clang instead of MSVC on ARM builds. This was an attempt to benefit from inline assembly, but this produces link errors (see [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157)). Until this is fixed, a patch is available under `tools\patches\libyuv_win_msvc_157.patch` which is applied by `build.ps1` but needs to be applied manually if `build.ps1` is not used.
 
 For Windows Desktop support (also called "Win32"):
 
