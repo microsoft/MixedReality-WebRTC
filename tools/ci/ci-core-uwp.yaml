@@ -14,21 +14,21 @@ name: core-uwp-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 jobs:
 - template: templates/jobs-libwebrtc.yaml
   parameters:
-    buildAgent: 'Hosted Windows 2019 with VS2019' # windows-2019
+    buildAgent: 'Hosted Windows 2019 with VS 2019' # windows-2019
     buildPlatform: 'Win32'
     buildArch: 'x64'
     buildConfig: 'Release'
     skipCoreCpp: true
 - template: templates/jobs-libwebrtc.yaml
   parameters:
-    buildAgent: 'Hosted Windows 2019 with VS2019' # windows-2019
+    buildAgent: 'Hosted Windows 2019 with VS 2019' # windows-2019
     buildPlatform: 'UWP'
     buildArch: 'x64'
     buildConfig: 'Release'
     skipCoreCpp: true
 # - template: templates/jobs-libwebrtc.yaml
 #   parameters:
-#    buildAgent: 'Hosted Windows 2019 with VS2019' # windows-2019
+#    buildAgent: 'Hosted Windows 2019 with VS 2019' # windows-2019
 #     buildPlatform: 'UWP'
 #     buildArch: 'ARM'
 #     buildConfig: 'Release'
