@@ -129,7 +129,42 @@ function Build-UWPWrappers
         "..\..\external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Org.WebRtc.vcxproj"
 }
 
+function Apply-GitPatch
+{
+    param(
+        [Parameter(Mandatory)]
+        [string]$Folder,
+        
+        [Parameter(Mandatory)]
+        [string]$PatchPath
+    )
+    
+    Push-Location $Folder
+    git apply $PatchPath
+    if ($?)
+    {
+        # Patch doesn't apply, check if already applied correctly by checking if
+        # it can be un-applied in the current state (reverse apply).
+        git apply --reverse --check $PatchPath
+        if (-not $?)
+        {
+            Write-Host "Patch $PatchPath not applied, and failed to apply."
+            exit 1
+        }
+    }
+    Pop-Location
+}
+
+
+#
+# Build
+#
+
 Test-WindowsSDK
+
+# Patch libyuv clang compile (see #157 on WebRTC UWP project)
+Apply-GitPatch ..\..\external\webrtc-uwp-sdk\webrtc\xplatform\libyuv\ ..\..\..\..\..\tools\patches\libyuv_win_msvc_157.patch
+
 Build-CoreWebRTC -BuildConfig $BuildConfig -BuildArch $BuildArch -ScriptPlatform $ScriptPlatform
 if ($BuildPlatform -eq "UWP")
 {
