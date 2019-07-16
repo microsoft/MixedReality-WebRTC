@@ -30,6 +30,6 @@ if %1==CPP (
 ) else (
     REM C# assemblies are AnyCPU (architecture-independent) - just need a single copy for all architectures
     REM But the Unity Editor doesn't like DLLs in multiple directories, so copy them in Win32\x86_64 where it's looking
-    xcopy /Y /Q ..\..\bin\%4\Microsoft.MixedReality.WebRTC.dll ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86_64\
-    xcopy /Y /Q ..\..\bin\%4\Microsoft.MixedReality.WebRTC.pdb ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86_64\
+    xcopy /Y /Q ..\..\bin\netstandard2.0\%4\Microsoft.MixedReality.WebRTC.dll ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86_64\
+    xcopy /Y /Q ..\..\bin\netstandard2.0\%4\Microsoft.MixedReality.WebRTC.pdb ..\..\libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86_64\
 )

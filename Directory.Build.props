@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Common properties -->
+  <PropertyGroup>
+    <!-- SolutionDir is not defined when building projects explicitly -->
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), Microsoft.MixedReality.WebRTC.sln))\</SolutionDir>
+
+    <!-- Intermediate Output paths -->
+    <BaseIntermediateOutputPath>$(SolutionDir)build\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+    <RestoreOutputPath>$(MSBuildProjectExtensionsPath)</RestoreOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <!-- Don't transitively copy output files, since everything builds to the same folder. -->
+    <UseCommonOutputDirectory>True</UseCommonOutputDirectory>
+
+    <!-- C++ support -->
+    <!-- Do NOT set OutDir or IntDir due to seemingly bug, instead set in the vcxproj directly -->
+    <!-- https://social.msdn.microsoft.com/Forums/en-US/8a4379b2-aa39-43ce-9cb1-320c97fa32b0/unusual-folder-with-name-as-projectname-being-appended-to-the-target-binarydlllib -->
+  </PropertyGroup>
+</Project>
