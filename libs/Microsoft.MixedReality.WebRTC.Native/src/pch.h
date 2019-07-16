@@ -62,6 +62,7 @@
 #include <winrt/windows.applicationmodel.core.h>
 #include "sdk/windows/wrapper/impl_org_webRtc_EventQueue.h"
 #include "sdk/windows/wrapper/impl_org_webRtc_VideoCapturer.h"
+#include "sdk/windows/wrapper/impl_org_webRtc_VideoCapturerCreationParameters.h"
 #include "sdk/windows/wrapper/impl_org_webRtc_VideoDeviceInfo.h"
 #include "sdk/windows/wrapper/impl_org_webRtc_WebRtcFactory.h"
 #include "sdk/windows/wrapper/impl_org_webRtc_WebRtcFactoryConfiguration.h"

@@ -55,8 +55,13 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     }
     auto id = devInfo.Id().c_str();
 
-    auto vcd =
-        wrapper::impl::org::webRtc::VideoCapturer::create(name, id, enable_mrc);
+    auto createParams = std::make_shared<
+        wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
+    createParams->enableMrc = enable_mrc;
+    createParams->id = id;
+    createParams->name = name;
+
+    auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
 
     if (vcd != nullptr) {
       auto nativeVcd = wrapper::impl::org::webRtc::VideoCapturer::toNative(vcd);
