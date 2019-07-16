@@ -36,7 +36,7 @@ MixedReality-WebRTC is a set of individual components in the form of C++ and C# 
 
 MixedReality-WebRTC is currently available for Windows 10 Desktop and UWP (18362+), with or without Unity, with planned support for Unity deployment on iOS and Android.
 
-Note that in the following and elsewhere in this repository the term "Win32" is used as a synonym for "Windows Desktop", and in opposition to "Windows UWP". However Microsoft Windows versions older than Windows 10 with Windows SDK 18362+ (May 2019 Update, 1903) are not officially supported. See _Required Softwares_ below for more information.
+_Note_ - In the following and elsewhere in this repository the term "Win32" is used as a synonym for "Windows Desktop", the historical Windows API for Desktop application development, and in opposition to the "Windows UWP" API. However Microsoft Windows versions older than Windows 10 with Windows SDK 17134 (April 2018 Update, 1803) are not officially supported. In particular, older versions of Windows (Windows 7, Windows 8, etc.) are explicitly not supported. See _Required Softwares_ below for more information.
 
 ## Getting Started
 
@@ -46,8 +46,9 @@ This repository follows the [Pitchfork Layout](https://api.csswg.org/bikeshed/?f
 
 ```
 bin/               Binary outputs (generated)
+build/             Intermediate build artifacts (generated)
 docs/              Documentation
-examples/          Examples apps
+examples/          Examples of use and sample apps
 external/          Third-party external dependencies
 libs/              Source code for the component libraries
 tests/             Source code for unit tests
@@ -58,11 +59,15 @@ tools/             Utility scripts
 
 ### Core WebRTC
 
+_Core WebRTC_ refers to the C++ implementation of WebRTC maintained by Google and used by this project, whose source repository is https://webrtc.googlesource.com/src.
+
 [**Visual Studio 2017**](http://dev.windows.com/downloads) is required to compile the core WebRTC implementation from Google. Having the MSVC v141 toolchain installed inside another version of Visual Studio is unfortunately not enough (see [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/175)), the actual IDE needs to be installed for the detection script to work. Selecting the **C++ Workload** alone is enough. If compiling for ARM or ARM64 architecture though, check the **Visual C++ compilers and libraries for ARM(64)** optional individual component.
 
 The **Windows SDK 10.0.17134** (also called 1803, or April 2018) is required to compile the Google WebRTC core implementation ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
 ### Core WebRTC UWP wrappers
+
+The _UWP wrappers_ refer to the set of wrappers and other UWP-specific additional code made available by the WebRTC UWP team (Microsoft) on top of the core implementation, to allow access to the core WebRTC API 
 
 The **Windows SDK 10.0.17763** (also called 1809, or October 2018) is required to compile the UWP wrappers provided by the WebRTC UWP team ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
@@ -72,7 +77,7 @@ The UWP wrappers also require the v141 platform toolset for UWP, either from the
 
 The **MSVC v142 - VS 2019 C++ x64/x86 build tools** toolchain is required to build the C++17 library of MixedReality-WebRTC. This is installed by default with the **Desktop development with C++** workload on Visual Studio 2019.
 
-Note - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually.
+_Note_ - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually (see [#14](https://github.com/microsoft/MixedReality-WebRTC/issues/14)).
 
 ### Unity integration
 
@@ -108,19 +113,31 @@ git submodule update --init --recursive
 
 ### Build the WebRTC UWP SDK libraries
 
+#### Using the build script
+
 In order to simplify building, a PowerShell **build script** is available. Simply run for example:
 
 ```
 tools/build/build.ps1 -BuildConfig Debug -BuildArch x64 -BuildPlatform Win32
 ```
 
-The manual steps are details below and can be skipped if running the build script. The dependencies still need to be installed manually.
+Valid parameter values are:
+
+- **BuildConfig** : Debug | Release
+- **BuildArch** : x86 | x64 | ARM | ARM64
+- **BuildPlatform** : Win32 | UWP
+
+_Note_ - ARM64 is not yet available (see [#13](https://github.com/microsoft/MixedReality-WebRTC/issues/13)).
+
+The manual steps are details below and can be skipped if running the build script. The dependencies still need to be installed manually before running `build.ps1`.
+
+#### Manually
 
 The WebRTC UWP project has [specific requirements](https://github.com/webrtc-uwp/webrtc-uwp-sdk/blob/master/README.md). In particular it needs Python 2.7.15+ installed **as default**, that is calling `python` from a shell without specifying a path launches that Python 2.7.15+ version.
 
-Note - Currently the Azure hosted agents with VS 2017 have Python 2.7.14 installed, but this is discouraged by the WebRTC UWP team as some spurious build errors might occur. The new VS 2019 build agents have Python 2.7.16 installed, and will be used eventually.
+_Note_ - Currently the Azure hosted agents with VS 2017 have Python 2.7.14 installed, but this is discouraged by the WebRTC UWP team as some spurious build errors might occur. The new VS 2019 build agents have Python 2.7.16 installed, and will be used eventually.
 
-Note - Currently the `libyuv` external dependency is incorrectly compiled with Clang instead of MSVC on ARM builds. This was an attempt to benefit from inline assembly, but this produces link errors (see [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157)). Until this is fixed, a patch is available under `tools\patches\libyuv_win_msvc_157.patch` which is applied by `build.ps1` but needs to be applied manually if `build.ps1` is not used.
+_Note_ - Currently the `libyuv` external dependency is incorrectly compiled with Clang instead of MSVC on ARM builds. This was an attempt to benefit from inline assembly, but this produces link errors (see [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157)). Until this is fixed, a patch is available under `tools\patches\libyuv_win_msvc_157.patch` which is applied by `build.ps1` but needs to be applied manually if `build.ps1` is not used.
 
 For Windows Desktop support (also called "Win32"):
 
@@ -132,7 +149,7 @@ For Windows Desktop support (also called "Win32"):
 For UWP support:
 
 - Open the **`WebRtc.Universal.sln`** Visual Studio solution located in `external\webrtc-uwp-sdk\webrtc\windows\solution\`
-- In the menu bar, select the relevant solution platform and solution configuration. For HoloLens, the **x86** binaries are required. For HoloLens 2, the **ARM** binaries are required (ARM64 is not supported yet).
+- In the menu bar, select the relevant solution platform and solution configuration. For HoloLens, the **x86** binaries are required. For HoloLens 2, the **ARM** binaries are required (ARM64 is not supported yet, see [#13](https://github.com/microsoft/MixedReality-WebRTC/issues/13)).
 - **Build first the `WebRtc.UWP.Native.Builder` project alone**, which generates some files needed by some of the other projects in the solution, by right-clicking on that project > **Build**
 - Build the rest of the solution with F7 or **Build > Build Solution**
 
@@ -169,7 +186,8 @@ The current version is a public preview under active development, which contains
   - The [missing support (#157)](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157) for SIMD-accelerated YUV conversion in WebRTC UWP SDK.
   - The use of the highest available video resolution when opening the webcam with the default video profile. Support for selecting a different video profile is not available yet in WebRTC UWP SDK. See [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/170) for details.
   - The use by default of the VP8 video codec, which is fairly CPU intensive.
-- Some less powerful devices (_e.g._ laptop) may exhibit performance issues similar to HoloLens 2 when using multiple video tracks, for example one local and one remote (video chat), due to the same CPU intensive VP8 codec. This problem is amplified if audio is also used at the same time, which can be CPU intensive too.
+- The Debug config of WebRTC core implementation is knows to exhibit performance issues on most devices, including some higher end PCs. Using the Release config of the core WebRTC implementation usually prevents this issue.
+- There is currently no clean C++ API; instead the C API used for C# P/Invoke can be used from C++ code, and opaque handles cast to C++ objects. An actual C++ API will eventually be exposed.
 
 ## Contributing
 
