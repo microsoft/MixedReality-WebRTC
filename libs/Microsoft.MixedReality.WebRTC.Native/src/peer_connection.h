@@ -97,13 +97,13 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   bool AddLocalAudioTrack(
       rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track) noexcept;
   void RemoveLocalAudioTrack() noexcept;
-  bool AddDataChannel(int id,
-                      const char* label,
-                      bool ordered,
-                      bool reliable,
-                      DataChannelMessageCallback message_callback,
-                      DataChannelBufferingCallback buffering_callback,
-                      DataChannelStateCallback state_callback) noexcept;
+  mrsResult AddDataChannel(int id,
+                           const char* label,
+                           bool ordered,
+                           bool reliable,
+                           DataChannelMessageCallback message_callback,
+                           DataChannelBufferingCallback buffering_callback,
+                           DataChannelStateCallback state_callback) noexcept;
   bool RemoveDataChannel(int id) noexcept;
   bool RemoveDataChannel(const char* label) noexcept;
 

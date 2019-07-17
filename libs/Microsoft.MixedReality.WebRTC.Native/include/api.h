@@ -32,13 +32,16 @@ using mrsResult = std::uint32_t;
 
 constexpr const mrsResult MRS_SUCCESS{0};
 
+// Unknown generic error
+constexpr const mrsResult MRS_E_UNKNOWN{0x80000000};
+
 // Peer conection (0x0xx)
-constexpr const mrsResult MRS_E_INVALID_PEER_HANDLE{0x8000001};
-constexpr const mrsResult MRS_E_PEER_NOT_INITIALIZED{0x8000002};
+constexpr const mrsResult MRS_E_INVALID_PEER_HANDLE{0x80000001};
+constexpr const mrsResult MRS_E_PEER_NOT_INITIALIZED{0x80000002};
 
 // Data (0x3xx)
-constexpr const mrsResult MRS_E_SCTP_NOT_NEGOTIATED{0x8000301};
-constexpr const mrsResult MRS_E_INVALID_DATA_CHANNEL_ID{0x8000302};
+constexpr const mrsResult MRS_E_SCTP_NOT_NEGOTIATED{0x80000301};
+constexpr const mrsResult MRS_E_INVALID_DATA_CHANNEL_ID{0x80000302};
 
 //
 // Generic utilities

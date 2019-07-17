@@ -141,7 +141,7 @@ void PeerConnection::RemoveLocalAudioTrack() noexcept {
   local_audio_sender_ = nullptr;
 }
 
-bool PeerConnection::AddDataChannel(
+mrsResult PeerConnection::AddDataChannel(
     int id,
     const char* label,
     bool ordered,
@@ -186,9 +186,9 @@ bool PeerConnection::AddDataChannel(
     if (config.id >= 0) {
       data_channel_from_id_.try_emplace(config.id, std::move(observer));
     }
-    return true;
+    return MRS_SUCCESS;
   }
-  return false;
+  return MRS_E_UNKNOWN;
 }
 
 bool PeerConnection::RemoveDataChannel(int id) noexcept {
