@@ -19,6 +19,38 @@ struct mrsEnumerator {
 
 namespace {
 
+/// Global factory for PeerConnection objects.
+rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
+    g_peer_connection_factory;
+
+#if defined(WINUWP)
+
+/// Winuwp relies on a global-scoped factory wrapper
+std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory> g_winuwp_factory;
+
+#else
+
+/// WebRTC worker thread.
+std::unique_ptr<rtc::Thread> g_worker_thread;
+
+/// WebRTC signaling thread.
+std::unique_ptr<rtc::Thread> g_signaling_thread;
+
+#endif
+
+/// Collection of all peer connection objects alive.
+std::unordered_map<
+    PeerConnectionHandle,
+    rtc::scoped_refptr<Microsoft::MixedReality::WebRTC::PeerConnection>>
+    g_peer_connection_map;
+
+/// Predefined name of the local video track.
+const std::string kLocalVideoLabel("local_video");
+
+/// Predefined name of the local audio track.
+const std::string kLocalAudioLabel("local_audio");
+
+/// Helper to open a video capture device.
 std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     const char* video_device_id,
     bool enable_mrc = false) noexcept(kNoExceptFalseOnUWP) {
@@ -57,9 +89,10 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
 
     auto createParams = std::make_shared<
         wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
-    createParams->enableMrc = enable_mrc;
-    createParams->id = id;
+    createParams->factory = g_winuwp_factory;
     createParams->name = name;
+    createParams->id = id;
+    createParams->enableMrc = enable_mrc;
 
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
 
@@ -122,37 +155,6 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   return capturer;
 #endif
 }
-
-/// Global factory for PeerConnection objects.
-rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
-    g_peer_connection_factory;
-
-#if defined(WINUWP)
-
-/// Winuwp relies on a global-scoped factory wrapper
-std::unique_ptr<wrapper::impl::org::webRtc::WebRtcFactory> g_winuwp_factory;
-
-#else
-
-/// WebRTC worker thread.
-std::unique_ptr<rtc::Thread> g_worker_thread;
-
-/// WebRTC signaling thread.
-std::unique_ptr<rtc::Thread> g_signaling_thread;
-
-#endif
-
-/// Collection of all peer connection objects alive.
-std::unordered_map<
-    PeerConnectionHandle,
-    rtc::scoped_refptr<Microsoft::MixedReality::WebRTC::PeerConnection>>
-    g_peer_connection_map;
-
-/// Predefined name of the local video track.
-const std::string kLocalVideoLabel("local_video");
-
-/// Predefined name of the local audio track.
-const std::string kLocalAudioLabel("local_audio");
 
 }  // namespace
 
@@ -257,7 +259,7 @@ PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
     factoryConfig->audioRenderingEnabled = true;
     factoryConfig->enableAudioBufferEvents = true;
     g_winuwp_factory =
-        std::make_unique<wrapper::impl::org::webRtc::WebRtcFactory>();
+        std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
     g_winuwp_factory->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
     g_winuwp_factory->setup();
 
