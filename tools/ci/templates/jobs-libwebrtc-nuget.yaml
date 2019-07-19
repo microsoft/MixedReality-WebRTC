@@ -18,7 +18,7 @@ jobs:
   
   # Compute the NuGet package version
   - powershell: |
-      $NuGetVersion = "$(MRWebRTCVersion)-$(Build.BuildId)"
+      $NuGetVersion = "$(MRWebRTCVersion)-$(MRWebRTCReleaseTag)-$(Build.BuildId)"
       Write-Host "NuGet package version : $NuGetVersion"
       Write-Host "##vso[task.setvariable variable=NuGetVersion]$NuGetVersion"
     displayName: 'Compute NuGet package version'
