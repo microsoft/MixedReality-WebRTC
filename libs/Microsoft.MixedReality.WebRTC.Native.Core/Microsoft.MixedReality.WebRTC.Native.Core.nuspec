@@ -48,7 +48,7 @@
         <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\ARM64\Org.WebRtc.dll" target="runtimes\win10-arm64\native" />
         <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\ARM64\Org.WebRtc.pri" target="runtimes\win10-arm64\native" /> -->
         <!-- .targets -->
-        <file src="Microsoft.MixedReality.WebRTC.Native.Core.targets" target="build\native" />
+        <file src="libs\Microsoft.MixedReality.WebRTC.Native.Core\Microsoft.MixedReality.WebRTC.Native.Core.targets" target="build\native" />
 
         <!-- ETW events -->
         <!-- <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\sdk\windows\wrapper\Org.WebRtc.Glue.events.h" target="lib\native\src\winrt" />
