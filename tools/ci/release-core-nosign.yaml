@@ -23,31 +23,31 @@ stages:
 - stage: build
   displayName: Build webrtc.lib
   jobs:
-  # - template: templates/jobs-libwebrtc-win32.yaml
-  #   parameters:
-  #     buildAgent: 'MR Sharing On-Prem'
-  #     buildArch: 'x86'
-  #     buildConfig: 'Release'
-  # - template: templates/jobs-libwebrtc-win32.yaml
-  #   parameters:
-  #     buildAgent: 'MR Sharing On-Prem'
-  #     buildArch: 'x64'
-  #     buildConfig: 'Release'
-  # - template: templates/jobs-libwebrtc-uwp.yaml
-  #   parameters:
-  #     buildAgent: 'MR Sharing On-Prem'
-  #     buildArch: 'x86'
-  #     buildConfig: 'Release'
+  - template: templates/jobs-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'MR Sharing On-Prem'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+  - template: templates/jobs-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'MR Sharing On-Prem'
+      buildArch: 'x64'
+      buildConfig: 'Release'
+  - template: templates/jobs-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'MR Sharing On-Prem'
+      buildArch: 'x86'
+      buildConfig: 'Release'
   - template: templates/jobs-libwebrtc-uwp.yaml
     parameters:
       buildAgent: 'MR Sharing On-Prem'
       buildArch: 'x64'
       buildConfig: 'Release'
-  # - template: templates/jobs-libwebrtc-uwp.yaml
-  #   parameters:
-  #     buildAgent: 'MR Sharing On-Prem'
-  #     buildArch: 'ARM'
-  #     buildConfig: 'Release'
+  - template: templates/jobs-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'MR Sharing On-Prem'
+      buildArch: 'ARM'
+      buildConfig: 'Release'
   # - template: templates/jobs-libwebrtc-uwp.yaml
   #   parameters:
   #     buildAgent: 'MR Sharing On-Prem'
