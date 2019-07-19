@@ -8,6 +8,7 @@
 
 #include "api.h"
 #include "peer_connection.h"
+#include "sdp_utils.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
@@ -18,6 +19,38 @@ struct mrsEnumerator {
 
 namespace {
 
+/// Global factory for PeerConnection objects.
+rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
+    g_peer_connection_factory;
+
+#if defined(WINUWP)
+
+/// Winuwp relies on a global-scoped factory wrapper
+std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory> g_winuwp_factory;
+
+#else
+
+/// WebRTC worker thread.
+std::unique_ptr<rtc::Thread> g_worker_thread;
+
+/// WebRTC signaling thread.
+std::unique_ptr<rtc::Thread> g_signaling_thread;
+
+#endif
+
+/// Collection of all peer connection objects alive.
+std::unordered_map<
+    PeerConnectionHandle,
+    rtc::scoped_refptr<Microsoft::MixedReality::WebRTC::PeerConnection>>
+    g_peer_connection_map;
+
+/// Predefined name of the local video track.
+const std::string kLocalVideoLabel("local_video");
+
+/// Predefined name of the local audio track.
+const std::string kLocalAudioLabel("local_audio");
+
+/// Helper to open a video capture device.
 std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     const char* video_device_id,
     bool enable_mrc = false) noexcept(kNoExceptFalseOnUWP) {
@@ -54,8 +87,14 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     }
     auto id = devInfo.Id().c_str();
 
-    auto vcd =
-        wrapper::impl::org::webRtc::VideoCapturer::create(name, id, enable_mrc);
+    auto createParams = std::make_shared<
+        wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
+    createParams->factory = g_winuwp_factory;
+    createParams->name = name;
+    createParams->id = id;
+    createParams->enableMrc = enable_mrc;
+
+    auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
 
     if (vcd != nullptr) {
       auto nativeVcd = wrapper::impl::org::webRtc::VideoCapturer::toNative(vcd);
@@ -77,6 +116,7 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   }
   return nullptr;
 #else
+  (void)enable_mrc;  // No MRC on non-UWP
   std::vector<std::string> device_names;
   {
     std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
@@ -115,37 +155,6 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   return capturer;
 #endif
 }
-
-/// Global factory for PeerConnection objects.
-rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
-    g_peer_connection_factory;
-
-#if defined(WINUWP)
-
-/// Winuwp relies on a global-scoped factory wrapper
-std::unique_ptr<wrapper::impl::org::webRtc::WebRtcFactory> g_winuwp_factory;
-
-#else
-
-/// WebRTC worker thread.
-std::unique_ptr<rtc::Thread> g_worker_thread;
-
-/// WebRTC signaling thread.
-std::unique_ptr<rtc::Thread> g_signaling_thread;
-
-#endif
-
-/// Collection of all peer connection objects alive.
-std::unordered_map<
-    PeerConnectionHandle,
-    rtc::scoped_refptr<Microsoft::MixedReality::WebRTC::PeerConnection>>
-    g_peer_connection_map;
-
-/// Predefined name of the local video track.
-const std::string kLocalVideoLabel("local_video");
-
-/// Predefined name of the local audio track.
-const std::string kLocalAudioLabel("local_audio");
 
 }  // namespace
 
@@ -250,7 +259,7 @@ PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
     factoryConfig->audioRenderingEnabled = true;
     factoryConfig->enableAudioBufferEvents = true;
     g_winuwp_factory =
-        std::make_unique<wrapper::impl::org::webRtc::WebRtcFactory>();
+        std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
     g_winuwp_factory->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
     g_winuwp_factory->setup();
 
@@ -496,7 +505,7 @@ mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept {
   return false;
 }
 
-bool MRS_CALL mrsPeerConnectionAddDataChannel(
+mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     PeerConnectionHandle peerHandle,
     int id,
     const char* label,
@@ -517,7 +526,7 @@ bool MRS_CALL mrsPeerConnectionAddDataChannel(
         DataChannelBufferingCallback{buffering_callback, buffering_user_data},
         DataChannelStateCallback{state_callback, state_user_data});
   }
-  return false;
+  return MRS_E_INVALID_PEER_HANDLE;
 }
 
 void MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
@@ -628,15 +637,60 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
   }
 }
 
+bool MRS_CALL mrsSdpForceCodecs(const char* message,
+                                const char* audio_codec_name,
+                                const char* video_codec_name,
+                                char* buffer,
+                                size_t* buffer_size) {
+  RTC_CHECK(message);
+  RTC_CHECK(buffer);
+  RTC_CHECK(buffer_size);
+  std::string message_str(message);
+  std::string audio_codec_name_str;
+  std::string video_codec_name_str;
+  if (audio_codec_name) {
+    audio_codec_name_str.assign(audio_codec_name);
+  }
+  if (video_codec_name) {
+    video_codec_name_str.assign(video_codec_name);
+  }
+  std::string out_message =
+      SdpForceCodecs(message_str, audio_codec_name_str, video_codec_name_str);
+  const size_t capacity = *buffer_size;
+  const size_t size = out_message.size();
+  *buffer_size = size + 1;
+  if (capacity < size + 1) {
+    return false;
+  }
+  memcpy(buffer, out_message.c_str(), size);
+  buffer[size] = '\0';
+  return true;
+}
+
+void MRS_CALL mrsMemCpy(void* dst, const void* src, size_t size) {
+  memcpy(dst, src, size);
+}
+
 void MRS_CALL mrsMemCpyStride(void* dst,
                               int dst_stride,
                               const void* src,
                               int src_stride,
                               int elem_size,
                               int elem_count) {
-  for (int i = 0; i < elem_count; ++i) {
-    memcpy(dst, src, elem_size);
-    dst = (char*)dst + dst_stride;
-    src = (const char*)src + src_stride;
+  RTC_CHECK(dst);
+  RTC_CHECK(dst_stride >= elem_size);
+  RTC_CHECK(src);
+  RTC_CHECK(src_stride >= elem_size);
+  if ((dst_stride == elem_size) && (src_stride == elem_size)) {
+    // If tightly packed, do a single memcpy() for performance
+    const size_t total_size = (size_t)elem_size * elem_count;
+    memcpy(dst, src, total_size);
+  } else {
+    // Otherwise, copy row by row
+    for (int i = 0; i < elem_count; ++i) {
+      memcpy(dst, src, elem_size);
+      dst = (char*)dst + dst_stride;
+      src = (const char*)src + src_stride;
+    }
   }
 }

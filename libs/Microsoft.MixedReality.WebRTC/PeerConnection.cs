@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -74,6 +75,18 @@ namespace Microsoft.MixedReality.WebRTC
         public string Credentials = string.Empty;
 
         /// <summary>
+        /// Name of the preferred audio codec, or empty to let WebRTC decide.
+        /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
+        /// </summary>
+        public string PreferredAudioCodec = string.Empty;
+
+        /// <summary>
+        /// Name of the preferred video codec, or empty to let WebRTC decide.
+        /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
+        /// </summary>
+        public string PreferredVideoCodec = string.Empty;
+
+        /// <summary>
         /// Boolean property indicating whether the peer connection has been initialized.
         /// </summary>
         public bool Initialized
@@ -86,6 +99,8 @@ namespace Microsoft.MixedReality.WebRTC
                 }
             }
         }
+
+        public bool IsConnected { get; private set; } = false;
 
         /// <summary>
         /// Event fired when a connection is established.
@@ -208,7 +223,7 @@ namespace Microsoft.MixedReality.WebRTC
             public class DataChannelCallbackArgs
             {
                 public PeerConnection Peer;
-                //public WebRTCDataChannel DataChannel;
+                public DataChannel DataChannel;
                 public NativeMethods.PeerConnectionDataChannelMessageCallback MessageCallback;
                 public NativeMethods.PeerConnectionDataChannelBufferingCallback BufferingCallback;
                 public NativeMethods.PeerConnectionDataChannelStateCallback StateCallback;
@@ -224,6 +239,7 @@ namespace Microsoft.MixedReality.WebRTC
             public static void ConnectedCallback(IntPtr userData)
             {
                 var peer = FromIntPtr(userData);
+                peer.IsConnected = true;
                 peer.Connected?.Invoke();
             }
 
@@ -338,26 +354,26 @@ namespace Microsoft.MixedReality.WebRTC
                 peer.ARGBRemoteVideoFrameReady?.Invoke(frame);
             }
 
-            //[MonoPInvokeCallback(typeof(DataChannelMessageDelegate))]
-            //public static void DataChannelMessageCallback(IntPtr userData, IntPtr data, ulong size)
-            //{
-            //    var args = DataChannelCallbackArgs.FromIntPtr(userData);
-            //    args.DataChannel.OnMessageReceived(data, size);
-            //}
+            [MonoPInvokeCallback(typeof(DataChannelMessageDelegate))]
+            public static void DataChannelMessageCallback(IntPtr userData, IntPtr data, ulong size)
+            {
+                var args = DataChannelCallbackArgs.FromIntPtr(userData);
+                args.DataChannel.OnMessageReceived(data, size);
+            }
 
-            //[MonoPInvokeCallback(typeof(DataChannelBufferingDelegate))]
-            //public static void DataChannelBufferingCallback(IntPtr userData, ulong previous, ulong current, ulong limit)
-            //{
-            //    var args = DataChannelCallbackArgs.FromIntPtr(userData);
-            //    args.DataChannel.OnBufferingChanged(previous, current, limit);
-            //}
+            [MonoPInvokeCallback(typeof(DataChannelBufferingDelegate))]
+            public static void DataChannelBufferingCallback(IntPtr userData, ulong previous, ulong current, ulong limit)
+            {
+                var args = DataChannelCallbackArgs.FromIntPtr(userData);
+                args.DataChannel.OnBufferingChanged(previous, current, limit);
+            }
 
-            //[MonoPInvokeCallback(typeof(DataChannelStateDelegate))]
-            //public static void DataChannelStateCallback(IntPtr userData, int state, int id)
-            //{
-            //    var args = DataChannelCallbackArgs.FromIntPtr(userData);
-            //    args.DataChannel.OnStateChanged((WebRTCDataChannel.State)state, id);
-            //}
+            [MonoPInvokeCallback(typeof(DataChannelStateDelegate))]
+            public static void DataChannelStateCallback(IntPtr userData, int state, int id)
+            {
+                var args = DataChannelCallbackArgs.FromIntPtr(userData);
+                args.DataChannel.OnStateChanged(state, id);
+            }
         }
 
         /// <summary>
@@ -629,6 +645,7 @@ namespace Microsoft.MixedReality.WebRTC
                 }
 
                 _isClosing = false;
+                IsConnected = false;
             }
         }
 
@@ -655,9 +672,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// On UWP this requires the "webcam" capability.
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
-        /// 
-        /// This method throws an exception if the peer connection is not initialized.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task AddLocalVideoTrackAsync(VideoCaptureDevice device = default(VideoCaptureDevice), bool enableMrc = false)
         {
             ThrowIfConnectionNotOpen();
@@ -675,7 +691,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Remove from the current connection the local video track added with <see cref="AddLocalAudioTrackAsync"/>.
         /// </summary>
-        /// <remarks>This method throws an exception if the peer connection is not initialized.</remarks>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void RemoveLocalVideoTrack()
         {
             ThrowIfConnectionNotOpen();
@@ -690,9 +706,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// On UWP this requires the "microphone" capability.
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
-        /// 
-        /// This method throws an exception if the peer connection is not initialized.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task AddLocalAudioTrackAsync()
         {
             ThrowIfConnectionNotOpen();
@@ -710,7 +725,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Remove from the current connection the local audio track added with <see cref="AddLocalAudioTrackAsync"/>.
         /// </summary>
-        /// <remarks>This method throws an exception if the peer connection is not initialized.</remarks>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void RemoveLocalAudioTrack()
         {
             ThrowIfConnectionNotOpen();
@@ -722,61 +737,123 @@ namespace Microsoft.MixedReality.WebRTC
 
         #region Data tracks
 
-        //public async Task<bool> AddDataChannel(WebRTCDataChannel dataChannel, string label, bool ordered, bool reliable)
-        //{
-        //    ThrowIfConnectionNotOpen();
-        //    var args = new CallbacksWrappers.DataChannelCallbackArgs()
-        //    {
-        //        Peer = this,
-        //        DataChannel = dataChannel,
-        //        MessageCallback = CallbacksWrappers.DataChannelMessageCallback,
-        //        BufferingCallback = CallbacksWrappers.DataChannelBufferingCallback,
-        //        StateCallback = CallbacksWrappers.DataChannelStateCallback
-        //    };
-        //    var handle = GCHandle.Alloc(args, GCHandleType.Normal);
-        //    IntPtr userData = GCHandle.ToIntPtr(handle);
-        //    return await Task.Run(() =>
-        //    {
-        //        return NativeMethods.PeerConnectionAddDataChannel(_nativePeerhandle, -1, label, ordered, reliable,
-        //        args.MessageCallback, userData, args.BufferingCallback, userData, args.StateCallback, userData);
-        //    });
-        //}
+        /// <summary>
+        /// Add a new out-of-band data channel with the given ID.
+        /// 
+        /// A data channel is negotiated out-of-band when the peers agree on an identifier by any mean
+        /// not known to WebRTC, and both open a data channel with that ID. The WebRTC will match the
+        /// incoming and outgoing pipes by this ID to allow sending and receiving through that channel.
+        /// 
+        /// This requires some external mechanism to agree on an available identifier not otherwise taken
+        /// by another channel, and also requires to ensure that both peers explicitly open that channel.
+        /// </summary>
+        /// <param name="id">The unique data channel identifier to use.</param>
+        /// <param name="label">The data channel name.</param>
+        /// <param name="ordered">Indicates whether data channel messages are ordered (see
+        /// <see cref="DataChannel.Ordered"/>).</param>
+        /// <param name="reliable">Indicates whether data channel messages are reliably delivered
+        /// (see <see cref="DataChannel.Reliable"/>).</param>
+        /// <returns>Returns a task which completes once the data channel is created.</returns>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        public async Task<DataChannel> AddDataChannelAsync(ushort id, string label, bool ordered, bool reliable)
+        {
+            if (id < 0)
+            {
+                throw new ArgumentOutOfRangeException("id", id, "Data channel ID must be greater than or equal to zero.");
+            }
+            return await AddDataChannelAsyncImpl(id, label, ordered, reliable);
+        }
 
-        //public async Task<bool> AddDataChannel(int id, WebRTCDataChannel dataChannel, string label, bool ordered, bool reliable)
-        //{
-        //    ThrowIfConnectionNotOpen();
-        //    var args = new CallbacksWrappers.DataChannelCallbackArgs()
-        //    {
-        //        Peer = this,
-        //        DataChannel = dataChannel,
-        //        MessageCallback = CallbacksWrappers.DataChannelMessageCallback,
-        //        BufferingCallback = CallbacksWrappers.DataChannelBufferingCallback,
-        //        StateCallback = CallbacksWrappers.DataChannelStateCallback
-        //    };
-        //    var handle = GCHandle.Alloc(args, GCHandleType.Normal);
-        //    IntPtr userData = GCHandle.ToIntPtr(handle);
-        //    return await Task.Run(() => {
-        //        return NativeMethods.PeerConnectionAddDataChannel( // needs to be called on signaling thread ideally
-        //            _nativePeerhandle, id, label, ordered, reliable,
-        //            args.MessageCallback, userData,
-        //            args.BufferingCallback, userData,
-        //            args.StateCallback, userData);
-        //    });
-        //}
+        /// <summary>
+        /// Add a new in-band data channel whose ID will be determined by the implementation.
+        /// 
+        /// A data channel is negotiated in-band when one peer requests its creation to the WebRTC core,
+        /// and the implementation negotiates with the remote peer an appropriate ID by sending some
+        /// SDP offer message. In that case once accepted the other peer will automatically create the
+        /// appropriate data channel on its side with that negotiated ID, and the ID will be returned on
+        /// both sides to the user for information.
+        /// 
+        /// Compares to out-of-band messages, this requires exchanging some SDP messages, but avoids having
+        /// to determine a common unused ID and having to explicitly open the data channel on both sides.
+        /// </summary>
+        /// <param name="label">The data channel name.</param>
+        /// <param name="ordered">Indicates whether data channel messages are ordered (see
+        /// <see cref="DataChannel.Ordered"/>).</param>
+        /// <param name="reliable">Indicates whether data channel messages are reliably delivered
+        /// (see <see cref="DataChannel.Reliable"/>).</param>
+        /// <returns>Returns a task which completes once the data channel is created.</returns>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        public async Task<DataChannel> AddDataChannelAsync(string label, bool ordered, bool reliable)
+        {
+            return await AddDataChannelAsyncImpl(-1, label, ordered, reliable);
+        }
 
-        //public bool RemoveDataChannel(int id)
-        //{
-        //    ThrowIfConnectionNotOpen();
-        //    return NativeMethods.PeerConnectionRemoveDataChannel(_nativePeerhandle, id);
-        //}
+        /// <summary>
+        /// Add a new in-band or out-of-band data channel.
+        /// </summary>
+        /// <param name="id">Identifier in [0:65535] of the out-of-band data channel, or <c>-1</c> for in-band.</param>
+        /// <param name="label">The data channel name.</param>
+        /// <param name="ordered">Indicates whether data channel messages are ordered (see
+        /// <see cref="DataChannel.Ordered"/>).</param>
+        /// <param name="reliable">Indicates whether data channel messages are reliably delivered
+        /// (see <see cref="DataChannel.Reliable"/>).</param>
+        /// <returns>Returns a task which completes once the data channel is created.</returns>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        private async Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable)
+        {
+            // Preconditions
+            ThrowIfConnectionNotOpen();
 
-        //public bool RemoveDataChannel(WebRTCDataChannel dataChannel)
-        //{
-        //    ThrowIfConnectionNotOpen();
-        //    return NativeMethods.PeerConnectionRemoveDataChannel(_nativePeerhandle, dataChannel.Label);
-        //}
+            // Create a new data channel object and its callback args
+            var dataChannel = new DataChannel(this, id, label, ordered, reliable);
+            var args = new CallbacksWrappers.DataChannelCallbackArgs()
+            {
+                Peer = this,
+                DataChannel = dataChannel,
+                MessageCallback = CallbacksWrappers.DataChannelMessageCallback,
+                BufferingCallback = CallbacksWrappers.DataChannelBufferingCallback,
+                StateCallback = CallbacksWrappers.DataChannelStateCallback
+            };
 
-        public void SendDataChannelMessage(int id, byte[] message)
+            // Pin the args to pin the delegates
+            var handle = GCHandle.Alloc(args, GCHandleType.Normal);
+            IntPtr userData = GCHandle.ToIntPtr(handle);
+
+            // Create the native channel
+            return await Task.Run(() =>
+            {
+                uint res = NativeMethods.PeerConnectionAddDataChannel(_nativePeerhandle, id, label, ordered, reliable,
+                args.MessageCallback, userData, args.BufferingCallback, userData, args.StateCallback, userData);
+                if (res == 0)
+                {
+                    return dataChannel;
+                }
+                handle.Free();
+                if (res == 0x80000301) // MRS_E_SCTP_NOT_NEGOTIATED
+                {
+                    throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
+                }
+                if (res == 0x80000302) // MRS_E_INVALID_DATA_CHANNEL_ID
+                {
+                    throw new ArgumentOutOfRangeException("id", id, "Invalid ID passed to AddDataChannelAsync().");
+                }
+                throw new Exception("AddDataChannelAsync() failed.");
+            });
+        }
+
+        internal bool RemoveDataChannel(DataChannel dataChannel)
+        {
+            ThrowIfConnectionNotOpen();
+            return NativeMethods.PeerConnectionRemoveDataChannel(_nativePeerhandle, dataChannel.ID);
+        }
+
+        internal void SendDataChannelMessage(int id, byte[] message)
         {
             ThrowIfConnectionNotOpen();
             NativeMethods.PeerConnectionSendDataChannelMessage(_nativePeerhandle, id, message, (ulong)message.LongLength);
@@ -793,24 +870,44 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="sdpMid"></param>
         /// <param name="sdpMlineindex"></param>
         /// <param name="candidate"></param>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void AddIceCandidate(string sdpMid, int sdpMlineindex, string candidate)
         {
             ThrowIfConnectionNotOpen();
             NativeMethods.PeerConnectionAddIceCandidate(_nativePeerhandle, sdpMid, sdpMlineindex, candidate);
         }
 
+        /// <summary>
+        /// Create an SDP offer message as an attempt to establish a connection.
+        /// </summary>
+        /// <returns><c>true</c> if the offer was created successfully.</returns>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
         public bool CreateOffer()
         {
             ThrowIfConnectionNotOpen();
             return NativeMethods.PeerConnectionCreateOffer(_nativePeerhandle);
         }
 
+        /// <summary>
+        /// Create an SDP answer message to a previously-received offer, to accept a connection.
+        /// </summary>
+        /// <returns><c>true</c> if the offer was created successfully.</returns>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
         public bool CreateAnswer()
         {
             ThrowIfConnectionNotOpen();
             return NativeMethods.PeerConnectionCreateAnswer(_nativePeerhandle);
         }
 
+        /// <summary>
+        /// Pass the given SDP description received from the remote peer via signaling to the
+        /// underlying WebRTC implementation, which will parse and use it.
+        /// 
+        /// This must be called by the signaler when receiving a message.
+        /// </summary>
+        /// <param name="type">The type of SDP message ("offer", "answer", "ice")</param>
+        /// <param name="sdp">The content of the SDP message</param>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void SetRemoteDescription(string type, string sdp)
         {
             ThrowIfConnectionNotOpen();
@@ -824,6 +921,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Utility to throw an exception if a method is called before the underlying
         /// native peer connection has been initialized.
         /// </summary>
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
         private void ThrowIfConnectionNotOpen()
         {
             lock (_openCloseLock)
@@ -855,9 +953,9 @@ namespace Microsoft.MixedReality.WebRTC
         private static class NativeMethods
         {
 #if MR_SHARING_WIN
-            private const string dllPath = "Microsoft.MixedReality.WebRTC.Native.dll";
+            internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.dll";
 #elif MR_SHARING_ANDROID
-            private const string dllPath = "Microsoft.MixedReality.WebRTC.Native.so";
+            internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.so";
 #endif
 
 
@@ -983,7 +1081,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddDataChannel")]
-            public static extern bool PeerConnectionAddDataChannel(IntPtr peerHandle, int id, string label,
+            public static extern uint PeerConnectionAddDataChannel(IntPtr peerHandle, int id, string label,
                 bool ordered, bool reliable, PeerConnectionDataChannelMessageCallback messageCallback,
                 IntPtr messageUserData, PeerConnectionDataChannelBufferingCallback bufferingCallback,
                 IntPtr bufferingUserData, PeerConnectionDataChannelStateCallback stateCallback,
@@ -1032,6 +1130,10 @@ namespace Microsoft.MixedReality.WebRTC
             public static extern void PeerConnectionClose(ref IntPtr peerHandle);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+                EntryPoint = "mrsSdpForceCodecs")]
+            public static unsafe extern bool SdpForceCodecs(string message, string audioCodecName, string videoCodecName, StringBuilder messageOut, ref ulong messageOutLength);
+
+            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsMemCpyStride")]
             public static unsafe extern void MemCpyStride(void* dst, int dst_stride, void* src, int src_stride, int elem_size, int elem_count);
 
@@ -1070,6 +1172,19 @@ namespace Microsoft.MixedReality.WebRTC
 
         private void OnLocalSdpReadytoSend(string type, string sdp)
         {
+            // If the user specified a preferred audio or video codec, manipulate the SDP message
+            // to exclude other codecs if the preferred one is supported.
+            if ((PreferredAudioCodec.Length > 0) || (PreferredVideoCodec.Length > 0))
+            {
+                var builder = new StringBuilder(sdp.Length);
+                ulong lengthInOut = (ulong)builder.Capacity;
+                if (NativeMethods.SdpForceCodecs(sdp, PreferredAudioCodec, PreferredVideoCodec, builder, ref lengthInOut))
+                {
+                    builder.Length = (int)lengthInOut;
+                    sdp = builder.ToString();
+                }
+            }
+
             var msg = new SignalerMessage()
             {
                 MessageType = MessageTypeFromString(type),
@@ -1136,9 +1251,43 @@ namespace Microsoft.MixedReality.WebRTC
             });
         }
 
-        public static unsafe void MemCpyStride(void* dst, int dst_stride, void* src, int src_stride, int elem_size, int elem_count)
-        {
-            NativeMethods.MemCpyStride(dst, dst_stride, src, src_stride, elem_size, elem_count);
-        }
+        /// <summary>
+        /// Unsafe utility to copy a contiguous block of memory.
+        /// This is equivalent to the C function <c>memcpy()</c>, and is provided for optimization purpose only.
+        /// </summary>
+        /// <param name="dst">Pointer to the beginning of the destination buffer data is copied to.</param>
+        /// <param name="src">Pointer to the beginning of the source buffer data is copied from.</param>
+        /// <param name="size">Size of the memory block, in bytes.</param>
+        [DllImport(NativeMethods.dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsMemCpy")]
+        public static unsafe extern void MemCpy(void* dst, void* src, ulong size);
+
+        /// <summary>
+        /// Unsafe utility to copy a memory block with stride.
+        /// 
+        /// This utility loops over the rows of the input memory block, and copy them to the output
+        /// memory block, then increment the read and write pointers by the source and destination
+        /// strides, respectively. For each row, exactly <paramref name="elem_size"/> bytes are copied,
+        /// even if the row stride is higher. The extra bytes in the destination buffer past the row
+        /// size until the row stride are left untouched.
+        /// 
+        /// This is equivalent to the following pseudo-code:
+        /// <code>
+        /// for (int row = 0; row &lt; elem_count; ++row) {
+        ///   memcpy(dst, src, elem_size);
+        ///   dst += dst_stride;
+        ///   src += src_stride;
+        /// }
+        /// </code>
+        /// </summary>
+        /// <param name="dst">Pointer to the beginning of the destination buffer data is copied to.</param>
+        /// <param name="dst_stride">Stride in bytes of the destination rows. This must be greater than
+        /// or equal to the row size <paramref name="elem_size"/>.</param>
+        /// <param name="src">Pointer to the beginning of the source buffer data is copied from.</param>
+        /// <param name="src_stride">Stride in bytes of the source rows. This must be greater than
+        /// or equal to the row size <paramref name="elem_size"/>.</param>
+        /// <param name="elem_size">Size of each row, in bytes.</param>
+        /// <param name="elem_count">Total number of rows to copy.</param>
+        [DllImport(NativeMethods.dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsMemCpyStride")]
+        public static unsafe extern void MemCpyStride(void* dst, int dst_stride, void* src, int src_stride, int elem_size, int elem_count);
     }
 }

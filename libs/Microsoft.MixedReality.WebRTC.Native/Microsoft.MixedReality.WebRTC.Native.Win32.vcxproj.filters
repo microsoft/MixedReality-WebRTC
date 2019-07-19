@@ -7,6 +7,7 @@
     <ClCompile Include="src/pch.cpp" />
     <ClCompile Include="src/peer_connection.cpp" />
     <ClCompile Include="src/video_frame_observer.cpp" />
+    <ClCompile Include="src/sdp_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include/api.h" />
@@ -17,6 +18,7 @@
     <ClInclude Include="src/peer_connection.h" />
     <ClInclude Include="src/targetver.h" />
     <ClInclude Include="src/video_frame_observer.h" />
+    <ClInclude Include="src/sdp_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="docs/design.md" />

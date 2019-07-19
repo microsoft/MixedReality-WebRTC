@@ -44,7 +44,7 @@ Shader "Video/YUVFeedShader (standard lit)"
 		void surf(Input IN, inout SurfaceOutput o)
 		{
 			float3 yuv;
-#if UNITY_UV_STARTS_AT_TOP
+#if !UNITY_UV_STARTS_AT_TOP
 			IN.uv_YPlane.y = 1 - IN.uv_YPlane.y;
 #endif
 #ifdef MIRROR

@@ -3,8 +3,8 @@
   <!-- This needs to go first, before Microsoft.Common.props is imported  -->
   <PropertyGroup>
   <!-- TEMP - This breaks NuGET (of course...) -->
-    <!-- <BaseIntermediateOutputPath>..\..\build\Microsoft.MixedReality.WebRTC\UWP\$(Platform)\$(Configuration)</BaseIntermediateOutputPath>
-    <OutputPath>..\..\bin\UWP\$(Platform)\$(Configuration)</OutputPath> -->
+    <!-- <BaseIntermediateOutputPath>..\..\build\Microsoft.MixedReality.WebRTC\UWP\$(Platform)\$(Configuration)</BaseIntermediateOutputPath> -->
+    <OutputPath>..\..\bin\netstandard2.0\$(Configuration)</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
@@ -30,9 +30,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libs\Microsoft.MixedReality.WebRTC\Microsoft.MixedReality.WebRTC.csproj" />
-    <!-- <PackageReference Include="nunit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.0" /> -->
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
