@@ -15,6 +15,13 @@ jobs:
     projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
   steps:
   - checkout: none
+  
+  # Compute the NuGet package version
+  - powershell: |
+      $NuGetVersion = "$(MRWebRTCVersion)-$(Build.BuildId)"
+      Write-Host "NuGet package version : $NuGetVersion"
+      Write-Host "##vso[task.setvariable variable=NuGetVersion]$NuGetVersion"
+    displayName: 'Compute NuGet package version'
 
   # Force NuGet 4.9.2
   - task: NuGetToolInstaller@1
@@ -31,7 +38,9 @@ jobs:
       packagesToPack: libs/Microsoft.MixedReality.WebRTC.Native.Core/Microsoft.MixedReality.WebRTC.Native.Core.nuspec
       packDestination: '$(Build.ArtifactStagingDirectory)/NuGet/'
       includeSymbols: true
-      buildProperties: 'bin=bin;version=$(MRWebRTCVersion)-$(Build.BuildNumber)'
+      versioningScheme: byEnvVar
+      versionEnvVar: NuGetVersion
+      buildProperties: 'bin=bin'
       basePath: '$(Build.SourcesDirectory)'
     timeoutInMinutes: 15
 
@@ -50,5 +59,5 @@ jobs:
       command: push
       packagesToPush: '$(Build.ArtifactStagingDirectory)/NuGet/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/NuGet/**/*.symbols.nupkg'
       publishVstsFeed: '$(NuGetFeedId)'
-      buildProperties: 'version=$(MRWebRTCVersion)-$(Build.BuildNumber)'
+      arguments: '-SymbolPackageFormat snupkg'
 
