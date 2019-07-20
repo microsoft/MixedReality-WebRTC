@@ -166,9 +166,11 @@ The `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution contains several 
 - A C# unit tests project `Microsoft.MixedReality.WebRTC.Tests`
 - A UWP C# sample app project `Microsoft.MixedReality.WebRTC.TestAppUWP` based on WPF and XAML
 
-### Optionally test the install
+### Optionally test the installation
 
 Test the install by _e.g._ opening the Unity project at `libs\Microsoft.MixedReality.WebRTC.Unity`, loading the `Assets\Microsoft.MixedReality.WebRTC\Unity.Examples\SimpleVideoChat` scene and pressing **Play**. After a few seconds (depending on the machine) the left media player should display the video feed from the local webcam. The Unity console should also display a message about the WebRTC library being initialized successfully.
+
+See the [Hello, Unity World!](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity.html) tutorial for more details.
 
 ## Known Issues
 
@@ -179,7 +181,7 @@ The current version is a public preview under active development, which contains
   - **MRC requires special permission** to record the content of the screen:
     - For shared apps (2D slates), this corresponds to the `screenDuplication` [restricted capability](https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations#restricted-capabilities), which **cannot be obtained by third-party applications**.
     - For exclusive-mode apps (fullscreen), there is no particular UWP capability, but the recorded content is limited to the application's own content.
-- HoloLens 2 exhibits performance issues due to:
+- HoloLens 2 exhibits performance issues thought to be due to:
   - The [missing support (#157)](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157) for SIMD-accelerated YUV conversion in WebRTC UWP SDK.
   - The use of the highest available video resolution when opening the webcam with the default video profile. Support for selecting a different video profile is not available yet in WebRTC UWP SDK. See [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/170) for details.
   - The use by default of the VP8 video codec, which is fairly CPU intensive.
