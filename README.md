@@ -5,9 +5,9 @@
 
 **⚠ This repository currently contains a public preview under active development, intended for early adopters and to gather feedback. While in preview, the API is expected to be unstable and breaking changes will occur. See also the Known Issues section for details.**
 
-MixedReality-WebRTC is a collection of components to help mixed reality app developers to integrate peer-to-peer real-time audio and video communication into their application and improve their collaborative experience.
+MixedReality-WebRTC is a collection of components to help mixed reality app developers to integrate peer-to-peer audio and video streaming into their application and improve their collaborative experience.
 
-- Enables **multi-track real-time audio / video / data communication** with a remote peer
+- Enables **multi-track audio / video / data streaming** to a remote peer
 - Provides an abstracted **signaling interface** to easily switch implementation
 - Exposes an **API for C++ and C#** to integrate into existing apps
 - Provides a set of **Unity3D components** for rapid prototyping and integration
@@ -44,19 +44,15 @@ MixedReality-WebRTC is currently under development, and precompiled packages are
 
 This repository follows the [Pitchfork Layout](https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs) in an attempt to standardize its hierarchy:
 
-```sh
-bin/               # Binary outputs (generated)
-build/             # Intermediate build artifacts (generated)
-docs/              # Documentation
-+ manual/          # User manual
-examples/          # Examples of use and sample apps
-external/          # Third-party external dependencies (git submodules)
-libs/              # Source code for the component libraries
-tests/             # Source code for unit tests
-tools/             # Utility scripts
-+ build/           # Build scripts
-+ ci/              # CI Azure pipelines
-+ patches/         # Patches applied by build.ps1
+```
+bin/               Binary outputs (generated)
+build/             Intermediate build artifacts (generated)
+docs/              Documentation
+examples/          Examples of use and sample apps
+external/          Third-party external dependencies
+libs/              Source code for the component libraries
+tests/             Source code for unit tests
+tools/             Utility scripts
 ```
 
 ## Prerequisites
@@ -71,7 +67,7 @@ The **Windows SDK 10.0.17134** (also called 1803, or April 2018) is required to 
 
 ### Core WebRTC UWP wrappers
 
-The _UWP wrappers_ refer to the set of wrappers and other UWP-specific additional code made available by the WebRTC UWP team (Microsoft) on top of the core implementation, to allow access to the core WebRTC API.
+The _UWP wrappers_ refer to the set of wrappers and other UWP-specific additional code made available by the WebRTC UWP team (Microsoft) on top of the core implementation, to allow access to the core WebRTC API 
 
 The **Windows SDK 10.0.17763** (also called 1809, or October 2018) is required to compile the UWP wrappers provided by the WebRTC UWP team ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
@@ -81,11 +77,11 @@ The UWP wrappers also require the v141 platform toolset for UWP, either from the
 
 The **MSVC v142 - VS 2019 C++ x64/x86 build tools** toolchain is required to build the C++17 library of MixedReality-WebRTC. This is installed by default with the **Desktop development with C++** workload on Visual Studio 2019.
 
-_Note_ - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually (see #14).
+_Note_ - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually (see [#14](https://github.com/microsoft/MixedReality-WebRTC/issues/14)).
 
 ### Unity integration
 
-The Unity integration has been tested on [Unity](https://unity3d.com/get-unity/download) **2018.3.x** and **2019.1.x**. Versions earlier than 2018.3.x may work but are not officially supported.
+The Unity integration has been tested on [Unity](https://unity3d.com/get-unity/download) **2018.3.x** and **2019.1.x**. Versions earlier than 2018.3.x are not officially supported.
 
 ## Documentation
 
@@ -124,7 +120,7 @@ Valid parameter values are:
 - **BuildArch** : x86 | x64 | ARM | ARM64
 - **BuildPlatform** : Win32 | UWP
 
-_Note_ - ARM64 is not yet available (see #13).
+_Note_ - ARM64 is not yet available (see [#13](https://github.com/microsoft/MixedReality-WebRTC/issues/13)).
 
 The manual steps are details below and can be skipped if running the build script. The dependencies still need to be installed manually before running `build.ps1`.
 
@@ -134,7 +130,7 @@ The WebRTC UWP project has [specific requirements](https://github.com/webrtc-uwp
 
 _Note_ - Currently the Azure hosted agents with VS 2017 have Python 2.7.14 installed, but this is discouraged by the WebRTC UWP team as some spurious build errors might occur. The new VS 2019 build agents have Python 2.7.16 installed, and will be used eventually.
 
-_Note_ - Currently the `libyuv` external dependency is incorrectly compiled with Clang instead of MSVC on ARM builds. This was an attempt to benefit from inline assembly, but this produces link errors (see webrtc-uwp/webrtc-uwp-sdk#157). Until this is fixed, a patch is available under `tools\patches\libyuv_win_msvc_157.patch` which is applied by `build.ps1` but needs to be applied manually if `build.ps1` is not used.
+_Note_ - Currently the `libyuv` external dependency is incorrectly compiled with Clang instead of MSVC on ARM builds. This was an attempt to benefit from inline assembly, but this produces link errors (see [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157)). Until this is fixed, a patch is available under `tools\patches\libyuv_win_msvc_157.patch` which is applied by `build.ps1` but needs to be applied manually if `build.ps1` is not used.
 
 For Windows Desktop support (also called "Win32"):
 
@@ -146,7 +142,7 @@ For Windows Desktop support (also called "Win32"):
 For UWP support:
 
 - Open the **`WebRtc.Universal.sln`** Visual Studio solution located in `external\webrtc-uwp-sdk\webrtc\windows\solution\`
-- In the menu bar, select the relevant solution platform and solution configuration. For HoloLens, the **x86** binaries are required. For HoloLens 2, the **ARM** binaries are required (ARM64 is not supported yet, see #13).
+- In the menu bar, select the relevant solution platform and solution configuration. For HoloLens, the **x86** binaries are required. For HoloLens 2, the **ARM** binaries are required (ARM64 is not supported yet, see [#13](https://github.com/microsoft/MixedReality-WebRTC/issues/13)).
 - **Build first the `WebRtc.UWP.Native.Builder` project alone**, which generates some files needed by some of the other projects in the solution, by right-clicking on that project > **Build**
 - Build the rest of the solution with F7 or **Build > Build Solution**
 
@@ -166,24 +162,22 @@ The `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution contains several 
 - A C# unit tests project `Microsoft.MixedReality.WebRTC.Tests`
 - A UWP C# sample app project `Microsoft.MixedReality.WebRTC.TestAppUWP` based on WPF and XAML
 
-### Optionally test the installation
+### Optionally test the install
 
 Test the install by _e.g._ opening the Unity project at `libs\Microsoft.MixedReality.WebRTC.Unity`, loading the `Assets\Microsoft.MixedReality.WebRTC\Unity.Examples\SimpleVideoChat` scene and pressing **Play**. After a few seconds (depending on the machine) the left media player should display the video feed from the local webcam. The Unity console should also display a message about the WebRTC library being initialized successfully.
-
-See the [Hello, Unity World!](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity.html) tutorial for more details.
 
 ## Known Issues
 
 The current version is a public preview under active development, which contains known issues being addressed:
 
 - Mixed Reality Capture (MRC) currently does not work on HoloLens 2 out of the box. Enabling MRC silently fails, and falls back to a video stream without hologram rendering. This is due to a combination of things:
-  - **MRC only works up to 1080p** (see the [Mixed reality capture for developers](https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture-for-developers) documentation), but the default resolution of the webcam on HoloLens2 is 2272x1278 (see the [Locatable Camera](https://docs.microsoft.com/en-us/windows/mixed-reality/locatable-camera) documentation). In order to access different resolutions, one need to use video profiles, which are not currently exposed by the WebRTC UWP SDK project. See webrtc-uwp/webrtc-uwp-sdk#170 for details.
+  - **MRC only works up to 1080p** (see the [Mixed reality capture for developers](https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture-for-developers) documentation), but the default resolution of the webcam on HoloLens2 is 2272x1278 (see the [Locatable Camera](https://docs.microsoft.com/en-us/windows/mixed-reality/locatable-camera) documentation). In order to access different resolutions, one need to use video profiles, which are not currently exposed by the WebRTC UWP SDK project. See [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/170) for details.
   - **MRC requires special permission** to record the content of the screen:
     - For shared apps (2D slates), this corresponds to the `screenDuplication` [restricted capability](https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations#restricted-capabilities), which **cannot be obtained by third-party applications**.
     - For exclusive-mode apps (fullscreen), there is no particular UWP capability, but the recorded content is limited to the application's own content.
-- HoloLens 2 exhibits performance issues thoughts to be due to:
-  - The missing support (see webrtc-uwp/webrtc-uwp-sdk#157) for SIMD-accelerated YUV conversion in WebRTC UWP SDK.
-  - The use of the highest available video resolution when opening the webcam with the default video profile. Support for selecting a different video profile is not available yet in WebRTC UWP SDK. See webrtc-uwp/webrtc-uwp-sdk#170 for details.
+- HoloLens 2 exhibits performance issues due to:
+  - The [missing support (#157)](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157) for SIMD-accelerated YUV conversion in WebRTC UWP SDK.
+  - The use of the highest available video resolution when opening the webcam with the default video profile. Support for selecting a different video profile is not available yet in WebRTC UWP SDK. See [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/170) for details.
   - The use by default of the VP8 video codec, which is fairly CPU intensive.
 - The Debug config of WebRTC core implementation is knows to exhibit performance issues on most devices, including some higher end PCs. Using the Release config of the core WebRTC implementation usually prevents this issue.
 - There is currently no clean C++ API; instead the C API used for C# P/Invoke can be used from C++ code, and opaque handles cast to C++ objects. An actual C++ API will eventually be exposed.
