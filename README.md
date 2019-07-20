@@ -96,20 +96,13 @@ The overall architecture of the components is as follow:
 
 ## Building MixedReality-WebRTC
 
-### Check out the MixedReality-WebRTC repository
+### Check out the repository and its dependencies
 
+```sh
+git clone --recursive https://github.com/microsoft/MixedReality-WebRTC.git
 ```
-git clone https://github.com/microsoft/MixedReality-WebRTC.git
-```
- 
-### Check out the external dependencies
 
-This may take some time (> 5 minutes) due to the large number of submodules in [the WebRTC UWP SDK repository](https://github.com/webrtc-uwp/webrtc-uwp-sdk) this repository depends on.
-
-```
-cd external\webrtc-uwp-sdk
-git submodule update --init --recursive
-```
+Note that **this may take some time (> 5 minutes)** due to the large number of submodules in [the WebRTC UWP SDK repository](https://github.com/webrtc-uwp/webrtc-uwp-sdk) this repository depends on.
 
 ### Build the WebRTC UWP SDK libraries
 
@@ -117,7 +110,7 @@ git submodule update --init --recursive
 
 In order to simplify building, a PowerShell **build script** is available. Simply run for example:
 
-```
+```sh
 tools/build/build.ps1 -BuildConfig Debug -BuildArch x64 -BuildPlatform Win32
 ```
 
