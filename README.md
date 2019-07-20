@@ -2,6 +2,8 @@
 
 [![Licensed under the MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/microsoft/MixedReality-WebRTC/blob/master/LICENSE)
 ![Under active development](https://img.shields.io/badge/status-public_preview-red.svg)
+[![Holodevelopers channel on Slack](https://img.shields.io/badge/slack-@holodevelopers-%233f0e40.svg?logo=slack)](https://holodevelopers.slack.com/messages/C1AK8E6CS/)
+
 
 **⚠ This repository currently contains a public preview under active development, intended for early adopters and to gather feedback. While in preview, the API is expected to be unstable and breaking changes will occur. See also the Known Issues section for details.**
 
