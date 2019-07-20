@@ -5,9 +5,9 @@
 
 **⚠ This repository currently contains a public preview under active development, intended for early adopters and to gather feedback. While in preview, the API is expected to be unstable and breaking changes will occur. See also the Known Issues section for details.**
 
-MixedReality-WebRTC is a collection of components to help mixed reality app developers to integrate peer-to-peer audio and video streaming into their application and improve their collaborative experience.
+MixedReality-WebRTC is a collection of components to help mixed reality app developers to integrate peer-to-peer real-time audio and video communication into their application and improve their collaborative experience.
 
-- Enables **multi-track audio / video / data streaming** to a remote peer
+- Enables **multi-track real-time audio / video / data communication** with a remote peer
 - Provides an abstracted **signaling interface** to easily switch implementation
 - Exposes an **API for C++ and C#** to integrate into existing apps
 - Provides a set of **Unity3D components** for rapid prototyping and integration
@@ -44,15 +44,19 @@ MixedReality-WebRTC is currently under development, and precompiled packages are
 
 This repository follows the [Pitchfork Layout](https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs) in an attempt to standardize its hierarchy:
 
-```
-bin/               Binary outputs (generated)
-build/             Intermediate build artifacts (generated)
-docs/              Documentation
-examples/          Examples of use and sample apps
-external/          Third-party external dependencies
-libs/              Source code for the component libraries
-tests/             Source code for unit tests
-tools/             Utility scripts
+```sh
+bin/               # Binary outputs (generated)
+build/             # Intermediate build artifacts (generated)
+docs/              # Documentation
++ manual/          # User manual
+examples/          # Examples of use and sample apps
+external/          # Third-party external dependencies (git submodules)
+libs/              # Source code for the component libraries
+tests/             # Source code for unit tests
+tools/             # Utility scripts
++ build/           # Build scripts
++ ci/              # CI Azure pipelines
++ patches/         # Patches applied by build.ps1
 ```
 
 ## Prerequisites
@@ -67,7 +71,7 @@ The **Windows SDK 10.0.17134** (also called 1803, or April 2018) is required to 
 
 ### Core WebRTC UWP wrappers
 
-The _UWP wrappers_ refer to the set of wrappers and other UWP-specific additional code made available by the WebRTC UWP team (Microsoft) on top of the core implementation, to allow access to the core WebRTC API 
+The _UWP wrappers_ refer to the set of wrappers and other UWP-specific additional code made available by the WebRTC UWP team (Microsoft) on top of the core implementation, to allow access to the core WebRTC API.
 
 The **Windows SDK 10.0.17763** (also called 1809, or October 2018) is required to compile the UWP wrappers provided by the WebRTC UWP team ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
@@ -77,11 +81,11 @@ The UWP wrappers also require the v141 platform toolset for UWP, either from the
 
 The **MSVC v142 - VS 2019 C++ x64/x86 build tools** toolchain is required to build the C++17 library of MixedReality-WebRTC. This is installed by default with the **Desktop development with C++** workload on Visual Studio 2019.
 
-_Note_ - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually (see [#14](https://github.com/microsoft/MixedReality-WebRTC/issues/14)).
+_Note_ - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually (see #14).
 
 ### Unity integration
 
-The Unity integration has been tested on [Unity](https://unity3d.com/get-unity/download) **2018.3.x** and **2019.1.x**. Versions earlier than 2018.3.x are not officially supported.
+The Unity integration has been tested on [Unity](https://unity3d.com/get-unity/download) **2018.3.x** and **2019.1.x**. Versions earlier than 2018.3.x may work but are not officially supported.
 
 ## Documentation
 
