@@ -160,15 +160,14 @@ For Windows Desktop support (also called "Win32"):
 
 - Open the **`WebRtc.Win32.sln`** Visual Studio solution located in `external\webrtc-uwp-sdk\webrtc\windows\solution\`
 - In the menu bar, select the relevant solution platform and solution configuration. For the Unity editor, the **x64** binaries are required.
-- **Build first the `WebRtc.Win32.Native.Builder` project alone**, which generates some files needed by some of the other projects in the solution, by right-clicking on that project > **Build**
-- Build the rest of the solution with F7 or **Build > Build Solution**
+- **Build the `WebRtc.Win32.Native.Builder` project alone**, which generates some files needed by some of the other projects in the solution, by right-clicking on that project > **Build**. The other projects are samples and are not needed.
 
 For UWP support:
 
 - Open the **`WebRtc.Universal.sln`** Visual Studio solution located in `external\webrtc-uwp-sdk\webrtc\windows\solution\`
 - In the menu bar, select the relevant solution platform and solution configuration. For HoloLens, the **x86** binaries are required. For HoloLens 2, the **ARM** binaries are required (ARM64 is not supported yet, see [#13](https://github.com/microsoft/MixedReality-WebRTC/issues/13)).
 - **Build first the `WebRtc.UWP.Native.Builder` project alone**, which generates some files needed by some of the other projects in the solution, by right-clicking on that project > **Build**
-- Build the rest of the solution with F7 or **Build > Build Solution**
+- Next build the `Org.WebRtc` and `Org.WebRtc.WrapperGlue` projects. The other projects samples and are not needed.
 
 ### Build the MixedReality-WebRTC libraries
 
