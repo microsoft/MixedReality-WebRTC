@@ -81,15 +81,21 @@ _Core WebRTC_ refers to the C++ implementation of WebRTC maintained by Google an
 
 - The **Windows SDK 10.0.17134** (also called 1803, or April 2018) is required to compile the Google WebRTC core implementation ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
+- As mentioned on the README of WebRTC UWP, the **Debugging Tools for Windows** is requird:
+
+  > When installing the SDK, include the feature **Debugging Tools for Windows** which is required by the preparation scripts. Note that the SDK installed as part of Visual Studio does not include this feature.
+
+  If the SDK is already installed, this optional feature can be installed with **Add or Remove Programs** > **Windows Software Development Kit - Windows 10.0.x** > **Modify** > Select **Change** then **Next** button > Check **Debugging Tools for Windows**.
+
 ### Core WebRTC UWP wrappers
 
 The _UWP wrappers_ refer to the set of wrappers and other UWP-specific additional code made available by the WebRTC UWP team (Microsoft) on top of the core implementation, to allow access to the core WebRTC API.
 
-- The **Windows SDK 10.0.17763** (also called 1809, or October 2018) is required to compile the UWP wrappers provided by the WebRTC UWP team ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
+- The **Windows SDK 10.0.17763** (also called 1809, or October 2018) is required to compile the UWP wrappers provided by the WebRTC UWP team ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)), with the **Debugging Tools for Windows** as above.
 
 - The UWP wrappers also require the v141 platform toolset for UWP, either from the **Universal Windows Platform development** workload in Visual Studio 2017, or from the optional component **C++ (v141) Universal Windows Platform tools** in [**Visual Studio 2019**](http://dev.windows.com/downloads).
 
-- The UWP wrappers use C++/WinRT, so the [C++/WinRT Visual Studio extension](https://marketplace.visualstudio.com/items?itemName=CppWinRTTeam.cppwinrt101804264) must be installed from the marketplace.
+- The UWP wrappers use C++/WinRT, so the [**C++/WinRT Visual Studio extension**](https://marketplace.visualstudio.com/items?itemName=CppWinRTTeam.cppwinrt101804264) must be installed from the marketplace.
 
 ### MixedReality-WebRTC C++ library
 
