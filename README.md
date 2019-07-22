@@ -81,11 +81,11 @@ _Core WebRTC_ refers to the C++ implementation of WebRTC maintained by Google an
 
 - The **Windows SDK 10.0.17134** (also called 1803, or April 2018) is required to compile the Google WebRTC core implementation ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
-- As mentioned on the README of WebRTC UWP, the **Debugging Tools for Windows** is requird:
+- As mentioned on the README of WebRTC UWP, the **Debugging Tools for Windows** are required:
 
   > When installing the SDK, include the feature **Debugging Tools for Windows** which is required by the preparation scripts. Note that the SDK installed as part of Visual Studio does not include this feature.
 
-  If the SDK is already installed, this optional feature can be installed with **Add or Remove Programs** > **Windows Software Development Kit - Windows 10.0.x** > **Modify** > Select **Change** then **Next** button > Check **Debugging Tools for Windows**.
+  If the SDK is already installed, this optional feature can be added with **Add or Remove Programs** > **Windows Software Development Kit - Windows 10.0.x** > **Modify** > Select **Change** then **Next** button > Check **Debugging Tools for Windows**.
 
 ### Core WebRTC UWP wrappers
 
