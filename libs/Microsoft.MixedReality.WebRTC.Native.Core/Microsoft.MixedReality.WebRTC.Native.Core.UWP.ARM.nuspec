@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM</id>
+        <version>0.0.1-alpha</version>
+        <authors>Microsoft Mixed Reality Sharing Team</authors>
+        <owners>Mixed Reality Sharing Team</owners>
+        <description>Core WebRTC implementation consumed by the C++ libraries of Microsoft.MixedReality.WebRTC</description>
+        <title>Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM</title>
+        <projectUrl>https://github.com/microsoft/MixedReality-WebRTC</projectUrl>
+        <license type="expression">MIT</license>
+        <iconUrl>https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/mr-webrtc_icon.png</iconUrl>
+        <tags>native webrtc rtc cpp video audio streaming voice media capture</tags>
+        <summary>UWP wrappers (ARM) of the core WebRTC implementation consumed by the C++ libraries of Microsoft.MixedReality.WebRTC</summary>
+    </metadata>
+    <files>
+        <!-- UWP static library wrapper Org.WebRtc.WrapperGlue -->
+        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.WrapperGlue.Universal\Build\Output\Org.WebRtc.WrapperGlue\Release\ARM\Org.WebRtc.WrapperGlue.lib" target="lib\native\lib\uap10.0\arm\release" />
+
+        <!-- UWP WinRT wrapper Org.WebRtc -->
+        <!-- WinMd and IntelliSense -->
+        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\ARM\Org.WebRtc.winmd" target="lib\uap10.0" />
+        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\ARM\Org.WebRtc.xml" target="lib\uap10.0" />
+        <!-- DLLs and resources -->
+        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\ARM\Org.WebRtc.dll" target="runtimes\win10-arm\native" />
+        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\ARM\Org.WebRtc.pri" target="runtimes\win10-arm\native" />
+        <!-- .targets -->
+        <file src="libs\Microsoft.MixedReality.WebRTC.Native.Core\Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.targets" target="build\native" />
+    </files>
+</package>

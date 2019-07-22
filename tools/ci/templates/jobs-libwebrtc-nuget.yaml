@@ -30,7 +30,7 @@ jobs:
       versionSpec: 4.9.2
     timeoutInMinutes: 5
     
-  # Generate the NuGet packages
+  # Generate the NuGet packages Microsoft.MixedReality.WebRTC.Native.Core.nupkg
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
     displayName: 'NuGet pack'
     inputs:
@@ -43,15 +43,49 @@ jobs:
       buildProperties: 'bin=bin'
       basePath: '$(Build.SourcesDirectory)'
     timeoutInMinutes: 15
+    
+  # Generate the NuGet packages Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.nupkg
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'NuGet pack'
+    inputs:
+      command: pack
+      packagesToPack: libs/Microsoft.MixedReality.WebRTC.Native.Core/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.nuspec
+      packDestination: '$(Build.ArtifactStagingDirectory)/NuGet/'
+      includeSymbols: true
+      versioningScheme: byEnvVar
+      versionEnvVar: NuGetVersion
+      buildProperties: 'bin=bin'
+      basePath: '$(Build.SourcesDirectory)'
+    timeoutInMinutes: 15
+    
+  # Generate the NuGet packages Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.nupkg
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'NuGet pack'
+    inputs:
+      command: pack
+      packagesToPack: libs/Microsoft.MixedReality.WebRTC.Native.Core/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.nuspec
+      packDestination: '$(Build.ArtifactStagingDirectory)/NuGet/'
+      includeSymbols: true
+      versioningScheme: byEnvVar
+      versionEnvVar: NuGetVersion
+      buildProperties: 'bin=bin'
+      basePath: '$(Build.SourcesDirectory)'
+    timeoutInMinutes: 15
+    
+  # Generate the NuGet packages Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.nupkg
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'NuGet pack'
+    inputs:
+      command: pack
+      packagesToPack: libs/Microsoft.MixedReality.WebRTC.Native.Core/Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.nuspec
+      packDestination: '$(Build.ArtifactStagingDirectory)/NuGet/'
+      includeSymbols: true
+      versioningScheme: byEnvVar
+      versionEnvVar: NuGetVersion
+      buildProperties: 'bin=bin'
+      basePath: '$(Build.SourcesDirectory)'
+    timeoutInMinutes: 15
 
-  # # Publish the NuGet packages
-  # - task: PublishPipelineArtifact@0
-  #   displayName: 'Publish core NuGet packages'
-  #   inputs:
-  #     artifactName: 'nuget_core'
-  #     targetPath: '$(Build.ArtifactStagingDirectory)/NuGet'
-  #   timeoutInMinutes: 15
-  
   # Push packages to NuGet feed
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
     displayName: 'NuGet push'

@@ -27,27 +27,5 @@
         <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\arm\Release\webrtc.lib" target="lib\native\lib\uap10.0\arm\release" />
         <!-- <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\arm64\Debug\webrtc.lib" target="lib\native\lib\uap10.0\arm64\debug" /> -->
         <!-- <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\arm64\Release\webrtc.lib" target="lib\native\lib\uap10.0\arm64\release" /> -->
-
-        <!-- UWP static library wrapper Org.WebRtc.WrapperGlue -->
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.WrapperGlue.Universal\Build\Output\Org.WebRtc.WrapperGlue\Release\x86\Org.WebRtc.WrapperGlue.lib" target="lib\native\lib\uap10.0\x86\release" />
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.WrapperGlue.Universal\Build\Output\Org.WebRtc.WrapperGlue\Release\x64\Org.WebRtc.WrapperGlue.lib" target="lib\native\lib\uap10.0\x64\release" />
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.WrapperGlue.Universal\Build\Output\Org.WebRtc.WrapperGlue\Release\ARM\Org.WebRtc.WrapperGlue.lib" target="lib\native\lib\uap10.0\arm\release" />
-        <!-- <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.WrapperGlue.Universal\Build\Output\Org.WebRtc.WrapperGlue\Release\ARM64\Org.WebRtc.WrapperGlue.lib" target="lib\native\lib\uap10.0\arm64\release" /> -->
-
-        <!-- UWP WinRT wrapper Org.WebRtc -->
-        <!-- WinMd and IntelliSense -->
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.winmd" target="lib\uap10.0" />
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.xml" target="lib\uap10.0" />
-        <!-- DLLs and resources -->
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\x86\Org.WebRtc.dll" target="runtimes\win10-x86\native" />
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\x86\Org.WebRtc.pri" target="runtimes\win10-x86\native" />
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.dll" target="runtimes\win10-x64\native" />
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.pri" target="runtimes\win10-x64\native" />
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\ARM\Org.WebRtc.dll" target="runtimes\win10-arm\native" />
-        <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\ARM\Org.WebRtc.pri" target="runtimes\win10-arm\native" />
-        <!-- <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\ARM64\Org.WebRtc.dll" target="runtimes\win10-arm64\native" /> -->
-        <!-- <file src="external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\Release\ARM64\Org.WebRtc.pri" target="runtimes\win10-arm64\native" /> -->
-        <!-- .targets -->
-        <file src="libs\Microsoft.MixedReality.WebRTC.Native.Core\Microsoft.MixedReality.WebRTC.Native.Core.targets" target="build\native" />
     </files>
 </package>
