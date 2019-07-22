@@ -8,7 +8,7 @@
     </PropertyGroup>
     <ItemDefinitionGroup>
         <Link>
-            <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)..\lib\native\lib\win10\$(OrgWebRtcPlatform)\release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+            <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)..\..\lib\native\lib\win10\$(OrgWebRtcPlatform)\release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
         </Link>
     </ItemDefinitionGroup>
 </Project>
