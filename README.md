@@ -67,25 +67,33 @@ tools/             # Utility scripts
 
 ## Prerequisites
 
+### General
+
+- Python 2.7 must be installed as the default interpreter. That is, `python --version` must return a Python version equal to 2.7. It is strongly recommended to get a patch version >= 15, that is **Python 2.7.15+**, as some users reported to the WebRTC UWP tea some spurious failures with earlier versions. Python 3.x does **not** work and should not be the default interpreter.
+
+- A recent version of Perl is needed for some builds. On Windows you can install for example [Strawberry Perl](http://strawberryperl.com/), or any other equivalent distribution you want.
+
 ### Core WebRTC
 
 _Core WebRTC_ refers to the C++ implementation of WebRTC maintained by Google and used by this project, whose source repository is https://webrtc.googlesource.com/src.
 
-[**Visual Studio 2017**](http://dev.windows.com/downloads) is required to compile the core WebRTC implementation from Google. Having the MSVC v141 toolchain installed inside another version of Visual Studio is unfortunately not enough (see [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/175)), the actual IDE needs to be installed for the detection script to work. Selecting the **C++ Workload** alone is enough. If compiling for ARM or ARM64 architecture though, check the **Visual C++ compilers and libraries for ARM(64)** optional individual component.
+- [**Visual Studio 2017**](http://dev.windows.com/downloads) is required to compile the core WebRTC implementation from Google. Having the MSVC v141 toolchain installed inside another version of Visual Studio is unfortunately not enough (see [this issue](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/175)), the actual IDE needs to be installed for the detection script to work. Selecting the **C++ Workload** alone is enough. If compiling for ARM or ARM64 architecture though, check the **Visual C++ compilers and libraries for ARM(64)** optional individual component.
 
-The **Windows SDK 10.0.17134** (also called 1803, or April 2018) is required to compile the Google WebRTC core implementation ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
+- The **Windows SDK 10.0.17134** (also called 1803, or April 2018) is required to compile the Google WebRTC core implementation ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
 ### Core WebRTC UWP wrappers
 
 The _UWP wrappers_ refer to the set of wrappers and other UWP-specific additional code made available by the WebRTC UWP team (Microsoft) on top of the core implementation, to allow access to the core WebRTC API.
 
-The **Windows SDK 10.0.17763** (also called 1809, or October 2018) is required to compile the UWP wrappers provided by the WebRTC UWP team ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
+- The **Windows SDK 10.0.17763** (also called 1809, or October 2018) is required to compile the UWP wrappers provided by the WebRTC UWP team ([archive download](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)).
 
-The UWP wrappers also require the v141 platform toolset for UWP, either from the **Universal Windows Platform development** workload in Visual Studio 2017, or from the optional component **C++ (v141) Universal Windows Platform tools** in [**Visual Studio 2019**](http://dev.windows.com/downloads).
+- The UWP wrappers also require the v141 platform toolset for UWP, either from the **Universal Windows Platform development** workload in Visual Studio 2017, or from the optional component **C++ (v141) Universal Windows Platform tools** in [**Visual Studio 2019**](http://dev.windows.com/downloads).
+
+- The UWP wrappers use C++/WinRT, so the [C++/WinRT Visual Studio extension](https://marketplace.visualstudio.com/items?itemName=CppWinRTTeam.cppwinrt101804264) must be installed from the marketplace.
 
 ### MixedReality-WebRTC C++ library
 
-The **MSVC v142 - VS 2019 C++ x64/x86 build tools** toolchain is required to build the C++17 library of MixedReality-WebRTC. This is installed by default with the **Desktop development with C++** workload on Visual Studio 2019.
+- The **MSVC v142 - VS 2019 C++ x64/x86 build tools** toolchain is required to build the C++17 library of MixedReality-WebRTC. This is installed by default with the **Desktop development with C++** workload on Visual Studio 2019.
 
 _Note_ - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually (see #14).
 
