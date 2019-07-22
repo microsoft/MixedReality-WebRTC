@@ -69,7 +69,7 @@ tools/             # Utility scripts
 
 ### General
 
-- Python 2.7 must be installed as the default interpreter. That is, `python --version` must return a Python version equal to 2.7. It is strongly recommended to get a patch version >= 15, that is **Python 2.7.15+**, as some users reported to the WebRTC UWP tea some spurious failures with earlier versions. Python 3.x does **not** work and should not be the default interpreter.
+- Python 2.7 must be installed as the default interpreter. That is, `python --version` must return a Python version equal to 2.7. It is strongly recommended to get a patch version >= 15, that is **Python 2.7.15+**, as some users reported to the WebRTC UWP team some spurious failures with earlier versions. Python 3.x does **not** work and should not be the default interpreter.
 
 - A recent version of Perl is needed for some builds. On Windows you can install for example [Strawberry Perl](http://strawberryperl.com/), or any other equivalent distribution you want.
 
