@@ -124,6 +124,14 @@ function Build-UWPWrappers
         [Parameter(Mandatory)]
         [string]$BuildArch
     )
+
+    # Restore NuGet packages
+    # This requires a separate step because Org.WebRtc.Universal uses a packages.config, which is not
+    # supported by the /restore option of msbuild.
+    nuget restore -NonInteractive "..\..\external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\packages.config" `
+        -SolutionDirectory "..\..\external\webrtc-uwp-sdk\webrtc\windows\solutions" -Verbosity detailed
+
+    # Compile
     & "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" `
         /target:Build /maxCpuCount:4 /property:Configuration=$BuildConfig /property:Platform=$BuildArch `
         "..\..\external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Org.WebRtc.vcxproj"
