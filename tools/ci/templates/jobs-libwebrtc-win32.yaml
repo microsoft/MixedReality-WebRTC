@@ -12,7 +12,9 @@ jobs:
   timeoutInMinutes: 360
   pool:
     name: ${{parameters.buildAgent}}
-    demands: msbuild
+    demands:
+    - msbuild
+    - mr_webrtc_core
   variables:
     buildTriple: Win32-${{parameters.buildArch}}-${{parameters.buildConfig}}
     projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
@@ -39,7 +41,7 @@ jobs:
       configuration: ${{parameters.buildConfig}}
     timeoutInMinutes: 120
 
-  # Publish webrtc.lib alone
+  # Publish webrtc.lib
   - task: PublishPipelineArtifact@0
     displayName: 'Publish webrtc.lib ($(buildTriple))'
     inputs:
