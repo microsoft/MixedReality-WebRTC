@@ -21,6 +21,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public bool AutoStartCapture = true;
 
         /// <summary>
+        /// Name of the preferred video codec, or empty to let WebRTC decide.
+        /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
+        /// </summary>
+        [Tooltip("SDP name of the preferred video codec to use if supported")]
+        public string PreferredVideoCodec = string.Empty;
+
+        /// <summary>
         /// Enable Mixed Reality Capture (MRC) if available on the local device.
         /// This option has no effect on devices not supporting MRC.
         /// </summary>
@@ -90,6 +97,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private void OnPeerInitialized()
         {
             var nativePeer = PeerConnection.Peer;
+
+            nativePeer.PreferredVideoCodec = PreferredVideoCodec;
 
             if (AutoStartCapture)
             {

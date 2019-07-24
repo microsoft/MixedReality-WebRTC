@@ -95,9 +95,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Event that occurs when signaling is disconnected.
         /// </summary>
-//#pragma warning disable 67
+#pragma warning disable 67
         public event Action OnDisconnect;
-//#pragma warning restore 67
+#pragma warning restore 67
 
         /// <summary>
         /// Event that occurs when the signaler receives a new message.

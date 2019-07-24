@@ -52,7 +52,7 @@ namespace TestAppUwp
         private object _isRemoteVideoPlayingLock = new object();
 
         private PeerConnection _peerConnection;
-        //private INetworkDataChannel _chatDataChannel = null;
+        private DataChannel _chatDataChannel = null;
 
         private const int ChatChannelID = 2;
 
@@ -101,12 +101,23 @@ namespace TestAppUwp
 
             _peerConnection = new PeerConnection(dssSignaler);
             _peerConnection.Connected += OnPeerConnected;
+            _peerConnection.RenegotiationNeeded += OnPeerRenegotiationNeeded;
             _peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
             _peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
 
             //Window.Current.Closed += Shutdown; // doesn't work
 
             this.Loaded += OnLoaded;
+        }
+
+        private void OnPeerRenegotiationNeeded()
+        {
+            // If already connected, update the connection on the fly.
+            // If not, wait for user action and don't automatically connect.
+            if (_peerConnection.IsConnected)
+            {
+                _peerConnection.CreateOffer();
+            }
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -187,17 +198,16 @@ namespace TestAppUwp
                             LogMessage($"Access to A/V denied, check app permissions: {accessTask.Exception.Message}");
                             throw accessTask.Exception;
                         }
-                        return _peerConnection.InitializeAsync();
-                    })
-                    .ContinueWith((initTask) =>
-                    {
-                        if (initTask.Exception != null)
+                        _peerConnection.InitializeAsync().ContinueWith((initTask) =>
                         {
-                            LogMessage($"WebRTC native plugin init failed: {initTask.Exception.Message}");
-                            throw initTask.Exception;
-                        }
-                        OnPluginPostInit();
-                    }, uiThreadScheduler); // run task on caller (UI) thread
+                            if (initTask.Exception != null)
+                            {
+                                LogMessage($"WebRTC native plugin init failed: {initTask.Exception.Message}");
+                                throw initTask.Exception;
+                            }
+                            OnPluginPostInit();
+                        }, uiThreadScheduler); // run task on caller (UI) thread
+                    });
             }
             //< TODO - This below shouldn't do anything since exceptions are caught and stored inside Task.Exception...
             catch (UnauthorizedAccessException uae)
@@ -228,21 +238,6 @@ namespace TestAppUwp
             {
                 sessionStatusText.Text = "(session joined)";
                 chatTextBox.IsEnabled = true;
-                //_peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true).ContinueWith((prevTask) =>
-                //{
-                //    if (prevTask.Exception != null)
-                //    {
-                //        throw prevTask.Exception;
-                //    }
-                //    var newDataChannel = prevTask.Result;
-                //    RunOnMainThread(() =>
-                //    {
-                //        _chatDataChannel = newDataChannel;
-                //        _chatDataChannel.MessageReceived += ChatMessageReceived;
-                //        chatInputBox.IsEnabled = true;
-                //        chatSendButton.IsEnabled = true;
-                //    });
-                //});
             });
         }
 
@@ -399,6 +394,26 @@ namespace TestAppUwp
         {
             PluginInitialized = true;
             LogMessage("WebRTC native plugin initialized.");
+
+            // It is CRUCIAL to add any data channel BEFORE the SDP offer is sent, if data channels are
+            // to be used at all. Otherwise the SCTP will not be negotiated, and then all channels will
+            // stay forever in the kConnecting state.
+            // https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
+            _peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true).ContinueWith((prevTask) =>
+            {
+                if (prevTask.Exception != null)
+                {
+                    throw prevTask.Exception;
+                }
+                var newDataChannel = prevTask.Result;
+                RunOnMainThread(() =>
+                {
+                    _chatDataChannel = newDataChannel;
+                    _chatDataChannel.MessageReceived += ChatMessageReceived;
+                    chatInputBox.IsEnabled = true;
+                    chatSendButton.IsEnabled = true;
+                });
+            });
 
             createOfferButton.IsEnabled = true;
 
@@ -678,28 +693,28 @@ namespace TestAppUwp
 
         private void ChatSendButton_Click(object sender, RoutedEventArgs e)
         {
-            //if (string.IsNullOrWhiteSpace(chatInputBox.Text))
-            //    return;
-            //byte[] chatMessage = System.Text.Encoding.UTF8.GetBytes(chatInputBox.Text);
-            //_chatDataChannel.WriteMessageAsync(chatMessage);
-            //chatTextBox.Text += $"[local] {chatInputBox.Text}\n";
-            //chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
-            //    chatScrollViewer.ScrollableHeight,
-            //    chatScrollViewer.ZoomFactor); // scroll to end
-            //chatInputBox.Text = string.Empty;
+            if (string.IsNullOrWhiteSpace(chatInputBox.Text))
+                return;
+            byte[] chatMessage = System.Text.Encoding.UTF8.GetBytes(chatInputBox.Text);
+            _chatDataChannel.SendMessage(chatMessage);
+            chatTextBox.Text += $"[local] {chatInputBox.Text}\n";
+            chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
+                chatScrollViewer.ScrollableHeight,
+                chatScrollViewer.ZoomFactor); // scroll to end
+            chatInputBox.Text = string.Empty;
         }
 
-        //private void ChatMessageReceived(INetworkDataChannel channel, INetworkParticipant participant, byte[] message)
-        //{
-        //    string text = System.Text.Encoding.UTF8.GetString(message);
-        //    RunOnMainThread(() =>
-        //    {
-        //        chatTextBox.Text += $"[remote] {text}\n";
-        //        chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
-        //            chatScrollViewer.ScrollableHeight,
-        //            chatScrollViewer.ZoomFactor); // scroll to end
-        //    });
-        //}
+        private void ChatMessageReceived(byte[] message)
+        {
+            string text = System.Text.Encoding.UTF8.GetString(message);
+            RunOnMainThread(() =>
+            {
+                chatTextBox.Text += $"[remote] {text}\n";
+                chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
+                    chatScrollViewer.ScrollableHeight,
+                    chatScrollViewer.ZoomFactor); // scroll to end
+            });
+        }
 
         private void OnChatKeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {

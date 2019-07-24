@@ -124,13 +124,65 @@ function Build-UWPWrappers
         [Parameter(Mandatory)]
         [string]$BuildArch
     )
+
+    # Restore NuGet packages
+    # This requires a separate step because Org.WebRtc.Universal uses a packages.config, which is not
+    # supported by the /restore option of msbuild.
+    nuget restore -NonInteractive "..\..\external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\packages.config" `
+        -SolutionDirectory "..\..\external\webrtc-uwp-sdk\webrtc\windows\solutions" -Verbosity detailed
+
+    # Compile
     & "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" `
         /target:Build /maxCpuCount:4 /property:Configuration=$BuildConfig /property:Platform=$BuildArch `
         "..\..\external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Org.WebRtc.vcxproj"
 }
 
+# Try to apply a git patch, or check that it is already applied.
+# Terminate the script if the patch is not applied already and failed to apply.
+function Apply-GitPatch
+{
+    param(
+        [Parameter(Mandatory)]
+        [string]$Folder,
+        
+        [Parameter(Mandatory)]
+        [string]$PatchPath
+    )
+    
+    Push-Location $Folder
+    git apply $PatchPath
+    if ($?)
+    {
+        # Patch doesn't apply, check if already applied correctly by checking if
+        # it can be un-applied in the current state (reverse apply).
+        git apply --reverse --check $PatchPath
+        if (-not $?)
+        {
+            Write-Host "Patch $PatchPath not applied, and failed to apply."
+            exit 1
+        }
+    }
+    Pop-Location
+}
+
+
+#
+# Build
+#
+
+# Check Windows SDKs are installed
 Test-WindowsSDK
+
+# Patch libyuv clang compile (see #157 on WebRTC UWP project)
+Apply-GitPatch ..\..\external\webrtc-uwp-sdk\webrtc\xplatform\libyuv\ ..\..\..\..\..\tools\patches\libyuv_win_msvc_157.patch
+
+# Patch libyuv color conversion (see #176 on WebRTC UWP project)
+Apply-GitPatch ..\..\external\webrtc-uwp-sdk\webrtc\xplatform\libyuv\ ..\..\..\..\..\tools\patches\libyuv_argb_176.patch
+
+# Build webrtc.lib
 Build-CoreWebRTC -BuildConfig $BuildConfig -BuildArch $BuildArch -ScriptPlatform $ScriptPlatform
+
+# Build Org.webrtc.dll/winmd
 if ($BuildPlatform -eq "UWP")
 {
     Build-UWPWrappers -BuildConfig $BuildConfig -BuildArch $BuildArch

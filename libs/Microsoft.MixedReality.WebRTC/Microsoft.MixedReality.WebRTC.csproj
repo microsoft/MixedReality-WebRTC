@@ -3,7 +3,7 @@
   <!-- This needs to go first, before Microsoft.Common.props is imported  -->
   <PropertyGroup>
     <BaseIntermediateOutputPath>..\..\build\Microsoft.MixedReality.WebRTC\$(Configuration)</BaseIntermediateOutputPath>
-    <OutputPath>..\..\bin\$(Configuration)</OutputPath>
+    <OutputPath>..\..\bin\netstandard2.0\$(Configuration)\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
@@ -18,6 +18,14 @@
     <DefineConstants Condition="'$(Configuration)'=='Debug'">TRACE</DefineConstants>
     <DefineConstants>MR_SHARING_WIN</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Version>0.1.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://microsoft.github.io/MixedReality-WebRTC/</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/mr-webrtc_icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/microsoft/MixedReality-WebRTC</RepositoryUrl>
+    <RepositoryType>github</RepositoryType>
+    <Copyright>Copyright (c) Microsoft Corporation</Copyright>
+    <PackageTags>webrtc video audio streaming</PackageTags>
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

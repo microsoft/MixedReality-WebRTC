@@ -1,8 +1,15 @@
 
 # Build artifacts
-bin
-build
-obj
+/bin
+/build
+/obj
+# TODO - Fix location with directory.build
+examples/TestAppUwp/bin
+examples/TestAppUwp/build
+examples/TestAppUwp/obj
+tests/Microsoft.MixedReality.WebRTC.Tests/bin
+tests/Microsoft.MixedReality.WebRTC.Tests/build
+tests/Microsoft.MixedReality.WebRTC.Tests/obj
 
 # Visual Studio + Code
 .vs
@@ -13,7 +20,7 @@ obj
 # UWP packages
 /examples/TestAppUwp/AppPackages
 
-# NuGet packages
+# Nuget packages
 /packages
 
 # Unity artifacts
@@ -22,6 +29,7 @@ obj
 /libs/Microsoft.MixedReality.WebRTC.Unity/Library
 /libs/Microsoft.MixedReality.WebRTC.Unity/Temp
 /libs/Microsoft.MixedReality.WebRTC.Unity/Logs
+/libs/Microsoft.MixedReality.WebRTC.Unity/obj
 /libs/Microsoft.MixedReality.WebRTC.Unity/*.csproj
 /libs/Microsoft.MixedReality.WebRTC.Unity/*.sln
 
@@ -32,3 +40,7 @@ obj
 # Certificates
 *.pfx
 *.pfx.meta
+
+# DocFX limitation/bug
+xdoc
+xdoc.meta
