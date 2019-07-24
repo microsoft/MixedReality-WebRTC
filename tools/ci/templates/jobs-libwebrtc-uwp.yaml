@@ -80,7 +80,7 @@ jobs:
     displayName: 'Publish WinRT wrappers ($(buildTriple))'
     inputs:
       artifactName: 'orgwebrtc_$(buildTriple)'
-      targetPath: '$(projectRoot)Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+      targetPath: 'Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
     timeoutInMinutes: 15
 
   # Publish Org.WebRtc.WrapperGlue.lib and associated (PDB, ...)
@@ -88,5 +88,5 @@ jobs:
     displayName: 'Publish WinRT glue wrappers ($(buildTriple))'
     inputs:
       artifactName: 'orgwebrtc_glue_$(buildTriple)'
-      targetPath: '$(projectRoot)Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+      targetPath: 'Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
     timeoutInMinutes: 15
