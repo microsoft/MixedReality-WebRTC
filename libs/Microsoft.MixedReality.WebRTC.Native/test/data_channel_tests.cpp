@@ -12,9 +12,9 @@
 TEST(DataChannel, AddChannelBeforeInit) {
   PCRaii pc;
   ASSERT_NE(nullptr, pc.handle());
-  ASSERT_EQ(false, mrsPeerConnectionAddDataChannel(
-                       pc.handle(), -1, "data", true, true, nullptr, nullptr,
-                       nullptr, nullptr, nullptr, nullptr));
+  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddDataChannel(
+                             pc.handle(), -1, "data", true, true, nullptr,
+                             nullptr, nullptr, nullptr, nullptr, nullptr));
 }
 
 #endif  // MRSW_EXCLUDE_DEVICE_TESTS
