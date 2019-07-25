@@ -9,7 +9,7 @@ trigger: none
 pr: none
 
 # Give a unique name to the build each time it runs
-name: release-core-nosign-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+name: $(Date:yyyyMMdd)-$(Rev:r)
 
 variables:
   # Version string is "$(MRWebRTCVersion)-$(MRWebRTCReleaseTag)-$(Build.BuildId)"
@@ -23,6 +23,36 @@ stages:
 - stage: build
   displayName: Build Core WebRTC
   jobs:
+  - template: templates/jobs-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+  - template: templates/jobs-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'x64'
+      buildConfig: 'Debug'
+  - template: templates/jobs-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+  - template: templates/jobs-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'x64'
+      buildConfig: 'Debug'
+  - template: templates/jobs-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'ARM'
+      buildConfig: 'Debug'
+  # - template: templates/jobs-libwebrtc-uwp.yaml
+  #   parameters:
+  #     buildAgent: 'Analog Open'
+  #     buildArch: 'ARM64'
+  #     buildConfig: 'Debug'
   - template: templates/jobs-libwebrtc-win32.yaml
     parameters:
       buildAgent: 'Analog Open'
