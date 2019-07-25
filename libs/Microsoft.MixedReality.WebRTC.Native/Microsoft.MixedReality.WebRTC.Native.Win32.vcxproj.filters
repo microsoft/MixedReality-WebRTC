@@ -23,5 +23,6 @@
   <ItemGroup>
     <None Include="docs/design.md" />
     <None Include="src/exports.def" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

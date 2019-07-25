@@ -96,7 +96,6 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalDependencies>Ole32.lib;Evr.lib;mf.lib;mfuuid.lib;mfplat.lib;webrtc.lib;WindowsApp.lib;Org.WebRtc.WrapperGlue.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>src/exports.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\$(PlatformTarget)\$(Configuration);$(WebRTCCoreRepoPath)webrtc\windows\solutions\Build\Output\Org.WebRtc.WrapperGlue\$(Configuration)\$(PlatformTarget)\;$(WebRTCCoreRepoPath)webrtc\windows\projects\msvc\Org.WebRtc.WrapperGlue.Universal\Build\Output\Org.WebRtc.WrapperGlue\$(Configuration)\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Message>Copying C++ and C# DLLs to Unity plugins folder...</Message>
@@ -129,9 +128,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="docs/design.md" />
+    <None Include="packages.config" />
     <None Include="src/exports.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.0.0.1-alpha-17240193\build\native\Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.targets" Condition="Exists('..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.0.0.1-alpha-17240193\build\native\Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.0.0.1-alpha-17240193\build\native\Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.0.0.1-alpha-17240193\build\native\Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.targets'))" />
+  </Target>
 </Project>
