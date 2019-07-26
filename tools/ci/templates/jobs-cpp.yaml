@@ -33,7 +33,7 @@ jobs:
     displayName: 'NuGet restore'
     inputs:
       command: restore
-      restoreSolution: '$(Build.SourcesDirectory)/libs/Microsoft.MixedReality.WebRTC.Native/packages.config'
+      restoreSolution: '$(Build.SourcesDirectory)/tools/nuget/Native.Core.${{parameters.buildPlatform}}.packages.config'
       restoreDirectory: '$(Build.SourcesDirectory)/packages'
       includeNuGetOrg: false
       feedsToUse: config
