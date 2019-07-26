@@ -126,6 +126,8 @@ _Note_ - Currently due to CI limitations some projects are downgraded to VS 2017
 
    On successful build, the binaries will be generated in a sub-directory under `bin/`, and the relevant DLLs will be copied by a post-build script to `libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\` for Unity to consume them.
 
+   _Note_ - At the moment the Unity plugins need to be manually configured in the Inspector window after Unity created a `.meta` files for them. Failing to do so will produce some duplicate assembly errors. See the [Hello, Unity World!](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity.html) tutorial for the steps to follow.
+
 3. Optionally test the installation
 
    Test the install by _e.g._ opening the Unity project at `libs\Microsoft.MixedReality.WebRTC.Unity`, loading the `Assets\Microsoft.MixedReality.WebRTC\Unity.Examples\SimpleVideoChat` scene and pressing **Play**. After a few seconds (depending on the machine) the left media player should display the video feed from the local webcam. The Unity console should also display a message about the WebRTC library being initialized successfully.
