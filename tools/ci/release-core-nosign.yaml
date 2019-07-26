@@ -38,6 +38,7 @@ stages:
       buildAgent: 'Analog Open'
       buildArch: 'x86'
       buildConfig: 'Debug'
+      publishWinRtHeaders: true # Randomly selected, any UWP build will do
   - template: templates/jobs-libwebrtc-uwp.yaml
     parameters:
       buildAgent: 'Analog Open'

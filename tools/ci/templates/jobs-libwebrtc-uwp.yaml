@@ -2,8 +2,9 @@
 
 parameters:
   buildAgent: ''
-  buildArch: ''        # x86|x64|ARM|ARM64
-  buildConfig: ''      # Debug|Release
+  buildArch: ''               # x86|x64|ARM|ARM64
+  buildConfig: ''             # Debug|Release
+  publishWinRtHeaders: false  # true|false
 
 jobs:
 
@@ -75,6 +76,15 @@ jobs:
     inputs:
       artifactName: 'orgwebrtc_$(buildTriple)'
       targetPath: 'Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+    timeoutInMinutes: 15
+
+  # Publish Org.WebRtc generated headers
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish WinRT generated headers ($(buildTriple))'
+    condition: eq('${{parameters.publishWinRtHeaders}}', 'true')
+    inputs:
+      artifactName: 'orgwebrtc_headers'
+      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
     timeoutInMinutes: 15
 
   # Publish Org.WebRtc.WrapperGlue.lib and associated (PDB, ...)
