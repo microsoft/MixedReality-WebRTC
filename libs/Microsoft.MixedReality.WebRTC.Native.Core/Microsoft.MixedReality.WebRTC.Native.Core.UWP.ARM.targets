@@ -4,6 +4,11 @@
         <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Org.WebRtc.winmd">
             <Implementation>Org.WebRtc.dll</Implementation>
         </Reference>
-    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-arm\native\Org.WebRtc.dll" />
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-arm\native\$(Configuration)\Org.WebRtc.dll" />
     </ItemGroup>
+    <ItemDefinitionGroup Condition="'$(Platform)' == 'ARM'">
+        <Link>
+            <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)..\..\lib\native\lib\uap10.0\arm\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+        </Link>
+    </ItemDefinitionGroup>
 </Project>
