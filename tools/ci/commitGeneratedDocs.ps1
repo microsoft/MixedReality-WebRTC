@@ -17,12 +17,6 @@ Write-Host "Source branch: '$SourceBranch'"
 # Create some authentication tokens to be able to connect to Azure DevOps to get changes and to GitHub to push changes
 Write-Host "Create auth tokens to connect to GitHub and Azure DevOps"
 $Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${env:GITHUB_USER}:${env:GITHUB_PAT}"))
-git config --global --add "http.https://microsoft.visualstudio.com.extraheader" "AUTHORIZATION: Bearer $env:SYSTEM_ACCESSTOKEN"
-
-# Set author for the generated docs commit
-Write-Host "Set docs commit author to '${env:GITHUB_NAME} <${env:GITHUB_EMAIL}>'"
-git config --local user.name ${env:GITHUB_NAME}
-git config --local user.email ${env:GITHUB_EMAIL}
 
 # Check that source branch exists
 # Note that the Azure DevOps checkout is a specific commit not a branch,
@@ -95,6 +89,11 @@ Copy-Item ".\build\docs\generated\*" -Destination "$DestFolder" -Force -Recurse
 # Move inside the generated docs repository, so that subsequent git commands
 # apply to this repo/branch and not the global one with the source code.
 Set-Location ".\_docs"
+
+# Set author for the generated docs commit
+Write-Host "Set docs commit author to '${env:GITHUB_NAME} <${env:GITHUB_EMAIL}>'"
+git config user.name ${env:GITHUB_NAME}
+git config user.email ${env:GITHUB_EMAIL}
 
 # Check for any change compared to previous version (if any)
 Write-Host "Check for changes"
