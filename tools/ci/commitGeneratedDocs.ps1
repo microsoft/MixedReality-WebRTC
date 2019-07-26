@@ -17,13 +17,12 @@ Write-Host "Source branch: '$SourceBranch'"
 # Create some authentication tokens to be able to connect to Azure DevOps to get changes and to GitHub to push changes
 Write-Host "Create auth tokens to connect to GitHub and Azure DevOps"
 $Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${env:GITHUB_USER}:${env:GITHUB_PAT}"))
-git config --global --add "http.https://github.com/.extraheader" "AUTHORIZATION: $Authorization"
 git config --global --add "http.https://microsoft.visualstudio.com.extraheader" "AUTHORIZATION: Bearer $env:SYSTEM_ACCESSTOKEN"
 
 # Set author for the generated docs commit
 Write-Host "Set docs commit author to '${env:GITHUB_NAME} <${env:GITHUB_EMAIL}>'"
-git config --global user.name ${env:GITHUB_NAME}
-git config --global user.email ${env:GITHUB_EMAIL}
+git config --local user.name ${env:GITHUB_NAME}
+git config --local user.email ${env:GITHUB_EMAIL}
 
 # Check that source branch exists
 # Note that the Azure DevOps checkout is a specific commit not a branch,
@@ -73,7 +72,9 @@ Write-Host "Destination folder: $DestFolder"
 # Note that we always clone into ".\_docs", which is the repository root,
 # even if the destination folder is a sub-folder.
 Write-Host "Clone the generated docs branch"
-git clone https://github.com/Microsoft/MixedReality-WebRTC.git --branch gh-pages-private ".\_docs" # TEMP - gh-pages-private for testing
+git -c http.extraheader="AUTHORIZATION: $Authorization" `
+    clone https://github.com/Microsoft/MixedReality-WebRTC.git `
+    --branch gh-pages-private ".\_docs" # TEMP - gh-pages-private for testing
 
 # Delete all the files in this folder, so that files deleted in the new version
 # of the documentation are effectively deleted in the commit.
@@ -104,7 +105,7 @@ if (git status --short)
     # this directory and retain only generated docs changes, which is exactly what we want.
     git add --all
     git commit -m "Generated docs for commit $commitSha ($commitTitle)"
-    git push origin "$DestBranch"
+    git -c http.extraheader="AUTHORIZATION: $Authorization" push origin "$DestBranch"
     Write-Host "Docs changes committed"
 }
 else
