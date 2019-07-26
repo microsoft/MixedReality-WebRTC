@@ -80,8 +80,11 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;UNICODE;_WINDLL;MR_SHARING_WIN;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\..\include;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -92,16 +95,13 @@
       <Message>Copying C++ DLLs to Unity plugins folder...</Message>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Command>..\..\..\..\tools\copy_unity_plugins.bat CPP Win32 $(PlatformTarget) $(Configuration)</Command>
+      <Command>cd ..\..\..\..\tools\ &amp;&amp; copy_unity_plugins.bat CPP Win32 $(PlatformTarget) $(Configuration)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;UNICODE;_WINDLL;MR_SHARING_WIN;WIN32;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\include;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -113,11 +113,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;UNICODE;_WINDLL;MR_SHARING_WIN;WIN32;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>include;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -155,12 +152,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-17261256\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-17261256\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets')" />
+    <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-17261256\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-17261256\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets'))" />
   </Target>
 </Project>

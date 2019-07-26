@@ -65,7 +65,7 @@
     <ClCompile Include="data_channel_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.MixedReality.WebRTC.Native.Win32.vcxproj">
+    <ProjectReference Include="..\src\win32\Microsoft.MixedReality.WebRTC.Native.Win32.vcxproj">
       <Project>{b69106ca-ecd6-49cc-a1a1-e5d97e9eb9e0}</Project>
     </ProjectReference>
   </ItemGroup>
