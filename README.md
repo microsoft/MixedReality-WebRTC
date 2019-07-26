@@ -97,6 +97,10 @@ The MixedReality-WebRTC projects consume their input dependencies as NuGet packa
 
 This section describes the prerequisites to build the MixedReality-WebRTC solution using the prebuilt binary input dependencies (NuGet packages). The solution is available at the root of the repository : [`Microsoft.MixedReality.WebRTC.sln`](https://github.com/microsoft/MixedReality-WebRTC/blob/master/Microsoft.MixedReality.WebRTC.sln).
 
+- The NuGet packages for the input dependencies require in total approximately **10 GB of disk space**.
+
+- Due to the Windows path length limit, it is recommended to **clone the source repository close to the root**, _e.g._ `C:\mr-webrtc\` or similar, as the recursive external dependencies create a deep hierarchy which may otherwise produce paths beyond the OS limit.
+
 - **Visual Studio 2019** is recommended with the following features:
 
   - The **MSVC v142 - VS 2019 C++ x64/x86 build tools** toolchain is required to build the C++17 library of MixedReality-WebRTC. This is installed by default with the **Desktop development with C++** workload on Visual Studio 2019.
@@ -111,10 +115,10 @@ _Note_ - Currently due to CI limitations some projects are downgraded to VS 2017
 
 ### Building
 
-1. Check out the repository and its dependencies
+1. Check out the repository and its dependencies, preferably close to the root (see prerequisites):
 
-   ```sh
-   git clone --recursive https://github.com/microsoft/MixedReality-WebRTC.git
+   ```cmd
+   git clone --recursive https://github.com/microsoft/MixedReality-WebRTC.git C:\mr-webrtc
    ```
    
    Note that **this may take some time (> 5 minutes)** due to the large number of submodules in [the WebRTC UWP SDK repository](https://github.com/webrtc-uwp/webrtc-uwp-sdk) this repository depends on.
