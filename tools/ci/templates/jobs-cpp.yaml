@@ -69,7 +69,7 @@ jobs:
   - task: MSBuild@1
     displayName: 'Build C++ WebRTC lib ($(buildTriple))'
     inputs:
-      solution: libs/Microsoft.MixedReality.WebRTC.Native/Microsoft.MixedReality.WebRTC.Native.${{parameters.buildPlatform}}.vcxproj
+      solution: libs/Microsoft.MixedReality.WebRTC.Native/src/${{parameters.buildPlatform}}/Microsoft.MixedReality.WebRTC.Native.${{parameters.buildPlatform}}.vcxproj
       msbuildVersion: 15.0
       msbuildArchitecture: x64
       platform: ${{parameters.buildArch}}
