@@ -22,6 +22,15 @@ jobs:
   - checkout: self
     submodules: recursive
 
+  # Restore the NuGet packages containing the input dependencies
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'NuGet restore'
+    inputs:
+      command: restore
+      restoreSolution: '../../../libs/Microsoft.MixedReality.WebRTC.Native/packages.config'
+      restoreDirectory: ../../../packages
+    timeoutInMinutes: 30
+
   # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
   - template: steps-prepare-python27.yaml
 
@@ -41,54 +50,6 @@ jobs:
       scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
       arguments: '-a prepare -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig)'
     timeoutInMinutes: 10
-
-  # Download webrtc.lib built by another agent
-  - task: DownloadPipelineArtifact@1
-    displayName: 'Download webrtc.lib ($(buildTriple))'
-    inputs:
-      buildType: specific
-      project: $(ArtifactConfig.Project)
-      definition: $(ArtifactConfig.CoreDefinitionId)
-      artifactName: 'libwebrtc_$(buildTriple)'
-      # Download back exactly where it would have been otherwise compiled inside the source folder
-      targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/$(scriptArch)/$(scriptConfig)'
-    timeoutInMinutes: 15
-
-  # Download the C++/WinRT generated headers used as #include inside C++ headers
-  - task: DownloadPipelineArtifact@1
-    condition: eq('${{parameters.buildPlatform}}', 'UWP')
-    displayName: 'Download generated WinRT headers ($(buildTriple))'
-    inputs:
-      buildType: specific
-      project: $(ArtifactConfig.Project)
-      definition: $(ArtifactConfig.CoreDefinitionId)
-      artifactName: 'orgwebrtc_winrt_hpp_$(buildTriple)'
-      targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
-    timeoutInMinutes: 15
-
-  # Download the prebuilt WinRT wrapper Org.WebRtc.dll
-  - task: DownloadPipelineArtifact@1
-    condition: eq('${{parameters.buildPlatform}}', 'UWP')
-    displayName: 'Download WinRT wrappers ($(buildTriple))'
-    inputs:
-      buildType: specific
-      project: $(ArtifactConfig.Project)
-      definition: $(ArtifactConfig.CoreUWPDefinitionId)
-      artifactName: 'orgwebrtc_$(buildTriple)'
-      targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
-    timeoutInMinutes: 15
-
-  # Download the prebuilt WinRT wrapper glue Org.WebRtc.WrapperGlue.lib
-  - task: DownloadPipelineArtifact@1
-    condition: eq('${{parameters.buildPlatform}}', 'UWP')
-    displayName: 'Download WinRT glue wrappers ($(buildTriple))'
-    inputs:
-      buildType: specific
-      project: $(ArtifactConfig.Project)
-      definition: $(ArtifactConfig.CoreUWPDefinitionId)
-      artifactName: 'orgwebrtc_glue_$(buildTriple)'
-      targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/windows/solutions/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
-    timeoutInMinutes: 15
 
   # Build Microsoft.MixedReality.WebRTC.Native.dll
   - task: MSBuild@1
