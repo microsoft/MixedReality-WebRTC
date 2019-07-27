@@ -17,6 +17,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.MixedReality.WebRTC.Tests", "tests\Microsoft.MixedReality.WebRTC.Tests\Microsoft.MixedReality.WebRTC.Tests.csproj", "{70AB2CE0-D35D-4911-AC83-545A611EA930}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.MixedReality.WebRTC.Native.Test", "libs\Microsoft.MixedReality.WebRTC.Native\test\Microsoft.MixedReality.WebRTC.Native.Test.vcxproj", "{6D020425-2E3E-4BA7-BC46-00C8D29081C0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{928899BC-F131-4343-A1AB-72F3A5787E41} = {928899BC-F131-4343-A1AB-72F3A5787E41}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
