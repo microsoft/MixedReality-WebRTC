@@ -6,4 +6,9 @@
         <OrgWebRtcPlatform Condition="'$(Platform)' == 'ARM'">arm</OrgWebRtcPlatform>
         <OrgWebRtcPlatform Condition="'$(Platform)' == 'ARM64'">arm64</OrgWebRtcPlatform>
     </PropertyGroup>
+    <ItemDefinitionGroup>
+        <ClCompile>
+            <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\..\lib\native\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+        </ClCompile>
+    </ItemDefinitionGroup>
 </Project>
