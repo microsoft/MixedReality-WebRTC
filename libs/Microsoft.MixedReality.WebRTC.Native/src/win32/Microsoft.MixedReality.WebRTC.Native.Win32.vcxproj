@@ -152,12 +152,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets')" />
+    <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-3\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-3\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-3\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.0.0.1-alpha-20190726-3\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.targets'))" />
   </Target>
 </Project>
