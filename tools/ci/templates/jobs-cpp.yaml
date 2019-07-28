@@ -41,29 +41,29 @@ jobs:
       externalFeedCredentials: 'mr_internal_nuget_feed'
     timeoutInMinutes: 30
 
-  # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
-  - task: UsePythonVersion@0
-    displayName: 'Use Python 2.7.16 x64 for Google GN'
-    inputs:
-      versionSpec: 2.7.16
-    timeoutInMinutes: 5
+  # # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
+  # - task: UsePythonVersion@0
+  #   displayName: 'Use Python 2.7.16 x64 for Google GN'
+  #   inputs:
+  #     versionSpec: 2.7.16
+  #   timeoutInMinutes: 5
 
-  # Map build* variables to script* ones
-  - task: PowerShell@2
-    displayName: Map script variables
-    inputs:
-      targetType: filePath
-      filePath: tools/ci/mapVariables.ps1
-      arguments: '${{parameters.buildPlatform}} ${{parameters.buildArch}} ${{parameters.buildConfig}}'
+  # # Map build* variables to script* ones
+  # - task: PowerShell@2
+  #   displayName: Map script variables
+  #   inputs:
+  #     targetType: filePath
+  #     filePath: tools/ci/mapVariables.ps1
+  #     arguments: '${{parameters.buildPlatform}} ${{parameters.buildArch}} ${{parameters.buildConfig}}'
 
-  # Prepare the environment with the setup script from Google
-  - task: PythonScript@0
-    displayName: Prepare WebRTC env
-    inputs:
-      scriptSource: 'filePath'
-      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
-      arguments: '-a prepare -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig)'
-    timeoutInMinutes: 10
+  # # Prepare the environment with the setup script from Google
+  # - task: PythonScript@0
+  #   displayName: Prepare WebRTC env
+  #   inputs:
+  #     scriptSource: 'filePath'
+  #     scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+  #     arguments: '-a prepare -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig)'
+  #   timeoutInMinutes: 10
 
   # Build Microsoft.MixedReality.WebRTC.Native.dll
   - task: MSBuild@1
