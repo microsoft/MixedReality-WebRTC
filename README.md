@@ -4,7 +4,6 @@
 ![Under active development](https://img.shields.io/badge/status-public_preview-red.svg)
 [![Holodevelopers channel on Slack](https://img.shields.io/badge/slack-@holodevelopers-%23972299.svg?logo=slack)](https://holodevelopers.slack.com/messages/C1AK8E6CS/)
 
-
 **⚠ PUBLIC PREVIEW ⚠**
 
 **This repository currently contains a public preview under active development, intended for early adopters and to gather feedback. While in preview, the API is expected to be unstable and breaking changes will occur. See also the Known Issues section for details.**
@@ -34,6 +33,8 @@ The current up-to-date branch with latest developments is the `master` branch. I
 The official documentation is hosted at https://microsoft.github.io/MixedReality-WebRTC/.
 
 - The [User Manual](https://microsoft.github.io/MixedReality-WebRTC/manual/) contains a general overview and some tutorials.
+  - The [Hello, Unity world!](docs/manual/helloworld-unity.md) tutorial introduces the Unity integration by building a simple chat client.
+  - The Hello, C# world! tutorial (under construction) introduces the C# API.
 - An [API reference](https://microsoft.github.io/MixedReality-WebRTC/api/) is also available for the C# library and the Unity integration.
 
 ## Getting Started
@@ -48,18 +49,18 @@ The overall architecture is as follow:
 
 | Library | Lang | Description |
 |---|---|---|
-| `Microsoft.MixedReality.WebRTC.Native` | C++17 | Native C++ library providing a low-level interface to the [underlying WebRTC implementation from Google](https://opensource.google.com/projects/webrtc). Compared to the API exposed by the Google implementation (`PeerConnection`), the current interface is simplified to remove the burden of setup and configuring. |
+| `Microsoft.MixedReality.WebRTC.Native` | C++17 | Native C++ library providing a low-level interface to the [underlying WebRTC implementation from Google](https://opensource.google.com/projects/webrtc). Compared to the API exposed by the Google implementation (`PeerConnection`), the current interface is simplified to remove the burden of setup and configuring. It also tries to prevent common threading errors with the UWP wrappers. |
 | `Microsoft.MixedReality.WebRTC` | C# 7.3 | C# .Net Standard 2.0 library providing access to the same API as the native C++ library, exposed with familiar C# concepts such as `async` / `await` and `Task`. |
-| `Microsoft.MixedReality.WebRTC.Unity` | C# 7.3 | Unity3D integration - a set of Unity `MonoBehaviour` components with almost no required setup, to enable rapid prototyping and simplify integration into an existing app. |
-| `Microsoft.MixedReality.WebRTC.Unity.Examples` | C# 7.3 | Unity3D samples showcasing typical use scenarios like a video chat app. |
+| `Microsoft.MixedReality.WebRTC.Unity` | C# 7.3 | Unity3D integration - a set of Unity [`MonoBehaviour` components](https://docs.unity3d.com/ScriptReference/MonoBehaviour.html) with almost no required setup, to enable rapid prototyping and simplify integration into an existing app. |
+| `Microsoft.MixedReality.WebRTC.Unity.Examples` | C# 7.3 | Unity3D samples showcasing typical use scenarios like a peer-to-peer video chat app. |
 
 MixedReality-WebRTC is currently available for Windows 10 Desktop and UWP, with or without Unity, with planned support for Unity deployment on iOS and Android.
 
-_Note_ - In the following and elsewhere in this repository the term "Win32" is used as a synonym for "Windows Desktop", the historical Windows API for Desktop application development, and in opposition to the "Windows UWP" API. However Microsoft Windows versions older than Windows 10 with Windows SDK 17134 (April 2018 Update, 1803) are not officially supported. In particular, older versions of Windows (Windows 7, Windows 8, etc.) are explicitly not supported. See _Required Softwares_ below for more information.
+_Note_ - In the following and elsewhere in this repository the term "Win32" is used as a synonym for "Windows Desktop", the historical Windows API for Desktop application development, and in opposition to the "Windows UWP" API. However Microsoft Windows versions older than Windows 10 with Windows SDK 17134 (April 2018 Update, 1803) are not officially supported for this project. In particular, older versions of Windows (Windows 7, Windows 8, etc.) are explicitly not supported.
 
 ### Binary packages
 
-MixedReality-WebRTC is currently under development, and precompiled packages are not yet available. See the _Prerequisites_ and _Building MixedReality-WebRTC_ sections below for compiling the libraries from sources.
+MixedReality-WebRTC is currently under development, and precompiled binary packages for the project's libraries are not yet available. See the _Building MixedReality-WebRTC_ sections below for compiling those libraries from sources.
 
 ### Sources
 
@@ -73,21 +74,22 @@ docs/              # Documentation
 examples/          # Examples of use and sample apps
 external/          # Third-party external dependencies (git submodules)
 libs/              # Source code for the individual libraries
-tests/             # Source code for unit tests
+tests/             # Source code for feature tests
 tools/             # Utility scripts
 + build/           # Build scripts
 + ci/              # CI Azure pipelines
 + patches/         # Patches applied by build.ps1
 ```
 
-The `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution contains several projects:
+The `Microsoft.MixedReality.WebRTC.sln` Visual Studio 2019 solution located at the root of the repository contains several projects:
 
 - The native C++ library, which can be compiled:
   - for Windows Desktop with the `Microsoft.MixedReality.WebRTC.Native.Win32` project
   - for UWP with the `Microsoft.MixedReality.WebRTC.Native.UWP` project
+- A C++ unit tests project `Microsoft.MixedReality.WebRTC.Native.Tests`
 - The C# library project `Microsoft.MixedReality.WebRTC`
 - A C# unit tests project `Microsoft.MixedReality.WebRTC.Tests`
-- A UWP C# sample app project `Microsoft.MixedReality.WebRTC.TestAppUWP` based on WPF and XAML
+- A UWP C# sample app project `Microsoft.MixedReality.WebRTC.TestAppUWP` based on WPF and XAML which demonstrates audio / video / data communication by mean of a simple video chat app.
 
 ## Building MixedReality-WebRTC
 
@@ -97,11 +99,11 @@ The MixedReality-WebRTC projects consume their input dependencies as NuGet packa
 
 This section describes the prerequisites to build the MixedReality-WebRTC solution using the prebuilt binary input dependencies (NuGet packages). The solution is available at the root of the repository : [`Microsoft.MixedReality.WebRTC.sln`](https://github.com/microsoft/MixedReality-WebRTC/blob/master/Microsoft.MixedReality.WebRTC.sln).
 
-- The NuGet packages for the input dependencies require in total approximately **10 GB of disk space**.
+- The NuGet packages for the input dependencies require in total approximately **10 GB of disk space**. Those dependencies contain unstripped `.lib` files much larger than the final compiled DLL libraries, for both the Debug and Release build configurations.
 
 - Due to the Windows path length limit, it is recommended to **clone the source repository close to the root**, _e.g._ `C:\mr-webrtc\` or similar, as the recursive external dependencies create a deep hierarchy which may otherwise produce paths beyond the OS limit.
 
-- **Visual Studio 2019** is recommended with the following features:
+- **Visual Studio 2019** with the following features:
 
   - The **MSVC v142 - VS 2019 C++ x64/x86 build tools** toolchain is required to build the C++17 library of MixedReality-WebRTC. This is installed by default with the **Desktop development with C++** workload on Visual Studio 2019.
 
@@ -111,16 +113,14 @@ This section describes the prerequisites to build the MixedReality-WebRTC soluti
 
 - The Unity integration has been tested on [Unity](https://unity3d.com/get-unity/download) **2018.3.x** and **2019.1.x**. Versions earlier than 2018.3.x may work but are not officially supported.
 
-_Note_ - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually (see [#14](https://github.com/microsoft/MixedReality-WebRTC/issues/14)).
-
 ### Building
 
-1. Check out the repository and its dependencies, preferably close to the root (see prerequisites):
+1. Check out the repository and its dependencies recursively, preferably close to the root (see prerequisites):
 
    ```cmd
    git clone --recursive https://github.com/microsoft/MixedReality-WebRTC.git C:\mr-webrtc
    ```
-   
+
    Note that **this may take some time (> 5 minutes)** due to the large number of submodules in [the WebRTC UWP SDK repository](https://github.com/webrtc-uwp/webrtc-uwp-sdk) this repository depends on.
 
 2. Build the MixedReality-WebRTC libraries
@@ -138,7 +138,7 @@ _Note_ - Currently due to CI limitations some projects are downgraded to VS 2017
 
    See the [Hello, Unity World!](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity.html) tutorial for more details.
 
-_Note_ - Although this is **strongly discouraged** for most users due to its complexity, a detailed step-by-step tutorial on building from source **including** the dependencies is also available, see [Building from sources](building.md).
+_Note_ - Although this is **strongly discouraged** for most users due to its complexity, a detailed step-by-step tutorial on building from source **including** the _Core_ input dependencies is also available, see [Building from sources](building.md).
 
 ## Known Issues
 
