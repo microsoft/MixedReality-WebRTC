@@ -23,7 +23,7 @@
     <ProjectGuid>{6D020425-2E3E-4BA7-BC46-00C8D29081C0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>Microsoft.MixedReality.WebRTC.Native.Test</ProjectName>
+    <ProjectName>Microsoft.MixedReality.WebRTC.Native.Tests</ProjectName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -51,8 +51,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <OutDir>..\..\..\bin\Win32\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>..\..\..\build\Microsoft.MixedReality.WebRTC.Native.Test\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>Microsoft.MixedReality.WebRTC.Native.Test</TargetName>
+    <IntDir>..\..\..\build\Microsoft.MixedReality.WebRTC.Native.Tests\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>Microsoft.MixedReality.WebRTC.Native.Tests</TargetName>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
