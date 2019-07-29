@@ -22,4 +22,4 @@ name: ci-docs-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 jobs:
 - template: templates/jobs-docs.yaml
   parameters:
-    buildAgent: 'Hosted Windows 2019 with VS2019' # windows-2019
+    buildAgent: 'Hosted VS2017' # vs2017-win2016

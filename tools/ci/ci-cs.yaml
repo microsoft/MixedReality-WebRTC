@@ -22,6 +22,6 @@ name: ci-cs-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 jobs:
 - template: templates/jobs-cs.yaml
   parameters:
-    buildAgent: 'Hosted Windows 2019 with VS2019' # windows-2019
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
     buildConfig: 'Debug'
     testConfig: 'Debug'
