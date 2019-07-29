@@ -1,3 +1,6 @@
+REM Copyright (c) Microsoft Corporation. All rights reserved.
+REM Licensed under the MIT License. See LICENSE in the project root for license information.
+
 @echo off
 
 REM %1 Kind (CPP / CS)

@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 # Map build* variables to script* variables
 #   build* variables are for MSVC and use uppercase : ARM(64), Debug|Release, Win32|UWP
 #   script* variables are for the Google Python scripts and use lowercase: arm(64), debug|release, win|winuwp

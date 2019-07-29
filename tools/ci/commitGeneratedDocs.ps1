@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 # Commit a generated documentation to the gh-pages documentation branch
 # For the master branch, this commits the documentation at the root of
 # the branch. For other branches, this commits it under the verions/ folder.

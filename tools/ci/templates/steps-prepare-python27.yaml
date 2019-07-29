@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 # [TEMPLATE] Install and configure Python 2.7.16 x64 as the default python interpreter
 
 steps:

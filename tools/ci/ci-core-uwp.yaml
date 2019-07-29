@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 # MixedReality-WebRTC build pipeline for CI
 # Build the UWP wrappers for the core WebRTC implementation
 
