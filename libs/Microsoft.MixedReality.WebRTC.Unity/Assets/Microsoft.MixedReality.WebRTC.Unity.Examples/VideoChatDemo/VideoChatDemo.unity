@@ -495,16 +495,6 @@ PrefabInstance:
       propertyPath: AutoLogErrors
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 8734329137356271696, guid: 94759df28537c86408a84858950de05a,
-        type: 3}
-      propertyPath: RemotePeerId
-      value: 0100f52302005a24030070260400abde0500d8000700fb0e0800f14a090046910100a70d0200b059030035110400f4570500cbad0700a8a80800329d0900c412
-      objectReference: {fileID: 0}
-    - target: {fileID: 8734329137356271696, guid: 94759df28537c86408a84858950de05a,
-        type: 3}
-      propertyPath: HttpServerAddress
-      value: http://10.164.30.73:3000/
-      objectReference: {fileID: 0}
     - target: {fileID: 8844783484497184051, guid: 94759df28537c86408a84858950de05a,
         type: 3}
       propertyPath: DeviceNameLabel2
