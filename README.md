@@ -132,7 +132,7 @@ This section describes the prerequisites to build the MixedReality-WebRTC soluti
 
    On successful build, the binaries will be generated in a sub-directory under `bin/`, and the relevant DLLs will be copied by a post-build script to `libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\` for Unity to consume them.
 
-   _Note_ - At the moment the Unity plugins need to be manually configured in the Inspector window after Unity created a `.meta` files for them. Failing to do so will produce some duplicate assembly errors. See the [Hello, Unity World!](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity.html) tutorial for the steps to follow.
+   _Note_ - At the moment **the Unity plugins need to be manually configured in the Inspector window** after Unity created a `.meta` files for them. Failing to do so will produce some duplicate assembly errors. See the [Hello, Unity World!](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity.html) tutorial for the steps to follow.
 
 3. Optionally test the installation
 
