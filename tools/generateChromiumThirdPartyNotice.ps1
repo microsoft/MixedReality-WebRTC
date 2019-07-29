@@ -1,5 +1,7 @@
 # Script to generate the part of the NOTICE file relative to the Chormium third-party dependencies
 # found in external\webrtc-uwp-sdk\webrtc\xplatform\chromium\third_party.
+# This script is not currently used, as WebRTC only imports a small subset of Chromium, found mostly
+# in external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\third_party and the submodules.
 
 param (
     [Parameter(Mandatory)][string]$BasePath,
