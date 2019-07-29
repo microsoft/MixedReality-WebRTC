@@ -84,7 +84,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt;..\..\include;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
@@ -94,7 +94,6 @@
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>C:\Program Files (x86)\Windows Kits\10\Lib\10.0.17763.0\ucrt\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Ole32.lib;Evr.lib;mf.lib;mfuuid.lib;mfplat.lib;webrtc.lib;WindowsApp.lib;Org.WebRtc.WrapperGlue.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>..\exports.def</ModuleDefinitionFile>
     </Link>
