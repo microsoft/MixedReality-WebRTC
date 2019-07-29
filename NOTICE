@@ -57,7 +57,27 @@ Component.
 
 Open Source License/Copyright Notice.
 
-    ?
+    MIT License
+    
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE
 
 Additional Attribution (if any).
 
@@ -71,7 +91,27 @@ Component.
 
 Open Source License/Copyright Notice.
 
-    ?
+    MIT License
+    
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE
 
 Additional Attribution (if any).
 
@@ -191,7 +231,27 @@ Component.
 
 Open Source License/Copyright Notice.
 
-    ?
+    MIT License
+    
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE
 
 Additional Attribution (if any).
 
@@ -499,11 +559,11 @@ Additional Attribution (if any).
 
 Component.
 
-    external/webrtc-uwp-sdk/webrtc/xplatform/buildtools
+    external/webrtc-uwp-sdk/webrtc/xplatform/chromium
 
 Open Source License/Copyright Notice.
 
-    // Copyright 2014 The Chromium Authors. All rights reserved.
+    // Copyright 2015 The Chromium Authors. All rights reserved.
     //
     // Redistribution and use in source and binary forms, with or without
     // modification, are permitted provided that the following conditions are
@@ -533,192 +593,1091 @@ Open Source License/Copyright Notice.
 
 Additional Attribution (if any).
 
-    -
-
---------------------------------------------------------------------------------
-
-Component.
-
-    external/webrtc-uwp-sdk/webrtc/xplatform/chromium/base
-
-Open Source License/Copyright Notice.
-
-    ?
-
-Additional Attribution (if any).
-
-    -
-
---------------------------------------------------------------------------------
-
-Component.
-
-    external/webrtc-uwp-sdk/webrtc/xplatform/chromium/build
-
-Open Source License/Copyright Notice.
-
-    ?
-
-Additional Attribution (if any).
-
-    -
-
---------------------------------------------------------------------------------
-
-Component.
-
-    external/webrtc-uwp-sdk/webrtc/xplatform/chromium/testing
-
-Open Source License/Copyright Notice.
-
-    ?
-
-Additional Attribution (if any).
-
-    -
-
---------------------------------------------------------------------------------
-
-Component.
-
-    external/webrtc-uwp-sdk/webrtc/xplatform/chromium/third_party
-
-Open Source License/Copyright Notice.
-
-    ?
-
-Additional Attribution (if any).
-
-    -
-
---------------------------------------------------------------------------------
-
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-Component.
-
-Open Source License/Copyright Notice.
-
-Additional Attribution (if any).
-
---------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Component.
-
-    external/webrtc-uwp-sdk/webrtc/xplatform/chromium/tools
-
-Open Source License/Copyright Notice.
-
-    ?
-
-Additional Attribution (if any).
-
-    -
+    # Names should be added to this file with this pattern:
+    #
+    # For individuals:
+    #   Name <email address>
+    #
+    # For organizations:
+    #   Organization <fnmatch pattern>
+    #
+    # See python fnmatch module documentation for more information.
+    Aaron Boushley <boushley@gmail.com>
+    Aaron Jacobs <samusaaron3@gmail.com>
+    Aaron Leventhal <aaronlevbugs@gmail.com>
+    Aaron Randolph <aaron.randolph@gmail.com>
+    Aaryaman Vasishta <jem456.vasishta@gmail.com>
+    Abdu Ameen <abdu.ameen000@gmail.com>
+    Abhijeet Kandalkar <abhijeet.k@samsung.com>
+    Abhishek Agarwal <abhishek.a21@samsung.com>
+    Abhishek Kanike <abhishek.ka@samsung.com>
+    Abhishek Singh <abhi.rathore@samsung.com>
+    Adam Bonner <abonner-chromium@solscope.com>
+    Adam Bujalski <abujalski@gmail.com>
+    Adam Kallai <kadam@inf.u-szeged.hu>
+    Adam Roben <adam@github.com>
+    Adam Treat <adam.treat@samsung.com>
+    Adam Yi <i@adamyi.com>
+    Addanki Gandhi Kishor <kishor.ag@samsung.com>
+    Adenilson Cavalcanti <a.cavalcanti@samsung.com>
+    Aditya Bhargava <heuristicist@gmail.com>
+    Adrian Belgun <adrian.belgun@intel.com>
+    Ahmet Emir Ercin <ahmetemiremir@gmail.com>
+    Ajay Berwal <a.berwal@samsung.com>
+    Ajay Berwal <ajay.berwal@samsung.com>
+    Ajith Kumar V <ajith.v@samsung.com>
+    Aku Kotkavuo <a.kotkavuo@partner.samsung.com>
+    Aldo Culquicondor <alculquicondor@gmail.com>
+    Aleksandar Stojiljkovic <aleksandar.stojiljkovic@intel.com>
+    Alex Gabriel <minilogo@gmail.com>
+    Alex Gartrell <agartrell@cmu.edu>
+    Alex Henrie <alexhenrie24@gmail.com>
+    Alex Scheele <alexscheele@gmail.com>
+    Alexander Douglas <agdoug@amazon.com>
+    Alexander Guettler <alexander@guettler.io>
+    Alexander Shalamov <alexander.shalamov@intel.com>
+    Alexander Sulfrian <alexander@sulfrian.net>
+    Alexandre Abreu <wiss1976@gmail.com>
+    Alexandru Chiculita <achicu@adobe.com>
+    Alexey Korepanov <alexkorep@gmail.com>
+    Alexey Kuts <kruntuid@gmail.com>
+    Alexey Kuzmin <alex.s.kuzmin@gmail.com>
+    Alexey Kuznetsov <saturas2000@gmail.com>
+    Alexis Brenon <brenon.alexis@gmail.com>
+    Alexis La Goutte <alexis.lagoutte@gmail.com>
+    Alexis Menard <alexis.menard@intel.com>
+    Alfredo Hernandez <ahernandez.miralles@gmail.com>
+    Ali Vathi <ali.akbar@gmail.com>
+    Allan Sandfeld Jensen <allan.jensen@qt.io>
+    Alper Çakan <alpercakan98@gmail.com>
+    Ambarish Rapte <ambarish.r@samsung.com>
+    Amey Jahagirdar <jahagird@amazon.com>
+    Amit Sarkar <amit.srkr@samsung.com>
+    Amogh Bihani <amogh.bihani@samsung.com>
+    Amos Lim <amoseui@gmail.com>
+    Amos Lim <eui-sang.lim@samsung.com>
+    Amruth Raj <amruthraj@motorola.com>
+    Amruth Raj <ckqr36@motorola.com>
+    Anand Ratn <anand.ratn@samsung.com>
+    Anastasios Cassiotis <tom.cassiotis@gmail.com>
+    anatoly techtonik <techtonik@gmail.com>
+    Ancil George <ancilgeorge@samsung.com>
+    Andra Paraschiv <andra.paraschiv@intel.com>
+    Andrei Borza <andrei.borza@gmail.com>
+    Andrei Parvu <andrei.prv@gmail.com>
+    Andrei Parvu <parvu@adobe.com>
+    Andrew Boyarshin <andrew.boyarshin@gmail.com>
+    Andrew Brampton <me@bramp.net>
+    Andrew Hung <andrhung@amazon.com>
+    Andrew Jorgensen <ajorgens@amazon.com>
+    Andrew MacPherson <andrew.macpherson@soundtrap.com>
+    Andrew Tulloch <andrew@tullo.ch>
+    Anish Patankar <anish.p@samsung.com>
+    Ankit Kumar <ankit2.kumar@samsung.com>
+    Ankur Verma <ankur1.verma@samsung.com>
+    Anna Henningsen <anna@addaleax.net>
+    Anne Kao <annekao94@gmail.com>
+    Anssi Hannula <anssi.hannula@iki.fi>
+    Anthony Halliday <anth.halliday12@gmail.com>
+    Anton Obzhirov <a.obzhirov@samsung.com>
+    Antonin Hildebrand <antonin.hildebrand@gmail.com>
+    Antonio Gomes <a1.gomes@sisa.samsung.com>
+    Anuj Kumar Sharma <anujk.sharma@samsung.com>
+    Arjun Karthik <arjunkar@amazon.com>
+    Arman Ghotb <armanghotb@gmail.com>
+    Armin Burgmeier <aburgmeier@bloomberg.net>
+    Arnaud Mandy <arnaud.mandy@intel.com>
+    Arnaud Renevier <a.renevier@samsung.com>
+    Arpita Bahuguna <a.bah@samsung.com>
+    Arthur Lussos <developer0420@gmail.com>
+    Arun Kulkarni <kulkarni.a@samsung.com>
+    Arun Kumar <arun87.kumar@samsung.com>
+    Arun Mankuzhi <arun.m@samsung.com>
+    Arunoday Sarkar <a.sarkar.arun@gmail.com>
+    Arunprasad Rajkumar <ararunprasad@gmail.com>
+    Arunprasad Rajkumar <arurajku@cisco.com>
+    Asami Doi <d0iasm.pub@gmail.com>
+    Ashish Kumar Gupta <guptaag@amazon.com>
+    Ashlin Joseph <ashlin.j@samsung.com>
+    Asish Singh <asish.singh@samsung.com>
+    Attila Dusnoki <dati91@gmail.com>
+    Avinaash Doreswamy <avi.nitk@samsung.com>
+    Ayush Khandelwal <k.ayush@samsung.com>
+    Azhar Shaikh <azhar.shaikh@intel.com>
+    Balazs Kelemen <b.kelemen@samsung.com>
+    Baul Eun <baul.eun@samsung.com>
+    Behara Mani Shyam Patro <behara.ms@samsung.com>
+    Bem Jones-Bey <bemajaniman@gmail.com>
+    Bem Jones-Bey <bjonesbe@adobe.com>
+    Ben Coe <bencoe@gmail.com>
+    Ben Fiola <benfiola@gmail.com>
+    Ben Karel <eschew@gmail.com>
+    Ben Noordhuis <ben@strongloop.com>
+    Benedek Heilig <benecene@gmail.com>
+    Benjamin Dupont <bedupont@cisco.com>
+    Benjamin Jemlich <pcgod99@gmail.com>
+    Bernard Cafarelli <voyageur@gentoo.org>
+    Bernhard M. Wiedemann <bwiedemann@suse.de>
+    Bert Belder <bertbelder@gmail.com>
+    Bhagirathi Satpathy <bhagirathi.s@samsung.com>
+    Bhanukrushana Rout <b.rout@samsung.com>
+    Biljith Jayan <billy.jayan@samsung.com>
+    Boaz Sender <boaz@bocoup.com>
+    Bobby Powers <bobbypowers@gmail.com>
+    Branden Archer <bma4@zips.uakron.edu>
+    Brendan Kirby <brendan.kirby@imgtec.com>
+    Brendan Long <self@brendanlong.com>
+    Brian G. Merrell <bgmerrell@gmail.com>
+    Brian Konzman, SJ <b.g.konzman@gmail.com>
+    Brian Luft <brian@electroly.com>
+    Brian Merrell, Novell Inc. <bgmerrell@gmail.com>
+    Brian Yip <itsbriany@gmail.com>
+    Bruno Calvignac <bruno@flock.com>
+    Bruno de Oliveira Abinader <brunoabinader@gmail.com>
+    Bruno Roy <brusi_roy@hotmail.com>
+    Bryan Donlan <bdonlan@gmail.com>
+    Bryce Thomas <bryct@amazon.com>
+    Burton <burton@typewritten.net>
+    Byounghoon Yoon <bill.2714@kakaocorp.com>
+    Byoungkwon Ko <codeimpl@gmail.com>
+    Byungwoo Lee <bw80.lee@samsung.com>
+    Caesar Wang <wxt@rock-chips.com>
+    Caio Marcelo de Oliveira Filho <caio.de.oliveira.filho@intel.com>
+    Caitlin Potter <caitpotter88@gmail.com>
+    Calvin Mei <calvimei@amazon.com>
+    Cameron Gutman <aicommander@gmail.com>
+    Catalin Badea <badea@adobe.com>
+    Cathie Chen <cathiechen@tencent.com>
+    Cem Kocagil <cem.kocagil@gmail.com>
+    Chakshu Ahuja <chakshu.a@samsung.com>
+    Chamal De Silva <chamalsl@yahoo.com>
+    Chandan Padhi <c.padhi@samsung.com>
+    Chandra Shekar Vallala <brk376@motorola.com>
+    Chandramouli Sanchi <cm.sanchi@samsung.com>
+    Chang Shu <c.shu@samsung.com>
+    Changbin Shao <changbin.shao@intel.com>
+    Changjun Yang <changjun.yang@intel.com>
+    ChangSeok Oh <shivamidow@gmail.com>
+    Changwan Hong <changwan.hong@navercorp.com>
+    Changyeon Kim <cyzero.kim@samsung.com>
+    Chanho Park <parkch98@gmail.com>
+    Chansik Yun <chansik.yun@gmail.com>
+    Chaobin Zhang <zhchbin@gmail.com>
+    Charles Vaughn <cvaughn@gmail.com>
+    Choongwoo Han <cwhan.tunz@gmail.com>
+    Chris Greene <cwgreene@amazon.com>
+    Chris Harrelson <chrishtr@gmail.com>
+    Chris Nardi <hichris123@gmail.com>
+    Chris Szurgot <szurgotc@amazon.com>
+    Chris Tserng <tserng@amazon.com>
+    Chris Vasselli <clindsay@gmail.com>
+    Christophe Dumez <ch.dumez@samsung.com>
+    Christopher Dale <chrelad@gmail.com>
+    Claudio DeSouza <claudiomdsjr@gmail.com>
+    Clemens Fruhwirth <clemens@endorphin.org>
+    Clement Scheelfeldt Skau <clementskau@gmail.com>
+    Clinton Staley <clintstaley@gmail.com>
+    Connor Pearson <cjp822@gmail.com>
+    Craig Schlenter <craig.schlenter@gmail.com>
+    Csaba Osztrogonác <ossy.szeged@gmail.com>
+    Daegyu Lee <na7jun8gi@gmail.com>
+    Dai Chunyang <chunyang.dai@intel.com>
+    Daiwei Li <daiweili@suitabletech.com>
+    Damien Marié <damien@dam.io>
+    Dan McCombs <overridex@gmail.com>
+    Daniel Bevenius <daniel.bevenius@gmail.com>
+    Daniel Bomar <dbdaniel42@gmail.com>
+    Daniel Carvalho Liedke <dliedke@gmail.com>
+    Daniel Charles <daniel.charles@intel.com>
+    Daniel Imms <daniimms@amazon.com>
+    Daniel Johnson <danielj41@gmail.com>
+    Daniel Lockyer <thisisdaniellockyer@gmail.com>
+    Daniel Nishi <dhnishi@gmail.com>
+    Daniel Platz <daplatz@googlemail.com>
+    Daniel Shaulov <dshaulov@ptc.com>
+    Daniel Trebbien <dtrebbien@gmail.com>
+    Daniel Waxweiler <daniel.waxweiler@gmail.com>
+    Dániel Bátyai <dbatyai@inf.u-szeged.hu>
+    Dániel Vince <vinced@inf.u-szeged.hu>
+    Darshini KN <kn.darshini@samsung.com>
+    Dave Barker <kzar@kzar.co.uk>
+    David Benjamin <davidben@mit.edu>
+    David Davidovic <david@davidovic.io>
+    David Erceg <erceg.david@gmail.com>
+    David Fox <david@davidjfox.com>
+    David Futcher <david.mike.futcher@gmail.com>
+    David Leen <davileen@amazon.com>
+    David McAllister <mcdavid@amazon.com>
+    David Michael Barr <david.barr@samsung.com>
+    David Spellman <dspell@amazon.com>
+    David Valachovic <adenflorian@gmail.com>
+    Dax Kelson <dkelson@gurulabs.com>
+    Debashish Samantaray <d.samantaray@samsung.com>
+    Debug Wang <debugwang@tencent.com>
+    Deepak Dilip Borade <deepak.db@samsung.com>
+    Deepak Mittal <deepak.m1@samsung.com>
+    Deepak Sharma <deepak.sharma@amd.com>
+    Deepak Singla <deepak.s@samsung.com>
+    Deokjin Kim <deokjin81.kim@samsung.com>
+    Derek Halman <d.halman@gmail.com>
+    Devlin Cronin <rdevlin.cronin@gmail.com>
+    Diana Suvorova <diana.suvorova@gmail.com>
+    Diego Ferreiro Val <elfogris@gmail.com>
+    Dillon Sellars <dill.sellars@gmail.com>
+    Divya Bansal <divya.bansal@samsung.com>
+    Dominic Farolino <domfarolino@gmail.com>
+    Dominic Jodoin <dominic.jodoin@gmail.com>
+    Dominik Röttsches <dominik.rottsches@intel.com>
+    Don Woodward <woodward@adobe.com>
+    Donghee Na <corona10@gmail.com>
+    Dong-hee Na <donghee.na92@gmail.com>
+    Dongie Agnir <dongie.agnir@gmail.com>
+    Dongjun Kim <djmix.kim@samsung.com>
+    Dongseong Hwang <dongseong.hwang@intel.com>
+    Dongwoo Joshua Im <dw.im@samsung.com>
+    Dongyu Lin <l2d4y3@gmail.com>
+    Donna Wu <donna.wu@intel.com>
+    Douglas F. Turner <doug.turner@gmail.com>
+    Dustin Doloff <doloffd@amazon.com>
+    Ebrahim Byagowi <ebrahim@gnu.org>
+    Ebrahim Byagowi <ebraminio@gmail.com>
+    Eden Wang <nedenwang@tencent.com>
+    Eduardo Lima (Etrunko) <eblima@gmail.com>
+    Eduardo Lima (Etrunko) <eduardo.lima@intel.com>
+    Edward Baker <edward.baker@intel.com>
+    Edward Crossman <tedoc2000@gmail.com>
+    Eero Häkkinen <e.hakkinen@samsung.com>
+    Eero Häkkinen <eero.hakkinen@intel.com>
+    Egor Starkov <egor.starkov@samsung.com>
+    Ehsan Akhgari <ehsan.akhgari@gmail.com>
+    Elan Ruusamäe <elan.ruusamae@gmail.com>
+    Ergun Erdogmus <erdogmusergun@gmail.com>
+    Eric Ahn <byungwook.ahn@gmail.com>
+    Eric Rescorla <ekr@rtfm.com>
+    Erik Hill <erikghill@gmail.com>
+    Erik Sjölund <erik.sjolund@gmail.com>
+    Eriq Augustine <eriq.augustine@gmail.com>
+    Ernesto Mudu <ernesto.mudu@gmail.com>
+    Etienne Laurin <etienne@atnnn.com>
+    Eugene Kim <eugene70kim@gmail.com>
+    Eugene Sudin <eugene@sudin.pro>
+    Eunseok Oh <fivesilverstone@gmail.com>
+    Evan Peterson <evan.peterson.ep@gmail.com>
+    Evan Wallace <evan.exe@gmail.com>
+    Evangelos Foutras <evangelos@foutrelis.com>
+    Evgeniy Dushistov <dushistov@gmail.com>
+    Evgeny Agafonchikov <evgeny.agafonchikov@akvelon.com>
+    Fabien Tassin <fta@sofaraway.org>
+    Felix H. Dahlke <fhd@ubercode.de>
+    Fengrong Fang <fr.fang@samsung.com>
+    Fernando Jiménez Moreno <ferjmoreno@gmail.com>
+    Finbar Crago <finbar.crago@gmail.com>
+    François Beaufort <beaufort.francois@gmail.com>
+    Francois Kritzinger <francoisk777@gmail.com>
+    Francois Rauch <leopardb@gmail.com>
+    Frankie Dintino <fdintino@theatlantic.com>
+    Franklin Ta <fta2012@gmail.com>
+    Frédéric Jacob <frederic.jacob.78@gmail.com>
+    Frédéric Wang <fred.wang@free.fr>
+    Fu Junwei <junwei.fu@intel.com>
+    Gabor Rapcsanyi <g.rapcsanyi@samsung.com>
+    Gaetano Mendola <mendola@gmail.com>
+    Gajendra N <gajendra.n@samsung.com>
+    Gajendra Singh <wxjg68@motorola.com>
+    Ganesh Borle <ganesh.borle@samsung.com>
+    Gao Chun <chun.gao@intel.com>
+    Gao Chun <gaochun.dev@gmail.com>
+    Gaurav Dhol <gaurav.dhol@einfochips.com>
+    Gautham Banasandra <gautham.bangalore@gmail.com>
+    George Adams <geoada@amazon.com>
+    George Joseph <kottackal.george@gmail.com>
+    George Liaskos <geo.liaskos@gmail.com>
+    Georgy Buranov <gburanov@gmail.com>
+    Gergely Nagy <ngg@ngg.hu>
+    Getulio Sánchez <valentin2507@gmail.com>
+    Gideon Pyzer <gjpyzer@gmail.com>
+    Giovanni Panaro <tsrwebgl@gmail.com>
+    Girish Kumar M <mck.giri@samsung.com>
+    Gitanshu Mehndiratta <g.mehndiratt@samsung.com>
+    Giuseppe Iuculano <giuseppe@iuculano.it>
+    Gnanasekar Somanathan <gnanasekar.s@samsung.com>
+    Gordana Cmiljanovic <gordana.cmiljanovic@imgtec.com>
+    Goutham Jagannatha <wrm364@motorola.com>
+    Graham Yoakum <gyoakum@skobalt.com>
+    Greg Visser <gregvis@gmail.com>
+    Gregory Davis <gpdavis.chromium@gmail.com>
+    Grzegorz Czajkowski <g.czajkowski@samsung.com>
+    Guangzhen Li <guangzhen.li@intel.com>
+    Gurpreet Kaur <k.gurpreet@samsung.com>
+    Gustav Tiger <gustav.tiger@sonymobile.com>
+    Gyuyoung Kim <gyuyoung.kim@navercorp.com>
+    Gzob Qq <gzobqq@gmail.com>
+    Habib Virji <habib.virji@samsung.com>
+    Haeun Kim <ggrace.kim93@gmail.com>
+    Haeun Kim <haeungun@gmail.com>
+    Haitao Feng <haitao.feng@intel.com>
+    Halley Zhao <halley.zhao@intel.com>
+    Halton Huo <halton.huo@gmail.com>
+    Halton Huo <halton.huo@intel.com>
+    Hans Hillen <hans.hillen@gmail.com>
+    Hao Li <hao.x.li@intel.com>
+    Haojian Wu <hokein.wu@gmail.com>
+    Hari Singh <hari.singh1@samsung.com>
+    Harpreet Singh Khurana <harpreet.sk@samsung.com>
+    Harshikesh Kumar <harshikeshnobug@gmail.com>
+    Hassan Salehe Matar <hassansalehe@gmail.com>
+    Hautio Kari <khautio@gmail.com>
+    Heejin R. Chung <heejin.r.chung@samsung.com>
+    Heeyoun Lee <heeyoun.lee@samsung.com>
+    Henrique Limas <henrique.ramos.limas@gmail.com>
+    Himanshu Joshi <h.joshi@samsung.com>
+    Holger Kraus <kraush@amazon.com>
+    Hong Zheng <hong.zheng@intel.com>
+    Hongbo Min <hongbo.min@intel.com>
+    Horia Olaru <horia.olaru@gmail.com>
+    Horia Olaru <olaru@adobe.com>
+    Hosung You <hosung.you@samsung.com>
+    Huapeng Li <huapengl@amazon.com>
+    Huayong Xu <huayong.xu@samsung.com>
+    Hugo Holgersson <hugo.holgersson@sonymobile.com>
+    Hui Wang <wanghui07050707@gmail.com>
+    Huiwon Jo <jhwon0415@gmail.com>
+    Huy Duong <huy.duongdinh@gmail.com>
+    Hwanseung Lee <hs1217.lee@gmail.com>
+    Hwanseung Lee <hs1217.lee@samsung.com>
+    Hyemi Shin <hyemi.sin@samsung.com>
+    HyeockJin Kim <kherootz@gmail.com>
+    Hyungchan Kim <inlinechan@gmail.com>
+    Hyungwook Lee <hyungwook.lee@navercorp.com>
+    Hyungwook Lee <withlhw@gmail.com>
+    Hyunjun Shin <hyunjun.shin2@navercorp.com>
+    Hyunjune Kim <hyunjune.kim@samsung.com>
+    Hyunki Baik <hyunki.baik@samsung.com>
+    Ian Cullinan <cullinan@amazon.com>
+    Ian Scott <ian.scott@arteris.com>
+    Ibrar Ahmed <ibrar.ahmad@gmail.com>
+    Ilia Demianenko <ilia.demianenko@gmail.com>
+    Ilia K <ki.stfu@gmail.com>
+    Ilya Konstantinov <ilya.konstantinov@gmail.com>
+    Imranur Rahman <ir.shimul@gmail.com>
+    Ion Rosca <rosca@adobe.com>
+    Irmak Kavasoglu <irmakkavasoglu@gmail.com>
+    Isaac Murchie <murchieisaac@gmail.com>
+    Isaac Reilly <reillyi@amazon.com>
+    Ivan Naydonov <samogot@gmail.com>
+    Ivan Sham <ivansham@amazon.com>
+    Jack Bates <jack@nottheoilrig.com>
+    Jacob Clark <jacob.jh.clark@googlemail.com>
+    Jacob Mandelson <jacob@mandelson.org>
+    Jaehun Lim <ljaehun.lim@samsung.com>
+    Jaehyun Lee <j-hyun.lee@samsung.com>
+    Jaekyeom Kim <btapiz@gmail.com>
+    Jaemin Seo <jaemin86.seo@samsung.com>
+    Jaeseok Yoon <yjaeseok@gmail.com>
+    Jaewon Choi <jaewon.james.choi@gmail.com>
+    Jaeyong Bae <jdragon.bae@gmail.com>
+    Jaime Soriano Pastor <jsorianopastor@gmail.com>
+    Jake Helfert <jake@helfert.us>
+    Jake Hendy <me@jakehendy.com>
+    Jakob Weigert <jakob.j.w@googlemail.com>
+    Jakub Machacek <xtreit@gmail.com>
+    James Burton <jb@0.me.uk>
+    James Choi <jchoi42@pha.jhu.edu>
+    James Stanley <james@apphaus.co.uk>
+    James Vega <vega.james@gmail.com>
+    James Wei <james.wei@intel.com>
+    James Willcox <jwillcox@litl.com>
+    Jan Rucka <ruckajan10@gmail.com>
+    Jan Sauer <jan@jansauer.de>
+    Janwar Dinata <j.dinata@gmail.com>
+    Jared Shumway <jaredshumway94@gmail.com>
+    Jared Sohn <jared.sohn@gmail.com>
+    Jared Wein <weinjared@gmail.com>
+    Jari Karppanen <jkarp@amazon.com>
+    Jay Oster <jay@kodewerx.org>
+    Jay Soffian <jaysoffian@gmail.com>
+    Jeado Ko <haibane84@gmail.com>
+    Jeffrey C <jeffreyca16@gmail.com>
+    Jeongeun Kim <je_julie.kim@samsung.com>
+    Jeongmin Kim <kimwjdalsl@gmail.com>
+    Jeongwoo Park <skeksk91@gmail.com>
+    Jeremy Noring <jnoring@hirevue.com>
+    Jeremy Spiegel <jeremysspiegel@gmail.com>
+    Jeroen Van den Berghe <vandenberghe.jeroen@gmail.com>
+    Jerry Lin <wahahab11@gmail.com>
+    Jesper Storm Bache <jsbache@gmail.com>
+    Jesse Miller <jesse@jmiller.biz>
+    Jesus Sanchez-Palencia <jesus.sanchez-palencia.fernandez.fil@intel.com>
+    Jiadong Zhu <jiadong.zhu@linaro.org>
+    Jiajia Qin <jiajia.qin@intel.com>
+    Jiajie Hu <jiajie.hu@intel.com>
+    Jianjun Zhu <jianjun.zhu@intel.com>
+    Jianneng Zhong <muzuiget@gmail.com>
+    Jiawei Shao <jiawei.shao@intel.com>
+    Jie Chen <jie.a.chen@intel.com>
+    Jihoon Chung <j.c@navercorp.com>
+    Jihoon Chung <jihoon@gmail.com>
+    Jihun Brent Kim <devgrapher@gmail.com>
+    Jihwan Marc Kim <bluewhale.marc@gmail.com>
+    Jin Yang <jin.a.yang@intel.com>
+    Jincheol Jo <jincheol.jo@navercorp.com>
+    Jinfeng Ma <majinfeng1@xiaomi.com>
+    Jing Zhao <zhaojing7@xiaomi.com>
+    Jinglong Zuo <zuojinglong@xiaomi.com>
+    Jingwei Liu <kingweiliu@gmail.com>
+    Jingyi Wei <wjywbs@gmail.com>
+    Jinho Bang <jinho.bang@samsung.com>
+    Jinsong Fan <fanjinsong@sogou-inc.com>
+    Jinwoo Song <jinwoo7.song@samsung.com>
+    Jinyoung Hur <hurims@gmail.com>
+    Jitendra Kumar Sahoo <jitendra.ks@samsung.com>
+    Joachim Bauch <jbauch@webrtc.org>
+    Joachim Bauch <mail@joachim-bauch.de>
+    Joanmarie Diggs <joanmarie.diggs@gmail.com>
+    Joe Knoll <joe.knoll@workday.com>
+    Joe Thomas <mhx348@motorola.com>
+    Joel Stanley <joel@jms.id.au>
+    Johannes Rudolph <johannes.rudolph@googlemail.com>
+    John Yani <vanuan@gmail.com>
+    John Yoo <nearbyh13@gmail.com>
+    Johnson Lin <johnson.lin@intel.com>
+    Jonathan Frazer <listedegarde@gmail.com>
+    Jonathan Garbee <jonathan@garbee.me>
+    Jonathan Hacker <jhacker@arcanefour.com>
+    Jongdeok Kim <jongdeok.kim@navercorp.com>
+    Jongheon Kim <sapzape@gmail.com>
+    JongKwon Lee <jongkwon.lee@navercorp.com>
+    Jongsoo Lee <leejongsoo@gmail.com>
+    Joone Hur <joone.hur@intel.com>
+    Joonghun Park <pjh0718@gmail.com>
+    Jorge Villatoro <jorge@tomatocannon.com>
+    Joseph Gentle <josephg@gmail.com>
+    Joseph Lolak <joseph.lolak@samsung.com>
+    Josh Triplett <josh.triplett@intel.com>
+    Josh Triplett <josh@joshtriplett.org>
+    Joshua Lock <joshua.lock@intel.com>
+    Joshua Roesslein <jroesslein@gmail.com>
+    Josué Ratelle <jorat1346@gmail.com>
+    Josyula Venkat Narasimham <venkat.nj@samsung.com>
+    Juan Jose Lopez Jaimez <jj.lopezjaimez@gmail.com>
+    Juhui Lee <juhui24.lee@samsung.com>
+    Julien Brianceau <jbriance@cisco.com>
+    Julien Isorce <j.isorce@samsung.com>
+    Julien Racle <jracle@logitech.com>
+    Jun Fang <jun_fang@foxitsoftware.com>
+    Jun Jiang <jun.a.jiang@intel.com>
+    Junchao Han <junchao.han@intel.com>
+    Junghoon Lee <sjh836@gmail.com>
+    Junghyuk Yoo <wjdgurdl272@gmail.com>
+    JungJik Lee <jungjik.lee@samsung.com>
+    Jungkee Song <jungkee.song@samsung.com>
+    Junmin Zhu <junmin.zhu@intel.com>
+    Justin Okamoto <justmoto@amazon.com>
+    Justin Ribeiro <justin@justinribeiro.com>
+    Jüri Valdmann <juri.valdmann@qt.io>
+    Kai Jiang <jiangkai@gmail.com>
+    Kai Köhne <kai.koehne@qt.io>
+    Kai Uwe Broulik <kde@privat.broulik.de>
+    Kal Conley <kcconley@gmail.com>
+    Kalyan Kondapally <kalyan.kondapally@intel.com>
+    Kamil Jiwa <kamil.jiwa@gmail.com>
+    Kamil Rytarowski <krytarowski@gmail.com>
+    Kangil Han <kangil.han@samsung.com>
+    Kangyuan Shu <kangyuan.shu@intel.com>
+    Karan Thakkar <karanjthakkar@gmail.com>
+    Kartikey Bhatt <kartikey@amazon.com>
+    Kaspar Brand <googlecontrib@velox.ch>
+    Kaustubh Atrawalkar <kaustubh.a@samsung.com>
+    Kaustubh Atrawalkar <kaustubh.ra@gmail.com>
+    Ke He <ke.he@intel.com>
+    Keene Pan <keenepan@linpus.com>
+    Keita Yoshimoto <y073k3@gmail.com>
+    Keith Chen <keitchen@amazon.com>
+    Kenneth Rohde Christiansen <kenneth.r.christiansen@intel.com>
+    Kenneth Strickland <ken.strickland@gmail.com>
+    Kenneth Zhou <knthzh@gmail.com>
+    Keonho Kim <keonho07.kim@samsung.com>
+    Ketan Goyal <ketan.goyal@samsung.com>
+    Kevin Gibbons <bakkot@gmail.com>
+    Kevin Lee Helpingstine <sig11@reprehensible.net>
+    Kevin M. McCormick <mckev@amazon.com>
+    Khasim Syed Mohammed <khasim.mohammed@linaro.org>
+    Kihong Kwon <kihong.kwon@samsung.com>
+    Kihoon Ko <rhrlgns777@gmail.com>
+    Kihwang Kim <pwangkk@gmail.com>
+    Kim Christensen <kimworking@gmail.com>
+    Kimberly Hunter <kimberhu@amazon.com>
+    Kingshuk Jana <kingshuk.j@samsung.com>
+    Kirill Bobyrev <kirillbobyrev@gmail.com>
+    Kirill Ovchinnikov <kirill.ovchinn@gmail.com>
+    Klemen Forstnerič <klemen.forstneric@gmail.com>
+    Kodam Nagaraju <k2.nagaraju@samsung.com>
+    Konrad Dzwinel <kdzwinel@gmail.com>
+    Krishna Chaitanya <krish.botta@samsung.com>
+    Kristof Kosztyo <kkosztyo.u-szeged@partner.samsung.com>
+    Krzysztof Czech <k.czech@samsung.com>
+    Krzysztof Wolanski <k.wolanski@samsung.com>
+    Kui Tan <tk1061178@gmail.com>
+    Kunal Thakar <kunalt@gmail.com>
+    Kushal Pisavadia <kushi.p@gmail.com>
+    Kwangho Shin <k_h.shin@samsung.com>
+    Kyle Nahrgang <kpn24@drexel.edu>
+    Kyle Plumadore <kyle.plumadore@amd.com>
+    Kyounga Ra <kyounga.ra@gmail.com>
+    Kyoungdeok Kwon <kkd927@gmail.com>
+    Kyung Yeol Kim <chitacan@gmail.com>
+    Kyungtae Kim <ktf.kim@samsung.com>
+    Kyungyoung Heo <bbvch13531@gmail.com>
+    Lalit Chandivade <lalit.chandivade@einfochips.com>
+    Laszlo Gombos <l.gombos@samsung.com>
+    Laszlo Radanyi <bekkra@gmail.com>
+    Lauren Yeun Kim <lauren.yeun.kim@gmail.com>
+    Lauri Oherd <lauri.oherd@gmail.com>
+    Lavar Askew <open.hyperion@gmail.com>
+    Legend Lee <guanxian.li@intel.com>
+    Leith Bade <leith@leithalweapon.geek.nz>
+    Lenny Khazan <lenny.khazan@gmail.com>
+    Leo Wolf <jclw@ymail.com>
+    Leon Han <leon.han@intel.com>
+    Leung Wing Chung <lwchkg@gmail.com>
+    Li Yin <li.yin@intel.com>
+    Lidwine Genevet <lgenevet@cisco.com>
+    Lin Sun <lin.sun@intel.com>
+    Lingyun Cai <lingyun.cai@intel.com>
+    Lionel Landwerlin <lionel.g.landwerlin@intel.com>
+    Lizhi Fan <lizhi.fan@samsung.com>
+    Loo Rong Jie <loorongjie@gmail.com>
+    Lorenzo Stoakes <lstoakes@gmail.com>
+    Lu Guanqun <guanqun.lu@gmail.com>
+    Luca Di Domenico <luca94dd@gmail.com>
+    Lucie Brozkova <lucinka.brozkova@gmail.com>
+    Luiz Von Dentz <luiz.von.dentz@intel.com>
+    Luka Dojcilovic <l.dojcilovic@gmail.com>
+    Luke Inman-Semerau <luke.semerau@gmail.com>
+    Luke Zarko <lukezarko@gmail.com>
+    Luoxi Pan <l.panpax@gmail.com>
+    Maarten Lankhorst <m.b.lankhorst@gmail.com>
+    Magnus Danielsson <fuzzac@gmail.com>
+    Mahesh Kulkarni <mahesh.kk@samsung.com>
+    Mahesh Machavolu <mahesh.ma@samsung.com>
+    Maksim Kolesin <mkolesin@gmail.com>
+    Maksim Sisov <maksim.sisov@intel.com>
+    Malcolm Wang <malcolm.2.wang@gmail.com>
+    Mallikarjuna Rao V <vm.arjun@samsung.com>
+    Manish Chhajer <chhajer.m@samsung.com>
+    Manish Jethani <m.jethani@eyeo.com>
+    Manojkumar Bhosale <manojkumar.bhosale@imgtec.com>
+    Manuel Braun <thembrown@gmail.com>
+    Mao Yujie <maojie0924@gmail.com>
+    Mao Yujie <yujie.mao@intel.com>
+    Marc des Garets <marc.desgarets@googlemail.com>
+    Marcin Wiacek <marcin@mwiacek.com>
+    Marco Rodrigues <gothicx@gmail.com>
+    Mario Pistrich <m.pistrich@gmail.com>
+    Mario Sanchez Prada <mario.prada@samsung.com>
+    Mariusz Mlynski <marius.mlynski@gmail.com>
+    Mark Hahnenberg <mhahnenb@andrew.cmu.edu>
+    Mark Seaborn <mrs@mythic-beasts.com>
+    Martijn Croonen <martijn@martijnc.be>
+    Martin Bednorz <m.s.bednorz@gmail.com>
+    Martin Rogalla <martin@martinrogalla.com>
+    Martina Kollarova <martina.kollarova@intel.com>
+    Masahiro Yado <yado.masa@gmail.com>
+    Masaru Nishida <msr.i386@gmail.com>
+    Matej Knopp <matej.knopp@gmail.com>
+    Matheus Bratfisch <matheusbrat@gmail.com>
+    Mathias Bynens <mathias@qiwi.be>
+    Mathieu Meisser <mmeisser@logitech.com>
+    Matt Arpidone <mma.public@gmail.com>
+    Matt Strum <mstrum@amazon.com>
+    Matt Zeunert <matt@mostlystatic.com>
+    Matthew Bauer <mjbauer95@gmail.com>
+    Matthew Demarest <demarem@amazon.com>
+    Matthew Robertson <matthewrobertson03@gmail.com>
+    Matthew Turk <matthewturk@gmail.com>
+    Matthew Willis <appamatto@gmail.com>
+    Matthias Reitinger <reimarvin@gmail.com>
+    Matthieu Rigolot <matthieu.rigolot@gmail.com>
+    Max Perepelitsyn <pph34r@gmail.com>
+    Max Vujovic <mvujovic@adobe.com>
+    Mayank Gupta <mayank.g1@samsung.com>
+    Mayur Kankanwadi <mayurk.vk@samsung.com>
+    Md Abdullah Al Alamin <a.alamin.cse@gmail.com>
+    Md. Hasanur Rashid <hasanur.r@samsung.com>
+    Md Jobed Hossain <jrony15@gmail.com>
+    Md Sami Uddin <md.sami@samsung.com>
+    Michael Cirone <mikecirone@gmail.com>
+    Michael Gilbert <floppymaster@gmail.com>
+    Michael Lopez <lopes92290@gmail.com>
+    Michael Morrison <codebythepound@gmail.com>
+    Michael Müller <michael@fds-team.de>
+    Michael Schechter <mike.schechter@gmail.com>
+    Michaël Zasso <mic.besace@gmail.com>
+    Michael Zugelder <michael@zugelder.org>
+    Michel Promonet <michel.promonet.1@gmail.com>
+    Mihai Maerean <mmaerean@adobe.com>
+    Mihai Tica <mihai.o.tica@gmail.com>
+    Mihai Tica <mitica@adobe.com>
+    Mike Pennisi <mike@mikepennisi.com>
+    Mike Tilburg <mtilburg@adobe.com>
+    Mikhail Pozdnyakov <mikhail.pozdnyakov@intel.com>
+    Milko Leporis <milko.leporis@imgtec.com>
+    Milton Chiang <milton.chiang@mediatek.com>
+    Minggang Wang <minggang.wang@intel.com>
+    Mingmin Xie <melvinxie@gmail.com>
+    Minjeong Lee <apenr1234@gmail.com>
+    Minseok Koo <kei98301@gmail.com>
+    Minsoo Max Koo <msu.koo@samsung.com>
+    Miran Karic <miran.karic@imgtec.com>
+    Mirela Budaes <mbudaes@adobe.com>
+    Mirela Budaes <mbudaes@gmail.com>
+    Miyoung Shin <myid.shin@navercorp.com>
+    Mohamed I. Hammad <ibraaaa@gmail.com>
+    Mohamed Mansour <m0.interactive@gmail.com>
+    Mohammad Azam <m.azam@samsung.com>
+    Mohammed Wajahat Ali Siddiqui <wajahat.s@samsung.com>
+    Mohan Reddy <mohan.reddy@samsung.com>
+    Mohit Bhalla <bhallam@amazon.com>
+    Momoko Hattori <momohatt10@gmail.com>
+    Mostafa Sedaghat joo <mostafa.sedaghat@gmail.com>
+    Mrunal Kapade <mrunal.kapade@intel.com>
+    Myeongjin Cho <myeongjin.cho@navercorp.com>
+    Myles C. Maxfield <mymax@amazon.com>
+    Myung-jong Kim <mjkim610@gmail.com>
+    Nagarajan Narayanan <nagarajan.n@samsung.com>
+    Nagarjuna Atluri <nagarjuna.a@samsung.com>
+    Naiem Shaik <naiem.shaik@gmail.com>
+    Naoki Takano <takano.naoki@gmail.com>
+    Naveen Bobbili <naveenbobbili@motorola.com>
+    Naveen Bobbili <qghc36@motorola.com>
+    Naveen Kumar Devaraj <devarajn@amazon.com>
+    Naveen Kumar S G <naveensg@samsung.com>
+    Nayan Kumar K <qtc746@motorola.com>
+    Neal Gompa <ngompa13@gmail.com>
+    Ned Williamson <nedwilliamson@gmail.com>
+    Nedeljko Babic <nedeljko.babic@imgtec.com>
+    Nikhil Bansal <n.bansal@samsung.com>
+    Nikhil Sahni <nikhil.sahni@samsung.com>
+    Nikita Ofitserov <himikof@gmail.com>
+    Niklas Hambüchen <mail@nh2.me>
+    Niklas Schulze <me@jns.io>
+    Nikola Kovacs <nikola.kovacs@gmail.com>
+    Nils Schneider <nils.schneider@gmail.com>
+    Nils Schneider <nils@nilsschneider.net>
+    Ningxin Hu <ningxin.hu@intel.com>
+    Nitish Mehrotra <nitish.m@samsung.com>
+    Noj Vek <nojvek@gmail.com>
+    Nolan Cao <nolan.robin.cao@gmail.com>
+    Oleksii Kadurin <ovkadurin@gmail.com>
+    Oliver Dunk <oliver@oliverdunk.com>
+    Olli Raula (Old name Olli Syrjälä) <olli.raula@intel.com>
+    Omar Sandoval <osandov@osandov.com>
+    Pan Deng <pan.deng@intel.com>
+    Parag Radke <nrqv63@motorola.com>
+    Paritosh Kumar <paritosh.in@samsung.com>
+    Patrasciuc Sorin Cristian <cristian.patrasciuc@gmail.com>
+    Patrick Chan <chanpatorikku@gmail.com>
+    Patrick Kettner <patrickkettner@gmail.com>
+    Patrick Riordan <patrickriordan177@gmail.com>
+    Patrick Stein <patrickwonders@gmail.com>
+    Patrik Ackland <patrikackland@gmail.com>
+    Paul Adolph <padolph@netflix.com>
+    Paul Kehrer <paul.l.kehrer@gmail.com>
+    Paul Lind <paul.lind@imgtec.com>
+    Paul Nettleship <pnettleship@gmail.com>
+    Paul Robinson <paulrobinson85@googlemail.com>
+    Paul Roskell <blurrech@gmail.com>
+    Paul Sapunaru <paul.sapunaru@intel.com>
+    Paul Wicks <pwicks86@gmail.com>
+    Pavan Kumar Emani <pavan.e@samsung.com>
+    Pavel Golikov <paullo612@ya.ru>
+    Pavel Ivanov <paivanof@gmail.com>
+    Pawel Forysiuk <p.forysiuk@samsung.com>
+    Paweł Hajdan jr <phajdan.jr@gmail.com>
+    Payal Pandey <payal.pandey@samsung.com>
+    Peng Hu <penghu@tencent.com>
+    Peng Jiang <leiyi.jp@gmail.com>
+    Peng Xinchao <pxinchao@gmail.com>
+    Peter Bright <drpizza@quiscalusmexicanus.org>
+    Peter Brophy <pbrophy@adobe.com>
+    Peter Collingbourne <peter@pcc.me.uk>
+    Peter Gal <pgal.u-szeged@partner.samsung.com>
+    Peter Griffin <peter.griffin@linaro.org>
+    Peter Molnar <pmolnar.u-szeged@partner.samsung.com>
+    Peter Snyder <snyderp@gmail.com>
+    Peter Wong <peter.wm.wong@gmail.com>
+    Philip Hanson <philip.hanson@intel.com>
+    Philipp Hancke <fippo@andyet.net>
+    Philipp Hancke <philipp.hancke@googlemail.com>
+    Philippe Beauchamp <philippe.beauchamp@gmail.com>
+    Philippe Beaudoin <philippe.beaudoin@gmail.com>
+    PhistucK <phistuck@gmail.com>
+    Pierre Neter <pierreneter@gmail.com>
+    Pierre-Antoine LaFayette <pierre.lafayette@gmail.com>
+    Po-Chun Chang <pochang0403@gmail.com>
+    Pramod Begur Srinath <pramod.bs@samsung.com>
+    Pranay Kumar <pranay.kumar@samsung.com>
+    Pranjal Jumde <pranjal@brave.com>
+    Prashant Hiremath <prashhir@cisco.com>
+    Prashant Nevase <prashant.n@samsung.com>
+    Prashant Patil <prashant.patil@imgtec.com>
+    Praveen Akkiraju <praveen.anp@samsung.com>
+    Preeti Nayak <preeti.nayak@samsung.com>
+    Pritam Nikam <pritam.nikam@samsung.com>
+    Puttaraju R <puttaraju.r@samsung.com>
+    Qi Yang <qi1988.yang@samsung.com>
+    Qiankun Miao <qiankun.miao@intel.com>
+    Qing Zhang <qing.zhang@intel.com>
+    Radu Stavila <stavila@adobe.com>
+    Radu Velea <radu.velea@intel.com>
+    Rafael Antognolli <rafael.antognolli@intel.com>
+    Raghavendra Ghatage <r.ghatage@samsung.com>
+    Raghu Ram Nagaraj <r.nagaraj@samsung.com>
+    Rahul Gupta <rahul.g@samsung.com>
+    Rajneesh Rana <rajneesh.r@samsung.com>
+    Raman Tenneti <raman.tenneti@gmail.com>
+    Ramkumar Gokarnesan <ramkumar.gokarnesan@gmail.com>
+    Ramkumar Ramachandra <artagnon@gmail.com>
+    Ramya Vadlamudi <ramya.v@samsung.com>
+    Randy Posynick <randy.posynick@gmail.com>
+    Raphael Kubo da Costa <raphael.kubo.da.costa@intel.com>
+    Raul Tambre <raul@tambre.ee>
+    Raveendra Karu <r.karu@samsung.com>
+    Ravi Nanjundappa <nravi.n@samsung.com>
+    Ravi Phaneendra Kasibhatla <r.kasibhatla@samsung.com>
+    Ravi Phaneendra Kasibhatla <ravi.kasibhatla@motorola.com>
+    Raviraj Sitaram <raviraj.p.sitaram@intel.com>
+    Réda Housni Alaoui <alaoui.rda@gmail.com>
+    Refael Ackermann <refack@gmail.com>
+    Renata Hodovan <rhodovan.u-szeged@partner.samsung.com>
+    Rene Bolldorf <rb@radix.io>
+    Rene Ladan <r.c.ladan@gmail.com>
+    Richard Baranyi <lordprotector@gmail.com>
+    Richard Li <richard.li@intel.com>
+    Rijubrata Bhaumik <rijubrata.bhaumik@intel.com>
+    Riku Voipio <riku.voipio@linaro.org>
+    Rob Buis <rob.buis@samsung.com>
+    Rob Wu <rob@robwu.nl>
+    Robert Bear Travis <bear.travis@gmail.com>
+    Robert Bear Travis <betravis@adobe.com>
+    Robert Bradford <robert.bradford@intel.com>
+    Robert Goldberg <goldberg@adobe.com>
+    Robert Hogan <robhogan@gmail.com>
+    Robert Nagy <robert.nagy@gmail.com>
+    Robert Sesek <rsesek@bluestatic.org>
+    Roland Takacs <rtakacs.u-szeged@partner.samsung.com>
+    Romain Pokrzywka <romain.pokrzywka@gmail.com>
+    Rosen Dash <nqk836@motorola.com>
+    Rosen Dash <rosen.dash@gmail.com>
+    Ross Kirsling <rkirsling@gmail.com>
+    ruben <chromium@hybridsource.org>
+    Ruben Bridgewater <ruben@bridgewater.de>
+    Ruben Terrazas <rubentopo@gmail.com>
+    Rufus Hamade <rufus.hamade@imgtec.com>
+    Ruiyi Luo <luoruiyi2008@gmail.com>
+    Ryan Ackley <ryanackley@gmail.com>
+    Ryan Norton <rnorton10@gmail.com>
+    Ryan Sleevi <ryan-chromium-dev@sleevi.com>
+    Ryan Yoakum <ryoakum@skobalt.com>
+    Ryuan Choi <ryuan.choi@samsung.com>
+    Saikrishna Arcot <saiarcot895@gmail.com>
+    Sajal Khandelwal <skhandelwa22@bloomberg.net>
+    Salvatore Iovene <salvatore.iovene@intel.com>
+    Sam Larison <qufighter@gmail.com>
+    Sam McDonald <sam@sammcd.com>
+    Samuel Attard <samuel.r.attard@gmail.com>
+    Sanggi Hong <sanggi.hong11@gmail.com>
+    Sanghee Lee <sanghee.lee1992@gmail.com>
+    Sanghyun Park <sh919.park@samsung.com>
+    Sanghyup Lee <sh53.lee@samsung.com>
+    Sangjoon Je <htamop@gmail.com>
+    Sangseok Jang <sangseok.jang@navercorp.com>
+    Sangwoo Ko <sangwoo.ko@navercorp.com>
+    Sangwoo Ko <sangwoo108@gmail.com>
+    Sanjoy Pal <ncj674@motorola.com>
+    Sanjoy Pal <sanjoy.pal@samsung.com>
+    Sanne Wouda <sanne.wouda@gmail.com>
+    Santosh Mahto <samahto@cisco.com>
+    Sarath Singapati <s.singapati@gmail.com>
+    Sarath Singapati <s.singapati@samsung.com>
+    Sarath Singapati <sarath.singapati@huawei.com>
+    Saravanan KR <sramajay@cisco.com>
+    Sathish Kuppuswamy <sathish.kuppuswamy@intel.com>
+    Satoshi Matsuzaki <satoshi.matsuzaki@gmail.com>
+    Satyajit Sahu <satyajit.sahu@amd.com>
+    Sayan Nayak <sayan.nayak@samsung.com>
+    Scott D Phillips <scott.d.phillips@intel.com>
+    Sean Bryant <sean@cyberwang.net>
+    Sean DuBois <seaduboi@amazon.com>
+    Sebastian Amend <sebastian.amend@googlemail.com>
+    Sebastian Krzyszkowiak <dos@dosowisko.net>
+    Seo Sanghyeon <sanxiyn@gmail.com>
+    Seokju Kwon <seokju.kwon@gmail.com>
+    SeongTae Jeong <ferendevelop.gl@gmail.com>
+    Sergey Kipet <sergey.kipet@gmail.com>
+    Sergey Putilin <p.sergey@samsung.com>
+    Sergey Shekyan <shekyan@gmail.com>
+    Sergio Carlos Morales Angeles <carloschilazo@gmail.com>
+    Sergiy Belozorov <rryk.ua@gmail.com>
+    Seshadri Mahalingam <seshadri.mahalingam@gmail.com>
+    Seungkyu Lee <zx6658@gmail.com>
+    Sevan Janiyan <venture37@geeklan.co.uk>
+    Shahriar Rostami <shahriar.rostami@gmail.com>
+    Shail Singhal <shail.s@samsung.com>
+    Shane Hansen <shanemhansen@gmail.com>
+    ShankarGanesh K <blr.bmlab@gmail.com>
+    Shanmuga Pandi M <shanmuga.m@samsung.com>
+    Shaobo Yan <shaobo.yan@intel.com>
+    Shashi Kumar <sk.kumar@samsung.com>
+    Shawn Anastasio <shawnanastasio@gmail.com>
+    Shen Yu <shenyu.tcv@gmail.com>
+    Sherry Mou <wenjinm@amazon.com>
+    Shez Baig <sbaig1@bloomberg.net>
+    Shigeki Ohtsu <shigeki.ohtsu@gmail.com>
+    Shiliu Wang <aofdwsl@gmail.com>
+    Shiliu Wang <shiliu.wang@intel.com>
+    Shilpa Shri <shilpa.shri@samsung.com>
+    Shirish S <shirish.s@amd.com>
+    Shiva Kumar <shiva.k1@samsung.com>
+    Shivakumar JM <shiva.jm@samsung.com>
+    Shouqun Liu <liushouqun@xiaomi.com>
+    Shouqun Liu <shouqun.liu@intel.com>
+    Shreeram Kushwaha <shreeram.k@samsung.com>
+    Shreyas Gopal <shreyas.g@samsung.com>
+    Shreyas VA <v.a.shreyas@gmail.com>
+    Shubham Agrawal <shubag@amazon.com>
+    Siba Samal <siba.samal@samsung.com>
+    Siddharth Bagai <b.siddharth@samsung.com>
+    Siddharth Shankar <funkysidd@gmail.com>
+    Simon Arlott <simon.arlott@gmail.com>
+    Simon La Macchia <smacchia@amazon.com>
+    Siva Kumar Gunturi <siva.gunturi@samsung.com>
+    Sohan Jyoti Ghosh <sohan.jyoti@huawei.com>
+    Sohan Jyoti Ghosh <sohan.jyoti@samsung.com>
+    Song YeWen <ffmpeg@gmail.com>
+    Sooho Park <sooho1000@gmail.com>
+    Soojung Choi <crystal2840@gmail.com>
+    Soorya R <soorya.r@samsung.com>
+    Soren Dreijer <dreijerbit@gmail.com>
+    Sreerenj Balachandran <sreerenj.balachandran@intel.com>
+    Srirama Chandra Sekhar Mogali <srirama.m@samsung.com>
+    Staphany Park <stapark008@gmail.com>
+    Stephen Searles <stephen.searles@gmail.com>
+    Steve Sanders <steve@zanderz.com>
+    Steven Pennington <spenn@engr.uvic.ca>
+    Steven Roussey <sroussey@gmail.com>
+    Subrahmanya Praveen Munukutla <sataya.m@samsung.com>
+    Suchit Agrawal <a.suchit@samsung.com>
+    Sudarsana Babu Nagineni <sudarsana.nagineni@intel.com>
+    Sudarshan Parthasarathy <sudarshan.p@samsung.com>
+    Sujae Jo <sujae33.jo@gmail.com>
+    Sujith S S <sujiths.s@samsung.com>
+    Sunchang Li <johnstonli@tencent.com>
+    Suneel Kota <suneel.kota@samsung.com>
+    Sungguk Lim <limasdf@gmail.com>
+    Sungmann Cho <sungmann.cho@gmail.com>
+    Sungmann Cho <sungmann.cho@navercorp.com>
+    Sunil Ratnu <sunil.ratnu@samsung.com>
+    Sunitha Srivatsa <srivats@amazon.com>
+    Suvanjan Mukherjee <suvanjanmukherjee@gmail.com>
+    Suyambulingam R M <suyambu.rm@samsung.com>
+    Suyash Sengar <suyash.s@samsung.com>
+    Swarali Raut <swarali.sr@samsung.com>
+    Swati Jaiswal <swa.jaiswal@samsung.com>
+    Sylvain Zimmer <sylvinus@gmail.com>
+    Sylvestre Ledru <sylvestre.ledru@gmail.com>
+    Szabolcs David <davidsz@inf.u-szeged.hu>
+    Szymon Piechowicz <szymonpiechowicz@o2.pl>
+    Taeheon Kim <skyrabbits1@gmail.com>
+    Taehoon Lee <taylor.hoon@gmail.com>
+    Takashi Fujita <tgfjt.mail@gmail.com>
+    Takeshi Kurosawa <taken.spc@gmail.com>
+    Tanay Chowdhury <tanay.c@samsung.com>
+    Tanvir Rizvi <tanvir.rizvi@samsung.com>
+    Tapu Kumar Ghose <ghose.tapu@gmail.com>
+    Taylor Price <trprice@gmail.com>
+    Ted Kim <neot0000@gmail.com>
+    Ted Vessenes <tedvessenes@gmail.com>
+    Teodora Novkovic <teodora.petrovic@gmail.com>
+    Thiago Farina <thiago.farina@gmail.com>
+    Thiago Marcos P. Santos <thiago.santos@intel.com>
+    Thomas Butter <tbutter@gmail.com>
+    Thomas Conti <tomc@amazon.com>
+    Thomas White <im.toms.inbox@gmail.com>
+    Tiago Vignatti <tiago.vignatti@intel.com>
+    Tibor Dusnoki <tibor.dusnoki.91@gmail.com>
+    Tim Ansell <mithro@mithis.com>
+    Tim Niederhausen <tim@rnc-ag.de>
+    Timo Gurr <timo.gurr@gmail.com>
+    Timo Reimann <ttr314@googlemail.com>
+    Timo Witte <timo.witte@gmail.com>
+    Ting Shao <ting.shao@intel.com>
+    Tom Callaway <tcallawa@redhat.com>
+    Tom Harwood <tfh@skip.org>
+    Tomas Popela <tomas.popela@gmail.com>
+    Torsten Kurbad <google@tk-webart.de>
+    Trent Willis <trentmwillis@gmail.com>
+    Trevor Perrin <unsafe@trevp.net>
+    Tripta Gupta <tripta.g@samsung.com>
+    U. Artie Eoff <ullysses.a.eoff@intel.com>
+    Umar Hansa <umar.hansa@gmail.com>
+    Upendra Gowda <upendrag.gowda@gmail.com>
+    Uzair Jaleel <uzair.jaleel@samsung.com>
+    Vadim Gorbachev <bmsdave@gmail.com>
+    Vaibhav Agrawal <vaibhav1.a@samsung.com>
+    Valentin Ilie <valentin.ilie@intel.com>
+    Vamshikrishna Yellenki <vamshi@motorola.com>
+    Vani Hegde <vani.hegde@samsung.com>
+    Varun Chowdhary Paturi <v.paturi@samsung.com>
+    Vartul Katiyar <vartul.k@samsung.com>
+    Vedran Šajatović <vedran.sajatovic@gmail.com>
+    Vernon Tang <vt@foilhead.net>
+    Viatcheslav Ostapenko <sl.ostapenko@samsung.com>
+    Victor Costan <costan@gmail.com>
+    Viet-Trung Luu <viettrungluu@gmail.com>
+    Vinay Anantharaman <vinaya@adobe.com>
+    Vipul Bhasin <vipul.bhasin@gmail.com>
+    Visa Putkinen <v.putkinen@partner.samsung.com>
+    Vishal Bhatnagar <vishal.b@samsung.com>
+    Vitaliy Kharin <kvserr@gmail.com>
+    Vivek Galatage <vivek.vg@samsung.com>
+    Volker Sorge <volker.sorge@gmail.com>
+    Waihung Fu <fufranci@amazon.com>
+    Wanming Lin <wanming.lin@intel.com>
+    Wei Li <wei.c.li@intel.com>
+    WenSheng He <wensheng.he@samsung.com>
+    Wesley Lancel <wesleylancel@gmail.com>
+    Wesley Wigham <wwigham@gmail.com>
+    Will Hirsch <chromium@willhirsch.co.uk>
+    Will Shackleton <w.shackleton@gmail.com>
+    William Xie <william.xie@intel.com>
+    Xiang Long <xiang.long@intel.com>
+    Xiangze Zhang <xiangze.zhang@intel.com>
+    Xiaofeng Zhang <xiaofeng.zhang@intel.com>
+    Xiaolei Yu <dreifachstein@gmail.com>
+    Xiaoshu Zhang <xiaoshu@amazon.com>
+    Xiaoyin Liu <xiaoyin.l@outlook.com>
+    Xinchao He <hexinchao@gmail.com>
+    Xing Zhang <xzhang@adobe.com>
+    Xinghua Cao <xinghua.cao@intel.com>
+    Xu Samuel <samuel.xu@intel.com>
+    Xu Xing <xing.xu@intel.com>
+    Xuefei Ren <xrenishere@gmail.com>
+    Xueqing Huang <huangxueqing@xiaomi.com>
+    Xun Sun <xun.sun@intel.com>
+    Xunran Ding <xunran.ding@samsung.com>
+    Xunran Ding <dingxunran@gmail.com>
+    Yael Aharon <yael.aharon@intel.com>
+    Yan Wang <yan0422.wang@samsung.com>
+    Yang Gu <yang.gu@intel.com>
+    Yannic Bonenberger <contact@yannic-bonenberger.com>
+    Yarin Kaul <yarin.kaul@gmail.com>
+    Yash Vempati <vempatiy@amazon.com>
+    Ye Liu <cbakgly@gmail.com>
+    Yeol Park <peary2@gmail.com>
+    Yeonwoo Jo <yeonwoo.jo.92@gmail.com>
+    Yi Shen <yi.shen@samsung.com>
+    Yi Sun <ratsunny@gmail.com>
+    Yichen Jiang <jiangyichen123@gmail.com>
+    Yifei Yu <yuyifei@xiaomi.com>
+    Yizhou Jiang <yizhou.jiang@intel.com>
+    Yoav Weiss <yoav@yoav.ws>
+    Yoav Zilberberg <yoav.zilberberg@gmail.com>
+    Yong Shin <sy3620@gmail.com>
+    Yong Wang <ccyongwang@tencent.com>
+    Yongha Lee <yongha78.lee@samsung.com>
+    Yongseok Choi <yongseok.choi@navercorp.com>
+    Yongsheng Zhu <yongsheng.zhu@intel.com>
+    Yoonjae Cho <yoonjae.cho92@gmail.com>
+    Yoshinori Sano <yoshinori.sano@gmail.com>
+    Youngho Seo <hazivoo@gmail.com>
+    Youngjin Choi <cyjin9.yc@gmail.com>
+    YoungKi Hong <simon.hong81@gmail.com>
+    Youngmin Yoo <youngmin.yoo@samsung.com>
+    Youngsoo Choi <kenshin.choi@samsung.com>
+    Youngsun Suh <zard17@gmail.com>
+    Yuhong Sha <yuhong.sha@samsung.com>
+    Yumikiyo Osanai <yumios.art@gmail.com>
+    Yunchao He <yunchao.he@intel.com>
+    Yupei Lin <yplam@yplam.com>
+    Yupei Wang <perryuwang@tencent.com>
+    Yura Yaroshevich <yura.yaroshevich@gmail.com>
+    Yuri Gorobets <yuri.gorobets@gmail.com>
+    Yuriy Taraday <yorik.sar@gmail.com>
+    Yuvanesh Natarajan <yuvanesh.n1@samsung.com>
+    Zeno Albisser <zeno.albisser@digia.com>
+    Zeqin Chen <talonchen@tencent.com>
+    Zhaoze Zhou <zhaoze.zhou@partner.samsung.com>
+    Zheda Chen <zheda.chen@intel.com>
+    Zheng Chuang <zhengchuangscu@gmail.com>
+    Zhengkun Li <zhengkli@amazon.com>
+    Zhenyu Liang <zhenyu.liang@intel.com>
+    Zhenyu Shan <zhenyu.shan@intel.com>
+    Zhifei Fang <facetothefate@gmail.com>
+    Zhuoyu Qian <zhuoyu.qian@samsung.com>
+    Ziran Sun <ziran.sun@samsung.com>
+    Zoltan Herczeg <zherczeg.u-szeged@partner.samsung.com>
+    Zoltan Kuscsik <zoltan.kuscsik@linaro.org>
+    Zsolt Borbely <zsborbely.u-szeged@partner.samsung.com>
+    方觉 (Fang Jue) <fangjue23303@gmail.com>
+    Rajesh Mahindra <rmahindra@uber.com>
+    Yuan-Pin Yu <yjames@uber.com>
+    Vinoth Chandar <vinoth@uber.com>
+    Zheng Xu <zxu@kobo.com>
+    Junsong Li <ljs.darkfish@gmail.com>
+    ACCESS CO., LTD. <*@access-company.com>
+    Akamai Inc. <*@akamai.com>
+    ARM Holdings <*@arm.com>
+    BlackBerry Limited <*@blackberry.com>
+    Bocoup <*@bocoup.com>
+    Canonical Limited <*@canonical.com>
+    Cloudflare, Inc. <*@cloudflare.com>
+    Code Aurora Forum <*@codeaurora.org>
+    Collabora Limited <*@collabora.com>
+    Comodo CA Limited
+    Cosium <*@cosium.com>
+    Duck Duck Go, Inc. <*@duckduckgo.com>
+    Endless Mobile, Inc. <*@endlessm.com>
+    Estimote, Inc. <*@estimote.com>
+    Facebook, Inc. <*@fb.com>
+    Facebook, Inc. <*@oculus.com>
+    Google Inc. <*@google.com>
+    Hewlett-Packard Development Company, L.P. <*@hp.com>
+    IBM Inc. <*@*.ibm.com>
+    IBM Inc. <*@ibm.com>
+    Igalia S.L. <*@igalia.com>
+    Imagination Technologies Limited <*@imagination.corp-partner.google.com>
+    Impossible Dreams Network <*@impossibledreams.net>
+    Intel Corporation <*@intel.com>
+    LG Electronics, Inc. <*@lge.com>
+    Loongson Technology Corporation Limited. <*@loongson.cn>
+    Macadamian <*@macadamian.com>
+    Mediatek <*@mediatek.com>
+    Microsoft <*@microsoft.com>
+    MIPS Technologies, Inc. <*@mips.com>
+    Mozilla Corporation <*@mozilla.com>
+    Neverware Inc. <*@neverware.com>
+    NIKE, Inc. <*@nike.com>
+    NVIDIA Corporation <*@nvidia.com>
+    Opera Software ASA <*@opera.com>
+    Optical Tone Ltd <*@opticaltone.com>
+    Pengutronix e.K. <*@pengutronix.de>
+    Rakuten Kobo Inc. <*@kobo.com>
+    Rakuten Kobo Inc. <*@rakuten.com>
+    Seznam.cz, a.s. <*@firma.seznam.cz>
+    Slack Technologies Inc. <*@slack-corp.com>
+    Spotify AB <*@spotify.com>
+    Tableau Software <*@tableau.com>
+    TeamSpeak Systems GmbH <*@teamspeak.com>
+    The Chromium Authors <*@chromium.org>
+    The MathWorks, Inc. <binod.pant@mathworks.com>
+    Torchmobile Inc.
+    Upwork <*@cloud.upwork.com>
+    Venture 3 Systems LLC <*@venture3systems.com>
+    Vewd Software AS <*@vewd.com>
+    Vivaldi Technologies AS <*@vivaldi.com>
+    Yandex LLC <*@yandex-team.ru>
+    Make Positive Provar Limited <*@provartesting.com>
 
 --------------------------------------------------------------------------------
 
@@ -1997,402 +2956,6 @@ Additional Attribution (if any).
 
 Component.
 
-    external/webrtc-uwp-sdk/webrtc/xplatform/llvm/libcxx
-
-Open Source License/Copyright Notice.
-
-    ==============================================================================
-    libc++ License
-    ==============================================================================
-    
-    The libc++ library is dual licensed under both the University of Illinois
-    "BSD-Like" license and the MIT license.  As a user of this code you may choose
-    to use it under either license.  As a contributor, you agree to allow your code
-    to be used under both.
-    
-    Full text of the relevant licenses is included below.
-    
-    ==============================================================================
-    
-    University of Illinois/NCSA
-    Open Source License
-    
-    Copyright (c) 2009-2017 by the contributors listed in CREDITS.TXT
-    
-    All rights reserved.
-    
-    Developed by:
-    
-        LLVM Team
-    
-        University of Illinois at Urbana-Champaign
-    
-        http://llvm.org
-    
-    Permission is hereby granted, free of charge, to any person obtaining a copy of
-    this software and associated documentation files (the "Software"), to deal with
-    the Software without restriction, including without limitation the rights to
-    use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-    of the Software, and to permit persons to whom the Software is furnished to do
-    so, subject to the following conditions:
-    
-        * Redistributions of source code must retain the above copyright notice,
-          this list of conditions and the following disclaimers.
-    
-        * Redistributions in binary form must reproduce the above copyright notice,
-          this list of conditions and the following disclaimers in the
-          documentation and/or other materials provided with the distribution.
-    
-        * Neither the names of the LLVM Team, University of Illinois at
-          Urbana-Champaign, nor the names of its contributors may be used to
-          endorse or promote products derived from this Software without specific
-          prior written permission.
-    
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-    FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-    CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE
-    SOFTWARE.
-    
-    ==============================================================================
-    
-    Copyright (c) 2009-2014 by the contributors listed in CREDITS.TXT
-    
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-    
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
-    
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-    THE SOFTWARE.
-
-Additional Attribution (if any).
-
-    This file is a partial list of people who have contributed to the LLVM/libc++
-    project.  If you have contributed a patch or made some other contribution to
-    LLVM/libc++, please submit a patch to this file to add yourself, and it will be
-    done!
-    
-    The list is sorted by surname and formatted to allow easy grepping and
-    beautification by scripts.  The fields are: name (N), email (E), web-address
-    (W), PGP key ID and fingerprint (P), description (D), and snail-mail address
-    (S).
-    
-    N: Saleem Abdulrasool
-    E: compnerd@compnerd.org
-    D: Minor patches and Linux fixes.
-    
-    N: Dan Albert
-    E: danalbert@google.com
-    D: Android support and test runner improvements.
-    
-    N: Dimitry Andric
-    E: dimitry@andric.com
-    D: Visibility fixes, minor FreeBSD portability patches.
-    
-    N: Holger Arnold
-    E: holgerar@gmail.com
-    D: Minor fix.
-    
-    N: Ruben Van Boxem
-    E: vanboxem dot ruben at gmail dot com
-    D: Initial Windows patches.
-    
-    N: David Chisnall
-    E: theraven at theravensnest dot org
-    D: FreeBSD and Solaris ports, libcxxrt support, some atomics work.
-    
-    N: Marshall Clow
-    E: mclow.lists@gmail.com
-    E: marshall@idio.com
-    D: C++14 support, patches and bug fixes.
-    
-    N: Jonathan B Coe
-    E: jbcoe@me.com
-    D: Implementation of propagate_const.
-    
-    N: Glen Joseph Fernandes
-    E: glenjofe@gmail.com
-    D: Implementation of to_address.
-    
-    N: Eric Fiselier
-    E: eric@efcs.ca
-    D: LFTS support, patches and bug fixes.
-    
-    N: Bill Fisher
-    E: william.w.fisher@gmail.com
-    D: Regex bug fixes.
-    
-    N: Matthew Dempsky
-    E: matthew@dempsky.org
-    D: Minor patches and bug fixes.
-    
-    N: Google Inc.
-    D: Copyright owner and contributor of the CityHash algorithm
-    
-    N: Howard Hinnant
-    E: hhinnant@apple.com
-    D: Architect and primary author of libc++
-    
-    N: Hyeon-bin Jeong
-    E: tuhertz@gmail.com
-    D: Minor patches and bug fixes.
-    
-    N: Argyrios Kyrtzidis
-    E: kyrtzidis@apple.com
-    D: Bug fixes.
-    
-    N: Bruce Mitchener, Jr.
-    E: bruce.mitchener@gmail.com
-    D: Emscripten-related changes.
-    
-    N: Michel Morin
-    E: mimomorin@gmail.com
-    D: Minor patches to is_convertible.
-    
-    N: Andrew Morrow
-    E: andrew.c.morrow@gmail.com
-    D: Minor patches and Linux fixes.
-    
-    N: Michael Park
-    E: mcypark@gmail.com
-    D: Implementation of <variant>.
-    
-    N: Arvid Picciani
-    E: aep at exys dot org
-    D: Minor patches and musl port.
-    
-    N: Bjorn Reese
-    E: breese@users.sourceforge.net
-    D: Initial regex prototype
-    
-    N: Nico Rieck
-    E: nico.rieck@gmail.com
-    D: Windows fixes
-    
-    N: Jon Roelofs
-    E: jroelofS@jroelofs.com
-    D: Remote testing, Newlib port, baremetal/single-threaded support.
-    
-    N: Jonathan Sauer
-    D: Minor patches, mostly related to constexpr
-    
-    N: Craig Silverstein
-    E: csilvers@google.com
-    D: Implemented Cityhash as the string hash function on 64-bit machines
-    
-    N: Richard Smith
-    D: Minor patches.
-    
-    N: Joerg Sonnenberger
-    E: joerg@NetBSD.org
-    D: NetBSD port.
-    
-    N: Stephan Tolksdorf
-    E: st@quanttec.com
-    D: Minor <atomic> fix
-    
-    N: Michael van der Westhuizen
-    E: r1mikey at gmail dot com
-    
-    N: Larisse Voufo
-    D: Minor patches.
-    
-    N: Klaas de Vries
-    E: klaas at klaasgaaf dot nl
-    D: Minor bug fix.
-    
-    N: Zhang Xiongpang
-    E: zhangxiongpang@gmail.com
-    D: Minor patches and bug fixes.
-    
-    N: Xing Xue
-    E: xingxue@ca.ibm.com
-    D: AIX port
-    
-    N: Zhihao Yuan
-    E: lichray@gmail.com
-    D: Standard compatibility fixes.
-    
-    N: Jeffrey Yasskin
-    E: jyasskin@gmail.com
-    E: jyasskin@google.com
-    D: Linux fixes.
-
---------------------------------------------------------------------------------
-
-Component.
-
-    external/webrtc-uwp-sdk/webrtc/xplatform/llvm/libcxxabi
-
-Open Source License/Copyright Notice.
-
-    ==============================================================================
-    libc++abi License
-    ==============================================================================
-    
-    The libc++abi library is dual licensed under both the University of Illinois
-    "BSD-Like" license and the MIT license.  As a user of this code you may choose
-    to use it under either license.  As a contributor, you agree to allow your code
-    to be used under both.
-    
-    Full text of the relevant licenses is included below.
-    
-    ==============================================================================
-    
-    University of Illinois/NCSA
-    Open Source License
-    
-    Copyright (c) 2009-2017 by the contributors listed in CREDITS.TXT
-    
-    All rights reserved.
-    
-    Developed by:
-    
-        LLVM Team
-    
-        University of Illinois at Urbana-Champaign
-    
-        http://llvm.org
-    
-    Permission is hereby granted, free of charge, to any person obtaining a copy of
-    this software and associated documentation files (the "Software"), to deal with
-    the Software without restriction, including without limitation the rights to
-    use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-    of the Software, and to permit persons to whom the Software is furnished to do
-    so, subject to the following conditions:
-    
-        * Redistributions of source code must retain the above copyright notice,
-          this list of conditions and the following disclaimers.
-    
-        * Redistributions in binary form must reproduce the above copyright notice,
-          this list of conditions and the following disclaimers in the
-          documentation and/or other materials provided with the distribution.
-    
-        * Neither the names of the LLVM Team, University of Illinois at
-          Urbana-Champaign, nor the names of its contributors may be used to
-          endorse or promote products derived from this Software without specific
-          prior written permission.
-    
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-    FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-    CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE
-    SOFTWARE.
-    
-    ==============================================================================
-    
-    Copyright (c) 2009-2014 by the contributors listed in CREDITS.TXT
-    
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-    
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
-    
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-    THE SOFTWARE.
-
-Additional Attribution (if any).
-
-    This file is a partial list of people who have contributed to the LLVM/libc++abi
-    project.  If you have contributed a patch or made some other contribution to
-    LLVM/libc++abi, please submit a patch to this file to add yourself, and it will be
-    done!
-    
-    The list is sorted by surname and formatted to allow easy grepping and
-    beautification by scripts.  The fields are: name (N), email (E), web-address
-    (W), PGP key ID and fingerprint (P), description (D), and snail-mail address
-    (S).
-    
-    N: Aaron Ballman
-    E: aaron@aaronballman.com
-    D: Minor patches
-    
-    N: Logan Chien
-    E: logan.chien@mediatek.com
-    D: ARM EHABI Unwind & Exception Handling
-    
-    N: Marshall Clow
-    E: mclow.lists@gmail.com
-    E: marshall@idio.com
-    D: Architect and primary coauthor of libc++abi
-    
-    N: Matthew Dempsky
-    E: matthew@dempsky.org
-    D: Minor patches and bug fixes.
-    
-    N: Nowar Gu
-    E: wenhan.gu@gmail.com
-    D: Minor patches and fixes
-    
-    N: Howard Hinnant
-    E: hhinnant@apple.com
-    D: Architect and primary coauthor of libc++abi
-    
-    N: Dana Jansens
-    E: danakj@chromium.org
-    D: ARM EHABI Unwind & Exception Handling
-    
-    N: Nick Kledzik
-    E: kledzik@apple.com
-    
-    N: Antoine Labour
-    E: piman@chromium.org
-    D: ARM EHABI Unwind & Exception Handling
-    
-    N: Bruce Mitchener, Jr.
-    E: bruce.mitchener@gmail.com
-    D: Minor typo fixes
-    
-    N: Andrew Morrow
-    E: andrew.c.morrow@gmail.com
-    D: Minor patches and fixes
-    
-    N: Erik Olofsson
-    E: erik.olofsson@hansoft.se
-    E: erik@olofsson.info
-    D: Minor patches and fixes
-    
-    N: Jon Roelofs
-    E: jroelofs@jroelofs.com
-    D: ARM EHABI Unwind & Exception Handling, Bare-metal
-    
-    N: Nico Weber
-    E: thakis@chromium.org
-    D: ARM EHABI Unwind & Exception Handling
-    
-    N: Albert J. Wong
-    E: ajwong@google.com
-    D: ARM EHABI Unwind & Exception Handling
-
---------------------------------------------------------------------------------
-
-Component.
-
     external/webrtc-uwp-sdk/webrtc/xplatform/openmax
 
 Open Source License/Copyright Notice.
@@ -2509,7 +3072,27 @@ Component.
 
 Open Source License/Copyright Notice.
 
-    ?
+    MIT License
+    
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE
 
 Additional Attribution (if any).
 
@@ -2694,6 +3277,690 @@ Additional Attribution (if any).
     Highfive, Inc. <*@highfive.com>
     CoSMo Software Consulting, Pte Ltd <*@cosmosoftware.io>
     Holo-Light GmbH <*@holo-light.com>
+
+--------------------------------------------------------------------------------
+
+Component.
+
+    external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/abseil-cpp
+
+Open Source License/Copyright Notice.
+
+                                     Apache License
+                               Version 2.0, January 2004
+                            http://www.apache.org/licenses/
+    
+       TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+    
+       1. Definitions.
+    
+          "License" shall mean the terms and conditions for use, reproduction,
+          and distribution as defined by Sections 1 through 9 of this document.
+    
+          "Licensor" shall mean the copyright owner or entity authorized by
+          the copyright owner that is granting the License.
+    
+          "Legal Entity" shall mean the union of the acting entity and all
+          other entities that control, are controlled by, or are under common
+          control with that entity. For the purposes of this definition,
+          "control" means (i) the power, direct or indirect, to cause the
+          direction or management of such entity, whether by contract or
+          otherwise, or (ii) ownership of fifty percent (50%) or more of the
+          outstanding shares, or (iii) beneficial ownership of such entity.
+    
+          "You" (or "Your") shall mean an individual or Legal Entity
+          exercising permissions granted by this License.
+    
+          "Source" form shall mean the preferred form for making modifications,
+          including but not limited to software source code, documentation
+          source, and configuration files.
+    
+          "Object" form shall mean any form resulting from mechanical
+          transformation or translation of a Source form, including but
+          not limited to compiled object code, generated documentation,
+          and conversions to other media types.
+    
+          "Work" shall mean the work of authorship, whether in Source or
+          Object form, made available under the License, as indicated by a
+          copyright notice that is included in or attached to the work
+          (an example is provided in the Appendix below).
+    
+          "Derivative Works" shall mean any work, whether in Source or Object
+          form, that is based on (or derived from) the Work and for which the
+          editorial revisions, annotations, elaborations, or other modifications
+          represent, as a whole, an original work of authorship. For the purposes
+          of this License, Derivative Works shall not include works that remain
+          separable from, or merely link (or bind by name) to the interfaces of,
+          the Work and Derivative Works thereof.
+    
+          "Contribution" shall mean any work of authorship, including
+          the original version of the Work and any modifications or additions
+          to that Work or Derivative Works thereof, that is intentionally
+          submitted to Licensor for inclusion in the Work by the copyright owner
+          or by an individual or Legal Entity authorized to submit on behalf of
+          the copyright owner. For the purposes of this definition, "submitted"
+          means any form of electronic, verbal, or written communication sent
+          to the Licensor or its representatives, including but not limited to
+          communication on electronic mailing lists, source code control systems,
+          and issue tracking systems that are managed by, or on behalf of, the
+          Licensor for the purpose of discussing and improving the Work, but
+          excluding communication that is conspicuously marked or otherwise
+          designated in writing by the copyright owner as "Not a Contribution."
+    
+          "Contributor" shall mean Licensor and any individual or Legal Entity
+          on behalf of whom a Contribution has been received by Licensor and
+          subsequently incorporated within the Work.
+    
+       2. Grant of Copyright License. Subject to the terms and conditions of
+          this License, each Contributor hereby grants to You a perpetual,
+          worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+          copyright license to reproduce, prepare Derivative Works of,
+          publicly display, publicly perform, sublicense, and distribute the
+          Work and such Derivative Works in Source or Object form.
+    
+       3. Grant of Patent License. Subject to the terms and conditions of
+          this License, each Contributor hereby grants to You a perpetual,
+          worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+          (except as stated in this section) patent license to make, have made,
+          use, offer to sell, sell, import, and otherwise transfer the Work,
+          where such license applies only to those patent claims licensable
+          by such Contributor that are necessarily infringed by their
+          Contribution(s) alone or by combination of their Contribution(s)
+          with the Work to which such Contribution(s) was submitted. If You
+          institute patent litigation against any entity (including a
+          cross-claim or counterclaim in a lawsuit) alleging that the Work
+          or a Contribution incorporated within the Work constitutes direct
+          or contributory patent infringement, then any patent licenses
+          granted to You under this License for that Work shall terminate
+          as of the date such litigation is filed.
+    
+       4. Redistribution. You may reproduce and distribute copies of the
+          Work or Derivative Works thereof in any medium, with or without
+          modifications, and in Source or Object form, provided that You
+          meet the following conditions:
+    
+          (a) You must give any other recipients of the Work or
+              Derivative Works a copy of this License; and
+    
+          (b) You must cause any modified files to carry prominent notices
+              stating that You changed the files; and
+    
+          (c) You must retain, in the Source form of any Derivative Works
+              that You distribute, all copyright, patent, trademark, and
+              attribution notices from the Source form of the Work,
+              excluding those notices that do not pertain to any part of
+              the Derivative Works; and
+    
+          (d) If the Work includes a "NOTICE" text file as part of its
+              distribution, then any Derivative Works that You distribute must
+              include a readable copy of the attribution notices contained
+              within such NOTICE file, excluding those notices that do not
+              pertain to any part of the Derivative Works, in at least one
+              of the following places: within a NOTICE text file distributed
+              as part of the Derivative Works; within the Source form or
+              documentation, if provided along with the Derivative Works; or,
+              within a display generated by the Derivative Works, if and
+              wherever such third-party notices normally appear. The contents
+              of the NOTICE file are for informational purposes only and
+              do not modify the License. You may add Your own attribution
+              notices within Derivative Works that You distribute, alongside
+              or as an addendum to the NOTICE text from the Work, provided
+              that such additional attribution notices cannot be construed
+              as modifying the License.
+    
+          You may add Your own copyright statement to Your modifications and
+          may provide additional or different license terms and conditions
+          for use, reproduction, or distribution of Your modifications, or
+          for any such Derivative Works as a whole, provided Your use,
+          reproduction, and distribution of the Work otherwise complies with
+          the conditions stated in this License.
+    
+       5. Submission of Contributions. Unless You explicitly state otherwise,
+          any Contribution intentionally submitted for inclusion in the Work
+          by You to the Licensor shall be under the terms and conditions of
+          this License, without any additional terms or conditions.
+          Notwithstanding the above, nothing herein shall supersede or modify
+          the terms of any separate license agreement you may have executed
+          with Licensor regarding such Contributions.
+    
+       6. Trademarks. This License does not grant permission to use the trade
+          names, trademarks, service marks, or product names of the Licensor,
+          except as required for reasonable and customary use in describing the
+          origin of the Work and reproducing the content of the NOTICE file.
+    
+       7. Disclaimer of Warranty. Unless required by applicable law or
+          agreed to in writing, Licensor provides the Work (and each
+          Contributor provides its Contributions) on an "AS IS" BASIS,
+          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+          implied, including, without limitation, any warranties or conditions
+          of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+          PARTICULAR PURPOSE. You are solely responsible for determining the
+          appropriateness of using or redistributing the Work and assume any
+          risks associated with Your exercise of permissions under this License.
+    
+       8. Limitation of Liability. In no event and under no legal theory,
+          whether in tort (including negligence), contract, or otherwise,
+          unless required by applicable law (such as deliberate and grossly
+          negligent acts) or agreed to in writing, shall any Contributor be
+          liable to You for damages, including any direct, indirect, special,
+          incidental, or consequential damages of any character arising as a
+          result of this License or out of the use or inability to use the
+          Work (including but not limited to damages for loss of goodwill,
+          work stoppage, computer failure or malfunction, or any and all
+          other commercial damages or losses), even if such Contributor
+          has been advised of the possibility of such damages.
+    
+       9. Accepting Warranty or Additional Liability. While redistributing
+          the Work or Derivative Works thereof, You may choose to offer,
+          and charge a fee for, acceptance of support, warranty, indemnity,
+          or other liability obligations and/or rights consistent with this
+          License. However, in accepting such obligations, You may act only
+          on Your own behalf and on Your sole responsibility, not on behalf
+          of any other Contributor, and only if You agree to indemnify,
+          defend, and hold each Contributor harmless for any liability
+          incurred by, or claims asserted against, such Contributor by reason
+          of your accepting any such warranty or additional liability.
+    
+       END OF TERMS AND CONDITIONS
+    
+       APPENDIX: How to apply the Apache License to your work.
+    
+          To apply the Apache License to your work, attach the following
+          boilerplate notice, with the fields enclosed by brackets "[]"
+          replaced with your own identifying information. (Don't include
+          the brackets!)  The text should be enclosed in the appropriate
+          comment syntax for the file format. We also recommend that a
+          file or class name and description of purpose be included on the
+          same "printed page" as the copyright notice for easier
+          identification within third-party archives.
+    
+       Copyright [yyyy] [name of copyright owner]
+    
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+    
+           http://www.apache.org/licenses/LICENSE-2.0
+    
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+Additional Attribution (if any).
+
+    # This is the list of Abseil authors for copyright purposes.
+    #
+    # This does not necessarily list everyone who has contributed code, since in
+    # some cases, their employer may be the copyright holder.  To see the full list
+    # of contributors, see the revision history in source control.
+    Google Inc.
+
+--------------------------------------------------------------------------------
+
+Component.
+
+    external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/expat
+
+Open Source License/Copyright Notice.
+
+    Copyright (c) 1998-2000 Thai Open Source Software Center Ltd and Clark Cooper
+    Copyright (c) 2001-2017 Expat maintainers
+    
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+    
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Additional Attribution (if any).
+
+    Expat is brought to you by:
+    
+    Clark Cooper
+    Fred L. Drake, Jr.
+    Greg Stein
+    James Clark
+    Karl Waclawek
+    Rhodri James
+    Sebastian Pipping
+    Steven Solie
+
+--------------------------------------------------------------------------------
+
+Component.
+
+    external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/libpng
+
+Open Source License/Copyright Notice.
+
+    This copy of the libpng notices is provided for your convenience.  In case of
+    any discrepancy between this copy and the notices in the file png.h that is
+    included in the libpng distribution, the latter shall prevail.
+    
+    COPYRIGHT NOTICE, DISCLAIMER, and LICENSE:
+    
+    If you modify libpng you may insert additional notices immediately following
+    this sentence.
+    
+    Using custom versions of pnglibconf.h and pngprefix.h for Chrome.
+    
+    This code is released under the libpng license.
+    
+    libpng versions 1.0.7, July 1, 2000 through 1.6.34, September 29, 2017 are
+    Copyright (c) 2000-2002, 2004, 2006-2017 Glenn Randers-Pehrson, are
+    derived from libpng-1.0.6, and are distributed according to the same
+    disclaimer and license as libpng-1.0.6 with the following individuals
+    added to the list of Contributing Authors:
+    
+       Simon-Pierre Cadieux
+       Eric S. Raymond
+       Mans Rullgard
+       Cosmin Truta
+       Gilles Vollant
+       James Yu
+       Mandar Sahastrabuddhe
+       Google Inc.
+       Vadim Barkov
+    
+    and with the following additions to the disclaimer:
+    
+       There is no warranty against interference with your enjoyment of the
+       library or against infringement.  There is no warranty that our
+       efforts or the library will fulfill any of your particular purposes
+       or needs.  This library is provided with all faults, and the entire
+       risk of satisfactory quality, performance, accuracy, and effort is with
+       the user.
+    
+    Some files in the "contrib" directory and some configure-generated
+    files that are distributed with libpng have other copyright owners and
+    are released under other open source licenses.
+    
+    libpng versions 0.97, January 1998, through 1.0.6, March 20, 2000, are
+    Copyright (c) 1998-2000 Glenn Randers-Pehrson, are derived from
+    libpng-0.96, and are distributed according to the same disclaimer and
+    license as libpng-0.96, with the following individuals added to the list
+    of Contributing Authors:
+    
+       Tom Lane
+       Glenn Randers-Pehrson
+       Willem van Schaik
+    
+    libpng versions 0.89, June 1996, through 0.96, May 1997, are
+    Copyright (c) 1996-1997 Andreas Dilger, are derived from libpng-0.88,
+    and are distributed according to the same disclaimer and license as
+    libpng-0.88, with the following individuals added to the list of
+    Contributing Authors:
+    
+       John Bowler
+       Kevin Bracey
+       Sam Bushell
+       Magnus Holmgren
+       Greg Roelofs
+       Tom Tanner
+    
+    Some files in the "scripts" directory have other copyright owners
+    but are released under this license.
+    
+    libpng versions 0.5, May 1995, through 0.88, January 1996, are
+    Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
+    
+    For the purposes of this copyright and license, "Contributing Authors"
+    is defined as the following set of individuals:
+    
+       Andreas Dilger
+       Dave Martindale
+       Guy Eric Schalnat
+       Paul Schmidt
+       Tim Wegner
+    
+    The PNG Reference Library is supplied "AS IS".  The Contributing Authors
+    and Group 42, Inc. disclaim all warranties, expressed or implied,
+    including, without limitation, the warranties of merchantability and of
+    fitness for any purpose.  The Contributing Authors and Group 42, Inc.
+    assume no liability for direct, indirect, incidental, special, exemplary,
+    or consequential damages, which may result from the use of the PNG
+    Reference Library, even if advised of the possibility of such damage.
+    
+    Permission is hereby granted to use, copy, modify, and distribute this
+    source code, or portions hereof, for any purpose, without fee, subject
+    to the following restrictions:
+    
+      1. The origin of this source code must not be misrepresented.
+    
+      2. Altered versions must be plainly marked as such and must not
+         be misrepresented as being the original source.
+    
+      3. This Copyright notice may not be removed or altered from any
+         source or altered source distribution.
+    
+    The Contributing Authors and Group 42, Inc. specifically permit, without
+    fee, and encourage the use of this source code as a component to
+    supporting the PNG file format in commercial products.  If you use this
+    source code in a product, acknowledgment is not required but would be
+    appreciated.
+    
+    END OF COPYRIGHT NOTICE, DISCLAIMER, and LICENSE.
+    
+    TRADEMARK:
+    
+    The name "libpng" has not been registered by the Copyright owner
+    as a trademark in any jurisdiction.  However, because libpng has
+    been distributed and maintained world-wide, continually since 1995,
+    the Copyright owner claims "common-law trademark protection" in any
+    jurisdiction where common-law trademark is recognized.
+    
+    OSI CERTIFICATION:
+    
+    Libpng is OSI Certified Open Source Software.  OSI Certified Open Source is
+    a certification mark of the Open Source Initiative. OSI has not addressed
+    the additional disclaimers inserted at version 1.0.7.
+    
+    EXPORT CONTROL:
+    
+    The Copyright owner believes that the Export Control Classification
+    Number (ECCN) for libpng is EAR99, which means not subject to export
+    controls or International Traffic in Arms Regulations (ITAR) because
+    it is open source, publicly available software, that does not contain
+    any encryption software.  See the EAR, paragraphs 734.3(b)(3) and
+    734.7(b).
+    
+    Glenn Randers-Pehrson
+    glennrp at users.sourceforge.net
+    September 29, 2017
+
+Additional Attribution (if any).
+
+    -
+
+--------------------------------------------------------------------------------
+
+Component.
+
+    external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/protobuf
+
+Open Source License/Copyright Notice.
+
+    Copyright 2008 Google Inc.  All rights reserved.
+    
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+    
+        * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following disclaimer
+    in the documentation and/or other materials provided with the
+    distribution.
+        * Neither the name of Google Inc. nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.
+    
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    
+    Code generated by the Protocol Buffer compiler is owned by the owner
+    of the input file used when generating it.  This code is not
+    standalone and requires a support library to be linked with it.  This
+    support library is itself covered by the above license.
+
+Additional Attribution (if any).
+
+    This file contains a list of people who have made large contributions
+    to the public version of Protocol Buffers.
+    
+    Original Protocol Buffers design and implementation:
+      Sanjay Ghemawat <sanjay@google.com>
+      Jeff Dean <jeff@google.com>
+      Daniel Dulitz <daniel@google.com>
+      Craig Silverstein
+      Paul Haahr <haahr@google.com>
+      Corey Anderson <corin@google.com>
+      (and many others)
+    
+    Proto2 C++ and Java primary author:
+      Kenton Varda <kenton@google.com>
+    
+    Proto2 Python primary authors:
+      Will Robinson <robinson@google.com>
+      Petar Petrov <petar@google.com>
+    
+    Java Nano primary authors:
+      Brian Duff <bduff@google.com>
+      Tom Chao <chaot@google.com>
+      Max Cai <maxtroy@google.com>
+      Ulas Kirazci <ulas@google.com>
+    
+    Large code contributions:
+      Jason Hsueh <jasonh@google.com>
+      Joseph Schorr <jschorr@google.com>
+      Wenbo Zhu <wenboz@google.com>
+    
+    Large quantity of code reviews:
+      Scott Bruce <sbruce@google.com>
+      Frank Yellin
+      Neal Norwitz <nnorwitz@google.com>
+      Jeffrey Yasskin <jyasskin@google.com>
+      Ambrose Feinstein <ambrose@google.com>
+    
+    Documentation:
+      Lisa Carey <lcarey@google.com>
+    
+    Maven packaging:
+      Gregory Kick <gak@google.com>
+    
+    Patch contributors:
+      Kevin Ko <kevin.s.ko@gmail.com>
+        * Small patch to handle trailing slashes in --proto_path flag.
+      Johan Euphrosine <proppy@aminche.com>
+        * Small patch to fix Python CallMethod().
+      Ulrich Kunitz <kune@deine-taler.de>
+        * Small optimizations to Python serialization.
+      Leandro Lucarella <llucax@gmail.com>
+        * VI syntax highlighting tweaks.
+        * Fix compiler to not make output executable.
+      Dilip Joseph <dilip.antony.joseph@gmail.com>
+        * Heuristic detection of sub-messages when printing unknown fields in
+          text format.
+      Brian Atkinson <nairb774@gmail.com>
+        * Added @Override annotation to generated Java code where appropriate.
+      Vincent Choinière <Choiniere.Vincent@hydro.qc.ca>
+        * Tru64 support.
+      Monty Taylor <monty.taylor@gmail.com>
+        * Solaris 10 + Sun Studio fixes.
+      Alek Storm <alek.storm@gmail.com>
+        * Slicing support for repeated scalar fields for the Python API.
+      Oleg Smolsky <oleg.smolsky@gmail.com>
+        * MS Visual Studio error format option.
+        * Detect unordered_map in stl_hash.m4.
+      Brian Olson <brianolson@google.com>
+        * gzip/zlib I/O support.
+      Michael Poole <mdpoole@troilus.org>
+        * Fixed warnings about generated constructors not explicitly initializing
+          all fields (only present with certain compiler settings).
+        * Added generation of field number constants.
+      Wink Saville <wink@google.com>
+        * Fixed initialization ordering problem in logging code.
+      Will Pierce <willp@nuclei.com>
+        * Small patch improving performance of in Python serialization.
+      Alexandre Vassalotti <alexandre@peadrop.com>
+        * Emacs mode for Protocol Buffers (editors/protobuf-mode.el).
+      Scott Stafford <scott.stafford@gmail.com>
+        * Added Swap(), SwapElements(), and RemoveLast() to Reflection interface.
+      Alexander Melnikov <alm@sibmail.ru>
+        * HPUX support.
+      Oliver Jowett <oliver.jowett@gmail.com>
+        * Detect whether zlib is new enough in configure script.
+        * Fixes for Solaris 10 32/64-bit confusion.
+      Evan Jones <evanj@mit.edu>
+        * Optimize Java serialization code when writing a small message to a stream.
+        * Optimize Java serialization of strings so that UTF-8 encoding happens only
+          once per string per serialization call.
+        * Clean up some Java warnings.
+        * Fix bug with permanent callbacks that delete themselves when run.
+      Michael Kucharski <m.kucharski@gmail.com>
+        * Added CodedInputStream.getTotalBytesRead().
+      Kacper Kowalik <xarthisius.kk@gmail.com>
+        * Fixed m4/acx_pthread.m4 problem for some Linux distributions.
+      William Orr <will@worrbase.com>
+        * Fixed detection of sched_yield on Solaris.
+        * Added atomicops for Solaris
+      Andrew Paprocki <andrew@ishiboo.com>
+        * Fixed minor IBM xlC compiler build issues
+        * Added atomicops for AIX (POWER)
+
+--------------------------------------------------------------------------------
+
+Component.
+
+    external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/rnnoise
+
+Open Source License/Copyright Notice.
+
+    Copyright (c) 2017, Mozilla
+    Copyright (c) 2007-2017, Jean-Marc Valin
+    Copyright (c) 2005-2017, Xiph.Org Foundation
+    Copyright (c) 2003-2004, Mark Borgerding
+    
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    
+    - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    
+    - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    
+    - Neither the name of the Xiph.Org Foundation nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.
+    
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+    A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION
+    OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Additional Attribution (if any).
+
+    -
+
+--------------------------------------------------------------------------------
+
+Component.
+
+    external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/winuwp_compat
+
+Open Source License/Copyright Notice.
+
+    * Redistribution and use in source and binary forms, with or without
+    * modification, are permitted provided that the following conditions
+    * are met:
+    * 1. Redistributions of source code must retain the above copyright
+    *    notice, this list of conditions and the following disclaimer.
+    * 2. Redistributions in binary form must reproduce the above copyright
+    *    notice, this list of conditions and the following disclaimer in the
+    *    documentation and/or other materials provided with the distribution.
+    *
+    * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND OTHER CONTRIBUTORS ``AS IS''
+    * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR OTHER CONTRIBUTORS BE
+    * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+    * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+    * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+    * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    * POSSIBILITY OF SUCH DAMAGE.
+
+Additional Attribution (if any).
+
+    -
+
+--------------------------------------------------------------------------------
+
+Component.
+
+    external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/winuwp_h264
+
+Open Source License/Copyright Notice.
+
+    *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
+    *
+    *  Use of this source code is governed by a BSD-style license
+    *  that can be found in the LICENSE file in the root of the source
+    *  tree. An additional intellectual property rights grant can be found
+    *  in the file PATENTS.  All contributing project authors may
+    *  be found in the AUTHORS file in the root of the source tree.
+
+Additional Attribution (if any).
+
+    -
+
+--------------------------------------------------------------------------------
+
+Component.
+
+    external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/zlib
+
+Open Source License/Copyright Notice.
+
+    version 1.2.11, January 15th, 2017
+    
+    Copyright (C) 1995-2017 Jean-loup Gailly and Mark Adler
+    
+    This software is provided 'as-is', without any express or implied
+    warranty.  In no event will the authors be held liable for any damages
+    arising from the use of this software.
+    
+    Permission is granted to anyone to use this software for any purpose,
+    including commercial applications, and to alter it and redistribute it
+    freely, subject to the following restrictions:
+    
+    1. The origin of this software must not be misrepresented; you must not
+       claim that you wrote the original software. If you use this software
+       in a product, an acknowledgment in the product documentation would be
+       appreciated but is not required.
+    2. Altered source versions must be plainly marked as such, and must not be
+       misrepresented as being the original software.
+    3. This notice may not be removed or altered from any source distribution.
+
+Additional Attribution (if any).
+
+    -
 
 --------------------------------------------------------------------------------
 
@@ -4535,95 +5802,6 @@ Open Source License/Copyright Notice.
 Additional Attribution (if any).
 
     -
-
---------------------------------------------------------------------------------
-
-Component.
-
-    external/webrtc-uwp-sdk/webrtc/xplatform/yasm/binaries
-
-Open Source License/Copyright Notice.
-
-    ?
-
-Additional Attribution (if any).
-
-    -
-
---------------------------------------------------------------------------------
-
-Component.
-
-    external/webrtc-uwp-sdk/webrtc/xplatform/yasm/patched-yasm
-
-Open Source License/Copyright Notice.
-
-    Yasm is Copyright (c) 2001-2014 Peter Johnson and other Yasm developers.
-    
-    Yasm developers and/or contributors include:
-      Peter Johnson
-      Michael Urman
-      Brian Gladman (Visual Studio build files, other fixes)
-      Stanislav Karchebny (options parser)
-      Mathieu Monnier (SSE4 instruction patches, NASM preprocessor additions)
-      Anonymous "NASM64" developer (NASM preprocessor fixes)
-      Stephen Polkowski (x86 instruction patches)
-      Henryk Richter (Mach-O object format)
-      Ben Skeggs (patches, bug reports)
-      Alexei Svitkine (GAS preprocessor)
-      Samuel Thibault (TASM parser and frontend)
-    
-    -----------------------------------
-    Yasm licensing overview and summary
-    -----------------------------------
-    
-    Note: This document does not provide legal advice nor is it the actual
-    license of any part of Yasm.  See the individual licenses for complete
-    details.  Consult a lawyer for legal advice.
-    
-    The primary license of Yasm is the 2-clause BSD license.  Please use this
-    license if you plan on submitting code to the project.
-    
-    Yasm has absolutely no warranty; not even for merchantibility or fitness
-    for a particular purpose.
-    
-    -------
-    Libyasm
-    -------
-    Libyasm is 2-clause or 3-clause BSD licensed, with the exception of
-    bitvect, which is triple-licensed under the Artistic license, GPL, and
-    LGPL.  Libyasm is thus GPL and LGPL compatible.  In addition, this also
-    means that libyasm is free for binary-only distribution as long as the
-    terms of the 3-clause BSD license and Artistic license (as it applies to
-    bitvect) are fulfilled.
-    
-    -------
-    Modules
-    -------
-    The modules are 2-clause or 3-clause BSD licensed.
-    
-    ---------
-    Frontends
-    ---------
-    The frontends are 2-clause BSD licensed.
-    
-    -------------
-    License Texts
-    -------------
-    The full text of all licenses are provided in separate files in the source
-    distribution.  Each source file may include the entire license (in the case
-    of the BSD and Artistic licenses), or may reference the GPL or LGPL license
-    file.
-    
-    BSD.txt - 2-clause and 3-clause BSD licenses
-    Artistic.txt - Artistic license
-    GNU_GPL-2.0 - GNU General Public License
-    GNU_LGPL-2.0 - GNU Library General Public License
-
-Additional Attribution (if any).
-
-    Peter Johnson <peter@tortall.net>
-    Michael Urman <mu@tortall.net>
 
 --------------------------------------------------------------------------------
 
