@@ -91,6 +91,8 @@ The `Microsoft.MixedReality.WebRTC.sln` Visual Studio 2019 solution located at t
 - A C# unit tests project `Microsoft.MixedReality.WebRTC.Tests`
 - A UWP C# sample app project `Microsoft.MixedReality.WebRTC.TestAppUWP` based on WPF and XAML which demonstrates audio / video / data communication by mean of a simple video chat app.
 
+_Note_ - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually (see [#14](https://github.com/microsoft/MixedReality-WebRTC/issues/14)).
+
 ## Building MixedReality-WebRTC
 
 The MixedReality-WebRTC projects consume their input dependencies as NuGet packages for simplicity, because those are complex to build and take a prohibitive amount of time. The steps below are recommended for most users who need to modify the source code of MixedReality-WebRTC without the need to change the input dependencies.
