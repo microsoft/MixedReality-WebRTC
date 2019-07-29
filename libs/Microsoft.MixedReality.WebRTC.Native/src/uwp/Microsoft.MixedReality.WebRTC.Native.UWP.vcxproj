@@ -84,7 +84,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt;..\..\include;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt;..\..\include;$(WebRTCCoreRepoPath)webrtc\xplatform;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
