@@ -12,108 +12,183 @@ trigger: none
 pr: none
 
 # Give a unique name to the build each time it runs
-name: release-core-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+# This is the value of $(Build.BuildNumber)
+name: $(Date:yyyyMMdd)-$(Rev:r)
+
+variables:
+  # Version string is "$(MRWebRTCVersion)-$(MRWebRTCReleaseTag)-$(Build.BuildNumber)"
+  MRWebRTCVersion: 0.0.1       # Major.Minor.Patch
+  MRWebRTCReleaseTag: 'alpha'  # Optional, without '-'
 
 stages:
 
 # Compile all platform/architecture/config variants as separate jobs
+# possibly in parallel if enough agents are available
 - stage: build
-  displayName: Build webrtc.lib
+  displayName: Build Core WebRTC
   jobs:
-#   - template: templates/jobs-libwebrtc.yaml
-#     parameters:
-#       buildAgent: 'MR Sharing On-Prem'
-#       buildPlatform: 'Win32'
-#       buildArch: 'x64'
-#       buildConfig: 'Release'
-#       skipUwpWrappers: true
-#       skipPython27: true
+  - template: templates/jobs-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+      withPdbs: true
+  - template: templates/jobs-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'x64'
+      buildConfig: 'Debug'
+      withPdbs: true
   - template: templates/jobs-libwebrtc-uwp.yaml
     parameters:
-      buildAgent: 'MR Sharing On-Prem'
+      buildAgent: 'Analog Open'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+      publishWinRtHeaders: true # Randomly selected, any UWP build will do
+  - template: templates/jobs-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'x64'
+      buildConfig: 'Debug'
+  - template: templates/jobs-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'ARM'
+      buildConfig: 'Debug'
+  # - template: templates/jobs-libwebrtc-uwp.yaml
+  #   parameters:
+  #     buildAgent: 'Analog Open'
+  #     buildArch: 'ARM64'
+  #     buildConfig: 'Debug'
+  - template: templates/jobs-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+  - template: templates/jobs-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'Analog Open'
       buildArch: 'x64'
       buildConfig: 'Release'
-#   - template: templates/jobs-libwebrtc.yaml
-#     parameters:
-#       buildAgent: 'MR Sharing On-Prem'
-#       buildPlatform: 'UWP'
-#       buildArch: 'ARM'
-#       buildConfig: 'Release'
-#       skipUwpWrappers: true
-#       skipPython27: true
+  - template: templates/jobs-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+  - template: templates/jobs-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'x64'
+      buildConfig: 'Release'
+  - template: templates/jobs-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Analog Open'
+      buildArch: 'ARM'
+      buildConfig: 'Release'
+  # - template: templates/jobs-libwebrtc-uwp.yaml
+  #   parameters:
+  #     buildAgent: 'Analog Open'
+  #     buildArch: 'ARM64'
+  #     buildConfig: 'Release'
 
 # Create signed NuGet packages
 - stage: pack
   displayName: Create signed NuGet packages
   dependsOn: build
   jobs:
-
-  # Create the NuGet packages
-  - template: templates/jobs-libwebrtc-nuget.yaml
+  - template: templates/jobs-libwebrtc-sign.yaml
     parameters:
-      buildAgent: 'MR Sharing On-Prem'
+      nugetPackage: 'Desktop'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreDesktopSignConfig.xml'
+      nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.Desktop.nuspec'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      nugetPackage: 'UWP'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreUwpSignConfig.xml'
+      nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.UWP.nuspec'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      nugetPackage: 'UWP.x86'
+      buildArch: 'x86'
+      artifactSignConfig: 'signconfig/artifactsCoreUwpX86SignConfig.xml'
+      nugetSignConfig: 'signconfig/nugetCoreUwpX86SignConfig.xml'
+      nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.nuspec'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      nugetPackage: 'UWP.x64'
+      buildArch: 'x64'
+      artifactSignConfig: 'signconfig/artifactsCoreUwpX64SignConfig.xml'
+      nugetSignConfig: 'signconfig/nugetCoreUwpX64SignConfig.xml'
+      nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.nuspec'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      nugetPackage: 'UWP.ARM'
+      buildArch: 'ARM'
+      artifactSignConfig: 'signconfig/artifactsCoreUwpArmSignConfig.xml'
+      nugetSignConfig: 'signconfig/nugetCoreUwpArmSignConfig.xml'
+      nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.nuspec'
 
-  # Sign everything and publish signed NuGet packages
-  - job: sign
-    dependsOn: libwebrtc_nuget
+# Publish everything
+- stage: publish
+  displayName: Publish NuGet packages
+  dependsOn: pack
+  jobs:
+
+  # Publish the NuGet packages to an internal private feed
+  - job: publish_internal
+    timeoutInMinutes: 120
     pool:
-      name: Package ES Lab E
-      steps:
+      name: 'Analog On-Prem'
+    steps:
 
-      # Download binaries to sign from build stage
-      - task: DownloadBuildArtifacts@0
-        inputs:
-          buildType: 'current'
-          downloadType: 'single'
-          artifactName: nuget_core
-          downloadPath: '$(Build.SourcesDirectory)'
+    # Use NuGet 4.9.2
+    - task: NuGetToolInstaller@1
+      displayName: 'Use NuGet 4.9.2'
+      inputs:
+        versionSpec: 4.9.2
 
-      # Download signing scripts
-      - powershell: |
-          $Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('$(scriptsRepoVSTSuser):$(scriptsRepoPAT)'))
-          git clone -c http.extraheader="AUTHORIZATION: $Authorization" -b prod $(scriptsRepoURL) $(Build.ArtifactStagingDirectory)\scripts
-        displayName: "Clone release scripts"
+    # Download all NuGet packages
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download nuget_core_desktop'
+      inputs:
+        artifactName: 'nuget_core_Desktop'
+        targetPath: '$(Build.ArtifactStagingDirectory)/signed'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download nuget_core_UWP'
+      inputs:
+        artifactName: 'nuget_core_UWP'
+        targetPath: '$(Build.ArtifactStagingDirectory)/signed'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download nuget_core_UWP.x86'
+      inputs:
+        artifactName: 'nuget_core_UWP.x86'
+        targetPath: '$(Build.ArtifactStagingDirectory)/signed'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download nuget_core_UWP.x64'
+      inputs:
+        artifactName: 'nuget_core_UWP.x64'
+        targetPath: '$(Build.ArtifactStagingDirectory)/signed'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download nuget_core_UWP.ARM'
+      inputs:
+        artifactName: 'nuget_core_UWP.ARM'
+        targetPath: '$(Build.ArtifactStagingDirectory)/signed'
 
-      # Sign all files
-      - template: templates/steps-codesign.yaml
-        parameters:
-          ConfigName: "$(Build.ArtifactStagingDirectory)/scripts/signconfig/artifactsSignConfig.xml"
-
-      # Create pre-release packages
-      - ${{ if eq(variables['MRWebRTCReleaseTag'], '') }}:
-        - template: templates/jobs-libwebrtc-nuget.yaml
-          parameters:
-            version: '$(MRWebRTCVersion)-$(Build.BuildNumber).prerelease'
-            packDestination: '$(Build.SourcesDirectory)\artifacts\prerelease'
-      - ${{ if ne(variables['MRWebRTCReleaseTag'], '') }}:
-        - template: templates/jobs-libwebrtc-nuget.yaml
-          parameters:
-            version: '$(MRWebRTCVersion)-$(Build.BuildNumber).prerelease.$(MRWebRTCReleaseTag)'
-            packDestination: '$(Build.SourcesDirectory)\artifacts\prerelease'
-
-      # Create release packages
-      - ${{ if eq(variables['MRWebRTCReleaseTag'], '') }}:
-        - template: templates/package.yml
-          parameters:
-            version: '$(MRWebRTCVersion)'
-            packDestination: '$(Build.SourcesDirectory)\artifacts\release'
-      - ${{ if ne(variables['MRWebRTCReleaseTag'], '') }}:
-        - template: templates/package.yml
-          parameters:
-            version: '$(MRWebRTCVersion)-$(MRWebRTCReleaseTag)'
-            packDestination: '$(Build.SourcesDirectory)\artifacts\release'        
-
-      # Sign pre-release and release packages
-      - template: templates/steps-codesign.yaml
-        parameters:
-          ConfigName: "$(Build.ArtifactStagingDirectory)/scripts/signconfig/nugetSignConfig.xml"
-
-      # Push packages to NuGet feed
-      - task: NuGetCommand@2
-        displayName: 'NuGet push'
-        inputs:
-          command: push
-          packagesToPush: '$(Build.SourcesDirectory)/artifacts/prerelease/**/*.nupkg;!$(Build.SourcesDirectory)/artifacts/prerelease/**/*.symbols.nupkg'
-          publishVstsFeed: '$(NuGetFeedId)'
-          buildProperties: 'version=$(MRWebRTCVersion)-$(Build.BuildNumber)'
+    # Push all packages
+    - powershell: |
+        Set-Location $(Join-Path "$(Build.ArtifactStagingDirectory)" "signed")
+        
+        $files=Get-ChildItem | Where {$_.Name -like "*.nupkg" -and $_.Name -notlike "*symbols*"}
+        foreach($file in $files)
+        {
+            # Use 900 seconds timeout instead of default 300 due to size of packages
+            nuget push $file.Name -NonInteractive -Timeout 900 -Source $(InternalNuGetFeed) -ApiKey dummy -Verbosity Detailed
+            if (-not $?)
+            {
+                throw "Failed to push $($file.Name)"
+            }
+        }
+      displayName: 'NuGet push all Core*'
 

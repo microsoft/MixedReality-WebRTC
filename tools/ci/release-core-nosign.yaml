@@ -31,11 +31,13 @@ stages:
       buildAgent: 'Analog Open'
       buildArch: 'x86'
       buildConfig: 'Debug'
+      withPdbs: true
   - template: templates/jobs-libwebrtc-win32.yaml
     parameters:
       buildAgent: 'Analog Open'
       buildArch: 'x64'
       buildConfig: 'Debug'
+      withPdbs: true
   - template: templates/jobs-libwebrtc-uwp.yaml
     parameters:
       buildAgent: 'Analog Open'
