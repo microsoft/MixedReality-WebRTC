@@ -1,0 +1,108 @@
+{
+    "ignore": [
+        {
+            "path": "android_protobuf",
+            "reason": "empty folder"
+        },
+        {
+            "path": "accessibility_test_framework",
+            "reason": "azure pipeline config"
+        },
+        {
+            "path": "auto",
+            "reason": "empty folder"
+        },
+        {
+            "path": "material_design_icons",
+            "reason": "empty folder"
+        },
+        {
+            "path": "minigbm",
+            "reason": "empty folder"
+        },
+        {
+            "path": "minizip",
+            "reason": "empty folder"
+        },
+        {
+            "path": "netty-tcnative",
+            "reason": "empty folder"
+        },
+        {
+            "path": "objenesis",
+            "reason": "azure pipeline config"
+        },
+        {
+            "path": "ow2_asm",
+            "reason": "azure pipeline config"
+        },
+        {
+            "path": "proguard",
+            "reason": "azure pipeline config"
+        },
+        {
+            "path": "pyftpdlib",
+            "reason": "empty folder"
+        },
+        {
+            "path": "pywebsocket",
+            "reason": "empty folder"
+        },
+        {
+            "path": "r8",
+            "reason": "azure pipeline config"
+        },
+        {
+            "path": "re2",
+            "reason": "empty folder"
+        },
+        {
+            "path": "requests",
+            "reason": "empty folder"
+        },
+        {
+            "path": "smhasher",
+            "reason": "empty folder"
+        },
+        {
+            "path": "spirv-headers",
+            "reason": "empty folder"
+        },
+        {
+            "path": "SPIRV-Tools",
+            "reason": "empty folder"
+        },
+        {
+            "path": "spirv-tools-angle",
+            "reason": "empty folder"
+        },
+        {
+            "path": "sqlite4java",
+            "reason": "azure pipeline config"
+        },
+        {
+            "path": "ub-uiautomator",
+            "reason": "empty folder"
+        },
+        {
+            "path": "visualmetrics",
+            "reason": "empty folder"
+        },
+        {
+            "path": "vulkan-validation-layers",
+            "reason": "empty folder"
+        },
+        {
+            "path": "webgl",
+            "reason": "empty folder"
+        },
+        {
+            "path": "xstream",
+            "reason": "azure pipeline config"
+        },
+        {
+            "path": "yara",
+            "reason": "empty folder"
+        }
+    ]
+}
