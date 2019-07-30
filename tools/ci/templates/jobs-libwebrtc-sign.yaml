@@ -4,6 +4,7 @@
 # [TEMPLATE] Sign WebRTC Core and create signed NuGet packages
 
 parameters:
+  jobName: ''
   nugetPackage: ''        # Desktop|UWP|UWP.x86|UWP.x64|UWP.ARM
   buildArch: ''           # x86|x64|ARM|ARM64 - only for UWP.*
   artifactSignConfig: ''  # Optional sign config .xml file for files inside the NuGet package
@@ -13,7 +14,7 @@ parameters:
 jobs:
 
 # Sign the files, create the NuGet, and sign it
-- job: nuget_core_Win32_${{parameters.nugetPackage}}
+- job: nuget_core_${{parameters.jobName}}
   timeoutInMinutes: 120
   pool:
     name: 'Package ES Lab E'
@@ -202,7 +203,7 @@ jobs:
 
   # Publish the signed NuGet package as a pipeline artifact for the final publish stage
   - task: PublishPipelineArtifact@1
-    displayName: 'Publish nuget_core_${{parameters.nugetPackage}}'
+    displayName: 'Publish nuget_core_${{parameters.jobName}}'
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)/signed'
-      artifact: 'nuget_core_${{parameters.nugetPackage}}'
+      artifact: 'nuget_core_${{parameters.jobName}}'

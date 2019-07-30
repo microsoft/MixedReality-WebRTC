@@ -98,18 +98,21 @@ stages:
   jobs:
   - template: templates/jobs-libwebrtc-sign.yaml
     parameters:
+      jobName: 'desktop'
       nugetPackage: 'Desktop'
       artifactSignConfig: ''
       nugetSignConfig: 'signconfig/nugetCoreDesktopSignConfig.xml'
       nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.Desktop.nuspec'
   - template: templates/jobs-libwebrtc-sign.yaml
     parameters:
+      jobName: 'uwp'
       nugetPackage: 'UWP'
       artifactSignConfig: ''
       nugetSignConfig: 'signconfig/nugetCoreUwpSignConfig.xml'
       nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.UWP.nuspec'
   - template: templates/jobs-libwebrtc-sign.yaml
     parameters:
+      jobName: 'uwp_x86'
       nugetPackage: 'UWP.x86'
       buildArch: 'x86'
       artifactSignConfig: 'signconfig/artifactsCoreUwpX86SignConfig.xml'
@@ -117,6 +120,7 @@ stages:
       nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.nuspec'
   - template: templates/jobs-libwebrtc-sign.yaml
     parameters:
+      jobName: 'uwp_x64'
       nugetPackage: 'UWP.x64'
       buildArch: 'x64'
       artifactSignConfig: 'signconfig/artifactsCoreUwpX64SignConfig.xml'
@@ -124,6 +128,7 @@ stages:
       nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.nuspec'
   - template: templates/jobs-libwebrtc-sign.yaml
     parameters:
+      jobName: 'uwp_arm'
       nugetPackage: 'UWP.ARM'
       buildArch: 'ARM'
       artifactSignConfig: 'signconfig/artifactsCoreUwpArmSignConfig.xml'
@@ -153,27 +158,27 @@ stages:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download nuget_core_desktop'
       inputs:
-        artifactName: 'nuget_core_Desktop'
+        artifactName: 'nuget_core_desktop'
         targetPath: '$(Build.ArtifactStagingDirectory)/signed'
     - task: DownloadPipelineArtifact@2
-      displayName: 'Download nuget_core_UWP'
+      displayName: 'Download nuget_core_uwp'
       inputs:
-        artifactName: 'nuget_core_UWP'
+        artifactName: 'nuget_core_uwp'
         targetPath: '$(Build.ArtifactStagingDirectory)/signed'
     - task: DownloadPipelineArtifact@2
-      displayName: 'Download nuget_core_UWP.x86'
+      displayName: 'Download nuget_core_uwp_x86'
       inputs:
-        artifactName: 'nuget_core_UWP.x86'
+        artifactName: 'nuget_core_uwp_x86'
         targetPath: '$(Build.ArtifactStagingDirectory)/signed'
     - task: DownloadPipelineArtifact@2
-      displayName: 'Download nuget_core_UWP.x64'
+      displayName: 'Download nuget_core_uwp_x64'
       inputs:
-        artifactName: 'nuget_core_UWP.x64'
+        artifactName: 'nuget_core_uwp_x64'
         targetPath: '$(Build.ArtifactStagingDirectory)/signed'
     - task: DownloadPipelineArtifact@2
-      displayName: 'Download nuget_core_UWP.ARM'
+      displayName: 'Download nuget_core_uwp_arm'
       inputs:
-        artifactName: 'nuget_core_UWP.ARM'
+        artifactName: 'nuget_core_uwp_arm'
         targetPath: '$(Build.ArtifactStagingDirectory)/signed'
 
     # Push all packages
