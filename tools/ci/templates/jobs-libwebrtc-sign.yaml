@@ -13,7 +13,7 @@ parameters:
 jobs:
 
 # Sign the files, create the NuGet, and sign it
-- job: nuget_core_Win32_${{parameters.buildArch}}
+- job: nuget_core_Win32_${{parameters.nugetPackage}}
   timeoutInMinutes: 120
   pool:
     name: 'Package ES Lab E'
