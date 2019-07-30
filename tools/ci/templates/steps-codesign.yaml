@@ -1,0 +1,16 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
+# [TEMPLATE] Codesign using config.
+
+parameters:
+  ConfigName: ""
+
+steps:
+- task: PkgESCodeSign@10
+  inputs:
+    signConfigXml: ${{parameters.ConfigName}}
+    inPathRoot: $(Build.SourcesDirectory)
+    outPathRoot: $(Build.SourcesDirectory)  
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)

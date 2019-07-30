@@ -1,0 +1,100 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
+# [TEMPLATE] Pack & publish WebRTC Core
+
+parameters:
+  buildAgent: ''
+
+jobs:
+
+# Create and publish the Microsoft.MixedReality.WebRTC.Native.Core NuGet package
+- job: libwebrtc_nuget
+  timeoutInMinutes: 20
+  pool:
+    name: ${{parameters.buildAgent}}
+    demands: msbuild
+  variables:
+    projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
+  steps:
+  - checkout: none
+  
+  # Compute the NuGet package version
+  - powershell: |
+      $NuGetVersion = "$(MRWebRTCVersion)-$(MRWebRTCReleaseTag)-$(Build.BuildId)"
+      Write-Host "NuGet package version : $NuGetVersion"
+      Write-Host "##vso[task.setvariable variable=NuGetVersion]$NuGetVersion"
+    displayName: 'Compute NuGet package version'
+
+  # Force NuGet 4.9.2
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 4.9.2'
+    inputs:
+      versionSpec: 4.9.2
+    timeoutInMinutes: 5
+    
+  # Generate the NuGet packages Microsoft.MixedReality.WebRTC.Native.Core.nupkg
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'NuGet pack'
+    inputs:
+      command: pack
+      packagesToPack: libs/Microsoft.MixedReality.WebRTC.Native.Core/Microsoft.MixedReality.WebRTC.Native.Core.nuspec
+      packDestination: '$(Build.ArtifactStagingDirectory)/NuGet/'
+      includeSymbols: true
+      versioningScheme: byEnvVar
+      versionEnvVar: NuGetVersion
+      buildProperties: 'bin=bin'
+      basePath: '$(Build.SourcesDirectory)'
+    timeoutInMinutes: 15
+    
+  # Generate the NuGet packages Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.nupkg
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'NuGet pack'
+    inputs:
+      command: pack
+      packagesToPack: libs/Microsoft.MixedReality.WebRTC.Native.Core/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.nuspec
+      packDestination: '$(Build.ArtifactStagingDirectory)/NuGet/'
+      includeSymbols: true
+      versioningScheme: byEnvVar
+      versionEnvVar: NuGetVersion
+      buildProperties: 'bin=bin'
+      basePath: '$(Build.SourcesDirectory)'
+    timeoutInMinutes: 15
+    
+  # Generate the NuGet packages Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.nupkg
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'NuGet pack'
+    inputs:
+      command: pack
+      packagesToPack: libs/Microsoft.MixedReality.WebRTC.Native.Core/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.nuspec
+      packDestination: '$(Build.ArtifactStagingDirectory)/NuGet/'
+      includeSymbols: true
+      versioningScheme: byEnvVar
+      versionEnvVar: NuGetVersion
+      buildProperties: 'bin=bin'
+      basePath: '$(Build.SourcesDirectory)'
+    timeoutInMinutes: 15
+    
+  # Generate the NuGet packages Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.nupkg
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'NuGet pack'
+    inputs:
+      command: pack
+      packagesToPack: libs/Microsoft.MixedReality.WebRTC.Native.Core/Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.nuspec
+      packDestination: '$(Build.ArtifactStagingDirectory)/NuGet/'
+      includeSymbols: true
+      versioningScheme: byEnvVar
+      versionEnvVar: NuGetVersion
+      buildProperties: 'bin=bin'
+      basePath: '$(Build.SourcesDirectory)'
+    timeoutInMinutes: 15
+
+  # Push packages to NuGet feed
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'NuGet push'
+    inputs:
+      command: push
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/NuGet/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/NuGet/**/*.symbols.nupkg'
+      publishVstsFeed: '$(NuGetFeedId)'
+      arguments: '-SymbolPackageFormat snupkg'
+

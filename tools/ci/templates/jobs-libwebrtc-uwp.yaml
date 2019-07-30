@@ -1,0 +1,99 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
+# [TEMPLATE] Compile WebRTC Core and UWP wrappers
+
+parameters:
+  buildAgent: ''
+  buildArch: ''               # x86|x64|ARM|ARM64
+  buildConfig: ''             # Debug|Release
+  publishWinRtHeaders: false  # true|false
+
+jobs:
+
+# Compile webrtc.lib (core Google implementation)
+- job: libwebrtc_UWP_${{parameters.buildArch}}_${{parameters.buildConfig}}
+  timeoutInMinutes: 360
+  pool:
+    name: ${{parameters.buildAgent}}
+    demands:
+    - msbuild
+    - mr_webrtc_core
+  variables:
+    buildTriple: UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}
+    projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
+  steps:
+  - checkout: self
+    submodules: recursive
+
+  # Map build* variables to script* ones
+  - task: PowerShell@2
+    displayName: Map script variables
+    inputs:
+      targetType: filePath
+      filePath: tools/ci/mapVariables.ps1
+      arguments: 'UWP ${{parameters.buildArch}} ${{parameters.buildConfig}}'
+
+  # Restore any NuGet package (C++/WinRT, ...)
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'Restore NuGet packages for Org.WebRtc'
+    inputs:
+      command: restore
+      restoreSolution: '$(projectRoot)Org.WebRtc.Universal/packages.config'
+      restoreDirectory: ../../../solutions/packages
+    timeoutInMinutes: 10
+
+  # Build webrtc.lib
+  - task: MSBuild@1
+    displayName: 'Build webrtc.lib ($(buildTriple))'
+    inputs:
+      solution: '$(projectRoot)WebRtc.UWP.Native.Builder/WebRtc.UWP.Native.Builder.vcxproj'
+      msbuildVersion: '15.0'
+      msbuildArchitecture: x64
+      platform: ${{parameters.buildArch}}
+      configuration: ${{parameters.buildConfig}}
+    timeoutInMinutes: 120
+
+  # Build the UWP wrapper
+  - task: MSBuild@1
+    displayName: 'Build Org.WebRTC WinRT wrappers ($(buildTriple))'
+    inputs:
+      solution: '$(projectRoot)Org.WebRtc.Universal/Org.WebRtc.vcxproj'
+      msbuildVersion: '15.0'
+      msbuildArchitecture: x64
+      platform: ${{parameters.buildArch}}
+      configuration: ${{parameters.buildConfig}}
+    timeoutInMinutes: 180
+
+  # Publish webrtc.lib
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish webrtc.lib ($(buildTriple))'
+    inputs:
+      artifactName: 'libwebrtc_$(buildTriple)'
+      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/webrtc.lib'
+    timeoutInMinutes: 15
+
+  # Publish Org.WebRtc.dll and associated (PDB, ...)
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish WinRT wrappers ($(buildTriple))'
+    inputs:
+      artifactName: 'orgwebrtc_$(buildTriple)'
+      targetPath: 'Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+    timeoutInMinutes: 15
+
+  # Publish Org.WebRtc generated headers
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish WinRT generated headers ($(buildTriple))'
+    condition: eq('${{parameters.publishWinRtHeaders}}', 'true')
+    inputs:
+      artifactName: 'orgwebrtc_headers'
+      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
+    timeoutInMinutes: 15
+
+  # Publish Org.WebRtc.WrapperGlue.lib and associated (PDB, ...)
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish WinRT glue wrappers ($(buildTriple))'
+    inputs:
+      artifactName: 'orgwebrtc_glue_$(buildTriple)'
+      targetPath: 'Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+    timeoutInMinutes: 15

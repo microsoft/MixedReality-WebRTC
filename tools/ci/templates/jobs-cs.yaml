@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 # [TEMPLATE] Compile C# library Microsoft.MixedReality.WebRTC.dll and run tests
 
 parameters: 
@@ -15,6 +18,8 @@ jobs:
   pool:
     name: ${{parameters.buildAgent}}
     demands: vstest
+  variables:
+  - group: MixedReality-WebRTC-ArtifactConfig
   steps:
   - checkout: self
 
@@ -48,8 +53,8 @@ jobs:
     displayName: 'Download C++ WebRTC lib (Win32-x64-Release)'
     inputs:
       buildType: specific
-      project: '8115054f-1c74-4928-a9ab-de4769e7d6ae'
-      pipeline: 40615
+      project: $(ArtifactConfig.Project)
+      definition: $(ArtifactConfig.CppDefinitionId)
       artifactName: 'Microsoft.MixedReality.WebRTC.Native_Win32-x64-Release'
       targetPath: '$(Build.SourcesDirectory)/bin/Win32/x64/Release'
     enabled: false

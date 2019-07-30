@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 # MixedReality-WebRTC build pipeline for CI
 # Build the UWP wrappers for the core WebRTC implementation
 
@@ -9,7 +12,7 @@ trigger: none
 pr: none
 
 # Give a unique name to the build each time it runs
-name: core-uwp-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+name: ci-core-uwp-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 jobs:
 - template: templates/jobs-libwebrtc.yaml

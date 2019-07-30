@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="../api.cpp" />
+    <ClCompile Include="../audio_frame_observer.cpp" />
+    <ClCompile Include="../data_channel_observer.cpp" />
+    <ClCompile Include="../pch.cpp" />
+    <ClCompile Include="../peer_connection.cpp" />
+    <ClCompile Include="../video_frame_observer.cpp" />
+    <ClCompile Include="../sdp_utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="../../include/api.h" />
+    <ClInclude Include="../audio_frame_observer.h" />
+    <ClInclude Include="../callback.h" />
+    <ClInclude Include="../data_channel_observer.h" />
+    <ClInclude Include="../pch.h" />
+    <ClInclude Include="../peer_connection.h" />
+    <ClInclude Include="../targetver.h" />
+    <ClInclude Include="../video_frame_observer.h" />
+    <ClInclude Include="../sdp_utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../../docs/design.md" />
+    <None Include="../exports.def" />
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

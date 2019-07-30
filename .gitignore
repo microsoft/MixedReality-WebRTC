@@ -20,7 +20,7 @@ tests/Microsoft.MixedReality.WebRTC.Tests/obj
 # UWP packages
 /examples/TestAppUwp/AppPackages
 
-# Nuget C++ packages
+# Nuget packages
 /packages
 
 # Unity artifacts
@@ -33,9 +33,9 @@ tests/Microsoft.MixedReality.WebRTC.Tests/obj
 /libs/Microsoft.MixedReality.WebRTC.Unity/*.csproj
 /libs/Microsoft.MixedReality.WebRTC.Unity/*.sln
 
-# Unity packages
-/libs/Microsoft.MixedReality.WebRTC.Unity/Assets/TextMesh Pro**
-/libs/Microsoft.MixedReality.WebRTC.Unity/Assets/MixedRealityToolkit**
+# Unity third-party dependencies
+/libs/Microsoft.MixedReality.WebRTC.Unity/Assets/MixedRealityToolkit*
+/libs/Microsoft.MixedReality.WebRTC.Unity/Assets/TextMesh Pro*
 
 # Certificates
 *.pfx
