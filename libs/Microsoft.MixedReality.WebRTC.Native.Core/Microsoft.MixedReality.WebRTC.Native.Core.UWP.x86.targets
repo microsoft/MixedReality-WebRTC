@@ -6,7 +6,7 @@
         </Reference>
         <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-x86\native\Org.WebRtc.dll" />
     </ItemGroup>
-    <ItemDefinitionGroup Condition="'$(Platform)' == 'x86'">
+    <ItemDefinitionGroup Condition="'$(Platform)' == 'Win32'">
         <Link>
             <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)..\..\lib\native\lib\uap10.0\x86\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
         </Link>
