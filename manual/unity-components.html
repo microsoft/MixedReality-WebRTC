@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Unity components | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Unity components | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.43.2.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="unity-components">Unity components</h1>
+
+<p>The Unity components provide some idiomatic wrapping over the C# MixedReality-WebRTC library.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Component</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PeerConnection</td>
+<td>Encapsulates a single peer-to-peer connection to a remote peer</td>
+</tr>
+<tr>
+<td>Signaler</td>
+<td>Abstract base class of components which manage the signaling messages to allow the peer connection to establish</td>
+</tr>
+<tr>
+<td>NodeDssSignaler</td>
+<td>Simple testing / debugging Signaler implementation component based on <a href="https://github.com/bengreenier/node-dss">node-dss</a></td>
+</tr>
+<tr>
+<td>VideoSource</td>
+<td>Component providing a hook to the local and remote video tracks of a peer connection</td>
+</tr>
+<tr>
+<td>VideoTrackPlayer</td>
+<td>Component bridging a Unity <a href="https://docs.unity3d.com/ScriptReference/MeshRenderer.html">MeshRenderer</a> with a video track from a VideoSource component</td>
+</tr>
+</tbody>
+</table>
+<p><img src="unity-inspector.png" alt="Some Unity components as shown in the inspector window"></p>
+<p><img src="unity-class-diagram.png" alt="Class diagram of the Unity components and their interaction with the underlying peer connection"></p>
+<h2 id="components-by-feature-area">Components by feature area</h2>
+<h3 id="connection">Connection</h3>
+<p>The most important component is <code>Microsoft.MixedReality.WebRTC.Unity.PeerConnection</code> which encapsulate the connection to a single remote peer. The peer connection works in coordination with a <code>Signaler</code> component, for example <code>Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler</code>, which handles the message transport for the session establishment.</p>
+<h3 id="video">Video</h3>
+<p>The entry point for video tracks is the <code>VideoSource</code> component, which is associated with a given <code>PeerConnection</code> and handles its video-related signals. The video source in turn makes use of one or two <code>VideoTrackPlayer</code> to render the content of the local and remote video tracks if needed, although this is optional.</p>
+<p>Video frames are provided by the underlying <code>WebRTC.PeerConnection</code> to the <code>VideoSource</code> via its frame events. The video source then fills a <code>VideoFrameQueue</code> for each video track player associated with it. The player use that shared queue to read back the frame and display it using a custom shader.</p>
+<h3 id="audio">Audio</h3>
+<p>Todo...</p>
+<h2 id="list-of-components">List of components</h2>
+<h3 id="microsoftmixedrealitywebrtcunitypeerconnection"><code>Microsoft.MixedReality.WebRTC.Unity.PeerConnection</code></h3>
+<p>This component abstracts a WebRTC peer connection and encapsulates the lower level <code>Microsoft.MixedReality.WebRTC.PeerConnection</code> object from the C# library. This is the main entry point for establishing a connection. It contains the list of ICE servers (<a href="https://tools.ietf.org/html/rfc5245">Interactive Connectivity Establishment</a>) used to punch through NAT, as well as some key events like <code>OnInitialized</code> and <code>OnShutdown</code> which mark the beginning and end of the connection from the point of view of the user.</p>
+<h3 id="microsoftmixedrealitywebrtcunitysignaler"><code>Microsoft.MixedReality.WebRTC.Unity.Signaler</code></h3>
+<p>This abstract base component is used by the peer connection to establish a connection with a remote peer. The peer connection needs one concrete implementation derived from this class to be specified in its <code>Signaler</code> property.</p>
+<h3 id="microsoftmixedrealitywebrtcunitynodedsssignaler"><code>Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler</code></h3>
+<p>THIS SHOULD NOT BE USED FOR PRODUCTION.</p>
+<p>This components is used for debugging and testing as a concrete implementation of a <code>Signaler</code> component. It is based on the <a href="https://github.com/bengreenier/node-dss">node-dss</a> protocol and NodeJS service. It is very simple and helps developers starting, but lacks many features.</p>
+<h3 id="microsoftmixedrealitywebrtcunityvideosource"><code>Microsoft.MixedReality.WebRTC.Unity.VideoSource</code></h3>
+<p>This component controls sending the local video track through the peer connection, and handles receiving a remote video track.</p>
+<ul>
+<li>For the local video, it controls whether or not a track is added to the WebRTC stream, and optionally provides a <code>VideoTrackPlayer</code> with frames to render that local video.</li>
+<li>For the remote video, it controls whether or not to handle the received feed and send it to a <code>VideoTrackPlayer</code> for rendering. Note that the local peer cannot control whether or not the remote peer sends a remote track; it can only ignore it if not interested (and ideally should probably tell the remote peer that it should stop sending it, although this is application specific logic).</li>
+</ul>
+<h3 id="microsoftmixedrealitywebrtcunityvideotrackplayer"><code>Microsoft.MixedReality.WebRTC.Unity.VideoTrackPlayer</code></h3>
+<p>This components bridges a raw video frame feed from a <code>VideoSource</code> to a Unity <code>MeshRenderer</code> for display. The component can limit the framerate of the video playback, and optionally display some statistics about it. The associated <code>MeshRenderer</code> on the same <code>GameObject</code> typically uses a <code>YUVFeedMaterial</code> to display the YUV-encoded feed uploaded to the main texture of that material by the video track player component.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/manual/unity-components.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

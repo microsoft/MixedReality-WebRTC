@@ -1,0 +1,269 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Building from sources | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Building from sources | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.43.2.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="building-from-sources">Building from sources</h1>
+
+<p>This document describes how to build the entire project from sources, including the so-called <em>Core</em> dependencies:</p>
+<ul>
+<li>The low-level WebRTC C++ implementation <code>webrtc.lib</code> from Google.</li>
+<li>The UWP WinRT wrapper <code>Org.WebRtc.winmd</code> from the Microsoft WebRTC UWP team.</li>
+</ul>
+<p>The dependencies require some heavy setup and take time to compile, therefore <strong>it is strongly recommended to use the prebuilt binaries shipped as NuGet packages</strong> instead of trying to build those from source:</p>
+<table>
+<thead>
+<tr>
+<th>NuGet Package</th>
+<th>Architecture</th>
+<th style="text-align: center;"><code>webrtc.lib</code></th>
+<th style="text-align: center;"><code>Org.WebRtc.winmd</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Core.Native.Desktop/"><code>Microsoft.MixedReality.WebRTC.Core.Native.Desktop</code></a></td>
+<td>x86, x64</td>
+<td style="text-align: center;">✔</td>
+<td style="text-align: center;">❌</td>
+</tr>
+<tr>
+<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Core.Native.UWP.x86/"><code>Microsoft.MixedReality.WebRTC.Core.Native.UWP.x86</code></a></td>
+<td>x86</td>
+<td style="text-align: center;">✔</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Core.Native.UWP.x64/"><code>Microsoft.MixedReality.WebRTC.Core.Native.UWP.x64</code></a></td>
+<td>x64</td>
+<td style="text-align: center;">✔</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Core.Native.UWP.ARM/"><code>Microsoft.MixedReality.WebRTC.Core.Native.UWP.ARM</code></a></td>
+<td>ARM (32-bit)</td>
+<td style="text-align: center;">✔</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Core.Native.UWP/"><code>Microsoft.MixedReality.WebRTC.Core.Native.UWP</code></a><em>(*)</em></td>
+<td>x86, x64, ARM</td>
+<td style="text-align: center;">✔</td>
+<td style="text-align: center;">✔</td>
+</tr>
+</tbody>
+</table>
+<p><em>(*) This is a meta-package referencing all the architecture-dependent ones for UWP for convenience.</em></p>
+<p>In general <strong>most users will want to follow <a href="../README.md">the steps in the readme</a> instead of the ones below</strong> if there is no need to modify the input dependencies.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="general">General</h3>
+<ul>
+<li><p>Python 2.7 must be installed as the default interpreter. That is, <code>python --version</code> must return a Python version equal to 2.7. It is strongly recommended to get a patch version &gt;= 15, that is <strong>Python 2.7.15+</strong>, as some users reported to the WebRTC UWP team some spurious failures with earlier versions. Python 3.x does <strong>not</strong> work and should not be the default interpreter.</p>
+</li>
+<li><p>A recent version of Perl is needed for some builds. On Windows you can install for example <a href="http://strawberryperl.com/">Strawberry Perl</a>, or any other equivalent distribution you want.</p>
+</li>
+</ul>
+<h3 id="core-webrtc">Core WebRTC</h3>
+<p><em>Core WebRTC</em> refers to the C++ implementation of WebRTC maintained by Google and used by this project, whose source repository is <a href="https://webrtc.googlesource.com/src">https://webrtc.googlesource.com/src</a>.</p>
+<ul>
+<li><p><a href="http://dev.windows.com/downloads"><strong>Visual Studio 2017</strong></a> is required to compile the core WebRTC implementation from Google. Having the MSVC v141 toolchain installed inside another version of Visual Studio is unfortunately not enough (see <a href="https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/175">this issue</a>), the actual IDE needs to be installed for the detection script to work. Selecting the <strong>C++ Workload</strong> alone is enough. If compiling for ARM or ARM64 architecture though, check the <strong>Visual C++ compilers and libraries for ARM(64)</strong> optional individual component.</p>
+</li>
+<li><p>The <strong>Windows SDK 10.0.17134</strong> (also called 1803, or April 2018) is required to compile the Google WebRTC core implementation (<a href="https://developer.microsoft.com/en-us/windows/downloads/sdk-archive">archive download</a>).</p>
+</li>
+<li><p>As mentioned on the README of WebRTC UWP, the <strong>Debugging Tools for Windows</strong> are required:</p>
+<blockquote>
+<p>When installing the SDK, include the feature <strong>Debugging Tools for Windows</strong> which is required by the preparation scripts. Note that the SDK installed as part of Visual Studio does not include this feature.</p>
+</blockquote>
+<p>If the SDK is already installed, this optional feature can be added with <strong>Add or Remove Programs</strong> &gt; <strong>Windows Software Development Kit - Windows 10.0.x</strong> &gt; <strong>Modify</strong> &gt; Select <strong>Change</strong> then <strong>Next</strong> button &gt; Check <strong>Debugging Tools for Windows</strong>.</p>
+</li>
+</ul>
+<h3 id="core-webrtc-uwp-wrappers">Core WebRTC UWP wrappers</h3>
+<p>The <em>UWP wrappers</em> refer to the set of wrappers and other UWP-specific additional code made available by the WebRTC UWP team (Microsoft) on top of the core implementation, to allow access to the core WebRTC API.</p>
+<ul>
+<li><p>The <strong>Windows SDK 10.0.17763</strong> (also called 1809, or October 2018) is required to compile the UWP wrappers provided by the WebRTC UWP team (<a href="https://developer.microsoft.com/en-us/windows/downloads/sdk-archive">archive download</a>), with the <strong>Debugging Tools for Windows</strong> as above.</p>
+</li>
+<li><p>The UWP wrappers also require the v141 platform toolset for UWP, either from the <strong>Universal Windows Platform development</strong> workload in Visual Studio 2017, or from the optional component <strong>C++ (v141) Universal Windows Platform tools</strong> in <a href="http://dev.windows.com/downloads"><strong>Visual Studio 2019</strong></a>.</p>
+</li>
+<li><p>The UWP wrappers use C++/WinRT, so the <a href="https://marketplace.visualstudio.com/items?itemName=CppWinRTTeam.cppwinrt101804264"><strong>C++/WinRT Visual Studio extension</strong></a> must be installed from the marketplace.</p>
+</li>
+</ul>
+<h3 id="mixedreality-webrtc-c-library">MixedReality-WebRTC C++ library</h3>
+<ul>
+<li>The <strong>MSVC v142 - VS 2019 C++ x64/x86 build tools</strong> toolchain is required to build the C++17 library of MixedReality-WebRTC. This is installed by default with the <strong>Desktop development with C++</strong> workload on Visual Studio 2019.</li>
+</ul>
+<p><em>Note</em> - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually (see #14).</p>
+<h3 id="unity-integration">Unity integration</h3>
+<p>The Unity integration has been tested on <a href="https://unity3d.com/get-unity/download">Unity</a> <strong>2018.3.x</strong> and <strong>2019.1.x</strong>. Versions earlier than 2018.3.x may work but are not officially supported.</p>
+<h2 id="build-steps">Build steps</h2>
+<h3 id="check-out-the-repository-and-its-dependencies">Check out the repository and its dependencies</h3>
+<pre><code class="lang-sh">git clone --recursive https://github.com/microsoft/MixedReality-WebRTC.git
+</code></pre>
+<p>Note that <strong>this may take some time (&gt; 5 minutes)</strong> due to the large number of submodules in <a href="https://github.com/webrtc-uwp/webrtc-uwp-sdk">the WebRTC UWP SDK repository</a> this repository depends on.</p>
+<h3 id="build-the-webrtc-uwp-sdk-libraries">Build the WebRTC UWP SDK libraries</h3>
+<h4 id="using-the-build-script">Using the build script</h4>
+<p>In order to simplify building, a PowerShell <strong>build script</strong> is available. The prerequisites still need to be installed manually before running it.</p>
+<p>To use the script, simply run for example:</p>
+<pre><code class="lang-sh">cd tools/build/
+build.ps1 -BuildConfig Debug -BuildArch x64 -BuildPlatform Win32
+</code></pre>
+<p><em>Note</em> - Currently the build script assumes it runs from <code>tools/build/</code> only. It will fail if invoked from another directory.</p>
+<p>Valid parameter values are:</p>
+<ul>
+<li><strong>BuildConfig</strong> : Debug | Release</li>
+<li><strong>BuildArch</strong> : x86 | x64 | ARM | ARM64</li>
+<li><strong>BuildPlatform</strong> : Win32 | UWP</li>
+</ul>
+<p><em>Note</em> - ARM and ARM64 are only valid for the UWP platform.</p>
+<p><em>Note</em> - ARM64 is not yet available (see <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/13">#13</a>).</p>
+<p>The manual steps are details below and can be skipped if running the build script.</p>
+<h4 id="manually">Manually</h4>
+<p>The WebRTC UWP project has <a href="https://github.com/webrtc-uwp/webrtc-uwp-sdk/blob/master/README.md">specific requirements</a>. In particular it needs Python 2.7.15+ installed <strong>as default</strong>, that is calling <code>python</code> from a shell without specifying a path launches that Python 2.7.15+ version.</p>
+<p><em>Note</em> - Currently the Azure hosted agents with VS 2017 have Python 2.7.14 installed, but this is discouraged by the WebRTC UWP team as some spurious build errors might occur. The new VS 2019 build agents have Python 2.7.16 installed.</p>
+<p><em>Note</em> - Currently the <code>libyuv</code> external dependency is incorrectly compiled with Clang instead of MSVC on ARM builds. This was an attempt to benefit from inline assembly, but this produces link errors (see <a href="https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157">this issue</a>). Until this is fixed, a patch is available under <code>tools\patches\libyuv_win_msvc_157.patch</code> which is applied by <code>build.ps1</code> but needs to be applied manually if <code>build.ps1</code> is not used. More generally <strong>all patches under <code>tools\patches</code> need to be manually applied</strong>.</p>
+<p>For Windows 10 Desktop support (also called &quot;Win32&quot;):</p>
+<ul>
+<li>Open the <strong><code>WebRtc.Win32.sln</code></strong> Visual Studio solution located in <code>external\webrtc-uwp-sdk\webrtc\windows\solution\</code></li>
+<li>In the menu bar, select the relevant solution platform and solution configuration. For the Unity editor, the <strong>x64</strong> binaries are required.</li>
+<li><strong>Build the <code>WebRtc.Win32.Native.Builder</code> project alone</strong>, which generates some files needed by some of the other projects in the solution, by right-clicking on that project &gt; <strong>Build</strong>. The other projects are samples and are not needed.</li>
+</ul>
+<p>For UWP support:</p>
+<ul>
+<li>Open the <strong><code>WebRtc.Universal.sln</code></strong> Visual Studio solution located in <code>external\webrtc-uwp-sdk\webrtc\windows\solution\</code></li>
+<li>In the menu bar, select the relevant solution platform and solution configuration. For HoloLens, the <strong>x86</strong> binaries are required. For HoloLens 2, the <strong>ARM</strong> binaries are required (ARM64 is not supported yet, see <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/13">#13</a>).</li>
+<li><strong>Build first the <code>WebRtc.UWP.Native.Builder</code> project alone</strong>, which generates some files needed by some of the other projects in the solution, by right-clicking on that project &gt; <strong>Build</strong></li>
+<li>Next build the <code>Org.WebRtc</code> and <code>Org.WebRtc.WrapperGlue</code> projects. The other projects samples and are not needed.</li>
+</ul>
+<h3 id="build-the-mixedreality-webrtc-libraries">Build the MixedReality-WebRTC libraries</h3>
+<ul>
+<li>Open the <code>Microsoft.MixedReality.WebRTC.sln</code> Visual Studio solution located at the root of the repository.</li>
+<li>Build the solution with F7 or <strong>Build &gt; Build Solution</strong></li>
+</ul>
+<p>On successful build, the binaries will be generated in a sub-directory under <code>bin/</code>, and the relevant DLLs will be copied by a post-build script to <code>libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\</code> for Unity to consume them.</p>
+<p>The <code>Microsoft.MixedReality.WebRTC.sln</code> Visual Studio solution contains several projects:</p>
+<ul>
+<li>The native C++ library, which can be compiled:
+<ul>
+<li>for Windows Desktop with the <code>Microsoft.MixedReality.WebRTC.Native.Win32</code> project</li>
+<li>for UWP with the <code>Microsoft.MixedReality.WebRTC.Native.UWP</code> project</li>
+</ul>
+</li>
+<li>The C# library project <code>Microsoft.MixedReality.WebRTC</code></li>
+<li>A C# unit tests project <code>Microsoft.MixedReality.WebRTC.Tests</code></li>
+<li>A UWP C# sample app project <code>Microsoft.MixedReality.WebRTC.TestAppUWP</code> based on WPF and XAML</li>
+</ul>
+<h3 id="optionally-test-the-installation">Optionally test the installation</h3>
+<p>Test the install by <em>e.g.</em> opening the Unity project at <code>libs\Microsoft.MixedReality.WebRTC.Unity</code>, loading the <code>Assets\Microsoft.MixedReality.WebRTC\Unity.Examples\SimpleVideoChat</code> scene and pressing <strong>Play</strong>. After a few seconds (depending on the machine) the left media player should display the video feed from the local webcam. The Unity console should also display a message about the WebRTC library being initialized successfully.</p>
+<p>See the <a href="https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity.html">Hello, Unity World!</a> tutorial for more details.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/manual/building.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
