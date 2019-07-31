@@ -2,7 +2,7 @@
 uid: index
 title: Index
 ---
-# MixedReality-WebRTC 0.1 documentation
+# MixedReality-WebRTC 0.1 documentation (Coming soon!)
 
 ## User Manual
 
