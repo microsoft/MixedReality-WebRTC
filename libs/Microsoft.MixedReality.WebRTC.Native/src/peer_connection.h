@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "base/memory/ref_counted.h"
-
 #include "audio_frame_observer.h"
 #include "callback.h"
 #include "data_channel_observer.h"
