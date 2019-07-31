@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemDefinitionGroup Condition="'$(Platform)' == 'x64'">
+        <Link>
+            <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)..\..\lib\native\lib\uap10.0\x64\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+        </Link>
+    </ItemDefinitionGroup>
+</Project>
