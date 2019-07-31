@@ -6,11 +6,11 @@ title: Index
 
 ## User Manual
 
-- Getting started
+- Getting started (coming soon)
   - Download
   - Prerequisites
   - Building
-- C# library
+- C# library (coming soon)
   - Feature Overview
   - Signaling
   - Audio
@@ -20,6 +20,7 @@ title: Index
     - Streaming
     - Rendering
 - Unity integration
+  - For now: <a href="https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity.html">Start here</a>
   - Feature Overview
   - Tutorial
   - Samples
