@@ -33,7 +33,7 @@ The current up-to-date branch with latest developments is the `master` branch. I
 The official documentation is hosted at https://microsoft.github.io/MixedReality-WebRTC/.
 
 - The [User Manual](https://microsoft.github.io/MixedReality-WebRTC/manual/) contains a general overview and some tutorials.
-  - The [Hello, Unity world!](docs/manual/helloworld-unity.md) tutorial introduces the Unity integration by building a simple chat client.
+  - The [Hello, Unity world!](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity.md) tutorial introduces the Unity integration by building a simple chat client.
   - The Hello, C# world! tutorial (under construction) introduces the C# API.
 - An [API reference](https://microsoft.github.io/MixedReality-WebRTC/api/) is also available for the C# library and the Unity integration.
 
@@ -95,52 +95,7 @@ _Note_ - Currently due to CI limitations some projects are downgraded to VS 2017
 
 ## Building MixedReality-WebRTC
 
-The MixedReality-WebRTC projects consume their input dependencies as NuGet packages for simplicity, because those are complex to build and take a prohibitive amount of time. The steps below are recommended for most users who need to modify the source code of MixedReality-WebRTC without the need to change the input dependencies.
-
-### Prerequisites
-
-This section describes the prerequisites to build the MixedReality-WebRTC solution using the prebuilt binary input dependencies (NuGet packages). The solution is available at the root of the repository : [`Microsoft.MixedReality.WebRTC.sln`](https://github.com/microsoft/MixedReality-WebRTC/blob/master/Microsoft.MixedReality.WebRTC.sln).
-
-- The NuGet packages for the input dependencies require in total approximately **10 GB of disk space**. Those dependencies contain unstripped `.lib` files much larger than the final compiled DLL libraries, for both the Debug and Release build configurations.
-
-- Due to the Windows path length limit, it is recommended to **clone the source repository close to the root**, _e.g._ `C:\mr-webrtc\` or similar, as the recursive external dependencies create a deep hierarchy which may otherwise produce paths beyond the OS limit.
-
-- **Visual Studio 2019** with the following features:
-
-  - The **MSVC v142 - VS 2019 C++ x64/x86 build tools** toolchain is required to build the C++17 library of MixedReality-WebRTC. This is installed by default with the **Desktop development with C++** workload on Visual Studio 2019.
-
-  - The C# library requires a .NET Standard 2.0 compiler, like the Roslyn compiler available as part of Visual Studio when installing the **.NET desktop development** workload.
-
-  - The UWP libraries and projects require UWP support from the compiler, available as part of Visual Studio when installing the **Universal Windows Platform development** workload.
-
-- The Unity integration has been tested on [Unity](https://unity3d.com/get-unity/download) **2018.3.x** and **2019.1.x**. Versions earlier than 2018.3.x may work but are not officially supported.
-
-### Building
-
-1. Check out the repository and its dependencies recursively, preferably close to the root (see prerequisites):
-
-   ```cmd
-   git clone --recursive https://github.com/microsoft/MixedReality-WebRTC.git C:\mr-webrtc
-   ```
-
-   Note that **this may take some time (> 5 minutes)** due to the large number of submodules in [the WebRTC UWP SDK repository](https://github.com/webrtc-uwp/webrtc-uwp-sdk) this repository depends on.
-
-2. Build the MixedReality-WebRTC libraries
-
-   - Open the `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution located at the root of the repository.
-   - Build the solution with F7 or **Build > Build Solution**
-
-   On successful build, the binaries will be generated in a sub-directory under `bin/`, and the relevant DLLs will be copied by a post-build script to `libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\` for Unity to consume them.
-
-   _Note_ - **Be sure to build the solution before opening any Unity integration project.** As part of the build, the libraries are copied to the `Plugins` directory of the Unity integration. There are already some associated `.meta` files, which have been committed to the repository, to inform Unity of the platform of each DLL. If the Unity project is opened first, before the DLLs are present, Unity will assume those `.meta` files are stale and will delete them, and then later will recreate some with a different default config once the DLLs are copied. This leads to errors about modules with duplicate names. See the [Importing MixedReality-WebRTC](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity-importwebrtc.md) chapter of the "Hello, Unity World!" tutorial for more details.
-
-3. Optionally test the installation
-
-   Test the install by _e.g._ opening the Unity project at `libs\Microsoft.MixedReality.WebRTC.Unity`, loading the `Assets\Microsoft.MixedReality.WebRTC\Unity.Examples\SimpleVideoChat` scene and pressing **Play**. After a few seconds (depending on the machine) the left media player should display the video feed from the local webcam. The Unity console should also display a message about the WebRTC library being initialized successfully.
-
-   See the [Hello, Unity World!](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity.html) tutorial for more details.
-
-_Note_ - Although this is **strongly discouraged** for most users due to its complexity, a detailed step-by-step tutorial on building from source **including** the _Core_ input dependencies is also available, see [Building from sources](building.md).
+See the user manual section on [Building from sources](https://microsoft.github.io/MixedReality-WebRTC/manual/building.html).
 
 ## Known Issues
 

@@ -1,6 +1,6 @@
 # Introduction
 
-The MixedReality-WebRTC project is a collection of components to help mixed reality app developers to integrate peer-to-peer audio and video streaming into their application and improve their collaborative experience. These components are based on [the WebRTC protocol](https://webrtc.org/) for Real-Time Communication (RTC), which is supported by most modern web browsers.
+The MixedReality-WebRTC project is a collection of components to help mixed reality app developers to integrate peer-to-peer audio, video, and data real-time communication into their application and improve their collaborative experience. These components are based on [the WebRTC protocol](https://webrtc.org/) for Real-Time Communication (RTC), which is supported by most modern web browsers.
 
 ## Project scope
 
