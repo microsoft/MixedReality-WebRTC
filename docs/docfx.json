@@ -9,7 +9,15 @@
         },
         {
           "files": [ "**/*.cs" ],
-          "src": "../libs/Microsoft.MixedReality.WebRTC.Unity/Assets"
+          "src": "../libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Microsoft.MixedReality.WebRTC.Unity"
+        },
+        {
+          "files": [ "**/*.cs" ],
+          "src": "../libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Microsoft.MixedReality.WebRTC.Unity.Editor"
+        },
+        {
+          "files": [ "**/*.cs" ],
+          "src": "../libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Microsoft.MixedReality.WebRTC.Unity.Examples"
         }
       ],
       "dest": "api"
