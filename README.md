@@ -14,7 +14,7 @@ MixedReality-WebRTC is a collection of libraries to help mixed reality app devel
 - Provides an abstracted **signaling interface** to easily switch implementation
 - Exposes an **API for C++ and C#** to integrate into existing apps
 - Provides a set of **Unity3D components** for rapid prototyping and integration
-- Supports Microsoft **HoloLens** (x86) and Microsoft **HoloLens 2** (ARM)
+- Includes support for Microsoft **HoloLens** (x86) and Microsoft **HoloLens 2** (ARM)
 - Allows easy use of **[Mixed Reality Capture (MRC)](https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture)** to stream the view point of the user for multi-device experiences
 
 MixedReality-WebRTC is part of the collection of repositories developed and maintained by the [Mixed Reality Sharing team](https://github.com/orgs/microsoft/teams/mixed-reality-sharing).
