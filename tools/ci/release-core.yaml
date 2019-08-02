@@ -96,104 +96,293 @@ stages:
   displayName: Create signed NuGet packages
   dependsOn: build
   jobs:
+
+  # Desktop webrtc.lib : Microsoft.MixedReality.WebRTC.Native.Core.Desktop.*
   - template: templates/jobs-libwebrtc-sign.yaml
     parameters:
-      jobName: 'desktop'
-      nugetPackage: 'Desktop'
+      jobName: 'desktop_x86_debug'
+      nugetPackageType: 'libwebrtc'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug'
+      buildPlatform: 'Desktop'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+      downloadPath: 'win10/x86/debug'
       artifactSignConfig: ''
-      nugetSignConfig: 'signconfig/nugetCoreDesktopSignConfig.xml'
-      nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.Desktop.nuspec'
+      nugetSignConfig: 'signconfig/nugetCoreDesktopX86DebugSignConfig.xml'
   - template: templates/jobs-libwebrtc-sign.yaml
     parameters:
-      jobName: 'uwp'
-      nugetPackage: 'UWP'
+      jobName: 'desktop_x86_release'
+      nugetPackageType: 'libwebrtc'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release'
+      buildPlatform: 'Desktop'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+      downloadPath: 'win10/x86/release'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreDesktopX86ReleaseSignConfig.xml'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'desktop_x64_debug'
+      nugetPackageType: 'libwebrtc'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug'
+      buildPlatform: 'Desktop'
+      buildArch: 'x64'
+      buildConfig: 'Debug'
+      downloadPath: 'win10/x64/debug'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreDesktopX64DebugSignConfig.xml'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'desktop_x64_release'
+      nugetPackageType: 'libwebrtc'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release'
+      buildPlatform: 'Desktop'
+      buildArch: 'x64'
+      buildConfig: 'Release'
+      downloadPath: 'win10/xx6486/release'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreDesktopX64ReleaseSignConfig.xml'
+
+  # UWP webrtc.lib : Microsoft.MixedReality.WebRTC.Native.Core.UWP.*
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'uwp_x86_debug'
+      nugetPackageType: 'libwebrtc'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.Debug'
+      buildPlatform: 'UWP'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+      downloadPath: 'uap10.0/x86/debug'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreUwpX86DebugSignConfig.xml'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'uwp_x86_release'
+      nugetPackageType: 'libwebrtc'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.Release'
+      buildPlatform: 'UWP'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+      downloadPath: 'uap10.0/x86/release'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreUwpX86ReleaseSignConfig.xml'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'uwp_x64_debug'
+      nugetPackageType: 'libwebrtc'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.Debug'
+      buildPlatform: 'UWP'
+      buildArch: 'x64'
+      buildConfig: 'Debug'
+      downloadPath: 'uap10.0/x64/debug'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreUwpX64DebugSignConfig.xml'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'uwp_x64_release'
+      nugetPackageType: 'libwebrtc'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.Release'
+      buildPlatform: 'UWP'
+      buildArch: 'x64'
+      buildConfig: 'Release'
+      downloadPath: 'uap10.0/x64/release'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreUwpX64ReleaseSignConfig.xml'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'uwp_arm_debug'
+      nugetPackageType: 'libwebrtc'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.Debug'
+      buildPlatform: 'UWP'
+      buildArch: 'ARM'
+      buildConfig: 'Debug'
+      downloadPath: 'uap10.0/arm/debug'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreUwpArmDebugSignConfig.xml'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'uwp_arm_release'
+      nugetPackageType: 'libwebrtc'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.Release'
+      buildPlatform: 'UWP'
+      buildArch: 'ARM'
+      buildConfig: 'Release'
+      downloadPath: 'uap10.0/arm/release'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreUwpArmReleaseSignConfig.xml'
+  # - template: templates/jobs-libwebrtc-sign.yaml
+  #   parameters:
+  #     jobName: 'uwp_arm64_debug'
+  #     nugetPackageType: 'libwebrtc'
+  #     packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM64.Debug'
+  #     buildPlatform: 'UWP'
+  #     buildArch: 'ARM64'
+  #     buildConfig: 'Debug'
+  #     downloadPath: 'uap10.0/arm64/debug'
+  #     artifactSignConfig: ''
+  #     nugetSignConfig: 'signconfig/nugetCoreUwpArm64DebugSignConfig.xml'
+  # - template: templates/jobs-libwebrtc-sign.yaml
+  #   parameters:
+  #     jobName: 'uwp_arm64_release'
+  #     nugetPackageType: 'libwebrtc'
+  #     packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM64.Release'
+  #     buildPlatform: 'UWP'
+  #     buildArch: 'ARM64'
+  #     buildConfig: 'Release'
+  #     downloadPath: 'uap10.0/arm64/release'
+  #     artifactSignConfig: ''
+  #     nugetSignConfig: 'signconfig/nugetCoreUwpArm64ReleaseSignConfig.xml'
+
+  # UWP headers inside meta-package : Microsoft.MixedReality.WebRTC.Native.Core.UWP
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'winrt_headers'
+      nugetPackageType: 'winrtheaders'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.UWP'
       artifactSignConfig: ''
       nugetSignConfig: 'signconfig/nugetCoreUwpSignConfig.xml'
-      nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.UWP.nuspec'
+
+  # WinRT wrappers : Microsoft.MixedReality.WebRTC.Native.Core.WinRT.*
   - template: templates/jobs-libwebrtc-sign.yaml
     parameters:
-      jobName: 'uwp_x86'
-      nugetPackage: 'UWP.x86'
+      jobName: 'winrt_x86_debug'
+      nugetPackageType: 'winrtwrappers'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x86.Debug'
       buildArch: 'x86'
-      artifactSignConfig: 'signconfig/artifactsCoreUwpX86SignConfig.xml'
-      nugetSignConfig: 'signconfig/nugetCoreUwpX86SignConfig.xml'
-      nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.nuspec'
+      buildConfig: 'Debug'
+      downloadPath: 'win10-x86/debug'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreWinrtX86DebugSignConfig.xml'
   - template: templates/jobs-libwebrtc-sign.yaml
     parameters:
-      jobName: 'uwp_x64'
-      nugetPackage: 'UWP.x64'
+      jobName: 'winrt_x86_release'
+      nugetPackageType: 'winrtwrappers'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x86.Release'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+      downloadPath: 'win10-x86/release'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreWinrtX86ReleaseSignConfig.xml'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'winrt_x64_debug'
+      nugetPackageType: 'winrtwrappers'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x64.Debug'
       buildArch: 'x64'
-      artifactSignConfig: 'signconfig/artifactsCoreUwpX64SignConfig.xml'
-      nugetSignConfig: 'signconfig/nugetCoreUwpX64SignConfig.xml'
-      nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.nuspec'
+      buildConfig: 'Debug'
+      downloadPath: 'win10-x64/debug'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreWinrtX64DebugSignConfig.xml'
   - template: templates/jobs-libwebrtc-sign.yaml
     parameters:
-      jobName: 'uwp_arm'
-      nugetPackage: 'UWP.ARM'
+      jobName: 'winrt_x64_release'
+      nugetPackageType: 'winrtwrappers'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x64.Release'
+      buildArch: 'x64'
+      buildConfig: 'Release'
+      downloadPath: 'win10-x64/release'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreWinrtX64ReleaseSignConfig.xml'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'winrt_arm_debug'
+      nugetPackageType: 'winrtwrappers'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.WinRT.ARM.Debug'
       buildArch: 'ARM'
-      artifactSignConfig: 'signconfig/artifactsCoreUwpArmSignConfig.xml'
-      nugetSignConfig: 'signconfig/nugetCoreUwpArmSignConfig.xml'
-      nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.nuspec'
+      buildConfig: 'Debug'
+      downloadPath: 'win10-arm/debug'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreWinrtArmDebugSignConfig.xml'
+  - template: templates/jobs-libwebrtc-sign.yaml
+    parameters:
+      jobName: 'winrt_arm_release'
+      nugetPackageType: 'winrtwrappers'
+      packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.WinRT.ARM.Release'
+      buildArch: 'ARM'
+      buildConfig: 'Release'
+      downloadPath: 'win10-arm/release'
+      artifactSignConfig: ''
+      nugetSignConfig: 'signconfig/nugetCoreWinrtArmReleaseSignConfig.xml'
+  # - template: templates/jobs-libwebrtc-sign.yaml
+  #   parameters:
+  #     jobName: 'winrt_arm64_debug'
+  #     nugetPackageType: 'winrtwrappers'
+  #     packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.WinRT.ARM64.Debug'
+  #     buildArch: 'ARM64'
+  #     buildConfig: 'Debug'
+  #     downloadPath: 'win10-arm64/debug'
+  #     artifactSignConfig: ''
+  #     nugetSignConfig: 'signconfig/nugetCoreWinrtArm64DebugSignConfig.xml'
+  # - template: templates/jobs-libwebrtc-sign.yaml
+  #   parameters:
+  #     jobName: 'winrt_arm64_release'
+  #     nugetPackageType: 'winrtwrappers'
+  #     packageName: 'Microsoft.MixedReality.WebRTC.Native.Core.WinRT.ARM64.Release'
+  #     buildArch: 'ARM64'
+  #     buildConfig: 'Release'
+  #     downloadPath: 'win10-arm64/release'
+  #     artifactSignConfig: ''
+  #     nugetSignConfig: 'signconfig/nugetCoreWinrtArm64ReleaseSignConfig.xml'
 
-# Publish everything
-- stage: publish
-  displayName: Publish NuGet packages
-  dependsOn: pack
-  jobs:
+# # Publish everything
+# - stage: publish
+#   displayName: Publish NuGet packages
+#   dependsOn: pack
+#   jobs:
 
-  # Publish the NuGet packages to an internal private feed
-  - job: publish_internal
-    timeoutInMinutes: 120
-    pool:
-      name: 'Analog On-Prem'
-    steps:
+#   # Publish the NuGet packages to an internal private feed
+#   - job: publish_internal
+#     timeoutInMinutes: 120
+#     pool:
+#       name: 'Analog On-Prem'
+#     steps:
 
-    # Use NuGet 4.9.2
-    - task: NuGetToolInstaller@1
-      displayName: 'Use NuGet 4.9.2'
-      inputs:
-        versionSpec: 4.9.2
+#     # Use NuGet 4.9.2
+#     - task: NuGetToolInstaller@1
+#       displayName: 'Use NuGet 4.9.2'
+#       inputs:
+#         versionSpec: 4.9.2
 
-    # Download all NuGet packages
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download nuget_core_desktop'
-      inputs:
-        artifactName: 'nuget_core_desktop'
-        targetPath: '$(Build.ArtifactStagingDirectory)/signed'
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download nuget_core_uwp'
-      inputs:
-        artifactName: 'nuget_core_uwp'
-        targetPath: '$(Build.ArtifactStagingDirectory)/signed'
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download nuget_core_uwp_x86'
-      inputs:
-        artifactName: 'nuget_core_uwp_x86'
-        targetPath: '$(Build.ArtifactStagingDirectory)/signed'
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download nuget_core_uwp_x64'
-      inputs:
-        artifactName: 'nuget_core_uwp_x64'
-        targetPath: '$(Build.ArtifactStagingDirectory)/signed'
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download nuget_core_uwp_arm'
-      inputs:
-        artifactName: 'nuget_core_uwp_arm'
-        targetPath: '$(Build.ArtifactStagingDirectory)/signed'
+#     # Download all NuGet packages
+#     - task: DownloadPipelineArtifact@2
+#       displayName: 'Download nuget_core_desktop'
+#       inputs:
+#         artifactName: 'nuget_core_desktop'
+#         targetPath: '$(Build.ArtifactStagingDirectory)/signed'
+#     - task: DownloadPipelineArtifact@2
+#       displayName: 'Download nuget_core_uwp'
+#       inputs:
+#         artifactName: 'nuget_core_uwp'
+#         targetPath: '$(Build.ArtifactStagingDirectory)/signed'
+#     - task: DownloadPipelineArtifact@2
+#       displayName: 'Download nuget_core_uwp_x86'
+#       inputs:
+#         artifactName: 'nuget_core_uwp_x86'
+#         targetPath: '$(Build.ArtifactStagingDirectory)/signed'
+#     - task: DownloadPipelineArtifact@2
+#       displayName: 'Download nuget_core_uwp_x64'
+#       inputs:
+#         artifactName: 'nuget_core_uwp_x64'
+#         targetPath: '$(Build.ArtifactStagingDirectory)/signed'
+#     - task: DownloadPipelineArtifact@2
+#       displayName: 'Download nuget_core_uwp_arm'
+#       inputs:
+#         artifactName: 'nuget_core_uwp_arm'
+#         targetPath: '$(Build.ArtifactStagingDirectory)/signed'
 
-    # Push all packages
-    - powershell: |
-        Set-Location $(Join-Path "$(Build.ArtifactStagingDirectory)" "signed")
+#     # Push all packages
+#     - powershell: |
+#         Set-Location $(Join-Path "$(Build.ArtifactStagingDirectory)" "signed")
         
-        $files=Get-ChildItem | Where {$_.Name -like "*.nupkg" -and $_.Name -notlike "*symbols*"}
-        foreach($file in $files)
-        {
-            # Use 900 seconds timeout instead of default 300 due to size of packages
-            nuget push $file.Name -NonInteractive -Timeout 900 -Source $(InternalNuGetFeed) -ApiKey dummy -Verbosity Detailed
-            if (-not $?)
-            {
-                throw "Failed to push $($file.Name)"
-            }
-        }
-      displayName: 'NuGet push all Core*'
+#         $files=Get-ChildItem | Where {$_.Name -like "*.nupkg" -and $_.Name -notlike "*symbols*"}
+#         foreach($file in $files)
+#         {
+#             # Use 900 seconds timeout instead of default 300 due to size of packages
+#             nuget push $file.Name -NonInteractive -Timeout 900 -Source $(InternalNuGetFeed) -ApiKey dummy -Verbosity Detailed
+#             if (-not $?)
+#             {
+#                 throw "Failed to push $($file.Name)"
+#             }
+#         }
+#       displayName: 'NuGet push all Core*'
 

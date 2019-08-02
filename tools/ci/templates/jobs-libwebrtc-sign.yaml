@@ -5,11 +5,14 @@
 
 parameters:
   jobName: ''
-  nugetPackage: ''        # Desktop|UWP|UWP.x86|UWP.x64|UWP.ARM
-  buildArch: ''           # x86|x64|ARM|ARM64 - only for UWP.*
+  nugetPackageType: ''    # libwebrtc|winrtwrappers|winrtheaders
+  packageName: ''         # NuGet package ID, without version
+  buildPlatform: ''       # Desktop|UWP
+  buildArch: ''           # x86|x64|ARM|ARM64
+  buildConfig: ''         # Debug|Release
+  downloadPath: ''        # Path where to download artifacts inside the unsigned package
   artifactSignConfig: ''  # Optional sign config .xml file for files inside the NuGet package
   nugetSignConfig: ''     # Sign config .xml file for the NuGet package itself
-  nuspecFile: ''          # .nuspec file
 
 jobs:
 
@@ -18,6 +21,9 @@ jobs:
   timeoutInMinutes: 120
   pool:
     name: 'Package ES Lab E'
+  variables:
+    buildTriple: '${{parameters.buildPlatform}}.${{parameters.buildArch}}.${{parameters.buildConfig}}'
+    nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.${{parameters.buildPlatform}}.${{parameters.buildArch}}.${{parameters.buildConfig}}.nuspec'
 
   steps:
   - powershell: |
@@ -41,7 +47,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: ./computePackageVersion.ps1
-      arguments: '-SignConfigFile ${{parameters.signConfig}} -NuspecFile ${{parameters.nuspecFile}}'
+      arguments: '-SignConfigFile ${{parameters.signConfig}} -NuspecFile $(nuspecFile)'
 
   - task: PowerShell@2
     displayName: 'Download .targets files'
@@ -63,82 +69,38 @@ jobs:
   # Download artifacts built from first stage
   # This depends on the actual package being built
 
-  # Microsoft.MixedReality.WebRTC.Native.Core.Desktop
-  - ${{ if eq(variables['nugetPackage'], 'Desktop') }}:
+  # Microsoft.MixedReality.WebRTC.Native.Core.Desktop|UWP.*
+  - ${{ if eq(variables['nugetPackageType'], 'libwebrtc') }}:
     - task: DownloadPipelineArtifact@2
-      displayName: 'Download libwebrtc_Win32-x86-Debug'
+      displayName: 'Download libwebrtc_${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}'
       inputs:
         buildType: current
-        artifactName: 'libwebrtc_Win32-x86-Debug'
-        targetPath: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.Desktop/lib/native/lib/win10/x86/debug'
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download libwebrtc_Win32-x86-Release'
-      inputs:
-        buildType: current
-        artifactName: 'libwebrtc_Win32-x86-Release'
-        targetPath: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.Desktop/lib/native/lib/win10/x86/release'
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download libwebrtc_Win32-x64-Debug'
-      inputs:
-        buildType: current
-        artifactName: 'libwebrtc_Win32-x64-Debug'
-        targetPath: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.Desktop/lib/native/lib/win10/x64/debug'
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download libwebrtc_Win32-x64-Release'
-      inputs:
-        buildType: current
-        artifactName: 'libwebrtc_Win32-x64-Release'
-        targetPath: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.Desktop/lib/native/lib/win10/x64/release'
+        artifactName: 'libwebrtc_${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}'
+        targetPath: '$(Build.BinariesDirectory)/unsigned/${{parameters.packageName}}/lib/native/lib/${{parameters.downloadPath}}'
 
   # Microsoft.MixedReality.WebRTC.Native.Core.UWP
-  - ${{ if eq(variables['nugetPackage'], 'UWP') }}:
+  - ${{ if eq(variables['nugetPackageType'], 'winrtheaders') }}:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download WinRT headers'
       inputs:
         buildType: current
         artifactName: 'orgwebrtc_headers'
-        targetPath: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.UWP/lib/native/include/wrapper'
+        targetPath: '$(Build.BinariesDirectory)/unsigned/${{parameters.packageName}}/lib/native/include/wrapper'
 
-  # Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86
-  # Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64
-  # Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM
-  - ${{ if startsWith(variables['nugetPackage'], 'UWP.') }}:
+  # Microsoft.MixedReality.WebRTC.Native.Core.WinRT.*
+  - ${{ if eq(variables['nugetPackageType'], 'winrtwrappers') }}:
     - task: DownloadPipelineArtifact@2
-      displayName: 'Download libwebrtc_UWP-${{parameters.buildArch}}-Debug'
+      displayName: 'Download orgwebrtc_UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
       inputs:
         buildType: current
-        artifactName: 'libwebrtc_UWP-${{parameters.buildArch}}-Debug'
-        targetPath: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.UWP.${{parameters.buildArch}}/lib/native/lib/uap10.0/${{parameters.buildArch}}/debug'
+        artifactName: 'orgwebrtc_UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
+        targetPath: '$(Build.BinariesDirectory)/unsigned/${{parameters.packageName}}/${{parameters.downloadPath}}'
     - task: DownloadPipelineArtifact@2
-      displayName: 'Download libwebrtc_UWP-${{parameters.buildArch}}-Release'
+      displayName: 'Download orgwebrtc_glue_UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
       inputs:
         buildType: current
-        artifactName: 'libwebrtc_UWP-${{parameters.buildArch}}-Release'
-        targetPath: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.UWP.${{parameters.buildArch}}/lib/native/lib/uap10.0/${{parameters.buildArch}}/release'
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download orgwebrtc_UWP-${{parameters.buildArch}}-Debug'
-      inputs:
-        buildType: current
-        artifactName: 'orgwebrtc_UWP-${{parameters.buildArch}}-Debug'
-        targetPath: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.UWP.${{parameters.buildArch}}/win10-${{parameters.buildArch}}/debug'
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download orgwebrtc_UWP-${{parameters.buildArch}}-Release'
-      inputs:
-        buildType: current
-        artifactName: 'orgwebrtc_UWP-${{parameters.buildArch}}-Release'
-        targetPath: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.UWP.${{parameters.buildArch}}/win10-${{parameters.buildArch}}/release'
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download orgwebrtc_glue_UWP-${{parameters.buildArch}}-Debug'
-      inputs:
-        buildType: current
-        artifactName: 'orgwebrtc_glue_UWP-${{parameters.buildArch}}-Debug'
-        targetPath: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.UWP.${{parameters.buildArch}}/win10-${{parameters.buildArch}}/debug'
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download orgwebrtc_glue_UWP-${{parameters.buildArch}}-Release'
-      inputs:
-        buildType: current
-        artifactName: 'orgwebrtc_glue_UWP-${{parameters.buildArch}}-Release'
-        targetPath: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.UWP.${{parameters.buildArch}}/win10-${{parameters.buildArch}}/release'
+        artifactName: 'orgwebrtc_glue_UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
+        targetPath: '$(Build.BinariesDirectory)/unsigned/${{parameters.packageName}}/${{parameters.downloadPath}}'
 
   # Print the content of the unsigned/ folder for debugging
   - powershell: |
@@ -154,7 +116,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: ./copyUnsignedFiles.ps1
-      arguments: '-PackageName "Microsoft.MixedReality.WebRTC.Native.Core.${{parameters.nugetPackage}}"'
+      arguments: '-PackageName "${{parameters.packageName}}"'
       ignoreLASTEXITCODE: true
 
   # Run Component Detection before signing for compliance
@@ -168,11 +130,11 @@ jobs:
   # This is conditional because some packages don't have any signed files
   - ${{ if ne(variables['signConfig'], '') }}:
     - task: PkgESCodeSign@10
-      displayName: 'Package ES - CodeSign Core ${{parameters.nugetPackage}}'
+      displayName: 'Package ES - CodeSign artifacts'
       inputs:
         signConfigXml: ${{parameters.artifactSignConfig}}
-        inPathRoot: '$(Build.BinariesDirectory)/unsigned/Microsoft.MixedReality.WebRTC.Native.Core.${{parameters.nugetPackage}}.$(NuGetSourceVersion)'
-        outPathRoot: '$(Build.BinariesDirectory)/signed/Microsoft.MixedReality.WebRTC.Native.Core.${{parameters.nugetPackage}}.$(NuGetVersion)'
+        inPathRoot: '$(Build.BinariesDirectory)/unsigned/${{parameters.packageName}}'
+        outPathRoot: '$(Build.BinariesDirectory)/signed/${{parameters.packageName}}.$(NuGetVersion)'
 
   # Print the content of the signed/ folder for debugging
   - powershell: |
@@ -184,18 +146,18 @@ jobs:
 
   # Create the NuGet package
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
-    displayName: 'NuGet pack Core ${{parameters.nugetPackage}}'
+    displayName: 'NuGet pack Core'
     inputs:
       command: pack
-      packagesToPack: ${{parameters.nuspecFile}}
+      packagesToPack: $(nuspecFile)
       packDestination: '$(Build.ArtifactStagingDirectory)/unsigned'
       versioningScheme: byEnvVar
       versionEnvVar: NuGetVersion
-      basePath: '$(Build.BinariesDirectory)/signed/Microsoft.MixedReality.WebRTC.Native.Core.${{parameters.nugetPackage}}.$(NuGetVersion)'
+      basePath: '$(Build.BinariesDirectory)/signed/${{parameters.packageName}}.$(NuGetVersion)'
 
   # Sign the NuGet package itself
   - task: PkgESCodeSign@10
-    displayName: 'Package ES - CodeSign NuGet Core ${{parameters.nugetPackage}}'
+    displayName: 'Package ES - CodeSign NuGet package'
     inputs:
       signConfigXml: ${{parameters.nugetSignConfig}}
       inPathRoot: '$(Build.ArtifactStagingDirectory)/unsigned'
