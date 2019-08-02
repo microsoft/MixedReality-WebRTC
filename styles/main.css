@@ -7,16 +7,16 @@ article[data-uid="index"] h2 {
   padding-top: 30px;
 }
 
-article[data-uid="index"] li {
+article[data-uid="index"] li, article[data-uid="index"] p {
   font-weight: normal;
   font-size: 16px;
 }
 
-article[data-uid="index"] h2 + * {
+article[data-uid="index"] h2 ~ * {
   padding-left: 0;
 }
 
-article[data-uid="index"] h2 + * > li {
+article[data-uid="index"] h2 ~ * > li {
   float: left;
   width: 285px;
   margin-right: 30px;
@@ -25,22 +25,22 @@ article[data-uid="index"] h2 + * > li {
   list-style-type: none;
 }
 
-article[data-uid="index"] h2 + ol > li > ol, article[data-uid="index"] h2 + ul > li > ul {
+article[data-uid="index"] h2 ~ ol > li > ol, article[data-uid="index"] h2 ~ ul > li > ul {
   padding-left: 16px;
   list-style-type: disc;
 }
 
-article[data-uid="index"] h2 + ol > li > ol > li > ul {
+article[data-uid="index"] h2 ~ ol > li > ol > li > ul {
   padding-left: 0;
   list-style-type: none;
 }
 
-article[data-uid="index"] h2 + ol > li > ol > li > ul > li {
+article[data-uid="index"] h2 ~ ol > li > ol > li > ul > li {
   font-size: 13px;
   margin-bottom: 5px;
 }
 
-article[data-uid="index"] h2 + ul > li > ul > li > ul {
+article[data-uid="index"] h2 ~ ul > li > ul > li > ul {
   padding-left: 15px;
   list-style-type: circle;
 }
