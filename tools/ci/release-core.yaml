@@ -24,79 +24,77 @@ stages:
 
 # Compile all platform/architecture/config variants as separate jobs
 # possibly in parallel if enough agents are available
-- stage: build
-  displayName: Build Core WebRTC
-  jobs:
-  - powershell: |
-      Write-Host "Nothing - DEBUG"
-  # - template: templates/jobs-libwebrtc-win32.yaml
-  #   parameters:
-  #     buildAgent: 'Analog Open'
-  #     buildArch: 'x86'
-  #     buildConfig: 'Debug'
-  #     withPdbs: true
-  # - template: templates/jobs-libwebrtc-win32.yaml
-  #   parameters:
-  #     buildAgent: 'Analog Open'
-  #     buildArch: 'x64'
-  #     buildConfig: 'Debug'
-  #     withPdbs: true
-  # - template: templates/jobs-libwebrtc-uwp.yaml
-  #   parameters:
-  #     buildAgent: 'Analog Open'
-  #     buildArch: 'x86'
-  #     buildConfig: 'Debug'
-  #     publishWinRtHeaders: true # Randomly selected, any UWP build will do
-  # - template: templates/jobs-libwebrtc-uwp.yaml
-  #   parameters:
-  #     buildAgent: 'Analog Open'
-  #     buildArch: 'x64'
-  #     buildConfig: 'Debug'
-  # - template: templates/jobs-libwebrtc-uwp.yaml
-  #   parameters:
-  #     buildAgent: 'Analog Open'
-  #     buildArch: 'ARM'
-  #     buildConfig: 'Debug'
-  # # - template: templates/jobs-libwebrtc-uwp.yaml
-  # #   parameters:
-  # #     buildAgent: 'Analog Open'
-  # #     buildArch: 'ARM64'
-  # #     buildConfig: 'Debug'
-  # - template: templates/jobs-libwebrtc-win32.yaml
-  #   parameters:
-  #     buildAgent: 'Analog Open'
-  #     buildArch: 'x86'
-  #     buildConfig: 'Release'
-  # - template: templates/jobs-libwebrtc-win32.yaml
-  #   parameters:
-  #     buildAgent: 'Analog Open'
-  #     buildArch: 'x64'
-  #     buildConfig: 'Release'
-  # - template: templates/jobs-libwebrtc-uwp.yaml
-  #   parameters:
-  #     buildAgent: 'Analog Open'
-  #     buildArch: 'x86'
-  #     buildConfig: 'Release'
-  # - template: templates/jobs-libwebrtc-uwp.yaml
-  #   parameters:
-  #     buildAgent: 'Analog Open'
-  #     buildArch: 'x64'
-  #     buildConfig: 'Release'
-  # - template: templates/jobs-libwebrtc-uwp.yaml
-  #   parameters:
-  #     buildAgent: 'Analog Open'
-  #     buildArch: 'ARM'
-  #     buildConfig: 'Release'
-  # # - template: templates/jobs-libwebrtc-uwp.yaml
-  # #   parameters:
-  # #     buildAgent: 'Analog Open'
-  # #     buildArch: 'ARM64'
-  # #     buildConfig: 'Release'
+# - stage: build
+#   displayName: Build Core WebRTC
+#   jobs:
+#   # - template: templates/jobs-libwebrtc-win32.yaml
+#   #   parameters:
+#   #     buildAgent: 'Analog Open'
+#   #     buildArch: 'x86'
+#   #     buildConfig: 'Debug'
+#   #     withPdbs: true
+#   # - template: templates/jobs-libwebrtc-win32.yaml
+#   #   parameters:
+#   #     buildAgent: 'Analog Open'
+#   #     buildArch: 'x64'
+#   #     buildConfig: 'Debug'
+#   #     withPdbs: true
+#   # - template: templates/jobs-libwebrtc-uwp.yaml
+#   #   parameters:
+#   #     buildAgent: 'Analog Open'
+#   #     buildArch: 'x86'
+#   #     buildConfig: 'Debug'
+#   #     publishWinRtHeaders: true # Randomly selected, any UWP build will do
+#   # - template: templates/jobs-libwebrtc-uwp.yaml
+#   #   parameters:
+#   #     buildAgent: 'Analog Open'
+#   #     buildArch: 'x64'
+#   #     buildConfig: 'Debug'
+#   # - template: templates/jobs-libwebrtc-uwp.yaml
+#   #   parameters:
+#   #     buildAgent: 'Analog Open'
+#   #     buildArch: 'ARM'
+#   #     buildConfig: 'Debug'
+#   # # - template: templates/jobs-libwebrtc-uwp.yaml
+#   # #   parameters:
+#   # #     buildAgent: 'Analog Open'
+#   # #     buildArch: 'ARM64'
+#   # #     buildConfig: 'Debug'
+#   # - template: templates/jobs-libwebrtc-win32.yaml
+#   #   parameters:
+#   #     buildAgent: 'Analog Open'
+#   #     buildArch: 'x86'
+#   #     buildConfig: 'Release'
+#   # - template: templates/jobs-libwebrtc-win32.yaml
+#   #   parameters:
+#   #     buildAgent: 'Analog Open'
+#   #     buildArch: 'x64'
+#   #     buildConfig: 'Release'
+#   # - template: templates/jobs-libwebrtc-uwp.yaml
+#   #   parameters:
+#   #     buildAgent: 'Analog Open'
+#   #     buildArch: 'x86'
+#   #     buildConfig: 'Release'
+#   # - template: templates/jobs-libwebrtc-uwp.yaml
+#   #   parameters:
+#   #     buildAgent: 'Analog Open'
+#   #     buildArch: 'x64'
+#   #     buildConfig: 'Release'
+#   # - template: templates/jobs-libwebrtc-uwp.yaml
+#   #   parameters:
+#   #     buildAgent: 'Analog Open'
+#   #     buildArch: 'ARM'
+#   #     buildConfig: 'Release'
+#   # # - template: templates/jobs-libwebrtc-uwp.yaml
+#   # #   parameters:
+#   # #     buildAgent: 'Analog Open'
+#   # #     buildArch: 'ARM64'
+#   # #     buildConfig: 'Release'
 
 # Create signed NuGet packages
 - stage: pack
   displayName: Create signed NuGet packages
-  dependsOn: build
+  #dependsOn: build
   jobs:
 
   # Desktop webrtc.lib : Microsoft.MixedReality.WebRTC.Native.Core.Desktop.*
