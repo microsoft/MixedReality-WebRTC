@@ -25,6 +25,9 @@ jobs:
     buildTriple: '${{parameters.buildPlatform}}.${{parameters.buildArch}}.${{parameters.buildConfig}}'
     nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.${{parameters.buildPlatform}}.${{parameters.buildArch}}.${{parameters.buildConfig}}.nuspec'
 
+  steps:
+  - checkout: none
+  
   - powershell: |
      Write-Host "Cleaning $(Build.BinariesDirectory)..."
      Get-ChildItem -Path "$(Build.BinariesDirectory)" -Force -Recurse | Sort-Object -Property FullName -Descending | Remove-Item -Recurse -Force
