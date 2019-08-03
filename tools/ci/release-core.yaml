@@ -27,12 +27,14 @@ stages:
 - stage: build
   displayName: Build Core WebRTC
   jobs:
-  - template: templates/jobs-libwebrtc-win32.yaml
-    parameters:
-      buildAgent: 'Analog Open'
-      buildArch: 'x86'
-      buildConfig: 'Debug'
-      withPdbs: true
+  - powershell: |
+      Write-Host "Nothing - DEBUG"
+  # - template: templates/jobs-libwebrtc-win32.yaml
+  #   parameters:
+  #     buildAgent: 'Analog Open'
+  #     buildArch: 'x86'
+  #     buildConfig: 'Debug'
+  #     withPdbs: true
   # - template: templates/jobs-libwebrtc-win32.yaml
   #   parameters:
   #     buildAgent: 'Analog Open'
