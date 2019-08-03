@@ -55,7 +55,7 @@ jobs:
 
   # Publish PDBs for webrtc.lib
   - task: PublishPipelineArtifact@0
-    displayName: 'Publish webrtc.lib ($(buildTriple))'
+    displayName: 'Publish webrtc.lib PDBs ($(buildTriple))'
     condition: ${{parameters.withPdbs}}
     inputs:
       artifactName: 'libwebrtc_pdbs_$(buildTriple)'
