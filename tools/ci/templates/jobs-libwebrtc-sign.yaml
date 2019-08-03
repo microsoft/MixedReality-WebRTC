@@ -26,6 +26,10 @@ jobs:
     nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.${{parameters.buildPlatform}}.${{parameters.buildArch}}.${{parameters.buildConfig}}.nuspec'
 
   steps:
+  - checkout: scripts
+    clean: false
+    path: $(Build.ArtifactStagingDirectory)/scripts
+    
   - powershell: |
      Write-Host "Cleaning $(Build.BinariesDirectory)..."
      Get-ChildItem -Path "$(Build.BinariesDirectory)" -Force -Recurse | Sort-Object -Property FullName -Descending | Remove-Item -Recurse -Force
@@ -42,18 +46,23 @@ jobs:
      
     displayName: 'Prepare env'
 
+  # - powershell: |
+  #     $Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('$(ScriptsRepoUser):$(ScriptsRepoPAT)'))
+  #     git clone -c http.extraheader="AUTHORIZATION: $Authorization" -b master $(ScriptsRepoURL) $(Build.ArtifactStagingDirectory)/scripts
+  #   displayName: "Checkout release scripts"
+    
   - task: PowerShell@2
     displayName: 'Compute package versions'
     inputs:
       targetType: filePath
-      filePath: ./computePackageVersion.ps1
+      filePath: $(Build.ArtifactStagingDirectory)/scripts/computePackageVersion.ps1
       arguments: '-SignConfigFile ${{parameters.signConfig}} -NuspecFile $(nuspecFile)'
 
   - task: PowerShell@2
     displayName: 'Download .targets files'
     inputs:
       targetType: filePath
-      filePath: ./downloadTargets.ps1
+      filePath: $(Build.ArtifactStagingDirectory)/scripts/downloadTargets.ps1
       arguments: '$(SourceBuildCommit) $(Build.BinariesDirectory)'
     env:
       GITHUB_USER: $(github.user)
@@ -115,7 +124,7 @@ jobs:
     displayName: 'Copy files not being signed'
     inputs:
       targetType: filePath
-      filePath: ./copyUnsignedFiles.ps1
+      filePath: $(Build.ArtifactStagingDirectory)/scripts/copyUnsignedFiles.ps1
       arguments: '-PackageName "${{parameters.packageName}}"'
       ignoreLASTEXITCODE: true
 
@@ -132,7 +141,7 @@ jobs:
     - task: PkgESCodeSign@10
       displayName: 'Package ES - CodeSign artifacts'
       inputs:
-        signConfigXml: ${{parameters.artifactSignConfig}}
+        signConfigXml: $(Build.ArtifactStagingDirectory)/scripts/${{parameters.artifactSignConfig}}
         inPathRoot: '$(Build.BinariesDirectory)/unsigned/${{parameters.packageName}}'
         outPathRoot: '$(Build.BinariesDirectory)/signed/${{parameters.packageName}}.$(NuGetVersion)'
 
@@ -159,7 +168,7 @@ jobs:
   - task: PkgESCodeSign@10
     displayName: 'Package ES - CodeSign NuGet package'
     inputs:
-      signConfigXml: ${{parameters.nugetSignConfig}}
+      signConfigXml: $(Build.ArtifactStagingDirectory)/scripts/${{parameters.nugetSignConfig}}
       inPathRoot: '$(Build.ArtifactStagingDirectory)/unsigned'
       outPathRoot: '$(Build.ArtifactStagingDirectory)/signed'
 

@@ -15,6 +15,13 @@ pr: none
 # This is the value of $(Build.BuildNumber)
 name: $(Date:yyyyMMdd)-$(Rev:r)
 
+resources:
+  repositories:
+  - repository: scripts
+    type: git
+    name: $(ScriptsRepoName)
+    ref: 'refs/heads/master'
+
 variables:
   # Version string is "$(MRWebRTCVersion)-$(MRWebRTCReleaseTag)-$(Build.BuildNumber)"
   MRWebRTCVersion: 0.0.1       # Major.Minor.Patch
