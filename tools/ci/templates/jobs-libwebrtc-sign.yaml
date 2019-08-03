@@ -45,10 +45,13 @@ jobs:
     displayName: 'Prepare env'
 
   - powershell: |
-      $Authorization = "Authorization: Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(":$(ScriptsRepoPAT)"))
+      #$Authorization = "Authorization: Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(":$(ScriptsRepoPAT)"))
+      $Authorization = "Authorization: Bearer $env:SYSTEM_ACCESSTOKEN"
       git -c http.extraheader="$Authorization" clone -b master $(ScriptsRepoURL) $(Build.ArtifactStagingDirectory)/scripts
     displayName: "Checkout release scripts"
-    
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
   - task: PowerShell@2
     displayName: 'Compute package versions'
     inputs:
