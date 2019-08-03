@@ -25,11 +25,6 @@ jobs:
     buildTriple: '${{parameters.buildPlatform}}.${{parameters.buildArch}}.${{parameters.buildConfig}}'
     nuspecFile: 'nuspec/Microsoft.MixedReality.WebRTC.Native.Core.${{parameters.buildPlatform}}.${{parameters.buildArch}}.${{parameters.buildConfig}}.nuspec'
 
-  steps:
-  - checkout: scripts
-    clean: false
-    path: $(Build.ArtifactStagingDirectory)/scripts
-    
   - powershell: |
      Write-Host "Cleaning $(Build.BinariesDirectory)..."
      Get-ChildItem -Path "$(Build.BinariesDirectory)" -Force -Recurse | Sort-Object -Property FullName -Descending | Remove-Item -Recurse -Force
@@ -46,10 +41,10 @@ jobs:
      
     displayName: 'Prepare env'
 
-  # - powershell: |
-  #     $Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('$(ScriptsRepoUser):$(ScriptsRepoPAT)'))
-  #     git clone -c http.extraheader="AUTHORIZATION: $Authorization" -b master $(ScriptsRepoURL) $(Build.ArtifactStagingDirectory)/scripts
-  #   displayName: "Checkout release scripts"
+  - powershell: |
+      $Authorization = "Authorization: Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('$(ScriptsRepoUser):$(ScriptsRepoPAT)'))
+      git clone -c http.extraheader="$Authorization" -b master $(ScriptsRepoURL) $(Build.ArtifactStagingDirectory)/scripts
+    displayName: "Checkout release scripts"
     
   - task: PowerShell@2
     displayName: 'Compute package versions'
