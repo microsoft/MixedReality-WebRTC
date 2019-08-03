@@ -45,8 +45,8 @@ jobs:
     displayName: 'Prepare env'
 
   - powershell: |
-      $Authorization = "Authorization: Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('$(ScriptsRepoUser):$(ScriptsRepoPAT)'))
-      git clone -c http.extraheader="$Authorization" -b master $(ScriptsRepoURL) $(Build.ArtifactStagingDirectory)/scripts
+      $Authorization = "Authorization: Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("$(ScriptsRepoUser):$(ScriptsRepoPAT)"))
+      git -c http.extraheader="$Authorization" clone -b master $(ScriptsRepoURL) $(Build.ArtifactStagingDirectory)/scripts
     displayName: "Checkout release scripts"
     
   - task: PowerShell@2
