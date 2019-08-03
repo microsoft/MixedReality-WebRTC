@@ -54,7 +54,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(Build.ArtifactStagingDirectory)/scripts/computePackageVersion.ps1
-      arguments: '-SignConfigFile ${{parameters.signConfig}} -NuspecFile $(nuspecFile)'
+      arguments: '-SignConfigFile ${{parameters.nugetSignConfig}} -NuspecFile $(nuspecFile)'
 
   - task: PowerShell@2
     displayName: 'Download .targets files'
@@ -135,7 +135,7 @@ jobs:
 
   # Sign the files inside the NuGet package
   # This is conditional because some packages don't have any signed files
-  - ${{ if ne(variables['signConfig'], '') }}:
+  - ${{ if ne(variables['artifactSignConfig'], '') }}:
     - task: PkgESCodeSign@10
       displayName: 'Package ES - CodeSign artifacts'
       inputs:
