@@ -78,11 +78,11 @@
   <ItemGroup>
     <Content Include="..\..\bin\UWP\$(Platform)\$(Configuration)\Microsoft.MixedReality.WebRTC.Native.dll">
       <Link>Microsoft.MixedReality.WebRTC.Native.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\bin\UWP\$(Platform)\$(Configuration)\Microsoft.MixedReality.WebRTC.Native.pdb">
       <Link>Microsoft.MixedReality.WebRTC.Native.pdb</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
