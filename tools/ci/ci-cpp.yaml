@@ -27,17 +27,59 @@ jobs:
   parameters:
     buildAgent: 'Hosted VS2017' # vs2017-win2016
     buildPlatform: 'Win32'
+    buildArch: 'x86'
+    buildConfig: 'Debug'
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'Win32'
+    buildArch: 'x86'
+    buildConfig: 'Release'
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'Win32'
+    buildArch: 'x64'
+    buildConfig: 'Debug'
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'Win32'
     buildArch: 'x64'
     buildConfig: 'Release'
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: 'Hosted VS2017' # vs2017-win2016
     buildPlatform: 'UWP'
+    buildArch: 'x86'
+    buildConfig: 'Debug'
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
+    buildArch: 'x86'
+    buildConfig: 'Release'
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
+    buildArch: 'x64'
+    buildConfig: 'Debug'
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
     buildArch: 'x64'
     buildConfig: 'Release'
-# - template: templates/jobs-cpp.yaml
-#   parameters:
-#     buildAgent: 'Hosted VS2017' # vs2017-win2016
-#     buildPlatform: 'UWP'
-#     buildArch: 'ARM'
-#     buildConfig: 'Release'
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
+    buildArch: 'ARM'
+    buildConfig: 'Debug'
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
+    buildArch: 'ARM'
+    buildConfig: 'Release'
