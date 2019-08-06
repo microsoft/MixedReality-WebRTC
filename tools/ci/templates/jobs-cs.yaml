@@ -64,6 +64,6 @@ jobs:
     displayName: 'C# Testing (C++ Win32-x64-Release / C# ${{parameters.testConfig}})'
     inputs:
       testAssemblyVer2: Microsoft.MixedReality.WebRTC.Tests.dll
-      searchFolder: tests/Microsoft.MixedReality.WebRTC.Tests/bin/${{parameters.testConfig}}/
+      searchFolder: bin/netstandard2.0/${{parameters.testConfig}}/
       runOnlyImpactedTests: false
 
