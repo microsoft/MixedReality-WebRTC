@@ -93,6 +93,9 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     createParams->name = name;
     createParams->id = id;
     createParams->enableMrc = enable_mrc;
+    createParams->width = 0;      // unconstrainted
+    createParams->height = 0;     // unconstrainted
+    createParams->framerate = 0;  // unconstrainted
 
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
 
