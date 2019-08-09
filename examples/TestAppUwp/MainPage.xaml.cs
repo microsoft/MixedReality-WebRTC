@@ -64,8 +64,34 @@ namespace TestAppUwp
         public ObservableCollection<VideoCaptureDevice> VideoCaptureDevices { get; private set; }
             = new ObservableCollection<VideoCaptureDevice>();
 
+        public VideoCaptureDevice SelectedVideoCaptureDevice
+        {
+            get
+            {
+                var deviceIndex = VideoCaptureDeviceList.SelectedIndex;
+                if ((deviceIndex < 0) || (deviceIndex >= VideoCaptureDevices.Count))
+                {
+                    return null;
+                }
+                return VideoCaptureDevices[deviceIndex];
+            }
+        }
+
         public ObservableCollection<MediaCaptureVideoProfile> VideoProfiles { get; private set; }
             = new ObservableCollection<MediaCaptureVideoProfile>();
+
+        public MediaCaptureVideoProfile SelectedVideoProfile
+        {
+            get
+            {
+                var profileIndex = VideoProfileComboBox.SelectedIndex;
+                if ((profileIndex < 0) || (profileIndex >= VideoProfiles.Count))
+                {
+                    return null;
+                }
+                return VideoProfiles[profileIndex];
+            }
+        }
 
         public ObservableCollection<MediaCaptureVideoProfileMediaDescription> RecordMediaDescs { get; private set; }
             = new ObservableCollection<MediaCaptureVideoProfileMediaDescription>();
@@ -304,12 +330,11 @@ namespace TestAppUwp
         {
             RecordMediaDescs.Clear();
 
-            var profileIndex = VideoProfileComboBox.SelectedIndex;
-            if (profileIndex < 0)
+            var profile = SelectedVideoProfile;
+            if (profile == null)
             {
                 return;
             }
-            var profile = VideoProfiles[profileIndex];
 
             foreach (var desc in profile.SupportedRecordMediaDescription)
             {
@@ -648,11 +673,16 @@ namespace TestAppUwp
             {
                 LogMessage("Opening local A/V stream...");
 
-                // TODO - HACK: support multi-webcams locally for testing
-                //_peerConnection.HACK_VideoDeviceIndex = HACK_GetVideoDeviceIndex();
+                var captureDevice = SelectedVideoCaptureDevice;
+                var captureDeviceInfo = new PeerConnection.VideoCaptureDevice()
+                {
+                    id = captureDevice.Id,
+                    name = captureDevice.DisplayName
+                };
+                string videoProfile = SelectedVideoProfile?.Id;
 
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                _peerConnection.AddLocalVideoTrackAsync().ContinueWith(prevTask =>
+                _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfile, false).ContinueWith(prevTask =>
                 {
                     // Continue inside UI thread here
                     if (prevTask.Exception != null)

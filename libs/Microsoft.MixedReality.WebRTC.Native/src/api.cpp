@@ -53,7 +53,8 @@ const std::string kLocalAudioLabel("local_audio");
 /// Helper to open a video capture device.
 std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     const char* video_device_id,
-    bool enable_mrc = false) noexcept(kNoExceptFalseOnUWP) {
+    const char* video_profile_id,
+    bool enable_mrc) noexcept(kNoExceptFalseOnUWP) {
 #if defined(WINUWP)
   // Check for calls from main UI thread; this is not supported (will deadlock)
   auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
@@ -81,17 +82,19 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   for (auto&& vdi : *deviceList) {
     auto devInfo =
         wrapper::impl::org::webRtc::VideoDeviceInfo::toNative_winrt(vdi);
-    auto name = devInfo.Name().c_str();
-    if (!video_device_id_str.empty() && (video_device_id_str != name)) {
+    const winrt::hstring& id = devInfo.Id();
+    if (!video_device_id_str.empty() && (video_device_id_str != id)) {
       continue;
     }
-    auto id = devInfo.Id().c_str();
 
     auto createParams = std::make_shared<
         wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
     createParams->factory = g_winuwp_factory;
-    createParams->name = name;
-    createParams->id = id;
+    createParams->name = devInfo.Name().c_str();
+    createParams->id = id.c_str();
+    if (video_profile_id) {
+      createParams->videoProfileId = video_profile_id;
+    }
     createParams->enableMrc = enable_mrc;
     createParams->width = 0;      // unconstrainted
     createParams->height = 0;     // unconstrainted
@@ -103,8 +106,8 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
       auto nativeVcd = wrapper::impl::org::webRtc::VideoCapturer::toNative(vcd);
 
       RTC_LOG(LS_INFO) << "Using video capture device '"
-                       << rtc::ToUtf8(devInfo.Name().c_str()).c_str()
-                       << "' (id=" << rtc::ToUtf8(id).c_str() << ")";
+                       << createParams->name.c_str()
+                       << "' (id=" << createParams->id.c_str() << ")";
 
       if (auto supportedFormats = nativeVcd->GetSupportedFormats()) {
         RTC_LOG(LS_INFO) << "Supported video formats:";
@@ -431,6 +434,7 @@ void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
 bool MRS_CALL
 mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
                                     const char* video_device_id,
+                                    const char* video_profile_id,
                                     bool enable_mrc)
 #if defined(WINUWP)
     noexcept(false)
@@ -443,7 +447,7 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
       return false;
     }
     std::unique_ptr<cricket::VideoCapturer> video_capturer =
-        OpenVideoCaptureDevice(video_device_id, enable_mrc);
+        OpenVideoCaptureDevice(video_device_id, video_profile_id, enable_mrc);
     if (!video_capturer) {
       return false;
     }
