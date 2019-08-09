@@ -158,7 +158,7 @@ namespace TestAppUwp.Video
             sample.Duration = TimeSpan.FromSeconds(1.0 / 30.0);
 
             // Copy the frame data into the sample's buffer
-            frameStorage.Buffer.CopyTo(0, sample.Buffer, 0, (int)frameStorage.Capacity);
+            frameStorage.Buffer.CopyTo(0, sample.Buffer, 0, (int)Math.Min(frameStorage.Capacity, byteSize));
             sample.Buffer.Length = (uint)frameStorage.Capacity; // Somewhat surprisingly, this is not automatic
 
             // Recycle the frame storage itself
