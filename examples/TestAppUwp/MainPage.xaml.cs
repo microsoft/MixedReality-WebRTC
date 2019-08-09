@@ -64,6 +64,12 @@ namespace TestAppUwp
         public ObservableCollection<VideoCaptureDevice> VideoCaptureDevices { get; private set; }
             = new ObservableCollection<VideoCaptureDevice>();
 
+        public ObservableCollection<MediaCaptureVideoProfile> VideoProfiles { get; private set; }
+            = new ObservableCollection<MediaCaptureVideoProfile>();
+
+        public ObservableCollection<MediaCaptureVideoProfileMediaDescription> RecordMediaDescs { get; private set; }
+            = new ObservableCollection<MediaCaptureVideoProfileMediaDescription>();
+
         public ObservableCollection<NavLink> NavLinks { get; }
             = new ObservableCollection<NavLink>();
 
@@ -124,6 +130,19 @@ namespace TestAppUwp
         {
             LogMessage("Initializing the WebRTC native plugin...");
 
+            // Populate the combo box with the KnownVideoProfile enum
+            {
+                var values = Enum.GetValues(typeof(KnownVideoProfile));
+                KnownVideoProfileKindComboBox.ItemsSource = values.Cast<KnownVideoProfile>();
+
+                // Select "VideoConferencing" kind by default
+                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, KnownVideoProfile.VideoConferencing);
+            }
+
+            VideoCaptureDeviceList.SelectionChanged += VideoCaptureDeviceList_SelectionChanged;
+            KnownVideoProfileKindComboBox.SelectionChanged += KnownVideoProfileKindComboBox_SelectionChanged;
+            VideoProfileComboBox.SelectionChanged += VideoProfileComboBox_SelectionChanged;
+
             // Populate the list of video capture devices (webcams).
             // On UWP this uses internally the API:
             //   Devices.Enumeration.DeviceInformation.FindAllAsync(VideoCapture)
@@ -163,6 +182,12 @@ namespace TestAppUwp
                         {
                             VideoCaptureDevices.Add(vcd);
                             LogMessage($"VCD id={vcd.Id} name={vcd.DisplayName}");
+                        }
+
+                        // Select first entry by default
+                        if (vcds.Count > 0)
+                        {
+                            VideoCaptureDeviceList.SelectedIndex = 0;
                         }
                     });
 
@@ -224,6 +249,71 @@ namespace TestAppUwp
                 {
                     LogMessage("Failed to initialize A/V with unknown exception: " + ex.Message);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Update the list of video profiles stored in <cref>VideoProfiles</cref>
+        /// when the selected video capture device or known video profile kind change.
+        /// </summary>
+        private void UpdateVideoProfiles()
+        {
+            VideoProfiles.Clear();
+
+            // Get the video capture device selected by the user
+            var deviceIndex = VideoCaptureDeviceList.SelectedIndex;
+            if (deviceIndex < 0)
+            {
+                return;
+            }
+            var device = VideoCaptureDevices[deviceIndex];
+
+            // Ensure that the video capture device actually supports video profiles
+            if (!MediaCapture.IsVideoProfileSupported(device.Id))
+            {
+                return;
+            }
+
+            // Get the kind of known video profile selected by the user
+            var knownVideoProfileIndex = KnownVideoProfileKindComboBox.SelectedIndex;
+            if (knownVideoProfileIndex < 0)
+            {
+                return;
+            }
+            var knownVideoProfile = (KnownVideoProfile)Enum.GetValues(typeof(KnownVideoProfile)).GetValue(knownVideoProfileIndex);
+
+            // List all video profiles for the select device and kind
+            var profiles = MediaCapture.FindKnownVideoProfiles(device.Id, knownVideoProfile);
+            foreach (var profile in profiles)
+            {
+                VideoProfiles.Add(profile);
+            }
+        }
+
+        private void VideoCaptureDeviceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateVideoProfiles();
+        }
+
+        private void KnownVideoProfileKindComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateVideoProfiles();
+        }
+
+        private void VideoProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RecordMediaDescs.Clear();
+
+            var profileIndex = VideoProfileComboBox.SelectedIndex;
+            if (profileIndex < 0)
+            {
+                return;
+            }
+            var profile = VideoProfiles[profileIndex];
+
+            foreach (var desc in profile.SupportedRecordMediaDescription)
+            {
+                RecordMediaDescs.Add(desc);
             }
         }
 
