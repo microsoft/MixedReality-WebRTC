@@ -29,13 +29,16 @@
         </DataTemplate>
         <DataTemplate x:Key="RecordMediaDescTemplate" x:DataType="winmc:MediaCaptureVideoProfileMediaDescription">
             <StackPanel Orientation="Horizontal">
+                <SymbolIcon Symbol="WebCam" Margin="0,0,12,0" />
                 <TextBlock VerticalAlignment="Center" >
                     <Run Text="{x:Bind Width}" />
                     <Run> x </Run>
                     <Run Text="{x:Bind Height}" />
                     <Run> @ </Run>
                     <Run Text="{x:Bind FrameRate}" />
-                    <Run> FPS</Run>
+                    <Run> FPS (</Run>
+                    <Run Text="{x:Bind Subtype}" />
+                    <Run>)</Run>
                 </TextBlock>
             </StackPanel>
         </DataTemplate>
