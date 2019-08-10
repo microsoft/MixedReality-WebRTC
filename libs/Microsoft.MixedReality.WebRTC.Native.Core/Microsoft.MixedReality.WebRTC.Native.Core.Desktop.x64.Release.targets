@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <OrgWebRtcPlatform Condition="'$(Platform)' == 'Win32'">x86</OrgWebRtcPlatform>
+        <OrgWebRtcPlatform Condition="'$(Platform)' == 'x64'">x64</OrgWebRtcPlatform>
+    </PropertyGroup>
+    <ItemDefinitionGroup>
+        <Link>
+            <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)..\..\lib\native\lib\win10\$(OrgWebRtcPlatform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+        </Link>
+    </ItemDefinitionGroup>
+</Project>

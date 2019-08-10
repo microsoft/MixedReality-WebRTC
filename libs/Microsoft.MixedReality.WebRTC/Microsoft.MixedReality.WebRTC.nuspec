@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Microsoft.MixedReality.WebRTC</id>
+        <version>0.1.0-publicpreview</version>
+        <authors>Microsoft Mixed Reality Sharing Team</authors>
+        <owners>Mixed Reality Sharing Team</owners>
+        <description>C# libraries of Microsoft.MixedReality.WebRTC</description>
+        <title>Microsoft.MixedReality.WebRTC</title>
+        <projectUrl>https://github.com/microsoft/MixedReality-WebRTC</projectUrl>
+        <license type="expression">MIT</license>
+        <iconUrl>https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/mr-webrtc_icon.png</iconUrl>
+        <tags>webrtc video audio streaming</tags>
+        <summary>C#libraries of Microsoft.MixedReality.WebRTC</summary>
+        <dependencies>
+            <dependency id="Microsoft.MixedReality.WebRTC.Native" version="0.1.0-publicpreview" include="runtime" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="$bin$\AnyCPU\$configuration$\Microsoft.MixedReality.WebRTC.dll" target="lib\netstandard2.0" />
+        <file src="$bin$\AnyCPU\$configuration$\Microsoft.MixedReality.WebRTC.pdb" target="lib\netstandard2.0" />
+    </files>
+</package>

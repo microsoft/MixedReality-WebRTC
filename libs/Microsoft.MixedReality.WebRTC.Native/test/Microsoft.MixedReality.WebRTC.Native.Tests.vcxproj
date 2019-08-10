@@ -22,7 +22,7 @@
     <ProjectGuid>{6D020425-2E3E-4BA7-BC46-00C8D29081C0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>Microsoft.MixedReality.WebRTC.Native.Test</ProjectName>
+    <ProjectName>Microsoft.MixedReality.WebRTC.Native.Tests</ProjectName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -38,7 +38,6 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <Import Project="project.props" />
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" />
@@ -50,34 +49,32 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup>
-    <OutDir>..\..\bin\Win32\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>..\..\build\Microsoft.MixedReality.WebRTC.Native.Test\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>Microsoft.MixedReality.WebRTC.Native.Test</TargetName>
+    <OutDir>..\..\..\bin\Win32\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>..\..\..\build\Microsoft.MixedReality.WebRTC.Native.Tests\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>Microsoft.MixedReality.WebRTC.Native.Tests</TargetName>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="test/pch.h" />
-    <ClInclude Include="test/peer_connection_test_helpers.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="peer_connection_test_helpers.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test/sdp_utils_tests.cpp" />
-    <ClCompile Include="test/pch.cpp">
+    <ClCompile Include="sdp_utils_tests.cpp" />
+    <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="test/data_channel_tests.cpp" />
+    <ClCompile Include="data_channel_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Microsoft.MixedReality.WebRTC.Native.Win32.vcxproj">
+    <ProjectReference Include="..\src\win32\Microsoft.MixedReality.WebRTC.Native.Win32.vcxproj">
       <Project>{b69106ca-ecd6-49cc-a1a1-e5d97e9eb9e0}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets" Condition="Exists('..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" />
+    <Import Project="..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets" Condition="Exists('..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" />
   </ImportGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -117,6 +114,6 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
   </Target>
 </Project>

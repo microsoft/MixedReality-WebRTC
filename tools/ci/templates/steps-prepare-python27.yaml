@@ -1,0 +1,29 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
+# [TEMPLATE] Install and configure Python 2.7.16 x64 as the default python interpreter
+
+steps:
+
+# Install Python 2.7.16 with NuGet, and pywin32 with pip
+- task: stevedower.python.InstallPython.InstallPython@1
+  displayName: 'Install Python 2.7.16 x64'
+  inputs:
+    version: 'python2==2.7.16'
+    dependencies: pywin32
+    outputdir: '$(Agent.ToolsDirectory)\Python\2.7.16\x64'
+  timeoutInMinutes: 5
+
+# Register the Python tool with the build agent for the Use Python Version task
+- powershell: |
+   Write-Host "Creating '.complete' file for build tool registration..."
+   New-Item "$(Agent.ToolsDirectory)\Python\2.7.16\x64.complete" -Force
+  displayName: 'Register Python 2.7.16 x64 with the build agent'
+  timeoutInMinutes: 5
+
+# Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
+- task: UsePythonVersion@0
+  displayName: 'Use Python 2.7.16 x64 for Google GN'
+  inputs:
+    versionSpec: 2.7.16
+  timeoutInMinutes: 5

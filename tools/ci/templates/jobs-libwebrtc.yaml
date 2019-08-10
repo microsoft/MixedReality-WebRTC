@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 # [TEMPLATE] Compile WebRTC Core
 
 parameters:
@@ -7,7 +10,8 @@ parameters:
   buildConfig: ''      # Debug|Release
   skipCoreCpp: false
   skipUwpWrappers: false
- 
+  skipPython27: false
+
 jobs:
 
 # Compile webrtc.lib (core Google implementation)
@@ -24,6 +28,9 @@ jobs:
   - checkout: self
     submodules: recursive
 
+  # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
+  #- template: steps-prepare-python27.yaml
+
   # Map build* variables to script* ones
   - task: PowerShell@2
     displayName: Map script variables
@@ -31,13 +38,6 @@ jobs:
       targetType: filePath
       filePath: tools/ci/mapVariables.ps1
       arguments: '${{parameters.buildPlatform}} ${{parameters.buildArch}} ${{parameters.buildConfig}}'
-
-  # Ensure that Python 2.7.14 is the default; the Google scripts don't work with Python 3.x
-  - task: UsePythonVersion@0
-    displayName: 'Use Python 2.7.14 x64 for Google GN'
-    inputs:
-      versionSpec: 2.7.14
-    timeoutInMinutes: 5
 
   # Compile webrtc.lib
   - task: MSBuild@1
@@ -89,8 +89,11 @@ jobs:
     name: ${{parameters.buildAgent}}
     demands: msbuild
   variables:
-    buildTriple: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
-    projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
+  - group: MixedReality-WebRTC-ArtifactConfig
+  - name: buildTriple
+    value: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
+  - name: projectRoot
+    value: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
   steps:
   - checkout: self
     submodules: recursive
@@ -103,16 +106,12 @@ jobs:
       filePath: tools/ci/mapVariables.ps1
       arguments: '${{parameters.buildPlatform}} ${{parameters.buildArch}} ${{parameters.buildConfig}}'
 
-  # Ensure that Python 2.7.14 is the default; the Google scripts don't work with Python 3.x
-  - task: UsePythonVersion@0
-    displayName: 'Use Python 2.7.14 x64 for Google GN'
-    inputs:
-      versionSpec: 2.7.14
-    timeoutInMinutes: 5
+  # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
+  #- template: steps-prepare-python27.yaml
 
   # Prepare the environment with the setup script from Google
   - task: PythonScript@0
-    displayName: format('Prepare WebRTC env ({0}-{1}-{2})', $(scriptPlatform), $(scriptArch), $(scriptConfig))
+    displayName: Prepare WebRTC env
     inputs:
       scriptSource: 'filePath'
       scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
@@ -124,8 +123,8 @@ jobs:
     displayName: 'Download webrtc.lib ($(buildTriple))'
     inputs:
       buildType: specific
-      project: '5610c425-4799-474c-b133-d95d78fb63b1'
-      definition: 23
+      project: $(ArtifactConfig.Project)
+      definition: $(ArtifactConfig.CoreDefinitionId)
       artifactName: 'libwebrtc_$(buildTriple)'
       # Download back exactly where it would have been otherwise compiled inside the source folder
       targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/$(scriptArch)/$(scriptConfig)'
@@ -136,8 +135,8 @@ jobs:
     displayName: 'Download WinRT generated headers ($(buildTriple))'
     inputs:
       buildType: specific
-      project: '5610c425-4799-474c-b133-d95d78fb63b1'
-      definition: 23
+      project: $(ArtifactConfig.Project)
+      definition: $(ArtifactConfig.CoreDefinitionId)
       artifactName: 'orgwebrtc_winrt_hpp_$(buildTriple)'
       # Download back exactly where they would have been otherwise generated inside the source folder
       targetPath: '$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
@@ -162,14 +161,6 @@ jobs:
       platform: ${{parameters.buildArch}}
       configuration: ${{parameters.buildConfig}}
     timeoutInMinutes: 180
-
-  # Publish the generated C++/WinRT headers
-  - task: PublishPipelineArtifact@0
-    displayName: 'Publish WinRT headers ($(buildTriple))'
-    inputs:
-      artifactName: 'orgwebrtc_winrt_hpp_$(buildTriple)'
-      targetPath: '$(projectRoot)Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
-    timeoutInMinutes: 15
 
   # Publish Org.WebRtc.dll and associated (PDB, ...)
   - task: PublishPipelineArtifact@0

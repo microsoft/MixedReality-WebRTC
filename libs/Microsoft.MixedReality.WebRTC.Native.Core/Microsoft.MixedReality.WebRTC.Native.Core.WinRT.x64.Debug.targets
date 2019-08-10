@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'UAP'">
+        <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Org.WebRtc.winmd">
+            <Implementation>Org.WebRtc.dll</Implementation>
+        </Reference>
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-x64\native\Org.WebRtc.dll" />
+    </ItemGroup>
+    <ItemDefinitionGroup Condition="'$(Platform)' == 'x64'">
+        <Link>
+            <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)..\..\lib\native\lib\uap10.0\x64\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+        </Link>
+    </ItemDefinitionGroup>
+</Project>
