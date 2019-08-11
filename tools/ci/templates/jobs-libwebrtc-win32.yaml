@@ -24,6 +24,7 @@ jobs:
   steps:
   - checkout: self
     submodules: recursive
+    clean: $(Clean)
 
   # Map build* variables to script* ones
   - task: PowerShell@2
