@@ -24,7 +24,7 @@
         <!-- DLLs and resources -->
         <file src="Build\Output\Org.WebRtc\Release\x86\Org.WebRtc.dll" target="runtimes\win10-x86\native" />
         <file src="Build\Output\Org.WebRtc\Release\x86\Org.WebRtc.pri" target="runtimes\win10-x86\native" />
-        <!-- .targets -->
-        <file src="libs\Microsoft.MixedReality.WebRTC.Native.Core\Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.targets" target="build\native" />
+        <!-- .props -->
+        <file src="libs\Microsoft.MixedReality.WebRTC.Native.Core\Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.props" target="build\native" />
     </files>
 </package>
