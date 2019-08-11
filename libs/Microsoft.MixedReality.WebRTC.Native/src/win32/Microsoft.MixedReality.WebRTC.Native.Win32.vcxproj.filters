@@ -8,6 +8,7 @@
     <ClCompile Include="../peer_connection.cpp" />
     <ClCompile Include="../video_frame_observer.cpp" />
     <ClCompile Include="../sdp_utils.cpp" />
+    <ClCompile Include="../video_capturer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../../include/api.h" />
@@ -19,6 +20,7 @@
     <ClInclude Include="../targetver.h" />
     <ClInclude Include="../video_frame_observer.h" />
     <ClInclude Include="../sdp_utils.h" />
+    <ClInclude Include="../video_capturer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

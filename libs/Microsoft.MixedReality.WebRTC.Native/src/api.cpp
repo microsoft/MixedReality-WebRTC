@@ -9,6 +9,7 @@
 #include "api.h"
 #include "peer_connection.h"
 #include "sdp_utils.h"
+#include "video_capturer.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
@@ -38,6 +39,13 @@ std::unique_ptr<rtc::Thread> g_signaling_thread;
 
 #endif
 
+#if defined(WEBRTC_ANDROID)
+// Android case: the video track does not own the capturer, and it
+// relies on the app to dispose the capturer when the peerconnection
+// shuts down.
+static jobject g_camera = nullptr;
+#endif
+
 /// Collection of all peer connection objects alive.
 std::unordered_map<
     PeerConnectionHandle,
@@ -49,112 +57,6 @@ const std::string kLocalVideoLabel("local_video");
 
 /// Predefined name of the local audio track.
 const std::string kLocalAudioLabel("local_audio");
-
-/// Helper to open a video capture device.
-std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
-    const char* video_device_id,
-    bool enable_mrc = false) noexcept(kNoExceptFalseOnUWP) {
-#if defined(WINUWP)
-  // Check for calls from main UI thread; this is not supported (will deadlock)
-  auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
-  auto cw = mw.CoreWindow();
-  auto dispatcher = cw.Dispatcher();
-  if (dispatcher.HasThreadAccess()) {
-    throw winrt::hresult_wrong_thread(
-        winrt::to_hstring(L"Cannot open the WebRTC video capture device from "
-                          L"the UI thread on UWP."));
-  }
-
-  // Get devices synchronously (wait for UI thread to retrieve them for us)
-  rtc::Event blockOnDevicesEvent(true, false);
-  auto vci = wrapper::impl::org::webRtc::VideoCapturer::getDevices();
-  vci->thenClosure([&blockOnDevicesEvent] { blockOnDevicesEvent.Set(); });
-  blockOnDevicesEvent.Wait(rtc::Event::kForever);
-  auto deviceList = vci->value();
-
-  std::wstring video_device_id_str;
-  if ((video_device_id != nullptr) && (video_device_id[0] != '\0')) {
-    video_device_id_str =
-        rtc::ToUtf16(video_device_id, strlen(video_device_id));
-  }
-
-  for (auto&& vdi : *deviceList) {
-    auto devInfo =
-        wrapper::impl::org::webRtc::VideoDeviceInfo::toNative_winrt(vdi);
-    auto name = devInfo.Name().c_str();
-    if (!video_device_id_str.empty() && (video_device_id_str != name)) {
-      continue;
-    }
-    auto id = devInfo.Id().c_str();
-
-    auto createParams = std::make_shared<
-        wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
-    createParams->factory = g_winuwp_factory;
-    createParams->name = name;
-    createParams->id = id;
-    createParams->enableMrc = enable_mrc;
-
-    auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
-
-    if (vcd != nullptr) {
-      auto nativeVcd = wrapper::impl::org::webRtc::VideoCapturer::toNative(vcd);
-
-      RTC_LOG(LS_INFO) << "Using video capture device '"
-                       << rtc::ToUtf8(devInfo.Name().c_str()).c_str()
-                       << "' (id=" << rtc::ToUtf8(id).c_str() << ")";
-
-      if (auto supportedFormats = nativeVcd->GetSupportedFormats()) {
-        RTC_LOG(LS_INFO) << "Supported video formats:";
-        for (auto&& format : *supportedFormats) {
-          auto str = format.ToString();
-          RTC_LOG(LS_INFO) << "- " << str.c_str();
-        }
-      }
-
-      return nativeVcd;
-    }
-  }
-  return nullptr;
-#else
-  (void)enable_mrc;  // No MRC on non-UWP
-  std::vector<std::string> device_names;
-  {
-    std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
-        webrtc::VideoCaptureFactory::CreateDeviceInfo());
-    if (!info) {
-      return nullptr;
-    }
-
-    std::string video_device_id_str;
-    if ((video_device_id != nullptr) && (video_device_id[0] != '\0')) {
-      video_device_id_str.assign(video_device_id);
-    }
-
-    int num_devices = info->NumberOfDevices();
-    for (int i = 0; i < num_devices; ++i) {
-      constexpr uint32_t kSize = 256;
-      char name[kSize] = {0};
-      char id[kSize] = {0};
-      if (info->GetDeviceName(i, name, kSize, id, kSize) != -1) {
-        device_names.push_back(name);
-        if (video_device_id_str == name) {
-          break;
-        }
-      }
-    }
-  }
-
-  cricket::WebRtcVideoDeviceCapturerFactory factory;
-  std::unique_ptr<cricket::VideoCapturer> capturer;
-  for (const auto& name : device_names) {
-    capturer = factory.Create(cricket::Device(name, 0));
-    if (capturer) {
-      break;
-    }
-  }
-  return capturer;
-#endif
-}
 
 }  // namespace
 
@@ -439,45 +341,32 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
     if (!g_peer_connection_factory) {
       return false;
     }
-    std::unique_ptr<cricket::VideoCapturer> video_capturer =
+
+    rtc::scoped_refptr<webrtc::VideoCaptureModule> video_capture_module =
         OpenVideoCaptureDevice(video_device_id, enable_mrc);
+    if (!video_capture_module) {
+      return false;
+    }
+
+    auto video_capturer =
+        std::make_unique<VideoCapturer>(std::move(video_capture_module));
     if (!video_capturer) {
       return false;
     }
 
-    //// HACK - Force max size to prevent high-res HoloLens 2 camera, which also
-    /// disables MRC /
-    /// https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture-for-developers#enabling-mrc-in-your-app
-    //// "MRC on HoloLens 2 supports videos up to 1080p and photos up to 4K
-    /// resolution"
-    // cricket::VideoFormat max_format{};
-    // max_format.width = 1920;
-    // max_format.height = 1080;
-    // max_format.interval = cricket::VideoFormat::FpsToInterval(30);
-    // video_capturer->set_enable_camera_list(
-    //    true);  //< needed to enable filtering
-    // video_capturer->ConstrainSupportedFormats(max_format);
-
-    //#if defined(WINUWP)
-    //    //MediaConstraints videoConstraints = new MediaConstraints();
-    //    //new wrapper::impl::org::webRtc::MediaConstraints(mandatory,
-    //    optional); auto ptr =
-    //    wrapper::org::webRtc::MediaConstraints::wrapper_create();
-    //    ptr->get_mandatory()->emplace_back(new
-    //    wrapper::org::webRtc::Constraint());
-    //#endif
-
-    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
-        g_peer_connection_factory->CreateVideoSource(std::move(video_capturer));
+    rtc::scoped_refptr<CapturerTrackSource> video_source =
+        CapturerTrackSource::Create(std::move(video_capturer));
     if (!video_source) {
       return false;
     }
+
     rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
         g_peer_connection_factory->CreateVideoTrack(kLocalVideoLabel,
                                                     video_source);
     if (!video_track) {
       return false;
     }
+
     return peer->AddLocalVideoTrack(std::move(video_track));
   }
   return false;

@@ -38,6 +38,7 @@
 #include "absl/memory/memory.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
+#include "api/create_peerconnection_factory.h"
 #include "api/data_channel_interface.h"
 #include "api/media_stream_interface.h"
 #include "api/peer_connection_interface.h"
@@ -46,12 +47,11 @@
 #include "media/engine/internal_decoder_factory.h"
 #include "media/engine/internal_encoder_factory.h"
 #include "media/engine/multiplex_codec_factory.h"
-//#include "media/engine/webrtc_video_capturer_factory.h"
-//#include "media/engine/webrtc_video_decoder_factory.h"
-//#include "media/engine/webrtc_video_encoder_factory.h"
 #include "modules/audio_device/include/audio_device.h"
 #include "modules/audio_processing/include/audio_processing.h"
 #include "modules/video_capture/video_capture_factory.h"
+#include "modules/video_capture/video_capture_defines.h"
+#include "pc/video_track_source.h"
 #include "rtc_base/memory/aligned_malloc.h"
 
 // libyuv from WebRTC repository for color conversion
