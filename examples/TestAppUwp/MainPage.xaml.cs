@@ -387,6 +387,7 @@ namespace TestAppUwp
 
         private void LogMessage(string message)
         {
+            Debugger.Log(4, "TestAppUWP", message);
             RunOnMainThread(() =>
             {
                 debugMessages.Text += message + "\n";
@@ -585,9 +586,9 @@ namespace TestAppUwp
             }
         }
 
-        private void OnMediaFailed(MediaPlayer sender, object args)
+        private void OnMediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
         {
-            LogMessage($"MediaElement reported an error");
+            LogMessage($"MediaElement reported an error: \"{args.ErrorMessage}\" (\"{args.ExtendedErrorCode.Message}\")");
         }
 
         private void OnMediaEnded(MediaPlayer sender, object args)
