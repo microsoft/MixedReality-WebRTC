@@ -122,7 +122,8 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   }
   return nullptr;
 #else
-  (void)enable_mrc;  // No MRC on non-UWP
+  (void)video_profile_id;  // No video profile on non-UWP
+  (void)enable_mrc;        // No MRC on non-UWP
   std::vector<std::string> device_names;
   {
     std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
