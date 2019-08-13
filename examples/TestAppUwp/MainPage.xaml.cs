@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC;
 using TestAppUwp.Video;
@@ -42,11 +43,13 @@ namespace TestAppUwp
         public bool PluginInitialized { get; private set; } = false;
 
         private MediaStreamSource localVideoSource = null;
+        private MediaSource localMediaSource = null;
         private MediaPlayer localVideoPlayer = new MediaPlayer();
         private bool _isLocalVideoPlaying = false;
         private object _isLocalVideoPlayingLock = new object();
 
         private MediaStreamSource remoteVideoSource = null;
+        private MediaSource remoteMediaSource = null;
         private MediaPlayer remoteVideoPlayer = new MediaPlayer();
         private bool _isRemoteVideoPlaying = false;
         private object _isRemoteVideoPlayingLock = new object();
@@ -532,9 +535,9 @@ namespace TestAppUwp
 
             createOfferButton.IsEnabled = true;
 
-            // Do not allow starting the local video before the MediaElement told us it was
-            // safe to do so (see OnMediaOpened). Otherwise Play() will silently fail.
-            startLocalVideo.IsEnabled = false;
+            ////// Do not allow starting the local video before the MediaElement told us it was
+            ////// safe to do so (see OnMediaOpened). Otherwise Play() will silently fail.
+            startLocalVideo.IsEnabled = true;
 
             localVideoPlayer.CurrentStateChanged += OnMediaStateChanged;
             localVideoPlayer.MediaOpened += OnMediaOpened;
@@ -542,15 +545,11 @@ namespace TestAppUwp
             localVideoPlayer.MediaEnded += OnMediaEnded;
             localVideoPlayer.RealTimePlayback = true;
             localVideoPlayer.AutoPlay = false;
-            localVideoSource = CreateVideoStreamSource(640, 480); //< TODO width,height
-            localVideoPlayer.Source = MediaSource.CreateFromMediaStreamSource(localVideoSource);
 
             remoteVideoPlayer.CurrentStateChanged += OnMediaStateChanged;
             remoteVideoPlayer.MediaOpened += OnMediaOpened;
             remoteVideoPlayer.MediaFailed += OnMediaFailed;
             remoteVideoPlayer.MediaEnded += OnMediaEnded;
-            remoteVideoSource = CreateVideoStreamSource(640, 480); //< TODO width,height
-            remoteVideoPlayer.Source = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
 
             // Bind the XAML UI control (localVideo) to the MediaFoundation rendering pipeline (localVideoPlayer)
             // so that the former can render in the UI the video frames produced in the background by the later.
@@ -580,7 +579,8 @@ namespace TestAppUwp
             {
                 RunOnMainThread(() =>
                 {
-                    startLocalVideo.IsEnabled = true;
+                    localVideo.MediaPlayer.Play();
+                    //startLocalVideo.IsEnabled = true;
                 });
             }
         }
@@ -597,6 +597,7 @@ namespace TestAppUwp
                 LogMessage("Local MediaElement video playback ended.");
                 //StopLocalVideo();
                 sender.Pause();
+                sender.Source = null;
                 if (sender == localVideoPlayer)
                 {
                     //< TODO - This should never happen. But what to do with
@@ -616,6 +617,9 @@ namespace TestAppUwp
                 if (_isLocalVideoPlaying)
                 {
                     localVideo.MediaPlayer.Pause();
+                    localVideo.SetMediaPlayer(null);
+                    localVideoSource = null;
+                    //localMediaSource.Reset();
                     _peerConnection.RemoveLocalVideoTrack();
                     _isLocalVideoPlaying = false;
                 }
@@ -679,10 +683,41 @@ namespace TestAppUwp
                     id = captureDevice.Id,
                     name = captureDevice.DisplayName
                 };
-                string videoProfile = SelectedVideoProfile?.Id;
+                var videoProfile = SelectedVideoProfile;
+                string videoProfileId = videoProfile?.Id;
+
+                uint width = 640; //< TODO width,height
+                uint height = 480; //< TODO width,height
+                if (videoProfile != null)
+                {
+                    // TODO - selected resolution inside the video profile instead of #0
+                    width = videoProfile.SupportedRecordMediaDescription[0].Width;
+                    height = videoProfile.SupportedRecordMediaDescription[0].Height;
+                }
+                else
+                {
+                    //< TODO width,height
+                }
+
+                localVideoPlayer.Source = null;
+                localMediaSource?.Reset();
+                localVideo.SetMediaPlayer(null);
+                localVideoSource = null;
+                localVideoSource = CreateVideoStreamSource(width, height);
+                localMediaSource = MediaSource.CreateFromMediaStreamSource(localVideoSource);
+                localVideoPlayer.Source = localMediaSource;
+                localVideo.SetMediaPlayer(localVideoPlayer);
+
+                remoteMediaSource?.Reset();
+                remoteVideo.SetMediaPlayer(null);
+                remoteVideoPlayer.Source = null;
+                remoteVideoSource = CreateVideoStreamSource(width, height);
+                remoteMediaSource = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
+                remoteVideoPlayer.Source = remoteMediaSource;
+                remoteVideo.SetMediaPlayer(remoteVideoPlayer);
 
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfile, false).ContinueWith(prevTask =>
+                _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfileId, false).ContinueWith(prevTask =>
                 {
                     // Continue inside UI thread here
                     if (prevTask.Exception != null)
@@ -697,7 +732,7 @@ namespace TestAppUwp
                     localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx); //< HACK
                     remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx)); //< HACK
                     localVideoSourceName.Text = $"({VideoCaptureDevices[idx].DisplayName})"; //< HACK
-                    localVideo.MediaPlayer.Play();
+                    //localVideo.MediaPlayer.Play();
                     lock (_isLocalVideoPlayingLock)
                     {
                         _isLocalVideoPlaying = true;
