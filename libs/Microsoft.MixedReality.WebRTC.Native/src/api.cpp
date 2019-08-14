@@ -382,7 +382,7 @@ void MRS_CALL mrsPeerConnectionRegisterTrackAddedCallback(
     PeerConnectionTrackAddedCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->RegisterTrackAddedCallback(Callback<>{callback, user_data});
+    peer->RegisterTrackAddedCallback(Callback<TrackKind>{callback, user_data});
   }
 }
 
@@ -391,7 +391,8 @@ void MRS_CALL mrsPeerConnectionRegisterTrackRemovedCallback(
     PeerConnectionTrackRemovedCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->RegisterTrackRemovedCallback(Callback<>{callback, user_data});
+    peer->RegisterTrackRemovedCallback(
+        Callback<TrackKind>{callback, user_data});
   }
 }
 

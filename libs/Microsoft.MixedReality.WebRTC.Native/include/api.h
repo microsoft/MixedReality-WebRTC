@@ -109,11 +109,21 @@ using PeerConnectionIceCandidateReadytoSendCallback =
 using PeerConnectionRenegotiationNeededCallback =
     void(MRS_CALL*)(void* user_data);
 
+/// Kind of media track. Equivalent to webrtc::MediaStreamTrackInterface::kind().
+enum class TrackKind : uint32_t {
+  kUnknownTrack = 0,
+  kAudioTrack = 1,
+  kVideoTrack = 2,
+  kDataTrack = 3,
+};
+
 /// Callback fired when a remote track is added to a connection.
-using PeerConnectionTrackAddedCallback = void(MRS_CALL*)(void* user_data);
+using PeerConnectionTrackAddedCallback = void(MRS_CALL*)(void* user_data,
+                                                         TrackKind track_kind);
 
 /// Callback fired when a remote track is removed from a connection.
-using PeerConnectionTrackRemovedCallback = void(MRS_CALL*)(void* user_data);
+using PeerConnectionTrackRemovedCallback =
+    void(MRS_CALL*)(void* user_data, TrackKind track_kind);
 
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.

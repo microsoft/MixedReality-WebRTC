@@ -440,7 +440,15 @@ void PeerConnection::OnAddTrack(
   auto lock = std::lock_guard{track_added_callback_mutex_};
   auto cb = track_added_callback_;
   if (cb) {
-    cb();
+    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
+        receiver->track();
+    TrackKind trackKind = TrackKind::kUnknownTrack;
+    if (track->kind() == webrtc::MediaStreamTrackInterface::kAudioKind) {
+      trackKind = TrackKind::kAudioTrack;
+    } else if (track->kind() == webrtc::MediaStreamTrackInterface::kVideoKind) {
+      trackKind = TrackKind::kVideoTrack;
+    }
+    cb(trackKind);
   }
 }
 
@@ -449,7 +457,15 @@ void PeerConnection::OnRemoveTrack(
   auto lock = std::lock_guard{track_removed_callback_mutex_};
   auto cb = track_removed_callback_;
   if (cb) {
-    cb();
+    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
+        receiver->track();
+    TrackKind trackKind = TrackKind::kUnknownTrack;
+    if (track->kind() == webrtc::MediaStreamTrackInterface::kAudioKind) {
+      trackKind = TrackKind::kAudioTrack;
+    } else if (track->kind() == webrtc::MediaStreamTrackInterface::kVideoKind) {
+      trackKind = TrackKind::kVideoTrack;
+    }
+    cb(trackKind);
   }
 }
 

@@ -151,6 +151,8 @@ namespace TestAppUwp
             _peerConnection = new PeerConnection(dssSignaler);
             _peerConnection.Connected += OnPeerConnected;
             _peerConnection.RenegotiationNeeded += OnPeerRenegotiationNeeded;
+            _peerConnection.TrackAdded += Peer_RemoteTrackAdeed;
+            _peerConnection.TrackRemoved += Peer_RemoteTrackRemoved;
             _peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
             _peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
 
@@ -167,6 +169,16 @@ namespace TestAppUwp
             {
                 _peerConnection.CreateOffer();
             }
+        }
+
+        private void Peer_RemoteTrackAdeed(PeerConnection.TrackKind trackKind)
+        {
+            LogMessage($"Added remote {trackKind} track.");
+        }
+
+        private void Peer_RemoteTrackRemoved(PeerConnection.TrackKind trackKind)
+        {
+            LogMessage($"Removed remote {trackKind} track.");
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
