@@ -62,27 +62,29 @@ const std::string kLocalAudioLabel("local_audio");
 
 #if defined(WINUWP)
 
-std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>
-GetOrCreateUWPFactory() {
+std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory> GetOrCreateUWPFactory() {
   if (!g_winuwp_factory) {
-    auto factoryConfig = std::make_shared<
-        wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
+    // wrapper::org::webRtc::WebRtcFactoryConfiguration::wrapper_create()
+    // This simulates wrapper creation, but getting back the actual impl and not
+    // its public interface, which is missing some bits needed to continue.
+    auto factoryConfig = std::make_shared<wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
+    factoryConfig->thisWeak_ = factoryConfig;
+    factoryConfig->wrapper_init_org_webRtc_WebRtcFactoryConfiguration();
+
     factoryConfig->audioCapturingEnabled = true;
     factoryConfig->audioRenderingEnabled = true;
     factoryConfig->enableAudioBufferEvents = true;
-    g_winuwp_factory =
-        std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
+
+    // wrapper::org::webRtc::WebRtcFactory::wrapper_create()
+    // This simulates wrapper creation, but getting back the actual impl and not
+    // its public interface, which is missing some bits needed to continue.
+    g_winuwp_factory = std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
+    g_winuwp_factory->thisWeak_ = g_winuwp_factory;
     g_winuwp_factory->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
+
     g_winuwp_factory->setup();
   }
   return g_winuwp_factory;
-}
-
-rtc::Thread* UnsafeGetWorkerThread() {
-  if (auto ptr = GetOrCreateUWPFactory()) {
-    return ptr->workerThread.get();
-  }
-  return nullptr;
 }
 
 #endif
@@ -171,8 +173,9 @@ PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
     libConfig->queue = dispatcherQueue;
     wrapper::impl::org::webRtc::WebRtcLib::setup(libConfig);
 
-	auto winuwp_factory = GetOrCreateUWPFactory();
+    auto winuwp_factory = GetOrCreateUWPFactory();
     g_peer_connection_factory = winuwp_factory->peerConnectionFactory();
+
 #else
     g_worker_thread.reset(new rtc::Thread());
     g_worker_thread->Start();

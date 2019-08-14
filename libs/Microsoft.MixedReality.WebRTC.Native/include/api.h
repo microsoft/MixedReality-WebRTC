@@ -10,11 +10,6 @@
 std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>
 GetOrCreateUWPFactory();
 
-// Non-API helper. Returned object can be deleted at any time in theory.
-// In practice because it's provided by a global object it's safe.
-//< TODO - Remove that, clean-up API, this is bad (c).
-rtc::Thread* UnsafeGetWorkerThread();
-
 #endif
 
 // P/Invoke uses stdcall by default. This can be changed, but Unity's IL2CPP
