@@ -64,6 +64,7 @@
 #include "impl_org_webRtc_VideoCapturer.h"
 #include "impl_org_webRtc_VideoCapturerCreationParameters.h"
 #include "impl_org_webRtc_VideoDeviceInfo.h"
+#include "impl_org_webRtc_VideoFormat.h"
 #include "impl_org_webRtc_WebRtcFactory.h"
 #include "impl_org_webRtc_WebRtcFactoryConfiguration.h"
 #include "impl_org_webRtc_WebRtcLib.h"

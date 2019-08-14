@@ -44,12 +44,20 @@ rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> OpenVideoCaptureDevice(
     }
     auto id = devInfo.Id().c_str();
 
+    auto format = wrapper::org::webRtc::VideoFormat::wrapper_create();
+    format->wrapper_init_org_webRtc_VideoFormat();
+    format->set_width(640);
+    format->set_height(480);
+    format->set_interval(std::chrono::nanoseconds{(long long)(1000 * 1000 / 30.0)});
+    format->set_fourcc(FOURCC('N', 'V', '1', '2'));
+
     auto createParams = std::make_shared<
         wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
     createParams->factory = GetOrCreateUWPFactory();
     createParams->name = name;
     createParams->id = id;
     createParams->enableMrc = enable_mrc;
+    createParams->format = format;
 
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
     if (vcd != nullptr) {
