@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license
 // information.
 
+// This is a precompiled header, it must be on its own, followed by a blank
+// line, to prevent clang-format from reordering it with other headers.
 #include "pch.h"
 
 #include "data_channel_observer.h"
