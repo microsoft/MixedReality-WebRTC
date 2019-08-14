@@ -566,6 +566,10 @@ namespace TestAppUwp
             remoteVideoPlayer.MediaFailed += OnMediaFailed;
             remoteVideoPlayer.MediaEnded += OnMediaEnded;
 
+            remoteVideoSource = CreateVideoStreamSource(640, 480); //< TODO: width,height
+            remoteMediaSource = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
+            remoteVideoPlayer.Source = remoteMediaSource;
+
             // Bind the XAML UI control (localVideo) to the MediaFoundation rendering pipeline (localVideoPlayer)
             // so that the former can render in the UI the video frames produced in the background by the later.
             localVideo.SetMediaPlayer(localVideoPlayer);
@@ -720,14 +724,6 @@ namespace TestAppUwp
                 localMediaSource = MediaSource.CreateFromMediaStreamSource(localVideoSource);
                 localVideoPlayer.Source = localMediaSource;
                 localVideo.SetMediaPlayer(localVideoPlayer);
-
-                remoteMediaSource?.Reset();
-                remoteVideo.SetMediaPlayer(null);
-                remoteVideoPlayer.Source = null;
-                remoteVideoSource = CreateVideoStreamSource(width, height);
-                remoteMediaSource = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
-                remoteVideoPlayer.Source = remoteMediaSource;
-                remoteVideo.SetMediaPlayer(remoteVideoPlayer);
 
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
                 _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfileId, (int)width, (int)height,
