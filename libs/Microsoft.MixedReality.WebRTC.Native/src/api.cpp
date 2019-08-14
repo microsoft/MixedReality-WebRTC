@@ -54,6 +54,9 @@ const std::string kLocalAudioLabel("local_audio");
 std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     const char* video_device_id,
     const char* video_profile_id,
+    int width,
+    int height,
+    double framerate,
     bool enable_mrc) noexcept(kNoExceptFalseOnUWP) {
 #if defined(WINUWP)
   // Check for calls from main UI thread; this is not supported (will deadlock)
@@ -96,9 +99,9 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
       createParams->videoProfileId = video_profile_id;
     }
     createParams->enableMrc = enable_mrc;
-    createParams->width = 0;      // unconstrainted
-    createParams->height = 0;     // unconstrainted
-    createParams->framerate = 0;  // unconstrainted
+    createParams->width = width;
+    createParams->height = height;
+    createParams->framerate = framerate;
 
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
 
@@ -436,6 +439,9 @@ bool MRS_CALL
 mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
                                     const char* video_device_id,
                                     const char* video_profile_id,
+                                    int width,
+                                    int height,
+                                    double framerate,
                                     bool enable_mrc)
 #if defined(WINUWP)
     noexcept(false)
@@ -448,7 +454,8 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
       return false;
     }
     std::unique_ptr<cricket::VideoCapturer> video_capturer =
-        OpenVideoCaptureDevice(video_device_id, video_profile_id, enable_mrc);
+        OpenVideoCaptureDevice(video_device_id, video_profile_id, width, height,
+                               framerate, enable_mrc);
     if (!video_capturer) {
       return false;
     }

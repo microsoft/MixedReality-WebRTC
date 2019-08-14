@@ -247,6 +247,9 @@ MRS_API bool MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     PeerConnectionHandle peerHandle,
     const char* video_device_id,
     const char* video_profile_id,
+    int width,
+    int height,
+    double framerate,
     bool enable_mrc) noexcept(kNoExceptFalseOnUWP);
 
 /// Add a local audio track from a local audio capture device (microphone) to

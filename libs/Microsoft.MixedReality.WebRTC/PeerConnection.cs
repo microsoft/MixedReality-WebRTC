@@ -675,14 +675,15 @@ namespace Microsoft.MixedReality.WebRTC
         /// </remarks>
         /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task AddLocalVideoTrackAsync(VideoCaptureDevice device = default(VideoCaptureDevice),
-            string videoProfileId = default, bool enableMrc = false)
+            string videoProfileId = default, int width = 0, int height = 0, double framerate = 0.0, bool enableMrc = false)
         {
             ThrowIfConnectionNotOpen();
             return Task.Run(() =>
             {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
-                if (!NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, device.id, videoProfileId, enableMrc))
+                if (!NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, device.id, videoProfileId,
+                    width, height, framerate, enableMrc))
                 {
                     throw new Exception();
                 }
@@ -1075,7 +1076,7 @@ namespace Microsoft.MixedReality.WebRTC
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
             public static extern bool PeerConnectionAddLocalVideoTrack(IntPtr peerHandle, string videoDeviceId,
-                string videoProfileId, bool enableMrc);
+                string videoProfileId, int width, int height, double framerate, bool enableMrc);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddLocalAudioTrack")]

@@ -99,6 +99,20 @@ namespace TestAppUwp
         public ObservableCollection<MediaCaptureVideoProfileMediaDescription> RecordMediaDescs { get; private set; }
             = new ObservableCollection<MediaCaptureVideoProfileMediaDescription>();
 
+        public MediaCaptureVideoProfileMediaDescription SelectedRecordMediaDesc
+        {
+            get
+            {
+                var descIndex = RecordMediaDescList.SelectedIndex;
+                if ((descIndex < 0) || (descIndex >= RecordMediaDescs.Count))
+                {
+                    return null;
+                }
+                return RecordMediaDescs[descIndex];
+
+            }
+        }
+
         public ObservableCollection<NavLink> NavLinks { get; }
             = new ObservableCollection<NavLink>();
 
@@ -687,17 +701,15 @@ namespace TestAppUwp
                 var videoProfile = SelectedVideoProfile;
                 string videoProfileId = videoProfile?.Id;
 
-                uint width = 640; //< TODO width,height
-                uint height = 480; //< TODO width,height
+                uint width = 0;
+                uint height = 0;
+                double framerate = 0.0;
                 if (videoProfile != null)
                 {
-                    // TODO - selected resolution inside the video profile instead of #0
-                    width = videoProfile.SupportedRecordMediaDescription[0].Width;
-                    height = videoProfile.SupportedRecordMediaDescription[0].Height;
-                }
-                else
-                {
-                    //< TODO width,height
+                    var recordMediaDesc = SelectedRecordMediaDesc ?? videoProfile.SupportedRecordMediaDescription[0];
+                    width = recordMediaDesc.Width;
+                    height = recordMediaDesc.Height;
+                    framerate = recordMediaDesc.FrameRate;
                 }
 
                 localVideoPlayer.Source = null;
@@ -718,7 +730,8 @@ namespace TestAppUwp
                 remoteVideo.SetMediaPlayer(remoteVideoPlayer);
 
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfileId, false).ContinueWith(prevTask =>
+                _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfileId, (int)width, (int)height,
+                    framerate, /* mrcEnabled = */ false).ContinueWith(prevTask =>
                 {
                     // Continue inside UI thread here
                     if (prevTask.Exception != null)
