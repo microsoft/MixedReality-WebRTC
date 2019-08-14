@@ -10,9 +10,11 @@ namespace Microsoft::MixedReality::WebRTC {
 
 /// Helper to open a video capture device by unique identifier and return it
 /// wrapped as a VideoCaptureModule object.
-rtc::scoped_refptr<webrtc::VideoCaptureModule> OpenVideoCaptureDevice(
+rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> OpenVideoCaptureDevice(
     const char* video_device_id,
     bool enable_mrc = false) noexcept;
+
+#if !defined(WINUWP)
 
 /// Bridge between a VideoCaptureModule producing some frames from a video
 /// capture device, and a VideoTrackSource providing the frame to WebRTC.
@@ -56,5 +58,7 @@ class CapturerTrackSource : public webrtc::VideoTrackSource {
   }
   std::unique_ptr<VideoCapturer> capturer_;
 };
+
+#endif  // !defined(WINUWP)
 
 }  // namespace Microsoft::MixedReality::WebRTC

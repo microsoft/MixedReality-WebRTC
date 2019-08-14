@@ -61,12 +61,30 @@ const std::string kLocalAudioLabel("local_audio");
 }  // namespace
 
 #if defined(WINUWP)
+
+std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>
+GetOrCreateUWPFactory() {
+  if (!g_winuwp_factory) {
+    auto factoryConfig = std::make_shared<
+        wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
+    factoryConfig->audioCapturingEnabled = true;
+    factoryConfig->audioRenderingEnabled = true;
+    factoryConfig->enableAudioBufferEvents = true;
+    g_winuwp_factory =
+        std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
+    g_winuwp_factory->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
+    g_winuwp_factory->setup();
+  }
+  return g_winuwp_factory;
+}
+
 rtc::Thread* UnsafeGetWorkerThread() {
-  if (auto* ptr = g_winuwp_factory.get()) {
+  if (auto ptr = GetOrCreateUWPFactory()) {
     return ptr->workerThread.get();
   }
   return nullptr;
 }
+
 #endif
 
 void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {
@@ -88,23 +106,21 @@ void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     return;
   }
 #if defined(WINUWP)
-  auto vci = wrapper::impl::org::webRtc::VideoCapturer::getDevices();
-  vci->thenClosure(
-      [vci, callback, completedCallback, userData, completedCallbackUserData] {
-        auto deviceList = vci->value();
-        for (auto&& vdi : *deviceList) {
-          auto devInfo =
-              wrapper::impl::org::webRtc::VideoDeviceInfo::toNative_winrt(vdi);
-          auto id = winrt::to_string(devInfo.Id());
-          id.push_back('\0');  // API must ensure null-terminated
-          auto name = winrt::to_string(devInfo.Name());
-          name.push_back('\0');  // API must ensure null-terminated
-          (*callback)(id.c_str(), name.c_str(), userData);
-        }
-        if (completedCallback) {
-          (*completedCallback)(completedCallbackUserData);
-        }
-      });
+  // Get devices synchronously (wait for UI thread to retrieve them for us)
+  auto deviceList =
+      winrt::Windows::Devices::Enumeration::DeviceInformation::FindAllAsync(
+          winrt::Windows::Devices::Enumeration::DeviceClass::VideoCapture)
+          .get();  // blocking call
+  for (auto&& devInfo : deviceList) {
+    auto id = winrt::to_string(devInfo.Id());
+    id.push_back('\0');  // API must ensure null-terminated
+    auto name = winrt::to_string(devInfo.Name());
+    name.push_back('\0');  // API must ensure null-terminated
+    (*callback)(id.c_str(), name.c_str(), userData);
+  }
+  if (completedCallback) {
+    (*completedCallback)(completedCallbackUserData);
+  }
 #else
   std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
       webrtc::VideoCaptureFactory::CreateDeviceInfo());
@@ -155,17 +171,8 @@ PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
     libConfig->queue = dispatcherQueue;
     wrapper::impl::org::webRtc::WebRtcLib::setup(libConfig);
 
-    auto factoryConfig = std::make_shared<
-        wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
-    factoryConfig->audioCapturingEnabled = true;
-    factoryConfig->audioRenderingEnabled = true;
-    factoryConfig->enableAudioBufferEvents = true;
-    g_winuwp_factory =
-        std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
-    g_winuwp_factory->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
-    g_winuwp_factory->setup();
-
-    g_peer_connection_factory = g_winuwp_factory->peerConnectionFactory();
+	auto winuwp_factory = GetOrCreateUWPFactory();
+    g_peer_connection_factory = winuwp_factory->peerConnectionFactory();
 #else
     g_worker_thread.reset(new rtc::Thread());
     g_worker_thread->Start();
@@ -342,20 +349,8 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
       return false;
     }
 
-    rtc::scoped_refptr<webrtc::VideoCaptureModule> video_capture_module =
+    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
         OpenVideoCaptureDevice(video_device_id, enable_mrc);
-    if (!video_capture_module) {
-      return false;
-    }
-
-    auto video_capturer =
-        std::make_unique<VideoCapturer>(std::move(video_capture_module));
-    if (!video_capturer) {
-      return false;
-    }
-
-    rtc::scoped_refptr<CapturerTrackSource> video_source =
-        CapturerTrackSource::Create(std::move(video_capturer));
     if (!video_source) {
       return false;
     }

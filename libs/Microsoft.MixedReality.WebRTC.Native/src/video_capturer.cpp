@@ -2,13 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license
 // information.
 
+// This is a precompiled header, it must be on its own, followed by a blank
+// line, to prevent clang-format from reordering it with other headers.
 #include "pch.h"
 
+#include "api.h"
 #include "video_capturer.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 
-rtc::scoped_refptr<webrtc::VideoCaptureModule> OpenVideoCaptureDevice(
+rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> OpenVideoCaptureDevice(
     const char* video_device_id,
     bool enable_mrc) noexcept {
 #if defined(WINUWP)
@@ -22,22 +25,19 @@ rtc::scoped_refptr<webrtc::VideoCaptureModule> OpenVideoCaptureDevice(
     return {};
   }
 
-  // Get devices synchronously (wait for UI thread to retrieve them for us)
-  rtc::Event blockOnDevicesEvent(true, false);
-  auto vci = wrapper::impl::org::webRtc::VideoCapturer::getDevices();
-  vci->thenClosure([&blockOnDevicesEvent] { blockOnDevicesEvent.Set(); });
-  blockOnDevicesEvent.Wait(rtc::Event::kForever);
-  auto deviceList = vci->value();
-
   std::wstring video_device_id_str;
   if ((video_device_id != nullptr) && (video_device_id[0] != '\0')) {
     video_device_id_str =
         rtc::ToUtf16(video_device_id, strlen(video_device_id));
   }
 
-  for (auto&& vdi : *deviceList) {
-    auto devInfo =
-        wrapper::impl::org::webRtc::VideoDeviceInfo::toNative_winrt(vdi);
+  // Get devices synchronously (wait for UI thread to retrieve them for us)
+  auto deviceList =
+      winrt::Windows::Devices::Enumeration::DeviceInformation::FindAllAsync(
+          winrt::Windows::Devices::Enumeration::DeviceClass::VideoCapture)
+          .get();  // blocking call
+
+  for (auto&& devInfo : deviceList) {
     auto name = devInfo.Name().c_str();
     if (!video_device_id_str.empty() && (video_device_id_str != name)) {
       continue;
@@ -46,27 +46,27 @@ rtc::scoped_refptr<webrtc::VideoCaptureModule> OpenVideoCaptureDevice(
 
     auto createParams = std::make_shared<
         wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
-    createParams->factory = g_winuwp_factory;
+    createParams->factory = GetOrCreateUWPFactory();
     createParams->name = name;
     createParams->id = id;
     createParams->enableMrc = enable_mrc;
 
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
-
     if (vcd != nullptr) {
-      auto nativeVcd = wrapper::impl::org::webRtc::VideoCapturer::toNative(vcd);
+      rtc::scoped_refptr<rtc::AdaptedVideoTrackSource> nativeVcd =
+          wrapper::impl::org::webRtc::VideoCapturer::toNative(vcd);
 
       RTC_LOG(LS_INFO) << "Using video capture device '"
                        << rtc::ToUtf8(devInfo.Name().c_str()).c_str()
                        << "' (id=" << rtc::ToUtf8(id).c_str() << ")";
 
-      if (auto supportedFormats = nativeVcd->GetSupportedFormats()) {
-        RTC_LOG(LS_INFO) << "Supported video formats:";
-        for (auto&& format : *supportedFormats) {
-          auto str = format.ToString();
-          RTC_LOG(LS_INFO) << "- " << str.c_str();
-        }
-      }
+      // if (auto supportedFormats = nativeVcd->GetSupportedFormats()) {
+      //  RTC_LOG(LS_INFO) << "Supported video formats:";
+      //  for (auto&& format : *supportedFormats) {
+      //    auto str = format.ToString();
+      //    RTC_LOG(LS_INFO) << "- " << str.c_str();
+      //  }
+      //}
 
       return nativeVcd;
     }
@@ -110,16 +110,34 @@ rtc::scoped_refptr<webrtc::VideoCaptureModule> OpenVideoCaptureDevice(
   }
 
   // Create the video capture module (VCM) from the first available device
-  rtc::scoped_refptr<webrtc::VideoCaptureModule> capturer;
+  rtc::scoped_refptr<webrtc::VideoCaptureModule> video_capture_module;
   for (const auto& id : device_ids) {
-    capturer = webrtc::VideoCaptureFactory::Create(id.c_str());
-    if (capturer) {
+    video_capture_module = webrtc::VideoCaptureFactory::Create(id.c_str());
+    if (video_capture_module) {
       break;
     }
   }
-  return capturer;
+  if (!video_capture_module) {
+    return {};
+  }
+
+  auto video_capturer =
+      std::make_unique<VideoCapturer>(std::move(video_capture_module));
+  if (!video_capturer) {
+    return {};
+  }
+
+  rtc::scoped_refptr<CapturerTrackSource> video_source =
+      CapturerTrackSource::Create(std::move(video_capturer));
+  if (!video_source) {
+    return {};
+  }
+
+  return video_source;
 #endif
 }
+
+#if !defined(WINUWP)
 
 VideoCapturer::VideoCapturer(rtc::scoped_refptr<webrtc::VideoCaptureModule> vcm)
     : vcm_(std::forward<rtc::scoped_refptr<webrtc::VideoCaptureModule>>(vcm)) {
@@ -164,5 +182,7 @@ void VideoCapturer::OnFrame(const webrtc::VideoFrame& frame) {
     sink->OnFrame(frame);
   }
 }
+
+#endif  // !defined(WINUWP)
 
 }  // namespace Microsoft::MixedReality::WebRTC
