@@ -73,6 +73,14 @@ jobs:
       targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/webrtc.lib'
     timeoutInMinutes: 15
 
+  # Publish PDBs for webrtc.lib
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish PDBs for webrtc.lib ($(buildTriple))'
+    inputs:
+      artifactName: 'libwebrtc_pdbs_$(buildTriple)'
+      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/pdbs'
+    timeoutInMinutes: 15
+
   # Publish Org.WebRtc.dll and associated (PDB, ...)
   - task: PublishPipelineArtifact@0
     displayName: 'Publish WinRT wrappers ($(buildTriple))'
