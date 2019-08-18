@@ -147,7 +147,7 @@ function Build-UWPWrappers
 
     # Compile
     & $msbuildTool `
-        /target:Build /maxCpuCount:4 /property:Configuration=$BuildConfig /property:Platform=$BuildArch `
+        /target:Build /property:Configuration=$BuildConfig /property:Platform=$BuildArch `
         "..\..\external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Org.WebRtc.vcxproj"
 }
 
