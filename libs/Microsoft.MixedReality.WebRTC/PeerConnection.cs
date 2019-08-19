@@ -513,24 +513,21 @@ namespace Microsoft.MixedReality.WebRTC
 
                 // Cache values in local variables before starting async task, to avoid any
                 // subsequent external change from affecting that task.
+                // Also set default values, as the native call doesn't handle NULL.
                 var servers = Servers;
                 var username = UserName;
                 var credentials = Credentials;
                 if (servers == null)
                 {
-                    throw new ArgumentNullException("Servers");
-                }
-                if (servers.Count == 0)
-                {
-                    throw new ArgumentException("Servers list is empty");
+                    servers = new List<string>();
                 }
                 if (username == null)
                 {
-                    throw new ArgumentNullException("UserName");
+                    username = "";
                 }
                 if (credentials == null)
                 {
-                    throw new ArgumentNullException("Credentials");
+                    credentials = "";
                 }
 
                 // On UWP PeerConnectionCreate() fails on main UI thread, so always initialize the native peer

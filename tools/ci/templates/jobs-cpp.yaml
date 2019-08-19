@@ -7,6 +7,7 @@ parameters:
   buildAgent: ''
   buildPlatform: ''    # Win32|UWP
   buildArch: ''        # x86|x64|ARM|ARM64
+  msbuildPlatform: ''  # Win32|x64|ARM|ARM64
   buildConfig: ''      # Debug|Release
  
 jobs:
@@ -74,7 +75,7 @@ jobs:
       solution: libs/Microsoft.MixedReality.WebRTC.Native/src/${{parameters.buildPlatform}}/Microsoft.MixedReality.WebRTC.Native.${{parameters.buildPlatform}}.vcxproj
       msbuildVersion: 15.0
       msbuildArchitecture: x64
-      platform: ${{parameters.buildArch}}
+      platform: ${{parameters.msbuildPlatform}}
       configuration: ${{parameters.buildConfig}}
     timeoutInMinutes: 20
 

@@ -28,7 +28,7 @@
         <!-- <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\arm64\Debug\webrtc.lib" target="lib\native\lib\uap10.0\arm64\debug" /> -->
         <!-- <file src="external\webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\arm64\Release\webrtc.lib" target="lib\native\lib\uap10.0\arm64\release" /> -->
         
-        <!-- .targets -->
-        <file src="libs\Microsoft.MixedReality.WebRTC.Native.Core\Microsoft.MixedReality.WebRTC.Native.Core.targets" target="build\native" />
+        <!-- .props -->
+        <file src="libs\Microsoft.MixedReality.WebRTC.Native.Core\Microsoft.MixedReality.WebRTC.Native.Core.props" target="build\native" />
     </files>
 </package>

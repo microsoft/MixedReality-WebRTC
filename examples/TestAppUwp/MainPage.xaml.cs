@@ -675,8 +675,12 @@ namespace TestAppUwp
                     remoteVideoPlayer.Source = remoteMediaSource;
 
                     _isRemoteVideoPlaying = true;
+                    uint width = frame.width;
+                    uint height = frame.height;
                     RunOnMainThread(() =>
                     {
+                        remoteVideoSource = CreateVideoStreamSource(width, height);
+                        remoteVideoPlayer.Source = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
                         remoteVideoPlayer.Play();
                     });
                 }
