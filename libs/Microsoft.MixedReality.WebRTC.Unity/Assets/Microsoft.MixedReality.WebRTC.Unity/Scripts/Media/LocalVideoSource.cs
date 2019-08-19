@@ -74,7 +74,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 var nativePeer = PeerConnection?.Peer;
                 if ((nativePeer != null) && nativePeer.Initialized)
                 {
-                    await nativePeer.AddLocalVideoTrackAsync(default, EnableMixedRealityCapture);
+                    await nativePeer.AddLocalVideoTrackAsync(default, enableMrc: EnableMixedRealityCapture);
                     VideoStreamStarted.Invoke();
                 }
             }
@@ -109,7 +109,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             if (AutoAddTrack)
             {
-                nativePeer.AddLocalVideoTrackAsync(default, EnableMixedRealityCapture);
+                nativePeer.AddLocalVideoTrackAsync(default, enableMrc: EnableMixedRealityCapture);
                 VideoStreamStarted.Invoke();
             }
         }

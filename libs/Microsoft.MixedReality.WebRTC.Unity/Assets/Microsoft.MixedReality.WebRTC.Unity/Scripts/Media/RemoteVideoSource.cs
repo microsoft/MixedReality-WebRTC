@@ -159,11 +159,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <see cref="VideoSource.VideoStreamStarted"/> event to be fired from the main
         /// Unity thread.
         /// </summary>
-        private void TrackAdded()
+        private void TrackAdded(WebRTC.PeerConnection.TrackKind trackKind)
         {
-            // Enqueue invoking the unity event from the main Unity thread, so that listeners
-            // can directly access Unity objects from their handler function.
-            _mainThreadWorkQueue.Enqueue(() => VideoStreamStarted.Invoke());
+            if (trackKind == WebRTC.PeerConnection.TrackKind.VideoTrack)
+            {
+                // Enqueue invoking the unity event from the main Unity thread, so that listeners
+                // can directly access Unity objects from their handler function.
+                _mainThreadWorkQueue.Enqueue(() => VideoStreamStarted.Invoke());
+            }
         }
 
         /// <summary>
@@ -171,11 +174,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <see cref="VideoSource.VideoStreamStopped"/> event to be fired from the main
         /// Unity thread.
         /// </summary>
-        private void TrackRemoved()
+        private void TrackRemoved(WebRTC.PeerConnection.TrackKind trackKind)
         {
-            // Enqueue invoking the unity event from the main Unity thread, so that listeners
-            // can directly access Unity objects from their handler function.
-            _mainThreadWorkQueue.Enqueue(() => VideoStreamStopped.Invoke());
+            if (trackKind == WebRTC.PeerConnection.TrackKind.VideoTrack)
+            {
+                // Enqueue invoking the unity event from the main Unity thread, so that listeners
+                // can directly access Unity objects from their handler function.
+                _mainThreadWorkQueue.Enqueue(() => VideoStreamStopped.Invoke());
+            }
         }
 
         /// <summary>
