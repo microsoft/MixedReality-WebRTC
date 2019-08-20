@@ -454,6 +454,15 @@ namespace TestAppUwp
         /// <returns>The newly created video source.</returns>
         private MediaStreamSource CreateVideoStreamSource(uint width, uint height)
         {
+            if (width == 0)
+            {
+                throw new ArgumentException("Invalid zero width for video stream source.", "width");
+            }
+            if (height == 0)
+            {
+                throw new ArgumentException("Invalid zero height for video stream source.", "height");
+            }
+
             // Note: IYUV and I420 have same memory layout (though different FOURCC)
             // https://docs.microsoft.com/en-us/windows/desktop/medfound/video-subtype-guids
             var videoProperties = VideoEncodingProperties.CreateUncompressed(MediaEncodingSubtypes.Iyuv, width, height);
