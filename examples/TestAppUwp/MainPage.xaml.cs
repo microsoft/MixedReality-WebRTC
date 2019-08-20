@@ -724,8 +724,8 @@ namespace TestAppUwp
                 var captureDevice = SelectedVideoCaptureDevice;
                 var captureDeviceInfo = new PeerConnection.VideoCaptureDevice()
                 {
-                    id = captureDevice.Id,
-                    name = captureDevice.DisplayName
+                    id = captureDevice?.Id,
+                    name = captureDevice?.DisplayName
                 };
                 var videoProfile = SelectedVideoProfile;
                 string videoProfileId = videoProfile?.Id;
