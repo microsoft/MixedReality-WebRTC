@@ -730,8 +730,8 @@ namespace TestAppUwp
                 var videoProfile = SelectedVideoProfile;
                 string videoProfileId = videoProfile?.Id;
 
-                uint width = 0;
-                uint height = 0;
+                uint width = 640; //< TODO - replace with non-profile resolution from querying the capture device
+                uint height = 480; //< TODO - replace with non-profile resolution from querying the capture device
                 double framerate = 0.0;
                 if (videoProfile != null)
                 {
