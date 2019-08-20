@@ -3,6 +3,10 @@
 
 using UnityEngine;
 
+#if ENABLE_WINMD_SUPPORT
+using Windows.Graphics.Holographic;
+#endif
+
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
@@ -74,8 +78,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 var nativePeer = PeerConnection?.Peer;
                 if ((nativePeer != null) && nativePeer.Initialized)
                 {
-                    await nativePeer.AddLocalVideoTrackAsync(default, enableMrc: EnableMixedRealityCapture);
-                    VideoStreamStarted.Invoke();
+                    AddLocalVideoTrackImpl(nativePeer);
                 }
             }
         }
@@ -109,9 +112,26 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             if (AutoAddTrack)
             {
-                nativePeer.AddLocalVideoTrackAsync(default, enableMrc: EnableMixedRealityCapture);
-                VideoStreamStarted.Invoke();
+                AddLocalVideoTrackImpl(nativePeer);
             }
+        }
+
+        private void AddLocalVideoTrackImpl(WebRTC.PeerConnection nativePeer)
+        {
+            //< TEMP - On HoloLens 2, force video profile to get low-power camera.
+            //< TODO - This won't work on HL1 which doesn't support video profiles; use MediaCapture.IsVideoProfileSupported(deviceId) to check.
+            string videoProfileId = null;
+            int width = 0;
+#if ENABLE_WINMD_SUPPORT
+            // For HoloLens, select the "VideoConferencing" profile
+            if (!Windows.Graphics.Holographic.HolographicDisplay.GetDefault().IsOpaque)
+            {
+                videoProfileId = "{C5444A88-E1BF-4597-B2DD-9E1EAD864BB8},100"; // VideoConferencing
+                width = 760; // Target 760 x 428
+            }
+#endif
+            nativePeer.AddLocalVideoTrackAsync(default, videoProfileId: videoProfileId, width: width, enableMrc: EnableMixedRealityCapture);
+            VideoStreamStarted.Invoke();
         }
 
         private void OnPeerShutdown()
