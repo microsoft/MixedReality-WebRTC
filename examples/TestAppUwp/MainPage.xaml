@@ -83,7 +83,7 @@
                     ItemsSource="{x:Bind NavLinks}" ItemTemplate="{StaticResource NavLinkItemTemplate}"/>-->
                 </Grid>
             </PivotItem>
-            <PivotItem Header="Peers">
+            <PivotItem Header="Connection">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -93,18 +93,18 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="350px"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="12px"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="STUN server" FontWeight="Bold" Grid.ColumnSpan="2" />
                     <TextBlock Text="The STUN server is used to establish a peer connection through NATs." FontStyle="Italic" Grid.ColumnSpan="2" Grid.Row="1" Margin="12,6,0,0" />
                     <TextBox Name="stunServer" HorizontalAlignment="Left" PlaceholderText="address:port (without prefix)" Text="stun.l.google.com:19302" VerticalAlignment="Center" Width="300" TextChanged="StunServerTextChanged" Grid.Row="2" Margin="12,6,0,6"/>
-                    <TextBlock Text="Discovered peers" FontWeight="Bold" Grid.ColumnSpan="2" Grid.Row="3" Margin="0,12,0,0" FontFamily="Segoe UI" />
-                    <ListView Grid.Row="4" Margin="12,0,0,0" ItemsSource="{x:Bind NavLinks}" ItemTemplate="{StaticResource NavLinkItemTemplate}" />
+                    <!--<TextBlock Text="Discovered peers" FontWeight="Bold" Grid.ColumnSpan="2" Grid.Row="3" Margin="0,12,0,0" FontFamily="Segoe UI" />
+                    <ListView Grid.Row="4" Margin="12,0,0,0" ItemsSource="{x:Bind NavLinks}" ItemTemplate="{StaticResource NavLinkItemTemplate}" />-->
                     <Button Name="createOfferButton" IsEnabled="False" Content="Create offer" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.511,0.634" Click="CreateOfferButtonClicked" Width="125" Grid.Row="5" Margin="0,6,0,6"/>
-                    <TextBlock Text="Video capture devices" FontWeight="Bold" Grid.Row="3" Margin="0,12,0,0" FontFamily="Segoe UI" Grid.Column="2" />
-                    <Grid Grid.Row="4" Grid.Column="2" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch">
+                    <TextBlock Text="Video capture devices" FontWeight="Bold" Grid.Row="3" Margin="0,12,0,0" FontFamily="Segoe UI" Grid.Column="0" />
+                    <Grid Grid.Row="4" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
