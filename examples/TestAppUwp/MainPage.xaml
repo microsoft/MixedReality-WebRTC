@@ -69,7 +69,7 @@
                     <TextBox Name="dssServer" HorizontalAlignment="Left" PlaceholderText="http://server:port/" Text="http://localhost:3000/" VerticalAlignment="Center" Width="285" TextChanged="StunServerTextChanged" Grid.Row="2" Grid.Column="1" Margin="0,6,0,6"/>
                     <TextBlock Text="Poll delay" VerticalAlignment="Center" Grid.Row="3" HorizontalAlignment="Right" Margin="0,0,12,0"/>
                     <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Margin="0,6,0,6">
-                        <TextBox x:Name="dssPollTimeMs" MinWidth="100" Text="200" TextAlignment="Right"/>
+                        <TextBox x:Name="dssPollTimeMs" MinWidth="100" Text="500" TextAlignment="Right"/>
                         <TextBlock Text="ms" VerticalAlignment="Center" Margin="4,0,0,0" />
                     </StackPanel>
                     <TextBlock Text="Local peer UID" VerticalAlignment="Center" Grid.Row="4" HorizontalAlignment="Right" Margin="0,0,12,0" Height="20"  />
