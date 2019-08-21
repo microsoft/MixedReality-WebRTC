@@ -838,6 +838,7 @@ namespace TestAppUwp
             createOfferButton.IsEnabled = false;
             createOfferButton.Content = "Joining...";
 
+            _peerConnection.PreferredVideoCodec = PreferredVideoCodec.Text;
             _peerConnection.CreateOffer();
         }
 
