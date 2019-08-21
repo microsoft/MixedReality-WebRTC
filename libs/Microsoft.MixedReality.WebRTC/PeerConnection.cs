@@ -706,7 +706,7 @@ namespace Microsoft.MixedReality.WebRTC
                 if (!NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, device.id, videoProfileId,
                     videoProfileKind, width, height, framerate, enableMrc))
                 {
-                    throw new Exception();
+                    throw new Exception("Failed to add a local video track to the peer connection.");
                 }
             });
         }
