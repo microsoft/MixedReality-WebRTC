@@ -80,6 +80,22 @@ namespace TestAppUwp
             }
         }
 
+        public ObservableCollection<PeerConnection.VideoProfileKind> VideoProfileKinds { get; private set; }
+            = new ObservableCollection<PeerConnection.VideoProfileKind>();
+
+        public PeerConnection.VideoProfileKind SelectedVideoProfileKind
+        {
+            get
+            {
+                var kindIndex = VideoProfileKindComboBox.SelectedIndex;
+                if ((kindIndex < 0) || (kindIndex >= VideoProfileKinds.Count))
+                {
+                    return PeerConnection.VideoProfileKind.Unspecified;
+                }
+                return VideoProfileKinds[kindIndex];
+            }
+        }
+
         public ObservableCollection<MediaCaptureVideoProfile> VideoProfiles { get; private set; }
             = new ObservableCollection<MediaCaptureVideoProfile>();
 
@@ -185,13 +201,13 @@ namespace TestAppUwp
         {
             LogMessage("Initializing the WebRTC native plugin...");
 
-            // Populate the combo box with the KnownVideoProfile enum
+            // Populate the combo box with the PeerConnection.VideoProfileKind enum
             {
-                var values = Enum.GetValues(typeof(KnownVideoProfile));
-                KnownVideoProfileKindComboBox.ItemsSource = values.Cast<KnownVideoProfile>();
+                var values = Enum.GetValues(typeof(PeerConnection.VideoProfileKind));
+                KnownVideoProfileKindComboBox.ItemsSource = values.Cast<PeerConnection.VideoProfileKind>();
 
                 // Select "VideoConferencing" kind by default
-                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, KnownVideoProfile.VideoConferencing);
+                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, PeerConnection.VideoProfileKind.VideoConferencing);
             }
 
             VideoCaptureDeviceList.SelectionChanged += VideoCaptureDeviceList_SelectionChanged;
@@ -209,7 +225,6 @@ namespace TestAppUwp
             // This is more for demo purpose here because using the UWP API is nicer.
             {
                 // Use a local list accessible from a background thread
-                List<VideoCaptureDevice> vcds = new List<VideoCaptureDevice>(4);
                 PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((prevTask) =>
                 {
                     if (prevTask.Exception != null)
@@ -218,7 +233,8 @@ namespace TestAppUwp
                     }
 
                     var devices = prevTask.Result;
-                    vcds.Capacity = devices.Count;
+
+                    List<VideoCaptureDevice> vcds = new List<VideoCaptureDevice>(devices.Count);
                     foreach (var device in devices)
                     {
                         vcds.Add(new VideoCaptureDevice()
@@ -330,15 +346,23 @@ namespace TestAppUwp
             }
 
             // Get the kind of known video profile selected by the user
-            var knownVideoProfileIndex = KnownVideoProfileKindComboBox.SelectedIndex;
-            if (knownVideoProfileIndex < 0)
+            var videoProfileKindIndex = KnownVideoProfileKindComboBox.SelectedIndex;
+            if (videoProfileKindIndex < 0)
             {
                 return;
             }
-            var knownVideoProfile = (KnownVideoProfile)Enum.GetValues(typeof(KnownVideoProfile)).GetValue(knownVideoProfileIndex);
+            var videoProfileKind = (PeerConnection.VideoProfileKind)Enum.GetValues(typeof(PeerConnection.VideoProfileKind)).GetValue(videoProfileKindIndex);
 
-            // List all video profiles for the select device and kind
-            var profiles = MediaCapture.FindKnownVideoProfiles(device.Id, knownVideoProfile);
+            // List all video profiles for the select device (and kind, if any specified)
+            IReadOnlyList<MediaCaptureVideoProfile> profiles;
+            if (videoProfileKind == PeerConnection.VideoProfileKind.Unspecified)
+            {
+                profiles = MediaCapture.FindAllVideoProfiles(device.Id);
+            }
+            else
+            {
+                profiles = MediaCapture.FindKnownVideoProfiles(device.Id, (KnownVideoProfile)(videoProfileKind - 1));
+            }
             foreach (var profile in profiles)
             {
                 VideoProfiles.Add(profile);
@@ -729,7 +753,6 @@ namespace TestAppUwp
                 };
                 var videoProfile = SelectedVideoProfile;
                 string videoProfileId = videoProfile?.Id;
-
                 uint width = 640; //< TODO - replace with non-profile resolution from querying the capture device
                 uint height = 480; //< TODO - replace with non-profile resolution from querying the capture device
                 double framerate = 0.0;
@@ -751,8 +774,8 @@ namespace TestAppUwp
                 localVideo.SetMediaPlayer(localVideoPlayer);
 
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfileId, (int)width, (int)height,
-                    framerate, /* mrcEnabled = */ false).ContinueWith(prevTask =>
+                _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfileId, SelectedVideoProfileKind,
+                    (int)width, (int)height, framerate, /* mrcEnabled = */ false).ContinueWith(prevTask =>
                 {
                     // Continue inside UI thread here
                     if (prevTask.Exception != null)
@@ -765,7 +788,8 @@ namespace TestAppUwp
                     startLocalVideo.Content = "Stop local video";
                     var idx = HACK_GetVideoDeviceIndex(); //< HACK
                     localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx); //< HACK
-                    remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx)); //< HACK
+                    remotePeerUidTextBox.Text = "030098210300865F0300E0980300C2A0"; // GetDeviceUniqueIdLikeUnity((byte)(1 - idx)); //< HACK
+                    dssServer.Text = "http://10.164.30.167:3000/";
                     localVideoSourceName.Text = $"({VideoCaptureDevices[idx].DisplayName})"; //< HACK
                     //localVideo.MediaPlayer.Play();
                     lock (_isLocalVideoPlayingLock)

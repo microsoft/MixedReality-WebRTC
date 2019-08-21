@@ -54,6 +54,7 @@ const std::string kLocalAudioLabel("local_audio");
 std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     const char* video_device_id,
     const char* video_profile_id,
+    VideoProfileKind video_profile_kind,
     int width,
     int height,
     double framerate,
@@ -98,6 +99,8 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     if (video_profile_id) {
       createParams->videoProfileId = video_profile_id;
     }
+    createParams->videoProfileKind =
+          (wrapper::org::webRtc::VideoProfileKind)video_profile_kind;
     createParams->enableMrc = enable_mrc;
     createParams->width = width;
     createParams->height = height;
@@ -440,6 +443,7 @@ bool MRS_CALL
 mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
                                     const char* video_device_id,
                                     const char* video_profile_id,
+                                    VideoProfileKind video_profile_kind,
                                     int width,
                                     int height,
                                     double framerate,
@@ -455,8 +459,9 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
       return false;
     }
     std::unique_ptr<cricket::VideoCapturer> video_capturer =
-        OpenVideoCaptureDevice(video_device_id, video_profile_id, width, height,
-                               framerate, enable_mrc);
+        OpenVideoCaptureDevice(video_device_id, video_profile_id,
+                               video_profile_kind, width, height, framerate,
+                               enable_mrc);
     if (!video_capturer) {
       return false;
     }

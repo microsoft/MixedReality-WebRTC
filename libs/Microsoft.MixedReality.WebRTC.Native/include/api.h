@@ -245,6 +245,21 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
     PeerConnectionARGBVideoFrameCallback callback,
     void* user_data) noexcept;
 
+// Kind of video profile. Equivalent to org::webRtc::VideoProfileKind.
+enum class VideoProfileKind : int32_t {
+  kUnspecified,
+  kVideoRecording,
+  kHighQualityPhoto,
+  kBalancedVideoAndPhoto,
+  kVideoConferencing,
+  kPhotoSequence,
+  kHighFrameRate,
+  kVariablePhotoSequence,
+  kHdrWithWcgVideo,
+  kHdrWithWcgPhoto,
+  kVideoHdr8,
+};
+
 /// Add a local video track from a local video capture device (webcam) to
 /// the collection of tracks to send to the remote peer.
 /// |video_device_id| specifies the unique identifier of a video capture
@@ -257,6 +272,7 @@ MRS_API bool MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     PeerConnectionHandle peerHandle,
     const char* video_device_id,
     const char* video_profile_id,
+	VideoProfileKind video_profile_kind,
     int width,
     int height,
     double framerate,

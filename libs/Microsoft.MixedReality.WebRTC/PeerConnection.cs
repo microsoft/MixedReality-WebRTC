@@ -55,6 +55,21 @@ namespace Microsoft.MixedReality.WebRTC
             DataTrack = 3
         };
 
+        public enum VideoProfileKind : int
+        {
+            Unspecified,
+            VideoRecording,
+            HighQualityPhoto,
+            BalancedVideoAndPhoto,
+            VideoConferencing,
+            PhotoSequence,
+            HighFrameRate,
+            VariablePhotoSequence,
+            HdrWithWcgVideo,
+            HdrWithWcgPhoto,
+            VideoHdr8,
+        };
+
 
         /// <summary>
         /// Signaler implementation used by this peer connection, as specified in the constructor.
@@ -680,7 +695,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// </remarks>
         /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task AddLocalVideoTrackAsync(VideoCaptureDevice device = default(VideoCaptureDevice),
-            string videoProfileId = default, int width = 0, int height = 0, double framerate = 0.0, bool enableMrc = false)
+            string videoProfileId = default, VideoProfileKind videoProfileKind = VideoProfileKind.Unspecified,
+            int width = 0, int height = 0, double framerate = 0.0, bool enableMrc = false)
         {
             ThrowIfConnectionNotOpen();
             return Task.Run(() =>
@@ -688,7 +704,7 @@ namespace Microsoft.MixedReality.WebRTC
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
                 if (!NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, device.id, videoProfileId,
-                    width, height, framerate, enableMrc))
+                    videoProfileKind, width, height, framerate, enableMrc))
                 {
                     throw new Exception();
                 }
@@ -1081,7 +1097,8 @@ namespace Microsoft.MixedReality.WebRTC
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
             public static extern bool PeerConnectionAddLocalVideoTrack(IntPtr peerHandle, string videoDeviceId,
-                string videoProfileId, int width, int height, double framerate, bool enableMrc);
+                string videoProfileId, VideoProfileKind videoProfileKind, int width, int height, double framerate,
+                bool enableMrc);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddLocalAudioTrack")]
