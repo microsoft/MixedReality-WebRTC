@@ -40,7 +40,7 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Signaling server" VerticalAlignment="Center" Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,0,6" Grid.ColumnSpan="2"/>
                     <TextBlock Style="{StaticResource BodyTextBlockStyle}" FontStyle="Italic" Grid.Row="1" Grid.ColumnSpan="2">
@@ -58,8 +58,7 @@
                     <TextBlock Text="Remote peer UID" VerticalAlignment="Center" Margin="0,0,12,0" Grid.Row="5" HorizontalAlignment="Right"  />
                     <TextBox x:Name="remotePeerUidTextBox" MinWidth="250" Grid.Row="5" Grid.Column="1" Margin="0,6,0,6" />
                     <!--<SymbolIcon Symbol="Setting" />-->
-                    <Button x:Name="pollDssButton" Content="Start polling" HorizontalAlignment="Left" Margin="3,12,0,0" VerticalAlignment="Center" RenderTransformOrigin="0.511,0.634" Width="125" Click="PollDssButtonClicked" Grid.Row="6" Grid.ColumnSpan="2"/>
-                    <Button x:Name="sendSetPeerButton" Content="Send 'set-peer'" Grid.Row="6" Grid.Column="1" Margin="0,12,0,0" Width="125" Click="SendSetPeerButton_Click"/>
+                    <Button x:Name="pollDssButton" Content="Start polling" HorizontalAlignment="Left" Margin="0,12,0,0" VerticalAlignment="Center" Width="125" Click="PollDssButtonClicked" Grid.Row="6" Grid.ColumnSpan="2"/>
                     <!--<ListView x:Name="NavLinksList" Margin="0,12,0,0" SelectionMode="None" Grid.Row="1" VerticalAlignment="Stretch"
                     ItemClick="NavLinksList_ItemClick" IsItemClickEnabled="True"
                     ItemsSource="{x:Bind NavLinks}" ItemTemplate="{StaticResource NavLinkItemTemplate}"/>-->

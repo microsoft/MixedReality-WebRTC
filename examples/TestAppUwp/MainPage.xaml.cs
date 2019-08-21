@@ -682,17 +682,6 @@ namespace TestAppUwp
 
         }
 
-        private void SendSetPeerButton_Click(object sender, RoutedEventArgs e)
-        {
-            //var msg = new SignalerMessage()
-            //{
-            //    MessageType = SignalerMessage.WireMessageType.SetPeer,
-            //    TargetId = remotePeerUidTextBox.Text,
-            //    Data = localPeerUidTextBox.Text
-            //};
-            //dssSignaler.SendMessageAsync(msg);
-        }
-
         private void ChatSendButton_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(chatInputBox.Text))
