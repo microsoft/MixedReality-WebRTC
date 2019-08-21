@@ -214,9 +214,7 @@ namespace TestAppUwp
             {
                 var values = Enum.GetValues(typeof(PeerConnection.VideoProfileKind));
                 KnownVideoProfileKindComboBox.ItemsSource = values.Cast<PeerConnection.VideoProfileKind>();
-
-                // Select "VideoConferencing" kind by default
-                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, PeerConnection.VideoProfileKind.VideoConferencing);
+                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, PeerConnection.VideoProfileKind.Unspecified);
             }
 
             VideoCaptureDeviceList.SelectionChanged += VideoCaptureDeviceList_SelectionChanged;
@@ -380,6 +378,31 @@ namespace TestAppUwp
 
         private void VideoCaptureDeviceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // Get the video capture device selected by the user
+            var deviceIndex = VideoCaptureDeviceList.SelectedIndex;
+            if (deviceIndex < 0)
+            {
+                return;
+            }
+            var device = VideoCaptureDevices[deviceIndex];
+
+            // Select a default video profile kind
+            var values = Enum.GetValues(typeof(PeerConnection.VideoProfileKind));
+            if (MediaCapture.IsVideoProfileSupported(device.Id))
+            {
+                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, PeerConnection.VideoProfileKind.VideoConferencing);
+                KnownVideoProfileKindComboBox.IsEnabled = true; //< TODO - Use binding
+                VideoProfileComboBox.IsEnabled = true;
+                RecordMediaDescList.IsEnabled = true;
+            }
+            else
+            {
+                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, PeerConnection.VideoProfileKind.Unspecified);
+                KnownVideoProfileKindComboBox.IsEnabled = false;
+                VideoProfileComboBox.IsEnabled = false;
+                RecordMediaDescList.IsEnabled = false;
+            }
+
             UpdateVideoProfiles();
         }
 
