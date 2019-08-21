@@ -33,6 +33,18 @@ namespace TestAppUwp
         public string Id;
         public string DisplayName;
         public Symbol Symbol;
+
+        public bool SupportsVideoProfiles
+        {
+            get
+            {
+                if (Id != null)
+                {
+                    return MediaCapture.IsVideoProfileSupported(Id);
+                }
+                return false;
+            }
+        }
     }
 
     /// <summary>
@@ -80,19 +92,16 @@ namespace TestAppUwp
             }
         }
 
-        public ObservableCollection<PeerConnection.VideoProfileKind> VideoProfileKinds { get; private set; }
-            = new ObservableCollection<PeerConnection.VideoProfileKind>();
-
         public PeerConnection.VideoProfileKind SelectedVideoProfileKind
         {
             get
             {
-                var kindIndex = VideoProfileKindComboBox.SelectedIndex;
-                if ((kindIndex < 0) || (kindIndex >= VideoProfileKinds.Count))
+                var videoProfileKindIndex = KnownVideoProfileKindComboBox.SelectedIndex;
+                if (videoProfileKindIndex < 0)
                 {
                     return PeerConnection.VideoProfileKind.Unspecified;
                 }
-                return VideoProfileKinds[kindIndex];
+                return (PeerConnection.VideoProfileKind)Enum.GetValues(typeof(PeerConnection.VideoProfileKind)).GetValue(videoProfileKindIndex);
             }
         }
 
