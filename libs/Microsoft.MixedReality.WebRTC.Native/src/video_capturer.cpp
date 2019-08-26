@@ -44,6 +44,7 @@ rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> OpenVideoCaptureDevice(
     }
     auto id = devInfo.Id().c_str();
 
+	  //< TODO - select supported resolution!
     auto format = wrapper::org::webRtc::VideoFormat::wrapper_create();
     format->wrapper_init_org_webRtc_VideoFormat();
     format->set_width(640);
