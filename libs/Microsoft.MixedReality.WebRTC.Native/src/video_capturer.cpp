@@ -171,7 +171,7 @@ void VideoCapturer::AddOrUpdateSink(
     const rtc::VideoSinkWants& /*wants*/) {
   std::scoped_lock lock(sinks_mutex_);
   auto it = std::find(sinks_.begin(), sinks_.end(), sink);
-  if (it != sinks_.end()) {
+  if (it == sinks_.end()) {
     sinks_.push_back(sink);
   }
 }
