@@ -125,9 +125,9 @@ rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> OpenVideoCaptureDevice(
   // List unique identifiers for all available devices if none requested, or
   // find the one requested.
   std::vector<std::string> device_ids;
+  std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
+      webrtc::VideoCaptureFactory::CreateDeviceInfo());
   {
-    std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
-        webrtc::VideoCaptureFactory::CreateDeviceInfo());
     if (!info) {
       return {};
     }
@@ -163,10 +163,19 @@ rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> OpenVideoCaptureDevice(
   rtc::scoped_refptr<webrtc::VideoCaptureModule> video_capture_module;
   {
     const std::unique_ptr<rtc::Thread>& signalingThread = GetSignalingThread();
-    AsyncCaller handler([&video_capture_module, &device_ids]() {
+    AsyncCaller handler([&video_capture_module, &device_ids, &info]() {
       for (const auto& id : device_ids) {
         video_capture_module = webrtc::VideoCaptureFactory::Create(id.c_str());
         if (video_capture_module) {
+          //< TODO - Hard-coded video capture format
+          webrtc::VideoCaptureCapability params, paramsRequested;
+          paramsRequested.width = 640;
+          paramsRequested.height = 480;
+          paramsRequested.maxFPS = 30;
+          paramsRequested.interlaced = false;
+          paramsRequested.videoType = webrtc::VideoType::kUnknown;  // any
+          info->GetBestMatchedCapability(id.c_str(), paramsRequested, params);
+          video_capture_module->StartCapture(params);
           break;
         }
       }
