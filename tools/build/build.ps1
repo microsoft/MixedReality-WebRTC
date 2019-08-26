@@ -133,9 +133,21 @@ function Build-UWPWrappers
     nuget restore -NonInteractive "..\..\external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\packages.config" `
         -SolutionDirectory "..\..\external\webrtc-uwp-sdk\webrtc\windows\solutions" -Verbosity detailed
 
+    # Find MSBuild.exe
+    $msbuildTool = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe"
+    if (-not (Test-Path $msbuildTool))
+    {
+        $msbuildTool = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe"
+        if (-not (Test-Path $msbuildTool))
+        {
+            Write-Error "Cannot find MSBuild.exe from Visual Studio 2019 install path"
+            exit 1
+        }
+    }
+
     # Compile
-    & "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" `
-        /target:Build /maxCpuCount:4 /property:Configuration=$BuildConfig /property:Platform=$BuildArch `
+    & $msbuildTool `
+        /target:Build /property:Configuration=$BuildConfig /property:Platform=$BuildArch `
         "..\..\external\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Org.WebRtc.vcxproj"
 }
 
@@ -160,7 +172,7 @@ function Apply-GitPatch
         git apply --reverse --check $PatchPath
         if (-not $?)
         {
-            Write-Host "Patch $PatchPath not applied, and failed to apply."
+            Write-Error "Patch $PatchPath not applied, and failed to apply."
             exit 1
         }
     }
