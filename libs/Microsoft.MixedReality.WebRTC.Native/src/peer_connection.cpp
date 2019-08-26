@@ -57,7 +57,8 @@ PeerConnection::PeerConnection() = default;
 
 PeerConnection::~PeerConnection() noexcept {
   // Ensure that observers (sinks) are removed, otherwise the media pipelines
-  // will continue to try to feed them with data after they're destroyed
+  // will continue to try to feed them with data after they're destroyed, or
+  // try to notify of some incoming data on data tracks.
   RemoveLocalVideoTrack();
   RemoveLocalAudioTrack();
   for (auto stream : remote_streams_) {
@@ -72,6 +73,7 @@ PeerConnection::~PeerConnection() noexcept {
       }
     }
   }
+  RemoveAllDataTracks();
 }
 
 void PeerConnection::SetPeerImpl(
@@ -230,6 +232,19 @@ bool PeerConnection::RemoveDataChannel(const char* label) noexcept {
   }
   data_channel_from_label_.erase(it_label);
   return true;
+}
+
+void PeerConnection::RemoveAllDataTracks() noexcept {
+  for (auto const& kv : data_channel_from_id_) {
+    int id = kv.first;
+    std::shared_ptr<DataChannelObserver> const& observer = kv.second;
+    if (auto* data_channel = observer->data_channel()) {
+      data_channel->UnregisterObserver();
+      data_channel->Close();
+    }
+  }
+  data_channel_from_id_.clear();
+  data_channel_from_label_.clear();
 }
 
 bool PeerConnection::SendDataChannelMessage(int id,

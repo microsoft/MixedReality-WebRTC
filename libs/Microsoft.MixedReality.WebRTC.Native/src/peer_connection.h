@@ -105,6 +105,9 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   bool RemoveDataChannel(int id) noexcept;
   bool RemoveDataChannel(const char* label) noexcept;
 
+  /// Remove all the existing data tracks from the peer connection.
+  void RemoveAllDataTracks() noexcept;
+
   bool SendDataChannelMessage(int id, const void* data, uint64_t size) noexcept;
 
   bool AddIceCandidate(const char* sdp_mid,
