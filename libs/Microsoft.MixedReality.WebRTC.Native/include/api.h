@@ -10,6 +10,14 @@
 std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>
 GetOrCreateUWPFactory();
 
+#else
+
+/// WebRTC worker thread.
+const std::unique_ptr<rtc::Thread>& GetWorkerThread();
+
+/// WebRTC signaling thread.
+const std::unique_ptr<rtc::Thread>& GetSignalingThread();
+
 #endif
 
 // P/Invoke uses stdcall by default. This can be changed, but Unity's IL2CPP

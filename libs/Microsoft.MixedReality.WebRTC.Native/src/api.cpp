@@ -87,6 +87,18 @@ std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory> GetOrCreateUWPFactory
   return g_winuwp_factory;
 }
 
+#else
+
+/// WebRTC worker thread.
+const std::unique_ptr<rtc::Thread>& GetWorkerThread() {
+  return g_worker_thread;
+}
+
+/// WebRTC signaling thread.
+const std::unique_ptr<rtc::Thread>& GetSignalingThread() {
+  return g_signaling_thread;
+}
+
 #endif
 
 void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {

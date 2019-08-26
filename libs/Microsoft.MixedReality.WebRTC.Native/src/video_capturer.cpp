@@ -9,6 +9,43 @@
 #include "api.h"
 #include "video_capturer.h"
 
+namespace {
+
+// Similar to webrtc::MethodCall0<> but with free function (see proxy.h)
+class AsyncCaller : public rtc::MessageHandler {
+ public:
+  AsyncCaller(std::function<void()>&& func);
+  ~AsyncCaller() override;
+  void InvokeAndWait(const rtc::Location& posted_from, rtc::Thread* t);
+
+ private:
+  void OnMessage(rtc::Message*) override;
+  rtc::Event ev_;
+  std::function<void()> func_;
+};
+
+AsyncCaller::AsyncCaller(std::function<void()>&& func)
+    : func_(std::forward<std::function<void()>>(func)) {}
+
+AsyncCaller::~AsyncCaller() = default;
+
+void AsyncCaller::InvokeAndWait(const rtc::Location& posted_from,
+                                rtc::Thread* t) {
+  if (t->IsCurrent()) {
+    func_();
+  } else {
+    t->Post(posted_from, this, 0);
+    ev_.Wait(rtc::Event::kForever);
+  }
+}
+
+void AsyncCaller::OnMessage(rtc::Message*) {
+  func_();
+  ev_.Set();
+}
+
+}  // namespace
+
 namespace Microsoft::MixedReality::WebRTC {
 
 rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> OpenVideoCaptureDevice(
@@ -44,12 +81,13 @@ rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> OpenVideoCaptureDevice(
     }
     auto id = devInfo.Id().c_str();
 
-	  //< TODO - select supported resolution!
+    //< TODO - select supported resolution!
     auto format = wrapper::org::webRtc::VideoFormat::wrapper_create();
     format->wrapper_init_org_webRtc_VideoFormat();
     format->set_width(640);
     format->set_height(480);
-    format->set_interval(std::chrono::nanoseconds{(long long)(1000 * 1000 / 30.0)});
+    format->set_interval(
+        std::chrono::nanoseconds{(long long)(1000 * 1000 / 30.0)});
     format->set_fourcc(FOURCC('N', 'V', '1', '2'));
 
     auto createParams = std::make_shared<
@@ -118,13 +156,22 @@ rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> OpenVideoCaptureDevice(
     }
   }
 
-  // Create the video capture module (VCM) from the first available device
+  // Create the video capture module (VCM) from the first available device.
+  // This needs to be on the WebRTC signaling thread, as the destruction code
+  // will check that it is called on the same thread so we don't want to be
+  // called from any random thread we don't control.
   rtc::scoped_refptr<webrtc::VideoCaptureModule> video_capture_module;
-  for (const auto& id : device_ids) {
-    video_capture_module = webrtc::VideoCaptureFactory::Create(id.c_str());
-    if (video_capture_module) {
-      break;
-    }
+  {
+    const std::unique_ptr<rtc::Thread>& signalingThread = GetSignalingThread();
+    AsyncCaller handler([&video_capture_module, &device_ids]() {
+      for (const auto& id : device_ids) {
+        video_capture_module = webrtc::VideoCaptureFactory::Create(id.c_str());
+        if (video_capture_module) {
+          break;
+        }
+      }
+    });
+    handler.InvokeAndWait(RTC_FROM_HERE, signalingThread.get());
   }
   if (!video_capture_module) {
     return {};
