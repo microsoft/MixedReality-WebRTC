@@ -8,7 +8,7 @@
     <title>Building the Core dependencies from sources | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Building the Core dependencies from sources | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.44.0.0">
+    <meta name="generator" content="docfx 2.45.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -84,50 +84,36 @@
 <li>The low-level WebRTC C++ implementation <code>webrtc.lib</code> from Google.</li>
 <li>The UWP WinRT wrapper <code>Org.WebRtc.winmd</code> from the Microsoft WebRTC UWP team.</li>
 </ul>
-<p>The dependencies require some heavy setup and take time to compile, therefore <strong>it is strongly recommended to use the prebuilt binaries shipped as NuGet packages</strong> instead of trying to build those from source:</p>
-<table>
-<thead>
-<tr>
-<th>NuGet Package</th>
-<th>Architecture</th>
-<th style="text-align: center;"><code>webrtc.lib</code></th>
-<th style="text-align: center;"><code>Org.WebRtc.winmd</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Core.Native.Desktop/"><code>Microsoft.MixedReality.WebRTC.Core.Native.Desktop</code></a></td>
-<td>x86, x64</td>
-<td style="text-align: center;">✔</td>
-<td style="text-align: center;">❌</td>
-</tr>
-<tr>
-<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Core.Native.UWP.x86/"><code>Microsoft.MixedReality.WebRTC.Core.Native.UWP.x86</code></a></td>
-<td>x86</td>
-<td style="text-align: center;">✔</td>
-<td style="text-align: center;">✔</td>
-</tr>
-<tr>
-<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Core.Native.UWP.x64/"><code>Microsoft.MixedReality.WebRTC.Core.Native.UWP.x64</code></a></td>
-<td>x64</td>
-<td style="text-align: center;">✔</td>
-<td style="text-align: center;">✔</td>
-</tr>
-<tr>
-<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Core.Native.UWP.ARM/"><code>Microsoft.MixedReality.WebRTC.Core.Native.UWP.ARM</code></a></td>
-<td>ARM (32-bit)</td>
-<td style="text-align: center;">✔</td>
-<td style="text-align: center;">✔</td>
-</tr>
-<tr>
-<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Core.Native.UWP/"><code>Microsoft.MixedReality.WebRTC.Core.Native.UWP</code></a><em>(*)</em></td>
-<td>x86, x64, ARM</td>
-<td style="text-align: center;">✔</td>
-<td style="text-align: center;">✔</td>
-</tr>
-</tbody>
-</table>
-<p><em>(*) This is a meta-package referencing all the architecture-dependent ones for UWP for convenience.</em></p>
+<p>The dependencies require some heavy setup and take time to compile, therefore <strong>it is strongly recommended to use the prebuilt binaries shipped as NuGet packages</strong> instead of trying to build those from source.</p>
+<p><strong>Windows Desktop</strong></p>
+<p>These packages contain <code>webrtc.lib</code> built for Windows Desktop (<code>Win32</code>) for a given architecture and build config.</p>
+<ul>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug/"><code>Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release/"><code>Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug/"><code>Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release/"><code>Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release</code></a></li>
+</ul>
+<p><strong>Windows UWP</strong></p>
+<p>These packages contain <code>webrtc.lib</code> built for Windows UWP for a given architecture and build config.</p>
+<ul>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.Debug/"><code>Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.Debug</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.Release/"><code>Microsoft.MixedReality.WebRTC.Native.Core.UWP.x86.Release</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.Debug/"><code>Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.Debug</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.Release/"><code>Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.Release</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.Debug/"><code>Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.Debug</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.Release/"><code>Microsoft.MixedReality.WebRTC.Native.Core.UWP.ARM.Release</code></a></li>
+</ul>
+<p>In addition, the <a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.UWP/"><code>Microsoft.MixedReality.WebRTC.Native.Core.UWP</code></a> package (which should have been named <code>.WinRT</code> for consistency) references all the architecture-dependent ones for UWP for convenience, and also contains the platform-independent generated C++/WinRT headers necessary to consume the libraries.</p>
+<p><strong>WinRT binding</strong></p>
+<p>These packages contain the WinRT binding (<code>Org.WebRtc.dll</code>, <code>Org.WebRtc.winmd</code>, <code>Org.WebRtc.WrapperGlue.lib</code>) built for Windows UWP for a given architecture and build config.</p>
+<ul>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x86.Debug/"><code>Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x86.Debug</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x86.Release/"><code>Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x86.Release</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x64.Debug/"><code>Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x64.Debug</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x64.Release/"><code>Microsoft.MixedReality.WebRTC.Native.Core.WinRT.x64.Release</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.WinRT.ARM.Debug/"><code>Microsoft.MixedReality.WebRTC.Native.Core.WinRT.ARM.Debug</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Core.WinRT.ARM.Release/"><code>Microsoft.MixedReality.WebRTC.Native.Core.WinRT.ARM.Release</code></a></li>
+</ul>
 <p>In general <strong>most users will want to follow <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/README.md">the steps in the readme</a> instead of the ones below</strong> if there is no need to modify the input dependencies.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <h3 id="general">General</h3>
