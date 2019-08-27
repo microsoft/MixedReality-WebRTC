@@ -61,6 +61,12 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// List of TURN and/or STUN servers to use for NAT bypass, in order of preference.
+        ///
+        /// The scheme is defined in the core WebRTC implementation, and is in short:
+        /// stunURI     = stunScheme ":" stun-host [ ":" stun-port ]
+        /// stunScheme  = "stun" / "stuns"
+        /// turnURI     = turnScheme ":" turn-host [ ":" turn-port ] [ "?transport=" transport ]
+        /// turnScheme  = "turn" / "turns"
         /// </summary>
         public List<string> Servers = new List<string>();
 
