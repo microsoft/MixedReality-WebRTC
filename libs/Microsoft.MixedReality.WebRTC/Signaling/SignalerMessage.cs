@@ -38,6 +38,24 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
+        /// Convert a message type from <see cref="string"/> to <see cref="WireMessageType"/>.
+        /// </summary>
+        /// <param name="stringType">The message type as <see cref="string"/>.</param>
+        /// <returns>The message type as a <see cref="WireMessageType"/> object.</returns>
+        public static WireMessageType WireMessageTypeFromString(string stringType)
+        {
+            if (string.Equals(stringType, "offer", StringComparison.OrdinalIgnoreCase))
+            {
+                return WireMessageType.Offer;
+            }
+            else if (string.Equals(stringType, "answer", StringComparison.OrdinalIgnoreCase))
+            {
+                return WireMessageType.Answer;
+            }
+            throw new ArgumentException($"Unkown signaler message type '{stringType}'");
+        }
+
+        /// <summary>
         /// The message type
         /// </summary>
         public WireMessageType MessageType;
@@ -60,5 +78,18 @@ namespace Microsoft.MixedReality.WebRTC
         /// </remarks>
         [NonSerialized]
         public string TargetId;
+    }
+
+    public static class WireMessageTypeExtensions
+    {
+        /// <summary>
+        /// Convert a message type from <see cref="SignalerMessage.WireMessageType"/> to <see cref="string"/>.
+        /// </summary>
+        /// <param name="type">The message type as <see cref="SignalerMessage.WireMessageType"/>.</param>
+        /// <returns>The message type as a <see cref="string"/> object.</returns>
+        public static string ToString(this SignalerMessage.WireMessageType type)
+        {
+            return type.ToString().ToLowerInvariant();
+        }
     }
 }
