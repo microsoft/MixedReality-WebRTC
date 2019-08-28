@@ -38,9 +38,9 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Convert a message type from <see cref="string"/> to <see cref="WireMessageType"/>.
+        /// Convert a message type from <see xref="string"/> to <see cref="WireMessageType"/>.
         /// </summary>
-        /// <param name="stringType">The message type as <see cref="string"/>.</param>
+        /// <param name="stringType">The message type as <see xref="string"/>.</param>
         /// <returns>The message type as a <see cref="WireMessageType"/> object.</returns>
         public static WireMessageType WireMessageTypeFromString(string stringType)
         {
@@ -83,10 +83,10 @@ namespace Microsoft.MixedReality.WebRTC
     public static class WireMessageTypeExtensions
     {
         /// <summary>
-        /// Convert a message type from <see cref="SignalerMessage.WireMessageType"/> to <see cref="string"/>.
+        /// Convert a message type from <see cref="SignalerMessage.WireMessageType"/> to <see xref="string"/>.
         /// </summary>
         /// <param name="type">The message type as <see cref="SignalerMessage.WireMessageType"/>.</param>
-        /// <returns>The message type as a <see cref="string"/> object.</returns>
+        /// <returns>The message type as a <see xref="string"/> object.</returns>
         public static string ToString(this SignalerMessage.WireMessageType type)
         {
             return type.ToString().ToLowerInvariant();

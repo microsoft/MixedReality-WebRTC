@@ -676,7 +676,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
         /// </remarks>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task AddLocalVideoTrackAsync(VideoCaptureDevice device = default(VideoCaptureDevice), bool enableMrc = false)
         {
             ThrowIfConnectionNotOpen();
@@ -694,7 +694,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Remove from the current connection the local video track added with <see cref="AddLocalAudioTrackAsync"/>.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void RemoveLocalVideoTrack()
         {
             ThrowIfConnectionNotOpen();
@@ -710,7 +710,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
         /// </remarks>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task AddLocalAudioTrackAsync()
         {
             ThrowIfConnectionNotOpen();
@@ -728,7 +728,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Remove from the current connection the local audio track added with <see cref="AddLocalAudioTrackAsync"/>.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void RemoveLocalAudioTrack()
         {
             ThrowIfConnectionNotOpen();
@@ -757,9 +757,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
-        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         public async Task<DataChannel> AddDataChannelAsync(ushort id, string label, bool ordered, bool reliable)
         {
             if (id < 0)
@@ -787,9 +787,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
-        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         public async Task<DataChannel> AddDataChannelAsync(string label, bool ordered, bool reliable)
         {
             return await AddDataChannelAsyncImpl(-1, label, ordered, reliable);
@@ -805,9 +805,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
-        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         private async Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable)
         {
             // Preconditions
@@ -873,7 +873,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="sdpMid"></param>
         /// <param name="sdpMlineindex"></param>
         /// <param name="candidate"></param>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void AddIceCandidate(string sdpMid, int sdpMlineindex, string candidate)
         {
             ThrowIfConnectionNotOpen();
@@ -884,7 +884,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Create an SDP offer message as an attempt to establish a connection.
         /// </summary>
         /// <returns><c>true</c> if the offer was created successfully.</returns>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public bool CreateOffer()
         {
             ThrowIfConnectionNotOpen();
@@ -895,7 +895,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Create an SDP answer message to a previously-received offer, to accept a connection.
         /// </summary>
         /// <returns><c>true</c> if the offer was created successfully.</returns>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public bool CreateAnswer()
         {
             ThrowIfConnectionNotOpen();
@@ -910,7 +910,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="type">The type of SDP message ("offer", "answer", "ice")</param>
         /// <param name="sdp">The content of the SDP message</param>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void SetRemoteDescription(string type, string sdp)
         {
             ThrowIfConnectionNotOpen();
@@ -924,7 +924,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Utility to throw an exception if a method is called before the underlying
         /// native peer connection has been initialized.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         private void ThrowIfConnectionNotOpen()
         {
             lock (_openCloseLock)
