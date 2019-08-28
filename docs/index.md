@@ -25,11 +25,11 @@ _Note_ : **The documentation writing is in progress**. Some links are not active
   - Video
     - Streaming
     - Rendering
-- Unity integration
+- [Unity integration](manual/unity-integration.md)
   - Feature Overview
   - [Tutorial](manual/helloworld-unity.md)
   - Samples
-  - [Peer Connection](manual/peerconnection.md)
+  - [Peer Connection](manual/unity-peerconnection.md)
   - [Signaling](manual/signaling.md)
   - Audio
     - Streaming
