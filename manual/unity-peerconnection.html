@@ -5,11 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Enum SignalerMessage.WireMessageType
-   | MixedReality-WebRTC Documentation </title>
+    <title>Unity PeerConnection component | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Enum SignalerMessage.WireMessageType
-   | MixedReality-WebRTC Documentation ">
+    <meta name="title" content="Unity PeerConnection component | MixedReality-WebRTC Documentation ">
     <meta name="generator" content="docfx 2.45.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
@@ -78,56 +76,65 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType">
-  
-  
-  <h1 id="Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType" data-uid="Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType" class="text-break">Enum SignalerMessage.WireMessageType
-  </h1>
-  <div class="markdown level0 summary"><p>Possible message types as-serialized on the wire</p>
-</div>
-  <div class="markdown level0 conceptual"></div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
-  <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
-  <h5 id="Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_syntax">Syntax</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public enum WireMessageType : int</code></pre>
-  </div>
-  <h3 id="fields">Fields
-  </h3>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    <thead>
-    <tbody>
-      <tr>
-        <td id="Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_Answer">Answer</td>
-        <td><p>A SDP answer message</p>
-</td>
-      </tr>
-      <tr>
-        <td id="Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_Ice">Ice</td>
-        <td><p>A trickle-ice or ice message</p>
-</td>
-      </tr>
-      <tr>
-        <td id="Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_Offer">Offer</td>
-        <td><p>A SDP offer message</p>
-</td>
-      </tr>
-      <tr>
-        <td id="Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_Unknown">Unknown</td>
-        <td><p>An unrecognized message</p>
-</td>
-      </tr>
-    </tbody>
-  </thead></thead></table>
-  <h3 id="extensionmethods">Extension Methods</h3>
-  <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.html#Microsoft_MixedReality_WebRTC_WireMessageTypeExtensions_ToString_Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_">WireMessageTypeExtensions.ToString()</a>
-  </div>
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="unity-peerconnection-component">Unity <code>PeerConnection</code> component</h1>
+
+<p>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> Unity component encapsulates a single peer connection between the local application and another remote Unity peer application.</p>
+<p><img src="unity-peerconnection.png" alt="The PeerConnection Unity component"></p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Behavior settings</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Auto Initialize On Start</td>
+<td>Automatically initialize the peer connection when the <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html"><code>MonoBehaviour.Start()</code></a>. If not set, the user need to call <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_System_Threading_CancellationToken_"><code>InitializeAsync()</code></a> manually before using the component.</td>
+</tr>
+<tr>
+<td>Auto Log Errors To Unity Console</td>
+<td>Add an event listener to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_OnError"><code>OnError</code></a> event which calls <a href="https://docs.unity3d.com/ScriptReference/Debug.LogError.html"><code>Debug.LogError()</code></a> to display the error message in the Unity console.</td>
+</tr>
+<tr>
+<td><strong>ICE servers</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Ice Servers</td>
+<td>A list of <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.html"><code>ConfigurableIceServer</code></a> elements representing the list of ICE servers to use to establish the peer connection. The list can be empty, in which case only a local connection will be possible.</td>
+</tr>
+<tr>
+<td>Ice Username</td>
+<td>Optional user name for TURN servers authentication.</td>
+</tr>
+<tr>
+<td>Ice Credential</td>
+<td>Optional password for TURN servers authentication.</td>
+</tr>
+<tr>
+<td><strong>Peer connection events</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>On Initialized</td>
+<td>Event fired once the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_System_Threading_CancellationToken_"><code>InitializeAsync()</code></a> method returned successfully, to indicate that the peer connection component is ready for use.</td>
+</tr>
+<tr>
+<td>On Shutdown</td>
+<td>Event fired when <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Uninitialize"><code>Uninitialize()</code></a> is called, usually automatically during <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDestroy.html"><code>MonoBehaviour.OnDestroy()</code></a></td>
+</tr>
+<tr>
+<td>On Error</td>
+<td>Event fired when an error occur in the peer connection.</td>
+</tr>
+</tbody>
+</table>
 </article>
           </div>
           
@@ -136,10 +143,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/Signaling/SignalerMessage.cs/#L20" class="contribution-link">View Source</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/manual/unity-peerconnection.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

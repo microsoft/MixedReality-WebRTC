@@ -1031,6 +1031,19 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Unknown
   fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Unknown
   nameWithType: SignalerMessage.WireMessageType.Unknown
+- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString(System.String)
+  name: WireMessageTypeFromString(String)
+  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.html#Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageTypeFromString_System_String_
+  commentId: M:Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString(System.String)
+  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString(System.String)
+  nameWithType: SignalerMessage.WireMessageTypeFromString(String)
+- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString*
+  name: WireMessageTypeFromString
+  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.html#Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageTypeFromString_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString
+  nameWithType: SignalerMessage.WireMessageTypeFromString
 - uid: Microsoft.MixedReality.WebRTC.TaskExtensions
   name: TaskExtensions
   href: api/Microsoft.MixedReality.WebRTC.TaskExtensions.html
@@ -2128,3 +2141,22 @@ references:
   fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).TryDequeue
   nameWithType: VideoFrameQueue<T>.TryDequeue
   nameWithType.vb: VideoFrameQueue(Of T).TryDequeue
+- uid: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions
+  name: WireMessageTypeExtensions
+  href: api/Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.html
+  commentId: T:Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions
+  fullName: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions
+  nameWithType: WireMessageTypeExtensions
+- uid: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString(Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType)
+  name: ToString(SignalerMessage.WireMessageType)
+  href: api/Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.html#Microsoft_MixedReality_WebRTC_WireMessageTypeExtensions_ToString_Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_
+  commentId: M:Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString(Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType)
+  fullName: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString(Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType)
+  nameWithType: WireMessageTypeExtensions.ToString(SignalerMessage.WireMessageType)
+- uid: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString*
+  name: ToString
+  href: api/Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.html#Microsoft_MixedReality_WebRTC_WireMessageTypeExtensions_ToString_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString
+  nameWithType: WireMessageTypeExtensions.ToString

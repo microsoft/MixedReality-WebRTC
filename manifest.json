@@ -198,7 +198,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDevice.html",
-          "hash": "pUTAwhJW+R1p8WMNMY8Qjw=="
+          "hash": "2a7pGK29ThubyS2lhjTLuw=="
         }
       },
       "is_incremental": false,
@@ -234,7 +234,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.html",
-          "hash": "lMCjOmJeq710Hi67ITGP3Q=="
+          "hash": "wLdoQLo/RjEjH6Lb4PqXXQ=="
         }
       },
       "is_incremental": false,
@@ -246,7 +246,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.html",
-          "hash": "gFjVd3xI+Mw67yxh8RzFqA=="
+          "hash": "wbJnwV56j7Uhytq4DyDvPw=="
         }
       },
       "is_incremental": false,
@@ -258,7 +258,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SignalerMessage.html",
-          "hash": "brHx63NRPfTtXnQ2RbMSYw=="
+          "hash": "iAVil8YtWuk+PjD7pAuFLQ=="
         }
       },
       "is_incremental": false,
@@ -554,11 +554,23 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.html",
+          "hash": "42UVNlLbl/yem7DfSX4XVA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.yml",
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "okBfOzWzZsW62IY3IvA2yg=="
+          "hash": "skhimJK8X+iFEhRF3U+GEg=="
         }
       },
       "is_incremental": false,
@@ -570,7 +582,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "c6mV7xEJhmYrdlw8q/kOQw=="
+          "hash": "AbE3bzcV5au1uorva3qPfw=="
         }
       },
       "is_incremental": false,
@@ -582,7 +594,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "FkIlqHQpXiDnaTUQ13Ja3Q=="
+          "hash": "+vKV3EWFNfwD8mSxpVz1jg=="
         }
       },
       "is_incremental": false,
@@ -1041,7 +1053,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/toc.html",
-          "hash": "rPEGupIaUexiGO2A3KxpEA=="
+          "hash": "jOTgzqB5tQ8mkMaaYBR+Xw=="
         }
       },
       "is_incremental": false,
@@ -1053,6 +1065,17 @@
       "output": {
         "resource": {
           "relative_path": "manual/unity-class-diagram.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity-components-diagram.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity-components-diagram.png"
         }
       },
       "is_incremental": false,
@@ -1076,6 +1099,41 @@
       "output": {
         "resource": {
           "relative_path": "manual/unity-inspector.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity-integration.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity-integration.html",
+          "hash": "Wzy+93HywnNRxuYJbMkR2Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity-peerconnection.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity-peerconnection.html",
+          "hash": "79x0sNN7KX0m8753FMnbJA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity-peerconnection.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity-peerconnection.png"
         }
       },
       "is_incremental": false,
@@ -1138,23 +1196,23 @@
         "full_build_reason_code": "ForceRebuild"
       },
       "processors": {
-        "TocDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build",
-          "total_file_count": 0,
-          "skipped_file_count": 0
-        },
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 20,
+          "total_file_count": 22,
           "skipped_file_count": 0
         },
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 46,
+          "total_file_count": 47,
+          "skipped_file_count": 0
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
