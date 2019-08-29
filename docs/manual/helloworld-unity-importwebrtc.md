@@ -43,8 +43,8 @@ For **Windows Desktop**, the C++ library variants are:
 
 | Path | Any Platform | Exclude Platforms | CPU | OS | Example use |
 |---|---|---|---|---|---|
-| `Assets/Plugins/Win32/x86` | yes | - | x86 | Windows | 32-bit Windows Desktop application |
-| `Assets/Plugins/Win32/x86_64` | yes | - | x86_64 | Windows | 64-bit Windows Desktop application, including the Unity Editor on Windows |
+| `Assets/Plugins/Win32/x86` | yes | -WSAPlayer | x86 | Windows | 32-bit Windows Desktop application |
+| `Assets/Plugins/Win32/x86_64` | yes | -WSAPlayer | x86_64 | Windows | 64-bit Windows Desktop application, including the Unity Editor on Windows |
 
 For **Windows UWP**, the C++ library variants are:
 
