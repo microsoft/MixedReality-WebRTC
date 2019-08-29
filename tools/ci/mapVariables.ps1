@@ -12,7 +12,7 @@ param(
     [string]$BuildPlatform,
 
     [Parameter(Position=1)]
-    [ValidateSet('x86','x64','ARM','ARM64')]
+    [ValidateSet('x86','x64','ARM')]
     [string]$BuildArch,
 
     [Parameter(Position=2)]
@@ -33,8 +33,8 @@ else {
     Write-Host "##vso[task.complete result=Failed;]Unknown build platform '$BuildPlatform'."
 }
 
-# buildArch = x86|x64|ARM|ARM64
-# scriptArch = x86|x64|arm|arm64
+# buildArch = x86|x64|ARM
+# scriptArch = x86|x64|arm
 Write-Host "buildArch = $BuildArch"
 if ($BuildArch -eq "x86") {
     Write-Host "##vso[task.setvariable variable=scriptArch; ]x86"
@@ -44,9 +44,6 @@ elseif ($BuildArch -eq "x64") {
 }
 elseif ($BuildArch -eq "ARM") {
     Write-Host "##vso[task.setvariable variable=scriptArch; ]arm"
-}
-elseif ($BuildArch -eq "ARM64") {
-    Write-Host "##vso[task.setvariable variable=scriptArch; ]arm64"
 }
 else {
     Write-Host "##vso[task.complete result=Failed; ]Unknown build architecture '$BuildArch'."

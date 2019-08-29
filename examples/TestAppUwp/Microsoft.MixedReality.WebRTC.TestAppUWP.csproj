@@ -50,9 +50,6 @@
   <PropertyGroup Condition="'$(Platform)' == 'ARM'">
     <PlatformTarget>ARM</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)' == 'ARM64'">
-    <PlatformTarget>ARM64</PlatformTarget>
-  </PropertyGroup>
   <PropertyGroup>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>

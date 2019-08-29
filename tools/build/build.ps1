@@ -24,7 +24,6 @@ enum BuildArch {
     x86
     x64
     ARM
-    ARM64
 }
 
 enum BuildPlatform {
