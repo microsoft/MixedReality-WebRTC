@@ -35,7 +35,7 @@ The official documentation is hosted at https://microsoft.github.io/MixedReality
 - The [User Manual](https://microsoft.github.io/MixedReality-WebRTC/manual/introduction) contains a general overview and some tutorials.
   - The [Hello, Unity world!](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity) tutorial introduces the Unity integration by building a simple chat client.
   - The Hello, C# world! tutorial (under construction) introduces the C# API.
-- An [API reference](https://microsoft.github.io/MixedReality-WebRTC/#api-documentation) is also available for the C# library and the Unity integration.
+- An [API reference](https://microsoft.github.io/MixedReality-WebRTC/api/Microsoft.MixedReality.WebRTC.html) is also available for the C# library and the Unity integration.
 
 ## Getting Started
 
