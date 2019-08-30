@@ -594,7 +594,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "Uer66q9sx2OP9xN/mXlv/A=="
+          "hash": "VUc+g6j+22bQfPtLnrnE9g=="
         }
       },
       "is_incremental": false,
@@ -1053,7 +1053,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/toc.html",
-          "hash": "le2qcCeUJE6rPDRY080zCw=="
+          "hash": "e8qLa7dzFzmpbpQkktRA3Q=="
         }
       },
       "is_incremental": false,
@@ -1145,7 +1145,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-localvideosource.html",
-          "hash": "2Kb4G9JW9Gen3pmwph4pSQ=="
+          "hash": "id5hQy3CFTVfO0K/XMeKrA=="
         }
       },
       "is_incremental": false,
@@ -1157,6 +1157,29 @@
       "output": {
         "resource": {
           "relative_path": "manual/unity-localvideosource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity-mediaplayer.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity-mediaplayer.html",
+          "hash": "HrwWpeImguSRshfF9SHeAg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity-mediaplayer.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity-mediaplayer.png"
         }
       },
       "is_incremental": false,
@@ -1300,16 +1323,16 @@
         "full_build_reason_code": "ForceRebuild"
       },
       "processors": {
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 28,
+          "skipped_file_count": 0
+        },
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
           "total_file_count": 47,
-          "skipped_file_count": 0
-        },
-        "ConceptualDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 27,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
