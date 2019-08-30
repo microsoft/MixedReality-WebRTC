@@ -85,6 +85,10 @@
 <li>We need 2 instances of the application running at the same time. Unfortunately the Unity Editor cannot be opened twice with the same project. As a workaround, we can build and deploy the app on a device, even locally on the developer machine. Alternatively, we can use a second computer running another instance of the Unity Editor with an exact copy of this Unity project. The later is easier because we can still modify the project.</li>
 <li>The <code>NodeDssSignaler</code> component needs to be configured to know which remote peer to expect. This is due to the fact that this is a simple, easy, and <strong>not production-ready</strong> solution which does not offer any functionality to discover and select a remote peer. Instead it uses strings to identify the two peers. We can chose any two different strings.</li>
 </ul>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>When deploying to multiple devices, remember to change the IP address of the <code>node-dss</code> server to the IP address of the host machine in the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> component, instead of the default <code>127.0.0.1</code>.</p>
+</div>
 <h2 id="configuring-the-nodedsssignaler">Configuring the <code>NodeDssSignaler</code></h2>
 <p>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> has a <strong>Remote Peer Id</strong> property which contains the string identifying the remote peer to connect with. This should be filled with the identifier of the remote peer. The easiest way to obtain this identifier is to press <strong>Play</strong> and wait for the local signaler to start polling our <code>node-dss</code> server. If the server was started with the <code>DEBUG=*dss</code> environment variable set, it will output for each web request a message containing the identifier of the peer.</p>
 <ul>
