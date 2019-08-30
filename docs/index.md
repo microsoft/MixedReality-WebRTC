@@ -32,11 +32,11 @@ _Note_ : **The documentation writing is in progress**. Some links are not active
   - [Peer Connection](manual/unity-peerconnection.md)
   - [Signaler](manual/unity-signaler.md)
   - Audio
-    - Streaming
-    - Rendering
+    - [LocalAudioSource](manual/unity-localaudiosource.md)
+    - [RemoteAudioSource](manual/unity-remoteaudiosource.md)
   - Video
-    - Streaming
-    - Rendering
+    - [LocalVideoSource](manual/unity-localvideosource.md)
+    - [RemoteVideoSource](manual/unity-remotevideosource.md)
 - Advanced topics
   - [Building the Core dependencies from sources](manual/building-core.md)
 
