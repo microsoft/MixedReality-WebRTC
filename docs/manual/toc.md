@@ -17,3 +17,4 @@
 # [Audio and video playback](avplayback.md)
 # [Unity integration](unity-integration.md)
 ## [Peer connection](unity-peerconnection.md)
+## [Signaler](unity-signaler.md)
