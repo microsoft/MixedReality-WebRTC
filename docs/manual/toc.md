@@ -18,6 +18,7 @@
 # [Unity integration](unity-integration.md)
 ## [Peer connection](unity-peerconnection.md)
 ## [Signaler](unity-signaler.md)
+## [MediaPlayer](unity-mediaplayer.md)
 ## Audio
 ### [LocalAudioSource](unity-localaudiosource.md)
 ### [RemoteAudioSource](unity-remoteaudiosource.md)

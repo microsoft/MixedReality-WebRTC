@@ -31,6 +31,7 @@ _Note_ : **The documentation writing is in progress**. Some links are not active
   - Samples
   - [Peer Connection](manual/unity-peerconnection.md)
   - [Signaler](manual/unity-signaler.md)
+  - [Media Player](manual/unity-mediaplayer.md)
   - Audio
     - [LocalAudioSource](manual/unity-localaudiosource.md)
     - [RemoteAudioSource](manual/unity-remoteaudiosource.md)
