@@ -84,6 +84,12 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// List of TURN and/or STUN servers to use for NAT bypass, in order of preference.
+        ///
+        /// The scheme is defined in the core WebRTC implementation, and is in short:
+        /// stunURI     = stunScheme ":" stun-host [ ":" stun-port ]
+        /// stunScheme  = "stun" / "stuns"
+        /// turnURI     = turnScheme ":" turn-host [ ":" turn-port ] [ "?transport=" transport ]
+        /// turnScheme  = "turn" / "turns"
         /// </summary>
         public List<string> Servers = new List<string>();
 
@@ -693,7 +699,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
         /// </remarks>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task AddLocalVideoTrackAsync(VideoCaptureDevice device = default(VideoCaptureDevice),
             string videoProfileId = default, VideoProfileKind videoProfileKind = VideoProfileKind.Unspecified,
             int width = 0, int height = 0, double framerate = 0.0, bool enableMrc = false)
@@ -714,7 +720,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Remove from the current connection the local video track added with <see cref="AddLocalAudioTrackAsync"/>.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void RemoveLocalVideoTrack()
         {
             ThrowIfConnectionNotOpen();
@@ -730,7 +736,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
         /// </remarks>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task AddLocalAudioTrackAsync()
         {
             ThrowIfConnectionNotOpen();
@@ -748,7 +754,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Remove from the current connection the local audio track added with <see cref="AddLocalAudioTrackAsync"/>.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void RemoveLocalAudioTrack()
         {
             ThrowIfConnectionNotOpen();
@@ -777,9 +783,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
-        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         public async Task<DataChannel> AddDataChannelAsync(ushort id, string label, bool ordered, bool reliable)
         {
             if (id < 0)
@@ -807,9 +813,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
-        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         public async Task<DataChannel> AddDataChannelAsync(string label, bool ordered, bool reliable)
         {
             return await AddDataChannelAsyncImpl(-1, label, ordered, reliable);
@@ -825,9 +831,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
-        /// <exception cref="InvalidOperationException">SCTP not negotiated.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         private async Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable)
         {
             // Preconditions
@@ -893,7 +899,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="sdpMid"></param>
         /// <param name="sdpMlineindex"></param>
         /// <param name="candidate"></param>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void AddIceCandidate(string sdpMid, int sdpMlineindex, string candidate)
         {
             ThrowIfConnectionNotOpen();
@@ -904,7 +910,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Create an SDP offer message as an attempt to establish a connection.
         /// </summary>
         /// <returns><c>true</c> if the offer was created successfully.</returns>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public bool CreateOffer()
         {
             ThrowIfConnectionNotOpen();
@@ -915,7 +921,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Create an SDP answer message to a previously-received offer, to accept a connection.
         /// </summary>
         /// <returns><c>true</c> if the offer was created successfully.</returns>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public bool CreateAnswer()
         {
             ThrowIfConnectionNotOpen();
@@ -930,7 +936,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="type">The type of SDP message ("offer", "answer", "ice")</param>
         /// <param name="sdp">The content of the SDP message</param>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void SetRemoteDescription(string type, string sdp)
         {
             ThrowIfConnectionNotOpen();
@@ -944,7 +950,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Utility to throw an exception if a method is called before the underlying
         /// native peer connection has been initialized.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         private void ThrowIfConnectionNotOpen()
         {
             lock (_openCloseLock)
@@ -1182,37 +1188,40 @@ namespace Microsoft.MixedReality.WebRTC
             public string name;
         }
 
-        private SignalerMessage.WireMessageType MessageTypeFromString(string type)
-        {
-            if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
-            {
-                return SignalerMessage.WireMessageType.Offer;
-            }
-            else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
-            {
-                return SignalerMessage.WireMessageType.Answer;
-            }
-            throw new ArgumentException($"Unkown signaler message type '{type}'");
-        }
-
+        /// <summary>
+        /// Callback invoked by the internal WebRTC implementation when it needs a SDP message
+        /// to be dispatched to the remote peer.
+        /// </summary>
+        /// <param name="type">The SDP message type.</param>
+        /// <param name="sdp">The SDP message content.</param>
         private void OnLocalSdpReadytoSend(string type, string sdp)
         {
+            SignalerMessage.WireMessageType messageType = SignalerMessage.WireMessageTypeFromString(type);
+
             // If the user specified a preferred audio or video codec, manipulate the SDP message
             // to exclude other codecs if the preferred one is supported.
             if ((PreferredAudioCodec.Length > 0) || (PreferredVideoCodec.Length > 0))
             {
-                var builder = new StringBuilder(sdp.Length);
-                ulong lengthInOut = (ulong)builder.Capacity;
-                if (NativeMethods.SdpForceCodecs(sdp, PreferredAudioCodec, PreferredVideoCodec, builder, ref lengthInOut))
+                // Only filter offers, so that both peers think it's each other's fault
+                // for only supporting a single codec.
+                // Filtering an answer will not work because the internal implementation
+                // already decided what codec to use before this callback is called, so
+                // that will only confuse the other peer.
+                if (messageType == SignalerMessage.WireMessageType.Offer)
                 {
-                    builder.Length = (int)lengthInOut;
-                    sdp = builder.ToString();
+                    var builder = new StringBuilder(sdp.Length);
+                    ulong lengthInOut = (ulong)builder.Capacity;
+                    if (NativeMethods.SdpForceCodecs(sdp, PreferredAudioCodec, PreferredVideoCodec, builder, ref lengthInOut))
+                    {
+                        builder.Length = (int)lengthInOut;
+                        sdp = builder.ToString();
+                    }
                 }
             }
 
             var msg = new SignalerMessage()
             {
-                MessageType = MessageTypeFromString(type),
+                MessageType = messageType,
                 Data = sdp,
                 IceDataSeparator = "|",
                 TargetId = RemotePeerId

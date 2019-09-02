@@ -129,7 +129,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Send a message through the data channel.
         /// </summary>
         /// <param name="message">The message to send to the remote peer.</param>
-        /// <exception cref="InvalidOperationException">The peer connection is not initialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         /// <seealso cref="PeerConnection.InitializeAsync"/>
         /// <seealso cref="PeerConnection.Initialized"/>
         public void SendMessage(byte[] message)

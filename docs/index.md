@@ -25,18 +25,19 @@ _Note_ : **The documentation writing is in progress**. Some links are not active
   - Video
     - Streaming
     - Rendering
-- Unity integration
+- [Unity integration](manual/unity-integration.md)
   - Feature Overview
   - [Tutorial](manual/helloworld-unity.md)
   - Samples
-  - [Peer Connection](manual/peerconnection.md)
-  - [Signaling](manual/signaling.md)
+  - [Peer Connection](manual/unity-peerconnection.md)
+  - [Signaler](manual/unity-signaler.md)
+  - [Media Player](manual/unity-mediaplayer.md)
   - Audio
-    - Streaming
-    - Rendering
+    - [LocalAudioSource](manual/unity-localaudiosource.md)
+    - [RemoteAudioSource](manual/unity-remoteaudiosource.md)
   - Video
-    - Streaming
-    - Rendering
+    - [LocalVideoSource](manual/unity-localvideosource.md)
+    - [RemoteVideoSource](manual/unity-remotevideosource.md)
 - Advanced topics
   - [Building the Core dependencies from sources](manual/building-core.md)
 

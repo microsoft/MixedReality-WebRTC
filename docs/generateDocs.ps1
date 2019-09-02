@@ -14,9 +14,9 @@ Write-Host "Clear previous version from build/docs"
 Remove-Item -Force -Recurse -ErrorAction Ignore ..\build\docs
 
 # Install DocFX command-line tool
-Write-Host "Installing DocFx in build/docs using NuGet..."
-nuget install docfx.console -o ..\build\docs\
-$DocFxDir = Get-ChildItem -Path ..\build\docs | Where-Object {$_.PSIsContainer -eq $true -and $_.Name -match "docfx"} | Select-Object -first 1
+Write-Host "Installing DocFx in build/ using NuGet..."
+nuget install docfx.console -o ..\build\
+$DocFxDir = Get-ChildItem -Path ..\build | Where-Object {$_.PSIsContainer -eq $true -and $_.Name -match "docfx"} | Select-Object -first 1
 $DocFxExe = Join-Path $DocFxDir "tools\docfx.exe"
 Write-Host  "DocFx install : $DocFxExe"
 

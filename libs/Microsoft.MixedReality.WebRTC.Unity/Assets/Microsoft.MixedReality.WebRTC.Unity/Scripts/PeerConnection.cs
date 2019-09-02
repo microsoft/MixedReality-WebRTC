@@ -78,7 +78,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <returns>stringified server information</returns>
         public override string ToString()
         {
-            return string.Format("{0}: {1}", Type.ToString().ToLower(), Uri);
+            return string.Format("{0}:{1}", Type.ToString().ToLowerInvariant(), Uri);
         }
     }
 
