@@ -42,14 +42,20 @@ namespace TestAppUwp
         public bool PluginInitialized { get; private set; } = false;
 
         private MediaStreamSource localVideoSource = null;
+        private MediaSource localMediaSource = null;
         private MediaPlayer localVideoPlayer = new MediaPlayer();
         private bool _isLocalVideoPlaying = false;
         private object _isLocalVideoPlayingLock = new object();
+        private uint _localFrameWidth = 0;
+        private uint _localFrameHeight = 0;
 
         private MediaStreamSource remoteVideoSource = null;
+        private MediaSource remoteMediaSource = null;
         private MediaPlayer remoteVideoPlayer = new MediaPlayer();
         private bool _isRemoteVideoPlaying = false;
         private object _isRemoteVideoPlayingLock = new object();
+        private uint _remoteFrameWidth = 0;
+        private uint _remoteFrameHeight = 0;
 
         private PeerConnection _peerConnection;
         private DataChannel _chatDataChannel = null;
@@ -102,6 +108,8 @@ namespace TestAppUwp
             _peerConnection = new PeerConnection(dssSignaler);
             _peerConnection.Connected += OnPeerConnected;
             _peerConnection.RenegotiationNeeded += OnPeerRenegotiationNeeded;
+            _peerConnection.TrackAdded += Peer_RemoteTrackAdded;
+            _peerConnection.TrackRemoved += Peer_RemoteTrackRemoved;
             _peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
             _peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
 
@@ -345,15 +353,23 @@ namespace TestAppUwp
         private void OnMediaStreamSourceClosed(MediaStreamSource sender, MediaStreamSourceClosedEventArgs args)
         {
             Debug.Assert(Dispatcher.HasThreadAccess == false);
+
             if (sender == localVideoSource)
             {
                 LogMessage("Closing local A/V stream...");
                 //webRTCNativePlugin.Peer.RemoveStream(audio: true, video: true);
+                localVideoSource = null;
             }
             else if (sender == remoteVideoSource)
             {
                 LogMessage("Closing remote A/V stream...");
+                remoteVideoSource = null;
             }
+
+            sender.Starting -= OnMediaStreamSourceStarting;
+            sender.Closed -= OnMediaStreamSourceClosed;
+            sender.Paused -= OnMediaStreamSourcePaused;
+            sender.SampleRequested -= OnMediaStreamSourceRequested;
         }
 
         private void OnMediaStreamSourcePaused(MediaStreamSource sender, object args)
@@ -416,10 +432,7 @@ namespace TestAppUwp
             });
 
             createOfferButton.IsEnabled = true;
-
-            // Do not allow starting the local video before the MediaElement told us it was
-            // safe to do so (see OnMediaOpened). Otherwise Play() will silently fail.
-            startLocalVideo.IsEnabled = false;
+            startLocalVideo.IsEnabled = true;
 
             localVideoPlayer.CurrentStateChanged += OnMediaStateChanged;
             localVideoPlayer.MediaOpened += OnMediaOpened;
@@ -427,8 +440,6 @@ namespace TestAppUwp
             localVideoPlayer.MediaEnded += OnMediaEnded;
             localVideoPlayer.RealTimePlayback = true;
             localVideoPlayer.AutoPlay = false;
-            localVideoSource = CreateVideoStreamSource(640, 480); //< TODO width,height
-            localVideoPlayer.Source = MediaSource.CreateFromMediaStreamSource(localVideoSource);
 
             remoteVideoPlayer.CurrentStateChanged += OnMediaStateChanged;
             remoteVideoPlayer.MediaOpened += OnMediaOpened;
@@ -459,13 +470,10 @@ namespace TestAppUwp
         private void OnMediaOpened(MediaPlayer sender, object args)
         {
             // Now it is safe to call Play() on the MediaElement
-            if (sender == localVideoPlayer)
+            RunOnMainThread(() =>
             {
-                RunOnMainThread(() =>
-                {
-                    startLocalVideo.IsEnabled = true;
-                });
-            }
+                sender.Play();
+            });
         }
 
         private void OnMediaFailed(MediaPlayer sender, object args)
@@ -478,15 +486,19 @@ namespace TestAppUwp
             RunOnMainThread(() =>
             {
                 LogMessage("Local MediaElement video playback ended.");
-                //StopLocalVideo();
-                sender.Pause();
+                sender.Source = null;
                 if (sender == localVideoPlayer)
                 {
-                    //< TODO - This should never happen. But what to do with
-                    //         local channels if it happens?
                     lock (_isLocalVideoPlayingLock)
                     {
                         _isLocalVideoPlaying = false;
+                    }
+                }
+                else if (sender == remoteVideoPlayer)
+                {
+                    lock (_isRemoteVideoPlayingLock)
+                    {
+                        _isRemoteVideoPlaying = false;
                     }
                 }
             });
@@ -498,16 +510,118 @@ namespace TestAppUwp
             {
                 if (_isLocalVideoPlaying)
                 {
-                    localVideo.MediaPlayer.Pause();
-                    _peerConnection.RemoveLocalVideoTrack();
+                    // Cut the tie with the UI, which clears the control.
+                    localVideoPlayer.Source = null;
+
+                    // Release resources associated with the media source.
+                    // This will invoke the Closed handler, which sets localVideoSource to null.
+                    localMediaSource.Dispose();
+                    localMediaSource = null;
+
+                    localVideoBridge.Clear();
                     _isLocalVideoPlaying = false;
+                }
+            }
+
+            _peerConnection.RemoveLocalVideoTrack();
+        }
+
+        private void Peer_RemoteTrackAdded()
+        {
+            lock (_isRemoteVideoPlayingLock)
+            {
+                if (!_isRemoteVideoPlaying)
+                {
+                    _isRemoteVideoPlaying = true;
+                }
+            }
+        }
+
+        private void Peer_RemoteTrackRemoved()
+        {
+            lock (_isRemoteVideoPlayingLock)
+            {
+                if (_isRemoteVideoPlaying)
+                {
+                    // Cut the tie with the UI, which clears the control.
+                    remoteVideoPlayer.Source = null;
+
+                    // Release resources associated with the media source.
+                    // This will invoke the Closed handler, which sets remoteVideoSource to null.
+                    remoteMediaSource.Dispose();
+                    remoteMediaSource = null;
+
+                    remoteVideoBridge.Clear();
+                    _isRemoteVideoPlaying = false;
                 }
             }
         }
 
         private void Peer_LocalI420FrameReady(I420AVideoFrame frame)
         {
-            localVideoBridge.HandleIncomingVideoFrame(frame);
+            bool hasSource = false;
+            lock (_isLocalVideoPlayingLock)
+            {
+                if (_isLocalVideoPlaying)
+                {
+                    // Check if there is a source currently, at this frame
+                    hasSource = (localVideoSource != null);
+
+                    // Check if a new source is needed, either because there is currently none,
+                    // or because the capture resolution changed.
+                    uint width = frame.width;
+                    uint height = frame.height;
+                    bool needNewSource = false;
+                    if (localVideoSource == null)
+                    {
+                        needNewSource = true;
+                    }
+                    else
+                    {
+                        // localVideoSource.VideoProperties not available immediately.
+                        // Instead cache the resolution of the frame right now.
+                        if (_localFrameWidth != width)
+                        {
+                            needNewSource = true;
+                        }
+                        else if (_localFrameHeight != height)
+                        {
+                            needNewSource = true;
+                        }
+                    }
+
+                    // Defer to the UI thread to recreate a new source if needed
+                    if (needNewSource)
+                    {
+                        localVideoBridge.Clear();
+                        _localFrameWidth = width;
+                        _localFrameHeight = height;
+                        localVideoSource = CreateVideoStreamSource(width, height);
+
+                        RunOnMainThread(() =>
+                        {
+                            // Only recreate a media source if playing, to avoid delayed callbacks
+                            // on UI thread arrive after stopping the local video and re-starting it.
+                            lock (_isLocalVideoPlayingLock)
+                            {
+                                if (_isLocalVideoPlaying)
+                                {
+                                    localVideo.SetMediaPlayer(null);
+                                    localMediaSource = MediaSource.CreateFromMediaStreamSource(localVideoSource);
+                                    localVideoPlayer.Source = localMediaSource;
+                                    localVideoPlayer.PlaybackSession.Position = TimeSpan.FromSeconds(0);
+                                    localVideo.SetMediaPlayer(localVideoPlayer);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            if (hasSource)
+            {
+                localVideoBridge.HandleIncomingVideoFrame(frame);
+            }
         }
 
         private void Peer_RemoteI420FrameReady(I420AVideoFrame frame)
@@ -518,23 +632,68 @@ namespace TestAppUwp
             // will be sending some video track.
             //< TODO - See if we can add an API to enumerate the remote channels,
             //         or an On(Audio|Video|Data)Channel(Added|Removed) event?
+            bool hasSource = false;
             lock (_isRemoteVideoPlayingLock)
             {
-                if (!_isRemoteVideoPlaying)
+                if (_isRemoteVideoPlaying)
                 {
-                    _isRemoteVideoPlaying = true;
+                    // Check if there is a source currently, at this frame
+                    hasSource = (remoteVideoSource != null);
+
+                    // Check if a new source is needed, either because there is currently none,
+                    // or because the capture resolution changed.
                     uint width = frame.width;
                     uint height = frame.height;
-                    RunOnMainThread(() =>
+                    bool needNewSource = false;
+                    if (remoteVideoSource == null)
                     {
+                        needNewSource = true;
+                    }
+                    else
+                    {
+                        // remoteVideoSource.VideoProperties not available immediately.
+                        // Instead cache the resolution of the frame right now.
+                        if (_remoteFrameWidth != width)
+                        {
+                            needNewSource = true;
+                        }
+                        else if (_remoteFrameHeight != height)
+                        {
+                            needNewSource = true;
+                        }
+                    }
+
+                    // Defer to the UI thread to recreate a new source if needed
+                    if (needNewSource)
+                    {
+                        remoteVideoBridge.Clear();
+                        _remoteFrameWidth = width;
+                        _remoteFrameHeight = height;
                         remoteVideoSource = CreateVideoStreamSource(width, height);
-                        remoteVideoPlayer.Source = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
-                        remoteVideoPlayer.Play();
-                    });
+
+                        RunOnMainThread(() =>
+                        {
+                            // Only recreate a media source if playing, to avoid delayed callbacks
+                            // on UI thread arrive after stopping the remote video and re-starting it.
+                            lock (_isRemoteVideoPlayingLock)
+                            {
+                                if (_isRemoteVideoPlaying)
+                                {
+                                    remoteVideo.SetMediaPlayer(null);
+                                    remoteMediaSource = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
+                                    remoteVideoPlayer.Source = remoteMediaSource;
+                                    remoteVideo.SetMediaPlayer(remoteVideoPlayer);
+                                }
+                            }
+                        });
+                    }
                 }
             }
 
-            remoteVideoBridge.HandleIncomingVideoFrame(frame);
+            if (hasSource)
+            {
+                remoteVideoBridge.HandleIncomingVideoFrame(frame);
+            }
         }
 
         private void StartLocalVideoClicked(object sender, RoutedEventArgs e)
@@ -560,8 +719,10 @@ namespace TestAppUwp
             {
                 LogMessage("Opening local A/V stream...");
 
-                // TODO - HACK: support multi-webcams locally for testing
-                //_peerConnection.HACK_VideoDeviceIndex = HACK_GetVideoDeviceIndex();
+                lock (_isLocalVideoPlayingLock)
+                {
+                    _isLocalVideoPlaying = true;
+                }
 
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
                 _peerConnection.AddLocalAudioTrackAsync().ContinueWith(addAudioTask =>
@@ -588,11 +749,6 @@ namespace TestAppUwp
                         localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx); //< HACK
                         remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx)); //< HACK
                         localVideoSourceName.Text = $"({VideoCaptureDevices[idx].DisplayName})"; //< HACK
-                        localVideo.MediaPlayer.Play();
-                        lock (_isLocalVideoPlayingLock)
-                        {
-                            _isLocalVideoPlaying = true;
-                        }
                     }, uiThreadScheduler);
                 });
             }

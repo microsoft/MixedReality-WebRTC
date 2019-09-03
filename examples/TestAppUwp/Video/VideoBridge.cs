@@ -131,8 +131,7 @@ namespace TestAppUwp.Video
         /// <param name="args">The Media Foundation sample request to attempt to serve</param>
         public void TryServeVideoFrame(MediaStreamSourceSampleRequestedEventArgs args)
         {
-            // Check if the local video stream is enabled
-            if (_frameQueue == null) //< TODO - not the correct check (though also useful)
+            if (_frameQueue == null)
             {
                 // End of stream
                 args.Request.Sample = null;
@@ -152,9 +151,13 @@ namespace TestAppUwp.Video
                         // Already a frame pending, and now another one.
                         // The earlier one will be skipped (we don't keep track of it for simplicity).
                         //_frameQueue.FrameSkip.Track();
+
+                        _request = null;
+                        _deferral.Complete();
+                        _deferral = null;
                     }
-                    args.Request.ReportSampleProgress(0);
                     _request = args.Request;
+                    _request.ReportSampleProgress(0);
                     _deferral = _request.GetDeferral();
                     return;
                 }
