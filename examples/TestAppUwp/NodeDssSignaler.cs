@@ -44,13 +44,22 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Unique identifier of the local client, used as part of message exchange
+        /// Unique identifier of the local peer, used as part of message exchange
         /// by the <c>node-dss</c> server to identify senders and receivers.
         /// </summary>
         /// <remarks>
         /// This must be set before calling <see cref="StartPollingAsync"/>.
         /// </remarks>
-        public string LocalId;
+        public string LocalPeerId;
+
+        /// <summary>
+        /// Unique identifier of the remote peer, used as part of message exchange
+        /// by the <c>node-dss</c> server to identify senders and receivers.
+        /// </summary>
+        /// <remarks>
+        /// This must be set before calling <see cref="StartPollingAsync"/>.
+        /// </remarks>
+        public string RemotePeerId;
 
         /// <summary>
         /// The interval (in ms) that the server is polled at.
@@ -167,7 +176,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             // Send a POST request to the server with the JSON-serialized message.
             var jsonMsg = JsonConvert.SerializeObject(message);
-            string requestUri = $"{_httpServerAddress}data/{message.TargetId}";
+            string requestUri = $"{_httpServerAddress}data/{RemotePeerId}";
             HttpContent content = new StringContent(jsonMsg);
             var task = _httpClient.PostAsync(requestUri, content).ContinueWith((postTask) =>
             {
@@ -209,13 +218,13 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <returns>Returns <c>true</c> if polling effectively started with this call.</returns>
         /// <remarks>
-        /// The <see cref="LocalId"/> field must be set before calling this method.
+        /// The <see cref="LocalPeerId"/> field must be set before calling this method.
         /// This method can safely be called multiple times, and will do nothing if
         /// polling is already underway or waiting to be stopped.
         /// </remarks>
         public bool StartPollingAsync()
         {
-            if (string.IsNullOrWhiteSpace(LocalId))
+            if (string.IsNullOrWhiteSpace(LocalPeerId))
             {
                 throw new Exception("Cannot start polling with empty LocalId.");
             }
@@ -227,7 +236,7 @@ namespace Microsoft.MixedReality.WebRTC
             }
 
             // Build the GET polling request
-            string requestUri = $"{_httpServerAddress}data/{LocalId}";
+            string requestUri = $"{_httpServerAddress}data/{LocalPeerId}";
 
             long lastPollTimeTicks = DateTime.UtcNow.Ticks;
             long pollTimeTicks = TimeSpan.FromMilliseconds(PollTimeMs).Ticks;
