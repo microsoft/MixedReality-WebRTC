@@ -1376,7 +1376,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NodeDssSignaler: {fileID: 8734329137356271696}
   DeviceNameLabel: {fileID: 114070876977189030}
-  DeviceNameLabel2: {fileID: 0}
   RemotePeerId: {fileID: 114259858479715936}
   CreateOfferButton: {fileID: 114751637186518168}
 --- !u!223 &223899471443708644
@@ -1459,7 +1458,7 @@ MonoBehaviour:
   m_ChildAlignment: 6
   m_StartCorner: 2
   m_StartAxis: 0
-  m_CellSize: {x: 150, y: 50}
+  m_CellSize: {x: 200, y: 50}
   m_Spacing: {x: 20, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2

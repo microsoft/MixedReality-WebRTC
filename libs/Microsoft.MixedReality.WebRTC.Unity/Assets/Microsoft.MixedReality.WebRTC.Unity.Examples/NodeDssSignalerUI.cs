@@ -19,7 +19,6 @@ public class NodeDssSignalerUI : MonoBehaviour
     /// </summary>
     [Tooltip("The text field in which we display the device name")]
     public Text DeviceNameLabel;
-    public TextMesh DeviceNameLabel2;
 
     /// <summary>
     /// The text input field in which we accept the target device name
@@ -35,10 +34,8 @@ public class NodeDssSignalerUI : MonoBehaviour
 
     private void Start()
     {
-        // Show device label (local peer ID)
         string localPeerId = NodeDssSignaler.LocalPeerId;
         DeviceNameLabel.text = localPeerId;
-        DeviceNameLabel2.text = localPeerId;
         Debug.Log($"NodeDSS local peer ID : {localPeerId}");
 
         if (!string.IsNullOrEmpty(NodeDssSignaler.RemotePeerId))
@@ -51,13 +48,12 @@ public class NodeDssSignalerUI : MonoBehaviour
         }
         Debug.Log($"NodeDSS remote peer ID : {RemotePeerId.text}");
 
-        // bind our handler for creating the offer
         CreateOfferButton.onClick.AddListener(() =>
         {
-            // create offer if we were given a valid RemotePeerId
             if (!string.IsNullOrEmpty(RemotePeerId.text))
             {
                 PlayerPrefs.SetString(kLastRemotePeerId, RemotePeerId.text);
+                NodeDssSignaler.RemotePeerId = RemotePeerId.text;
                 NodeDssSignaler.PeerConnection.Peer.CreateOffer();
             }
         });
