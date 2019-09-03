@@ -675,10 +675,10 @@ namespace TestAppUwp
             }
 
             dssSignaler.HttpServerAddress = dssServer.Text;
-            dssSignaler.LocalId = localPeerUidTextBox.Text;
+            dssSignaler.LocalPeerId = localPeerUidTextBox.Text;
             dssSignaler.PollTimeMs = pollTimeMs;
             remotePeerId = remotePeerUidTextBox.Text;
-            _peerConnection.RemotePeerId = remotePeerId;
+            dssSignaler.RemotePeerId = remotePeerId;
 
             if (dssSignaler.StartPollingAsync())
             {
