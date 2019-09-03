@@ -33,12 +33,24 @@ jobs:
 
   # Build Microsoft.MixedReality.WebRTC (Release, full build)
   - task: DotNetCoreCLI@2
-    condition: succeededOrFailed() # Build even if Debug failed
+    condition: succeededOrFailed() # Build even previous task failed
     displayName: 'Build C# WebRTC lib (AnyCPU-Release) [full build]'
     inputs:
       projects: libs/Microsoft.MixedReality.WebRTC/Microsoft.MixedReality.WebRTC.csproj
       arguments: '-f netstandard2.0 --no-incremental -c Release'
       workingDirectory: libs/Microsoft.MixedReality.WebRTC/
+
+  # Build TestAppUWP (Release)
+  - task: MSBuild@1
+    condition: succeededOrFailed() # Build even previous task failed
+    displayName: 'Build C# sample TestAppUWP (AnyCPU-Release)'
+    inputs:
+      msbuildVersion: 16.0
+      msbuildArchitecture: x64
+      solution: examples/TestAppUwp/Microsoft.MixedReality.WebRTC.TestAppUWP.csproj
+      platform: x64
+      configuration: Release
+      restoreNugetPackages: true
 
   # Build C# tests
   - task: DotNetCoreCLI@2
