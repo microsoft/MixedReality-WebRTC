@@ -564,27 +564,37 @@ namespace TestAppUwp
                 //_peerConnection.HACK_VideoDeviceIndex = HACK_GetVideoDeviceIndex();
 
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                _peerConnection.AddLocalVideoTrackAsync().ContinueWith(prevTask =>
+                _peerConnection.AddLocalAudioTrackAsync().ContinueWith(addAudioTask =>
                 {
-                    // Continue inside UI thread here
-                    if (prevTask.Exception != null)
+                    // Continue on worker thread here
+                    if (addAudioTask.Exception != null)
                     {
-                        LogMessage(prevTask.Exception.Message);
+                        LogMessage(addAudioTask.Exception.Message);
                         return;
                     }
-                    dssStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
-                    dssStatsTimer.Start();
-                    startLocalVideo.Content = "Stop local video";
-                    var idx = HACK_GetVideoDeviceIndex(); //< HACK
-                    localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx); //< HACK
-                    remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx)); //< HACK
-                    localVideoSourceName.Text = $"({VideoCaptureDevices[idx].DisplayName})"; //< HACK
-                    localVideo.MediaPlayer.Play();
-                    lock (_isLocalVideoPlayingLock)
+
+                    _peerConnection.AddLocalVideoTrackAsync().ContinueWith(addVideoTask =>
                     {
-                        _isLocalVideoPlaying = true;
-                    }
-                }, uiThreadScheduler);
+                        // Continue inside UI thread here
+                        if (addVideoTask.Exception != null)
+                        {
+                            LogMessage(addVideoTask.Exception.Message);
+                            return;
+                        }
+                        dssStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
+                        dssStatsTimer.Start();
+                        startLocalVideo.Content = "Stop local video";
+                        var idx = HACK_GetVideoDeviceIndex(); //< HACK
+                        localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx); //< HACK
+                        remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx)); //< HACK
+                        localVideoSourceName.Text = $"({VideoCaptureDevices[idx].DisplayName})"; //< HACK
+                        localVideo.MediaPlayer.Play();
+                        lock (_isLocalVideoPlayingLock)
+                        {
+                            _isLocalVideoPlaying = true;
+                        }
+                    }, uiThreadScheduler);
+                });
             }
         }
 
