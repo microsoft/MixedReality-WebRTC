@@ -54,12 +54,6 @@ namespace Microsoft.MixedReality.WebRTC
         public ISignaler Signaler { get; }
 
         /// <summary>
-        /// Identifier of the remote peer for signaling. This must be sent before the connection starts
-        /// to send messages via the <see cref="Signaler"/>.
-        /// </summary>
-        public string RemotePeerId;
-
-        /// <summary>
         /// List of TURN and/or STUN servers to use for NAT bypass, in order of preference.
         ///
         /// The scheme is defined in the core WebRTC implementation, and is in short:
@@ -1195,8 +1189,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 MessageType = messageType,
                 Data = sdp,
-                IceDataSeparator = "|",
-                TargetId = RemotePeerId
+                IceDataSeparator = "|"
             };
             Signaler?.SendMessageAsync(msg);
 
@@ -1209,8 +1202,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 MessageType = SignalerMessage.WireMessageType.Ice,
                 Data = $"{candidate}|{sdpMlineindex}|{sdpMid}",
-                IceDataSeparator = "|",
-                TargetId = RemotePeerId
+                IceDataSeparator = "|"
             };
             Signaler?.SendMessageAsync(msg);
 
