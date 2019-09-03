@@ -62,7 +62,7 @@ jobs:
       solution: examples/TestAppUwp/Microsoft.MixedReality.WebRTC.TestAppUWP.csproj
       platform: x64
       configuration: Release
-      msbuildArguments: -restore
+      msbuildArguments: -restore -p:AppxPackageSigningEnabled=false
 
   # Build C# tests
   - task: DotNetCoreCLI@2
