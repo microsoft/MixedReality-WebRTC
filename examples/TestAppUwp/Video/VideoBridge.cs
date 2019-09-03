@@ -87,6 +87,20 @@ namespace TestAppUwp.Video
         }
 
         /// <summary>
+        /// Clear the bridge of any pending frames and reset for reuse.
+        /// </summary>
+        public void Clear()
+        {
+            lock (_deferralLock)
+            {
+                _request = null;
+                _deferral?.Complete();
+                _deferral = null;
+            }
+            _frameQueue.Clear();
+        }
+
+        /// <summary>
         /// Handle an incoming raw video frame by either enqueuing it for serving
         /// a later request, or immediately serving a pending request.
         /// </summary>

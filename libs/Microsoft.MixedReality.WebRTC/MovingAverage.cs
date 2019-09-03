@@ -37,6 +37,15 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
+        /// Clear the moving average and discard all cached samples.
+        /// </summary>
+        public void Clear()
+        {
+            _samples.Clear();
+            Average = 0f;
+        }
+
+        /// <summary>
         /// Push a new sample and recalculate the current average.
         /// </summary>
         /// <param name="value">The new value to add.</param>

@@ -173,6 +173,24 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
+        /// Clear the queue and drop all frames currently pending.
+        /// </summary>
+        public void Clear()
+        {
+            _lastQueuedTimeMs = 0f;
+            _lastDequeuedTimeMs = 0f;
+            _lastDroppedTimeMs = 0f;
+            _queuedFrameTimeAverage.Clear();
+            _dequeuedFrameTimeAverage.Clear();
+            _droppedFrameTimeAverage.Clear();
+            while (_frameQueue.TryDequeue(out T frame))
+            {
+                _unusedFramePool.Push(frame);
+            }
+            _stopwatch.Restart();
+        }
+
+        /// <summary>
         /// Enqueue a new video frame encoded in I420 format.
         /// If the internal queue reached its maximum capacity, do nothing and drop the frame.
         /// </summary>
