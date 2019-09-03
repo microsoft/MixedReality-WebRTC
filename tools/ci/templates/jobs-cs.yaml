@@ -23,11 +23,17 @@ jobs:
   steps:
   - checkout: self
 
-  # Create fake native lib for TestAppUWP dependency
-  - powershell: |
-      New-Item -Path bin\UWP\x64\Release\ -Name Microsoft.MixedReality.WebRTC.Native.dll -ItemType File
-      New-Item -Path bin\UWP\x64\Release\ -Name Microsoft.MixedReality.WebRTC.Native.pdb -ItemType File
-    displayName: Create fake native DLL and PDB
+  # Download the native libraries for testing
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download native library (UWP-x64-Release)'
+    inputs:
+      source: specific
+      project: '5610c425-4799-474c-b133-d95d78fb63b1' # MixedReality-WebRTC-CI
+      pipeline: 24 # mr-webrtc-cpp-ci
+      runVersion: 'latest'
+      artifact: 'Microsoft.MixedReality.WebRTC.Native_UWP-x64-Release'
+      patterns: '**/*.@(pdb|dll)'
+      path: 'bin/UWP/x64/Release'
 
   # Build Microsoft.MixedReality.WebRTC (Debug, incremental build)
   - task: DotNetCoreCLI@2
