@@ -499,6 +499,7 @@ namespace TestAppUwp
                 if (_isLocalVideoPlaying)
                 {
                     localVideo.MediaPlayer.Pause();
+                    _peerConnection.RemoveLocalAudioTrack();
                     _peerConnection.RemoveLocalVideoTrack();
                     _isLocalVideoPlaying = false;
                 }
