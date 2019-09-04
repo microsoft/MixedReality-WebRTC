@@ -235,6 +235,24 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
     PeerConnectionARGBVideoFrameCallback callback,
     void* user_data) noexcept;
 
+/// Configuration for opening a local video capture device.
+struct VideoDeviceConfiguration {
+  /// Unique identifier of the video capture device to select, as returned by
+  /// |mrsEnumVideoCaptureDevicesAsync|, or a null or empty string to select the
+  /// default device.
+  const char* video_device_id = nullptr;
+
+  /// On platforms supporting Mixed Reality Capture (MRC) like HoloLens, enable
+  /// this feature. This produces a video track where the holograms rendering is
+  /// overlaid over the webcam frame. This parameter is ignored on platforms not
+  /// supporting MRC.
+  /// Note that MRC is only available in exclusive-mode applications, or in
+  /// shared apps with the restricted capability "rescap:screenDuplication". In
+  /// any other case the capability will not be granted and MRC will silently
+  /// fail, falling back to a simple webcam video feed without holograms.
+  bool enable_mrc = true;
+};
+
 /// Add a local video track from a local video capture device (webcam) to
 /// the collection of tracks to send to the remote peer.
 /// |video_device_id| specifies the unique identifier of a video capture
@@ -245,8 +263,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
 /// invoked from another thread than the main UI thread.
 MRS_API bool MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     PeerConnectionHandle peerHandle,
-    const char* video_device_id,
-    bool enable_mrc) noexcept(kNoExceptFalseOnUWP);
+    VideoDeviceConfiguration config) noexcept(kNoExceptFalseOnUWP);
 
 /// Add a local audio track from a local audio capture device (microphone) to
 /// the collection of tracks to send to the remote peer.

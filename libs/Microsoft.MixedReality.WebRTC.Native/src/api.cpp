@@ -52,8 +52,7 @@ const std::string kLocalAudioLabel("local_audio");
 
 /// Helper to open a video capture device.
 std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
-    const char* video_device_id,
-    bool enable_mrc = false) noexcept(kNoExceptFalseOnUWP) {
+    VideoDeviceConfiguration config) noexcept(kNoExceptFalseOnUWP) {
 #if defined(WINUWP)
   // Check for calls from main UI thread; this is not supported (will deadlock)
   auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
@@ -73,9 +72,10 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   auto deviceList = vci->value();
 
   std::wstring video_device_id_str;
-  if ((video_device_id != nullptr) && (video_device_id[0] != '\0')) {
+  if ((config.video_device_id != nullptr) &&
+      (config.video_device_id[0] != '\0')) {
     video_device_id_str =
-        rtc::ToUtf16(video_device_id, strlen(video_device_id));
+        rtc::ToUtf16(config.video_device_id, strlen(config.video_device_id));
   }
 
   for (auto&& vdi : *deviceList) {
@@ -92,7 +92,7 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     createParams->factory = g_winuwp_factory;
     createParams->name = name;
     createParams->id = id;
-    createParams->enableMrc = enable_mrc;
+    createParams->enableMrc = config.enable_mrc;
 
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
 
@@ -116,7 +116,6 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   }
   return nullptr;
 #else
-  (void)enable_mrc;  // No MRC on non-UWP
   std::vector<std::string> device_names;
   {
     std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
@@ -126,8 +125,9 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     }
 
     std::string video_device_id_str;
-    if ((video_device_id != nullptr) && (video_device_id[0] != '\0')) {
-      video_device_id_str.assign(video_device_id);
+    if ((config.video_device_id != nullptr) &&
+        (config.video_device_id[0] != '\0')) {
+      video_device_id_str.assign(config.video_device_id);
     }
 
     int num_devices = info->NumberOfDevices();
@@ -427,8 +427,7 @@ void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
 
 bool MRS_CALL
 mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
-                                    const char* video_device_id,
-                                    bool enable_mrc)
+                                    VideoDeviceConfiguration config)
 #if defined(WINUWP)
     noexcept(false)
 #else
@@ -440,7 +439,7 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
       return false;
     }
     std::unique_ptr<cricket::VideoCapturer> video_capturer =
-        OpenVideoCaptureDevice(video_device_id, enable_mrc);
+        OpenVideoCaptureDevice(config);
     if (!video_capturer) {
       return false;
     }

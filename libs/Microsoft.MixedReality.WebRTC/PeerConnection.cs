@@ -678,7 +678,12 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
-                if (!NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, device.id, enableMrc))
+                var config = new NativeMethods.VideoDeviceConfiguration
+                {
+                    VideoDeviceId = device.id,
+                    EnableMixedRealityCapture = enableMrc
+                };
+                if (!NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, config))
                 {
                     throw new Exception();
                 }
@@ -955,6 +960,23 @@ namespace Microsoft.MixedReality.WebRTC
             internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.so";
 #endif
 
+            /// <summary>
+            /// Helper structure to pass video capture device configuration to the underlying C++ library.
+            /// </summary>
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+            internal struct VideoDeviceConfiguration
+            {
+                /// <summary>
+                /// Video capture device unique identifier, as returned by <see cref="GetVideoCaptureDevicesAsync"/>.
+                /// </summary>
+                public string VideoDeviceId;
+
+                /// <summary>
+                /// Enable Mixed Reality Capture (MRC). This flag is ignored if the platform doesn't support MRC.
+                /// </summary>
+                public bool EnableMixedRealityCapture;
+            }
+
 
             #region Unmanaged delegates
 
@@ -1070,7 +1092,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
-            public static extern bool PeerConnectionAddLocalVideoTrack(IntPtr peerHandle, string videoDeviceId, bool enableMrc);
+            public static extern bool PeerConnectionAddLocalVideoTrack(IntPtr peerHandle, VideoDeviceConfiguration config);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddLocalAudioTrack")]
