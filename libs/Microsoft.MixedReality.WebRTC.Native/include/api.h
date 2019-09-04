@@ -348,6 +348,19 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandle) noexcept;
 // SDP utilities
 //
 
+/// Codec arguments for SDP filtering, to allow selecting a preferred codec and
+/// overriding some of its parameters.
+struct SdpFilter {
+  /// SDP name of a preferred codec, which is to be retained alone if present in
+  /// the SDP offer message, discarding all others.
+  const char* codec_name = nullptr;
+
+  /// Semicolon-separated list of "key=value" pairs of codec parameters to pass
+  /// to the codec. Arguments are passed as is without validation of their name
+  /// nor value.
+  const char* params = nullptr;
+};
+
 /// Force audio and video codecs when advertizing capabilities in an SDP offer.#
 ///
 /// This is a workaround for the lack of access to codec selection. Instead of
@@ -379,8 +392,8 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandle) noexcept;
 /// Returns true on success or false if the buffer is not large enough to
 /// contain the new SDP message.
 MRS_API bool MRS_CALL mrsSdpForceCodecs(const char* message,
-                                        const char* audio_codec_name,
-                                        const char* video_codec_name,
+                                        SdpFilter audio_filter,
+                                        SdpFilter video_filter,
                                         char* buffer,
                                         size_t* buffer_size);
 

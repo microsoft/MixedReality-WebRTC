@@ -10,6 +10,11 @@
 
 namespace Microsoft::MixedReality::WebRTC {
 
+/// Parse a list of semicolon-separated pairs of "key=value" arguments into a
+/// map of (key, value) pairs.
+void SdpParseCodecParameters(const std::string& param_string,
+                             std::map<std::string, std::string>& params);
+
 /// Force audio and video codecs when advertizing capabilities in an SDP offer.
 /// This is a workaround for the lack of access to codec selection. Instead of
 /// selecting codecs in code, this can be used to intercept a generated SDP
@@ -23,8 +28,11 @@ namespace Microsoft::MixedReality::WebRTC {
 /// |audio_codec_name| SDP name of the audio codec to force, if supported.
 /// |video_codec_name| SDP name of the video codec to force, if supported.
 /// Returns the new SDP offer message string to be sent via the signaler.
-std::string SdpForceCodecs(const std::string& message,
-                           const std::string& audio_codec_name,
-                           const std::string& video_codec_name);
+std::string SdpForceCodecs(
+    const std::string& message,
+    const std::string& audio_codec_name,
+    const std::map<std::string, std::string>& extra_audio_codec_params,
+    const std::string& video_codec_name,
+    const std::map<std::string, std::string>& extra_video_codec_params);
 
 }  // namespace Microsoft::MixedReality::WebRTC
