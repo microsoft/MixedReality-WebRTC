@@ -74,6 +74,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public string Credentials = string.Empty;
 
+
+        #region Codec filtering
+
         /// <summary>
         /// Name of the preferred audio codec, or empty to let WebRTC decide.
         /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
@@ -81,10 +84,33 @@ namespace Microsoft.MixedReality.WebRTC
         public string PreferredAudioCodec = string.Empty;
 
         /// <summary>
+        /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
+        /// passed as extra parameters to the preferred audio codec during SDP filtering.
+        /// This enables configuring codec-specific parameters. Arguments are passed as is,
+        /// and there is no check on the validity of the parameter names nor their value.
+        /// This is ignored if <see cref="PreferredAudioCodec"/> is an empty string, or is not
+        /// a valid codec name found in the SDP message offer.
+        /// </summary>
+        public string PreferredAudioCodecExtraParams = string.Empty;
+
+        /// <summary>
         /// Name of the preferred video codec, or empty to let WebRTC decide.
         /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
         /// </summary>
         public string PreferredVideoCodec = string.Empty;
+
+        /// <summary>
+        /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
+        /// passed as extra parameters to the preferred video codec during SDP filtering.
+        /// This enables configuring codec-specific parameters. Arguments are passed as is,
+        /// and there is no check on the validity of the parameter names nor their value.
+        /// This is ignored if <see cref="PreferredVideoCodec"/> is an empty string, or is not
+        /// a valid codec name found in the SDP message offer.
+        /// </summary>
+        public string PreferredVideoCodecExtraParams = string.Empty;
+
+        #endregion
+
 
         /// <summary>
         /// Boolean property indicating whether the peer connection has been initialized.
@@ -977,6 +1003,13 @@ namespace Microsoft.MixedReality.WebRTC
                 public bool EnableMixedRealityCapture;
             }
 
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+            internal struct SdpFilter
+            {
+                public string CodecName;
+                public string ExtraParams;
+            }
+
 
             #region Unmanaged delegates
 
@@ -1150,7 +1183,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsSdpForceCodecs")]
-            public static unsafe extern bool SdpForceCodecs(string message, string audioCodecName, string videoCodecName, StringBuilder messageOut, ref ulong messageOutLength);
+            public static unsafe extern bool SdpForceCodecs(string message, SdpFilter audioFilter, SdpFilter videoFilter, StringBuilder messageOut, ref ulong messageOutLength);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsMemCpyStride")]
@@ -1199,7 +1232,17 @@ namespace Microsoft.MixedReality.WebRTC
                 {
                     var builder = new StringBuilder(sdp.Length);
                     ulong lengthInOut = (ulong)builder.Capacity;
-                    if (NativeMethods.SdpForceCodecs(sdp, PreferredAudioCodec, PreferredVideoCodec, builder, ref lengthInOut))
+                    var audioFilter = new NativeMethods.SdpFilter
+                    {
+                        CodecName = PreferredAudioCodec,
+                        ExtraParams = PreferredAudioCodecExtraParams
+                    };
+                    var videoFilter = new NativeMethods.SdpFilter
+                    {
+                        CodecName = PreferredVideoCodec,
+                        ExtraParams = PreferredVideoCodecExtraParams
+                    };
+                    if (NativeMethods.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut))
                     {
                         builder.Length = (int)lengthInOut;
                         sdp = builder.ToString();

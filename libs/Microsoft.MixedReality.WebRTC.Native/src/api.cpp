@@ -637,8 +637,8 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
 }
 
 bool MRS_CALL mrsSdpForceCodecs(const char* message,
-                                const char* audio_codec_name,
-                                const char* video_codec_name,
+                                SdpFilter audio_filter,
+                                SdpFilter video_filter,
                                 char* buffer,
                                 size_t* buffer_size) {
   RTC_CHECK(message);
@@ -647,14 +647,24 @@ bool MRS_CALL mrsSdpForceCodecs(const char* message,
   std::string message_str(message);
   std::string audio_codec_name_str;
   std::string video_codec_name_str;
-  if (audio_codec_name) {
-    audio_codec_name_str.assign(audio_codec_name);
+  std::map<std::string, std::string> extra_audio_params;
+  std::map<std::string, std::string> extra_video_params;
+  if (audio_filter.codec_name) {
+    audio_codec_name_str.assign(audio_filter.codec_name);
   }
-  if (video_codec_name) {
-    video_codec_name_str.assign(video_codec_name);
+  if (video_filter.codec_name) {
+    video_codec_name_str.assign(video_filter.codec_name);
+  }
+  // Only assign extra parameters if codec name is not empty
+  if (!audio_codec_name_str.empty() && audio_filter.params) {
+    SdpParseCodecParameters(audio_filter.params, extra_audio_params);
+  }
+  if (!video_codec_name_str.empty() && video_filter.params) {
+    SdpParseCodecParameters(video_filter.params, extra_video_params);
   }
   std::string out_message =
-      SdpForceCodecs(message_str, audio_codec_name_str, video_codec_name_str);
+      SdpForceCodecs(message_str, audio_codec_name_str, extra_audio_params,
+                     video_codec_name_str, extra_video_params);
   const size_t capacity = *buffer_size;
   const size_t size = out_message.size();
   *buffer_size = size + 1;
