@@ -102,6 +102,8 @@ namespace TestAppUwp
             _peerConnection = new PeerConnection(dssSignaler);
             _peerConnection.Connected += OnPeerConnected;
             _peerConnection.RenegotiationNeeded += OnPeerRenegotiationNeeded;
+            _peerConnection.TrackAdded += Peer_RemoteTrackAdded;
+            _peerConnection.TrackRemoved += Peer_RemoteTrackRemoved;
             _peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
             _peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
 
@@ -502,6 +504,35 @@ namespace TestAppUwp
                     _peerConnection.RemoveLocalAudioTrack();
                     _peerConnection.RemoveLocalVideoTrack();
                     _isLocalVideoPlaying = false;
+                }
+            }
+        }
+
+        private void Peer_RemoteTrackAdded(PeerConnection.TrackKind trackKind)
+        {
+            //if (trackKind == PeerConnection.TrackKind.Video)
+            //{
+            //    lock (_isRemoteVideoPlayingLock)
+            //    {
+            //        if (!_isRemoteVideoPlaying)
+            //        {
+            //            _isRemoteVideoPlaying = true;
+            //        }
+            //    }
+            //}
+        }
+
+        private void Peer_RemoteTrackRemoved(PeerConnection.TrackKind trackKind)
+        {
+            if (trackKind == PeerConnection.TrackKind.Video)
+            {
+                lock (_isRemoteVideoPlayingLock)
+                {
+                    if (_isRemoteVideoPlaying)
+                    {
+                        remoteVideo.MediaPlayer.Pause();
+                        _isRemoteVideoPlaying = false;
+                    }
                 }
             }
         }

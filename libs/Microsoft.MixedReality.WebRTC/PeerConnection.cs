@@ -47,6 +47,17 @@ namespace Microsoft.MixedReality.WebRTC
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void VideoCaptureDeviceEnumCompletedCallback();
 
+        /// <summary>
+        /// Kind of WebRTC track.
+        /// </summary>
+        public enum TrackKind : uint
+        {
+            Unknown = 0,
+            Audio = 1,
+            Video = 2,
+            Data = 3
+        };
+
 
         /// <summary>
         /// Signaler implementation used by this peer connection, as specified in the constructor.
@@ -154,12 +165,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Event that occurs when a remote track is added to the current connection.
         /// </summary>
-        public event Action TrackAdded;
+        public event Action<TrackKind> TrackAdded;
 
         /// <summary>
         /// Event that occurs when a remote track is removed from the current connection.
         /// </summary>
-        public event Action TrackRemoved;
+        public event Action<TrackKind> TrackRemoved;
 
         /// <summary>
         /// Event that occurs when a video frame from a local track has been
@@ -196,8 +207,8 @@ namespace Microsoft.MixedReality.WebRTC
             private delegate void LocalSdpReadytoSendDelegate(IntPtr peer, string type, string sdp);
             private delegate void IceCandidateReadytoSendDelegate(IntPtr peer, string candidate, int sdpMlineindex, string sdpMid);
             private delegate void RenegotiationNeededDelegate(IntPtr peer);
-            private delegate void TrackAddedDelegate(IntPtr peer);
-            private delegate void TrackRemovedDelegate(IntPtr peer);
+            private delegate void TrackAddedDelegate(IntPtr peer, TrackKind trackKind);
+            private delegate void TrackRemovedDelegate(IntPtr peer, TrackKind trackKind);
             private delegate void DataChannelMessageDelegate(IntPtr peer, IntPtr data, ulong size);
             private delegate void DataChannelBufferingDelegate(IntPtr peer, ulong previous, ulong current, ulong limit);
             private delegate void DataChannelStateDelegate(IntPtr peer, int state, int id);
@@ -291,17 +302,17 @@ namespace Microsoft.MixedReality.WebRTC
             }
 
             [MonoPInvokeCallback(typeof(TrackAddedDelegate))]
-            public static void TrackAddedCallback(IntPtr userData)
+            public static void TrackAddedCallback(IntPtr userData, TrackKind trackKind)
             {
                 var peer = FromIntPtr(userData);
-                peer.TrackAdded?.Invoke();
+                peer.TrackAdded?.Invoke(trackKind);
             }
 
             [MonoPInvokeCallback(typeof(TrackRemovedDelegate))]
-            public static void TrackRemovedCallback(IntPtr userData)
+            public static void TrackRemovedCallback(IntPtr userData, TrackKind trackKind)
             {
                 var peer = FromIntPtr(userData);
-                peer.TrackRemoved?.Invoke();
+                peer.TrackRemoved?.Invoke(trackKind);
             }
 
             [MonoPInvokeCallback(typeof(I420VideoFrameDelegate))]
@@ -1034,10 +1045,10 @@ namespace Microsoft.MixedReality.WebRTC
             public delegate void PeerConnectionRenegotiationNeededCallback(IntPtr userData);
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionTrackAddedCallback(IntPtr userData);
+            public delegate void PeerConnectionTrackAddedCallback(IntPtr userData, TrackKind trackKind);
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionTrackRemovedCallback(IntPtr userData);
+            public delegate void PeerConnectionTrackRemovedCallback(IntPtr userData, TrackKind trackKind);
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
             public delegate void PeerConnectionI420VideoFrameCallback(IntPtr userData,

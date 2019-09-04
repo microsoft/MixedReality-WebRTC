@@ -2,27 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
-    /// <summary>
-    /// Unity event corresponding to a new audio track added to the current connection
-    /// by the remote peer.
-    /// </summary>
-    [Serializable]
-    public class AudioTrackAddedEvent : UnityEvent
-    { };
-
-    /// <summary>
-    /// Unity event corresponding to an existing audio track removed from the current connection
-    /// by the remote peer.
-    /// </summary>
-    [Serializable]
-    public class AudioTrackRemovedEvent : UnityEvent
-    { };
-
     /// <summary>
     /// This component represents a remote audio source added as an audio track to an
     /// existing WebRTC peer connection by a remote peer and received locally.
@@ -43,42 +28,152 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public bool AutoPlayOnAdded = true;
 
         /// <summary>
-        /// Event triggered when a remote audio track is added remotely and received locally.
+        /// Is the audio source currently playing?
+        /// The concept of _playing_ is described in the <see cref="Play"/> function.
         /// </summary>
-        public AudioTrackAddedEvent AudioTrackAdded = new AudioTrackAddedEvent();
+        /// <seealso cref="Play"/>
+        /// <seealso cref="Stop()"/>
+        public bool IsPlaying { get; private set; }
 
         /// <summary>
-        /// Event triggered when a remote audio track is removed remotely and stops begin received locally.
+        /// Internal queue used to marshal work back to the main Unity thread.
         /// </summary>
-        public AudioTrackRemovedEvent AudioTrackRemoved = new AudioTrackRemovedEvent();
+        private ConcurrentQueue<Action> _mainThreadWorkQueue = new ConcurrentQueue<Action>();
 
+        /// <summary>
+        /// Manually start playback of the remote audio feed by registering some listeners
+        /// to the peer connection and starting to enqueue audio frames as they become ready.
+        /// 
+        /// If <see cref="AutoPlayOnAdded"/> is <c>true</c> then this is called automatically
+        /// as soon as the peer connection is initialized.
+        /// </summary>
+        /// <remarks>
+        /// This is only valid while the peer connection is initialized, that is after the
+        /// <see cref="PeerConnection.OnInitialized"/> event was fired.
+        /// </remarks>
+        /// <seealso cref="Stop()"/>
+        /// <seealso cref="IsPlaying"/>
+        public void Play()
+        {
+            if (!IsPlaying)
+            {
+                IsPlaying = true;
+                //PeerConnection.Peer.RemoteAudioFrameReady += RemoteAudioFrameReady;
+            }
+        }
+
+        /// <summary>
+        /// Stop playback of the remote audio feed and unregister the handler listening to remote
+        /// video frames.
+        /// 
+        /// Note that this is independent of whether or not a remote track is actually present.
+        /// In particular this does not fire the <see cref="VideoSource.AudioStreamStopped"/>, which corresponds
+        /// to a track being made available to the local peer by the remote peer.
+        /// </summary>
+        /// <seealso cref="Play()"/>
+        /// <seealso cref="IsPlaying"/>
+        public void Stop()
+        {
+            if (IsPlaying)
+            {
+                IsPlaying = false;
+                //PeerConnection.Peer.RemoteAudioFrameReady -= RemoteAudioFrameReady;
+            }
+        }
+
+        /// <summary>
+        /// Implementation of <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Awake.html">MonoBehaviour.Awake</a>
+        /// which registers some handlers with the peer connection to listen to its <see cref="PeerConnection.OnInitialized"/>
+        /// and <see cref="PeerConnection.OnShutdown"/> events.
+        /// </summary>
         protected void Awake()
         {
-            //FrameQueue = new VideoFrameQueue<I420VideoFrameStorage>(5);
+            //FrameQueue = new AudioFrameQueue<AudioFrameStorage>(5);
             PeerConnection.OnInitialized.AddListener(OnPeerInitialized);
             PeerConnection.OnShutdown.AddListener(OnPeerShutdown);
         }
 
+        /// <summary>
+        /// Implementation of <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDestroy.html">MonoBehaviour.OnDestroy</a>
+        /// which unregisters all listeners from the peer connection.
+        /// </summary>
         protected void OnDestroy()
         {
             PeerConnection.OnInitialized.RemoveListener(OnPeerInitialized);
             PeerConnection.OnShutdown.RemoveListener(OnPeerShutdown);
         }
 
-        private void OnPeerInitialized()
+        /// <summary>
+        /// Implementation of <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html">MonoBehaviour.Update</a>
+        /// to execute from the current Unity main thread any background work enqueued from free-threaded callbacks.
+        /// </summary>
+        protected void Update()
         {
-            if (AutoPlayOnAdded)
+            // Execute any pending work enqueued by background tasks
+            while (_mainThreadWorkQueue.TryDequeue(out Action workload))
             {
-                //PeerConnection.Peer.I420RemoteVideoFrameReady += I420RemoteVideoFrameReady;
+                workload();
             }
         }
 
-        private void OnPeerShutdown()
+        /// <summary>
+        /// Internal helper callback fired when the peer is initialized, which starts listening for events
+        /// on remote tracks added and removed, and optionally starts audio playback if the
+        /// <see cref="AutoPlayOnAdded"/> property is <c>true</c>.
+        /// </summary>
+        private void OnPeerInitialized()
         {
-            //PeerConnection.Peer.I420RemoteVideoFrameReady -= I420RemoteVideoFrameReady;
+            PeerConnection.Peer.TrackAdded += TrackAdded;
+            PeerConnection.Peer.TrackRemoved += TrackRemoved;
+
+            if (AutoPlayOnAdded)
+            {
+                Play();
+            }
         }
 
-        //private void I420RemoteVideoFrameReady(I420AVideoFrame frame)
+        /// <summary>
+        /// Internal helper callback fired when the peer is shut down, which stops audio playback and
+        /// unregister all the event listeners from the peer connection about to be destroyed.
+        /// </summary>
+        private void OnPeerShutdown()
+        {
+            Stop();
+            PeerConnection.Peer.TrackAdded -= TrackAdded;
+            PeerConnection.Peer.TrackRemoved -= TrackRemoved;
+        }
+
+        /// <summary>
+        /// Internal free-threaded helper callback on track added, which enqueues the
+        /// <see cref="VideoSource.VideoStreamStarted"/> event to be fired from the main
+        /// Unity thread.
+        /// </summary>
+        private void TrackAdded(WebRTC.PeerConnection.TrackKind trackKind)
+        {
+            if (trackKind == WebRTC.PeerConnection.TrackKind.Audio)
+            {
+                // Enqueue invoking the unity event from the main Unity thread, so that listeners
+                // can directly access Unity objects from their handler function.
+                _mainThreadWorkQueue.Enqueue(() => AudioStreamStarted.Invoke());
+            }
+        }
+
+        /// <summary>
+        /// Internal free-threaded helper callback on track added, which enqueues the
+        /// <see cref="VideoSource.VideoStreamStopped"/> event to be fired from the main
+        /// Unity thread.
+        /// </summary>
+        private void TrackRemoved(WebRTC.PeerConnection.TrackKind trackKind)
+        {
+            if (trackKind == WebRTC.PeerConnection.TrackKind.Audio)
+            {
+                // Enqueue invoking the unity event from the main Unity thread, so that listeners
+                // can directly access Unity objects from their handler function.
+                _mainThreadWorkQueue.Enqueue(() => AudioStreamStopped.Invoke());
+            }
+        }
+
+        //private void RemoteAudioFrameReady(AudioFrame frame)
         //{
         //    FrameQueue.Enqueue(frame);
         //}

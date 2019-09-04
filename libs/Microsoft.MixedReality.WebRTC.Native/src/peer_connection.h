@@ -49,13 +49,13 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
     renegotiation_needed_callback_ = std::move(callback);
   }
 
-  using TrackAddedCallback = Callback<>;
+  using TrackAddedCallback = Callback<TrackKind>;
   void RegisterTrackAddedCallback(TrackAddedCallback&& callback) noexcept {
     auto lock = std::lock_guard{track_added_callback_mutex_};
     track_added_callback_ = std::move(callback);
   }
 
-  using TrackRemovedCallback = Callback<>;
+  using TrackRemovedCallback = Callback<TrackKind>;
   void RegisterTrackRemovedCallback(TrackRemovedCallback&& callback) noexcept {
     auto lock = std::lock_guard{track_removed_callback_mutex_};
     track_removed_callback_ = std::move(callback);
