@@ -50,16 +50,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             PeerConnection.OnShutdown.RemoveListener(OnPeerShutdown);
         }
 
-        protected async void OnEnable()
+        protected void OnEnable()
         {
-            if (AutoAddTrack)
+            var nativePeer = PeerConnection?.Peer;
+            if ((nativePeer != null) && nativePeer.Initialized)
             {
-                var nativePeer = PeerConnection?.Peer;
-                if ((nativePeer != null) && nativePeer.Initialized)
-                {
-                    await nativePeer.AddLocalAudioTrackAsync();
-                    AudioStreamStarted.Invoke();
-                }
+                DoAutoStartActions(nativePeer);
             }
         }
 
@@ -76,9 +72,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private void OnPeerInitialized()
         {
             var nativePeer = PeerConnection.Peer;
-
             nativePeer.PreferredAudioCodec = PreferredAudioCodec;
 
+            // Only perform auto-start actions (add track, start capture) if the component
+            // is enabled. Otherwise just do nothing, this component is idle.
+            if (enabled)
+            {
+                DoAutoStartActions(nativePeer);
+            }
+        }
+
+        private async void DoAutoStartActions(WebRTC.PeerConnection nativePeer)
+        {
             if (AutoStartCapture)
             {
                 //nativePeer.I420LocalVideoFrameReady += I420LocalVideoFrameReady;
@@ -88,7 +93,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             if (AutoAddTrack)
             {
-                nativePeer.AddLocalAudioTrackAsync();
+                // Force again PreferredAudioCodec right before starting the local capture,
+                // so that modifications to the property done after OnPeerInitialized() are
+                // accounted for.
+                nativePeer.PreferredAudioCodec = PreferredAudioCodec;
+
+                await nativePeer.AddLocalAudioTrackAsync();
                 AudioStreamStarted.Invoke();
             }
         }
