@@ -426,6 +426,26 @@ void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
   }
 }
 
+MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionAudioFrameCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterLocalAudioFrameCallback(
+        AudioFrameReadyCallback{callback, user_data});
+  }
+}
+
+MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionAudioFrameCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterRemoteAudioFrameCallback(
+        AudioFrameReadyCallback{callback, user_data});
+  }
+}
+
 bool MRS_CALL
 mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
                                     VideoDeviceConfiguration config)

@@ -121,6 +121,8 @@ bool PeerConnection::AddLocalAudioTrack(
   auto result = peer_->AddTrack(audio_track, {kAudioVideoStreamId});
   if (result.ok()) {
     if (auto* sink = local_audio_observer_.get()) {
+      // FIXME - Current implementation of AddSink() for the local audio
+      // capture device is no-op. So this callback is never fired.
       audio_track->AddSink(sink);
     }
     local_audio_sender_ = result.value();

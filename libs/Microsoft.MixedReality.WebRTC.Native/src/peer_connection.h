@@ -89,6 +89,22 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
     }
   }
 
+  /// FIXME - Current implementation of AddSink() for the local audio capture
+  /// device is no-op. So this callback is never fired.
+  void RegisterLocalAudioFrameCallback(
+      AudioFrameReadyCallback callback) noexcept {
+    if (local_audio_observer_) {
+      local_audio_observer_->SetCallback(std::move(callback));
+    }
+  }
+
+  void RegisterRemoteAudioFrameCallback(
+      AudioFrameReadyCallback callback) noexcept {
+    if (remote_audio_observer_) {
+      remote_audio_observer_->SetCallback(std::move(callback));
+    }
+  }
+
   bool AddLocalVideoTrack(
       rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept;
   void RemoveLocalVideoTrack() noexcept;

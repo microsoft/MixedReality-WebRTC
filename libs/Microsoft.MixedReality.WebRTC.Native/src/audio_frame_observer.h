@@ -13,8 +13,17 @@
 namespace Microsoft::MixedReality::WebRTC {
 
 /// Callback fired on newly available audio frame.
-using AudioFrameReadyCallback =
-    Callback<const void*, const int, const int, const int, const int>;
+/// The callback parameters are:
+/// - Audio data buffer pointer.
+/// - Number of bits per sample.
+/// - Sampling rate, in Hz.
+/// - Number of channels.
+/// - Number of consecutive audio frames in the buffer.
+using AudioFrameReadyCallback = Callback<const void*,
+                                         const uint32_t,
+                                         const uint32_t,
+                                         const uint32_t,
+                                         const uint32_t>;
 
 /// Video frame observer to get notified of newly available video frames.
 class AudioFrameObserver : public webrtc::AudioTrackSinkInterface {

@@ -128,6 +128,7 @@ using PeerConnectionTrackRemovedCallback =
 
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
+/// The video frame is encoded in I420 triplanar format (NV12).
 using PeerConnectionI420VideoFrameCallback =
     void(MRS_CALL*)(void* user_data,
                     const void* yptr,
@@ -141,6 +142,9 @@ using PeerConnectionI420VideoFrameCallback =
                     const int frame_width,  //< TODO : uint?
                     const int frame_height);
 
+/// Callback fired when a local or remote (depending on use) video frame is
+/// available to be consumed by the caller, usually for display.
+/// The video frame is encoded in ARGB 32-bit per pixel.
 using PeerConnectionARGBVideoFrameCallback =
     void(MRS_CALL*)(void* user_data,
                     const void* data,
@@ -148,15 +152,32 @@ using PeerConnectionARGBVideoFrameCallback =
                     const int frame_width,
                     const int frame_height);
 
+/// Callback fired when a local or remote (depending on use) audio frame is
+/// available to be consumed by the caller, usually for local output.
+using PeerConnectionAudioFrameCallback =
+    void(MRS_CALL*)(void* user_data,
+                    const void* audio_data,
+                    const uint32_t bits_per_sample,
+                    const uint32_t sample_rate,
+                    const uint32_t number_of_channels,
+                    const uint32_t number_of_frames);
+
+/// Callback fired when a message is received on a data channel.
 using PeerConnectionDataChannelMessageCallback =
     void(MRS_CALL*)(void* user_data, const void* data, const uint64_t size);
 
+/// Callback fired when a data channel buffering changes.
+/// The |previous| and |current| values are the old and new sizes in byte of the
+/// buffering buffer. The |limit| is the capacity of the buffer.
+/// Note that when the buffer is full, any attempt to send data will result is
+/// an abrupt closing of the data channel. So monitoring this state is critical.
 using PeerConnectionDataChannelBufferingCallback =
     void(MRS_CALL*)(void* user_data,
                     const uint64_t previous,
                     const uint64_t current,
                     const uint64_t limit);
 
+/// Callback fired when the state of a data channel changed.
 using PeerConnectionDataChannelStateCallback = void(MRS_CALL*)(void* user_data,
                                                                int state,
                                                                int id);
@@ -244,6 +265,25 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(
 MRS_API void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionARGBVideoFrameCallback callback,
+    void* user_data) noexcept;
+
+/// Register a callback fired when an audio frame is available from a local
+/// audio track, usually from a local audio capture device (local microphone).
+///
+/// -- WARNING --
+/// Currently this callback is never fired, because the internal audio capture
+/// device implementation ignores any registration and only delivers its audio
+/// data to the internal WebRTC engine for sending to the remote peer.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionAudioFrameCallback callback,
+    void* user_data) noexcept;
+
+/// Register a callback fired when an audio frame from an audio track was
+/// received from the remote peer.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionAudioFrameCallback callback,
     void* user_data) noexcept;
 
 /// Configuration for opening a local video capture device.

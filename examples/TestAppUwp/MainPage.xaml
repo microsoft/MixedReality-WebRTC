@@ -122,12 +122,13 @@
                         <TextBlock x:Name="remoteVideoStateText" Text="State:" Grid.Column="1" />
                     </Grid>
                     <Border Grid.Row="1" BorderBrush="#66000000" BorderThickness="2,2,2,2" Background="#AAFFFFFF">
-                        <StackPanel>
-                            <MediaPlayerElement x:Name="localVideo" Height="480" Width="640" />
-                            <!--<MediaTransportControls x:Name="localVideoControls" />-->
-                        </StackPanel>
+                        <MediaPlayerElement x:Name="localVideo" Height="480" Width="640" />
                     </Border>
-                    <Border Grid.Row="1"  BorderBrush="#66000000" BorderThickness="2,2,2,2" Grid.Column="2" Background="#AAFFFFFF">
+                    <Grid Grid.Row="1">
+                        <Rectangle Width="125" Height="32" VerticalAlignment="Bottom" Margin="0,0,0,20" Fill="#CCFFFFFF" />
+                        <Button Grid.Row="1" Name="startLocalVideo" IsEnabled="False" Content="Start local video" VerticalAlignment="Bottom" Click="StartLocalVideoClicked" Width="125" HorizontalAlignment="Center" Margin="0,0,0,20" Height="32" />
+                    </Grid>
+                    <Border Grid.Row="1" BorderBrush="#66000000" BorderThickness="2,2,2,2" Grid.Column="2" Background="#AAFFFFFF">
                         <MediaPlayerElement x:Name="remoteVideo" Height="480" Width="640" />
                     </Border>
                     <Grid Grid.Row="2">
@@ -154,7 +155,12 @@
                         <TextBlock x:Name="remoteSkipText" Text="Skip :" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="2" />
                         <TextBlock x:Name="remoteLateText" Text="Late :" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     </Grid>
-                    <Button Name="startLocalVideo" IsEnabled="False" Content="Start local video" VerticalAlignment="Center" Click="StartLocalVideoClicked" Width="125" HorizontalAlignment="Center" Grid.Row="3"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2">
+                        <TextBlock Text="Remote Audio Channels : " VerticalAlignment="Top" />
+                        <TextBlock x:Name="remoteAudioChannelCount" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />
+                        <TextBlock Text="Sample rate : " VerticalAlignment="Top" Margin="20,0,0,0" />
+                        <TextBlock x:Name="remoteAudioSampleRate" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />
+                    </StackPanel>
                     <StackPanel Orientation="Horizontal" Grid.Row="3">
                         <TextBlock Text="Data channel" VerticalAlignment="Bottom" FontWeight="Bold" />
                         <TextBlock x:Name="sessionStatusText" Text="(not connected)" VerticalAlignment="Bottom" Margin="6,0,0,0" />

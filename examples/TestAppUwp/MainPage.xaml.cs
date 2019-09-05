@@ -51,6 +51,11 @@ namespace TestAppUwp
         private bool _isRemoteVideoPlaying = false;
         private object _isRemoteVideoPlayingLock = new object();
 
+        private uint _remoteAudioChannelCount = 0;
+        private uint _remoteAudioSampleRate = 0;
+        private bool _isRemoteAudioPlaying = false;
+        private object _isRemoteAudioPlayingLock = new object();
+
         private PeerConnection _peerConnection;
         private DataChannel _chatDataChannel = null;
 
@@ -106,6 +111,8 @@ namespace TestAppUwp
             _peerConnection.TrackRemoved += Peer_RemoteTrackRemoved;
             _peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
             _peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
+            _peerConnection.LocalAudioFrameReady += Peer_LocalAudioFrameReady;
+            _peerConnection.RemoteAudioFrameReady += Peer_RemoteAudioFrameReady;
 
             //Window.Current.Closed += Shutdown; // doesn't work
 
@@ -567,6 +574,47 @@ namespace TestAppUwp
             }
 
             remoteVideoBridge.HandleIncomingVideoFrame(frame);
+        }
+
+        private void Peer_LocalAudioFrameReady(AudioFrame frame)
+        {
+            // The current underlying WebRTC implementation does not support
+            // local audio frame callbacks, so this will never be called until
+            // that implementation is changed.
+            throw new NotImplementedException();
+        }
+
+        private void Peer_RemoteAudioFrameReady(AudioFrame frame)
+        {
+            lock (_isRemoteAudioPlayingLock)
+            {
+                uint channelCount = frame.channelCount;
+                uint sampleRate = frame.sampleRate;
+
+                bool changed = false;
+                if (!_isRemoteAudioPlaying)
+                {
+                    _isRemoteAudioPlaying = true;
+                    changed = true;
+                }
+                else if ((_remoteAudioChannelCount != channelCount) || (_remoteAudioSampleRate != sampleRate))
+                {
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    _remoteAudioChannelCount = channelCount;
+                    _remoteAudioSampleRate = sampleRate;
+                    RunOnMainThread(() => UpdateRemoteAudioStats(channelCount, sampleRate));
+                }
+            }
+        }
+
+        private void UpdateRemoteAudioStats(uint channelCount, uint sampleRate)
+        {
+            remoteAudioChannelCount.Text = channelCount.ToString();
+            remoteAudioSampleRate.Text = $"{sampleRate} Hz";
         }
 
         private void StartLocalVideoClicked(object sender, RoutedEventArgs e)
