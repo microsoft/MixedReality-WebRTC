@@ -446,7 +446,7 @@ MRS_API bool MRS_CALL mrsSdpForceCodecs(const char* message,
                                         SdpFilter audio_filter,
                                         SdpFilter video_filter,
                                         char* buffer,
-                                        size_t* buffer_size);
+                                        uint64_t* buffer_size);
 
 //
 // Generic utilities
@@ -454,7 +454,7 @@ MRS_API bool MRS_CALL mrsSdpForceCodecs(const char* message,
 
 /// Optimized helper to copy a contiguous block of memory.
 /// This is equivalent to the standard malloc() function.
-MRS_API void MRS_CALL mrsMemCpy(void* dst, const void* src, size_t size);
+MRS_API void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size);
 
 /// Optimized helper to copy a block of memory with source and destination
 /// stride.

@@ -661,7 +661,7 @@ bool MRS_CALL mrsSdpForceCodecs(const char* message,
                                 SdpFilter audio_filter,
                                 SdpFilter video_filter,
                                 char* buffer,
-                                size_t* buffer_size) {
+                                uint64_t* buffer_size) {
   RTC_CHECK(message);
   RTC_CHECK(buffer);
   RTC_CHECK(buffer_size);
@@ -686,7 +686,7 @@ bool MRS_CALL mrsSdpForceCodecs(const char* message,
   std::string out_message =
       SdpForceCodecs(message_str, audio_codec_name_str, extra_audio_params,
                      video_codec_name_str, extra_video_params);
-  const size_t capacity = *buffer_size;
+  const size_t capacity = static_cast<size_t>(*buffer_size);
   const size_t size = out_message.size();
   *buffer_size = size + 1;
   if (capacity < size + 1) {
@@ -697,8 +697,8 @@ bool MRS_CALL mrsSdpForceCodecs(const char* message,
   return true;
 }
 
-void MRS_CALL mrsMemCpy(void* dst, const void* src, size_t size) {
-  memcpy(dst, src, size);
+void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size) {
+  memcpy(dst, src, static_cast<size_t>(size));
 }
 
 void MRS_CALL mrsMemCpyStride(void* dst,
