@@ -23,10 +23,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         #region ISignaler interface
 
+// Those events must be invoked by the derived class
+#pragma warning disable 67
+
         public event Action OnConnect;
         public event Action OnDisconnect;
         public event Action<SignalerMessage> OnMessage;
         public event Action<Exception> OnFailure;
+
+#pragma warning restore 67
 
         /// <summary>
         /// Asynchronously send a signaling message to the remote peer.

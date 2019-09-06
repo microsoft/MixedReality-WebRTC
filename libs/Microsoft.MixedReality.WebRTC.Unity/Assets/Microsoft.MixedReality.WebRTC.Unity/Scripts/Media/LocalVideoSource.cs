@@ -146,15 +146,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Callback when the Unity component is enabled. This is the proper way to enable the
         /// video source and get it to start video capture and enqueue video frames.
         /// </summary>
-        protected async void OnEnable()
+        protected void OnEnable()
         {
-            if (AutoAddTrack)
+            var nativePeer = PeerConnection?.Peer;
+            if ((nativePeer != null) && nativePeer.Initialized)
             {
-                var nativePeer = PeerConnection?.Peer;
-                if ((nativePeer != null) && nativePeer.Initialized)
-                {
-                    AddLocalVideoTrackImpl(nativePeer);
-                }
+                DoAutoStartActions(nativePeer);
             }
         }
 
@@ -168,16 +165,27 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if ((nativePeer != null) && nativePeer.Initialized)
             {
                 VideoStreamStopped.Invoke();
+                nativePeer.I420LocalVideoFrameReady -= I420LocalVideoFrameReady;
                 nativePeer.RemoveLocalVideoTrack();
+                FrameQueue.Clear();
             }
         }
 
         private void OnPeerInitialized()
         {
             var nativePeer = PeerConnection.Peer;
-
             nativePeer.PreferredVideoCodec = PreferredVideoCodec;
 
+            // Only perform auto-start actions (add track, start capture) if the component
+            // is enabled. Otherwise just do nothing, this component is idle.
+            if (enabled)
+            {
+                DoAutoStartActions(nativePeer);
+            }
+        }
+
+        private async void DoAutoStartActions(WebRTC.PeerConnection nativePeer)
+        {
             if (AutoStartCapture)
             {
                 nativePeer.I420LocalVideoFrameReady += I420LocalVideoFrameReady;
@@ -228,6 +236,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 }
             }
 #endif
+            // Force again PreferredVideoCodec right before starting the local capture,
+            // so that modifications to the property done after OnPeerInitialized() are
+            // accounted for.
+            nativePeer.PreferredVideoCodec = PreferredVideoCodec;
+
+            FrameQueue.Clear();
             nativePeer.AddLocalVideoTrackAsync(default, videoProfileId: videoProfileId, videoProfileKind: videoProfileKind,
                 width: width, height: height, framerate: framerate, enableMrc: EnableMixedRealityCapture);
             VideoStreamStarted.Invoke();
@@ -237,8 +251,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             VideoStreamStopped.Invoke();
             var nativePeer = PeerConnection.Peer;
-            nativePeer.RemoveLocalVideoTrack();
             nativePeer.I420LocalVideoFrameReady -= I420LocalVideoFrameReady;
+            nativePeer.RemoveLocalVideoTrack();
+            FrameQueue.Clear();
         }
 
         private void I420LocalVideoFrameReady(I420AVideoFrame frame)

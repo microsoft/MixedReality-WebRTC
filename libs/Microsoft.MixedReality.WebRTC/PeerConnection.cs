@@ -47,6 +47,17 @@ namespace Microsoft.MixedReality.WebRTC
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void VideoCaptureDeviceEnumCompletedCallback();
 
+        /// <summary>
+        /// Kind of WebRTC track.
+        /// </summary>
+        public enum TrackKind : uint
+        {
+            Unknown = 0,
+            Audio = 1,
+            Video = 2,
+            Data = 3
+        };
+
         public enum TrackKind : uint
         {
             UnknownTrack = 0,
@@ -77,12 +88,6 @@ namespace Microsoft.MixedReality.WebRTC
         public ISignaler Signaler { get; }
 
         /// <summary>
-        /// Identifier of the remote peer for signaling. This must be sent before the connection starts
-        /// to send messages via the <see cref="Signaler"/>.
-        /// </summary>
-        public string RemotePeerId;
-
-        /// <summary>
         /// List of TURN and/or STUN servers to use for NAT bypass, in order of preference.
         ///
         /// The scheme is defined in the core WebRTC implementation, and is in short:
@@ -103,6 +108,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public string Credentials = string.Empty;
 
+
+        #region Codec filtering
+
         /// <summary>
         /// Name of the preferred audio codec, or empty to let WebRTC decide.
         /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
@@ -110,10 +118,33 @@ namespace Microsoft.MixedReality.WebRTC
         public string PreferredAudioCodec = string.Empty;
 
         /// <summary>
+        /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
+        /// passed as extra parameters to the preferred audio codec during SDP filtering.
+        /// This enables configuring codec-specific parameters. Arguments are passed as is,
+        /// and there is no check on the validity of the parameter names nor their value.
+        /// This is ignored if <see cref="PreferredAudioCodec"/> is an empty string, or is not
+        /// a valid codec name found in the SDP message offer.
+        /// </summary>
+        public string PreferredAudioCodecExtraParams = string.Empty;
+
+        /// <summary>
         /// Name of the preferred video codec, or empty to let WebRTC decide.
         /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
         /// </summary>
         public string PreferredVideoCodec = string.Empty;
+
+        /// <summary>
+        /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
+        /// passed as extra parameters to the preferred video codec during SDP filtering.
+        /// This enables configuring codec-specific parameters. Arguments are passed as is,
+        /// and there is no check on the validity of the parameter names nor their value.
+        /// This is ignored if <see cref="PreferredVideoCodec"/> is an empty string, or is not
+        /// a valid codec name found in the SDP message offer.
+        /// </summary>
+        public string PreferredVideoCodecExtraParams = string.Empty;
+
+        #endregion
+
 
         /// <summary>
         /// Boolean property indicating whether the peer connection has been initialized.
@@ -189,6 +220,22 @@ namespace Microsoft.MixedReality.WebRTC
         public event ARGBVideoFrameDelegate ARGBRemoteVideoFrameReady;
 
         /// <summary>
+        /// Event that occurs when an audio frame from a local track has been
+        /// produced locally and is available for render.
+        /// </summary>
+        /// <remarks>
+        /// WARNING -- This is currently not implemented in the underlying WebRTC
+        /// implementation, so THIS EVENT IS NEVER FIRED.
+        /// </remarks>
+        public event AudioFrameDelegate LocalAudioFrameReady;
+
+        /// <summary>
+        /// Event that occurs when an audio frame from a remote peer has been
+        /// received and is available for render.
+        /// </summary>
+        public event AudioFrameDelegate RemoteAudioFrameReady;
+
+        /// <summary>
         /// Static wrappers for native callbacks to invoke instance methods on objects.
         /// </summary>
         private static class CallbacksWrappers
@@ -247,6 +294,8 @@ namespace Microsoft.MixedReality.WebRTC
                 public NativeMethods.PeerConnectionI420VideoFrameCallback I420RemoteVideoFrameCallback;
                 public NativeMethods.PeerConnectionARGBVideoFrameCallback ARGBLocalVideoFrameCallback;
                 public NativeMethods.PeerConnectionARGBVideoFrameCallback ARGBRemoteVideoFrameCallback;
+                public NativeMethods.PeerConnectionAudioFrameCallback LocalAudioFrameCallback;
+                public NativeMethods.PeerConnectionAudioFrameCallback RemoteAudioFrameCallback;
             }
 
             public class DataChannelCallbackArgs
@@ -381,6 +430,38 @@ namespace Microsoft.MixedReality.WebRTC
                     stride = stride
                 };
                 peer.ARGBRemoteVideoFrameReady?.Invoke(frame);
+            }
+
+            [MonoPInvokeCallback(typeof(AudioFrameDelegate))]
+            public static void LocalAudioFrameCallback(IntPtr userData, IntPtr audioData, uint bitsPerSample,
+                uint sampleRate, uint channelCount, uint frameCount)
+            {
+                var peer = FromIntPtr(userData);
+                var frame = new AudioFrame()
+                {
+                    bitsPerSample = bitsPerSample,
+                    sampleRate = sampleRate,
+                    channelCount = channelCount,
+                    frameCount = frameCount,
+                    audioData = audioData
+                };
+                peer.LocalAudioFrameReady?.Invoke(frame);
+            }
+
+            [MonoPInvokeCallback(typeof(AudioFrameDelegate))]
+            public static void RemoteAudioFrameCallback(IntPtr userData, IntPtr audioData, uint bitsPerSample,
+                uint sampleRate, uint channelCount, uint frameCount)
+            {
+                var peer = FromIntPtr(userData);
+                var frame = new AudioFrame()
+                {
+                    bitsPerSample = bitsPerSample,
+                    sampleRate = sampleRate,
+                    channelCount = channelCount,
+                    frameCount = frameCount,
+                    audioData = audioData
+                };
+                peer.RemoteAudioFrameReady?.Invoke(frame);
             }
 
             [MonoPInvokeCallback(typeof(DataChannelMessageDelegate))]
@@ -529,7 +610,9 @@ namespace Microsoft.MixedReality.WebRTC
                     I420LocalVideoFrameCallback = CallbacksWrappers.I420LocalVideoFrameCallback,
                     I420RemoteVideoFrameCallback = CallbacksWrappers.I420RemoteVideoFrameCallback,
                     ARGBLocalVideoFrameCallback = CallbacksWrappers.ARGBLocalVideoFrameCallback,
-                    ARGBRemoteVideoFrameCallback = CallbacksWrappers.ARGBRemoteVideoFrameCallback
+                    ARGBRemoteVideoFrameCallback = CallbacksWrappers.ARGBRemoteVideoFrameCallback,
+                    LocalAudioFrameCallback = CallbacksWrappers.LocalAudioFrameCallback,
+                    RemoteAudioFrameCallback = CallbacksWrappers.RemoteAudioFrameCallback
                 };
 
                 // Cache values in local variables before starting async task, to avoid any
@@ -609,6 +692,10 @@ namespace Microsoft.MixedReality.WebRTC
                         //    _nativePeerhandle, _peerCallbackArgs.ARGBLocalVideoFrameCallback, self);
                         //NativeMethods.PeerConnectionRegisterARGBRemoteVideoFrameCallback(
                         //    _nativePeerhandle, _peerCallbackArgs.ARGBRemoteVideoFrameCallback, self);
+                        NativeMethods.PeerConnectionRegisterLocalAudioFrameCallback(
+                            _nativePeerhandle, _peerCallbackArgs.LocalAudioFrameCallback, self);
+                        NativeMethods.PeerConnectionRegisterRemoteAudioFrameCallback(
+                            _nativePeerhandle, _peerCallbackArgs.RemoteAudioFrameCallback, self);
                     }
                 }, token);
 
@@ -657,6 +744,8 @@ namespace Microsoft.MixedReality.WebRTC
                     NativeMethods.PeerConnectionRegisterI420RemoteVideoFrameCallback(_nativePeerhandle, null, IntPtr.Zero);
                     NativeMethods.PeerConnectionRegisterARGBLocalVideoFrameCallback(_nativePeerhandle, null, IntPtr.Zero);
                     NativeMethods.PeerConnectionRegisterARGBRemoteVideoFrameCallback(_nativePeerhandle, null, IntPtr.Zero);
+                    NativeMethods.PeerConnectionRegisterLocalAudioFrameCallback(_nativePeerhandle, null, IntPtr.Zero);
+                    NativeMethods.PeerConnectionRegisterRemoteAudioFrameCallback(_nativePeerhandle, null, IntPtr.Zero);
 
                     // Close the native WebRTC peer connection and destroy the object
                     NativeMethods.PeerConnectionClose(ref _nativePeerhandle);
@@ -709,8 +798,17 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
-                if (!NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, device.id, videoProfileId,
-                    videoProfileKind, width, height, framerate, enableMrc))
+                var config = new NativeMethods.VideoDeviceConfiguration
+                {
+                    VideoDeviceId = device.id,
+                    VideoProfileId = videoProfileId,
+                    VideoProfileKind = videoProfileKind,
+                    Width = width,
+                    Height = height,
+                    Framerate = framerate,
+                    EnableMixedRealityCapture = enableMrc
+                };
+                if (!NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, config))
                 {
                     throw new Exception("Failed to add a local video track to the peer connection.");
                 }
@@ -987,6 +1085,30 @@ namespace Microsoft.MixedReality.WebRTC
             internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.so";
 #endif
 
+            /// <summary>
+            /// Helper structure to pass video capture device configuration to the underlying C++ library.
+            /// </summary>
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+            internal struct VideoDeviceConfiguration
+            {
+                /// <summary>
+                /// Video capture device unique identifier, as returned by <see cref="GetVideoCaptureDevicesAsync"/>.
+                /// </summary>
+                public string VideoDeviceId;
+
+                /// <summary>
+                /// Enable Mixed Reality Capture (MRC). This flag is ignored if the platform doesn't support MRC.
+                /// </summary>
+                public bool EnableMixedRealityCapture;
+            }
+
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+            internal struct SdpFilter
+            {
+                public string CodecName;
+                public string ExtraParams;
+            }
+
 
             #region Unmanaged delegates
 
@@ -1025,6 +1147,10 @@ namespace Microsoft.MixedReality.WebRTC
             [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
             public delegate void PeerConnectionARGBVideoFrameCallback(IntPtr userData,
                 IntPtr data, int stride, int frameWidth, int frameHeight);
+
+            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+            public delegate void PeerConnectionAudioFrameCallback(IntPtr userData,
+                IntPtr data, uint bitsPerSample, uint sampleRate, uint channelCount, uint frameCount);
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
             public delegate void PeerConnectionDataChannelMessageCallback(IntPtr userData, IntPtr data, ulong size);
@@ -1101,10 +1227,18 @@ namespace Microsoft.MixedReality.WebRTC
                 PeerConnectionARGBVideoFrameCallback callback, IntPtr userData);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+                EntryPoint = "mrsPeerConnectionRegisterLocalAudioFrameCallback")]
+            public static extern void PeerConnectionRegisterLocalAudioFrameCallback(IntPtr peerHandle,
+                PeerConnectionAudioFrameCallback callback, IntPtr userData);
+
+            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+                EntryPoint = "mrsPeerConnectionRegisterRemoteAudioFrameCallback")]
+            public static extern void PeerConnectionRegisterRemoteAudioFrameCallback(IntPtr peerHandle,
+                PeerConnectionAudioFrameCallback callback, IntPtr userData);
+
+            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
-            public static extern bool PeerConnectionAddLocalVideoTrack(IntPtr peerHandle, string videoDeviceId,
-                string videoProfileId, VideoProfileKind videoProfileKind, int width, int height, double framerate,
-                bool enableMrc);
+            public static extern bool PeerConnectionAddLocalVideoTrack(IntPtr peerHandle, VideoDeviceConfiguration config);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddLocalAudioTrack")]
@@ -1162,7 +1296,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsSdpForceCodecs")]
-            public static unsafe extern bool SdpForceCodecs(string message, string audioCodecName, string videoCodecName, StringBuilder messageOut, ref ulong messageOutLength);
+            public static unsafe extern bool SdpForceCodecs(string message, SdpFilter audioFilter, SdpFilter videoFilter, StringBuilder messageOut, ref ulong messageOutLength);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsMemCpyStride")]
@@ -1211,7 +1345,17 @@ namespace Microsoft.MixedReality.WebRTC
                 {
                     var builder = new StringBuilder(sdp.Length);
                     ulong lengthInOut = (ulong)builder.Capacity;
-                    if (NativeMethods.SdpForceCodecs(sdp, PreferredAudioCodec, PreferredVideoCodec, builder, ref lengthInOut))
+                    var audioFilter = new NativeMethods.SdpFilter
+                    {
+                        CodecName = PreferredAudioCodec,
+                        ExtraParams = PreferredAudioCodecExtraParams
+                    };
+                    var videoFilter = new NativeMethods.SdpFilter
+                    {
+                        CodecName = PreferredVideoCodec,
+                        ExtraParams = PreferredVideoCodecExtraParams
+                    };
+                    if (NativeMethods.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut))
                     {
                         builder.Length = (int)lengthInOut;
                         sdp = builder.ToString();
@@ -1223,8 +1367,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 MessageType = messageType,
                 Data = sdp,
-                IceDataSeparator = "|",
-                TargetId = RemotePeerId
+                IceDataSeparator = "|"
             };
             Signaler?.SendMessageAsync(msg);
 
@@ -1237,8 +1380,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 MessageType = SignalerMessage.WireMessageType.Ice,
                 Data = $"{candidate}|{sdpMlineindex}|{sdpMid}",
-                IceDataSeparator = "|",
-                TargetId = RemotePeerId
+                IceDataSeparator = "|"
             };
             Signaler?.SendMessageAsync(msg);
 

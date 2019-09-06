@@ -52,13 +52,7 @@ const std::string kLocalAudioLabel("local_audio");
 
 /// Helper to open a video capture device.
 std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
-    const char* video_device_id,
-    const char* video_profile_id,
-    VideoProfileKind video_profile_kind,
-    int width,
-    int height,
-    double framerate,
-    bool enable_mrc) noexcept(kNoExceptFalseOnUWP) {
+    VideoDeviceConfiguration config) noexcept(kNoExceptFalseOnUWP) {
 #if defined(WINUWP)
   // Check for calls from main UI thread; this is not supported (will deadlock)
   auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
@@ -78,9 +72,10 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   auto deviceList = vci->value();
 
   std::wstring video_device_id_str;
-  if ((video_device_id != nullptr) && (video_device_id[0] != '\0')) {
+  if ((config.video_device_id != nullptr) &&
+      (config.video_device_id[0] != '\0')) {
     video_device_id_str =
-        rtc::ToUtf16(video_device_id, strlen(video_device_id));
+        rtc::ToUtf16(config.video_device_id, strlen(config.video_device_id));
   }
 
   for (auto&& vdi : *deviceList) {
@@ -101,7 +96,7 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     }
     createParams->videoProfileKind =
           (wrapper::org::webRtc::VideoProfileKind)video_profile_kind;
-    createParams->enableMrc = enable_mrc;
+    createParams->enableMrc = config.enable_mrc;
     createParams->width = width;
     createParams->height = height;
     createParams->framerate = framerate;
@@ -128,8 +123,6 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   }
   return nullptr;
 #else
-  (void)video_profile_id;  // No video profile on non-UWP
-  (void)enable_mrc;        // No MRC on non-UWP
   std::vector<std::string> device_names;
   {
     std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
@@ -139,8 +132,9 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     }
 
     std::string video_device_id_str;
-    if ((video_device_id != nullptr) && (video_device_id[0] != '\0')) {
-      video_device_id_str.assign(video_device_id);
+    if ((config.video_device_id != nullptr) &&
+        (config.video_device_id[0] != '\0')) {
+      video_device_id_str.assign(config.video_device_id);
     }
 
     int num_devices = info->NumberOfDevices();
@@ -329,14 +323,7 @@ PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
 
   // Create the new peer connection
   rtc::scoped_refptr<PeerConnection> peer =
-      new rtc::RefCountedObject<PeerConnection>();
-  webrtc::PeerConnectionDependencies dependencies(peer);
-  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection =
-      g_peer_connection_factory->CreatePeerConnection(config,
-                                                      std::move(dependencies));
-  if (peer_connection.get() == nullptr)
-    return {};
-  peer->SetPeerImpl(peer_connection);
+      PeerConnection::create(*g_peer_connection_factory, config);
   const PeerConnectionHandle handle{peer.get()};
   g_peer_connection_map.insert({handle, std::move(peer)});
   return handle;
@@ -439,15 +426,29 @@ void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
   }
 }
 
+MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionAudioFrameCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterLocalAudioFrameCallback(
+        AudioFrameReadyCallback{callback, user_data});
+  }
+}
+
+MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionAudioFrameCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterRemoteAudioFrameCallback(
+        AudioFrameReadyCallback{callback, user_data});
+  }
+}
+
 bool MRS_CALL
 mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
-                                    const char* video_device_id,
-                                    const char* video_profile_id,
-                                    VideoProfileKind video_profile_kind,
-                                    int width,
-                                    int height,
-                                    double framerate,
-                                    bool enable_mrc)
+                                    VideoDeviceConfiguration config)
 #if defined(WINUWP)
     noexcept(false)
 #else
@@ -459,9 +460,7 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
       return false;
     }
     std::unique_ptr<cricket::VideoCapturer> video_capturer =
-        OpenVideoCaptureDevice(video_device_id, video_profile_id,
-                               video_profile_kind, width, height, framerate,
-                               enable_mrc);
+        OpenVideoCaptureDevice(config);
     if (!video_capturer) {
       return false;
     }
@@ -659,25 +658,35 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
 }
 
 bool MRS_CALL mrsSdpForceCodecs(const char* message,
-                                const char* audio_codec_name,
-                                const char* video_codec_name,
+                                SdpFilter audio_filter,
+                                SdpFilter video_filter,
                                 char* buffer,
-                                size_t* buffer_size) {
+                                uint64_t* buffer_size) {
   RTC_CHECK(message);
   RTC_CHECK(buffer);
   RTC_CHECK(buffer_size);
   std::string message_str(message);
   std::string audio_codec_name_str;
   std::string video_codec_name_str;
-  if (audio_codec_name) {
-    audio_codec_name_str.assign(audio_codec_name);
+  std::map<std::string, std::string> extra_audio_params;
+  std::map<std::string, std::string> extra_video_params;
+  if (audio_filter.codec_name) {
+    audio_codec_name_str.assign(audio_filter.codec_name);
   }
-  if (video_codec_name) {
-    video_codec_name_str.assign(video_codec_name);
+  if (video_filter.codec_name) {
+    video_codec_name_str.assign(video_filter.codec_name);
+  }
+  // Only assign extra parameters if codec name is not empty
+  if (!audio_codec_name_str.empty() && audio_filter.params) {
+    SdpParseCodecParameters(audio_filter.params, extra_audio_params);
+  }
+  if (!video_codec_name_str.empty() && video_filter.params) {
+    SdpParseCodecParameters(video_filter.params, extra_video_params);
   }
   std::string out_message =
-      SdpForceCodecs(message_str, audio_codec_name_str, video_codec_name_str);
-  const size_t capacity = *buffer_size;
+      SdpForceCodecs(message_str, audio_codec_name_str, extra_audio_params,
+                     video_codec_name_str, extra_video_params);
+  const size_t capacity = static_cast<size_t>(*buffer_size);
   const size_t size = out_message.size();
   *buffer_size = size + 1;
   if (capacity < size + 1) {
@@ -688,8 +697,8 @@ bool MRS_CALL mrsSdpForceCodecs(const char* message,
   return true;
 }
 
-void MRS_CALL mrsMemCpy(void* dst, const void* src, size_t size) {
-  memcpy(dst, src, size);
+void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size) {
+  memcpy(dst, src, static_cast<size_t>(size));
 }
 
 void MRS_CALL mrsMemCpyStride(void* dst,

@@ -127,6 +127,7 @@ using PeerConnectionTrackRemovedCallback =
 
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
+/// The video frame is encoded in I420 triplanar format (NV12).
 using PeerConnectionI420VideoFrameCallback =
     void(MRS_CALL*)(void* user_data,
                     const void* yptr,
@@ -140,6 +141,9 @@ using PeerConnectionI420VideoFrameCallback =
                     const int frame_width,  //< TODO : uint?
                     const int frame_height);
 
+/// Callback fired when a local or remote (depending on use) video frame is
+/// available to be consumed by the caller, usually for display.
+/// The video frame is encoded in ARGB 32-bit per pixel.
 using PeerConnectionARGBVideoFrameCallback =
     void(MRS_CALL*)(void* user_data,
                     const void* data,
@@ -147,15 +151,32 @@ using PeerConnectionARGBVideoFrameCallback =
                     const int frame_width,
                     const int frame_height);
 
+/// Callback fired when a local or remote (depending on use) audio frame is
+/// available to be consumed by the caller, usually for local output.
+using PeerConnectionAudioFrameCallback =
+    void(MRS_CALL*)(void* user_data,
+                    const void* audio_data,
+                    const uint32_t bits_per_sample,
+                    const uint32_t sample_rate,
+                    const uint32_t number_of_channels,
+                    const uint32_t number_of_frames);
+
+/// Callback fired when a message is received on a data channel.
 using PeerConnectionDataChannelMessageCallback =
     void(MRS_CALL*)(void* user_data, const void* data, const uint64_t size);
 
+/// Callback fired when a data channel buffering changes.
+/// The |previous| and |current| values are the old and new sizes in byte of the
+/// buffering buffer. The |limit| is the capacity of the buffer.
+/// Note that when the buffer is full, any attempt to send data will result is
+/// an abrupt closing of the data channel. So monitoring this state is critical.
 using PeerConnectionDataChannelBufferingCallback =
     void(MRS_CALL*)(void* user_data,
                     const uint64_t previous,
                     const uint64_t current,
                     const uint64_t limit);
 
+/// Callback fired when the state of a data channel changed.
 using PeerConnectionDataChannelStateCallback = void(MRS_CALL*)(void* user_data,
                                                                int state,
                                                                int id);
@@ -258,6 +279,43 @@ enum class VideoProfileKind : int32_t {
   kHdrWithWcgVideo,
   kHdrWithWcgPhoto,
   kVideoHdr8,
+}
+
+/// Register a callback fired when an audio frame is available from a local
+/// audio track, usually from a local audio capture device (local microphone).
+///
+/// -- WARNING --
+/// Currently this callback is never fired, because the internal audio capture
+/// device implementation ignores any registration and only delivers its audio
+/// data to the internal WebRTC engine for sending to the remote peer.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionAudioFrameCallback callback,
+    void* user_data) noexcept;
+
+/// Register a callback fired when an audio frame from an audio track was
+/// received from the remote peer.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionAudioFrameCallback callback,
+    void* user_data) noexcept;
+
+/// Configuration for opening a local video capture device.
+struct VideoDeviceConfiguration {
+  /// Unique identifier of the video capture device to select, as returned by
+  /// |mrsEnumVideoCaptureDevicesAsync|, or a null or empty string to select the
+  /// default device.
+  const char* video_device_id = nullptr;
+
+  /// On platforms supporting Mixed Reality Capture (MRC) like HoloLens, enable
+  /// this feature. This produces a video track where the holograms rendering is
+  /// overlaid over the webcam frame. This parameter is ignored on platforms not
+  /// supporting MRC.
+  /// Note that MRC is only available in exclusive-mode applications, or in
+  /// shared apps with the restricted capability "rescap:screenDuplication". In
+  /// any other case the capability will not be granted and MRC will silently
+  /// fail, falling back to a simple webcam video feed without holograms.
+  bool enable_mrc = true;
 };
 
 /// Add a local video track from a local video capture device (webcam) to
@@ -270,13 +328,7 @@ enum class VideoProfileKind : int32_t {
 /// invoked from another thread than the main UI thread.
 MRS_API bool MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     PeerConnectionHandle peerHandle,
-    const char* video_device_id,
-    const char* video_profile_id,
-	VideoProfileKind video_profile_kind,
-    int width,
-    int height,
-    double framerate,
-    bool enable_mrc) noexcept(kNoExceptFalseOnUWP);
+    VideoDeviceConfiguration config) noexcept(kNoExceptFalseOnUWP);
 
 /// Add a local audio track from a local audio capture device (microphone) to
 /// the collection of tracks to send to the remote peer.
@@ -361,6 +413,19 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandle) noexcept;
 // SDP utilities
 //
 
+/// Codec arguments for SDP filtering, to allow selecting a preferred codec and
+/// overriding some of its parameters.
+struct SdpFilter {
+  /// SDP name of a preferred codec, which is to be retained alone if present in
+  /// the SDP offer message, discarding all others.
+  const char* codec_name = nullptr;
+
+  /// Semicolon-separated list of "key=value" pairs of codec parameters to pass
+  /// to the codec. Arguments are passed as is without validation of their name
+  /// nor value.
+  const char* params = nullptr;
+};
+
 /// Force audio and video codecs when advertizing capabilities in an SDP offer.#
 ///
 /// This is a workaround for the lack of access to codec selection. Instead of
@@ -392,10 +457,10 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandle) noexcept;
 /// Returns true on success or false if the buffer is not large enough to
 /// contain the new SDP message.
 MRS_API bool MRS_CALL mrsSdpForceCodecs(const char* message,
-                                        const char* audio_codec_name,
-                                        const char* video_codec_name,
+                                        SdpFilter audio_filter,
+                                        SdpFilter video_filter,
                                         char* buffer,
-                                        size_t* buffer_size);
+                                        uint64_t* buffer_size);
 
 //
 // Generic utilities
@@ -403,7 +468,7 @@ MRS_API bool MRS_CALL mrsSdpForceCodecs(const char* message,
 
 /// Optimized helper to copy a contiguous block of memory.
 /// This is equivalent to the standard malloc() function.
-MRS_API void MRS_CALL mrsMemCpy(void* dst, const void* src, size_t size);
+MRS_API void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size);
 
 /// Optimized helper to copy a block of memory with source and destination
 /// stride.

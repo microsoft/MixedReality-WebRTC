@@ -128,7 +128,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Internal helper callback fired peer initialize, which starts listening for events
+        /// Internal helper callback fired when the peer is initialized, which starts listening for events
         /// on remote tracks added and removed, and optionally starts video playback if the
         /// <see cref="AutoPlayOnAdded"/> property is <c>true</c>.
         /// </summary>
@@ -144,7 +144,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Internal helper callback fired peer shutdown, which stops video playback and
+        /// Internal helper callback fired when the peer is shut down, which stops video playback and
         /// unregister all the event listeners from the peer connection about to be destroyed.
         /// </summary>
         private void OnPeerShutdown()
@@ -161,7 +161,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private void TrackAdded(WebRTC.PeerConnection.TrackKind trackKind)
         {
-            if (trackKind == WebRTC.PeerConnection.TrackKind.VideoTrack)
+            if (trackKind == WebRTC.PeerConnection.TrackKind.Video)
             {
                 // Enqueue invoking the unity event from the main Unity thread, so that listeners
                 // can directly access Unity objects from their handler function.
@@ -176,7 +176,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private void TrackRemoved(WebRTC.PeerConnection.TrackKind trackKind)
         {
-            if (trackKind == WebRTC.PeerConnection.TrackKind.VideoTrack)
+            if (trackKind == WebRTC.PeerConnection.TrackKind.Video)
             {
                 // Enqueue invoking the unity event from the main Unity thread, so that listeners
                 // can directly access Unity objects from their handler function.

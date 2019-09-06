@@ -462,6 +462,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             Debug.Log("WebRTC plugin initialized successfully.");
 
+            _nativePeer.RenegotiationNeeded += Peer_RenegotiationNeeded;
+
             // Once the peer is initialized, it becomes publicly accessible.
             // This prevent scripts from accessing it before it is initialized,
             // or worse before it is constructed in Awake(). This happens because
@@ -472,6 +474,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             Signaler.OnPeerInitialized(this);
             OnInitialized.Invoke();
+        }
+
+        private void Peer_RenegotiationNeeded()
+        {
+            // If already connected, update the connection on the fly.
+            // If not, wait for user action and don't automatically connect.
+            if (_nativePeer.IsConnected)
+            {
+                _nativePeer.CreateOffer();
+            }
         }
 
         /// <summary>

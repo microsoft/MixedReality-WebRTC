@@ -53,6 +53,30 @@ void ensureNullTerminatedCString(std::string& str) {
 
 namespace Microsoft::MixedReality::WebRTC {
 
+rtc::scoped_refptr<PeerConnection> PeerConnection::create(
+    webrtc::PeerConnectionFactoryInterface& factory,
+    const webrtc::PeerConnectionInterface::RTCConfiguration& config) {
+  // Create the PeerConnection object
+  rtc::scoped_refptr<PeerConnection> peer =
+      new rtc::RefCountedObject<PeerConnection>();
+
+  // Create the underlying implementation
+  webrtc::PeerConnectionDependencies dependencies(peer);
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> impl =
+      factory.CreatePeerConnection(config, std::move(dependencies));
+  if (impl.get() == nullptr) {
+    return {};
+  }
+
+  // Acquire ownership of the underlying implementation
+  peer->peer_ = std::move(impl);
+  peer->local_video_observer_.reset(new VideoFrameObserver());
+  peer->remote_video_observer_.reset(new VideoFrameObserver());
+  peer->local_audio_observer_.reset(new AudioFrameObserver());
+  peer->remote_audio_observer_.reset(new AudioFrameObserver());
+  return peer;
+}
+
 PeerConnection::PeerConnection() = default;
 
 PeerConnection::~PeerConnection() noexcept {
@@ -72,15 +96,6 @@ PeerConnection::~PeerConnection() noexcept {
       }
     }
   }
-}
-
-void PeerConnection::SetPeerImpl(
-    rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer) noexcept {
-  peer_ = std::move(peer);
-  local_video_observer_.reset(new VideoFrameObserver());
-  remote_video_observer_.reset(new VideoFrameObserver());
-  local_audio_observer_.reset(new AudioFrameObserver());
-  remote_audio_observer_.reset(new AudioFrameObserver());
 }
 
 bool PeerConnection::AddLocalVideoTrack(
@@ -121,6 +136,8 @@ bool PeerConnection::AddLocalAudioTrack(
   auto result = peer_->AddTrack(audio_track, {kAudioVideoStreamId});
   if (result.ok()) {
     if (auto* sink = local_audio_observer_.get()) {
+      // FIXME - Current implementation of AddSink() for the local audio
+      // capture device is no-op. So this callback is never fired.
       audio_track->AddSink(sink);
     }
     local_audio_sender_ = result.value();

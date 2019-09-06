@@ -23,6 +23,30 @@ jobs:
   steps:
   - checkout: self
 
+  # Download Microsoft.MixedReality.WebRTC.Native.dll (UWP-x64-Debug)
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download native library (UWP-x64-Debug)'
+    inputs:
+      source: specific
+      project: $(ArtifactConfig.Project)
+      definition: $(ArtifactConfig.CppDefinitionId)
+      runVersion: 'latest'
+      artifact: 'Microsoft.MixedReality.WebRTC.Native_UWP-x64-Debug'
+      patterns: '**/*.@(pdb|dll)'
+      path: 'bin/UWP/x64/Debug'
+
+  # Download Microsoft.MixedReality.WebRTC.Native.dll (UWP-x64-Release)
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download native library (UWP-x64-Release)'
+    inputs:
+      source: specific
+      project: $(ArtifactConfig.Project)
+      definition: $(ArtifactConfig.CppDefinitionId)
+      runVersion: 'latest'
+      artifact: 'Microsoft.MixedReality.WebRTC.Native_UWP-x64-Release'
+      patterns: '**/*.@(pdb|dll)'
+      path: 'bin/UWP/x64/Release'
+
   # Build Microsoft.MixedReality.WebRTC (Debug, incremental build)
   - task: DotNetCoreCLI@2
     displayName: 'Build C# WebRTC lib (AnyCPU-Debug) [incremental]'
@@ -33,12 +57,36 @@ jobs:
 
   # Build Microsoft.MixedReality.WebRTC (Release, full build)
   - task: DotNetCoreCLI@2
-    condition: succeededOrFailed() # Build even if Debug failed
+    condition: succeededOrFailed() # Build even previous task failed
     displayName: 'Build C# WebRTC lib (AnyCPU-Release) [full build]'
     inputs:
       projects: libs/Microsoft.MixedReality.WebRTC/Microsoft.MixedReality.WebRTC.csproj
       arguments: '-f netstandard2.0 --no-incremental -c Release'
       workingDirectory: libs/Microsoft.MixedReality.WebRTC/
+
+  # Build TestAppUWP (Debug)
+  - task: MSBuild@1
+    condition: succeededOrFailed() # Build even previous task failed
+    displayName: 'Build C# sample TestAppUWP (AnyCPU-Debug)'
+    inputs:
+      msbuildVersion: latest
+      msbuildArchitecture: x64
+      solution: examples/TestAppUwp/Microsoft.MixedReality.WebRTC.TestAppUWP.csproj
+      platform: x64
+      configuration: Debug
+      msbuildArguments: -restore -p:AppxPackageSigningEnabled=false
+
+  # Build TestAppUWP (Release)
+  - task: MSBuild@1
+    condition: succeededOrFailed() # Build even previous task failed
+    displayName: 'Build C# sample TestAppUWP (AnyCPU-Release) [.NET Native]'
+    inputs:
+      msbuildVersion: latest
+      msbuildArchitecture: x64
+      solution: examples/TestAppUwp/Microsoft.MixedReality.WebRTC.TestAppUWP.csproj
+      platform: x64
+      configuration: Release
+      msbuildArguments: -restore -p:AppxPackageSigningEnabled=false
 
   # Build C# tests
   - task: DotNetCoreCLI@2
@@ -47,17 +95,6 @@ jobs:
       projects: tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Tests.csproj
       arguments: '-c ${{parameters.testConfig}}'
       workingDirectory: tests/Microsoft.MixedReality.WebRTC.Tests/
-
-  # Download Microsoft.MixedReality.WebRTC.Native.dll (Win32-x64-Release)
-  - task: DownloadPipelineArtifact@1
-    displayName: 'Download C++ WebRTC lib (Win32-x64-Release)'
-    inputs:
-      buildType: specific
-      project: $(ArtifactConfig.Project)
-      definition: $(ArtifactConfig.CppDefinitionId)
-      artifactName: 'Microsoft.MixedReality.WebRTC.Native_Win32-x64-Release'
-      targetPath: '$(Build.SourcesDirectory)/bin/Win32/x64/Release'
-    enabled: false
 
   # Run tests (Win32-x64-Release)
   - task: VSTest@2
