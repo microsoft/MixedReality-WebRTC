@@ -58,14 +58,6 @@ namespace Microsoft.MixedReality.WebRTC
             Data = 3
         };
 
-        public enum TrackKind : uint
-        {
-            UnknownTrack = 0,
-            AudioTrack = 1,
-            VideoTrack = 2,
-            DataTrack = 3
-        };
-
         public enum VideoProfileKind : int
         {
             Unspecified,
@@ -803,8 +795,8 @@ namespace Microsoft.MixedReality.WebRTC
                     VideoDeviceId = device.id,
                     VideoProfileId = videoProfileId,
                     VideoProfileKind = videoProfileKind,
-                    Width = width,
-                    Height = height,
+                    Width = (uint)width,
+                    Height = (uint)height,
                     Framerate = framerate,
                     EnableMixedRealityCapture = enableMrc
                 };
@@ -1095,6 +1087,12 @@ namespace Microsoft.MixedReality.WebRTC
                 /// Video capture device unique identifier, as returned by <see cref="GetVideoCaptureDevicesAsync"/>.
                 /// </summary>
                 public string VideoDeviceId;
+
+                public string VideoProfileId;
+                public VideoProfileKind VideoProfileKind;
+                public uint Width;
+                public uint Height;
+                public double Framerate;
 
                 /// <summary>
                 /// Enable Mixed Reality Capture (MRC). This flag is ignored if the platform doesn't support MRC.

@@ -109,7 +109,8 @@ using PeerConnectionIceCandidateReadytoSendCallback =
 using PeerConnectionRenegotiationNeededCallback =
     void(MRS_CALL*)(void* user_data);
 
-/// Kind of media track. Equivalent to webrtc::MediaStreamTrackInterface::kind().
+/// Kind of media track. Equivalent to
+/// webrtc::MediaStreamTrackInterface::kind().
 enum class TrackKind : uint32_t {
   kUnknownTrack = 0,
   kAudioTrack = 1,
@@ -279,7 +280,7 @@ enum class VideoProfileKind : int32_t {
   kHdrWithWcgVideo,
   kHdrWithWcgPhoto,
   kVideoHdr8,
-}
+};
 
 /// Register a callback fired when an audio frame is available from a local
 /// audio track, usually from a local audio capture device (local microphone).
@@ -306,6 +307,31 @@ struct VideoDeviceConfiguration {
   /// |mrsEnumVideoCaptureDevicesAsync|, or a null or empty string to select the
   /// default device.
   const char* video_device_id = nullptr;
+
+  /// Optional name of a video profile, if the platform supports it, or null to
+  /// no use video profiles.
+  const char* video_profile_id = nullptr;
+
+  /// Optional kind of video profile to select, if the platform supports it.
+  /// If a video profile ID is specified with |video_profile_id| it is
+  /// recommended to leave this as kUnspecified to avoid over-constraining the
+  /// video capture format selection.
+  VideoProfileKind video_profile_kind = VideoProfileKind::kUnspecified;
+
+  /// Optional preferred capture resolution width, in pixels, or zero for
+  /// unconstrained.
+  uint32_t width = 0;
+
+  /// Optional preferred capture resolution height, in pixels, or zero for
+  /// unconstrained.
+  uint32_t height = 0;
+
+  /// Optional preferred capture framerate, in frame per second (FPS), or zero
+  /// for unconstrained.
+  /// This framerate is compared exactly to the one reported by the video
+  /// capture device (webcam), so should be queried rather than hard-coded to
+  /// avoid mismatches with video formats reporting e.g. 29.99 instead of 30.0.
+  double framerate = 0;
 
   /// On platforms supporting Mixed Reality Capture (MRC) like HoloLens, enable
   /// this feature. This produces a video track where the holograms rendering is

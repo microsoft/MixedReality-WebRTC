@@ -203,16 +203,6 @@ namespace TestAppUwp
             }
         }
 
-        private void Peer_RemoteTrackAdeed(PeerConnection.TrackKind trackKind)
-        {
-            LogMessage($"Added remote {trackKind} track.");
-        }
-
-        private void Peer_RemoteTrackRemoved(PeerConnection.TrackKind trackKind)
-        {
-            LogMessage($"Removed remote {trackKind} track.");
-        }
-
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             LogMessage("Initializing the WebRTC native plugin...");
@@ -728,6 +718,8 @@ namespace TestAppUwp
 
         private void Peer_RemoteTrackAdded(PeerConnection.TrackKind trackKind)
         {
+            LogMessage($"Added remote {trackKind} track.");
+
             //if (trackKind == PeerConnection.TrackKind.Video)
             //{
             //    lock (_isRemoteVideoPlayingLock)
@@ -742,6 +734,8 @@ namespace TestAppUwp
 
         private void Peer_RemoteTrackRemoved(PeerConnection.TrackKind trackKind)
         {
+            LogMessage($"Removed remote {trackKind} track.");
+
             if (trackKind == PeerConnection.TrackKind.Video)
             {
                 lock (_isRemoteVideoPlayingLock)
@@ -894,12 +888,12 @@ namespace TestAppUwp
                     }
 
                     _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfileId, SelectedVideoProfileKind,
-                    (int)width, (int)height, framerate, /* mrcEnabled = */ false).ContinueWith(prevTask =>
+                    (int)width, (int)height, framerate, /* mrcEnabled = */ false).ContinueWith(addVideoTask =>
                     {
                         // Continue inside UI thread here
-                        if (prevTask.Exception != null)
+                        if (addVideoTask.Exception != null)
                         {
-                            LogMessage(prevTask.Exception.Message);
+                            LogMessage(addVideoTask.Exception.Message);
                             return;
                         }
                         dssStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
@@ -907,32 +901,14 @@ namespace TestAppUwp
                         startLocalVideo.Content = "Stop local video";
                         var idx = HACK_GetVideoDeviceIndex(); //< HACK
                         localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx); //< HACK
-                        remotePeerUidTextBox.Text = "030098210300865F0300E0980300C2A0"; // GetDeviceUniqueIdLikeUnity((byte)(1 - idx)); //< HACK
-                        dssServer.Text = "http://10.164.30.167:3000/";
+                        remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx)); //< HACK
                         localVideoSourceName.Text = $"({VideoCaptureDevices[idx].DisplayName})"; //< HACK
                         //localVideo.MediaPlayer.Play();
                         lock (_isLocalVideoPlayingLock)
                         {
-                            // Continue inside UI thread here
-                            if (addVideoTask.Exception != null)
-                            {
-                                LogMessage(addVideoTask.Exception.Message);
-                                return;
-                            }
-                            dssStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
-                            dssStatsTimer.Start();
-                            startLocalVideo.Content = "Stop local video";
-                            var idx = HACK_GetVideoDeviceIndex(); //< HACK
-                            localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx); //< HACK
-                            remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx)); //< HACK
-                            localVideoSourceName.Text = $"({VideoCaptureDevices[idx].DisplayName})"; //< HACK
-                            localVideo.MediaPlayer.Play();
-                            lock (_isLocalVideoPlayingLock)
-                            {
-                                _isLocalVideoPlaying = true;
-                            }
-                        }, uiThreadScheduler);
-                    });
+                            _isLocalVideoPlaying = true;
+                        }
+                    }, uiThreadScheduler);
                 });
             }
         }

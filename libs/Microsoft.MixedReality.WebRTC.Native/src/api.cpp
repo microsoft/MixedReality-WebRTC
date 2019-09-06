@@ -91,15 +91,15 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     createParams->factory = g_winuwp_factory;
     createParams->name = devInfo.Name().c_str();
     createParams->id = id.c_str();
-    if (video_profile_id) {
-      createParams->videoProfileId = video_profile_id;
+    if (config.video_profile_id) {
+      createParams->videoProfileId = config.video_profile_id;
     }
     createParams->videoProfileKind =
-          (wrapper::org::webRtc::VideoProfileKind)video_profile_kind;
+        (wrapper::org::webRtc::VideoProfileKind)config.video_profile_kind;
     createParams->enableMrc = config.enable_mrc;
-    createParams->width = width;
-    createParams->height = height;
-    createParams->framerate = framerate;
+    createParams->width = config.width;
+    createParams->height = config.height;
+    createParams->framerate = config.framerate;
 
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
 
