@@ -65,7 +65,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if ((nativePeer != null) && nativePeer.Initialized)
             {
                 AudioStreamStopped.Invoke();
+                //nativePeer.LocalAudioFrameReady -= LocalAudioFrameReady;
                 nativePeer.RemoveLocalAudioTrack();
+                //FrameQueue.Clear();
             }
         }
 
@@ -86,9 +88,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (AutoStartCapture)
             {
-                //nativePeer.I420LocalVideoFrameReady += I420LocalVideoFrameReady;
+                //nativePeer.LocalAudioFrameReady += LocalAudioFrameReady;
 
-                // TODO - Currently AddLocalVideoTrackAsync() both open the capture device AND add a video track
+                // TODO - Currently AddLocalAudioTrackAsync() both open the capture device AND add an audio track
             }
 
             if (AutoAddTrack)
@@ -98,6 +100,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // accounted for.
                 nativePeer.PreferredAudioCodec = PreferredAudioCodec;
 
+                //FrameQueue.Clear();
                 await nativePeer.AddLocalAudioTrackAsync();
                 AudioStreamStarted.Invoke();
             }
@@ -107,11 +110,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             AudioStreamStopped.Invoke();
             var nativePeer = PeerConnection.Peer;
+            //nativePeer.LocalAudioFrameReady -= LocalAudioFrameReady;
             nativePeer.RemoveLocalAudioTrack();
-            //nativePeer.I420LocalVideoFrameReady -= I420LocalVideoFrameReady;
+            //FrameQueue.Clear();
         }
 
-        //private void I420LocalVideoFrameReady(I420AVideoFrame frame)
+        //private void LocalAudioFrameReady(AudioFrame frame)
         //{
         //    FrameQueue.Enqueue(frame);
         //}

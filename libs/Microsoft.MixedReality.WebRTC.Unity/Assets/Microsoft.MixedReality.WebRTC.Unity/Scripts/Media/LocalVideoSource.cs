@@ -86,7 +86,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if ((nativePeer != null) && nativePeer.Initialized)
             {
                 VideoStreamStopped.Invoke();
+                nativePeer.I420LocalVideoFrameReady -= I420LocalVideoFrameReady;
                 nativePeer.RemoveLocalVideoTrack();
+                FrameQueue.Clear();
             }
         }
 
@@ -119,6 +121,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // accounted for.
                 nativePeer.PreferredVideoCodec = PreferredVideoCodec;
 
+                FrameQueue.Clear();
                 await nativePeer.AddLocalVideoTrackAsync(default, EnableMixedRealityCapture);
                 VideoStreamStarted.Invoke();
             }
@@ -128,8 +131,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             VideoStreamStopped.Invoke();
             var nativePeer = PeerConnection.Peer;
-            nativePeer.RemoveLocalVideoTrack();
             nativePeer.I420LocalVideoFrameReady -= I420LocalVideoFrameReady;
+            nativePeer.RemoveLocalVideoTrack();
+            FrameQueue.Clear();
         }
 
         private void I420LocalVideoFrameReady(I420AVideoFrame frame)
