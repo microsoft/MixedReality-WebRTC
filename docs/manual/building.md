@@ -56,11 +56,11 @@ On successful build, the binaries will be generated in a sub-directory under `bi
 
 ## Testing the build
 
-Test the newly built libraries by _e.g._ using the `SimpleVideoChat` Unity integration sample:
+Test the newly built libraries by _e.g._ using the `VideoChatDemo` Unity integration sample:
 
 1. Open the Unity project at `libs\Microsoft.MixedReality.WebRTC.Unity`.
 
-2. Load the `Assets\Microsoft.MixedReality.WebRTC\Unity.Examples\SimpleVideoChat` scene.
+2. Load the `Assets\Microsoft.MixedReality.WebRTC\Unity.Examples\VideoChatDemo` scene.
 
 3. At the top center of the Unity editor window, press the **Play** button.
 
