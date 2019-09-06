@@ -128,11 +128,11 @@
 <p><strong>Be sure to build the solution before opening any Unity integration project.</strong> As part of the build, the libraries are copied to the <code>Plugins</code> directory of the Unity integration project. There are already some associated <code>.meta</code> files, which have been committed to the repository, to inform Unity of the platform of each DLL. If the Unity project is opened first, before the DLLs are present, Unity will assume those <code>.meta</code> files are stale and will delete them, and then later will recreate some with a different default config once the DLLs are copied. This leads to errors about modules with duplicate names. See the <a href="https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity-importwebrtc.md">Importing MixedReality-WebRTC</a> chapter of the &quot;Hello, Unity World!&quot; tutorial for more details.</p>
 </div>
 <h2 id="testing-the-build">Testing the build</h2>
-<p>Test the newly built libraries by <em>e.g.</em> using the <code>SimpleVideoChat</code> Unity integration sample:</p>
+<p>Test the newly built libraries by <em>e.g.</em> using the <code>VideoChatDemo</code> Unity integration sample:</p>
 <ol>
 <li><p>Open the Unity project at <code>libs\Microsoft.MixedReality.WebRTC.Unity</code>.</p>
 </li>
-<li><p>Load the <code>Assets\Microsoft.MixedReality.WebRTC\Unity.Examples\SimpleVideoChat</code> scene.</p>
+<li><p>Load the <code>Assets\Microsoft.MixedReality.WebRTC\Unity.Examples\VideoChatDemo</code> scene.</p>
 </li>
 <li><p>At the top center of the Unity editor window, press the <strong>Play</strong> button.</p>
 </li>

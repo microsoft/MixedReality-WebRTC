@@ -52,6 +52,36 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.AudioFrame
   fullName: Microsoft.MixedReality.WebRTC.AudioFrame
   nameWithType: AudioFrame
+- uid: Microsoft.MixedReality.WebRTC.AudioFrame.audioData
+  name: audioData
+  href: api/Microsoft.MixedReality.WebRTC.AudioFrame.html#Microsoft_MixedReality_WebRTC_AudioFrame_audioData
+  commentId: F:Microsoft.MixedReality.WebRTC.AudioFrame.audioData
+  fullName: Microsoft.MixedReality.WebRTC.AudioFrame.audioData
+  nameWithType: AudioFrame.audioData
+- uid: Microsoft.MixedReality.WebRTC.AudioFrame.bitsPerSample
+  name: bitsPerSample
+  href: api/Microsoft.MixedReality.WebRTC.AudioFrame.html#Microsoft_MixedReality_WebRTC_AudioFrame_bitsPerSample
+  commentId: F:Microsoft.MixedReality.WebRTC.AudioFrame.bitsPerSample
+  fullName: Microsoft.MixedReality.WebRTC.AudioFrame.bitsPerSample
+  nameWithType: AudioFrame.bitsPerSample
+- uid: Microsoft.MixedReality.WebRTC.AudioFrame.channelCount
+  name: channelCount
+  href: api/Microsoft.MixedReality.WebRTC.AudioFrame.html#Microsoft_MixedReality_WebRTC_AudioFrame_channelCount
+  commentId: F:Microsoft.MixedReality.WebRTC.AudioFrame.channelCount
+  fullName: Microsoft.MixedReality.WebRTC.AudioFrame.channelCount
+  nameWithType: AudioFrame.channelCount
+- uid: Microsoft.MixedReality.WebRTC.AudioFrame.frameCount
+  name: frameCount
+  href: api/Microsoft.MixedReality.WebRTC.AudioFrame.html#Microsoft_MixedReality_WebRTC_AudioFrame_frameCount
+  commentId: F:Microsoft.MixedReality.WebRTC.AudioFrame.frameCount
+  fullName: Microsoft.MixedReality.WebRTC.AudioFrame.frameCount
+  nameWithType: AudioFrame.frameCount
+- uid: Microsoft.MixedReality.WebRTC.AudioFrame.sampleRate
+  name: sampleRate
+  href: api/Microsoft.MixedReality.WebRTC.AudioFrame.html#Microsoft_MixedReality_WebRTC_AudioFrame_sampleRate
+  commentId: F:Microsoft.MixedReality.WebRTC.AudioFrame.sampleRate
+  fullName: Microsoft.MixedReality.WebRTC.AudioFrame.sampleRate
+  nameWithType: AudioFrame.sampleRate
 - uid: Microsoft.MixedReality.WebRTC.AudioFrameDelegate
   name: AudioFrameDelegate
   href: api/Microsoft.MixedReality.WebRTC.AudioFrameDelegate.html
@@ -563,6 +593,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.MovingAverage.Capacity
   nameWithType: MovingAverage.Capacity
+- uid: Microsoft.MixedReality.WebRTC.MovingAverage.Clear
+  name: Clear()
+  href: api/Microsoft.MixedReality.WebRTC.MovingAverage.html#Microsoft_MixedReality_WebRTC_MovingAverage_Clear
+  commentId: M:Microsoft.MixedReality.WebRTC.MovingAverage.Clear
+  fullName: Microsoft.MixedReality.WebRTC.MovingAverage.Clear()
+  nameWithType: MovingAverage.Clear()
+- uid: Microsoft.MixedReality.WebRTC.MovingAverage.Clear*
+  name: Clear
+  href: api/Microsoft.MixedReality.WebRTC.MovingAverage.html#Microsoft_MixedReality_WebRTC_MovingAverage_Clear_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.MovingAverage.Clear
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.MovingAverage.Clear
+  nameWithType: MovingAverage.Clear
 - uid: Microsoft.MixedReality.WebRTC.MovingAverage.Push(System.Single)
   name: Push(Single)
   href: api/Microsoft.MixedReality.WebRTC.MovingAverage.html#Microsoft_MixedReality_WebRTC_MovingAverage_Push_System_Single_
@@ -805,6 +848,12 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.IsConnected
   nameWithType: PeerConnection.IsConnected
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.LocalAudioFrameReady
+  name: LocalAudioFrameReady
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalAudioFrameReady
+  commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.LocalAudioFrameReady
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.LocalAudioFrameReady
+  nameWithType: PeerConnection.LocalAudioFrameReady
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadytoSend
   name: LocalSdpReadytoSend
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend
@@ -847,18 +896,30 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodec
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodec
   nameWithType: PeerConnection.PreferredAudioCodec
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParams
+  name: PreferredAudioCodecExtraParams
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_PreferredAudioCodecExtraParams
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParams
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParams
+  nameWithType: PeerConnection.PreferredAudioCodecExtraParams
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodec
   name: PreferredVideoCodec
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_PreferredVideoCodec
   commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodec
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodec
   nameWithType: PeerConnection.PreferredVideoCodec
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.RemotePeerId
-  name: RemotePeerId
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_RemotePeerId
-  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.RemotePeerId
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.RemotePeerId
-  nameWithType: PeerConnection.RemotePeerId
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParams
+  name: PreferredVideoCodecExtraParams
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_PreferredVideoCodecExtraParams
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParams
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParams
+  nameWithType: PeerConnection.PreferredVideoCodecExtraParams
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.RemoteAudioFrameReady
+  name: RemoteAudioFrameReady
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_RemoteAudioFrameReady
+  commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.RemoteAudioFrameReady
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.RemoteAudioFrameReady
+  nameWithType: PeerConnection.RemoteAudioFrameReady
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalAudioTrack
   name: RemoveLocalAudioTrack()
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalAudioTrack
@@ -929,6 +990,36 @@ references:
   commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.TrackAdded
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.TrackAdded
   nameWithType: PeerConnection.TrackAdded
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind
+  name: PeerConnection.TrackKind
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind
+  nameWithType: PeerConnection.TrackKind
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Audio
+  name: Audio
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackKind_Audio
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Audio
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Audio
+  nameWithType: PeerConnection.TrackKind.Audio
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Data
+  name: Data
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackKind_Data
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Data
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Data
+  nameWithType: PeerConnection.TrackKind.Data
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Unknown
+  name: Unknown
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackKind_Unknown
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Unknown
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Unknown
+  nameWithType: PeerConnection.TrackKind.Unknown
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Video
+  name: Video
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackKind_Video
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Video
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.Video
+  nameWithType: PeerConnection.TrackKind.Video
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.TrackRemoved
   name: TrackRemoved
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackRemoved
@@ -995,12 +1086,6 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.SignalerMessage.MessageType
   fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.MessageType
   nameWithType: SignalerMessage.MessageType
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.TargetId
-  name: TargetId
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.html#Microsoft_MixedReality_WebRTC_SignalerMessage_TargetId
-  commentId: F:Microsoft.MixedReality.WebRTC.SignalerMessage.TargetId
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.TargetId
-  nameWithType: SignalerMessage.TargetId
 - uid: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType
   name: SignalerMessage.WireMessageType
   href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.html
@@ -1134,18 +1219,6 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent
   fullName: Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent
   nameWithType: AudioStreamStoppedEvent
-- uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackAddedEvent
-  name: AudioTrackAddedEvent
-  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackAddedEvent.html
-  commentId: T:Microsoft.MixedReality.WebRTC.Unity.AudioTrackAddedEvent
-  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackAddedEvent
-  nameWithType: AudioTrackAddedEvent
-- uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackRemovedEvent
-  name: AudioTrackRemovedEvent
-  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackRemovedEvent.html
-  commentId: T:Microsoft.MixedReality.WebRTC.Unity.AudioTrackRemovedEvent
-  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackRemovedEvent
-  nameWithType: AudioTrackRemovedEvent
 - uid: Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer
   name: ConfigurableIceServer
   href: api/Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.html
@@ -1676,18 +1749,6 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource
   fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource
   nameWithType: RemoteAudioSource
-- uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.AudioTrackAdded
-  name: AudioTrackAdded
-  href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_AudioTrackAdded
-  commentId: F:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.AudioTrackAdded
-  fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.AudioTrackAdded
-  nameWithType: RemoteAudioSource.AudioTrackAdded
-- uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.AudioTrackRemoved
-  name: AudioTrackRemoved
-  href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_AudioTrackRemoved
-  commentId: F:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.AudioTrackRemoved
-  fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.AudioTrackRemoved
-  nameWithType: RemoteAudioSource.AudioTrackRemoved
 - uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.AutoPlayOnAdded
   name: AutoPlayOnAdded
   href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_AutoPlayOnAdded
@@ -1707,6 +1768,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Awake
   nameWithType: RemoteAudioSource.Awake
+- uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.IsPlaying
+  name: IsPlaying
+  href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_IsPlaying
+  commentId: P:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.IsPlaying
+  fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.IsPlaying
+  nameWithType: RemoteAudioSource.IsPlaying
+- uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.IsPlaying*
+  name: IsPlaying
+  href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_IsPlaying_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.IsPlaying
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.IsPlaying
+  nameWithType: RemoteAudioSource.IsPlaying
 - uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.OnDestroy
   name: OnDestroy()
   href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_OnDestroy
@@ -1726,6 +1800,45 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.PeerConnection
   fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.PeerConnection
   nameWithType: RemoteAudioSource.PeerConnection
+- uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Play
+  name: Play()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_Play
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Play
+  fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Play()
+  nameWithType: RemoteAudioSource.Play()
+- uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Play*
+  name: Play
+  href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_Play_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Play
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Play
+  nameWithType: RemoteAudioSource.Play
+- uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Stop
+  name: Stop()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_Stop
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Stop
+  fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Stop()
+  nameWithType: RemoteAudioSource.Stop()
+- uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Stop*
+  name: Stop
+  href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_Stop_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Stop
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Stop
+  nameWithType: RemoteAudioSource.Stop
+- uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Update
+  name: Update()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_Update
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Update
+  fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Update()
+  nameWithType: RemoteAudioSource.Update()
+- uid: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Update*
+  name: Update
+  href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_Update_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Update
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.Update
+  nameWithType: RemoteAudioSource.Update
 - uid: Microsoft.MixedReality.WebRTC.Unity.RemoteVideoSource
   name: RemoteVideoSource
   href: api/Microsoft.MixedReality.WebRTC.Unity.RemoteVideoSource.html
@@ -2030,6 +2143,23 @@ references:
   fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).VideoFrameQueue
   nameWithType: VideoFrameQueue<T>.VideoFrameQueue
   nameWithType.vb: VideoFrameQueue(Of T).VideoFrameQueue
+- uid: Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.Clear
+  name: Clear()
+  href: api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html#Microsoft_MixedReality_WebRTC_VideoFrameQueue_1_Clear
+  commentId: M:Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.Clear
+  fullName: Microsoft.MixedReality.WebRTC.VideoFrameQueue<T>.Clear()
+  fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).Clear()
+  nameWithType: VideoFrameQueue<T>.Clear()
+  nameWithType.vb: VideoFrameQueue(Of T).Clear()
+- uid: Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.Clear*
+  name: Clear
+  href: api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html#Microsoft_MixedReality_WebRTC_VideoFrameQueue_1_Clear_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.Clear
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.VideoFrameQueue<T>.Clear
+  fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).Clear
+  nameWithType: VideoFrameQueue<T>.Clear
+  nameWithType.vb: VideoFrameQueue(Of T).Clear
 - uid: Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.DequeuedFramesPerSecond
   name: DequeuedFramesPerSecond
   href: api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html#Microsoft_MixedReality_WebRTC_VideoFrameQueue_1_DequeuedFramesPerSecond

@@ -42,7 +42,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioFrame.html",
-          "hash": "jEXvP9PAEYgv3o0aMOEqyA=="
+          "hash": "t4wL+icMn9vYhYMXS6sDKw=="
         }
       },
       "is_incremental": false,
@@ -54,7 +54,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioFrameDelegate.html",
-          "hash": "shRs0i2OW5eVr141mu8u4w=="
+          "hash": "wCjC/8Yw2UCxtFsWu8CZSg=="
         }
       },
       "is_incremental": false,
@@ -162,7 +162,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.MovingAverage.html",
-          "hash": "Ji1CeLaaPwSjKhLW+rmjaQ=="
+          "hash": "En4S3nCjXObNsJpJD9nKkg=="
         }
       },
       "is_incremental": false,
@@ -194,11 +194,23 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html",
+          "hash": "GQQUwEPhQ6Z6m5wqDtYnCw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDevice.yml",
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDevice.html",
-          "hash": "2a7pGK29ThubyS2lhjTLuw=="
+          "hash": "t6N0aVWlFY9QPPF/gvuwhA=="
         }
       },
       "is_incremental": false,
@@ -234,7 +246,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.html",
-          "hash": "wLdoQLo/RjEjH6Lb4PqXXQ=="
+          "hash": "8bkvOZC6kvXAh14nXLkUsA=="
         }
       },
       "is_incremental": false,
@@ -258,7 +270,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SignalerMessage.html",
-          "hash": "ZAC9KRdHhne2bb5OiZ5jCw=="
+          "hash": "ekgo5jKYh/OHnExk1X4nsA=="
         }
       },
       "is_incremental": false,
@@ -307,30 +319,6 @@
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent.html",
           "hash": "wextKSY9IGpvvo4+oGL/JQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackAddedEvent.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackAddedEvent.html",
-          "hash": "hEW+dIJZSJS+jjGvR/RsFg=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackRemovedEvent.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackRemovedEvent.html",
-          "hash": "JBFJNHz+yc4/xZ6jYY7DZA=="
         }
       },
       "is_incremental": false,
@@ -450,7 +438,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html",
-          "hash": "H/Nsf9xOSF7r02r9ZK6uYg=="
+          "hash": "wwmHwyVFL2vO+OcFboiNeg=="
         }
       },
       "is_incremental": false,
@@ -534,7 +522,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.html",
-          "hash": "Ejwz+n7snv7ZArGynJATig=="
+          "hash": "ouZV8ESUDkIN25IbF/vxGA=="
         }
       },
       "is_incremental": false,
@@ -546,7 +534,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html",
-          "hash": "FgGiaBBXDVC94Age4u9w3w=="
+          "hash": "yWMWwFqGALFkT2qaBOqiuQ=="
         }
       },
       "is_incremental": false,
@@ -558,7 +546,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.html",
-          "hash": "2BX/WEN/sh7IiAtPQBjfpw=="
+          "hash": "gPBXDDSqgqB+xopDS9HSXA=="
         }
       },
       "is_incremental": false,
@@ -570,7 +558,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "skhimJK8X+iFEhRF3U+GEg=="
+          "hash": "L/IC1EKMeqrovUsRBOcpHg=="
         }
       },
       "is_incremental": false,
@@ -582,7 +570,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "AbE3bzcV5au1uorva3qPfw=="
+          "hash": "MOQ0sZV/YHyLg2hdp95p8Q=="
         }
       },
       "is_incremental": false,
@@ -674,7 +662,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/building.html",
-          "hash": "gvSRBJ+okGGSDvCWHPhrMg=="
+          "hash": "tkGe96PSgdaOvfuWcowscA=="
         }
       },
       "is_incremental": false,
@@ -1323,28 +1311,28 @@
         "full_build_reason_code": "ForceRebuild"
       },
       "processors": {
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 46,
+          "skipped_file_count": 0
+        },
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
           "total_file_count": 28,
           "skipped_file_count": 0
         },
-        "ManagedReferenceDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 47,
-          "skipped_file_count": 0
-        },
         "ResourceDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build",
-          "total_file_count": 0,
-          "skipped_file_count": 0
-        },
-        "TocDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build",
           "total_file_count": 0,
           "skipped_file_count": 0
