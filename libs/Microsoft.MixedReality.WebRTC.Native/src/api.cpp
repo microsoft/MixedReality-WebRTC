@@ -316,14 +316,7 @@ PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
 
   // Create the new peer connection
   rtc::scoped_refptr<PeerConnection> peer =
-      new rtc::RefCountedObject<PeerConnection>();
-  webrtc::PeerConnectionDependencies dependencies(peer);
-  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection =
-      g_peer_connection_factory->CreatePeerConnection(config,
-                                                      std::move(dependencies));
-  if (peer_connection.get() == nullptr)
-    return {};
-  peer->SetPeerImpl(peer_connection);
+      PeerConnection::create(*g_peer_connection_factory, config);
   const PeerConnectionHandle handle{peer.get()};
   g_peer_connection_map.insert({handle, std::move(peer)});
   return handle;
