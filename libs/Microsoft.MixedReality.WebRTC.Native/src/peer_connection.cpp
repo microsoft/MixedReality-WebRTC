@@ -26,6 +26,13 @@ struct SessionDescObserver : public webrtc::SetSessionDescriptionObserver {
     if (callback_)
       callback_();
   }
+  void OnFailure(webrtc::RTCError error) override {
+    RTC_LOG(LS_ERROR) << "Error setting session description: "
+                      << error.message();
+  }
+  void OnFailure(const std::string& error) override {
+    RTC_LOG(LS_ERROR) << "Error setting session description: " << error;
+  }
 
  protected:
   std::function<void()> callback_;
@@ -363,36 +370,20 @@ void PeerConnection::OnSignalingChange(
 
 void PeerConnection::OnAddStream(
     rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) noexcept {
+  RTC_LOG(LS_INFO) << "Added stream #" << stream->id() << " with "
+                   << stream->GetAudioTracks().size() << " audio tracks and "
+                   << stream->GetVideoTracks().size() << " video tracks.";
   remote_streams_.push_back(stream);
-  if (auto* sink = remote_video_observer_.get()) {
-    rtc::VideoSinkWants sink_settings{};
-    sink_settings.rotation_applied =
-        true;  // no exposed API for caller to handle rotation
-    for (auto&& video_track : stream->GetVideoTracks()) {
-      video_track->AddOrUpdateSink(sink, sink_settings);
-    }
-  }
-  if (auto* sink = remote_audio_observer_.get()) {
-    for (auto&& audio_track : stream->GetAudioTracks()) {
-      audio_track->AddSink(sink);
-    }
-  }
 }
 
 void PeerConnection::OnRemoveStream(
     rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) noexcept {
+  RTC_LOG(LS_INFO) << "Removed stream #" << stream->id() << " with "
+                   << stream->GetAudioTracks().size() << " audio tracks and "
+                   << stream->GetVideoTracks().size() << " video tracks.";
   auto it = std::find(remote_streams_.begin(), remote_streams_.end(), stream);
-  if (it == remote_streams_.end())
+  if (it == remote_streams_.end()) {
     return;
-  if (auto* sink = remote_video_observer_.get()) {
-    for (auto&& video_track : stream->GetVideoTracks()) {
-      video_track->RemoveSink(sink);
-    }
-  }
-  if (auto* sink = remote_audio_observer_.get()) {
-    for (auto&& audio_track : stream->GetAudioTracks()) {
-      audio_track->RemoveSink(sink);
-    }
   }
   remote_streams_.erase(it);
 }
@@ -454,35 +445,84 @@ void PeerConnection::OnAddTrack(
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
     const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>&
     /*streams*/) noexcept {
-  auto lock = std::lock_guard{track_added_callback_mutex_};
-  auto cb = track_added_callback_;
-  if (cb) {
-    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
-        receiver->track();
-    TrackKind trackKind = TrackKind::kUnknownTrack;
-    if (track->kind() == webrtc::MediaStreamTrackInterface::kAudioKind) {
-      trackKind = TrackKind::kAudioTrack;
-    } else if (track->kind() == webrtc::MediaStreamTrackInterface::kVideoKind) {
-      trackKind = TrackKind::kVideoTrack;
+  RTC_LOG(LS_INFO) << "Added track #" << receiver->id() << " of type "
+                   << (int)receiver->media_type();
+  for (auto&& stream : receiver->streams()) {
+    RTC_LOG(LS_INFO) << "+ Track #" << receiver->id() << " with stream #"
+                     << stream->id();
+  }
+
+  // Register the remote observer
+  rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
+      receiver->track();
+  TrackKind trackKind = TrackKind::kUnknownTrack;
+  const std::string& trackKindStr = track->kind();
+  if (trackKindStr == webrtc::MediaStreamTrackInterface::kAudioKind) {
+    trackKind = TrackKind::kAudioTrack;
+    if (auto* sink = remote_audio_observer_.get()) {
+      auto audio_track = static_cast<webrtc::AudioTrackInterface*>(track.get());
+      audio_track->AddSink(sink);
     }
-    cb(trackKind);
+  } else if (trackKindStr == webrtc::MediaStreamTrackInterface::kVideoKind) {
+    trackKind = TrackKind::kVideoTrack;
+    if (auto* sink = remote_video_observer_.get()) {
+      rtc::VideoSinkWants sink_settings{};
+      sink_settings.rotation_applied =
+          true;  // no exposed API for caller to handle rotation
+      auto video_track = static_cast<webrtc::VideoTrackInterface*>(track.get());
+      video_track->AddOrUpdateSink(sink, sink_settings);
+    }
+  } else {
+    return;
+  }
+
+  // Invoke the TrackAdded callback
+  {
+    auto lock = std::lock_guard{track_added_callback_mutex_};
+    auto cb = track_added_callback_;
+    if (cb) {
+      cb(trackKind);
+    }
   }
 }
 
 void PeerConnection::OnRemoveTrack(
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) noexcept {
-  auto lock = std::lock_guard{track_removed_callback_mutex_};
-  auto cb = track_removed_callback_;
-  if (cb) {
-    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
-        receiver->track();
-    TrackKind trackKind = TrackKind::kUnknownTrack;
-    if (track->kind() == webrtc::MediaStreamTrackInterface::kAudioKind) {
-      trackKind = TrackKind::kAudioTrack;
-    } else if (track->kind() == webrtc::MediaStreamTrackInterface::kVideoKind) {
-      trackKind = TrackKind::kVideoTrack;
+  RTC_LOG(LS_INFO) << "Removed track #" << receiver->id() << " of type "
+                   << (int)receiver->media_type();
+  for (auto&& stream : receiver->streams()) {
+    RTC_LOG(LS_INFO) << "- Track #" << receiver->id() << " with stream #"
+                     << stream->id();
+  }
+
+  // Unregister the remote observer
+  rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
+      receiver->track();
+  TrackKind trackKind = TrackKind::kUnknownTrack;
+  const std::string& trackKindStr = track->kind();
+  if (trackKindStr == webrtc::MediaStreamTrackInterface::kAudioKind) {
+    trackKind = TrackKind::kAudioTrack;
+    if (auto* sink = remote_audio_observer_.get()) {
+      auto audio_track = static_cast<webrtc::AudioTrackInterface*>(track.get());
+      audio_track->RemoveSink(sink);
     }
-    cb(trackKind);
+  } else if (trackKindStr == webrtc::MediaStreamTrackInterface::kVideoKind) {
+    trackKind = TrackKind::kVideoTrack;
+    if (auto* sink = remote_video_observer_.get()) {
+      auto video_track = static_cast<webrtc::VideoTrackInterface*>(track.get());
+      video_track->RemoveSink(sink);
+    }
+  } else {
+    return;
+  }
+
+  // Invoke the TrackRemoved callback
+  {
+    auto lock = std::lock_guard{track_removed_callback_mutex_};
+    auto cb = track_removed_callback_;
+    if (cb) {
+      cb(trackKind);
+    }
   }
 }
 
