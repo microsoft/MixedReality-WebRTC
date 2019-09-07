@@ -26,6 +26,13 @@ struct SessionDescObserver : public webrtc::SetSessionDescriptionObserver {
     if (callback_)
       callback_();
   }
+  void OnFailure(webrtc::RTCError error) override {
+    RTC_LOG(LS_ERROR) << "Error setting session description: "
+                      << error.message();
+  }
+  void OnFailure(const std::string& error) override {
+    RTC_LOG(LS_ERROR) << "Error setting session description: " << error;
+  }
 
  protected:
   std::function<void()> callback_;
