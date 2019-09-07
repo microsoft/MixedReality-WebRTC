@@ -41,7 +41,7 @@ jobs:
       restoreDirectory: '$(Build.SourcesDirectory)/packages'
       includeNuGetOrg: true
       feedsToUse: config
-      nugetConfigPath: '$(Build.SourcesDirectory)/tools/nuget/NuGetOrg.config'
+      nugetConfigPath: '$(NuGetConfigPath)'
     timeoutInMinutes: 30
 
   # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
