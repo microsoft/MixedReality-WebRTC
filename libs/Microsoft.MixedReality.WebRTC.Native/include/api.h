@@ -267,7 +267,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
     PeerConnectionARGBVideoFrameCallback callback,
     void* user_data) noexcept;
 
-// Kind of video profile. Equivalent to org::webRtc::VideoProfileKind.
+/// Kind of video profile. Equivalent to org::webRtc::VideoProfileKind.
 enum class VideoProfileKind : int32_t {
   kUnspecified,
   kVideoRecording,

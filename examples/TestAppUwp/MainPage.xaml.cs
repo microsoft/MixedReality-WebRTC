@@ -799,22 +799,15 @@ namespace TestAppUwp
             {
                 uint channelCount = frame.channelCount;
                 uint sampleRate = frame.sampleRate;
-
-                bool changed = false;
-                if (!_isRemoteAudioPlaying)
+                if (!_isRemoteAudioPlaying || (_remoteAudioChannelCount != channelCount)
+                    || (_remoteAudioSampleRate != sampleRate))
                 {
                     _isRemoteAudioPlaying = true;
-                    changed = true;
-                }
-                else if ((_remoteAudioChannelCount != channelCount) || (_remoteAudioSampleRate != sampleRate))
-                {
-                    changed = true;
-                }
-
-                if (changed)
-                {
                     _remoteAudioChannelCount = channelCount;
                     _remoteAudioSampleRate = sampleRate;
+
+                    // As an example of handling, update the UI to display the number of audio
+                    // channels and the sample rate of the audio track.
                     RunOnMainThread(() => UpdateRemoteAudioStats(channelCount, sampleRate));
                 }
             }
@@ -878,6 +871,7 @@ namespace TestAppUwp
                 localVideo.SetMediaPlayer(localVideoPlayer);
 
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+                var videoProfileKind = SelectedVideoProfileKind; // capture on UI thread
                 _peerConnection.AddLocalAudioTrackAsync().ContinueWith(addAudioTask =>
                 {
                     // Continue on worker thread here
@@ -887,7 +881,7 @@ namespace TestAppUwp
                         return;
                     }
 
-                    _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfileId, SelectedVideoProfileKind,
+                    _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfileId, videoProfileKind,
                     (int)width, (int)height, framerate, /* mrcEnabled = */ false).ContinueWith(addVideoTask =>
                     {
                         // Continue inside UI thread here
