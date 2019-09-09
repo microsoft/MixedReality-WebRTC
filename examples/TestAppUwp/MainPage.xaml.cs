@@ -768,9 +768,16 @@ namespace TestAppUwp
                     localVideo.SetMediaPlayer(null);
                     localVideoSource = null;
                     //localMediaSource.Reset();
-                    _peerConnection.RemoveLocalAudioTrack();
-                    _peerConnection.RemoveLocalVideoTrack();
                     _isLocalVideoPlaying = false;
+
+                    // Avoid deadlock in audio processing stack, as this call is delegated to the WebRTC
+                    // signaling thread (and will block the caller thread), and audio processing will
+                    // delegate to the UI thread for UWP operations (and will block the signaling thread).
+                    RunOnWorkerThread(() =>
+                    {
+                        _peerConnection.RemoveLocalAudioTrack();
+                        _peerConnection.RemoveLocalVideoTrack();
+                    });
                 }
             }
         }
@@ -805,8 +812,22 @@ namespace TestAppUwp
                 {
                     if (_isRemoteVideoPlaying)
                     {
-                        remoteVideo.MediaPlayer.Pause();
-                        _isRemoteVideoPlaying = false;
+                        // Schedule on the main UI thread to access STA objects.
+                        RunOnMainThread(() =>
+                        {
+                            // Check that the remote video is still playing.
+                            // This ensures that rapid calls to add/remove the video track
+                            // are serialized, and an earlier remove call doesn't remove the
+                            // track added by a later call, due to delays in scheduling the task.
+                            lock (_isRemoteVideoPlayingLock)
+                            {
+                                if (_isRemoteVideoPlaying)
+                                {
+                                    remoteVideo.MediaPlayer.Pause();
+                                    _isRemoteVideoPlaying = false;
+                                }
+                            }
+                        });
                     }
                 }
             }
