@@ -124,18 +124,25 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   for (auto&& vdi : *deviceList) {
     auto devInfo =
         wrapper::impl::org::webRtc::VideoDeviceInfo::toNative_winrt(vdi);
-    auto name = devInfo.Name().c_str();
-    if (!video_device_id_str.empty() && (video_device_id_str != name)) {
+    const winrt::hstring& id = devInfo.Id();
+    if (!video_device_id_str.empty() && (video_device_id_str != id)) {
       continue;
     }
-    auto id = devInfo.Id().c_str();
 
     auto createParams = std::make_shared<
         wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
     createParams->factory = g_winuwp_factory;
-    createParams->name = name;
-    createParams->id = id;
+    createParams->name = devInfo.Name().c_str();
+    createParams->id = id.c_str();
+    if (config.video_profile_id) {
+      createParams->videoProfileId = config.video_profile_id;
+    }
+    createParams->videoProfileKind =
+        (wrapper::org::webRtc::VideoProfileKind)config.video_profile_kind;
     createParams->enableMrc = config.enable_mrc;
+    createParams->width = config.width;
+    createParams->height = config.height;
+    createParams->framerate = config.framerate;
 
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
 
@@ -143,8 +150,8 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
       auto nativeVcd = wrapper::impl::org::webRtc::VideoCapturer::toNative(vcd);
 
       RTC_LOG(LS_INFO) << "Using video capture device '"
-                       << rtc::ToUtf8(devInfo.Name().c_str()).c_str()
-                       << "' (id=" << rtc::ToUtf8(id).c_str() << ")";
+                       << createParams->name.c_str()
+                       << "' (id=" << createParams->id.c_str() << ")";
 
       if (auto supportedFormats = nativeVcd->GetSupportedFormats()) {
         RTC_LOG(LS_INFO) << "Supported video formats:";

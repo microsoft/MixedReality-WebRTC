@@ -1189,6 +1189,13 @@ MonoBehaviour:
   EnableMixedRealityCapture: 1
   PeerConnection: {fileID: 114452439610826054}
   AutoAddTrack: 1
+  Mode: 0
+  VideoProfileId: 
+  VideoProfileKind: 0
+  Constraints:
+    width: 0
+    height: 0
+    framerate: 0
 --- !u!114 &8864274441281116404
 MonoBehaviour:
   m_ObjectHideFlags: 0

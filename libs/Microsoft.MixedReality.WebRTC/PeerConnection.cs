@@ -58,6 +58,21 @@ namespace Microsoft.MixedReality.WebRTC
             Data = 3
         };
 
+        public enum VideoProfileKind : int
+        {
+            Unspecified,
+            VideoRecording,
+            HighQualityPhoto,
+            BalancedVideoAndPhoto,
+            VideoConferencing,
+            PhotoSequence,
+            HighFrameRate,
+            VariablePhotoSequence,
+            HdrWithWcgVideo,
+            HdrWithWcgPhoto,
+            VideoHdr8,
+        };
+
 
         /// <summary>
         /// Signaler implementation used by this peer connection, as specified in the constructor.
@@ -766,7 +781,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// for more details.
         /// </remarks>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        public Task AddLocalVideoTrackAsync(VideoCaptureDevice device = default(VideoCaptureDevice), bool enableMrc = false)
+        public Task AddLocalVideoTrackAsync(VideoCaptureDevice device = default(VideoCaptureDevice),
+            string videoProfileId = default, VideoProfileKind videoProfileKind = VideoProfileKind.Unspecified,
+            int width = 0, int height = 0, double framerate = 0.0, bool enableMrc = false)
         {
             ThrowIfConnectionNotOpen();
             return Task.Run(() =>
@@ -776,11 +793,16 @@ namespace Microsoft.MixedReality.WebRTC
                 var config = new NativeMethods.VideoDeviceConfiguration
                 {
                     VideoDeviceId = device.id,
+                    VideoProfileId = videoProfileId,
+                    VideoProfileKind = videoProfileKind,
+                    Width = (uint)width,
+                    Height = (uint)height,
+                    Framerate = framerate,
                     EnableMixedRealityCapture = enableMrc
                 };
                 if (!NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, config))
                 {
-                    throw new Exception();
+                    throw new Exception("Failed to add a local video track to the peer connection.");
                 }
             });
         }
@@ -1065,6 +1087,12 @@ namespace Microsoft.MixedReality.WebRTC
                 /// Video capture device unique identifier, as returned by <see cref="GetVideoCaptureDevicesAsync"/>.
                 /// </summary>
                 public string VideoDeviceId;
+
+                public string VideoProfileId;
+                public VideoProfileKind VideoProfileKind;
+                public uint Width;
+                public uint Height;
+                public double Framerate;
 
                 /// <summary>
                 /// Enable Mixed Reality Capture (MRC). This flag is ignored if the platform doesn't support MRC.

@@ -22,6 +22,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         SerializedProperty _preferredVideoCodec;
         SerializedProperty _enableMixedRealityCapture;
         SerializedProperty _autoAddTrack;
+        SerializedProperty _mode;
+        SerializedProperty _videoProfileId;
+        SerializedProperty _videoProfileKind;
+        SerializedProperty _constraints;
+        SerializedProperty _width;
+        SerializedProperty _height;
+        SerializedProperty _framerate;
 
         /// <summary>
         /// Helper enumeration for commonly used video codecs.
@@ -55,7 +62,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             /// </summary>
             VP9,
 
-            //Custom //< TODO
+            /// <summary>
+            /// Try to use the given codec if available.
+            /// </summary>
+            Custom
         }
 
         /// <summary>
@@ -70,6 +80,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             _preferredVideoCodec = serializedObject.FindProperty("PreferredVideoCodec");
             _enableMixedRealityCapture = serializedObject.FindProperty("EnableMixedRealityCapture");
             _autoAddTrack = serializedObject.FindProperty("AutoAddTrack");
+            _mode = serializedObject.FindProperty("Mode");
+            _videoProfileId = serializedObject.FindProperty("VideoProfileId");
+            _videoProfileKind = serializedObject.FindProperty("VideoProfileKind");
+            _constraints = serializedObject.FindProperty("Constraints");
+            _width = _constraints.FindPropertyRelative("width");
+            _height = _constraints.FindPropertyRelative("height");
+            _framerate = _constraints.FindPropertyRelative("framerate");
         }
 
         /// <summary>
@@ -85,48 +102,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             EditorGUILayout.PropertyField(_autoAddTrack);
             EditorGUILayout.PropertyField(_autoStartCapture);
 
-            try
-            {
-                // Convert the selected codec name to an enum value.
-                // This may throw an exception if this is a custom name, which will be handled below.
-                SdpVideoCodecs codecValue;
-                if (_preferredVideoCodec.stringValue.Length == 0)
-                {
-                    codecValue = SdpVideoCodecs.None;
-                }
-                else
-                {
-                    codecValue = (SdpVideoCodecs)System.Enum.Parse(typeof(SdpVideoCodecs), _preferredVideoCodec.stringValue);
-                }
-
-                // Display the edit field for the enum
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.Label(_preferredVideoCodec.displayName);
-                var newCodecValue = (SdpVideoCodecs)EditorGUILayout.EnumPopup(codecValue);
-                EditorGUILayout.EndHorizontal();
-
-                // Update the value if changed
-                if (newCodecValue != codecValue)
-                {
-                    if (newCodecValue == SdpVideoCodecs.None)
-                    {
-                        _preferredVideoCodec.stringValue = string.Empty;
-                    }
-                    //else if (newCodecValue == SdpVideoCodecs.Custom) //< TODO
-                    //{
-                    //    _preferredVideoCodec.stringValue = EditorGUILayout.TextField("SDP codec name", _preferredVideoCodec.stringValue);
-                    //}
-                    else
-                    {
-                        _preferredVideoCodec.stringValue = System.Enum.GetName(typeof(SdpVideoCodecs), newCodecValue);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                EditorGUILayout.PropertyField(_preferredVideoCodec);
-            }
-
             EditorGUILayout.PropertyField(_enableMixedRealityCapture);
             if (_enableMixedRealityCapture.boolValue && !PlayerSettings.virtualRealitySupported)
             {
@@ -135,6 +110,91 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                 {
                     PlayerSettings.virtualRealitySupported = true;
                 }
+            }
+
+            try
+            {
+                // Convert the selected codec name to an enum value.
+                // This may throw an exception if this is a custom name, which will be handled below.
+                SdpVideoCodecs codecValue;
+                string customCodecValue = string.Empty;
+                if (_preferredVideoCodec.stringValue.Length == 0)
+                {
+                    codecValue = SdpVideoCodecs.None;
+                }
+                else
+                {
+                    try
+                    {
+                        codecValue = (SdpVideoCodecs)Enum.Parse(typeof(SdpVideoCodecs), _preferredVideoCodec.stringValue);
+                    }
+                    catch
+                    {
+                        codecValue = SdpVideoCodecs.Custom;
+                        customCodecValue = _preferredVideoCodec.stringValue;
+                        // Hide internal marker
+                        if (customCodecValue == "__CUSTOM")
+                        {
+                            customCodecValue = string.Empty;
+                        }
+                    }
+                }
+
+                // Display the edit field for the enum
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label(_preferredVideoCodec.displayName);
+                var newCodecValue = (SdpVideoCodecs)EditorGUILayout.EnumPopup(codecValue);
+                EditorGUILayout.EndHorizontal();
+
+                // Update the value if changed or custom
+                if ((newCodecValue != codecValue) || (newCodecValue == SdpVideoCodecs.Custom))
+                {
+                    if (newCodecValue == SdpVideoCodecs.None)
+                    {
+                        _preferredVideoCodec.stringValue = string.Empty;
+                    }
+                    else if (newCodecValue == SdpVideoCodecs.Custom)
+                    {
+                        ++EditorGUI.indentLevel;
+                        string newValue = EditorGUILayout.TextField("SDP codec name", customCodecValue);
+                        if (newValue == string.Empty)
+                        {
+                            EditorGUILayout.HelpBox("The SDP codec name must be non-empty. See https://en.wikipedia.org/wiki/RTP_audio_video_profile for valid names.", MessageType.Error);
+
+                            // Force a non-empty value now, otherwise the field will reset to None
+                            newValue = "__CUSTOM";
+                        }
+                        _preferredVideoCodec.stringValue = newValue;
+                        --EditorGUI.indentLevel;
+                    }
+                    else
+                    {
+                        _preferredVideoCodec.stringValue = Enum.GetName(typeof(SdpVideoCodecs), newCodecValue);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                EditorGUILayout.PropertyField(_preferredVideoCodec);
+            }
+
+            EditorGUILayout.PropertyField(_mode);
+            if ((LocalVideoSourceFormatMode)_mode.intValue == LocalVideoSourceFormatMode.Manual)
+            {
+                ++EditorGUI.indentLevel;
+
+                EditorGUILayout.PropertyField(_videoProfileKind);
+                EditorGUILayout.PropertyField(_videoProfileId);
+                EditorGUILayout.IntSlider(_width, 0, 10000);
+                EditorGUILayout.IntSlider(_height, 0, 10000);
+                //EditorGUILayout.Slider(_framerate, 0.0, 60.0); //< TODO
+
+                if ((_videoProfileKind.intValue != (int)WebRTC.PeerConnection.VideoProfileKind.Unspecified) && (_videoProfileId.stringValue.Length > 0))
+                {
+                    EditorGUILayout.HelpBox("Video profile ID is already unique. Specifying also a video kind over-constrains the selection algorithm and can decrease the chances of finding a matching video profile. It is recommended to select either a video profile kind, or a video profile ID (and leave the kind to Unspecified).", MessageType.Warning);
+                }
+
+                --EditorGUI.indentLevel;
             }
 
             serializedObject.ApplyModifiedProperties();
