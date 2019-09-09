@@ -70,6 +70,9 @@ void InitUWPFactory() noexcept(false) {
 
 #else  // defined(WINUWP)
 
+/// WebRTC network thread.
+std::unique_ptr<rtc::Thread> g_network_thread;
+
 /// WebRTC worker thread.
 std::unique_ptr<rtc::Thread> g_worker_thread;
 
@@ -309,13 +312,18 @@ PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
 
     g_peer_connection_factory = g_winuwp_factory->peerConnectionFactory();
 #else
-    g_worker_thread.reset(new rtc::Thread());
+    g_network_thread = rtc::Thread::CreateWithSocketServer();
+    g_network_thread->SetName("WebRTC network thread", g_network_thread.get());
+    g_network_thread->Start();
+    g_worker_thread = rtc::Thread::Create();
+    g_worker_thread->SetName("WebRTC worker thread", g_worker_thread.get());
     g_worker_thread->Start();
-    g_signaling_thread.reset(new rtc::Thread());
+    g_signaling_thread = rtc::Thread::Create();
+    g_signaling_thread->SetName("WebRTC signaling thread", g_signaling_thread.get());
     g_signaling_thread->Start();
 
     g_peer_connection_factory = webrtc::CreatePeerConnectionFactory(
-        g_worker_thread.get(), g_worker_thread.get(), g_signaling_thread.get(),
+        g_network_thread.get(), g_worker_thread.get(), g_signaling_thread.get(),
         nullptr, webrtc::CreateBuiltinAudioEncoderFactory(),
         webrtc::CreateBuiltinAudioDecoderFactory(),
         std::unique_ptr<webrtc::VideoEncoderFactory>(
@@ -684,6 +692,7 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
 #if defined(WINUWP)
           g_winuwp_factory = nullptr;
 #else
+          g_network_thread.reset();
           g_signaling_thread.reset();
           g_worker_thread.reset();
 #endif
