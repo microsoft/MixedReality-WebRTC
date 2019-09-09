@@ -52,6 +52,10 @@ namespace TestAppUwp
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        /// <summary>
+        /// Indicates whether the native plugin has been successfully initialized,
+        /// and the <see cref="_peerConnection"/> object can be used.
+        /// </summary>
         public bool PluginInitialized { get; private set; } = false;
 
         private MediaStreamSource localVideoSource = null;
@@ -71,9 +75,19 @@ namespace TestAppUwp
         private bool _isRemoteAudioPlaying = false;
         private object _isRemoteAudioPlayingLock = new object();
 
+        /// <summary>
+        /// The underlying <see cref="PeerConnection"/> object.
+        /// </summary>
         private PeerConnection _peerConnection;
+
+        /// <summary>
+        /// Data channel used to send and receive text messages, as an example use.
+        /// </summary>
         private DataChannel _chatDataChannel = null;
 
+        /// <summary>
+        /// Predetermined chat data channel ID, negotiated out of band.
+        /// </summary>
         private const int ChatChannelID = 2;
 
         private bool isDssPolling = false;
@@ -429,6 +443,9 @@ namespace TestAppUwp
         //    webRTCNativePlugin.Uninitialize();
         //}
 
+        /// <summary>
+        /// Callback invoked when the peer connection is established.
+        /// </summary>
         private void OnPeerConnected()
         {
             RunOnMainThread(() =>
@@ -464,6 +481,11 @@ namespace TestAppUwp
             });
         }
 
+        /// <summary>
+        /// Log a message to the debugger and to the Debug tab in the UI.
+        /// This can be called from any thread.
+        /// </summary>
+        /// <param name="message">The message to log.</param>
         private void LogMessage(string message)
         {
             Debugger.Log(4, "TestAppUWP", message);
@@ -473,6 +495,10 @@ namespace TestAppUwp
             });
         }
 
+        /// <summary>
+        /// Utility to run some random workload on the main UI thread.
+        /// </summary>
+        /// <param name="handler">The workload to run.</param>
         private void RunOnMainThread(Windows.UI.Core.DispatchedHandler handler)
         {
             if (Dispatcher.HasThreadAccess)
@@ -486,6 +512,10 @@ namespace TestAppUwp
             }
         }
 
+        /// <summary>
+        /// Utility to run some random workload on a worker thread (not the main UI thread).
+        /// </summary>
+        /// <param name="handler">The workload to run.</param>
         private Task RunOnWorkerThread(Action handler)
         {
             if (Dispatcher.HasThreadAccess)
@@ -661,6 +691,12 @@ namespace TestAppUwp
             });
         }
 
+        /// <summary>
+        /// Callback on Media Foundation pipeline media successfully opened and
+        /// ready to be played in a local media player.
+        /// </summary>
+        /// <param name="sender">The <see xref="MediaPlayer"/> source object owning the media.</param>
+        /// <param name="args">(unused)</param>
         private void OnMediaOpened(MediaPlayer sender, object args)
         {
             // Now it is safe to call Play() on the MediaElement
@@ -674,11 +710,22 @@ namespace TestAppUwp
             }
         }
 
+        /// <summary>
+        /// Callback on Media Foundation pipeline media failed to open or to continue playback.
+        /// </summary>
+        /// <param name="sender">The <see xref="MediaPlayer"/> source object owning the media.</param>
+        /// <param name="args">(unused)</param>
         private void OnMediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
         {
             LogMessage($"MediaElement reported an error: \"{args.ErrorMessage}\" (\"{args.ExtendedErrorCode.Message}\")");
         }
 
+        /// <summary>
+        /// Callback on Media Foundation pipeline media ended playback.
+        /// </summary>
+        /// <param name="sender">The <see xref="MediaPlayer"/> source object owning the media.</param>
+        /// <param name="args">(unused)</param>
+        /// <remarks>This appears to never be called for live sources.</remarks>
         private void OnMediaEnded(MediaPlayer sender, object args)
         {
             RunOnMainThread(() =>
@@ -699,6 +746,11 @@ namespace TestAppUwp
             });
         }
 
+        /// <summary>
+        /// Stop playback of the local video from the local webcam, and remove the local
+        /// audio and video tracks from the peer connection.
+        /// This is called on the UI thread.
+        /// </summary>
         private void StopLocalVideo()
         {
             lock (_isLocalVideoPlayingLock)
@@ -716,28 +768,32 @@ namespace TestAppUwp
             }
         }
 
+        /// <summary>
+        /// Callback on remote media (audio or video) track added.
+        /// Currently does nothing, as starting the media pipeline is done lazily in the
+        /// per-frame callback.
+        /// </summary>
+        /// <param name="trackKind">The kind of media track added (audio or video only).</param>
+        /// <seealso cref="Peer_RemoteI420FrameReady"/>
         private void Peer_RemoteTrackAdded(PeerConnection.TrackKind trackKind)
         {
             LogMessage($"Added remote {trackKind} track.");
-
-            //if (trackKind == PeerConnection.TrackKind.Video)
-            //{
-            //    lock (_isRemoteVideoPlayingLock)
-            //    {
-            //        if (!_isRemoteVideoPlaying)
-            //        {
-            //            _isRemoteVideoPlaying = true;
-            //        }
-            //    }
-            //}
         }
 
+        /// <summary>
+        /// Callback on remote media (audio or video) track removed.
+        /// </summary>
+        /// <param name="trackKind">The kind of media track added (audio or video only).</param>
         private void Peer_RemoteTrackRemoved(PeerConnection.TrackKind trackKind)
         {
             LogMessage($"Removed remote {trackKind} track.");
 
             if (trackKind == PeerConnection.TrackKind.Video)
             {
+                // Just double-check that the remote video track is indeed playing
+                // before scheduling a task to stop it. Currently the remote video
+                // playback is exclusively controlled by the remote track being present
+                // or not, so these should be always in sync.
                 lock (_isRemoteVideoPlayingLock)
                 {
                     if (_isRemoteVideoPlaying)
@@ -749,11 +805,21 @@ namespace TestAppUwp
             }
         }
 
+        /// <summary>
+        /// Callback on video frame received from the local video capture device,
+        /// for local rendering before (or in parallel of) being sent to the remote peer.
+        /// </summary>
+        /// <param name="frame">The newly captured video frame.</param>
         private void Peer_LocalI420FrameReady(I420AVideoFrame frame)
         {
             localVideoBridge.HandleIncomingVideoFrame(frame);
         }
 
+        /// <summary>
+        /// Callback on video frame received from the remote peer, for local rendering
+        /// (or any other use).
+        /// </summary>
+        /// <param name="frame">The newly received video frame.</param>
         private void Peer_RemoteI420FrameReady(I420AVideoFrame frame)
         {
             // Lazily start the remote video media player when receiving
@@ -785,14 +851,25 @@ namespace TestAppUwp
             remoteVideoBridge.HandleIncomingVideoFrame(frame);
         }
 
+        /// <summary>
+        /// Callback on audio frame received from the local audio capture device (microphone),
+        /// for local output before (or in parallel of) being sent to the remote peer.
+        /// </summary>
+        /// <param name="frame">The newly captured audio frame.</param>
+        /// <remarks>This is currently never called due to implementation limitations.</remarks>
         private void Peer_LocalAudioFrameReady(AudioFrame frame)
         {
             // The current underlying WebRTC implementation does not support
-            // local audio frame callbacks, so this will never be called until
+            // local audio frame callbacks, so THIS WILL NEVER BE CALLED until
             // that implementation is changed.
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Callback on audio frame received from the remote peer, for local output
+        /// (or any other use). 
+        /// </summary>
+        /// <param name="frame">The newly received audio frame.</param>
         private void Peer_RemoteAudioFrameReady(AudioFrame frame)
         {
             lock (_isRemoteAudioPlayingLock)
@@ -819,9 +896,14 @@ namespace TestAppUwp
             remoteAudioSampleRate.Text = $"{sampleRate} Hz";
         }
 
+        /// <summary>
+        /// Toggle local audio and video playback on/off, adding or removing tracks as needed.
+        /// </summary>
+        /// <param name="sender">The object which invoked the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void StartLocalVideoClicked(object sender, RoutedEventArgs e)
         {
-            // Toggle between start and stop local video feed
+            // Toggle between start and stop local audio/video feeds
             //< TODO dssStatsTimer.IsEnabled used for toggle, but dssStatsTimer should be
             // used also for remote statistics display (so even when no local video active)
             if (dssStatsTimer.IsEnabled)
@@ -909,15 +991,15 @@ namespace TestAppUwp
 
         private void OnDssStatsTimerTick(object sender, object e)
         {
-            //localLoadText.Text = $"Load: {localVideoBridge.FrameLoad.Value:F2}";
-            //localPresentText.Text = $"Present: {localVideoBridge.FramePresent.Value:F2}";
-            //localSkipText.Text = $"Skip: {localVideoBridge.FrameSkip.Value:F2}";
-            //localLateText.Text = $"Late: {localVideoBridge.LateFrame.Value:F2}";
+            //localLoadText.Text = $"Load: {localVideoBridge.FrameLoad:F2}";
+            //localPresentText.Text = $"Present: {localVideoBridge.FramePresent:F2}";
+            //localSkipText.Text = $"Skip: {localVideoBridge.FrameSkip:F2}";
+            //localLateText.Text = $"Late: {localVideoBridge.LateFrame:F2}";
 
-            //remoteLoadText.Text = $"Load: {remoteVideoBridge.FrameLoad.Value:F2}";
-            //remotePresentText.Text = $"Present: {remoteVideoBridge.FramePresent.Value:F2}";
-            //remoteSkipText.Text = $"Skip: {remoteVideoBridge.FrameSkip.Value:F2}";
-            //remoteLateText.Text = $"Late: {remoteVideoBridge.LateFrame.Value:F2}";
+            //remoteLoadText.Text = $"Load: {remoteVideoBridge.FrameLoad:F2}";
+            //remotePresentText.Text = $"Present: {remoteVideoBridge.FramePresent:F2}";
+            //remoteSkipText.Text = $"Skip: {remoteVideoBridge.FrameSkip:F2}";
+            //remoteLateText.Text = $"Late: {remoteVideoBridge.LateFrame:F2}";
         }
 
         private void StunServerTextChanged(object sender, TextChangedEventArgs e)
@@ -1002,6 +1084,13 @@ namespace TestAppUwp
 
         }
 
+        /// <summary>
+        /// Callback on Send button from text chat clicker.
+        /// If connected, this sends the text message to the remote peer using
+        /// the previously opened data channel.
+        /// </summary>
+        /// <param name="sender">The object which invoked the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void ChatSendButton_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(chatInputBox.Text))
@@ -1015,6 +1104,10 @@ namespace TestAppUwp
             chatInputBox.Text = string.Empty;
         }
 
+        /// <summary>
+        /// Callback on text message received through the data channel.
+        /// </summary>
+        /// <param name="message">The raw data channel message.</param>
         private void ChatMessageReceived(byte[] message)
         {
             string text = System.Text.Encoding.UTF8.GetString(message);
@@ -1027,6 +1120,12 @@ namespace TestAppUwp
             });
         }
 
+        /// <summary>
+        /// Callback on key down event invoked in the chat window, to handle
+        /// the "press Enter to send" text chat functionality.
+        /// </summary>
+        /// <param name="sender">The object which invoked the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void OnChatKeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Enter)
