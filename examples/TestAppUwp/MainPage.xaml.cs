@@ -88,7 +88,7 @@ namespace TestAppUwp
         /// <summary>
         /// Predetermined chat data channel ID, negotiated out of band.
         /// </summary>
-        private const int ChatChannelID = 2;
+        private const int ChatChannelID = 42;
 
         private bool isDssPolling = false;
         private NodeDssSignaler dssSignaler = new NodeDssSignaler();
