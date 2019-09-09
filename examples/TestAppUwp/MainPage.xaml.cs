@@ -86,6 +86,13 @@ namespace TestAppUwp
         private DataChannel _chatDataChannel = null;
 
         /// <summary>
+        /// Enable automatically creating a new SDP offer when the renegotiation event is fired.
+        /// This can be disabled when adding multiple tracks, to bundle all changes together and
+        /// avoid multiple round trips to the signaler and remote peer.
+        /// </summary>
+        private bool _renegotiationOfferEnabled = true;
+
+        /// <summary>
         /// Predetermined chat data channel ID, negotiated out of band.
         /// </summary>
         private const int ChatChannelID = 42;
@@ -211,7 +218,7 @@ namespace TestAppUwp
         {
             // If already connected, update the connection on the fly.
             // If not, wait for user action and don't automatically connect.
-            if (_peerConnection.IsConnected)
+            if (_peerConnection.IsConnected && _renegotiationOfferEnabled)
             {
                 _peerConnection.CreateOffer();
             }
@@ -954,12 +961,21 @@ namespace TestAppUwp
 
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
                 var videoProfileKind = SelectedVideoProfileKind; // capture on UI thread
+
+                // Disable auto-offer on renegotiation needed event, to bundle the audio + video tracks
+                // change together into a single SDP offer. Otherwise each added track will send a
+                // separate offer message, which is currently not handled correctly (the second message
+                // will arrive too soon, before the core implementation finished processing the first one
+                // and is in kStable state, and it will get discarded so remote video will not start).
+                _renegotiationOfferEnabled = false;
+
                 _peerConnection.AddLocalAudioTrackAsync().ContinueWith(addAudioTask =>
                 {
                     // Continue on worker thread here
                     if (addAudioTask.Exception != null)
                     {
                         LogMessage(addAudioTask.Exception.Message);
+                        _renegotiationOfferEnabled = true;
                         return;
                     }
 
@@ -970,6 +986,7 @@ namespace TestAppUwp
                         if (addVideoTask.Exception != null)
                         {
                             LogMessage(addVideoTask.Exception.Message);
+                            _renegotiationOfferEnabled = true;
                             return;
                         }
                         dssStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
@@ -984,6 +1001,14 @@ namespace TestAppUwp
                         {
                             _isLocalVideoPlaying = true;
                         }
+
+                        // Re-enable auto-offer on track change, and manually apply above changes.
+                        _renegotiationOfferEnabled = true;
+                        if (_peerConnection.IsConnected)
+                        {
+                            _peerConnection.CreateOffer();
+                        }
+
                     }, uiThreadScheduler);
                 });
             }
