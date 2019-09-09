@@ -44,23 +44,28 @@ void InitUWPFactory() noexcept(false) {
       wrapper::impl::org::webRtc::EventQueue::toWrapper(dispatcher);
 
   // Setup the WebRTC library
-  auto libConfig =
-      std::make_shared<wrapper::impl::org::webRtc::WebRtcLibConfiguration>();
-  libConfig->thisWeak_ = libConfig;  // mimic wrapper_create()
-  libConfig->queue = dispatcherQueue;
-  wrapper::impl::org::webRtc::WebRtcLib::setup(libConfig);
+  {
+    auto libConfig =
+        std::make_shared<wrapper::impl::org::webRtc::WebRtcLibConfiguration>();
+    libConfig->thisWeak_ = libConfig;  // mimic wrapper_create()
+    libConfig->queue = dispatcherQueue;
+    wrapper::impl::org::webRtc::WebRtcLib::setup(libConfig);
+  }
 
   // Create the UWP factory
-  auto factoryConfig = std::make_shared<
-      wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
-  factoryConfig->audioCapturingEnabled = true;
-  factoryConfig->audioRenderingEnabled = true;
-  factoryConfig->enableAudioBufferEvents = true;
-  g_winuwp_factory =
-      std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
-  g_winuwp_factory->thisWeak_ = g_winuwp_factory;  // mimic wrapper_create()
-  g_winuwp_factory->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
-  g_winuwp_factory->setup();
+  {
+    auto factoryConfig = std::make_shared<
+        wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
+    factoryConfig->thisWeak_ = factoryConfig;  // mimic wrapper_create()
+    factoryConfig->audioCapturingEnabled = true;
+    factoryConfig->audioRenderingEnabled = true;
+    factoryConfig->enableAudioBufferEvents = true;
+    g_winuwp_factory =
+        std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
+    g_winuwp_factory->thisWeak_ = g_winuwp_factory;  // mimic wrapper_create()
+    g_winuwp_factory->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
+  }
+  g_winuwp_factory->internalSetup();
 }
 
 #else  // defined(WINUWP)
@@ -215,7 +220,7 @@ rtc::Thread* UnsafeGetWorkerThread() {
   }
   return nullptr;
 }
-#endif
+#endif  // defined(WINUWP)
 
 void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {
   if (handleRef) {
