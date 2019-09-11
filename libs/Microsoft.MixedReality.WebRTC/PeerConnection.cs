@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-[assembly:InternalsVisibleTo("Microsoft.MixedReality.WebRTC.Tests")]
+[assembly: InternalsVisibleTo("Microsoft.MixedReality.WebRTC.Tests")]
 
 namespace Microsoft.MixedReality.WebRTC
 {
@@ -27,6 +27,118 @@ namespace Microsoft.MixedReality.WebRTC
     sealed class MonoPInvokeCallbackAttribute : Attribute
     {
         public MonoPInvokeCallbackAttribute(Type t) { }
+    }
+
+    /// <summary>
+    /// Type of ICE candidates offered to the remote peer.
+    /// </summary>
+    public enum IceTransportType : int
+    {
+        /// <summary>
+        /// No ICE candidate offered.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Only advertize relay-type candidates, like TURN servers, to avoid leaking the IP address of the client.
+        /// </summary>
+        Relay = 1,
+
+        /// ?
+        NoHost = 2,
+
+        /// <summary>
+        /// Offer all types of ICE candidates.
+        /// </summary>
+        All = 3
+    }
+
+    /// <summary>
+    /// Bundle policy.
+    /// See https://www.w3.org/TR/webrtc/#rtcbundlepolicy-enum.
+    /// </summary>
+    public enum BundlePolicy : int
+    {
+        /// <summary>
+        /// Gather ICE candidates for each media type in use (audio, video, and data). If the remote endpoint is
+        /// not bundle-aware, negotiate only one audio and video track on separate transports.
+        /// </summary>
+        Balanced = 0,
+
+        /// <summary>
+        /// Gather ICE candidates for only one track. If the remote endpoint is not bundle-aware, negotiate only
+        /// one media track.
+        /// </summary>
+        MaxBundle = 1,
+
+        /// <summary>
+        /// Gather ICE candidates for each track. If the remote endpoint is not bundle-aware, negotiate all media
+        /// tracks on separate transports.
+        /// </summary>
+        MaxCompat = 2
+    }
+
+    public class IceServer
+    {
+        /// <summary>
+        /// List of TURN and/or STUN server URLs to use for NAT bypass, in order of preference.
+        ///
+        /// The scheme is defined in the core WebRTC implementation, and is in short:
+        /// stunURI     = stunScheme ":" stun-host [ ":" stun-port ]
+        /// stunScheme  = "stun" / "stuns"
+        /// turnURI     = turnScheme ":" turn-host [ ":" turn-port ] [ "?transport=" transport ]
+        /// turnScheme  = "turn" / "turns"
+        /// </summary>
+        public List<string> Urls = new List<string>();
+
+        /// <summary>
+        /// Optional TURN server username.
+        /// </summary>
+        public string TurnUserName = string.Empty;
+
+        /// <summary>
+        /// Optional TURN server credentials.
+        /// </summary>
+        public string TurnPassword = string.Empty;
+
+        /// <summary>
+        /// Format the ICE server data according to the encoded marshalling of the C++ API.
+        /// </summary>
+        /// <returns>The encoded string of ICE servers.</returns>
+        public override string ToString()
+        {
+            string ret = string.Join("\n", Urls);
+            if (TurnUserName.Length > 0)
+            {
+                ret += $"\nusername:{TurnUserName}";
+                if (TurnPassword.Length > 0)
+                {
+                    ret += $"\npassword:{TurnPassword}";
+                }
+            }
+            return ret;
+        }
+    }
+
+    /// <summary>
+    /// Configuration to initialize a <see cref="PeerConnection"/>.
+    /// </summary>
+    public class PeerConnectionConfiguration
+    {
+        /// <summary>
+        /// List of TURN and/or STUN servers to use for NAT bypass, in order of preference.
+        /// </summary>
+        public List<IceServer> IceServers = new List<IceServer>();
+
+        /// <summary>
+        /// ICE transport policy for the connection.
+        /// </summary>
+        public IceTransportType IceTransportType = IceTransportType.All;
+
+        /// <summary>
+        /// Bundle policy for the connection.
+        /// </summary>
+        public BundlePolicy BundlePolicy = BundlePolicy.Balanced;
     }
 
     /// <summary>
@@ -78,27 +190,6 @@ namespace Microsoft.MixedReality.WebRTC
         /// Signaler implementation used by this peer connection, as specified in the constructor.
         /// </summary>
         public ISignaler Signaler { get; }
-
-        /// <summary>
-        /// List of TURN and/or STUN servers to use for NAT bypass, in order of preference.
-        ///
-        /// The scheme is defined in the core WebRTC implementation, and is in short:
-        /// stunURI     = stunScheme ":" stun-host [ ":" stun-port ]
-        /// stunScheme  = "stun" / "stuns"
-        /// turnURI     = turnScheme ":" turn-host [ ":" turn-port ] [ "?transport=" transport ]
-        /// turnScheme  = "turn" / "turns"
-        /// </summary>
-        public List<string> Servers = new List<string>();
-
-        /// <summary>
-        /// Optional TURN server username.
-        /// </summary>
-        public string UserName = string.Empty;
-
-        /// <summary>
-        /// Optional TURN server credentials.
-        /// </summary>
-        public string Credentials = string.Empty;
 
 
         #region Codec filtering
@@ -532,26 +623,26 @@ namespace Microsoft.MixedReality.WebRTC
         {
             switch (message.MessageType)
             {
-            case SignalerMessage.WireMessageType.Offer:
-                SetRemoteDescription("offer", message.Data);
-                // If we get an offer, we immediately send an answer back
-                CreateAnswer();
-                break;
+                case SignalerMessage.WireMessageType.Offer:
+                    SetRemoteDescription("offer", message.Data);
+                    // If we get an offer, we immediately send an answer back
+                    CreateAnswer();
+                    break;
 
-            case SignalerMessage.WireMessageType.Answer:
-                SetRemoteDescription("answer", message.Data);
-                break;
+                case SignalerMessage.WireMessageType.Answer:
+                    SetRemoteDescription("answer", message.Data);
+                    break;
 
-            case SignalerMessage.WireMessageType.Ice:
-                // TODO - This is NodeDSS-specific
-                // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
-                var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
-                AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
-                break;
+                case SignalerMessage.WireMessageType.Ice:
+                    // TODO - This is NodeDSS-specific
+                    // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                    var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                    // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                    AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                    break;
 
-            default:
-                throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
+                default:
+                    throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
             }
         }
 
@@ -565,7 +656,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// from the first call to it until the peer connection object is deinitialized. This allows
         /// multiple callers to all execute some action following the initialization, without the need
         /// to force a single caller and to synchronize with it.</remarks>
-        public Task InitializeAsync(CancellationToken token = default)
+        public Task InitializeAsync(PeerConnectionConfiguration config = default, CancellationToken token = default)
         {
             lock (_openCloseLock)
             {
@@ -610,21 +701,12 @@ namespace Microsoft.MixedReality.WebRTC
                 // Cache values in local variables before starting async task, to avoid any
                 // subsequent external change from affecting that task.
                 // Also set default values, as the native call doesn't handle NULL.
-                var servers = Servers;
-                var username = UserName;
-                var credentials = Credentials;
-                if (servers == null)
+                var nativeConfig = new NativeMethods.PeerConnectionConfiguration
                 {
-                    servers = new List<string>();
-                }
-                if (username == null)
-                {
-                    username = "";
-                }
-                if (credentials == null)
-                {
-                    credentials = "";
-                }
+                    EncodedIceServers = string.Join("\n\n", config.IceServers),
+                    IceTransportType = config.IceTransportType,
+                    BundlePolicy = config.BundlePolicy,
+                };
 
                 // On UWP PeerConnectionCreate() fails on main UI thread, so always initialize the native peer
                 // connection asynchronously from a background worker thread.
@@ -634,10 +716,27 @@ namespace Microsoft.MixedReality.WebRTC
                 {
                     token.ThrowIfCancellationRequested();
 
-                    var serversArray = servers.ToArray();
-                    IntPtr nativeHandle = NativeMethods.PeerConnectionCreate(serversArray, serversArray.Length, username, credentials, video: false);
+                    IntPtr nativeHandle = IntPtr.Zero;
+                    uint res = NativeMethods.PeerConnectionCreate(nativeConfig, out nativeHandle);
+
                     lock (_openCloseLock)
                     {
+                        // Handle errors
+                        if ((res != NativeMethods.MRS_SUCCESS) || (nativeHandle == IntPtr.Zero))
+                        {
+                            if (_selfHandle.IsAllocated)
+                            {
+                                _peerCallbackArgs = null;
+                                _selfHandle.Free();
+                            }
+
+                            if (res == NativeMethods.MRS_E_INVALID_PARAMETER)
+                            {
+                                throw new ArgumentNullException();
+                            }
+                            throw new Exception();
+                        }
+
                         // The connection may have been aborted while being created, either via the
                         // cancellation token, or by calling Close() after the synchronous codepath
                         // above but before this task had a chance to run in the background.
@@ -1077,6 +1176,22 @@ namespace Microsoft.MixedReality.WebRTC
             internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.so";
 #endif
 
+            internal const uint MRS_SUCCESS = 0u;
+            internal const uint MRS_E_UNKNOWN = 0x80000000;
+            internal const uint MRS_E_INVALID_PARAMETER = 0x80000001u;
+            internal const uint MRS_E_INVALID_PEER_HANDLE = 0x80000101u;
+            internal const uint MRS_E_PEER_NOT_INITIALIZED = 0x80000102u;
+            internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
+            internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
+
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+            internal struct PeerConnectionConfiguration
+            {
+                public string EncodedIceServers;
+                public IceTransportType IceTransportType;
+                public BundlePolicy BundlePolicy;
+            }
+
             /// <summary>
             /// Helper structure to pass video capture device configuration to the underlying C++ library.
             /// </summary>
@@ -1172,7 +1287,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionCreate")]
-            public static extern IntPtr PeerConnectionCreate(string[] servers, int numServers, string username, string credentials, bool video);
+            public static extern uint PeerConnectionCreate(PeerConnectionConfiguration config, out IntPtr peerHandle);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionRegisterConnectedCallback")]

@@ -35,4 +35,24 @@ std::string SdpForceCodecs(
     const std::string& video_codec_name,
     const std::map<std::string, std::string>& extra_video_codec_params);
 
+/// Decode a marshalled ICE server string.
+/// Syntax is:
+///   string = blocks
+///   blocks = block [ "\n\n" blocks ]
+///   block = lines
+///   lines = line [ "\n" lines ]
+///   line = key ":" value
+webrtc::PeerConnectionInterface::IceServers DecodeIceServers(
+    const std::string& str);
+
+/// Encode a single URL of a single ICE server into a marshalled ICE server
+/// string.
+std::string EncodeIceServers(const std::string& url);
+
+/// Encode a single URL of a single ICE server into a marshalled ICE server
+/// string, with optional username and password for a TURN server.
+std::string EncodeIceServers(const std::string& url,
+                             const std::string& username,
+                             const std::string& password);
+
 }  // namespace Microsoft::MixedReality::WebRTC

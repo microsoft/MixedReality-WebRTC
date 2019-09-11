@@ -66,7 +66,7 @@
                     The signaling server is used to discover a peer to connect to. This app uses <Hyperlink NavigateUri="https://github.com/bengreenier/node-dss">node-dss</Hyperlink>.
                     </TextBlock>
                     <TextBlock Text="Server address" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0" Grid.Row="2"/>
-                    <TextBox Name="dssServer" HorizontalAlignment="Left" PlaceholderText="http://server:port/" Text="http://localhost:3000/" VerticalAlignment="Center" Width="285" TextChanged="StunServerTextChanged" Grid.Row="2" Grid.Column="1" Margin="0,6,0,6"/>
+                    <TextBox Name="dssServer" HorizontalAlignment="Left" PlaceholderText="http://server:port/" Text="http://localhost:3000/" VerticalAlignment="Center" Width="285" Grid.Row="2" Grid.Column="1" Margin="0,6,0,6"/>
                     <TextBlock Text="Poll delay" VerticalAlignment="Center" Grid.Row="3" HorizontalAlignment="Right" Margin="0,0,12,0"/>
                     <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Margin="0,6,0,6">
                         <TextBox x:Name="dssPollTimeMs" MinWidth="100" Text="500" TextAlignment="Right"/>
@@ -99,7 +99,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="STUN server" FontWeight="Bold" Grid.ColumnSpan="2" />
                     <TextBlock Text="The STUN server is used to establish a peer connection through NATs." FontStyle="Italic" Grid.ColumnSpan="2" Grid.Row="1" Margin="12,6,0,0" />
-                    <TextBox Name="stunServer" HorizontalAlignment="Left" PlaceholderText="address:port (without prefix)" Text="stun.l.google.com:19302" VerticalAlignment="Center" Width="300" TextChanged="StunServerTextChanged" Grid.Row="2" Margin="12,6,0,6"/>
+                    <TextBox Name="stunServer" HorizontalAlignment="Left" PlaceholderText="address:port (without prefix)" Text="stun.l.google.com:19302" VerticalAlignment="Center" Width="300" Grid.Row="2" Margin="12,6,0,6"/>
                     <!--<TextBlock Text="Discovered peers" FontWeight="Bold" Grid.ColumnSpan="2" Grid.Row="3" Margin="0,12,0,0" FontFamily="Segoe UI" />
                     <ListView Grid.Row="4" Margin="12,0,0,0" ItemsSource="{x:Bind NavLinks}" ItemTemplate="{StaticResource NavLinkItemTemplate}" />-->
                     <Button Name="createOfferButton" IsEnabled="False" Content="Create offer" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.511,0.634" Click="CreateOfferButtonClicked" Width="125" Grid.Row="5" Margin="0,6,0,6"/>

@@ -214,6 +214,44 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
 #endif
 }
 
+webrtc::PeerConnectionInterface::IceTransportsType ICETransportTypeToNative(
+    IceTransportType mrsValue) {
+  using Native = webrtc::PeerConnectionInterface::IceTransportsType;
+  using Impl = IceTransportType;
+  static_assert((int)Native::kNone == (int)Impl::kNone);
+  static_assert((int)Native::kNoHost == (int)Impl::kNoHost);
+  static_assert((int)Native::kRelay == (int)Impl::kRelay);
+  static_assert((int)Native::kAll == (int)Impl::kAll);
+  return static_cast<Native>(mrsValue);
+}
+
+webrtc::PeerConnectionInterface::BundlePolicy BundlePolicyToNative(
+    BundlePolicy mrsValue) {
+  using Native = webrtc::PeerConnectionInterface::BundlePolicy;
+  using Impl = BundlePolicy;
+  static_assert((int)Native::kBundlePolicyBalanced == (int)Impl::kBalanced);
+  static_assert((int)Native::kBundlePolicyMaxBundle == (int)Impl::kMaxBundle);
+  static_assert((int)Native::kBundlePolicyMaxCompat == (int)Impl::kMaxCompat);
+  return static_cast<Native>(mrsValue);
+}
+
+//< TODO - Unit test / check if RTC has already a utility like this
+std::vector<std::string> SplitString(const std::string& str, char sep) {
+  std::vector<std::string> ret;
+  size_t offset = 0;
+  for (size_t idx = str.find_first_of(sep); idx < std::string::npos;
+       idx = str.find_first_of(sep, offset)) {
+    if (idx > offset) {
+      ret.push_back(str.substr(offset, idx - offset));
+    }
+    offset = idx + 1;
+  }
+  if (offset < str.size()) {
+    ret.push_back(str.substr(offset));
+  }
+  return ret;
+}
+
 }  // namespace
 
 #if defined(WINUWP)
@@ -293,12 +331,14 @@ void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
 #endif
 }
 
-PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
-    const char** turn_urls,
-    const int no_of_urls,
-    const char* username,
-    const char* credential,
-    bool /*mandatory_receive_video*/) noexcept(kNoExceptFalseOnUWP) {
+mrsResult MRS_CALL mrsPeerConnectionCreate(
+    PeerConnectionConfiguration config,
+    PeerConnectionHandle* peerHandleOut) noexcept(kNoExceptFalseOnUWP) {
+  if (!peerHandleOut) {
+    return MRS_E_INVALID_PARAMETER;
+  }
+  *peerHandleOut = nullptr;
+
   // Ensure the factory exists
   if (g_peer_connection_factory == nullptr) {
 #if defined(WINUWP)
@@ -306,7 +346,7 @@ PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
       InitUWPFactory();
       if (!g_winuwp_factory) {
         RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
-        return nullptr;
+        return MRS_E_UNKNOWN;
       }
     }
 
@@ -319,7 +359,8 @@ PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
     g_worker_thread->SetName("WebRTC worker thread", g_worker_thread.get());
     g_worker_thread->Start();
     g_signaling_thread = rtc::Thread::Create();
-    g_signaling_thread->SetName("WebRTC signaling thread", g_signaling_thread.get());
+    g_signaling_thread->SetName("WebRTC signaling thread",
+                                g_signaling_thread.get());
     g_signaling_thread->Start();
 
     g_peer_connection_factory = webrtc::CreatePeerConnectionFactory(
@@ -336,42 +377,27 @@ PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
 #endif
   }
   if (!g_peer_connection_factory.get()) {
-    return {};
+    return MRS_E_UNKNOWN;
   }
 
   // Setup the connection configuration
-  webrtc::PeerConnectionInterface::RTCConfiguration config;
-  if (turn_urls != nullptr) {
-    if (no_of_urls > 0) {
-      config.servers.reserve(no_of_urls);
-      webrtc::PeerConnectionInterface::IceServer server;
-      for (int i = 0; i < no_of_urls; ++i) {
-        std::string url(turn_urls[i]);
-        if (url.length() > 0)
-          server.urls.push_back(turn_urls[i]);
-      }
-      if (username) {
-        std::string user_name(username);
-        if (user_name.length() > 0)
-          server.username = std::move(username);
-      }
-      if (credential) {
-        std::string password(credential);
-        if (password.length() > 0)
-          server.password = std::move(password);
-      }
-      config.servers.push_back(server);
-    }
+  webrtc::PeerConnectionInterface::RTCConfiguration rtc_config;
+  if (config.encoded_ice_servers != nullptr) {
+    std::string encoded_ice_servers{config.encoded_ice_servers};
+    rtc_config.servers = DecodeIceServers(encoded_ice_servers);
   }
-  config.enable_rtp_data_channel = false;
-  config.enable_dtls_srtp = true;  //< TODO - Should be true/unset for security
+  rtc_config.enable_rtp_data_channel = false;  // Always false for security
+  rtc_config.enable_dtls_srtp = true;          // Always true for security
+  rtc_config.type = ICETransportTypeToNative(config.ice_transport_type);
+  rtc_config.bundle_policy = BundlePolicyToNative(config.bundle_policy);
 
   // Create the new peer connection
   rtc::scoped_refptr<PeerConnection> peer =
-      PeerConnection::create(*g_peer_connection_factory, config);
+      PeerConnection::create(*g_peer_connection_factory, rtc_config);
   const PeerConnectionHandle handle{peer.get()};
   g_peer_connection_map.insert({handle, std::move(peer)});
-  return handle;
+  *peerHandleOut = handle;
+  return MRS_SUCCESS;
 }
 
 void MRS_CALL mrsPeerConnectionRegisterConnectedCallback(

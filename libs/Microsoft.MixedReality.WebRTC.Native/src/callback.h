@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "pch.h"
-
 #include "api.h"
 
 namespace Microsoft::MixedReality::WebRTC {

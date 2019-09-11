@@ -34,10 +34,11 @@ constexpr const mrsResult MRS_SUCCESS{0};
 
 // Unknown generic error
 constexpr const mrsResult MRS_E_UNKNOWN{0x80000000};
+constexpr const mrsResult MRS_E_INVALID_PARAMETER{0x80000001};
 
-// Peer conection (0x0xx)
-constexpr const mrsResult MRS_E_INVALID_PEER_HANDLE{0x80000001};
-constexpr const mrsResult MRS_E_PEER_NOT_INITIALIZED{0x80000002};
+// Peer conection (0x1xx)
+constexpr const mrsResult MRS_E_INVALID_PEER_HANDLE{0x80000101};
+constexpr const mrsResult MRS_E_PEER_NOT_INITIALIZED{0x80000102};
 
 // Data (0x3xx)
 constexpr const mrsResult MRS_E_SCTP_NOT_NEGOTIATED{0x80000301};
@@ -188,14 +189,43 @@ inline constexpr bool kNoExceptFalseOnUWP = false;
 inline constexpr bool kNoExceptFalseOnUWP = true;
 #endif
 
+/// ICE transport type. See webrtc::PeerConnectionInterface::IceTransportsType.
+/// Currently values are aligned, but kept as a separate structure to allow
+/// backward compatilibity in case of changes in WebRTC.
+enum class IceTransportType : int32_t {
+  kNone = 0,
+  kRelay = 1,
+  kNoHost = 2,
+  kAll = 3
+};
+
+/// Bundle policy. See webrtc::PeerConnectionInterface::BundlePolicy.
+/// Currently values are aligned, but kept as a separate structure to allow
+/// backward compatilibity in case of changes in WebRTC.
+enum class BundlePolicy : int32_t {
+  kBalanced = 0,
+  kMaxBundle = 1,
+  kMaxCompat = 2
+};
+
+/// Configuration to intialize a peer connection object.
+struct PeerConnectionConfiguration {
+  /// ICE servers, encoded as a single string buffer.
+  /// See |EncodeIceServers| and |DecodeIceServers|.
+  const char* encoded_ice_servers = nullptr;
+
+  /// ICE transport type for the connection.
+  IceTransportType ice_transport_type = IceTransportType::kAll;
+
+  /// Bundle policy for the connection.
+  BundlePolicy bundle_policy = BundlePolicy::kBalanced;
+};
+
 /// Create a peer connection and return a handle to it.
 /// On UWP this must be invoked from another thread than the main UI thread.
-MRS_API PeerConnectionHandle MRS_CALL mrsPeerConnectionCreate(
-    const char** turn_urls,
-    const int no_of_urls,
-    const char* username,
-    const char* credential,
-    bool mandatory_receive_video) noexcept(kNoExceptFalseOnUWP);
+MRS_API mrsResult MRS_CALL mrsPeerConnectionCreate(
+    PeerConnectionConfiguration config,
+    PeerConnectionHandle* peerHandleOut) noexcept(kNoExceptFalseOnUWP);
 
 /// Register a callback fired once connected to a remote peer.
 /// To unregister, simply pass nullptr as the callback pointer.
