@@ -155,6 +155,31 @@ namespace Microsoft.MixedReality.WebRTC
         Closed = 6,
     }
 
+    /// Identifier for a video capture device.
+    /// </summary>
+    [Serializable]
+    public struct VideoCaptureDevice
+    {
+        /// <summary>
+        /// Unique device identifier.
+        /// </summary>
+        public string id;
+
+        /// <summary>
+        /// Friendly device name.
+        /// </summary>
+        public string name;
+    }
+
+    [Serializable]
+    public struct VideoCaptureFormat
+    {
+        public uint width;
+        public uint height;
+        public double framerate;
+        public uint fourcc;
+    }
+
     /// <summary>
     /// The WebRTC peer connection object is the entry point to using WebRTC.
     /// </summary>
@@ -173,6 +198,12 @@ namespace Microsoft.MixedReality.WebRTC
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void VideoCaptureDeviceEnumCompletedCallback();
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void VideoCaptureFormatEnumCallback(uint width, uint height, double framerate, uint fourcc);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void VideoCaptureFormatEnumCompletedCallback(Exception e);
 
         /// <summary>
         /// Kind of WebRTC track.
@@ -345,6 +376,8 @@ namespace Microsoft.MixedReality.WebRTC
         {
             private delegate void VideoCaptureDeviceEnumDelegate(string id, string name, IntPtr handle);
             private delegate void VideoCaptureDeviceEnumCompletedDelegate(IntPtr handle);
+            private delegate void VideoCaptureFormatEnumDelegate(uint width, uint height, double framerate, string encoding, IntPtr handle);
+            private delegate void VideoCaptureFormatEnumCompletedDelegate(IntPtr handle);
             private delegate void ConnectedDelegate(IntPtr peer);
             private delegate void LocalSdpReadytoSendDelegate(IntPtr peer, string type, string sdp);
             private delegate void IceCandidateReadytoSendDelegate(IntPtr peer, string candidate, int sdpMlineindex, string sdpMid);
@@ -356,9 +389,9 @@ namespace Microsoft.MixedReality.WebRTC
             private delegate void DataChannelBufferingDelegate(IntPtr peer, ulong previous, ulong current, ulong limit);
             private delegate void DataChannelStateDelegate(IntPtr peer, int state, int id);
 
-            public class EnumVideoCaptureWrapper
+            public class EnumVideoCaptureDeviceWrapper
             {
-                public VideoCaptureDeviceEnumCallback callback;
+                public VideoCaptureDeviceEnumCallback enumCallback;
                 public VideoCaptureDeviceEnumCompletedCallback completedCallback;
             }
 
@@ -366,16 +399,39 @@ namespace Microsoft.MixedReality.WebRTC
             public static void VideoCaptureDeviceEnumCallback(string id, string name, IntPtr userData)
             {
                 var handle = GCHandle.FromIntPtr(userData);
-                var wrapper = (handle.Target as EnumVideoCaptureWrapper);
-                wrapper.callback(id, name); // this is mandatory, never null
+                var wrapper = (handle.Target as EnumVideoCaptureDeviceWrapper);
+                wrapper.enumCallback(id, name); // this is mandatory, never null
             }
 
             [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCompletedDelegate))]
             public static void VideoCaptureDeviceEnumCompletedCallback(IntPtr userData)
             {
                 var handle = GCHandle.FromIntPtr(userData);
-                var wrapper = (handle.Target as EnumVideoCaptureWrapper);
+                var wrapper = (handle.Target as EnumVideoCaptureDeviceWrapper);
                 wrapper.completedCallback?.Invoke(); // this is optional, allows to be null
+            }
+
+            public class EnumVideoCaptureFormatsWrapper
+            {
+                public VideoCaptureFormatEnumCallback enumCallback;
+                public VideoCaptureFormatEnumCompletedCallback completedCallback;
+            }
+
+            [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumDelegate))]
+            public static void VideoCaptureFormatEnumCallback(uint width, uint height, double framerate, uint fourcc, IntPtr userData)
+            {
+                var handle = GCHandle.FromIntPtr(userData);
+                var wrapper = (handle.Target as EnumVideoCaptureFormatsWrapper);
+                wrapper.enumCallback(width, height, framerate, fourcc); // this is mandatory, never null
+            }
+
+            [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCompletedDelegate))]
+            public static void VideoCaptureFormatEnumCompletedCallback(uint resultCode, IntPtr userData)
+            {
+                var exception = (resultCode == /*MRS_SUCCESS*/0 ? null : new Exception());
+                var handle = GCHandle.FromIntPtr(userData);
+                var wrapper = (handle.Target as EnumVideoCaptureFormatsWrapper);
+                wrapper.completedCallback?.Invoke(exception); // this is optional, allows to be null
             }
 
             /// <summary>
@@ -1081,16 +1137,18 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 uint res = NativeMethods.PeerConnectionAddDataChannel(_nativePeerhandle, id, label, ordered, reliable,
                 args.MessageCallback, userData, args.BufferingCallback, userData, args.StateCallback, userData);
-                if (res == 0)
+                handle.Free();
+                if (res == NativeMethods.MRS_SUCCESS)
                 {
                     return dataChannel;
                 }
-                handle.Free();
-                if (res == 0x80000301) // MRS_E_SCTP_NOT_NEGOTIATED
+
+                // Translate the error code into the appropriate exception
+                if (res == NativeMethods.MRS_E_SCTP_NOT_NEGOTIATED)
                 {
                     throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
                 }
-                if (res == 0x80000302) // MRS_E_INVALID_DATA_CHANNEL_ID
+                if (res == NativeMethods.MRS_E_INVALID_DATA_CHANNEL_ID)
                 {
                     throw new ArgumentOutOfRangeException("id", id, "Invalid ID passed to AddDataChannelAsync().");
                 }
@@ -1209,10 +1267,12 @@ namespace Microsoft.MixedReality.WebRTC
             internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.so";
 #endif
 
+            // Error codes returned by the C API -- see api.h
             internal const uint MRS_SUCCESS = 0u;
-            internal const uint MRS_E_UNKNOWN = 0x80000000;
+            internal const uint MRS_E_UNKNOWN = 0x80000000u;
             internal const uint MRS_E_INVALID_PARAMETER = 0x80000001u;
             internal const uint MRS_E_INVALID_OPERATION = 0x80000002u;
+            internal const uint MRS_E_WRONG_THREAD = 0x80000003u;
             internal const uint MRS_E_INVALID_PEER_HANDLE = 0x80000101u;
             internal const uint MRS_E_PEER_NOT_INITIALIZED = 0x80000102u;
             internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
@@ -1264,6 +1324,12 @@ namespace Microsoft.MixedReality.WebRTC
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
             public delegate void VideoCaptureDeviceEnumCompletedCallback(IntPtr userData);
+
+            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+            public delegate void VideoCaptureFormatEnumCallback(uint width, uint height, double framerate, uint fourcc, IntPtr userData);
+
+            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+            public delegate void VideoCaptureFormatEnumCompletedCallback(uint resultCode, IntPtr userData);
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
             public delegate void PeerConnectionConnectedCallback(IntPtr userData);
@@ -1320,8 +1386,13 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsEnumVideoCaptureDevicesAsync")]
-            public static extern void EnumVideoCaptureDevicesAsync(VideoCaptureDeviceEnumCallback callback, IntPtr userData,
+            public static extern void EnumVideoCaptureDevicesAsync(VideoCaptureDeviceEnumCallback enumCallback, IntPtr userData,
                 VideoCaptureDeviceEnumCompletedCallback completedCallback, IntPtr completedUserData);
+
+            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+                EntryPoint = "mrsEnumVideoCaptureFormatsAsync")]
+            public static extern uint EnumVideoCaptureFormatsAsync(string deviceId, VideoCaptureFormatEnumCallback enumCallback,
+                IntPtr userData, VideoCaptureFormatEnumCompletedCallback completedCallback, IntPtr completedUserData);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionCreate")]
@@ -1462,23 +1533,6 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Identifier for a video capture device.
-        /// </summary>
-        [Serializable]
-        public struct VideoCaptureDevice
-        {
-            /// <summary>
-            /// Unique device identifier.
-            /// </summary>
-            public string id;
-
-            /// <summary>
-            /// Friendly device name.
-            /// </summary>
-            public string name;
-        }
-
-        /// <summary>
         /// Callback invoked by the internal WebRTC implementation when it needs a SDP message
         /// to be dispatched to the remote peer.
         /// </summary>
@@ -1551,9 +1605,9 @@ namespace Microsoft.MixedReality.WebRTC
         {
             var devices = new List<VideoCaptureDevice>();
             var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-            var wrapper = new CallbacksWrappers.EnumVideoCaptureWrapper()
+            var wrapper = new CallbacksWrappers.EnumVideoCaptureDeviceWrapper()
             {
-                callback = (id, name) =>
+                enumCallback = (id, name) =>
                 {
                     devices.Add(new VideoCaptureDevice() { id = id, name = name });
                 },
@@ -1565,21 +1619,71 @@ namespace Microsoft.MixedReality.WebRTC
             };
 
             // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
-            IntPtr handle = GCHandle.ToIntPtr(GCHandle.Alloc(wrapper, GCHandleType.Normal));
+            var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
+            IntPtr userData = GCHandle.ToIntPtr(handle);
 
             return Task.Run(() =>
             {
                 // Execute the native async callback
-                NativeMethods.EnumVideoCaptureDevicesAsync(CallbacksWrappers.VideoCaptureDeviceEnumCallback, handle,
-                    CallbacksWrappers.VideoCaptureDeviceEnumCompletedCallback, handle);
+                NativeMethods.EnumVideoCaptureDevicesAsync(CallbacksWrappers.VideoCaptureDeviceEnumCallback, userData,
+                    CallbacksWrappers.VideoCaptureDeviceEnumCompletedCallback, userData);
 
                 // Wait for end of enumerating
                 eventWaitHandle.WaitOne();
 
                 // Clean-up and release the wrapper delegates
-                GCHandle.FromIntPtr(handle).Free();
+                handle.Free();
 
                 return devices;
+            });
+        }
+
+        public static Task<List<VideoCaptureFormat>> GetVideoCaptureFormatsAsync(string deviceId)
+        {
+            var formats = new List<VideoCaptureFormat>();
+            var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+            var wrapper = new CallbacksWrappers.EnumVideoCaptureFormatsWrapper()
+            {
+                enumCallback = (width, height, framerate, fourcc) =>
+                {
+                    formats.Add(new VideoCaptureFormat() { width = width, height = height, framerate = framerate, fourcc = fourcc });
+                },
+                completedCallback = (Exception _) =>
+                {
+                    // On enumeration end, signal the caller thread
+                    eventWaitHandle.Set();
+                }
+            };
+
+            // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
+            var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
+            IntPtr userData = GCHandle.ToIntPtr(handle);
+
+            // Execute the native async callback
+            uint res = NativeMethods.EnumVideoCaptureFormatsAsync(deviceId, CallbacksWrappers.VideoCaptureFormatEnumCallback, userData,
+                CallbacksWrappers.VideoCaptureFormatEnumCompletedCallback, userData);
+            if (res != NativeMethods.MRS_SUCCESS)
+            {
+                // Clean-up and release the wrapper delegates
+                handle.Free();
+
+                // Translate the error code into the appropriate exception
+                if (res == NativeMethods.MRS_E_INVALID_PARAMETER)
+                {
+                    throw new ArgumentException();
+                }
+                throw new Exception();
+            }
+
+            return Task.Run(() =>
+            {
+                // Wait for end of enumerating
+                eventWaitHandle.WaitOne();
+
+                // Clean-up and release the wrapper delegates
+                handle.Free();
+
+                return formats;
             });
         }
 

@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:winmc="using:Windows.Media.Capture"
+    xmlns:webrtc="using:Microsoft.MixedReality.WebRTC"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
@@ -15,7 +16,7 @@
                 <TextBlock Text="{x:Bind Label}" Margin="24,0,0,0" VerticalAlignment="Center" />
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="VideoCaptureDeviceTemplate" x:DataType="local:VideoCaptureDevice">
+        <DataTemplate x:Key="VideoCaptureDeviceTemplate" x:DataType="local:VideoCaptureDeviceInfo">
             <StackPanel Orientation="Horizontal">
                 <SymbolIcon Symbol="{x:Bind Symbol}" Margin="0,0,12,0" />
                 <StackPanel Orientation="Vertical" AutomationProperties.Name="{x:Bind DisplayName}">
@@ -38,6 +39,21 @@
                     <Run Text="{x:Bind FrameRate}" />
                     <Run> FPS (</Run>
                     <Run Text="{x:Bind Subtype}" />
+                    <Run>)</Run>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="VideoCaptureFormatTemplate" x:DataType="webrtc:VideoCaptureFormat">
+            <StackPanel Orientation="Horizontal">
+                <SymbolIcon Symbol="Video" Margin="0,0,12,0" />
+                <TextBlock VerticalAlignment="Center" >
+                    <Run Text="{x:Bind width}" />
+                    <Run> x </Run>
+                    <Run Text="{x:Bind height}" />
+                    <Run> @ </Run>
+                    <Run Text="{x:Bind framerate}" />
+                    <Run> FPS (</Run>
+                    <Run Text="{x:Bind fourcc}" />
                     <Run>)</Run>
                 </TextBlock>
             </StackPanel>
@@ -124,6 +140,7 @@
                         <ComboBox x:Name="KnownVideoProfileKindComboBox" Margin="0,10,0,0" Grid.Row="4" MaxWidth="400" MinWidth="200"/>
                         <ComboBox x:Name="VideoProfileComboBox" ItemsSource="{x:Bind VideoProfiles}" ItemTemplate="{StaticResource VideoProfileTemplate}" Margin="0,10,0,0" Grid.Row="5" MaxWidth="400" MinWidth="200"/>
                         <ListView x:Name="RecordMediaDescList" Grid.Row="6" ItemsSource="{x:Bind RecordMediaDescs}" ItemTemplate="{StaticResource RecordMediaDescTemplate}" MinHeight="120" MinWidth="120" />
+                        <ListView x:Name="VideoCaptureFormatList" Grid.Row="6" ItemsSource="{x:Bind VideoCaptureFormats}" ItemTemplate="{StaticResource VideoCaptureFormatTemplate}" MinHeight="120" MinWidth="120" />
                     </Grid>
                 </Grid>
             </PivotItem>

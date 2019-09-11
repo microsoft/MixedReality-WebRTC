@@ -28,7 +28,7 @@ namespace TestAppUwp
         public Symbol Symbol { get; set; }
     }
 
-    public class VideoCaptureDevice
+    public class VideoCaptureDeviceInfo
     {
         public string Id;
         public string DisplayName;
@@ -102,10 +102,10 @@ namespace TestAppUwp
         private DispatcherTimer dssStatsTimer = new DispatcherTimer();
         private string remotePeerId; // local copy of remotePeerUidTextBox.Text accessible from non-UI thread
 
-        public ObservableCollection<VideoCaptureDevice> VideoCaptureDevices { get; private set; }
-            = new ObservableCollection<VideoCaptureDevice>();
+        public ObservableCollection<VideoCaptureDeviceInfo> VideoCaptureDevices { get; private set; }
+            = new ObservableCollection<VideoCaptureDeviceInfo>();
 
-        public VideoCaptureDevice SelectedVideoCaptureDevice
+        public VideoCaptureDeviceInfo SelectedVideoCaptureDevice
         {
             get
             {
@@ -161,6 +161,22 @@ namespace TestAppUwp
                 }
                 return RecordMediaDescs[descIndex];
 
+            }
+        }
+
+        public ObservableCollection<VideoCaptureFormat> VideoCaptureFormats { get; private set; }
+            = new ObservableCollection<VideoCaptureFormat>();
+
+        public VideoCaptureFormat SelectedVideoCaptureFormat
+        {
+            get
+            {
+                var profileIndex = VideoCaptureFormatList.SelectedIndex;
+                if ((profileIndex < 0) || (profileIndex >= VideoCaptureFormats.Count))
+                {
+                    return default(VideoCaptureFormat);
+                }
+                return VideoCaptureFormats[profileIndex];
             }
         }
 
@@ -269,10 +285,10 @@ namespace TestAppUwp
 
                     var devices = prevTask.Result;
 
-                    List<VideoCaptureDevice> vcds = new List<VideoCaptureDevice>(devices.Count);
+                    List<VideoCaptureDeviceInfo> vcds = new List<VideoCaptureDeviceInfo>(devices.Count);
                     foreach (var device in devices)
                     {
-                        vcds.Add(new VideoCaptureDevice()
+                        vcds.Add(new VideoCaptureDeviceInfo()
                         {
                             Id = device.id,
                             DisplayName = device.name,
@@ -296,7 +312,6 @@ namespace TestAppUwp
                             VideoCaptureDeviceList.SelectedIndex = 0;
                         }
                     });
-
                 });
             }
 
@@ -365,6 +380,7 @@ namespace TestAppUwp
         private void UpdateVideoProfiles()
         {
             VideoProfiles.Clear();
+            VideoCaptureFormats.Clear();
 
             // Get the video capture device selected by the user
             var deviceIndex = VideoCaptureDeviceList.SelectedIndex;
@@ -375,32 +391,50 @@ namespace TestAppUwp
             var device = VideoCaptureDevices[deviceIndex];
 
             // Ensure that the video capture device actually supports video profiles
-            if (!MediaCapture.IsVideoProfileSupported(device.Id))
+            if (MediaCapture.IsVideoProfileSupported(device.Id))
             {
-                return;
-            }
+                // Get the kind of known video profile selected by the user
+                var videoProfileKindIndex = KnownVideoProfileKindComboBox.SelectedIndex;
+                if (videoProfileKindIndex < 0)
+                {
+                    return;
+                }
+                var videoProfileKind = (PeerConnection.VideoProfileKind)Enum.GetValues(typeof(PeerConnection.VideoProfileKind)).GetValue(videoProfileKindIndex);
 
-            // Get the kind of known video profile selected by the user
-            var videoProfileKindIndex = KnownVideoProfileKindComboBox.SelectedIndex;
-            if (videoProfileKindIndex < 0)
-            {
-                return;
-            }
-            var videoProfileKind = (PeerConnection.VideoProfileKind)Enum.GetValues(typeof(PeerConnection.VideoProfileKind)).GetValue(videoProfileKindIndex);
-
-            // List all video profiles for the select device (and kind, if any specified)
-            IReadOnlyList<MediaCaptureVideoProfile> profiles;
-            if (videoProfileKind == PeerConnection.VideoProfileKind.Unspecified)
-            {
-                profiles = MediaCapture.FindAllVideoProfiles(device.Id);
+                // List all video profiles for the select device (and kind, if any specified)
+                IReadOnlyList<MediaCaptureVideoProfile> profiles;
+                if (videoProfileKind == PeerConnection.VideoProfileKind.Unspecified)
+                {
+                    profiles = MediaCapture.FindAllVideoProfiles(device.Id);
+                }
+                else
+                {
+                    profiles = MediaCapture.FindKnownVideoProfiles(device.Id, (KnownVideoProfile)(videoProfileKind - 1));
+                }
+                foreach (var profile in profiles)
+                {
+                    VideoProfiles.Add(profile);
+                }
             }
             else
             {
-                profiles = MediaCapture.FindKnownVideoProfiles(device.Id, (KnownVideoProfile)(videoProfileKind - 1));
-            }
-            foreach (var profile in profiles)
-            {
-                VideoProfiles.Add(profile);
+                // Device doesn't support video profiles; fall back on flat list of capture formats.
+
+                // List resolutions
+                var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+                PeerConnection.GetVideoCaptureFormatsAsync(device.Id).ContinueWith((listTask) =>
+                {
+                    if (listTask.Exception != null)
+                    {
+                        throw listTask.Exception;
+                    }
+
+                    // Populate the capture format list
+                    foreach (var format in listTask.Result)
+                    {
+                        VideoCaptureFormats.Add(format);
+                    }
+                }, uiThreadScheduler);
             }
         }
 
@@ -422,6 +456,7 @@ namespace TestAppUwp
                 KnownVideoProfileKindComboBox.IsEnabled = true; //< TODO - Use binding
                 VideoProfileComboBox.IsEnabled = true;
                 RecordMediaDescList.IsEnabled = true;
+                VideoCaptureFormatList.IsEnabled = false;
             }
             else
             {
@@ -429,6 +464,7 @@ namespace TestAppUwp
                 KnownVideoProfileKindComboBox.IsEnabled = false;
                 VideoProfileComboBox.IsEnabled = false;
                 RecordMediaDescList.IsEnabled = false;
+                VideoCaptureFormatList.IsEnabled = true;
             }
 
             UpdateVideoProfiles();
@@ -963,15 +999,15 @@ namespace TestAppUwp
                 LogMessage("Opening local A/V stream...");
 
                 var captureDevice = SelectedVideoCaptureDevice;
-                var captureDeviceInfo = new PeerConnection.VideoCaptureDevice()
+                var captureDeviceInfo = new VideoCaptureDevice()
                 {
                     id = captureDevice?.Id,
                     name = captureDevice?.DisplayName
                 };
                 var videoProfile = SelectedVideoProfile;
                 string videoProfileId = videoProfile?.Id;
-                uint width = 640; //< TODO - replace with non-profile resolution from querying the capture device
-                uint height = 480; //< TODO - replace with non-profile resolution from querying the capture device
+                uint width = 0;
+                uint height = 0;
                 double framerate = 0.0;
                 if (videoProfile != null)
                 {
@@ -979,6 +1015,13 @@ namespace TestAppUwp
                     width = recordMediaDesc.Width;
                     height = recordMediaDesc.Height;
                     framerate = recordMediaDesc.FrameRate;
+                }
+                else
+                {
+                    var captureFormat = SelectedVideoCaptureFormat;
+                    width = captureFormat.width;
+                    height = captureFormat.height;
+                    framerate = captureFormat.framerate;
                 }
 
                 localVideoPlayer.Source = null;

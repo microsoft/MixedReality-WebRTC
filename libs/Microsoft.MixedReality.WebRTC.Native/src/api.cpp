@@ -93,6 +93,44 @@ const std::string kLocalVideoLabel("local_video");
 /// Predefined name of the local audio track.
 const std::string kLocalAudioLabel("local_audio");
 
+class SimpleMediaConstraints : public webrtc::MediaConstraintsInterface {
+ public:
+  using webrtc::MediaConstraintsInterface::Constraint;
+  using webrtc::MediaConstraintsInterface::Constraints;
+  static Constraint MinWidth(uint32_t min_width) {
+    return Constraint(webrtc::MediaConstraintsInterface::kMinWidth,
+                      std::to_string(min_width));
+  }
+  static Constraint MaxWidth(uint32_t max_width) {
+    return Constraint(webrtc::MediaConstraintsInterface::kMaxWidth,
+                      std::to_string(max_width));
+  }
+  static Constraint MinHeight(uint32_t min_height) {
+    return Constraint(webrtc::MediaConstraintsInterface::kMinHeight,
+                      std::to_string(min_height));
+  }
+  static Constraint MaxHeight(uint32_t max_height) {
+    return Constraint(webrtc::MediaConstraintsInterface::kMaxHeight,
+                      std::to_string(max_height));
+  }
+  static Constraint MinFrameRate(double min_framerate) {
+	// Note: kMinFrameRate is read back as an int
+    const int min_int = (int)std::floor(min_framerate);
+    return Constraint(webrtc::MediaConstraintsInterface::kMinFrameRate,
+                      std::to_string(min_int));
+  }
+  static Constraint MaxFrameRate(double max_framerate) {
+    // Note: kMinFrameRate is read back as an int
+    const int max_int = (int)std::ceil(max_framerate);
+    return Constraint(webrtc::MediaConstraintsInterface::kMaxFrameRate,
+                      std::to_string(max_int));
+  }
+  const Constraints& GetMandatory() const override { return mandatory_; }
+  const Constraints& GetOptional() const override { return optional_; }
+  Constraints mandatory_;
+  Constraints optional_;
+};
+
 /// Helper to open a video capture device.
 std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
     VideoDeviceConfiguration config) noexcept(kNoExceptFalseOnUWP) {
@@ -252,6 +290,46 @@ std::vector<std::string> SplitString(const std::string& str, char sep) {
   return ret;
 }
 
+/// Convert a WebRTC VideoType format into its FOURCC counterpart.
+uint32_t FourCCFromVideoType(webrtc::VideoType videoType) {
+  switch (videoType) {
+    default:
+    case webrtc::VideoType::kUnknown:
+      return (uint32_t)libyuv::FOURCC_ANY;
+    case webrtc::VideoType::kI420:
+      return (uint32_t)libyuv::FOURCC_I420;
+    case webrtc::VideoType::kIYUV:
+      return (uint32_t)libyuv::FOURCC_IYUV;
+    case webrtc::VideoType::kRGB24:
+      // this seems unintuitive, but is how defined in the core implementation
+      return (uint32_t)libyuv::FOURCC_24BG;
+    case webrtc::VideoType::kABGR:
+      return (uint32_t)libyuv::FOURCC_ABGR;
+    case webrtc::VideoType::kARGB:
+      return (uint32_t)libyuv::FOURCC_ARGB;
+    case webrtc::VideoType::kARGB4444:
+      return (uint32_t)libyuv::FOURCC_R444;
+    case webrtc::VideoType::kRGB565:
+      return (uint32_t)libyuv::FOURCC_RGBP;
+    case webrtc::VideoType::kARGB1555:
+      return (uint32_t)libyuv::FOURCC_RGBO;
+    case webrtc::VideoType::kYUY2:
+      return (uint32_t)libyuv::FOURCC_YUY2;
+    case webrtc::VideoType::kYV12:
+      return (uint32_t)libyuv::FOURCC_YV12;
+    case webrtc::VideoType::kUYVY:
+      return (uint32_t)libyuv::FOURCC_UYVY;
+    case webrtc::VideoType::kMJPEG:
+      return (uint32_t)libyuv::FOURCC_MJPG;
+    case webrtc::VideoType::kNV21:
+      return (uint32_t)libyuv::FOURCC_NV21;
+    case webrtc::VideoType::kNV12:
+      return (uint32_t)libyuv::FOURCC_NV12;
+    case webrtc::VideoType::kBGRA:
+      return (uint32_t)libyuv::FOURCC_BGRA;
+  };
+}
+
 }  // namespace
 
 #if defined(WINUWP)
@@ -274,11 +352,11 @@ void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {
 }
 
 void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
-    mrsVideoCaptureDeviceEnumCallback callback,
-    void* userData,
+    mrsVideoCaptureDeviceEnumCallback enumCallback,
+    void* enumCallbackUserData,
     mrsVideoCaptureDeviceEnumCompletedCallback completedCallback,
     void* completedCallbackUserData) noexcept {
-  if (!callback) {
+  if (!enumCallback) {
     return;
   }
 #if defined(WINUWP)
@@ -292,22 +370,22 @@ void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
   }
 
   auto vci = wrapper::impl::org::webRtc::VideoCapturer::getDevices();
-  vci->thenClosure(
-      [vci, callback, completedCallback, userData, completedCallbackUserData] {
-        auto deviceList = vci->value();
-        for (auto&& vdi : *deviceList) {
-          auto devInfo =
-              wrapper::impl::org::webRtc::VideoDeviceInfo::toNative_winrt(vdi);
-          auto id = winrt::to_string(devInfo.Id());
-          id.push_back('\0');  // API must ensure null-terminated
-          auto name = winrt::to_string(devInfo.Name());
-          name.push_back('\0');  // API must ensure null-terminated
-          (*callback)(id.c_str(), name.c_str(), userData);
-        }
-        if (completedCallback) {
-          (*completedCallback)(completedCallbackUserData);
-        }
-      });
+  vci->thenClosure([vci, enumCallback, completedCallback, enumCallbackUserData,
+                    completedCallbackUserData] {
+    auto deviceList = vci->value();
+    for (auto&& vdi : *deviceList) {
+      auto devInfo =
+          wrapper::impl::org::webRtc::VideoDeviceInfo::toNative_winrt(vdi);
+      auto id = winrt::to_string(devInfo.Id());
+      id.push_back('\0');  // API must ensure null-terminated
+      auto name = winrt::to_string(devInfo.Name());
+      name.push_back('\0');  // API must ensure null-terminated
+      (*enumCallback)(id.c_str(), name.c_str(), enumCallbackUserData);
+    }
+    if (completedCallback) {
+      (*completedCallback)(completedCallbackUserData);
+    }
+  });
 #else
   std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
       webrtc::VideoCaptureFactory::CreateDeviceInfo());
@@ -322,7 +400,7 @@ void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     char name[kSize] = {0};
     char id[kSize] = {0};
     if (info->GetDeviceName(i, name, kSize, id, kSize) != -1) {
-      (*callback)(id, name, userData);
+      (*enumCallback)(id, name, enumCallbackUserData);
     }
   }
   if (completedCallback) {
@@ -331,6 +409,166 @@ void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
 #endif
 }
 
+mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
+    const char* device_id,
+    mrsVideoCaptureFormatEnumCallback enumCallback,
+    void* enumCallbackUserData,
+    mrsVideoCaptureFormatEnumCompletedCallback completedCallback,
+    void* completedCallbackUserData) noexcept {
+  if (!device_id || (device_id[0] == '\0')) {
+    return MRS_E_INVALID_PARAMETER;
+  }
+  const std::string device_id_str = device_id;
+
+  if (!enumCallback) {
+    return MRS_E_INVALID_PARAMETER;
+  }
+
+#if defined(WINUWP)
+  // The UWP factory needs to be initialized for getDevices() to work.
+  if (!g_winuwp_factory) {
+    InitUWPFactory();
+    if (!g_winuwp_factory) {
+      RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
+      return MRS_E_UNKNOWN;
+    }
+  }
+
+  // On UWP, MediaCapture is used to open the video capture device and list
+  // the available capture formats. This requires the UI thread to be idle,
+  // ready to process messages. Because the enumeration is async, and this
+  // function can return before the enumeration completed, if called on the
+  // main UI thread then defer all of it to a different thread.
+  //auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
+  //auto cw = mw.CoreWindow();
+  //auto dispatcher = cw.Dispatcher();
+  //if (dispatcher.HasThreadAccess()) {
+  //  if (completedCallback) {
+  //    (*completedCallback)(MRS_E_WRONG_THREAD, completedCallbackUserData);
+  //  }
+  //  return MRS_E_WRONG_THREAD;
+  //}
+
+  // Enumerate the video capture devices
+  auto asyncResults =
+      winrt::Windows::Devices::Enumeration::DeviceInformation::FindAllAsync(
+          winrt::Windows::Devices::Enumeration::DeviceClass::VideoCapture);
+  asyncResults.Completed([device_id_str, enumCallback, completedCallback,
+                          enumCallbackUserData, completedCallbackUserData](
+                             auto&& asyncResults,
+                             winrt::Windows::Foundation::AsyncStatus status) {
+    // If the OS enumeration failed, terminate our own enumeration
+    if (status != winrt::Windows::Foundation::AsyncStatus::Completed) {
+      if (completedCallback) {
+        (*completedCallback)(MRS_E_UNKNOWN, completedCallbackUserData);
+      }
+      return;
+    }
+    winrt::Windows::Devices::Enumeration::DeviceInformationCollection
+        devInfoCollection = asyncResults.GetResults();
+
+    // Find the video capture device by unique identifier
+    winrt::Windows::Devices::Enumeration::DeviceInformation devInfo(nullptr);
+    for (auto curDevInfo : devInfoCollection) {
+      auto id = winrt::to_string(curDevInfo.Id());
+      if (id != device_id_str) {
+        continue;
+      }
+      devInfo = curDevInfo;
+      break;
+    }
+    if (!devInfo) {
+      if (completedCallback) {
+        (*completedCallback)(MRS_E_INVALID_PARAMETER,
+                             completedCallbackUserData);
+      }
+      return;
+    }
+
+    // Device found, create an instance to enumerate. Most devices require
+    // actually opening the device to enumerate its capture formats.
+    auto createParams = std::make_shared<
+        wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
+    createParams->factory = g_winuwp_factory;
+    createParams->name = devInfo.Name().c_str();
+    createParams->id = devInfo.Id().c_str();
+    auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
+    if (vcd == nullptr) {
+      if (completedCallback) {
+        (*completedCallback)(MRS_E_UNKNOWN, completedCallbackUserData);
+      }
+      return;
+    }
+
+    // Get its supported capture formats
+    auto captureFormatList = vcd->getSupportedFormats();
+    for (auto&& captureFormat : *captureFormatList) {
+      uint32_t width = captureFormat->get_width();
+      uint32_t height = captureFormat->get_height();
+      double framerate = captureFormat->get_framerateFloat();
+      uint32_t fourcc = captureFormat->get_fourcc();
+
+      // When VideoEncodingProperties.Subtype() contains a GUID, the
+      // conversion to FOURCC fails and returns FOURCC_ANY. So ignore
+      // those formats, as we don't know their encoding.
+      if (fourcc != libyuv::FOURCC_ANY) {
+        (*enumCallback)(width, height, framerate, fourcc, enumCallbackUserData);
+      }
+    }
+
+    // Invoke the completed callback at the end of enumeration
+    if (completedCallback) {
+      (*completedCallback)(MRS_SUCCESS, completedCallbackUserData);
+    }
+  });
+#else   // defined(WINUWP)
+  std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
+      webrtc::VideoCaptureFactory::CreateDeviceInfo());
+  if (!info) {
+    return MRS_E_UNKNOWN;
+  }
+  int num_devices = info->NumberOfDevices();
+  for (int device_idx = 0; device_idx < num_devices; ++device_idx) {
+    // Filter devices by name
+    constexpr uint32_t kSize = 256;
+    char name[kSize] = {0};
+    char id[kSize] = {0};
+    if (info->GetDeviceName(device_idx, name, kSize, id, kSize) == -1) {
+      continue;
+    }
+    if (id != device_id_str) {
+      continue;
+    }
+
+    // Enum video capture formats
+    int32_t num_capabilities = info->NumberOfCapabilities(id);
+    for (int32_t cap_idx = 0; cap_idx < num_capabilities; ++cap_idx) {
+      webrtc::VideoCaptureCapability capability{};
+      if (info->GetCapability(id, cap_idx, capability) != -1) {
+        uint32_t width = capability.width;
+        uint32_t height = capability.height;
+        double framerate = capability.maxFPS;
+        uint32_t fourcc = FourCCFromVideoType(capability.videoType);
+        if (fourcc != libyuv::FOURCC_ANY) {
+          (*enumCallback)(width, height, framerate, fourcc,
+                          enumCallbackUserData);
+        }
+      }
+    }
+
+    break;
+  }
+
+  // Invoke the completed callback at the end of enumeration
+  if (completedCallback) {
+    (*completedCallback)(MRS_SUCCESS, completedCallbackUserData);
+  }
+#endif  // defined(WINUWP)
+
+  // If the async operation was successfully queued, return successfully.
+  // Note that the enumeration is asynchronous, so not done yet.
+  return MRS_SUCCESS;
+}
 mrsResult MRS_CALL mrsPeerConnectionCreate(
     PeerConnectionConfiguration config,
     PeerConnectionHandle* peerHandleOut) noexcept(kNoExceptFalseOnUWP) {
@@ -338,7 +576,7 @@ mrsResult MRS_CALL mrsPeerConnectionCreate(
     return MRS_E_INVALID_PARAMETER;
   }
   *peerHandleOut = nullptr;
-
+  
   // Ensure the factory exists
   if (g_peer_connection_factory == nullptr) {
 #if defined(WINUWP)
@@ -546,30 +784,30 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
       return MRS_E_UNKNOWN;
     }
 
-    //// HACK - Force max size to prevent high-res HoloLens 2 camera, which also
-    /// disables MRC /
-    /// https://docs.microsoft.com/en-us/windows/mixed-reality/mixed-reality-capture-for-developers#enabling-mrc-in-your-app
-    //// "MRC on HoloLens 2 supports videos up to 1080p and photos up to 4K
-    /// resolution"
-    // cricket::VideoFormat max_format{};
-    // max_format.width = 1920;
-    // max_format.height = 1080;
-    // max_format.interval = cricket::VideoFormat::FpsToInterval(30);
-    // video_capturer->set_enable_camera_list(
-    //    true);  //< needed to enable filtering
-    // video_capturer->ConstrainSupportedFormats(max_format);
-
-    //#if defined(WINUWP)
-    //    //MediaConstraints videoConstraints = new MediaConstraints();
-    //    //new wrapper::impl::org::webRtc::MediaConstraints(mandatory,
-    //    optional); auto ptr =
-    //    wrapper::org::webRtc::MediaConstraints::wrapper_create();
-    //    ptr->get_mandatory()->emplace_back(new
-    //    wrapper::org::webRtc::Constraint());
-    //#endif
+    // Apply the same constraints used for opening the video capturer
+    auto videoConstraints = std::make_unique<SimpleMediaConstraints>();
+    if (config.width > 0) {
+      videoConstraints->mandatory_.push_back(
+          SimpleMediaConstraints::MinWidth(config.width));
+      videoConstraints->mandatory_.push_back(
+          SimpleMediaConstraints::MaxWidth(config.width));
+    }
+    if (config.height > 0) {
+      videoConstraints->mandatory_.push_back(
+          SimpleMediaConstraints::MinHeight(config.height));
+      videoConstraints->mandatory_.push_back(
+          SimpleMediaConstraints::MaxHeight(config.height));
+    }
+    if (config.framerate > 0) {
+      videoConstraints->mandatory_.push_back(
+          SimpleMediaConstraints::MinFrameRate(config.framerate));
+      videoConstraints->mandatory_.push_back(
+          SimpleMediaConstraints::MaxFrameRate(config.framerate));
+    }
 
     rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
-        g_peer_connection_factory->CreateVideoSource(std::move(video_capturer));
+        g_peer_connection_factory->CreateVideoSource(std::move(video_capturer),
+                                                     videoConstraints.get());
     if (!video_source) {
       return MRS_E_UNKNOWN;
     }
@@ -726,10 +964,10 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
         // still using the connection.
         g_peer_connection_map.erase(it);
         if (g_peer_connection_map.empty()) {
-          // Release the factory so that the threads are stopped and the DLL can
-          // be unloaded. This is mandatory to be able to unload/reload in the
-          // Unity Editor and be able to Play/Stop multiple times per Editor
-          // process run.
+          // Release the factory so that the threads are stopped and the DLL
+          // can be unloaded. This is mandatory to be able to unload/reload in
+          // the Unity Editor and be able to Play/Stop multiple times per
+          // Editor process run.
           g_peer_connection_factory = nullptr;
 #if defined(WINUWP)
           g_winuwp_factory = nullptr;

@@ -32,10 +32,11 @@ using mrsResult = std::uint32_t;
 
 constexpr const mrsResult MRS_SUCCESS{0};
 
-// Unknown generic error
+// Generic errors
 constexpr const mrsResult MRS_E_UNKNOWN{0x80000000};
 constexpr const mrsResult MRS_E_INVALID_PARAMETER{0x80000001};
 constexpr const mrsResult MRS_E_INVALID_OPERATION{0x80000002};
+constexpr const mrsResult MRS_E_WRONG_THREAD{0x80000003};
 
 // Peer conection (0x1xx)
 constexpr const mrsResult MRS_E_INVALID_PEER_HANDLE{0x80000101};
@@ -77,9 +78,31 @@ using mrsVideoCaptureDeviceEnumCompletedCallback =
 /// At the end of the enumeration, invoke the optional |completedCallback| if it
 /// was provided (non-null).
 MRS_API void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
-    mrsVideoCaptureDeviceEnumCallback callback,
-    void* callbackUserData,
+    mrsVideoCaptureDeviceEnumCallback enumCallback,
+    void* enumCallbackUserData,
     mrsVideoCaptureDeviceEnumCompletedCallback completedCallback,
+    void* completedCallbackUserData) noexcept;
+
+/// Callback invoked for each enumerated video capture format.
+using mrsVideoCaptureFormatEnumCallback = void(MRS_CALL*)(uint32_t width,
+                                                          uint32_t height,
+                                                          double framerate,
+                                                          uint32_t encoding,
+                                                          void* user_data);
+
+/// Callback invoked on video capture format enumeration completed.
+using mrsVideoCaptureFormatEnumCompletedCallback =
+    void(MRS_CALL*)(mrsResult result, void* user_data);
+
+/// Enumerate the video capture formats asynchronously.
+/// For each device found, invoke the mandatory |callback|.
+/// At the end of the enumeration, invoke the optional |completedCallback| if it
+/// was provided (non-null).
+MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
+    const char* device_id,
+    mrsVideoCaptureFormatEnumCallback enumCallback,
+    void* enumCallbackUserData,
+    mrsVideoCaptureFormatEnumCompletedCallback completedCallback,
     void* completedCallbackUserData) noexcept;
 
 //

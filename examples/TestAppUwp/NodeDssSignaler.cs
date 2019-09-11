@@ -8,8 +8,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.MixedReality.WebRTC;
 
-namespace Microsoft.MixedReality.WebRTC
+namespace TestAppUwp
 {
     /// <summary>
     /// A signaler implementation for reference and prototyping.
