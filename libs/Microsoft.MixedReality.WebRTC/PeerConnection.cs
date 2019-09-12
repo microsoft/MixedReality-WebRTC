@@ -899,7 +899,7 @@ namespace Microsoft.MixedReality.WebRTC
                     Framerate = framerate,
                     EnableMixedRealityCapture = enableMrc
                 };
-                if (!NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, config))
+                if (NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, config) != NativeMethods.MRS_SUCCESS)
                 {
                     throw new Exception("Failed to add a local video track to the peer connection.");
                 }
@@ -933,7 +933,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
-                if (!NativeMethods.PeerConnectionAddLocalAudioTrack(_nativePeerhandle))
+                if (NativeMethods.PeerConnectionAddLocalAudioTrack(_nativePeerhandle) != NativeMethods.MRS_SUCCESS)
                 {
                     throw new Exception();
                 }
@@ -1068,7 +1068,7 @@ namespace Microsoft.MixedReality.WebRTC
         internal bool RemoveDataChannel(DataChannel dataChannel)
         {
             ThrowIfConnectionNotOpen();
-            return NativeMethods.PeerConnectionRemoveDataChannel(_nativePeerhandle, dataChannel.ID);
+            return (NativeMethods.PeerConnectionRemoveDataChannel(_nativePeerhandle, dataChannel.ID) == NativeMethods.MRS_SUCCESS);
         }
 
         internal void SendDataChannelMessage(int id, byte[] message)
@@ -1103,7 +1103,7 @@ namespace Microsoft.MixedReality.WebRTC
         public bool CreateOffer()
         {
             ThrowIfConnectionNotOpen();
-            return NativeMethods.PeerConnectionCreateOffer(_nativePeerhandle);
+            return (NativeMethods.PeerConnectionCreateOffer(_nativePeerhandle) == NativeMethods.MRS_SUCCESS);
         }
 
         /// <summary>
@@ -1114,7 +1114,7 @@ namespace Microsoft.MixedReality.WebRTC
         public bool CreateAnswer()
         {
             ThrowIfConnectionNotOpen();
-            return NativeMethods.PeerConnectionCreateAnswer(_nativePeerhandle);
+            return (NativeMethods.PeerConnectionCreateAnswer(_nativePeerhandle) == NativeMethods.MRS_SUCCESS);
         }
 
         /// <summary>
@@ -1179,6 +1179,7 @@ namespace Microsoft.MixedReality.WebRTC
             internal const uint MRS_SUCCESS = 0u;
             internal const uint MRS_E_UNKNOWN = 0x80000000;
             internal const uint MRS_E_INVALID_PARAMETER = 0x80000001u;
+            internal const uint MRS_E_INVALID_OPERATION = 0x80000002u;
             internal const uint MRS_E_INVALID_PEER_HANDLE = 0x80000101u;
             internal const uint MRS_E_PEER_NOT_INITIALIZED = 0x80000102u;
             internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
@@ -1351,11 +1352,11 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
-            public static extern bool PeerConnectionAddLocalVideoTrack(IntPtr peerHandle, VideoDeviceConfiguration config);
+            public static extern uint PeerConnectionAddLocalVideoTrack(IntPtr peerHandle, VideoDeviceConfiguration config);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddLocalAudioTrack")]
-            public static extern bool PeerConnectionAddLocalAudioTrack(IntPtr peerHandle);
+            public static extern uint PeerConnectionAddLocalAudioTrack(IntPtr peerHandle);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionAddDataChannel")]
@@ -1375,15 +1376,15 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionRemoveDataChannelById")]
-            public static extern bool PeerConnectionRemoveDataChannel(IntPtr peerHandle, int id);
+            public static extern uint PeerConnectionRemoveDataChannel(IntPtr peerHandle, int id);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionRemoveDataChannelByLabel")]
-            public static extern bool PeerConnectionRemoveDataChannel(IntPtr peerHandle, string label);
+            public static extern uint PeerConnectionRemoveDataChannel(IntPtr peerHandle, string label);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionSendDataChannelMessage")]
-            public static extern bool PeerConnectionSendDataChannelMessage(IntPtr peerHandle, int id,
+            public static extern uint PeerConnectionSendDataChannelMessage(IntPtr peerHandle, int id,
                 byte[] data, ulong size);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
@@ -1393,15 +1394,15 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionCreateOffer")]
-            public static extern bool PeerConnectionCreateOffer(IntPtr peerHandle);
+            public static extern uint PeerConnectionCreateOffer(IntPtr peerHandle);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionCreateAnswer")]
-            public static extern bool PeerConnectionCreateAnswer(IntPtr peerHandle);
+            public static extern uint PeerConnectionCreateAnswer(IntPtr peerHandle);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionSetRemoteDescription")]
-            public static extern void PeerConnectionSetRemoteDescription(IntPtr peerHandle, string type, string sdp);
+            public static extern uint PeerConnectionSetRemoteDescription(IntPtr peerHandle, string type, string sdp);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsPeerConnectionClose")]
@@ -1409,7 +1410,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsSdpForceCodecs")]
-            public static unsafe extern bool SdpForceCodecs(string message, SdpFilter audioFilter, SdpFilter videoFilter, StringBuilder messageOut, ref ulong messageOutLength);
+            public static unsafe extern uint SdpForceCodecs(string message, SdpFilter audioFilter, SdpFilter videoFilter, StringBuilder messageOut, ref ulong messageOutLength);
 
             [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
                 EntryPoint = "mrsMemCpyStride")]
@@ -1468,7 +1469,7 @@ namespace Microsoft.MixedReality.WebRTC
                         CodecName = PreferredVideoCodec,
                         ExtraParams = PreferredVideoCodecExtraParams
                     };
-                    if (NativeMethods.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut))
+                    if (NativeMethods.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut) == NativeMethods.MRS_SUCCESS)
                     {
                         builder.Length = (int)lengthInOut;
                         sdp = builder.ToString();

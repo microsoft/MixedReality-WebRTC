@@ -517,7 +517,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
   }
 }
 
-bool MRS_CALL
+mrsResult MRS_CALL
 mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
                                     VideoDeviceConfiguration config)
 #if defined(WINUWP)
@@ -528,12 +528,12 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
 {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     if (!g_peer_connection_factory) {
-      return false;
+      return MRS_E_INVALID_OPERATION;
     }
     std::unique_ptr<cricket::VideoCapturer> video_capturer =
         OpenVideoCaptureDevice(config);
     if (!video_capturer) {
-      return false;
+      return MRS_E_UNKNOWN;
     }
 
     //// HACK - Force max size to prevent high-res HoloLens 2 camera, which also
@@ -561,39 +561,41 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
     rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
         g_peer_connection_factory->CreateVideoSource(std::move(video_capturer));
     if (!video_source) {
-      return false;
+      return MRS_E_UNKNOWN;
     }
     rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
         g_peer_connection_factory->CreateVideoTrack(kLocalVideoLabel,
                                                     video_source);
     if (!video_track) {
-      return false;
+      return MRS_E_UNKNOWN;
     }
-    return peer->AddLocalVideoTrack(std::move(video_track));
+    return (peer->AddLocalVideoTrack(std::move(video_track)) ? MRS_SUCCESS
+                                                             : MRS_E_UNKNOWN);
   }
-  return false;
+  return MRS_E_UNKNOWN;
 }
 
-bool MRS_CALL
+mrsResult MRS_CALL
 mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     if (!g_peer_connection_factory) {
-      return false;
+      return MRS_E_INVALID_OPERATION;
     }
     rtc::scoped_refptr<webrtc::AudioSourceInterface> audio_source =
         g_peer_connection_factory->CreateAudioSource(cricket::AudioOptions());
     if (!audio_source) {
-      return false;
+      return MRS_E_UNKNOWN;
     }
     rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track =
         g_peer_connection_factory->CreateAudioTrack(kLocalAudioLabel,
                                                     audio_source);
     if (!audio_track) {
-      return false;
+      return MRS_E_UNKNOWN;
     }
-    return peer->AddLocalAudioTrack(std::move(audio_track));
+    return (peer->AddLocalAudioTrack(std::move(audio_track)) ? MRS_SUCCESS
+                                                             : MRS_E_UNKNOWN);
   }
-  return false;
+  return MRS_E_UNKNOWN;
 }
 
 mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
@@ -634,69 +636,73 @@ void MRS_CALL mrsPeerConnectionRemoveLocalAudioTrack(
   }
 }
 
-bool MRS_CALL
+mrsResult MRS_CALL
 mrsPeerConnectionRemoveDataChannelById(PeerConnectionHandle peerHandle,
                                        int id) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->RemoveDataChannel(id);
+    return (peer->RemoveDataChannel(id) ? MRS_SUCCESS : MRS_E_UNKNOWN);
   }
-  return false;
+  return MRS_E_INVALID_PEER_HANDLE;
 }
 
-bool MRS_CALL
+mrsResult MRS_CALL
 mrsPeerConnectionRemoveDataChannelByLabel(PeerConnectionHandle peerHandle,
                                           const char* label) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->RemoveDataChannel(label);
+    return (peer->RemoveDataChannel(label) ? MRS_SUCCESS : MRS_E_UNKNOWN);
   }
-  return false;
+  return MRS_E_INVALID_PEER_HANDLE;
 }
 
-bool MRS_CALL
+mrsResult MRS_CALL
 mrsPeerConnectionSendDataChannelMessage(PeerConnectionHandle peerHandle,
                                         int id,
                                         const void* data,
                                         uint64_t size) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->SendDataChannelMessage(id, data, size);
+    return (peer->SendDataChannelMessage(id, data, size) ? MRS_SUCCESS
+                                                         : MRS_E_UNKNOWN);
   }
-  return false;
+  return MRS_E_INVALID_PEER_HANDLE;
 }
 
-bool MRS_CALL mrsPeerConnectionAddIceCandidate(PeerConnectionHandle peerHandle,
+mrsResult MRS_CALL mrsPeerConnectionAddIceCandidate(PeerConnectionHandle peerHandle,
                                                const char* sdp,
                                                const int sdp_mline_index,
                                                const char* sdp_mid) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->AddIceCandidate(sdp, sdp_mline_index, sdp_mid);
+    return (peer->AddIceCandidate(sdp, sdp_mline_index, sdp_mid)
+                ? MRS_SUCCESS
+                : MRS_E_UNKNOWN);
   }
-  return false;
+  return MRS_E_INVALID_PEER_HANDLE;
 }
 
-bool MRS_CALL
+mrsResult MRS_CALL
 mrsPeerConnectionCreateOffer(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->CreateOffer();
+    return (peer->CreateOffer() ? MRS_SUCCESS : MRS_E_UNKNOWN);
   }
-  return false;
+  return MRS_E_INVALID_PEER_HANDLE;
 }
 
-bool MRS_CALL
+mrsResult MRS_CALL
 mrsPeerConnectionCreateAnswer(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->CreateAnswer();
+    return (peer->CreateAnswer() ? MRS_SUCCESS : MRS_E_UNKNOWN);
   }
-  return false;
+  return MRS_E_INVALID_PEER_HANDLE;
 }
 
-bool MRS_CALL
+mrsResult MRS_CALL
 mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
                                       const char* type,
                                       const char* sdp) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->SetRemoteDescription(type, sdp);
+    return (peer->SetRemoteDescription(type, sdp) ? MRS_SUCCESS
+                                                  : MRS_E_UNKNOWN);
   }
-  return false;
+  return MRS_E_INVALID_PEER_HANDLE;
 }
 
 void MRS_CALL
@@ -729,11 +735,11 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
   }
 }
 
-bool MRS_CALL mrsSdpForceCodecs(const char* message,
-                                SdpFilter audio_filter,
-                                SdpFilter video_filter,
-                                char* buffer,
-                                uint64_t* buffer_size) {
+mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
+                                     SdpFilter audio_filter,
+                                     SdpFilter video_filter,
+                                     char* buffer,
+                                     uint64_t* buffer_size) {
   RTC_CHECK(message);
   RTC_CHECK(buffer);
   RTC_CHECK(buffer_size);
@@ -762,11 +768,11 @@ bool MRS_CALL mrsSdpForceCodecs(const char* message,
   const size_t size = out_message.size();
   *buffer_size = size + 1;
   if (capacity < size + 1) {
-    return false;
+    return MRS_E_INVALID_PARAMETER;
   }
   memcpy(buffer, out_message.c_str(), size);
   buffer[size] = '\0';
-  return true;
+  return MRS_SUCCESS;
 }
 
 void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size) {
@@ -774,11 +780,11 @@ void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size) {
 }
 
 void MRS_CALL mrsMemCpyStride(void* dst,
-                              int dst_stride,
+                              int32_t dst_stride,
                               const void* src,
-                              int src_stride,
-                              int elem_size,
-                              int elem_count) {
+                              int32_t src_stride,
+                              int32_t elem_size,
+                              int32_t elem_count) {
   RTC_CHECK(dst);
   RTC_CHECK(dst_stride >= elem_size);
   RTC_CHECK(src);
