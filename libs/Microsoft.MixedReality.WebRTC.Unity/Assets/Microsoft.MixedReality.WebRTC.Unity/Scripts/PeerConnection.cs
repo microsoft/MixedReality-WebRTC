@@ -426,10 +426,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private Task InitializePluginAsync(CancellationToken token)
         {
             Debug.Log("Initializing WebRTC plugin...");
-            _nativePeer.Servers = IceServers.Select(i => i.ToString()).ToList();
-            _nativePeer.UserName = IceUsername;
-            _nativePeer.Credentials = IceCredential;
-            return _nativePeer.InitializeAsync(token).ContinueWith((initTask) =>
+            var config = new PeerConnectionConfiguration();
+            foreach (var server in IceServers)
+            {
+                config.IceServers.Add(new IceServer
+                {
+                    Urls = { server.ToString() },
+                    TurnUserName = IceUsername,
+                    TurnPassword = IceCredential
+                });
+            }
+            return _nativePeer.InitializeAsync(config, token).ContinueWith((initTask) =>
             {
                 token.ThrowIfCancellationRequested();
 
