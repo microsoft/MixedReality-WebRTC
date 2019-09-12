@@ -184,7 +184,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        private async void DoAutoStartActions(WebRTC.PeerConnection nativePeer)
+        private void DoAutoStartActions(WebRTC.PeerConnection nativePeer)
         {
             if (AutoStartCapture)
             {
