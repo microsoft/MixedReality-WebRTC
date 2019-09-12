@@ -186,12 +186,6 @@ function Apply-GitPatch
 # Check Windows SDKs are installed
 Test-WindowsSDK
 
-# Patch libyuv clang compile (see #157 on WebRTC UWP project)
-Apply-GitPatch ..\..\external\webrtc-uwp-sdk\webrtc\xplatform\libyuv\ ..\..\..\..\..\tools\patches\libyuv_win_msvc_157.patch
-
-# Patch libyuv color conversion (see #176 on WebRTC UWP project)
-Apply-GitPatch ..\..\external\webrtc-uwp-sdk\webrtc\xplatform\libyuv\ ..\..\..\..\..\tools\patches\libyuv_argb_176.patch
-
 # Build webrtc.lib
 Build-CoreWebRTC -BuildConfig $BuildConfig -BuildArch $BuildArch -ScriptPlatform $ScriptPlatform
 
