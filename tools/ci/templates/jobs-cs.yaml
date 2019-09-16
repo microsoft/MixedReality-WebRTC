@@ -67,7 +67,7 @@ jobs:
   # Move artifacts to publish only what needed
   - powershell: |
       # Ensure destination folder exists
-      New-Item -Path "$env:STAGEDIR" -Force -ErrorAction Ignore
+      New-Item -Path "$env:STAGEDIR" -ItemType Directory -Force -ErrorAction Ignore
 
       # Copy DLL and PDB from Release build
       Copy-Item -Force -Path "$env:SOURCEDIR/Microsoft.MixedReality.WebRTC.dll" -Destination "$env:STAGEDIR"
