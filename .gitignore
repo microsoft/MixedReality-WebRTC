@@ -25,6 +25,7 @@ tests/Microsoft.MixedReality.WebRTC.Tests/obj
 
 # Unity artifacts
 /libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Plugins
+/libs/Microsoft.MixedReality.WebRTC.Unity/build
 /libs/Microsoft.MixedReality.WebRTC.Unity/Builds
 /libs/Microsoft.MixedReality.WebRTC.Unity/Library
 /libs/Microsoft.MixedReality.WebRTC.Unity/Temp
