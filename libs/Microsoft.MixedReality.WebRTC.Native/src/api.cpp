@@ -429,6 +429,16 @@ void MRS_CALL mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(
   }
 }
 
+void MRS_CALL mrsPeerConnectionRegisterIceStateChangedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionIceStateChangedCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterIceStateChangedCallback(
+        Callback<IceConnectionState>{callback, user_data});
+  }
+}
+
 void MRS_CALL mrsPeerConnectionRegisterRenegotiationNeededCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionRenegotiationNeededCallback callback,

@@ -195,7 +195,9 @@
                         <TextBlock x:Name="remoteLateText" Text="Late :" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     </Grid>
                     <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2">
-                        <TextBlock Text="Remote Audio Channels : " VerticalAlignment="Top" />
+                        <TextBlock Text="ICE state : " VerticalAlignment="Top" />
+                        <TextBlock x:Name="iceStateText" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />
+                        <TextBlock Text="Remote Audio Channels : " VerticalAlignment="Top" Margin="20,0,0,0" />
                         <TextBlock x:Name="remoteAudioChannelCount" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />
                         <TextBlock Text="Sample rate : " VerticalAlignment="Top" Margin="20,0,0,0" />
                         <TextBlock x:Name="remoteAudioSampleRate" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />

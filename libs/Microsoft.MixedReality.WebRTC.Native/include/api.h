@@ -106,6 +106,23 @@ using PeerConnectionIceCandidateReadytoSendCallback =
                     int sdpMlineindex,
                     const char* sdpMid);
 
+/// State of the ICE connection.
+/// See https://www.w3.org/TR/webrtc/#rtciceconnectionstate-enum.
+/// Note that there is a mismatch currently due to the m71 implementation.
+enum IceConnectionState : int32_t {
+  kNew = 0,
+  kChecking = 1,
+  kConnected = 2,
+  kCompleted = 3,
+  kFailed = 4,
+  kDisconnected = 5,
+  kClosed = 6,
+};
+
+/// Callback fired when the state of the ICE connection changed.
+using PeerConnectionIceStateChangedCallback =
+    void(MRS_CALL*)(void* user_data, IceConnectionState new_state);
+
 /// Callback fired when a renegotiation of the current session needs to occur to
 /// account for new parameters (e.g. added or removed tracks).
 using PeerConnectionRenegotiationNeededCallback =
@@ -247,6 +264,12 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(
 MRS_API void MRS_CALL mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionIceCandidateReadytoSendCallback callback,
+    void* user_data) noexcept;
+
+/// Register a callback fired when the ICE connection state changes.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterIceStateChangedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionIceStateChangedCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a renegotiation of the current session needs

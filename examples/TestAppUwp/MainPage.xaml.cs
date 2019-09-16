@@ -201,6 +201,7 @@ namespace TestAppUwp
 
             _peerConnection = new PeerConnection(dssSignaler);
             _peerConnection.Connected += OnPeerConnected;
+            _peerConnection.IceStateChanged += OnIceStateChanged;
             _peerConnection.RenegotiationNeeded += OnPeerRenegotiationNeeded;
             _peerConnection.TrackAdded += Peer_RemoteTrackAdded;
             _peerConnection.TrackRemoved += Peer_RemoteTrackRemoved;
@@ -212,6 +213,15 @@ namespace TestAppUwp
             //Window.Current.Closed += Shutdown; // doesn't work
 
             this.Loaded += OnLoaded;
+        }
+
+        private void OnIceStateChanged(IceConnectionState newState)
+        {
+            RunOnMainThread(() =>
+            {
+                LogMessage($"ICE state changed to {newState}.");
+                iceStateText.Text = newState.ToString();
+            });
         }
 
         private void OnPeerRenegotiationNeeded()

@@ -56,6 +56,24 @@ void ensureNullTerminatedCString(std::string& str) {
   }
 }
 
+/// Convert an implementation value to a native API value of the ICE connection
+/// state. This ensures API stability if the implementation changes, although
+/// currently API values are mapped 1:1 with the implementation.
+IceConnectionState IceStateFromImpl(
+    webrtc::PeerConnectionInterface::IceConnectionState impl_state) {
+  using Native = IceConnectionState;
+  using Impl = webrtc::PeerConnectionInterface::IceConnectionState;
+  static_assert((int)Native::kNew == (int)Impl::kIceConnectionNew);
+  static_assert((int)Native::kChecking == (int)Impl::kIceConnectionChecking);
+  static_assert((int)Native::kConnected == (int)Impl::kIceConnectionConnected);
+  static_assert((int)Native::kCompleted == (int)Impl::kIceConnectionCompleted);
+  static_assert((int)Native::kFailed == (int)Impl::kIceConnectionFailed);
+  static_assert((int)Native::kDisconnected ==
+                (int)Impl::kIceConnectionDisconnected);
+  static_assert((int)Native::kClosed == (int)Impl::kIceConnectionClosed);
+  return (IceConnectionState)impl_state;
+}
+
 }  // namespace
 
 namespace Microsoft::MixedReality::WebRTC {
@@ -423,6 +441,15 @@ void PeerConnection::OnRenegotiationNeeded() noexcept {
   auto cb = renegotiation_needed_callback_;
   if (cb) {
     cb();
+  }
+}
+
+void PeerConnection::OnIceConnectionChange(
+    webrtc::PeerConnectionInterface::IceConnectionState new_state) noexcept {
+  auto lock = std::lock_guard{ice_state_changed_callback_mutex_};
+  auto cb = ice_state_changed_callback_;
+  if (cb) {
+    cb(IceStateFromImpl(new_state));
   }
 }
 

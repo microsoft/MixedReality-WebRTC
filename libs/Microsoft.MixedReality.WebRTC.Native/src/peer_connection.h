@@ -87,6 +87,18 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
     ice_candidate_ready_to_send_callback_ = std::move(callback);
   }
 
+  /// Callback fired when the state of the ICE connection changed.
+  /// Note that the current implementation (m71) mixes the state of ICE and
+  /// DTLS, so this does not correspond exactly to
+  using IceStateChangedCallback = Callback<IceConnectionState>;
+
+  /// Register a custom IceStateChangedCallback.
+  void RegisterIceStateChangedCallback(
+      IceStateChangedCallback&& callback) noexcept {
+    auto lock = std::lock_guard{ice_state_changed_callback_mutex_};
+    ice_state_changed_callback_ = std::move(callback);
+  }
+
   /// Callback fired when some SDP negotiation needs to be initiated, often
   /// because some tracks have been added to or removed from the peer
   /// connection, to notify the remote peer of the change.
@@ -292,12 +304,13 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
 
   /// Called any time the IceConnectionState changes.
   ///
-  /// Note that our ICE states lag behind the standard slightly. The most
+  /// From the Google implementation:
+  /// "Note that our ICE states lag behind the standard slightly. The most
   /// notable differences include the fact that "failed" occurs after 15
   /// seconds, not 30, and this actually represents a combination ICE + DTLS
-  /// state, so it may be "failed" if DTLS fails while ICE succeeds.
+  /// state, so it may be "failed" if DTLS fails while ICE succeeds."
   void OnIceConnectionChange(webrtc::PeerConnectionInterface::IceConnectionState
-                             /*new_state*/) noexcept override {}
+                                 new_state) noexcept override;
 
   /// Called any time the IceGatheringState changes.
   void OnIceGatheringChange(webrtc::PeerConnectionInterface::IceGatheringState
@@ -344,31 +357,43 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
 
   /// User callback invoked when the peer connection is established.
   /// This is generally invoked even if ICE didn't finish.
-  ConnectedCallback connected_callback_;
+  ConnectedCallback connected_callback_
+      RTC_GUARDED_BY(connected_callback_mutex_);
 
   /// User callback invoked when a local SDP message has been crafted by the
   /// core engine and is ready to be sent by the signaling solution.
-  LocalSdpReadytoSendCallback local_sdp_ready_to_send_callback_;
+  LocalSdpReadytoSendCallback local_sdp_ready_to_send_callback_
+      RTC_GUARDED_BY(local_sdp_ready_to_send_callback_mutex_);
 
   /// User callback invoked when a local ICE message has been crafted by the
   /// core engine and is ready to be sent by the signaling solution.
-  IceCandidateReadytoSendCallback ice_candidate_ready_to_send_callback_;
+  IceCandidateReadytoSendCallback ice_candidate_ready_to_send_callback_
+      RTC_GUARDED_BY(ice_candidate_ready_to_send_callback_mutex_);
+
+  /// User callback invoked when the ICE connection state changed.
+  IceStateChangedCallback ice_state_changed_callback_
+      RTC_GUARDED_BY(ice_state_changed_callback_mutex_);
 
   /// User callback invoked when SDP renegotiation is needed.
-  RenegotiationNeededCallback renegotiation_needed_callback_;
+  RenegotiationNeededCallback renegotiation_needed_callback_
+      RTC_GUARDED_BY(renegotiation_needed_callback_mutex_);
 
   /// User callback invoked when a remote audio or video track is added.
-  TrackAddedCallback track_added_callback_;
+  TrackAddedCallback track_added_callback_
+      RTC_GUARDED_BY(track_added_callback_mutex_);
 
   /// User callback invoked when a remote audio or video track is removed.
-  TrackRemovedCallback track_removed_callback_;
+  TrackRemovedCallback track_removed_callback_
+      RTC_GUARDED_BY(track_removed_callback_mutex_);
 
   std::mutex connected_callback_mutex_;
   std::mutex local_sdp_ready_to_send_callback_mutex_;
   std::mutex ice_candidate_ready_to_send_callback_mutex_;
+  std::mutex ice_state_changed_callback_mutex_;
   std::mutex renegotiation_needed_callback_mutex_;
   std::mutex track_added_callback_mutex_;
   std::mutex track_removed_callback_mutex_;
+
   rtc::scoped_refptr<webrtc::VideoTrackInterface> local_video_track_;
   rtc::scoped_refptr<webrtc::AudioTrackInterface> local_audio_track_;
   rtc::scoped_refptr<webrtc::RtpSenderInterface> local_video_sender_;
