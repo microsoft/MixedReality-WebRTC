@@ -18,9 +18,22 @@
     <Authors>Mixed Reality Sharing Team</Authors>
   </PropertyGroup>
 
+  <!-- Default to x64 if not specified -->
   <PropertyGroup Condition="'$(Platform)'=='AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
+
+  <!-- Deploy native DLL to output folder to run tests -->
+  <ItemGroup>
+    <Content Include="..\..\bin\Win32\$(PlatformTarget)\$(Configuration)\Microsoft.MixedReality.WebRTC.Native.dll">
+      <Link>Microsoft.MixedReality.WebRTC.Native.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\bin\Win32\$(PlatformTarget)\$(Configuration)\Microsoft.MixedReality.WebRTC.Native.pdb">
+      <Link>Microsoft.MixedReality.WebRTC.Native.pdb</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.0" />

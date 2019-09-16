@@ -4,7 +4,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.MixedReality.WebRTC;
 using NUnit.Framework;
 
 namespace Microsoft.MixedReality.WebRTC.Tests

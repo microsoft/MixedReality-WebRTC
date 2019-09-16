@@ -1168,7 +1168,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Collection of native P/Invoke static functions.
         /// </summary>
-        private static class NativeMethods
+        internal static class NativeMethods
         {
 #if MR_SHARING_WIN
             internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.dll";

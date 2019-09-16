@@ -45,3 +45,8 @@ tests/Microsoft.MixedReality.WebRTC.Tests/obj
 # DocFX limitation/bug
 xdoc
 xdoc.meta
+
+# For testing, NUnit needs the native DLL to be avaiable in the same directory as
+# the tested assembly for DllImport. There is probably a more elegant way but...
+/tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Native.dll
+/tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Native.pdb
