@@ -9,7 +9,6 @@ parameters:
   # Build arch is always AnyCPU
   buildConfig: ''      # Debug|Release
   testConfig: ''       # Debug|Release
-  publish: false       # Publish artifact?
  
 jobs:
 
@@ -75,14 +74,14 @@ jobs:
       Copy-Item -Force -Path "$env:SOURCEDIR/Microsoft.MixedReality.WebRTC.pdb" -Destination "$env:STAGEDIR"
 
     displayName: 'Stage C# WebRTC lib'
-    condition: ${{ parameters.publish }}
+    condition: variables['publish']
     env:
       SOURCEDIR: 'bin/netstandard2.0/Release'
       STAGEDIR: '$(Build.ArtifactStagingDirectory)/Microsoft.MixedReality.WebRTC'
 
   # Publish Microsoft.MixedReality.WebRTC.dll and associated files (PDB, ...)
   - task: PublishPipelineArtifact@0
-    condition: ${{ parameters.publish }}
+    condition: variables['publish']
     displayName: 'Publish C# WebRTC lib'
     inputs:
       artifactName: 'Microsoft.MixedReality.WebRTC'
