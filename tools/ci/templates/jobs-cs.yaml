@@ -23,6 +23,18 @@ jobs:
   steps:
   - checkout: self
 
+  # Download Microsoft.MixedReality.WebRTC.Native.dll (Win32-x64-Debug)
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download native library (Win32-x64-Debug)'
+    inputs:
+      source: specific
+      project: $(ArtifactConfig.Project)
+      definition: $(ArtifactConfig.CppDefinitionId)
+      runVersion: 'latest'
+      artifact: 'Microsoft.MixedReality.WebRTC.Native_Win32-x64-Debug'
+      patterns: '**/*.@(pdb|dll)'
+      path: 'bin/Win32/x64/Debug'
+
   # Download Microsoft.MixedReality.WebRTC.Native.dll (UWP-x64-Debug)
   - task: DownloadPipelineArtifact@2
     displayName: 'Download native library (UWP-x64-Debug)'
