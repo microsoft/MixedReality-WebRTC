@@ -9,6 +9,7 @@ parameters:
   # Build arch is always AnyCPU
   buildConfig: ''      # Debug|Release
   testConfig: ''       # Debug|Release
+  publish: false       # Publish artifact?
  
 jobs:
 
@@ -63,6 +64,29 @@ jobs:
       projects: libs/Microsoft.MixedReality.WebRTC/Microsoft.MixedReality.WebRTC.csproj
       arguments: '-f netstandard2.0 --no-incremental -c Release'
       workingDirectory: libs/Microsoft.MixedReality.WebRTC/
+
+  # Move artifacts to publish only what needed
+  - powershell: |
+      # Ensure destination folder exists
+      New-Item -Path "$env:STAGEDIR" -Force -ErrorAction Ignore
+
+      # Copy DLL and PDB from Release build
+      Copy-Item -Force -Path "$env:SOURCEDIR/Microsoft.MixedReality.WebRTC.dll" -Destination "$env:STAGEDIR"
+      Copy-Item -Force -Path "$env:SOURCEDIR/Microsoft.MixedReality.WebRTC.pdb" -Destination "$env:STAGEDIR"
+
+    displayName: 'Stage C# WebRTC lib'
+    condition: ${{ parameters.publish }}
+    env:
+      SOURCEDIR: 'bin/netstandard2.0/Release'
+      STAGEDIR: '$(Build.ArtifactStagingDirectory)/Microsoft.MixedReality.WebRTC'
+
+  # Publish Microsoft.MixedReality.WebRTC.dll and associated files (PDB, ...)
+  - task: PublishPipelineArtifact@0
+    condition: ${{ parameters.publish }}
+    displayName: 'Publish C# WebRTC lib'
+    inputs:
+      artifactName: 'Microsoft.MixedReality.WebRTC'
+      targetPath: '$(Build.ArtifactStagingDirectory)/Microsoft.MixedReality.WebRTC'
 
   # Build TestAppUWP (Debug)
   - task: MSBuild@1
