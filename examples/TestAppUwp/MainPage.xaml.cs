@@ -1049,8 +1049,17 @@ namespace TestAppUwp
                         return;
                     }
 
-                    _peerConnection.AddLocalVideoTrackAsync(captureDeviceInfo, videoProfileId, videoProfileKind,
-                    (int)width, (int)height, framerate, /* mrcEnabled = */ false).ContinueWith(addVideoTask =>
+                    var trackConfig = new PeerConnection.LocalVideoTrackSettings
+                    {
+                        videoDevice = captureDeviceInfo,
+                        videoProfileId = videoProfileId,
+                        videoProfileKind = videoProfileKind,
+                        width = width,
+                        height = height,
+                        framerate = framerate,
+                        enableMrc = false
+                    };
+                    _peerConnection.AddLocalVideoTrackAsync(trackConfig).ContinueWith(addVideoTask =>
                     {
                         // Continue inside UI thread here
                         if (addVideoTask.Exception != null)

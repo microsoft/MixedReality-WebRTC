@@ -242,8 +242,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             nativePeer.PreferredVideoCodec = PreferredVideoCodec;
 
             FrameQueue.Clear();
-            nativePeer.AddLocalVideoTrackAsync(default, videoProfileId: videoProfileId, videoProfileKind: videoProfileKind,
-                width: width, height: height, framerate: framerate, enableMrc: EnableMixedRealityCapture);
+            var trackSettings = new WebRTC.PeerConnection.LocalVideoTrackSettings
+            {
+                videoDevice = default,
+                videoProfileId = videoProfileId,
+                videoProfileKind = videoProfileKind,
+                width = (width > 0 ? (uint?)width : null),
+                height = (height > 0 ? (uint?)height : null),
+                framerate = (framerate > 0 ? (double?)framerate : null),
+                enableMrc = EnableMixedRealityCapture
+            };
+            nativePeer.AddLocalVideoTrackAsync(trackSettings);
             VideoStreamStarted.Invoke();
         }
 

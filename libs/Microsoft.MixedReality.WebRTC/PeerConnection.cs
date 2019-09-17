@@ -219,6 +219,59 @@ namespace Microsoft.MixedReality.WebRTC
             VideoHdr8,
         };
 
+        /// <summary>
+        /// Settings for adding a local video track.
+        /// </summary>
+        public class LocalVideoTrackSettings
+        {
+            /// <summary>
+            /// Optional video capture device to use for capture.
+            /// Use the default device if not specified.
+            /// </summary>
+            public VideoCaptureDevice videoDevice = default;
+
+            /// <summary>
+            /// Optional unique identifier of the video profile to use for capture,
+            /// if the device supports video profiles, as retrieved by one of:
+            /// - <see xref="MediaCapture.FindAllVideoProfiles"/>
+            /// - <see xref="MediaCapture.FindKnownVideoProfiles"/>
+            /// This requires <see cref="videoDevice"/> to be specified.
+            /// </summary>
+            public string videoProfileId = string.Empty;
+
+            /// <summary>
+            /// Optional video profile kind to restrict the list of video profiles to consider.
+            /// Note that this is not exclusive with <see cref="videoProfileId"/>, although in
+            /// practice it is recommended to specify only one or the other.
+            /// This requires <see cref="videoDevice"/> to be specified.
+            /// </summary>
+            public VideoProfileKind videoProfileKind = VideoProfileKind.Unspecified;
+
+            /// <summary>
+            /// Enable Mixed Reality Capture on devices supporting the feature.
+            /// </summary>
+            public bool enableMrc = true;
+
+            /// <summary>
+            /// Optional capture resolution width, in pixels.
+            /// </summary>
+            public uint? width;
+
+            /// <summary>
+            /// Optional capture resolution height, in pixels.
+            /// </summary>
+            public uint? height;
+
+            /// <summary>
+            /// Optional capture frame rate, in frames per second (FPS).
+            /// </summary>
+            /// <remarks>
+            /// This is compared by strict equality, so is best left unspecified or to an exact value
+            /// retrieved by <see cref="GetVideoCaptureFormatsAsync"/>.
+            /// </remarks>
+            public double? framerate;
+        }
+
 
         /// <summary>
         /// Signaler implementation used by this peer connection, as specified in the constructor.
@@ -707,26 +760,26 @@ namespace Microsoft.MixedReality.WebRTC
         {
             switch (message.MessageType)
             {
-            case SignalerMessage.WireMessageType.Offer:
-                SetRemoteDescription("offer", message.Data);
-                // If we get an offer, we immediately send an answer back
-                CreateAnswer();
-                break;
+                case SignalerMessage.WireMessageType.Offer:
+                    SetRemoteDescription("offer", message.Data);
+                    // If we get an offer, we immediately send an answer back
+                    CreateAnswer();
+                    break;
 
-            case SignalerMessage.WireMessageType.Answer:
-                SetRemoteDescription("answer", message.Data);
-                break;
+                case SignalerMessage.WireMessageType.Answer:
+                    SetRemoteDescription("answer", message.Data);
+                    break;
 
-            case SignalerMessage.WireMessageType.Ice:
-                // TODO - This is NodeDSS-specific
-                // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
-                var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
-                AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
-                break;
+                case SignalerMessage.WireMessageType.Ice:
+                    // TODO - This is NodeDSS-specific
+                    // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                    var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                    // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                    AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                    break;
 
-            default:
-                throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
+                default:
+                    throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
             }
         }
 
@@ -963,29 +1016,25 @@ namespace Microsoft.MixedReality.WebRTC
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
         /// </remarks>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        public Task AddLocalVideoTrackAsync(VideoCaptureDevice device = default(VideoCaptureDevice),
-            string videoProfileId = default, VideoProfileKind videoProfileKind = VideoProfileKind.Unspecified,
-            int width = 0, int height = 0, double framerate = 0.0, bool enableMrc = false)
+        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        public Task AddLocalVideoTrackAsync(LocalVideoTrackSettings settings = default)
         {
             ThrowIfConnectionNotOpen();
             return Task.Run(() => {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
-                var config = new NativeMethods.VideoDeviceConfiguration
+                var config = (settings != null ? new NativeMethods.VideoDeviceConfiguration
                 {
-                    VideoDeviceId = device.id,
-                    VideoProfileId = videoProfileId,
-                    VideoProfileKind = videoProfileKind,
-                    Width = (uint)width,
-                    Height = (uint)height,
-                    Framerate = framerate,
-                    EnableMixedRealityCapture = enableMrc
-                };
-                if (NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, config) != NativeMethods.MRS_SUCCESS)
-                {
-                    throw new Exception("Failed to add a local video track to the peer connection.");
-                }
+                    VideoDeviceId = settings.videoDevice.id,
+                    VideoProfileId = settings.videoProfileId,
+                    VideoProfileKind = settings.videoProfileKind,
+                    Width = settings.width.GetValueOrDefault(0),
+                    Height = settings.height.GetValueOrDefault(0),
+                    Framerate = settings.framerate.GetValueOrDefault(0.0),
+                    EnableMixedRealityCapture = settings.enableMrc
+                } : new NativeMethods.VideoDeviceConfiguration());
+                uint res = NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, config);
+				ThrowOnErrorCode(res);
             });
         }
 
