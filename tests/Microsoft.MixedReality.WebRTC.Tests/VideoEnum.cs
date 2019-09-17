@@ -22,7 +22,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((enumTask) =>
             {
                 Assert.IsNull(enumTask.Exception);
-                List<PeerConnection.VideoCaptureDevice> devices = enumTask.Result;
+                List<VideoCaptureDevice> devices = enumTask.Result;
                 foreach (var device in devices)
                 {
                     Assert.That(device.id.Length, Is.GreaterThan(0));
@@ -35,27 +35,31 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         /// Check that, for all available video capture devices on the host device,
         /// GetVideoCaptureFormatsAsync() returns some valid formats.
         /// </summary>
-        //[Test]
-        //public void EnumVideoFormats()
-        //{
-        //    PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((enumDeviceTask) =>
-        //    {
-        //        Assert.IsNull(enumDeviceTask.Exception);
-        //        List<PeerConnection.VideoCaptureDevice> devices = enumDeviceTask.Result;
-        //        if (devices.Count == 0)
-        //        {
-        //            Assert.Inconclusive("Host device has no available video capture device.");
-        //        }
+        [Test]
+        public void EnumVideoFormats()
+        {
+            PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((enumDeviceTask) => {
+                Assert.IsNull(enumDeviceTask.Exception);
+                List<VideoCaptureDevice> devices = enumDeviceTask.Result;
+                if (devices.Count == 0)
+                {
+                    Assert.Inconclusive("Host device has no available video capture device.");
+                }
 
-        //        foreach (var device in devices)
-        //        {
-        //            PeerConnection.GetVideoCaptureFormatsAsync(device.id).ContinueWith((enumFormatTask) =>
-        //            {
-        //                Assert.IsNull(enumFormatTask.Exception);
-        //                // TODO...
-        //            }
-        //        }
-        //    });
-        //}
+                foreach (var device in devices)
+                {
+                    PeerConnection.GetVideoCaptureFormatsAsync(device.id).ContinueWith((enumFormatTask) => {
+                        Assert.IsNull(enumFormatTask.Exception);
+                        List<VideoCaptureFormat> formats = enumFormatTask.Result;
+                        foreach (var format in formats)
+                        {
+                            Assert.That(format.width, Is.GreaterThan(0));
+                            Assert.That(format.height, Is.GreaterThan(0));
+                            Assert.That(format.framerate, Is.GreaterThan(0.0));
+                        }
+                    });
+                }
+            });
+        }
     }
 }
