@@ -7,9 +7,9 @@
 class PCRaii {
  public:
   PCRaii() {
-    constexpr const char stunServerUrl[] = "stun:stun.l.google.com:19302";
-    const char* stunServer = stunServerUrl;
-    handle_ = mrsPeerConnectionCreate(&stunServer, 1, "", "", false);
+    PeerConnectionConfiguration config {};
+	config.encoded_ice_servers = "stun:stun.l.google.com:19302";
+    mrsPeerConnectionCreate(config, &handle_);
   }
   ~PCRaii() { mrsPeerConnectionClose(&handle_); }
   PeerConnectionHandle handle() const { return handle_; }
