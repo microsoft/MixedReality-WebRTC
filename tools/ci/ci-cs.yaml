@@ -16,6 +16,7 @@ trigger:
     include:
     - libs/Microsoft.MixedReality.WebRTC/*
     - examples/TestAppUwp/*
+    - tests/Microsoft.MixedReality.WebRTC.Tests/*
 
 # Do not trigger CI on PRs
 pr: none
