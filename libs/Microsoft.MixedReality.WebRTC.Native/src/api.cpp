@@ -29,7 +29,7 @@ rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
 std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory> g_winuwp_factory;
 
 /// Initialize the global factory for UWP.
-void InitUWPFactory() noexcept(false) {
+mrsResult InitUWPFactory() noexcept {
   RTC_CHECK(!g_winuwp_factory);
   auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
   auto cw = mw.CoreWindow();
@@ -37,8 +37,7 @@ void InitUWPFactory() noexcept(false) {
   if (dispatcher.HasThreadAccess()) {
     // WebRtcFactory::setup() will deadlock if called from main UI thread
     // See https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/143
-    throw winrt::hresult_wrong_thread(winrt::to_hstring(
-        L"Cannot setup the UWP factory from the UI thread on UWP."));
+    return MRS_E_WRONG_THREAD;
   }
   auto dispatcherQueue =
       wrapper::impl::org::webRtc::EventQueue::toWrapper(dispatcher);
@@ -66,6 +65,7 @@ void InitUWPFactory() noexcept(false) {
     g_winuwp_factory->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
   }
   g_winuwp_factory->internalSetup();
+  return MRS_SUCCESS;
 }
 
 #else  // defined(WINUWP)
@@ -114,7 +114,7 @@ class SimpleMediaConstraints : public webrtc::MediaConstraintsInterface {
                       std::to_string(max_height));
   }
   static Constraint MinFrameRate(double min_framerate) {
-	// Note: kMinFrameRate is read back as an int
+    // Note: kMinFrameRate is read back as an int
     const int min_int = (int)std::floor(min_framerate);
     return Constraint(webrtc::MediaConstraintsInterface::kMinFrameRate,
                       std::to_string(min_int));
@@ -132,14 +132,16 @@ class SimpleMediaConstraints : public webrtc::MediaConstraintsInterface {
 };
 
 /// Helper to open a video capture device.
-std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
-    VideoDeviceConfiguration config) noexcept(kNoExceptFalseOnUWP) {
+mrsResult OpenVideoCaptureDevice(
+    const VideoDeviceConfiguration& config,
+    std::unique_ptr<cricket::VideoCapturer>& capturer_out) noexcept {
+  capturer_out.reset();
 #if defined(WINUWP)
   if (!g_winuwp_factory) {
-    InitUWPFactory();
-    if (!g_winuwp_factory) {
+    mrsResult res = InitUWPFactory();
+    if (res != MRS_SUCCESS) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
-      return {};
+      return res;
     }
   }
 
@@ -148,9 +150,7 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   auto cw = mw.CoreWindow();
   auto dispatcher = cw.Dispatcher();
   if (dispatcher.HasThreadAccess()) {
-    throw winrt::hresult_wrong_thread(
-        winrt::to_hstring(L"Cannot open the WebRTC video capture device from "
-                          L"the UI thread on UWP."));
+    return MRS_E_WRONG_THREAD;
   }
 
   // Get devices synchronously (wait for UI thread to retrieve them for us)
@@ -207,17 +207,19 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
         }
       }
 
-      return nativeVcd;
+      capturer_out = std::move(nativeVcd);
+      return MRS_SUCCESS;
     }
   }
-  return nullptr;
 #else
+  // List video capture devices, match by name if specified, or use first one
+  // available otherwise.
   std::vector<std::string> device_names;
   {
     std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
         webrtc::VideoCaptureFactory::CreateDeviceInfo());
     if (!info) {
-      return nullptr;
+      return MRS_E_UNKNOWN;
     }
 
     std::string video_device_id_str;
@@ -226,11 +228,11 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
       video_device_id_str.assign(config.video_device_id);
     }
 
-    int num_devices = info->NumberOfDevices();
+    const int num_devices = info->NumberOfDevices();
     for (int i = 0; i < num_devices; ++i) {
       constexpr uint32_t kSize = 256;
-      char name[kSize] = {0};
-      char id[kSize] = {0};
+      char name[kSize] = {};
+      char id[kSize] = {};
       if (info->GetDeviceName(i, name, kSize, id, kSize) != -1) {
         device_names.push_back(name);
         if (video_device_id_str == name) {
@@ -241,15 +243,16 @@ std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(
   }
 
   cricket::WebRtcVideoDeviceCapturerFactory factory;
-  std::unique_ptr<cricket::VideoCapturer> capturer;
   for (const auto& name : device_names) {
-    capturer = factory.Create(cricket::Device(name, 0));
-    if (capturer) {
-      break;
+    capturer_out = factory.Create(cricket::Device(name, 0));
+    if (capturer_out) {
+      return MRS_SUCCESS;
     }
   }
-  return capturer;
+
 #endif
+
+  return MRS_E_UNKNOWN;
 }
 
 webrtc::PeerConnectionInterface::IceTransportsType ICETransportTypeToNative(
@@ -333,11 +336,15 @@ uint32_t FourCCFromVideoType(webrtc::VideoType videoType) {
 }  // namespace
 
 #if defined(WINUWP)
-rtc::Thread* UnsafeGetWorkerThread() {
+inline rtc::Thread* GetWorkerThread() {
   if (auto* ptr = g_winuwp_factory.get()) {
     return ptr->workerThread.get();
   }
   return nullptr;
+}
+#else
+inline rtc::Thread* GetWorkerThread() {
+  return g_worker_thread.get();
 }
 #endif  // defined(WINUWP)
 
@@ -362,8 +369,7 @@ void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
 #if defined(WINUWP)
   // The UWP factory needs to be initialized for getDevices() to work.
   if (!g_winuwp_factory) {
-    InitUWPFactory();
-    if (!g_winuwp_factory) {
+    if (InitUWPFactory() != MRS_SUCCESS) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
       return;
     }
@@ -427,10 +433,10 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 #if defined(WINUWP)
   // The UWP factory needs to be initialized for getDevices() to work.
   if (!g_winuwp_factory) {
-    InitUWPFactory();
-    if (!g_winuwp_factory) {
+    mrsResult res = InitUWPFactory();
+    if (res != MRS_SUCCESS) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
-      return MRS_E_UNKNOWN;
+      return res;
     }
   }
 
@@ -569,22 +575,22 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
   // Note that the enumeration is asynchronous, so not done yet.
   return MRS_SUCCESS;
 }
-mrsResult MRS_CALL mrsPeerConnectionCreate(
-    PeerConnectionConfiguration config,
-    PeerConnectionHandle* peerHandleOut) noexcept(kNoExceptFalseOnUWP) {
+mrsResult MRS_CALL
+mrsPeerConnectionCreate(PeerConnectionConfiguration config,
+                        PeerConnectionHandle* peerHandleOut) noexcept {
   if (!peerHandleOut) {
     return MRS_E_INVALID_PARAMETER;
   }
   *peerHandleOut = nullptr;
-  
+
   // Ensure the factory exists
   if (g_peer_connection_factory == nullptr) {
 #if defined(WINUWP)
     if (!g_winuwp_factory) {
-      InitUWPFactory();
-      if (!g_winuwp_factory) {
+      mrsResult res = InitUWPFactory();
+      if (res != MRS_SUCCESS) {
         RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
-        return MRS_E_UNKNOWN;
+        return res;
       }
     }
 
@@ -767,58 +773,58 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
 
 mrsResult MRS_CALL
 mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
-                                    VideoDeviceConfiguration config)
-#if defined(WINUWP)
-    noexcept(false)
-#else
-    noexcept(true)
-#endif
-{
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    if (!g_peer_connection_factory) {
-      return MRS_E_INVALID_OPERATION;
-    }
-    std::unique_ptr<cricket::VideoCapturer> video_capturer =
-        OpenVideoCaptureDevice(config);
-    if (!video_capturer) {
-      return MRS_E_UNKNOWN;
-    }
+                                    VideoDeviceConfiguration config) noexcept {
+  auto peer = static_cast<PeerConnection*>(peerHandle);
+  if (!peer) {
+    return MRS_E_INVALID_PEER_HANDLE;
+  }
+  if (!g_peer_connection_factory) {
+    return MRS_E_INVALID_OPERATION;
+  }
 
-    // Apply the same constraints used for opening the video capturer
-    auto videoConstraints = std::make_unique<SimpleMediaConstraints>();
-    if (config.width > 0) {
-      videoConstraints->mandatory_.push_back(
-          SimpleMediaConstraints::MinWidth(config.width));
-      videoConstraints->mandatory_.push_back(
-          SimpleMediaConstraints::MaxWidth(config.width));
-    }
-    if (config.height > 0) {
-      videoConstraints->mandatory_.push_back(
-          SimpleMediaConstraints::MinHeight(config.height));
-      videoConstraints->mandatory_.push_back(
-          SimpleMediaConstraints::MaxHeight(config.height));
-    }
-    if (config.framerate > 0) {
-      videoConstraints->mandatory_.push_back(
-          SimpleMediaConstraints::MinFrameRate(config.framerate));
-      videoConstraints->mandatory_.push_back(
-          SimpleMediaConstraints::MaxFrameRate(config.framerate));
-    }
+  // Open the video capture device
+  std::unique_ptr<cricket::VideoCapturer> video_capturer;
+  auto res = OpenVideoCaptureDevice(config, video_capturer);
+  if (res != MRS_SUCCESS) {
+    return res;
+  }
+  RTC_CHECK(video_capturer.get());
 
-    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
-        g_peer_connection_factory->CreateVideoSource(std::move(video_capturer),
-                                                     videoConstraints.get());
-    if (!video_source) {
-      return MRS_E_UNKNOWN;
-    }
-    rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
-        g_peer_connection_factory->CreateVideoTrack(kLocalVideoLabel,
-                                                    video_source);
-    if (!video_track) {
-      return MRS_E_UNKNOWN;
-    }
-    return (peer->AddLocalVideoTrack(std::move(video_track)) ? MRS_SUCCESS
-                                                             : MRS_E_UNKNOWN);
+  // Apply the same constraints used for opening the video capturer
+  auto videoConstraints = std::make_unique<SimpleMediaConstraints>();
+  if (config.width > 0) {
+    videoConstraints->mandatory_.push_back(
+        SimpleMediaConstraints::MinWidth(config.width));
+    videoConstraints->mandatory_.push_back(
+        SimpleMediaConstraints::MaxWidth(config.width));
+  }
+  if (config.height > 0) {
+    videoConstraints->mandatory_.push_back(
+        SimpleMediaConstraints::MinHeight(config.height));
+    videoConstraints->mandatory_.push_back(
+        SimpleMediaConstraints::MaxHeight(config.height));
+  }
+  if (config.framerate > 0) {
+    videoConstraints->mandatory_.push_back(
+        SimpleMediaConstraints::MinFrameRate(config.framerate));
+    videoConstraints->mandatory_.push_back(
+        SimpleMediaConstraints::MaxFrameRate(config.framerate));
+  }
+
+  rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
+      g_peer_connection_factory->CreateVideoSource(std::move(video_capturer),
+                                                   videoConstraints.get());
+  if (!video_source) {
+    return MRS_E_UNKNOWN;
+  }
+  rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
+      g_peer_connection_factory->CreateVideoTrack(kLocalVideoLabel,
+                                                  video_source);
+  if (!video_track) {
+    return MRS_E_UNKNOWN;
+  }
+  if (peer->AddLocalVideoTrack(std::move(video_track))) {
+    return MRS_SUCCESS;
   }
   return MRS_E_UNKNOWN;
 }
@@ -860,14 +866,15 @@ mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     void* state_user_data) noexcept
 
 {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->AddDataChannel(
-        id, label, ordered, reliable,
-        DataChannelMessageCallback{message_callback, message_user_data},
-        DataChannelBufferingCallback{buffering_callback, buffering_user_data},
-        DataChannelStateCallback{state_callback, state_user_data});
+  auto peer = static_cast<PeerConnection*>(peerHandle);
+  if (!peer) {
+    return MRS_E_INVALID_PEER_HANDLE;
   }
-  return MRS_E_INVALID_PEER_HANDLE;
+  return peer->AddDataChannel(
+      id, label, ordered, reliable,
+      DataChannelMessageCallback{message_callback, message_user_data},
+      DataChannelBufferingCallback{buffering_callback, buffering_user_data},
+      DataChannelStateCallback{state_callback, state_user_data});
 }
 
 void MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
@@ -914,10 +921,11 @@ mrsPeerConnectionSendDataChannelMessage(PeerConnectionHandle peerHandle,
   return MRS_E_INVALID_PEER_HANDLE;
 }
 
-mrsResult MRS_CALL mrsPeerConnectionAddIceCandidate(PeerConnectionHandle peerHandle,
-                                               const char* sdp,
-                                               const int sdp_mline_index,
-                                               const char* sdp_mid) noexcept {
+mrsResult MRS_CALL
+mrsPeerConnectionAddIceCandidate(PeerConnectionHandle peerHandle,
+                                 const char* sdp,
+                                 const int sdp_mline_index,
+                                 const char* sdp_mid) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     return (peer->AddIceCandidate(sdp, sdp_mline_index, sdp_mid)
                 ? MRS_SUCCESS
@@ -964,10 +972,10 @@ mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
         // still using the connection.
         g_peer_connection_map.erase(it);
         if (g_peer_connection_map.empty()) {
-          // Release the factory so that the threads are stopped and the DLL
-          // can be unloaded. This is mandatory to be able to unload/reload in
-          // the Unity Editor and be able to Play/Stop multiple times per
-          // Editor process run.
+          // Release the factory so that the threads are stopped and the DLL can
+          // be unloaded. This is mandatory to be able to unload/reload in the
+          // Unity Editor and be able to Play/Stop multiple times Editor process
+          // run.
           g_peer_connection_factory = nullptr;
 #if defined(WINUWP)
           g_winuwp_factory = nullptr;

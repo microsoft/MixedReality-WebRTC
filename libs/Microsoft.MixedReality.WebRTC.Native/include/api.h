@@ -224,12 +224,6 @@ using PeerConnectionDataChannelStateCallback = void(MRS_CALL*)(void* user_data,
                                                                int state,
                                                                int id);
 
-#if defined(WINUWP)
-inline constexpr bool kNoExceptFalseOnUWP = false;
-#else
-inline constexpr bool kNoExceptFalseOnUWP = true;
-#endif
-
 /// ICE transport type. See webrtc::PeerConnectionInterface::IceTransportsType.
 /// Currently values are aligned, but kept as a separate structure to allow
 /// backward compatilibity in case of changes in WebRTC.
@@ -266,7 +260,7 @@ struct PeerConnectionConfiguration {
 /// On UWP this must be invoked from another thread than the main UI thread.
 MRS_API mrsResult MRS_CALL mrsPeerConnectionCreate(
     PeerConnectionConfiguration config,
-    PeerConnectionHandle* peerHandleOut) noexcept(kNoExceptFalseOnUWP);
+    PeerConnectionHandle* peerHandleOut) noexcept;
 
 /// Register a callback fired once connected to a remote peer.
 /// To unregister, simply pass nullptr as the callback pointer.
@@ -429,9 +423,9 @@ struct VideoDeviceConfiguration {
 /// |enable_mrc| allows enabling Mixed Reality Capture on HoloLens devices, and
 /// is otherwise ignored for other video capture devices. On UWP this must be
 /// invoked from another thread than the main UI thread.
-MRS_API mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
-    PeerConnectionHandle peerHandle,
-    VideoDeviceConfiguration config) noexcept(kNoExceptFalseOnUWP);
+MRS_API mrsResult MRS_CALL
+mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
+                                    VideoDeviceConfiguration config) noexcept;
 
 /// Add a local audio track from a local audio capture device (microphone) to
 /// the collection of tracks to send to the remote peer.
