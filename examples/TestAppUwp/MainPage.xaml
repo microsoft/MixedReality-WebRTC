@@ -100,23 +100,20 @@
                 </Grid>
             </PivotItem>
             <PivotItem Header="Connection">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical">
                     <TextBlock Text="STUN server" FontWeight="Bold" />
                     <TextBlock Text="The STUN server is used to establish a peer connection through NATs." FontStyle="Italic" Grid.Row="1" Margin="12,6,0,0" />
                     <TextBox Name="stunServer" Width="400" HorizontalAlignment="Left" PlaceholderText="address:port (without prefix)" Text="stun.l.google.com:19302" Grid.Row="2" Margin="12,6,0,6"/>
                     <!--<TextBlock Text="Discovered peers" FontWeight="Bold" Grid.ColumnSpan="2" Grid.Row="3" Margin="0,12,0,0" FontFamily="Segoe UI" />
                     <ListView Grid.Row="4" Margin="12,0,0,0" ItemsSource="{x:Bind NavLinks}" ItemTemplate="{StaticResource NavLinkItemTemplate}" />-->
-                    <Button Name="createOfferButton" IsEnabled="False" Content="Create offer" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="CreateOfferButtonClicked" Width="125" Grid.Row="3" Margin="0,12,0,0"/>
-                </Grid>
+                    <TextBlock Text="SDP semantic" FontWeight="Bold" />
+                    <TextBlock Text="Specifies the SDP dialect. Don't use Plan B unless there is an issue with the Unified Plan." FontStyle="Italic" Margin="12,6,0,0" />
+                    <StackPanel Orientation="Horizontal" Margin="12,0,0,0">
+                        <RadioButton x:Name="sdpSemanticUnifiedPlan" Content="Unified Plan" IsChecked="True" GroupName="SdpSemanticGroup" Margin="0,0,20,0" />
+                        <RadioButton x:Name="sdpSemanticPlanB" Content="Plan B (deprecated)" GroupName="SdpSemanticGroup" />
+                    </StackPanel>
+                    <Button Name="createOfferButton" IsEnabled="False" Content="Create offer" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="CreateOfferButtonClicked" Width="125" Margin="0,12,0,0"/>
+                </StackPanel>
             </PivotItem>
             <PivotItem Header="Webcam">
                 <Grid>

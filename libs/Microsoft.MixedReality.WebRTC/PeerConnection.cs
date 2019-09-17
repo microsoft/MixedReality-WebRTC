@@ -78,6 +78,24 @@ namespace Microsoft.MixedReality.WebRTC
         MaxCompat = 2
     }
 
+    /// <summary>
+    /// SDP semantic used for (re)negotiating a peer connection.
+    /// </summary>
+    public enum SdpSemantic : int
+    {
+        /// <summary>
+        /// Unified plan, as standardized in the WebRTC 1.0 standard.
+        /// </summary>
+        UnifiedPlan = 0,
+
+        /// <summary>
+        /// Legacy Plan B, deprecated and soon removed.
+        /// Only available for compatiblity with older implementations if needed.
+        /// Do not use unless there is a problem with the Unified Plan.
+        /// </summary>
+        PlanB = 1
+    }
+
     public class IceServer
     {
         /// <summary>
@@ -139,6 +157,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// Bundle policy for the connection.
         /// </summary>
         public BundlePolicy BundlePolicy = BundlePolicy.Balanced;
+
+        /// <summary>
+        /// SDP semantic for the connection.
+        /// </summary>
+        /// <remarks>Plan B is deprecated, do not use it.</remarks>
+        public SdpSemantic SdpSemantic = SdpSemantic.UnifiedPlan;
     }
 
     /// <summary>
@@ -844,6 +868,7 @@ namespace Microsoft.MixedReality.WebRTC
                     EncodedIceServers = string.Join("\n\n", config.IceServers),
                     IceTransportType = config.IceTransportType,
                     BundlePolicy = config.BundlePolicy,
+                    SdpSemantic = config.SdpSemantic,
                 };
 
                 // On UWP PeerConnectionCreate() fails on main UI thread, so always initialize the native peer
@@ -1323,6 +1348,7 @@ namespace Microsoft.MixedReality.WebRTC
                 public string EncodedIceServers;
                 public IceTransportType IceTransportType;
                 public BundlePolicy BundlePolicy;
+                public SdpSemantic SdpSemantic;
             }
 
             /// <summary>

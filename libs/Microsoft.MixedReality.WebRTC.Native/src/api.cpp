@@ -674,6 +674,9 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
   rtc_config.enable_dtls_srtp = true;          // Always true for security
   rtc_config.type = ICETransportTypeToNative(config.ice_transport_type);
   rtc_config.bundle_policy = BundlePolicyToNative(config.bundle_policy);
+  rtc_config.sdp_semantics = (config.sdp_semantic == SdpSemantic::kUnifiedPlan
+                                  ? webrtc::SdpSemantics::kUnifiedPlan
+                                  : webrtc::SdpSemantics::kPlanB);
 
   // Create the new peer connection
   rtc::scoped_refptr<PeerConnection> peer =

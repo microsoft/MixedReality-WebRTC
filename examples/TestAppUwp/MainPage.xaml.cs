@@ -322,6 +322,8 @@ namespace TestAppUwp
             // Assign STUN server(s) before calling InitializeAsync()
             var config = new PeerConnectionConfiguration();
             config.IceServers.Add(new IceServer { Urls = { "stun:" + stunServer.Text } });
+            config.SdpSemantic = (sdpSemanticUnifiedPlan.IsChecked.GetValueOrDefault(true)
+                ? SdpSemantic.UnifiedPlan : SdpSemantic.PlanB);
 
             // Ensure that the UWP app was authorized to capture audio (cap:microphone)
             // and video (cap:webcam), otherwise the native plugin will fail.
@@ -1071,10 +1073,18 @@ namespace TestAppUwp
                         dssStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
                         dssStatsTimer.Start();
                         startLocalVideo.Content = "Stop local video";
-                        var idx = HACK_GetVideoDeviceIndex(); //< HACK
-                        localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx); //< HACK
-                        remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx)); //< HACK
-                        localVideoSourceName.Text = $"({VideoCaptureDevices[idx].DisplayName})"; //< HACK
+
+                        //< HACK - Generate pseudo-random unique identifiers which are stable
+                        // across sessions (so they can be cached) and are deterministic for each
+                        // of the first 2 instances of the app, so that 2 instances can connect to
+                        // each other without having to setup anything.
+                        {
+                            var idx = HACK_GetVideoDeviceIndex();
+                            localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx);
+                            remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx));
+                        }
+
+                        localVideoSourceName.Text = $"({SelectedVideoCaptureDevice?.DisplayName})";
                         //localVideo.MediaPlayer.Play();
                         lock (_isLocalVideoPlayingLock)
                         {

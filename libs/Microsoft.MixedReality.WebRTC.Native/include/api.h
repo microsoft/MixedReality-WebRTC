@@ -243,6 +243,16 @@ enum class BundlePolicy : int32_t {
   kMaxCompat = 2
 };
 
+/// SDP semantic (protocol dialect) for (re)negotiating a peer connection.
+/// This cannot be changed after the connection is established.
+enum class SdpSemantic : int32_t {
+  /// Unified Plan - default and recommended. Standardized in WebRTC 1.0.
+  kUnifiedPlan = 0,
+  /// Plan B - deprecated and soon to be removed. Do not use unless for
+  /// compability with an older implementation. This is non-standard.
+  kPlanB = 1
+};
+
 /// Configuration to intialize a peer connection object.
 struct PeerConnectionConfiguration {
   /// ICE servers, encoded as a single string buffer.
@@ -254,13 +264,17 @@ struct PeerConnectionConfiguration {
 
   /// Bundle policy for the connection.
   BundlePolicy bundle_policy = BundlePolicy::kBalanced;
+
+  /// SDP semantic for connection negotiation.
+  /// Do not use Plan B unless there is a problem with Unified Plan.
+  SdpSemantic sdp_semantic = SdpSemantic::kUnifiedPlan;
 };
 
 /// Create a peer connection and return a handle to it.
 /// On UWP this must be invoked from another thread than the main UI thread.
-MRS_API mrsResult MRS_CALL mrsPeerConnectionCreate(
-    PeerConnectionConfiguration config,
-    PeerConnectionHandle* peerHandleOut) noexcept;
+MRS_API mrsResult MRS_CALL
+mrsPeerConnectionCreate(PeerConnectionConfiguration config,
+                        PeerConnectionHandle* peerHandleOut) noexcept;
 
 /// Register a callback fired once connected to a remote peer.
 /// To unregister, simply pass nullptr as the callback pointer.
