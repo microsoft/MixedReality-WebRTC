@@ -906,10 +906,6 @@ namespace TestAppUwp
             {
                 if (!_isRemoteVideoPlaying)
                 {
-                    remoteVideoSource = CreateVideoStreamSource(frame.width, frame.height);
-                    remoteMediaSource = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
-                    remoteVideoPlayer.Source = remoteMediaSource;
-
                     _isRemoteVideoPlaying = true;
                     uint width = frame.width;
                     uint height = frame.height;
