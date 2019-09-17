@@ -193,18 +193,6 @@ namespace Microsoft.MixedReality.WebRTC
         public delegate void IceCandidateReadytoSendDelegate(string candidate, int sdpMlineindex, string sdpMid);
         public delegate void IceStateChangedDelegate(IceConnectionState newState);
 
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void VideoCaptureDeviceEnumCallback(string id, string name);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void VideoCaptureDeviceEnumCompletedCallback();
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void VideoCaptureFormatEnumCallback(uint width, uint height, double framerate, uint fourcc);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void VideoCaptureFormatEnumCompletedCallback(Exception e);
-
         /// <summary>
         /// Kind of WebRTC track.
         /// </summary>
@@ -374,6 +362,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private static class CallbacksWrappers
         {
+            // Types of trampolines for MonoPInvokeCallback
             private delegate void VideoCaptureDeviceEnumDelegate(string id, string name, IntPtr handle);
             private delegate void VideoCaptureDeviceEnumCompletedDelegate(IntPtr handle);
             private delegate void VideoCaptureFormatEnumDelegate(uint width, uint height, double framerate, string encoding, IntPtr handle);
@@ -389,10 +378,16 @@ namespace Microsoft.MixedReality.WebRTC
             private delegate void DataChannelBufferingDelegate(IntPtr peer, ulong previous, ulong current, ulong limit);
             private delegate void DataChannelStateDelegate(IntPtr peer, int state, int id);
 
+            // Callbacks for internal enumeration implementation only
+            public delegate void VideoCaptureDeviceEnumCallbackImpl(string id, string name);
+            public delegate void VideoCaptureDeviceEnumCompletedCallbackImpl();
+            public delegate void VideoCaptureFormatEnumCallbackImpl(uint width, uint height, double framerate, uint fourcc);
+            public delegate void VideoCaptureFormatEnumCompletedCallbackImpl(Exception e);
+
             public class EnumVideoCaptureDeviceWrapper
             {
-                public VideoCaptureDeviceEnumCallback enumCallback;
-                public VideoCaptureDeviceEnumCompletedCallback completedCallback;
+                public VideoCaptureDeviceEnumCallbackImpl enumCallback;
+                public VideoCaptureDeviceEnumCompletedCallbackImpl completedCallback;
             }
 
             [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumDelegate))]
@@ -413,8 +408,8 @@ namespace Microsoft.MixedReality.WebRTC
 
             public class EnumVideoCaptureFormatsWrapper
             {
-                public VideoCaptureFormatEnumCallback enumCallback;
-                public VideoCaptureFormatEnumCompletedCallback completedCallback;
+                public VideoCaptureFormatEnumCallbackImpl enumCallback;
+                public VideoCaptureFormatEnumCompletedCallbackImpl completedCallback;
             }
 
             [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumDelegate))]
@@ -459,6 +454,10 @@ namespace Microsoft.MixedReality.WebRTC
                 public NativeMethods.PeerConnectionAudioFrameCallback RemoteAudioFrameCallback;
             }
 
+            /// <summary>
+            ///  Utility to lock all data channel delegates registered with the native plugin and prevent their
+            ///  garbage collection while registerd.
+            /// </summary>
             public class DataChannelCallbackArgs
             {
                 public PeerConnection Peer;
@@ -708,26 +707,26 @@ namespace Microsoft.MixedReality.WebRTC
         {
             switch (message.MessageType)
             {
-                case SignalerMessage.WireMessageType.Offer:
-                    SetRemoteDescription("offer", message.Data);
-                    // If we get an offer, we immediately send an answer back
-                    CreateAnswer();
-                    break;
+            case SignalerMessage.WireMessageType.Offer:
+                SetRemoteDescription("offer", message.Data);
+                // If we get an offer, we immediately send an answer back
+                CreateAnswer();
+                break;
 
-                case SignalerMessage.WireMessageType.Answer:
-                    SetRemoteDescription("answer", message.Data);
-                    break;
+            case SignalerMessage.WireMessageType.Answer:
+                SetRemoteDescription("answer", message.Data);
+                break;
 
-                case SignalerMessage.WireMessageType.Ice:
-                    // TODO - This is NodeDSS-specific
-                    // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
-                    var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                    // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
-                    AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
-                    break;
+            case SignalerMessage.WireMessageType.Ice:
+                // TODO - This is NodeDSS-specific
+                // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                break;
 
-                default:
-                    throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
+            default:
+                throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
             }
         }
 
@@ -798,8 +797,7 @@ namespace Microsoft.MixedReality.WebRTC
                 // connection asynchronously from a background worker thread.
                 //using (var cancelOrCloseToken = CancellationTokenSource.CreateLinkedTokenSource(_initCTS.Token, token))
                 //{
-                _initTask = Task.Run(() =>
-                {
+                _initTask = Task.Run(() => {
                     token.ThrowIfCancellationRequested();
 
                     IntPtr nativeHandle = IntPtr.Zero;
@@ -974,8 +972,7 @@ namespace Microsoft.MixedReality.WebRTC
             int width = 0, int height = 0, double framerate = 0.0, bool enableMrc = false)
         {
             ThrowIfConnectionNotOpen();
-            return Task.Run(() =>
-            {
+            return Task.Run(() => {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
                 var config = new NativeMethods.VideoDeviceConfiguration
@@ -1018,8 +1015,7 @@ namespace Microsoft.MixedReality.WebRTC
         public Task AddLocalAudioTrackAsync()
         {
             ThrowIfConnectionNotOpen();
-            return Task.Run(() =>
-            {
+            return Task.Run(() => {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
                 if (NativeMethods.PeerConnectionAddLocalAudioTrack(_nativePeerhandle) != NativeMethods.MRS_SUCCESS)
@@ -1117,31 +1113,36 @@ namespace Microsoft.MixedReality.WebRTC
             // Preconditions
             ThrowIfConnectionNotOpen();
 
-            // Create a new data channel object and its callback args
-            var dataChannel = new DataChannel(this, id, label, ordered, reliable);
+            // Create the callback args for the data channel
             var args = new CallbacksWrappers.DataChannelCallbackArgs()
             {
                 Peer = this,
-                DataChannel = dataChannel,
+                DataChannel = null, // set below
                 MessageCallback = CallbacksWrappers.DataChannelMessageCallback,
                 BufferingCallback = CallbacksWrappers.DataChannelBufferingCallback,
                 StateCallback = CallbacksWrappers.DataChannelStateCallback
             };
 
-            // Pin the args to pin the delegates
+            // Pin the args to pin the delegates while they're registered with the native code
             var handle = GCHandle.Alloc(args, GCHandleType.Normal);
             IntPtr userData = GCHandle.ToIntPtr(handle);
 
+            // Create a new data channel. It will hold the lock for its args while alive.
+            var dataChannel = new DataChannel(this, handle, id, label, ordered, reliable);
+            args.DataChannel = dataChannel;
+
             // Create the native channel
-            return await Task.Run(() =>
-            {
+            return await Task.Run(() => {
                 uint res = NativeMethods.PeerConnectionAddDataChannel(_nativePeerhandle, id, label, ordered, reliable,
-                args.MessageCallback, userData, args.BufferingCallback, userData, args.StateCallback, userData);
-                handle.Free();
+                    args.MessageCallback, userData, args.BufferingCallback, userData, args.StateCallback, userData);
                 if (res == NativeMethods.MRS_SUCCESS)
                 {
                     return dataChannel;
                 }
+
+                // Some error occurred, callbacks are not registered, so remove the GC lock.
+                dataChannel.Dispose();
+                dataChannel = null;
 
                 // Translate the error code into the appropriate exception
                 if (res == NativeMethods.MRS_E_SCTP_NOT_NEGOTIATED)
@@ -1607,12 +1608,10 @@ namespace Microsoft.MixedReality.WebRTC
             var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
             var wrapper = new CallbacksWrappers.EnumVideoCaptureDeviceWrapper()
             {
-                enumCallback = (id, name) =>
-                {
+                enumCallback = (id, name) => {
                     devices.Add(new VideoCaptureDevice() { id = id, name = name });
                 },
-                completedCallback = () =>
-                {
+                completedCallback = () => {
                     // On enumeration end, signal the caller thread
                     eventWaitHandle.Set();
                 }
@@ -1622,8 +1621,7 @@ namespace Microsoft.MixedReality.WebRTC
             var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
             IntPtr userData = GCHandle.ToIntPtr(handle);
 
-            return Task.Run(() =>
-            {
+            return Task.Run(() => {
                 // Execute the native async callback
                 NativeMethods.EnumVideoCaptureDevicesAsync(CallbacksWrappers.VideoCaptureDeviceEnumCallback, userData,
                     CallbacksWrappers.VideoCaptureDeviceEnumCompletedCallback, userData);
@@ -1644,12 +1642,10 @@ namespace Microsoft.MixedReality.WebRTC
             var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
             var wrapper = new CallbacksWrappers.EnumVideoCaptureFormatsWrapper()
             {
-                enumCallback = (width, height, framerate, fourcc) =>
-                {
+                enumCallback = (width, height, framerate, fourcc) => {
                     formats.Add(new VideoCaptureFormat() { width = width, height = height, framerate = framerate, fourcc = fourcc });
                 },
-                completedCallback = (Exception _) =>
-                {
+                completedCallback = (Exception _) => {
                     // On enumeration end, signal the caller thread
                     eventWaitHandle.Set();
                 }
@@ -1675,8 +1671,7 @@ namespace Microsoft.MixedReality.WebRTC
                 throw new Exception();
             }
 
-            return Task.Run(() =>
-            {
+            return Task.Run(() => {
                 // Wait for end of enumerating
                 eventWaitHandle.WaitOne();
 
