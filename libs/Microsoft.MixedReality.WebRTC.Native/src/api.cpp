@@ -25,48 +25,86 @@ rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
 
 #if defined(WINUWP)
 
-/// Winuwp relies on a global-scoped factory wrapper
-std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory> g_winuwp_factory;
+using WebRtcFactoryPtr =
+    std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>;
 
-/// Initialize the global factory for UWP.
-mrsResult InitUWPFactory() noexcept {
-  RTC_CHECK(!g_winuwp_factory);
-  auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
-  auto cw = mw.CoreWindow();
-  auto dispatcher = cw.Dispatcher();
-  if (dispatcher.HasThreadAccess()) {
-    // WebRtcFactory::setup() will deadlock if called from main UI thread
-    // See https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/143
-    return MRS_E_WRONG_THREAD;
+class UwpFactory {
+ public:
+  ~UwpFactory() {
+    std::scoped_lock lock(mutex_);
+    impl_.reset();
   }
-  auto dispatcherQueue =
-      wrapper::impl::org::webRtc::EventQueue::toWrapper(dispatcher);
+  WebRtcFactoryPtr get() {
+    std::scoped_lock lock(mutex_);
+    if (!impl_) {
+      if (CreateImpl() != MRS_SUCCESS) {
+        return nullptr;
+      }
+    }
+    return impl_;
+  }
+  mrsResult get(WebRtcFactoryPtr& factory) {
+    factory.reset();
+    std::scoped_lock lock(mutex_);
+    if (!impl_) {
+      mrsResult res = CreateImpl();
+      if (res != MRS_SUCCESS) {
+        return res;
+      }
+    }
+    factory = impl_;
+    return (factory ? MRS_SUCCESS : MRS_E_UNKNOWN);
+  }
 
-  // Setup the WebRTC library
-  {
-    auto libConfig =
-        std::make_shared<wrapper::impl::org::webRtc::WebRtcLibConfiguration>();
-    libConfig->thisWeak_ = libConfig;  // mimic wrapper_create()
-    libConfig->queue = dispatcherQueue;
-    wrapper::impl::org::webRtc::WebRtcLib::setup(libConfig);
+ private:
+  mrsResult CreateImpl() {
+    RTC_CHECK(!impl_);
+    auto mw =
+        winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
+    auto cw = mw.CoreWindow();
+    auto dispatcher = cw.Dispatcher();
+    if (dispatcher.HasThreadAccess()) {
+      // WebRtcFactory::setup() will deadlock if called from main UI thread
+      // See https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/143
+      return MRS_E_WRONG_THREAD;
+    }
+    auto dispatcherQueue =
+        wrapper::impl::org::webRtc::EventQueue::toWrapper(dispatcher);
+
+    // Setup the WebRTC library
+    {
+      auto libConfig = std::make_shared<
+          wrapper::impl::org::webRtc::WebRtcLibConfiguration>();
+      libConfig->thisWeak_ = libConfig;  // mimic wrapper_create()
+      libConfig->queue = dispatcherQueue;
+      wrapper::impl::org::webRtc::WebRtcLib::setup(libConfig);
+    }
+
+    // Create the UWP factory
+    {
+      auto factoryConfig = std::make_shared<
+          wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
+      factoryConfig->thisWeak_ = factoryConfig;  // mimic wrapper_create()
+      factoryConfig->audioCapturingEnabled = true;
+      factoryConfig->audioRenderingEnabled = true;
+      factoryConfig->enableAudioBufferEvents = true;
+      impl_ = std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
+      impl_->thisWeak_ = impl_;  // mimic wrapper_create()
+      impl_->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
+    }
+    impl_->internalSetup();
+    return MRS_SUCCESS;
   }
 
-  // Create the UWP factory
-  {
-    auto factoryConfig = std::make_shared<
-        wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
-    factoryConfig->thisWeak_ = factoryConfig;  // mimic wrapper_create()
-    factoryConfig->audioCapturingEnabled = true;
-    factoryConfig->audioRenderingEnabled = true;
-    factoryConfig->enableAudioBufferEvents = true;
-    g_winuwp_factory =
-        std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
-    g_winuwp_factory->thisWeak_ = g_winuwp_factory;  // mimic wrapper_create()
-    g_winuwp_factory->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
-  }
-  g_winuwp_factory->internalSetup();
-  return MRS_SUCCESS;
-}
+ private:
+  WebRtcFactoryPtr impl_;
+  std::recursive_mutex mutex_;
+};
+
+/// Winuwp relies on a global-scoped factory wrapper.
+/// Because it may be needed from multiple threads at once,
+/// wrap it into a object with added thread safety.
+std::unique_ptr<UwpFactory> g_winuwp_factory = std::make_unique<UwpFactory>();
 
 #else  // defined(WINUWP)
 
@@ -137,8 +175,9 @@ mrsResult OpenVideoCaptureDevice(
     std::unique_ptr<cricket::VideoCapturer>& capturer_out) noexcept {
   capturer_out.reset();
 #if defined(WINUWP)
-  if (!g_winuwp_factory) {
-    mrsResult res = InitUWPFactory();
+  WebRtcFactoryPtr uwp_factory;
+  {
+    mrsResult res = g_winuwp_factory->get(uwp_factory);
     if (res != MRS_SUCCESS) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
       return res;
@@ -177,7 +216,7 @@ mrsResult OpenVideoCaptureDevice(
 
     auto createParams = std::make_shared<
         wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
-    createParams->factory = g_winuwp_factory;
+    createParams->factory = uwp_factory;
     createParams->name = devInfo.Name().c_str();
     createParams->id = id.c_str();
     if (config.video_profile_id) {
@@ -337,7 +376,7 @@ uint32_t FourCCFromVideoType(webrtc::VideoType videoType) {
 
 #if defined(WINUWP)
 inline rtc::Thread* GetWorkerThread() {
-  if (auto* ptr = g_winuwp_factory.get()) {
+  if (auto ptr = g_winuwp_factory->get()) {
     return ptr->workerThread.get();
   }
   return nullptr;
@@ -368,11 +407,9 @@ void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
   }
 #if defined(WINUWP)
   // The UWP factory needs to be initialized for getDevices() to work.
-  if (!g_winuwp_factory) {
-    if (InitUWPFactory() != MRS_SUCCESS) {
-      RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
-      return;
-    }
+  if (!g_winuwp_factory->get()) {
+    RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
+    return;
   }
 
   auto vci = wrapper::impl::org::webRtc::VideoCapturer::getDevices();
@@ -432,8 +469,9 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 
 #if defined(WINUWP)
   // The UWP factory needs to be initialized for getDevices() to work.
-  if (!g_winuwp_factory) {
-    mrsResult res = InitUWPFactory();
+  WebRtcFactoryPtr uwp_factory;
+  {
+    mrsResult res = g_winuwp_factory->get(uwp_factory);
     if (res != MRS_SUCCESS) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
       return res;
@@ -460,7 +498,8 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
       winrt::Windows::Devices::Enumeration::DeviceInformation::FindAllAsync(
           winrt::Windows::Devices::Enumeration::DeviceClass::VideoCapture);
   asyncResults.Completed([device_id_str, enumCallback, completedCallback,
-                          enumCallbackUserData, completedCallbackUserData](
+                          enumCallbackUserData, completedCallbackUserData,
+                          uwp_factory = std::move(uwp_factory)](
                              auto&& asyncResults,
                              winrt::Windows::Foundation::AsyncStatus status) {
     // If the OS enumeration failed, terminate our own enumeration
@@ -495,7 +534,7 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
     // actually opening the device to enumerate its capture formats.
     auto createParams = std::make_shared<
         wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
-    createParams->factory = g_winuwp_factory;
+    createParams->factory = uwp_factory;
     createParams->name = devInfo.Name().c_str();
     createParams->id = devInfo.Id().c_str();
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
@@ -586,15 +625,16 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
   // Ensure the factory exists
   if (g_peer_connection_factory == nullptr) {
 #if defined(WINUWP)
-    if (!g_winuwp_factory) {
-      mrsResult res = InitUWPFactory();
+    WebRtcFactoryPtr uwp_factory;
+    {
+      mrsResult res = g_winuwp_factory->get(uwp_factory);
       if (res != MRS_SUCCESS) {
         RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
         return res;
       }
     }
 
-    g_peer_connection_factory = g_winuwp_factory->peerConnectionFactory();
+    g_peer_connection_factory = uwp_factory->peerConnectionFactory();
 #else
     g_network_thread = rtc::Thread::CreateWithSocketServer();
     g_network_thread->SetName("WebRTC network thread", g_network_thread.get());
