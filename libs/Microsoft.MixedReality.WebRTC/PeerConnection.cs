@@ -814,11 +814,8 @@ namespace Microsoft.MixedReality.WebRTC
                                 _selfHandle.Free();
                             }
 
-                            if (res == NativeMethods.MRS_E_INVALID_PARAMETER)
-                            {
-                                throw new ArgumentNullException();
-                            }
-                            throw new Exception();
+                            ThrowOnErrorCode(res);
+                            throw new Exception(); // if res == MRS_SUCCESS but handle is NULL
                         }
 
                         // The connection may have been aborted while being created, either via the
@@ -1144,16 +1141,8 @@ namespace Microsoft.MixedReality.WebRTC
                 dataChannel.Dispose();
                 dataChannel = null;
 
-                // Translate the error code into the appropriate exception
-                if (res == NativeMethods.MRS_E_SCTP_NOT_NEGOTIATED)
-                {
-                    throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
-                }
-                if (res == NativeMethods.MRS_E_INVALID_DATA_CHANNEL_ID)
-                {
-                    throw new ArgumentOutOfRangeException("id", id, "Invalid ID passed to AddDataChannelAsync().");
-                }
-                throw new Exception("AddDataChannelAsync() failed.");
+                ThrowOnErrorCode(res);
+                return null; // for the compiler
             });
         }
 
@@ -1566,11 +1555,10 @@ namespace Microsoft.MixedReality.WebRTC
                         CodecName = PreferredVideoCodec,
                         ExtraParams = PreferredVideoCodecExtraParams
                     };
-                    if (NativeMethods.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut) == NativeMethods.MRS_SUCCESS)
-                    {
-                        builder.Length = (int)lengthInOut;
-                        sdp = builder.ToString();
-                    }
+                    uint res = NativeMethods.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut);
+                    ThrowOnErrorCode(res);
+                    builder.Length = (int)lengthInOut;
+                    sdp = builder.ToString();
                 }
             }
 
@@ -1663,12 +1651,8 @@ namespace Microsoft.MixedReality.WebRTC
                 // Clean-up and release the wrapper delegates
                 handle.Free();
 
-                // Translate the error code into the appropriate exception
-                if (res == NativeMethods.MRS_E_INVALID_PARAMETER)
-                {
-                    throw new ArgumentException();
-                }
-                throw new Exception();
+                ThrowOnErrorCode(res);
+                return null; // for the compiler
             }
 
             return Task.Run(() => {
@@ -1719,6 +1703,45 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="elem_size">Size of each row, in bytes.</param>
         /// <param name="elem_count">Total number of rows to copy.</param>
         [DllImport(NativeMethods.dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsMemCpyStride")]
-        public static unsafe extern void MemCpyStride(void* dst, int dst_stride, void* src, int src_stride, int elem_size, int elem_count);
+        public static unsafe extern void MemCpyStride(void* dst, int dst_stride, void* src, int src_stride,
+            int elem_size, int elem_count);
+
+        /// <summary>
+        /// Helper to throw an exception based on an error code.
+        /// </summary>
+        /// <param name="res">The error code to turn into an exception, if not zero (MRS_SUCCESS).</param>
+        private static void ThrowOnErrorCode(uint res)
+        {
+            switch (res)
+            {
+            case NativeMethods.MRS_SUCCESS:
+                return;
+
+            case NativeMethods.MRS_E_UNKNOWN:
+            default:
+                throw new Exception();
+
+            case NativeMethods.MRS_E_INVALID_PARAMETER:
+                throw new ArgumentException();
+
+            case NativeMethods.MRS_E_INVALID_OPERATION:
+                throw new InvalidOperationException();
+
+            case NativeMethods.MRS_E_WRONG_THREAD:
+                throw new InvalidOperationException("This method cannot be called on that thread.");
+
+            case NativeMethods.MRS_E_INVALID_PEER_HANDLE:
+                throw new InvalidOperationException("Invalid peer connection handle.");
+
+            case NativeMethods.MRS_E_PEER_NOT_INITIALIZED:
+                throw new InvalidOperationException("Peer connection not initialized.");
+
+            case NativeMethods.MRS_E_SCTP_NOT_NEGOTIATED:
+                throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
+
+            case NativeMethods.MRS_E_INVALID_DATA_CHANNEL_ID:
+                throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
+            }
+        }
     }
 }
