@@ -107,7 +107,9 @@
                     <!--<TextBlock Text="Discovered peers" FontWeight="Bold" Grid.ColumnSpan="2" Grid.Row="3" Margin="0,12,0,0" FontFamily="Segoe UI" />
                     <ListView Grid.Row="4" Margin="12,0,0,0" ItemsSource="{x:Bind NavLinks}" ItemTemplate="{StaticResource NavLinkItemTemplate}" />-->
                     <TextBlock Text="SDP semantic" FontWeight="Bold" />
-                    <TextBlock Text="Specifies the SDP dialect. Don't use Plan B unless there is an issue with the Unified Plan." FontStyle="Italic" Margin="12,6,0,0" />
+                    <TextBlock FontStyle="Italic" Margin="12,6,0,0">
+                        Specifies the <Hyperlink NavigateUri="https://webrtc.org/web-apis/chrome/unified-plan/">SDP dialect</Hyperlink> used to negotiate a peer connection.<LineBreak/>Do not use Plan B unless there is an issue with the Unified Plan.
+                    </TextBlock>
                     <StackPanel Orientation="Horizontal" Margin="12,0,0,0">
                         <RadioButton x:Name="sdpSemanticUnifiedPlan" Content="Unified Plan" IsChecked="True" GroupName="SdpSemanticGroup" Margin="0,0,20,0" />
                         <RadioButton x:Name="sdpSemanticPlanB" Content="Plan B (deprecated)" GroupName="SdpSemanticGroup" />
@@ -129,7 +131,9 @@
                         <TextBlock Text="Video capture device" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
                         <ListView x:Name="VideoCaptureDeviceList" ItemsSource="{x:Bind VideoCaptureDevices}" ItemTemplate="{StaticResource VideoCaptureDeviceTemplate}" MinHeight="120" MinWidth="120" />
                         <TextBlock Text="Preferred video codec" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
-                        <TextBlock Text="Leave blank to use the default video codec" FontStyle="Italic" Margin="0,6,0,0" />
+                        <TextBlock FontStyle="Italic" Margin="0,6,0,0">
+                            Leave blank to use the default video codec. A partial list is <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.<LineBreak />Common values include "H264", "H265", "VP8", "VP9". Names are case sensitive.
+                        </TextBlock>
                         <TextBox x:Name="PreferredVideoCodec" Text="H264" Margin="0,6,0,6" Width="400" HorizontalAlignment="Left" />
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Grid.Column="2">
