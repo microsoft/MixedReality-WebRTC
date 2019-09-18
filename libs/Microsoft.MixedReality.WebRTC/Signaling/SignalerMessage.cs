@@ -71,6 +71,9 @@ namespace Microsoft.MixedReality.WebRTC
         public string IceDataSeparator;
     }
 
+    /// <summary>
+    /// Extension methods for <see cref="SignalerMessage.WireMessageType"/>.
+    /// </summary>
     public static class WireMessageTypeExtensions
     {
         /// <summary>

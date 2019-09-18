@@ -16,7 +16,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// 
     /// https://tools.ietf.org/wg/rtcweb/
     /// 
-    /// An instance of <see cref="DataChannel"/> is created by calling <see cref="PeerConnection.AddDataChannelAsync"/>
+    /// An instance of <see cref="DataChannel"/> is created by calling <see cref="PeerConnection.AddDataChannelAsync(string,bool,bool)"/>
     /// or one of its variants. <see cref="DataChannel"/> cannot be instantiated directly.
     /// </summary>
     public class DataChannel : IDisposable
@@ -116,15 +116,17 @@ namespace Microsoft.MixedReality.WebRTC
             State = ChannelState.Connecting; // see PeerConnection.AddDataChannelImpl()
         }
 
+        /// <summary>
+        /// Finalizer to ensure the data track is removed from the peer connection
+        /// and the managed resources are cleaned-up.
+        /// </summary>
         ~DataChannel()
         {
-            State = ChannelState.Closing;
-            PeerConnection.RemoveDataChannel(this);
-            State = ChannelState.Closed;
+            Dispose();
         }
 
         /// <summary>
-        /// Remove the data channel from the peer connection and destroy it.
+        /// Remove the data track from the peer connection and destroy it.
         /// </summary>
         public void Dispose()
         {

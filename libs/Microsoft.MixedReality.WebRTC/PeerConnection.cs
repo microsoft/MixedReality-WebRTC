@@ -96,6 +96,9 @@ namespace Microsoft.MixedReality.WebRTC
         PlanB = 1
     }
 
+    /// <summary>
+    /// ICE server configuration (STUN and/or TURN).
+    /// </summary>
     public class IceServer
     {
         /// <summary>
@@ -166,19 +169,50 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
-    /// ICE connection state.
+    /// ICE connection state. This is currently a mix of the RTPIceGatheringState
+    /// and the RTPPeerConnectionState from the WebRTC 1.0 standard.
     /// </summary>
+    /// <seealso href="https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum"/>
+    /// <seealso href="https://www.w3.org/TR/webrtc/#rtcpeerconnectionstate-enum"/>
     public enum IceConnectionState : int
     {
+        /// <summary>
+        /// Newly created ICE connection. This is the starting state.
+        /// </summary>
         New = 0,
+
+        /// <summary>
+        /// ICE connection received an offer, but transports are not writable yet.
+        /// </summary>
         Checking = 1,
+
+        /// <summary>
+        /// Transports are writable.
+        /// </summary>
         Connected = 2,
+
+        /// <summary>
+        /// ICE connection finisehd establishing.
+        /// </summary>
         Completed = 3,
+
+        /// <summary>
+        /// Failed establishing an ICE connection.
+        /// </summary>
         Failed = 4,
+
+        /// <summary>
+        /// ICE connection is disconnected, there is no more writable transport.
+        /// </summary>
         Disconnected = 5,
+
+        /// <summary>
+        /// The peer connection was closed entirely.
+        /// </summary>
         Closed = 6,
     }
 
+    /// <summary>
     /// Identifier for a video capture device.
     /// </summary>
     [Serializable]
@@ -195,12 +229,30 @@ namespace Microsoft.MixedReality.WebRTC
         public string name;
     }
 
+    /// <summary>
+    /// Capture format for a video track.
+    /// </summary>
     [Serializable]
     public struct VideoCaptureFormat
     {
+        /// <summary>
+        /// Frame width, in pixels.
+        /// </summary>
         public uint width;
+
+        /// <summary>
+        /// Frame height, in pixels.
+        /// </summary>
         public uint height;
+
+        /// <summary>
+        /// Capture framerate, in frames per second.
+        /// </summary>
         public double framerate;
+
+        /// <summary>
+        /// FOURCC identifier of the video encoding.
+        /// </summary>
         public uint fourcc;
     }
 
@@ -213,8 +265,25 @@ namespace Microsoft.MixedReality.WebRTC
         //public delegate void DataChannelBufferingDelegate(ulong previous, ulong current, ulong limit);
         //public delegate void DataChannelStateDelegate(WebRTCDataChannel.State state);
 
+        /// <summary>
+        /// Delegate for <see cref="LocalSdpReadytoSend"/> event.
+        /// </summary>
+        /// <param name="type">SDP message type, one of "offer", "answer", or "ice".</param>
+        /// <param name="sdp">Raw SDP message content.</param>
         public delegate void LocalSdpReadyToSendDelegate(string type, string sdp);
+
+        /// <summary>
+        /// Delegate for the <see cref="IceCandidateReadytoSend"/> event.
+        /// </summary>
+        /// <param name="candidate">Raw SDP message describing the ICE candidate.</param>
+        /// <param name="sdpMlineindex">Index of the m= line.</param>
+        /// <param name="sdpMid">Media identifier</param>
         public delegate void IceCandidateReadytoSendDelegate(string candidate, int sdpMlineindex, string sdpMid);
+
+        /// <summary>
+        /// Delegate for the <see cref="IceStateChanged"/> event.
+        /// </summary>
+        /// <param name="newState">The new ICE connection state.</param>
         public delegate void IceStateChangedDelegate(IceConnectionState newState);
 
         /// <summary>
@@ -222,24 +291,90 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public enum TrackKind : uint
         {
+            /// <summary>
+            /// Unknown track kind. Generally not initialized or error.
+            /// </summary>
             Unknown = 0,
+
+            /// <summary>
+            /// Audio track.
+            /// </summary>
             Audio = 1,
+
+            /// <summary>
+            /// Video track.
+            /// </summary>
             Video = 2,
+
+            /// <summary>
+            /// Data track.
+            /// </summary>
             Data = 3
         };
 
+        /// <summary>
+        /// Kind of video profile. This corresponds to the <see xref="Windows.Media.Capture.KnownVideoProfile"/>
+        /// enum of the <see xref="Windows.Media.Capture.MediaCapture"/> API.
+        /// </summary>
+        /// <seealso href="https://docs.microsoft.com/en-us/uwp/api/windows.media.capture.knownvideoprofile"/>
         public enum VideoProfileKind : int
         {
+            /// <summary>
+            /// Unspecified video profile kind. Used to remove any constraint on the video profile kind.
+            /// </summary>
             Unspecified,
+
+            /// <summary>
+            /// Video profile for video recording, often of higher quality and framerate at the expense
+            /// of power consumption and latency.
+            /// </summary>
             VideoRecording,
+
+            /// <summary>
+            /// Video profile for high quality photo capture.
+            /// </summary>
             HighQualityPhoto,
+
+            /// <summary>
+            /// Balanced video profile to capture both videos and photos.
+            /// </summary>
             BalancedVideoAndPhoto,
+
+            /// <summary>
+            /// Video profile for video conferencing, often of lower power consumption
+            /// and lower latency by deprioritizing higher resolutions.
+            /// This is the recommended profile for most WebRTC applications, if supported.
+            /// </summary>
             VideoConferencing,
+
+            /// <summary>
+            /// Video profile for capturing a sequence of photos.
+            /// </summary>
             PhotoSequence,
+
+            /// <summary>
+            /// Video profile containing high framerate capture formats.
+            /// </summary>
             HighFrameRate,
+
+            /// <summary>
+            /// Video profile for capturing a variable sequence of photos.
+            /// </summary>
             VariablePhotoSequence,
+
+            /// <summary>
+            /// Video profile for capturing videos with High Dynamic Range (HDR) and Wide Color Gamut (WCG).
+            /// </summary>
             HdrWithWcgVideo,
+
+            /// <summary>
+            /// Video profile for capturing photos with High Dynamic Range (HDR) and Wide Color Gamut (WCG).
+            /// </summary>
             HdrWithWcgPhoto,
+
+            /// <summary>
+            /// Video profile for capturing videos with High Dynamic Range (HDR).
+            /// </summary>
             VideoHdr8,
         };
 
@@ -354,6 +489,15 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
+        /// <summary>
+        /// Indicates whether the peer connection is established and can exchange some
+        /// track content (audio/video/data) with the remote peer.
+        /// </summary>
+        /// <remarks>
+        /// This does not indicate whether the ICE exchange is done, as it
+        /// may continue after the peer connection negotiated a first session.
+        /// For ICE connection status, see the <see cref="IceStateChanged"/> event.
+        /// </remarks>
         public bool IsConnected { get; private set; } = false;
 
         /// <summary>
@@ -810,6 +954,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Initialize the current peer connection object asynchronously.
         /// </summary>
+        /// <param name="config">Configuration for initializing the peer connection.</param>
         /// <param name="token">Optional cancellation token for the initialize task. This is only used if
         /// the singleton task was created by this call, and not a prior call.</param>
         /// <returns>The singleton task used to initialize the underlying native peer connection.</returns>
@@ -1034,7 +1179,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Add to the current connection a video track from a local video capture device (webcam).
         /// </summary>
-        /// <param name="device">Optional device to use, defaults to first available one.</param>
+        /// <param name="settings">Video capture settings for the local video track.</param>
         /// <returns>Asynchronous task completed once the device is capturing and the track is added.</returns>
         /// <remarks>
         /// On UWP this requires the "webcam" capability.
@@ -1699,6 +1844,13 @@ namespace Microsoft.MixedReality.WebRTC
             });
         }
 
+        /// <summary>
+        /// Enumerate the video capture formats for the specified video captur device.
+        /// </summary>
+        /// <param name="deviceId">Unique identifier of the video capture device to enumerate the
+        /// capture formats of, as retrieved from the <see cref="VideoCaptureDevice.id"/> field of
+        /// a capture device enumerated with <see cref="GetVideoCaptureDevicesAsync"/>.</param>
+        /// <returns>The list of available video capture formats for the specified video capture device.</returns>
         public static Task<List<VideoCaptureFormat>> GetVideoCaptureFormatsAsync(string deviceId)
         {
             var formats = new List<VideoCaptureFormat>();

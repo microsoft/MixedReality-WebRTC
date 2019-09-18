@@ -37,12 +37,33 @@ namespace Microsoft.MixedReality.WebRTC
     /// </summary>
     public class I420VideoFrameStorage : IVideoFrameStorage
     {
-        public ulong Capacity { get { return _capacity; } set { Resize(value); } }
-        public uint Width { get; set; }
-        public uint Height { get; set; }
-        public byte[] Buffer { get; private set; }
+        /// <summary>
+        /// Total capacity of the storage, in bytes.
+        /// This can be assigned to resize the storage.
+        /// </summary>
+        /// <remarks>
+        /// Reading this property is equivalent to reading the <see cref="System.Array.LongLength"/>
+        /// property of <see cref="Buffer"/>.
+        /// </remarks>
+        public ulong Capacity {
+            get { return (ulong)Buffer.LongLength; }
+            set { Resize(value); }
+        }
 
-        private ulong _capacity = 0;
+        /// <summary>
+        /// Frame width, in pixels.
+        /// </summary>
+        public uint Width { get; set; }
+
+        /// <summary>
+        /// Frame height, in pixels.
+        /// </summary>
+        public uint Height { get; set; }
+
+        /// <summary>
+        /// Raw byte buffer containing the frame data.
+        /// </summary>
+        public byte[] Buffer { get; private set; }
 
         /// <summary>
         /// Resize the internal buffer to the given capacity.
@@ -51,10 +72,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="capacity">The new desired capacity, in bytes.</param>
         private void Resize(ulong capacity)
         {
-            if (capacity > _capacity)
+            if (capacity > (ulong)Buffer.LongLength)
             {
                 Buffer = new byte[capacity];
-                _capacity = capacity;
             }
         }
     }
