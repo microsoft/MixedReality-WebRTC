@@ -81,9 +81,10 @@ jobs:
       # Ensure destination folder exists
       New-Item -Path "$env:STAGEDIR" -ItemType Directory -Force -ErrorAction Ignore
 
-      # Copy DLL and PDB from Release build
+      # Copy DLL, PDB, and Intellisense docs (XML) from Release build
       Copy-Item -Force -Path "$env:SOURCEDIR/Microsoft.MixedReality.WebRTC.dll" -Destination "$env:STAGEDIR"
       Copy-Item -Force -Path "$env:SOURCEDIR/Microsoft.MixedReality.WebRTC.pdb" -Destination "$env:STAGEDIR"
+      Copy-Item -Force -Path "$env:SOURCEDIR/Microsoft.MixedReality.WebRTC.xml" -Destination "$env:STAGEDIR"
 
     displayName: 'Stage C# WebRTC lib'
     condition: variables['publish']
