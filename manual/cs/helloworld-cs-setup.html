@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Creating a project | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Creating a project | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="creating-a-project">Creating a project</h1>
+
+<p>In this tutorial we use <a href="https://dotnet.microsoft.com/download/dotnet-core/3.0">.NET Core 3.0</a> to create a C# Desktop application that is mostly platform independent, except for the UI part which requires the Desktop Pack for Windows to use the <a href="https://github.com/dotnet/wpf">Windows Presentation Foundation (WPF)</a> UI framework.</p>
+<p><em>Note</em>: Currently .NET Core 3.0 is still in preview, so some extra Visual Studio 2019 setup is required.</p>
+<p><em>Note</em>: This tutorial assumes that the host device where the app will be running during the tutorial has access to:</p>
+<ul>
+<li>a webcam, or any other video capture device recognized by WebRTC</li>
+<li>a microphone, or any other audio capture device recognized by WebRTC</li>
+</ul>
+<h2 id="install-net-core-30">Install .NET Core 3.0</h2>
+<p>Download the latest .NET Core 3.0 <strong>SDK</strong> (and not Runtime) from its <a href="https://dotnet.microsoft.com/download/dotnet-core/3.0">download page</a> and install it.</p>
+<h2 id="generate-the-project">Generate the project</h2>
+<p>Open a terminal and use the <code>dotnet</code> command to create a new project from the WPF template. We will name this tutorial project <code>TestNetCoreWpf</code>.</p>
+<pre><code>dotnet new wpf --name TestNetCoreWpf
+</code></pre>
+<p>This generates a folder named <code>TestNetCoreWpf</code> which contains the following notable files:</p>
+<ul>
+<li><strong><code>TestNetCoreWpf.csproj</code></strong> : The C# project</li>
+<li><strong><code>MainWindow.xaml</code></strong> : The XAML file describing the user interface of the main application window</li>
+<li><strong><code>MainWindow.xaml.cs</code></strong> : The C# code associated with <code>MainWindow.xaml</code>, where the UI actions are created</li>
+</ul>
+<h2 id="configure-visual-studio-2019">Configure Visual Studio 2019</h2>
+<p><em>This step is only needed if using a preview version of .NET Core.</em></p>
+<p>In order to be able to open C# projects created with a preview version of .NET Core 3.0, Visual Studio 2019 must be configured to use preview SDKs. Otherwise it will display a generic error dialog box when trying to open the <code>.csproj</code> project file.</p>
+<p>Open Visual Studio 2019, go to <strong>Tools</strong> &gt; <strong>Options</strong> &gt; <strong>Environment</strong> &gt; <strong>Preview Features</strong>, and check the <strong>Use previews of the .NET Core SDK</strong> option. After that, restart Visual Studio 2019 for changes to take effect.</p>
+<p><img src="cs2.png" alt="Allow preview versions of .NET Core 3.0 SDK"></p>
+<h2 id="open-the-net-core-project-in-visual-studio-2019">Open the .NET Core project in Visual Studio 2019</h2>
+<p>Open the C# project generated earlier (<code>TestNetCoreWpf.csproj</code>), then build and run it, either by pressing <strong>F5</strong> or selecting in the menu <strong>Debug</strong> &gt; <strong>Start Debugging</strong>. After the project built successfully, an empty main window should appear, with the WPF debug bar at its top. Note that this bar only appears while debugging, not when running the app outside Visual Studio 2019. It can be ignored.</p>
+<p><img src="cs3.png" alt="Empty main window of the newly generated C# project"></p>
+<p><em>Note</em> : The project can alternatively be built on the command line with <code>dotnet build</code>, and launched with <code>dotnet run</code> (which implies building). However because we will be modifying the XAML user interface, Visual Studio 2019 provides a better experience with its integrated visual XAML editor than editing <code>.xaml</code> files from code.</p>
+<h2 id="add-a-dependency-to-mixedreality-webrtc">Add a dependency to MixedReality-WebRTC</h2>
+<p>In order to use the MixedReality-WebRTC project in this new <code>TestNetCoreWpf</code> app, we will add a dependency to its C# NuGet package hosted on <a href="https://www.nuget.org/">nuget.org</a>. This is by far the easiest way, although a locally-built copy of the <code>Microsoft.MixedReality.WebRTC.dll</code> assembly could also be alternatively used (but this is out of the scope of this tutorial).</p>
+<p>There are again multiple ways to add a reference to this NuGet package, in particular via the Visual Studio NuGet package manager for the project, or via the <code>dotnet</code> command line. For simplicity, we show here how to do so the <code>dotnet</code> way, which simply involves typing a single command.</p>
+<pre><code>dotnet add TestNetCoreWpf.csproj package Microsoft.MixedReality.WebRTC
+</code></pre>
+<p>This will download from <a href="https://www.nuget.org/">nuget.org</a> and install the <code>Microsoft.MixedReality.WebRTC.nupkg</code> NuGet package, which contains the same-named assembly, as well as its native dependencies for both Desktop and UWP platforms.</p>
+<p>After that, <code>TestNetCoreWpf.csproj</code> should contain a reference to the package, with a version corresponding to the latest version found on <a href="https://www.nuget.org/">nuget.org</a>.</p>
+<pre><code class="lang-xml">&lt;ItemGroup&gt;
+  &lt;PackageReference Include=&quot;Microsoft.MixedReality.WebRTC&quot; Version=&quot;...&quot; /&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<h2 id="test-the-reference">Test the reference</h2>
+<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a href="xref:PeerConnection.GetVideoCaptureDevicesAsync"><code>PeerConnection.GetVideoCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
+<p>In <code>MainWindows.xaml.cs</code>:</p>
+<ol>
+<li><p>At the top of the file, add some <code>using</code> statement to import the <code>Microsoft.MixedReality.WebRTC</code> assembly.</p>
+<pre><code class="lang-cs">using Microsoft.MixedReality.WebRTC;
+</code></pre>
+</li>
+<li><p>In the <code>MainWindow</code> constructor, register a handler for the <code>OnLoaded</code> event, which will be fired once the XAML user interface finished loading. For now it is not required to wait on the UI to call <code>Microsoft.MixedReality.WebRTC</code> methods. But later when accessing the UI to interact with its controls, either to get user inputs or display results, this will be required. So as a best practice we start doing so right away instead of invoking some code directly in the <code>MainWindow</code> constructor.</p>
+<pre><code class="lang-cs">public MainWindow()
+{
+    InitializeComponent();
+    this.Loaded += OnLoaded;
+}
+</code></pre>
+</li>
+<li><p>Create the event handler <code>OnLoaded()</code> and use it to enumerate the video capture devices. <code>GetVideoCaptureDevicesAsync()</code> returns a <code>Task</code> object which, once the task is completed successfully, will hold a list of video capture devices found on the host device where the app is running.</p>
+<pre><code class="lang-cs">public void OnLoaded(object sender, RoutedEventArgs e)
+{
+     // Asynchronously retrieve a list of available video capture devices (webcams).
+     PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((enumTask) =&gt;
+         {
+             // Abort if the device enumeration failed
+             if (enumTask.Exception != null)
+             {
+                 throw enumTask.Exception;
+             }
+
+             // Get the device list and, for example, print them to the debugger console
+             var devices = enumTask.Result;
+             foreach (var device in devices)
+             {
+                 // This message will show up in the Output window of Visual Studio
+                 Debugger.Log(0, &quot;&quot;, $&quot;Found video capture device {device.name} (id: {device.id})&quot;);
+             }
+         }
+     );
+}
+</code></pre>
+</li>
+</ol>
+<p>Launch the app again. The main window is still empty, but the <strong>Output window</strong> of Visual Studio 2019 should show a list of devices. This list depends on the actual host device running the app, but looks something like:</p>
+<pre><code>Found video capture device &lt;some webcam name&gt; (id: &lt;some long ID&gt;)
+</code></pre>
+<p>Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see <a href="xref:PeerConnection.AddLocalVideoTrackAsync"><code>PeerConnection.AddLocalVideoTrackAsync</code></a>).</p>
+<hr>
+<p>Next : <a href="helloworld-cs-peerconnection">Creating a peer connection</a></p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/manual/cs/helloworld-cs-setup.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

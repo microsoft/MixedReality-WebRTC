@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class LocalVideoSource
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -171,6 +171,34 @@ to add a video track to the peer connection and start sending video data to the 
   </table>
   
   
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Constraints" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.Constraints">Constraints</h4>
+  <div class="markdown level1 summary"><p>For manual <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Mode">Mode</a>, optional constraints on the resolution and framerate of
+the capture format. These constraints are additive, meaning a matching format must satisfy
+all of them at once, in addition of being restricted to the formats supported by the selected
+video profile or kind of profile.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public VideoCaptureConstraints Constraints</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints.html">VideoCaptureConstraints</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_EnableMixedRealityCapture" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.EnableMixedRealityCapture">EnableMixedRealityCapture</h4>
   <div class="markdown level1 summary"><p>Enable Mixed Reality Capture (MRC) if available on the local device.
 This option has no effect on devices not supporting MRC.</p>
@@ -191,6 +219,31 @@ This option has no effect on devices not supporting MRC.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Mode" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.Mode">Mode</h4>
+  <div class="markdown level1 summary"><p>Selection mode for the video capture format.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public LocalVideoSourceFormatMode Mode</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.html">LocalVideoSourceFormatMode</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -242,6 +295,58 @@ See <a href="https://en.wikipedia.org/wiki/RTP_audio_video_profile">https://en.w
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_VideoProfileId" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.VideoProfileId">VideoProfileId</h4>
+  <div class="markdown level1 summary"><p>For manual <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Mode">Mode</a>, unique identifier of the video profile to use,
+or an empty string to leave unconstrained.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string VideoProfileId</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_VideoProfileKind" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.VideoProfileKind">VideoProfileKind</h4>
+  <div class="markdown level1 summary"><p>For manual <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Mode">Mode</a>, kind of video profile to use among a list of predefined
+ones, or an empty string to leave unconstrained.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PeerConnection.VideoProfileKind VideoProfileKind</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.VideoProfileKind.html">PeerConnection.VideoProfileKind</a></td>
         <td></td>
       </tr>
     </tbody>

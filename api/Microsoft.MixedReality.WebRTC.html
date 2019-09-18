@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace Microsoft.MixedReality.WebRTC
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -100,11 +100,19 @@ or one of its variants. <a class="xref" href="Microsoft.MixedReality.WebRTC.Data
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.I420VideoFrameStorage.html">I420VideoFrameStorage</a></h4>
       <section><p>Storage for a video frame encoded in I420 format.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IceServer.html">IceServer</a></h4>
+      <section></section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.MovingAverage.html">MovingAverage</a></h4>
       <section><p>Utility to manage a moving average of a time series.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html">PeerConnection</a></h4>
       <section><p>The WebRTC peer connection object is the entry point to using WebRTC.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.html">PeerConnection.LocalVideoTrackSettings</a></h4>
+      <section><p>Settings for adding a local video track.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html">PeerConnectionConfiguration</a></h4>
+      <section><p>Configuration to initialize a <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html">PeerConnection</a>.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.SignalerMessage.html">SignalerMessage</a></h4>
       <section><p>Data that makes up a signaler message</p>
@@ -132,9 +140,10 @@ is faster than the sink, by limiting the maximum queue length.</p>
       <section><p>Single video frame encoded in I420A format (triplanar YUV + alpha, 18 bits per pixel).
 See e.g. <a href="https://wiki.videolan.org/YUV/#I420">https://wiki.videolan.org/YUV/#I420</a> for details.</p>
 </section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDevice.html">PeerConnection.VideoCaptureDevice</a></h4>
-      <section><p>Identifier for a video capture device.</p>
-</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html">VideoCaptureDevice</a></h4>
+      <section></section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureFormat.html">VideoCaptureFormat</a></h4>
+      <section></section>
     <h3 id="interfaces">Interfaces
   </h3>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.ISignaler.html">ISignaler</a></h4>
@@ -149,12 +158,27 @@ to send and receive messages in order to establish a connection with a remote pe
 </section>
     <h3 id="enums">Enums
   </h3>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.BundlePolicy.html">BundlePolicy</a></h4>
+      <section><p>Bundle policy.
+See <a href="https://www.w3.org/TR/webrtc/#rtcbundlepolicy-enum">https://www.w3.org/TR/webrtc/#rtcbundlepolicy-enum</a>.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.ChannelState.html">DataChannel.ChannelState</a></h4>
       <section><p>Connecting state of a data channel, when adding it to a peer connection
 or removing it from a peer connection.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IceConnectionState.html">IceConnectionState</a></h4>
+      <section><p>ICE connection state.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IceTransportType.html">IceTransportType</a></h4>
+      <section><p>Type of ICE candidates offered to the remote peer.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html">PeerConnection.TrackKind</a></h4>
       <section><p>Kind of WebRTC track.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.VideoProfileKind.html">PeerConnection.VideoProfileKind</a></h4>
+      <section></section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.SdpSemantic.html">SdpSemantic</a></h4>
+      <section><p>SDP semantic used for (re)negotiating a peer connection.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.html">SignalerMessage.WireMessageType</a></h4>
       <section><p>Possible message types as-serialized on the wire</p>
@@ -175,11 +199,9 @@ and is ready for consumption.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate.html">PeerConnection.IceCandidateReadytoSendDelegate</a></h4>
       <section></section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChangedDelegate.html">PeerConnection.IceStateChangedDelegate</a></h4>
+      <section></section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadyToSendDelegate.html">PeerConnection.LocalSdpReadyToSendDelegate</a></h4>
-      <section></section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDeviceEnumCallback.html">PeerConnection.VideoCaptureDeviceEnumCallback</a></h4>
-      <section></section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDeviceEnumCompletedCallback.html">PeerConnection.VideoCaptureDeviceEnumCompletedCallback</a></h4>
       <section></section>
 </article>
           </div>

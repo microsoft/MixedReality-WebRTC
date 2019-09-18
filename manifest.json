@@ -18,7 +18,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.ARGBVideoFrame.html",
-          "hash": "nY6y8cJzXDQ+wvZklOMY6w=="
+          "hash": "LxSJoBvOnW4FBrT2uY3uOA=="
         }
       },
       "is_incremental": false,
@@ -30,7 +30,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameDelegate.html",
-          "hash": "VEAm6AEqzTSW4HWVbF6YAA=="
+          "hash": "DB8MZDx81H8WGHXZT3KS0g=="
         }
       },
       "is_incremental": false,
@@ -42,7 +42,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioFrame.html",
-          "hash": "t4wL+icMn9vYhYMXS6sDKw=="
+          "hash": "K2IOmi2JqffUndibc1kIkA=="
         }
       },
       "is_incremental": false,
@@ -54,7 +54,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioFrameDelegate.html",
-          "hash": "wCjC/8Yw2UCxtFsWu8CZSg=="
+          "hash": "QOJkWYUV24MGkgAARVpkGg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.BundlePolicy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.BundlePolicy.html",
+          "hash": "l9NaojKprcLMQR7edCscLQ=="
         }
       },
       "is_incremental": false,
@@ -66,7 +78,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.ChannelState.html",
-          "hash": "V26/ARHWLtkYxIZIGe6WMg=="
+          "hash": "YUhVWvzlE16um4MTROV4RQ=="
         }
       },
       "is_incremental": false,
@@ -78,7 +90,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.html",
-          "hash": "MpN2Pzcn2JflP1ArnbQdRQ=="
+          "hash": "q4gUORd91Fc2CLc+iStVEw=="
         }
       },
       "is_incremental": false,
@@ -90,7 +102,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrame.html",
-          "hash": "AtZaqj77HshKm+l8TkLdyg=="
+          "hash": "uGJ08TEtrU4hDiUzBeyM4A=="
         }
       },
       "is_incremental": false,
@@ -102,7 +114,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420VideoFrameDelegate.html",
-          "hash": "8KaCyMGPk8/anplK1w5Vjw=="
+          "hash": "PQ/B9A5sTAEPn1/5Wh2mzA=="
         }
       },
       "is_incremental": false,
@@ -114,7 +126,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420VideoFrameStorage.html",
-          "hash": "MXScPW5a2K+GFeqb1ABj5w=="
+          "hash": "H7AMl+w7h7SACGTPOBldpg=="
         }
       },
       "is_incremental": false,
@@ -126,7 +138,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.ISignaler.html",
-          "hash": "mHk1FAspDw3OBD+Y8YXzLQ=="
+          "hash": "RCn+/oRTCtizu3+RcZ7LIQ=="
         }
       },
       "is_incremental": false,
@@ -138,7 +150,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoFrameQueue.html",
-          "hash": "FxFeKXDKZCSou/FBsH40CQ=="
+          "hash": "3s1us3fLJf6AFAsvYyAdwg=="
         }
       },
       "is_incremental": false,
@@ -150,7 +162,43 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoFrameStorage.html",
-          "hash": "0qL1Ok4kGCHc3rRltBMoPQ=="
+          "hash": "CpkoFXYhmPUHAAPzMy8Uzg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IceConnectionState.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IceConnectionState.html",
+          "hash": "rDYG3lqZd7DB1I5tskBm/g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IceServer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IceServer.html",
+          "hash": "eXDfjc0SK1etHD1BvX0hxg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IceTransportType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IceTransportType.html",
+          "hash": "P5IdqAjP1AHLctLxBVth5g=="
         }
       },
       "is_incremental": false,
@@ -162,7 +210,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.MovingAverage.html",
-          "hash": "En4S3nCjXObNsJpJD9nKkg=="
+          "hash": "dwa4DP2BqB4FfmO9PHI7Ig=="
         }
       },
       "is_incremental": false,
@@ -174,7 +222,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate.html",
-          "hash": "lkLc9J/4n0bA+EpHwbGJiw=="
+          "hash": "x+zw243x8UeJR/WRUkdohQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChangedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChangedDelegate.html",
+          "hash": "hfo9IgnDchN6rP86PdvEyA=="
         }
       },
       "is_incremental": false,
@@ -186,7 +246,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadyToSendDelegate.html",
-          "hash": "G+mmsLwu2lUjjnNTSk4++A=="
+          "hash": "jB37RvbvAFTOY/WKTuoLiA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.html",
+          "hash": "vXE9suOQw61KJvka2tUsPw=="
         }
       },
       "is_incremental": false,
@@ -198,7 +270,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html",
-          "hash": "GQQUwEPhQ6Z6m5wqDtYnCw=="
+          "hash": "KJ2XUiZ2Z0QWOLujAs18Tw=="
         }
       },
       "is_incremental": false,
@@ -206,35 +278,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDevice.yml",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoProfileKind.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDevice.html",
-          "hash": "t6N0aVWlFY9QPPF/gvuwhA=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDeviceEnumCallback.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDeviceEnumCallback.html",
-          "hash": "qDKya+J51RJ5VibURkV2sQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDeviceEnumCompletedCallback.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoCaptureDeviceEnumCompletedCallback.html",
-          "hash": "OBkIAWkNGIbWz0vFqk0EoA=="
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoProfileKind.html",
+          "hash": "TDajaWCAKuys6kBaiotHAA=="
         }
       },
       "is_incremental": false,
@@ -246,7 +294,31 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.html",
-          "hash": "8bkvOZC6kvXAh14nXLkUsA=="
+          "hash": "FKxceuMITTUp9lrEXOnQug=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html",
+          "hash": "f/Jt/HlQS9Zxs9eoQHEGew=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.SdpSemantic.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.SdpSemantic.html",
+          "hash": "WD9BGr72OrfOy0ZEXU+Vrg=="
         }
       },
       "is_incremental": false,
@@ -258,7 +330,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.html",
-          "hash": "wbJnwV56j7Uhytq4DyDvPw=="
+          "hash": "1fXGooU4loAXsXVRsrusyA=="
         }
       },
       "is_incremental": false,
@@ -270,7 +342,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SignalerMessage.html",
-          "hash": "ekgo5jKYh/OHnExk1X4nsA=="
+          "hash": "DZgstPtqEy79QBZbX1+6uQ=="
         }
       },
       "is_incremental": false,
@@ -282,7 +354,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.TaskExtensions.html",
-          "hash": "PQGONd2MQ9gsnhwiHcuueQ=="
+          "hash": "RrlTW0t1T6gOtULEeJlOsg=="
         }
       },
       "is_incremental": false,
@@ -294,7 +366,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioSource.html",
-          "hash": "dx9SVEohxZFlog1WU2DQ3w=="
+          "hash": "plk0ZJq2fdi8DTqLiW71Ug=="
         }
       },
       "is_incremental": false,
@@ -306,7 +378,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent.html",
-          "hash": "+Tf4xCxeL3ULm3xVFjJXng=="
+          "hash": "PFb7iAuMPWL9gzrpUIdiZA=="
         }
       },
       "is_incremental": false,
@@ -318,7 +390,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent.html",
-          "hash": "wextKSY9IGpvvo4+oGL/JQ=="
+          "hash": "nbC5+EbMiSYNWr47BRyM8Q=="
         }
       },
       "is_incremental": false,
@@ -330,7 +402,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.html",
-          "hash": "qyg78WK5xHyxDmKyA6vDaw=="
+          "hash": "8LSSpM4UG8wh4CE6J4CmwQ=="
         }
       },
       "is_incremental": false,
@@ -342,7 +414,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.LocalVideoSourceEditor.html",
-          "hash": "tfORzxysodDShcuemZyM+A=="
+          "hash": "xqqJ+QA4f2JjpwUzIEWLSQ=="
         }
       },
       "is_incremental": false,
@@ -354,7 +426,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.html",
-          "hash": "GCGwTILr49xiUHEgRxfAGA=="
+          "hash": "c+rVeJslEfZYils3O6U1SQ=="
         }
       },
       "is_incremental": false,
@@ -366,7 +438,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.IceType.html",
-          "hash": "xkL+xcLDli9kSqYlpi3yBQ=="
+          "hash": "bBvmouVg4v5OfvG50lvRmw=="
         }
       },
       "is_incremental": false,
@@ -378,7 +450,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.html",
-          "hash": "pf5gQ5UxG4QqgFnuff8dtw=="
+          "hash": "mw2ZoyuyazZMimkHXbj60g=="
         }
       },
       "is_incremental": false,
@@ -390,7 +462,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html",
-          "hash": "yiK1FoKBhdKjn+mJk2dwNw=="
+          "hash": "kW55PYUzk6ydqnzY24wqOA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.html",
+          "hash": "N9XDfKjle9aQv2gQNb3nMg=="
         }
       },
       "is_incremental": false,
@@ -402,7 +486,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html",
-          "hash": "Rkp+UzmULDPahv6YH4D2gg=="
+          "hash": "UscV11nZSKw4ULecUK9oQg=="
         }
       },
       "is_incremental": false,
@@ -414,7 +498,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html",
-          "hash": "Zy8vRhJ85mk4C5pFAN8ckA=="
+          "hash": "QzZP5tYb+Pb+rAzaqbomXA=="
         }
       },
       "is_incremental": false,
@@ -426,7 +510,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html",
-          "hash": "LBaz0zmPQrBmVkRW+TNjog=="
+          "hash": "+gVWYQfbw+BkULibxBwfYA=="
         }
       },
       "is_incremental": false,
@@ -438,7 +522,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html",
-          "hash": "wwmHwyVFL2vO+OcFboiNeg=="
+          "hash": "+Emy1MkhSEiLQ6oBJgE8TA=="
         }
       },
       "is_incremental": false,
@@ -450,7 +534,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.RemoteVideoSource.html",
-          "hash": "b9czRfmbZEBj13SlB8U9wA=="
+          "hash": "YEdoUmg5yuHvSzaaPwVpAQ=="
         }
       },
       "is_incremental": false,
@@ -462,7 +546,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html",
-          "hash": "EWx8RD32P0qvwapEun4/UA=="
+          "hash": "c2wI1tJ0TjruRcsmmGAHqw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints.html",
+          "hash": "bqr59DOJ8pcJIZb+KcU1DA=="
         }
       },
       "is_incremental": false,
@@ -474,7 +570,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoSource.html",
-          "hash": "+kTPA4Ole8NswU9z1xdg+A=="
+          "hash": "VokW/ki8doRpDeRXZgxi3w=="
         }
       },
       "is_incremental": false,
@@ -486,7 +582,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent.html",
-          "hash": "un1CGFihVhShNBPhPQNTpQ=="
+          "hash": "0RxqdwYTVaPXmgiQfB9jYg=="
         }
       },
       "is_incremental": false,
@@ -498,7 +594,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoStreamStoppedEvent.html",
-          "hash": "S8Xl0i3CTOXVdb0Y/bvpLQ=="
+          "hash": "zJ6jgA1PaMvFeSOXQxwmdQ=="
         }
       },
       "is_incremental": false,
@@ -510,7 +606,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WebRTCErrorEvent.html",
-          "hash": "COjGX0I9q7jYbIrfyZRbXg=="
+          "hash": "2aFVWWoZM82CjTHyBT4oTw=="
         }
       },
       "is_incremental": false,
@@ -522,7 +618,31 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.html",
-          "hash": "ouZV8ESUDkIN25IbF/vxGA=="
+          "hash": "yM7v16zWWq4GpMhQZQL40w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoCaptureDevice.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html",
+          "hash": "BqCJC3rhBbfdAchQTdhNYA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoCaptureFormat.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoCaptureFormat.html",
+          "hash": "V6QCYWYVU9ZhdA2N+PO3JQ=="
         }
       },
       "is_incremental": false,
@@ -534,7 +654,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html",
-          "hash": "yWMWwFqGALFkT2qaBOqiuQ=="
+          "hash": "WzxxJS2pLUwhr9OrC3szPw=="
         }
       },
       "is_incremental": false,
@@ -546,7 +666,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.html",
-          "hash": "gPBXDDSqgqB+xopDS9HSXA=="
+          "hash": "MwRnmcKVmpUI/NpM4lgZbw=="
         }
       },
       "is_incremental": false,
@@ -558,7 +678,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "L/IC1EKMeqrovUsRBOcpHg=="
+          "hash": "b08HnvlaOn6LjTz9KJRgMw=="
         }
       },
       "is_incremental": false,
@@ -570,7 +690,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "MOQ0sZV/YHyLg2hdp95p8Q=="
+          "hash": "LflMU2Jig2p4Fk1P0OV0RQ=="
         }
       },
       "is_incremental": false,
@@ -582,7 +702,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "VUc+g6j+22bQfPtLnrnE9g=="
+          "hash": "xklqAdHP5wQeeCxZldJjVw=="
         }
       },
       "is_incremental": false,
@@ -638,7 +758,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/avplayback.html",
-          "hash": "TUg3T7oGoAqVtq615/3ijQ=="
+          "hash": "Oiv8/Ey0uw5s46EZJnJhWg=="
         }
       },
       "is_incremental": false,
@@ -650,7 +770,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/building-core.html",
-          "hash": "HCLviBJ+su9qATllxfyI2g=="
+          "hash": "lkFfWgFh2iwkBVHWeTvpXw=="
         }
       },
       "is_incremental": false,
@@ -662,7 +782,68 @@
       "output": {
         ".html": {
           "relative_path": "manual/building.html",
-          "hash": "tkGe96PSgdaOvfuWcowscA=="
+          "hash": "Uix0JxAvzZoojvsLr//t7g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs1.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs2.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs3.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-peerconnection.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-peerconnection.html",
+          "hash": "f2MIAz+adbn0ueAiDGgvbw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "InvalidFileLink",
+        "UidNotFound"
+      ],
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-setup.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-setup.html",
+          "hash": "EHb/xNbwH2zfzNmfnbe0XA=="
         }
       },
       "is_incremental": false,
@@ -674,7 +855,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/download.html",
-          "hash": "/T0p3MkG4/nloTsbF+nnrw=="
+          "hash": "n08VBu+4SawqlXqmbO1tFg=="
         }
       },
       "is_incremental": false,
@@ -686,7 +867,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/gettingstarted.html",
-          "hash": "lUg9dWsdupPVw7C+aLj4ZA=="
+          "hash": "IbLdopvLrcgUs9TbtIi4pQ=="
         }
       },
       "is_incremental": false,
@@ -698,7 +879,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/helloworld-cs.html",
-          "hash": "cjeyEb4qFALD+plqZxDzxQ=="
+          "hash": "TngTE8GsxugyISGtq1NkDQ=="
         }
       },
       "is_incremental": false,
@@ -897,7 +1078,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/helloworld-unity-connection.html",
-          "hash": "bbNpxS8M5z392o8da3sDiQ=="
+          "hash": "2MhZMBmewc1VPdGtxAc4Bg=="
         }
       },
       "is_incremental": false,
@@ -909,7 +1090,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/helloworld-unity-createproject.html",
-          "hash": "U2bwQcHdvMOBoJbeQT/YkA=="
+          "hash": "i/DCUE18bj/eEbZYfPbxLw=="
         }
       },
       "is_incremental": false,
@@ -921,7 +1102,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/helloworld-unity-importwebrtc.html",
-          "hash": "oJNDftguOE1gFC88j16Auw=="
+          "hash": "A/tY5xIJQ8dFq3RWmiRuMA=="
         }
       },
       "is_incremental": false,
@@ -933,7 +1114,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/helloworld-unity-localvideo.html",
-          "hash": "kCUqMkS2wlRs3mLQmaHvjQ=="
+          "hash": "cTztKeAECeLgfI7eqUTWRw=="
         }
       },
       "is_incremental": false,
@@ -945,7 +1126,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/helloworld-unity-peerconnection.html",
-          "hash": "uM+nhoNquWfxuEEClgnc/w=="
+          "hash": "xb3VCxNE6em87BrpKZyz7w=="
         }
       },
       "is_incremental": false,
@@ -957,7 +1138,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/helloworld-unity-remotevideo.html",
-          "hash": "0QUzcU32b85c0Tt+KN/wLA=="
+          "hash": "ZkxdXsqWYnqOVR5/2P1M1Q=="
         }
       },
       "is_incremental": false,
@@ -969,7 +1150,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/helloworld-unity-signaler.html",
-          "hash": "oQGEPumvA+A2ojinh6IJYQ=="
+          "hash": "39OAeL/OHmMIsXrEVWCStQ=="
         }
       },
       "is_incremental": false,
@@ -981,7 +1162,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/helloworld-unity.html",
-          "hash": "62riGfDC5zLa/+qeBXKtDQ=="
+          "hash": "nK8SN0LnTcKdaMRVF7vM6Q=="
         }
       },
       "is_incremental": false,
@@ -993,7 +1174,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/installation.html",
-          "hash": "eeNdK8v8E3EMHkU9/PpS4g=="
+          "hash": "LQGu6i8qqmd+UORnHdieIA=="
         }
       },
       "is_incremental": false,
@@ -1005,7 +1186,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/introduction.html",
-          "hash": "5oDQBP3iLN9qlaIH22k4yg=="
+          "hash": "eL4J9HlpCJV3qK1JuljI6Q=="
         }
       },
       "is_incremental": false,
@@ -1017,7 +1198,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/peerconnection.html",
-          "hash": "unYfAOc97hzrqOs1YnIbWQ=="
+          "hash": "mUA5/n2sgryLxEEa8w+hmA=="
         }
       },
       "is_incremental": false,
@@ -1029,7 +1210,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/signaling.html",
-          "hash": "HmSALL/JiKjaSA1xVwMj8Q=="
+          "hash": "1+BYx5P+EKWQBaVne0albg=="
         }
       },
       "is_incremental": false,
@@ -1075,7 +1256,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-components.html",
-          "hash": "UrAVa7wtrAddps0uF0tSBA=="
+          "hash": "p4RSH4AmuaiiHJq1pBNsqA=="
         }
       },
       "is_incremental": false,
@@ -1098,7 +1279,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-integration.html",
-          "hash": "Wzy+93HywnNRxuYJbMkR2Q=="
+          "hash": "/RQ6v5PqAnU0AMKPROrfcA=="
         }
       },
       "is_incremental": false,
@@ -1110,7 +1291,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-localaudiosource.html",
-          "hash": "P8XQMYVSCEWh5dt0SeMY7A=="
+          "hash": "EQ5NcOKN/1ehZyuLEPWGxw=="
         }
       },
       "is_incremental": false,
@@ -1133,7 +1314,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-localvideosource.html",
-          "hash": "id5hQy3CFTVfO0K/XMeKrA=="
+          "hash": "rKwVEdZZnV3XmLinFRtObQ=="
         }
       },
       "is_incremental": false,
@@ -1156,7 +1337,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-mediaplayer.html",
-          "hash": "HrwWpeImguSRshfF9SHeAg=="
+          "hash": "W7lZQOC0UizExYGBjneb2A=="
         }
       },
       "is_incremental": false,
@@ -1179,7 +1360,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-peerconnection.html",
-          "hash": "79x0sNN7KX0m8753FMnbJA=="
+          "hash": "yHhEVSBsmQFOe52WAo2PFg=="
         }
       },
       "is_incremental": false,
@@ -1202,7 +1383,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-remoteaudiosource.html",
-          "hash": "KX88dY0GcL8qnthaVA2PaQ=="
+          "hash": "mN5K/eOIdo03ZutavYs/FA=="
         }
       },
       "is_incremental": false,
@@ -1225,7 +1406,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-remotevideosource.html",
-          "hash": "Dd0D0PmABDp9N3urRNC2lA=="
+          "hash": "9SMLz3N7FhXS6At6/pY8hQ=="
         }
       },
       "is_incremental": false,
@@ -1248,7 +1429,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-signaler.html",
-          "hash": "TZYKVZ57RBGMopIl0DyiaQ=="
+          "hash": "9GkcHeUesuyfTD1O+qypHA=="
         }
       },
       "is_incremental": false,
@@ -1318,16 +1499,10 @@
           "total_file_count": 0,
           "skipped_file_count": 0
         },
-        "ManagedReferenceDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 46,
-          "skipped_file_count": 0
-        },
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 28,
+          "total_file_count": 30,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
@@ -1335,6 +1510,12 @@
           "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build",
           "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 56,
           "skipped_file_count": 0
         }
       }
