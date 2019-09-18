@@ -72,7 +72,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="capacity">The new desired capacity, in bytes.</param>
         private void Resize(ulong capacity)
         {
-            if (capacity > (ulong)Buffer.LongLength)
+            if ((Buffer == null) || (capacity > (ulong)Buffer.LongLength))
             {
                 Buffer = new byte[capacity];
             }
