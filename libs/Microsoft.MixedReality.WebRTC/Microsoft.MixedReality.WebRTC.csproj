@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
 
   <!-- This needs to go first, before Microsoft.Common.props is imported  -->
   <PropertyGroup>
@@ -26,6 +26,7 @@
     <RepositoryType>github</RepositoryType>
     <Copyright>Copyright (c) Microsoft Corporation</Copyright>
     <PackageTags>webrtc video audio streaming</PackageTags>
+    <DocumentationFile>..\..\bin\$(TargetFramework)\$(Configuration)\Microsoft.MixedReality.WebRTC.xml</DocumentationFile>
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
