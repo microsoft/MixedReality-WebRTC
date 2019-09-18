@@ -210,13 +210,16 @@ namespace TestAppUwp
             localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx);
             remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx));
 
+            dssSignaler.OnMessage += DssSignaler_OnMessage;
             dssSignaler.OnFailure += DssSignaler_OnFailure;
             dssSignaler.OnPollingDone += DssSignaler_OnPollingDone;
 
             dssStatsTimer.Tick += OnDssStatsTimerTick;
 
-            _peerConnection = new PeerConnection(dssSignaler);
+            _peerConnection = new PeerConnection();
             _peerConnection.Connected += OnPeerConnected;
+            _peerConnection.LocalSdpReadytoSend += OnLocalSdpReadyToSend;
+            _peerConnection.IceCandidateReadytoSend += OnIceCandidateReadyToSend;
             _peerConnection.IceStateChanged += OnIceStateChanged;
             _peerConnection.RenegotiationNeeded += OnPeerRenegotiationNeeded;
             _peerConnection.TrackAdded += Peer_RemoteTrackAdded;
@@ -229,6 +232,28 @@ namespace TestAppUwp
             //Window.Current.Closed += Shutdown; // doesn't work
 
             this.Loaded += OnLoaded;
+        }
+
+        private void OnLocalSdpReadyToSend(string type, string sdp)
+        {
+            var message = new NodeDssSignaler.Message
+            {
+                MessageType = NodeDssSignaler.Message.WireMessageTypeFromString(type),
+                Data = sdp,
+                IceDataSeparator = "|"
+            };
+            dssSignaler.SendMessageAsync(message);
+        }
+
+        private void OnIceCandidateReadyToSend(string candidate, int sdpMlineindex, string sdpMid)
+        {
+            var message = new NodeDssSignaler.Message
+            {
+                MessageType = NodeDssSignaler.Message.WireMessageType.Ice,
+                Data = $"{candidate}|{sdpMlineindex}|{sdpMid}", // see DssSignaler_OnMessage
+                IceDataSeparator = "|"
+            };
+            dssSignaler.SendMessageAsync(message);
         }
 
         private void OnIceStateChanged(IceConnectionState newState)
@@ -508,6 +533,33 @@ namespace TestAppUwp
                 sessionStatusText.Text = "(session joined)";
                 chatTextBox.IsEnabled = true;
             });
+        }
+
+        private void DssSignaler_OnMessage(NodeDssSignaler.Message message)
+        {
+            switch (message.MessageType)
+            {
+            case NodeDssSignaler.Message.WireMessageType.Offer:
+                _peerConnection.SetRemoteDescription("offer", message.Data);
+                // If we get an offer, we immediately send an answer back
+                _peerConnection.CreateAnswer();
+                break;
+
+            case NodeDssSignaler.Message.WireMessageType.Answer:
+                _peerConnection.SetRemoteDescription("answer", message.Data);
+                break;
+
+            case NodeDssSignaler.Message.WireMessageType.Ice:
+                // TODO - This is NodeDSS-specific
+                // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                _peerConnection.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
+            }
         }
 
         private void DssSignaler_OnFailure(Exception e)

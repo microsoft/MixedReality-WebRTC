@@ -292,6 +292,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // Fire signals before doing anything else to allow listeners to clean-up,
                 // including un-registering any callback and remove any track from the connection.
                 OnShutdown.Invoke();
+                Signaler.OnMessage -= Signaler_OnMessage;
                 Signaler.OnPeerUninitializing(this);
 
                 // Prevent publicly accessing the native peer after it has been deinitialized.
@@ -311,7 +312,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void Awake()
         {
-            _nativePeer = new WebRTC.PeerConnection(Signaler);
+            _nativePeer = new WebRTC.PeerConnection();
+            _nativePeer.LocalSdpReadytoSend += Signaler_LocalSdpReadyToSend;
+            _nativePeer.IceCandidateReadytoSend += Signaler_IceCandidateReadytoSend;
         }
 
         /// <summary>
@@ -328,11 +331,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
             // List video capture devices to Unity console
-            GetVideoCaptureDevicesAsync().ContinueWith((prevTask) =>
-            {
+            GetVideoCaptureDevicesAsync().ContinueWith((prevTask) => {
                 var devices = prevTask.Result;
-                _mainThreadWorkQueue.Enqueue(() =>
-                {
+                _mainThreadWorkQueue.Enqueue(() => {
                     foreach (var device in devices)
                     {
                         Debug.Log($"Found video capture device '{device.name}' (id:{device.id}).");
@@ -369,6 +370,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private void OnDestroy()
         {
+            _nativePeer.IceCandidateReadytoSend -= Signaler_IceCandidateReadytoSend;
+            _nativePeer.LocalSdpReadytoSend -= Signaler_LocalSdpReadyToSend;
             Uninitialize();
             OnError.RemoveListener(OnError_Listener);
         }
@@ -436,14 +439,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     TurnPassword = IceCredential
                 });
             }
-            return _nativePeer.InitializeAsync(config, token).ContinueWith((initTask) =>
-            {
+            return _nativePeer.InitializeAsync(config, token).ContinueWith((initTask) => {
                 token.ThrowIfCancellationRequested();
 
                 if (initTask.Exception != null)
                 {
-                    _mainThreadWorkQueue.Enqueue(() =>
-                    {
+                    _mainThreadWorkQueue.Enqueue(() => {
                         var errorMessage = new StringBuilder();
                         errorMessage.Append("WebRTC plugin initializing failed. See full log for exception details.\n");
                         Exception ex = initTask.Exception;
@@ -480,7 +481,56 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Peer = _nativePeer;
 
             Signaler.OnPeerInitialized(this);
+            Signaler.OnMessage += Signaler_OnMessage;
             OnInitialized.Invoke();
+        }
+
+        private void Signaler_LocalSdpReadyToSend(string type, string sdp)
+        {
+            var message = new Signaler.Message
+            {
+                MessageType = Signaler.Message.WireMessageTypeFromString(type),
+                Data = sdp
+            };
+            Signaler.SendMessageAsync(message);
+        }
+
+        private void Signaler_IceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
+        {
+            var message = new Signaler.Message
+            {
+                MessageType = Signaler.Message.WireMessageType.Ice,
+                Data = $"{candidate}|{sdpMlineindex}|{sdpMid}",
+                IceDataSeparator = "|"
+            };
+            Signaler.SendMessageAsync(message);
+        }
+
+        private void Signaler_OnMessage(Signaler.Message message)
+        {
+            switch (message.MessageType)
+            {
+            case Signaler.Message.WireMessageType.Offer:
+                _nativePeer.SetRemoteDescription("offer", message.Data);
+                // If we get an offer, we immediately send an answer back
+                _nativePeer.CreateAnswer();
+                break;
+
+            case Signaler.Message.WireMessageType.Answer:
+                _nativePeer.SetRemoteDescription("answer", message.Data);
+                break;
+
+            case Signaler.Message.WireMessageType.Ice:
+                // TODO - This is NodeDSS-specific
+                // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                _nativePeer.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
+            }
         }
 
         private void Peer_RenegotiationNeeded()

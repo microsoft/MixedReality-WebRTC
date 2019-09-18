@@ -432,12 +432,6 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
 
-        /// <summary>
-        /// Signaler implementation used by this peer connection, as specified in the constructor.
-        /// </summary>
-        public ISignaler Signaler { get; }
-
-
         #region Codec filtering
 
         /// <summary>
@@ -713,7 +707,7 @@ namespace Microsoft.MixedReality.WebRTC
             public static void IceCandidateReadytoSendCallback(IntPtr userData, string candidate, int sdpMlineindex, string sdpMid)
             {
                 var peer = FromIntPtr(userData);
-                peer.OnIceCandidateReadytoSend(candidate, sdpMlineindex, sdpMid);
+                peer.IceCandidateReadytoSend?.Invoke(candidate, sdpMlineindex, sdpMid);
             }
 
             [MonoPInvokeCallback(typeof(IceStateChangedDelegate))]
@@ -912,44 +906,6 @@ namespace Microsoft.MixedReality.WebRTC
 
 
         #region Initializing and shutdown
-
-        /// <summary>
-        /// Construct an uninitialized peer connection object which will delegate to the given
-        /// <see cref="ISignaler"/> implementation for its WebRTC signaling needs.
-        /// </summary>
-        /// <param name="signaler">The signaling implementation to use.</param>
-        public PeerConnection(ISignaler signaler)
-        {
-            Signaler = signaler;
-            Signaler.OnMessage += Signaler_OnMessage;
-        }
-
-        private void Signaler_OnMessage(SignalerMessage message)
-        {
-            switch (message.MessageType)
-            {
-                case SignalerMessage.WireMessageType.Offer:
-                    SetRemoteDescription("offer", message.Data);
-                    // If we get an offer, we immediately send an answer back
-                    CreateAnswer();
-                    break;
-
-                case SignalerMessage.WireMessageType.Answer:
-                    SetRemoteDescription("answer", message.Data);
-                    break;
-
-                case SignalerMessage.WireMessageType.Ice:
-                    // TODO - This is NodeDSS-specific
-                    // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
-                    var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                    // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
-                    AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
-                    break;
-
-                default:
-                    throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
-            }
-        }
 
         /// <summary>
         /// Initialize the current peer connection object asynchronously.
@@ -1750,8 +1706,6 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="sdp">The SDP message content.</param>
         private void OnLocalSdpReadytoSend(string type, string sdp)
         {
-            SignalerMessage.WireMessageType messageType = SignalerMessage.WireMessageTypeFromString(type);
-
             // If the user specified a preferred audio or video codec, manipulate the SDP message
             // to exclude other codecs if the preferred one is supported.
             if ((PreferredAudioCodec.Length > 0) || (PreferredVideoCodec.Length > 0))
@@ -1761,7 +1715,7 @@ namespace Microsoft.MixedReality.WebRTC
                 // Filtering an answer will not work because the internal implementation
                 // already decided what codec to use before this callback is called, so
                 // that will only confuse the other peer.
-                if (messageType == SignalerMessage.WireMessageType.Offer)
+                if (type == "offer")
                 {
                     var builder = new StringBuilder(sdp.Length);
                     ulong lengthInOut = (ulong)builder.Capacity;
@@ -1782,28 +1736,7 @@ namespace Microsoft.MixedReality.WebRTC
                 }
             }
 
-            var msg = new SignalerMessage()
-            {
-                MessageType = messageType,
-                Data = sdp,
-                IceDataSeparator = "|"
-            };
-            Signaler?.SendMessageAsync(msg);
-
             LocalSdpReadytoSend?.Invoke(type, sdp);
-        }
-
-        private void OnIceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
-        {
-            var msg = new SignalerMessage()
-            {
-                MessageType = SignalerMessage.WireMessageType.Ice,
-                Data = $"{candidate}|{sdpMlineindex}|{sdpMid}",
-                IceDataSeparator = "|"
-            };
-            Signaler?.SendMessageAsync(msg);
-
-            IceCandidateReadytoSend?.Invoke(candidate, sdpMlineindex, sdpMid);
         }
 
         /// <summary>

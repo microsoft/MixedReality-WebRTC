@@ -11,7 +11,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <summary>
     /// Base class for WebRTC signaling implementations in Unity.
     /// </summary>
-    public abstract class Signaler : MonoBehaviour, ISignaler
+    public abstract class Signaler : MonoBehaviour
     {
         /// <summary>
         /// The <see cref="PeerConnection"/> this signaler is attached to, or <c>null</c>
@@ -21,14 +21,74 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public PeerConnection PeerConnection { get; private set; }
 
 
-        #region ISignaler interface
+        #region Signaler interface
 
-// Those events must be invoked by the derived class
+        [Serializable]
+        public class Message
+        {
+            /// <summary>
+            /// Possible message types as-serialized on the wire
+            /// </summary>
+            public enum WireMessageType
+            {
+                /// <summary>
+                /// An unrecognized message
+                /// </summary>
+                Unknown = 0,
+                /// <summary>
+                /// A SDP offer message
+                /// </summary>
+                Offer,
+                /// <summary>
+                /// A SDP answer message
+                /// </summary>
+                Answer,
+                /// <summary>
+                /// A trickle-ice or ice message
+                /// </summary>
+                Ice
+            }
+
+            /// <summary>
+            /// Convert a message type from <see xref="string"/> to <see cref="WireMessageType"/>.
+            /// </summary>
+            /// <param name="stringType">The message type as <see xref="string"/>.</param>
+            /// <returns>The message type as a <see cref="WireMessageType"/> object.</returns>
+            public static WireMessageType WireMessageTypeFromString(string stringType)
+            {
+                if (string.Equals(stringType, "offer", StringComparison.OrdinalIgnoreCase))
+                {
+                    return WireMessageType.Offer;
+                }
+                else if (string.Equals(stringType, "answer", StringComparison.OrdinalIgnoreCase))
+                {
+                    return WireMessageType.Answer;
+                }
+                throw new ArgumentException($"Unkown signaler message type '{stringType}'");
+            }
+
+            /// <summary>
+            /// The message type
+            /// </summary>
+            public WireMessageType MessageType;
+
+            /// <summary>
+            /// The primary message contents
+            /// </summary>
+            public string Data;
+
+            /// <summary>
+            /// The data separator needed for proper ICE serialization
+            /// </summary>
+            public string IceDataSeparator;
+        }
+
+        // Those events must be invoked by the derived class
 #pragma warning disable 67
 
         public event Action OnConnect;
         public event Action OnDisconnect;
-        public event Action<SignalerMessage> OnMessage;
+        public event Action<Message> OnMessage;
         public event Action<Exception> OnFailure;
 
 #pragma warning restore 67
@@ -41,7 +101,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// A <see cref="Task"/> object completed once the message has been sent,
         /// but not necessarily delivered.
         /// </returns>
-        public abstract Task SendMessageAsync(SignalerMessage message);
+        public abstract Task SendMessageAsync(Message message);
 
         #endregion
 
