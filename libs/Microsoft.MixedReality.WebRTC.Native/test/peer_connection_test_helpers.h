@@ -9,7 +9,8 @@ class PCRaii {
   PCRaii() {
     PeerConnectionConfiguration config{};
     config.encoded_ice_servers = "stun:stun.l.google.com:19302";
-    mrsPeerConnectionInteropHandle interop_handle = nullptr;  // no interop
+    mrsPeerConnectionInteropHandle interop_handle =
+        (void*)0x1;  // fake handle, anything but NULL works
     mrsPeerConnectionCreate(config, interop_handle, &handle_);
   }
   ~PCRaii() { mrsPeerConnectionClose(&handle_); }
