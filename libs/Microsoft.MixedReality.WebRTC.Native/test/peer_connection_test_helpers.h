@@ -30,11 +30,19 @@ struct Callback {
   using function_type = void(Args...);
   using static_type = void(MRS_CALL*)(void*, Args...);
   using method_type = void (Callback::*)(Args...);
-  Callback(std::function<function_type> func)
-      : func_(std::forward<std::function<function_type>>(func)) {
+  Callback() { callback_ = &StaticExec; }
+  Callback(std::function<function_type> func) : func_(std::move(func)) {
     callback_ = &StaticExec;
   }
-  static void StaticExec(void* user_data, Args&&... args) {
+  template <typename U>
+  Callback(U func) : func_(std::forward<std::function<function_type>>(func)) {
+    callback_ = &StaticExec;
+  }
+  Callback& operator=(std::function<function_type> func) {
+    func_ = std::move(func);
+    return (*this);
+  }
+  static void StaticExec(void* user_data, Args... args) {
     auto self = (Callback*)user_data;
     self->func_(std::forward<Args>(args)...);
   }
