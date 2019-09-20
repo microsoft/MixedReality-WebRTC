@@ -159,6 +159,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <param name="msg">the message to send</param>
         private IEnumerator PostToServer(Message msg)
         {
+            if (RemotePeerId.Length == 0)
+            {
+                throw new InvalidOperationException("Cannot send message to remote peer; invalid empty remote peer ID.");
+            }
+
             var data = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(msg));
             var www = new UnityWebRequest($"{HttpServerAddress}data/{RemotePeerId}", UnityWebRequest.kHttpVerbPOST);
             www.uploadHandler = new UploadHandlerRaw(data);
@@ -167,7 +172,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             if (AutoLogErrors && (www.isNetworkError || www.isHttpError))
             {
-                Debug.Log("Failure sending message: " + www.error);
+                Debug.Log($"Failed to send message to remote peer {RemotePeerId}: {www.error}");
             }
         }
 
