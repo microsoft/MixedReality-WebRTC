@@ -707,13 +707,12 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
 
 mrsResult MRS_CALL mrsPeerConnectionRegisterInteropCallbacks(
     PeerConnectionHandle peerHandle,
-    mrsPeerConnectionInteropCallbacks* callbacks,
-    void* user_data) noexcept {
+    mrsPeerConnectionInteropCallbacks* callbacks) noexcept {
   if (!callbacks) {
     return MRS_E_INVALID_PARAMETER;
   }
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->RegisterInteropCallbacks(*callbacks, user_data);
+    return peer->RegisterInteropCallbacks(*callbacks);
   }
   return MRS_E_INVALID_PEER_HANDLE;
 }

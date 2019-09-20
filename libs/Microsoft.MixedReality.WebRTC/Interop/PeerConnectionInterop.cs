@@ -410,7 +410,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterInteropCallbacks")]
         public static extern void PeerConnection_RegisterInteropCallbacks(IntPtr peerHandle,
-            ref MarshaledInteropCallbacks callback, IntPtr userData);
+            ref MarshaledInteropCallbacks callback);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterConnectedCallback")]

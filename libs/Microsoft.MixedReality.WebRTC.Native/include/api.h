@@ -76,7 +76,6 @@ using mrsDataChannelInteropHandle = void*;
 /// Callback to create an interop wrapper for a data channel.
 using mrsPeerConnectionDataChannelCreateObjectCallback =
     mrsDataChannelInteropHandle(MRS_CALL*)(
-        void* user_data,
         mrsPeerConnectionInteropHandle parent,
         mrsDataChannelConfig config,
         mrsDataChannelCallbacks* callbacks);
@@ -307,8 +306,7 @@ struct mrsPeerConnectionInteropCallbacks {
 
 MRS_API mrsResult MRS_CALL mrsPeerConnectionRegisterInteropCallbacks(
     PeerConnectionHandle peerHandle,
-    mrsPeerConnectionInteropCallbacks* callbacks,
-    void* user_data) noexcept;
+    mrsPeerConnectionInteropCallbacks* callbacks) noexcept;
 
 /// Register a callback fired once connected to a remote peer.
 /// To unregister, simply pass nullptr as the callback pointer.

@@ -288,11 +288,9 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   //
 
   mrsResult RegisterInteropCallbacks(
-      const mrsPeerConnectionInteropCallbacks& callbacks,
-      void* user_data) {
+      const mrsPeerConnectionInteropCallbacks& callbacks) {
     // Make a full copy of all callbacks
     interop_callbacks_ = callbacks;
-    interop_callbacks_user_data_ = user_data;
     return MRS_SUCCESS;
   }
 
@@ -385,7 +383,6 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   mrsPeerConnectionInteropHandle interop_handle_;
 
   mrsPeerConnectionInteropCallbacks interop_callbacks_{};
-  void* interop_callbacks_user_data_{};
 
   /// User callback invoked when the peer connection received a new data channel
   /// from the remote peer and added it locally.

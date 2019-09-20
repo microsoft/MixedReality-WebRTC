@@ -397,8 +397,8 @@ void PeerConnection::OnDataChannel(
   mrsDataChannelCallbacks callbacks;
   mrsDataChannelInteropHandle data_channel_interop_handle{};
   if (auto create_cb = interop_callbacks_.data_channel_create_object) {
-    data_channel_interop_handle = (*create_cb)(
-        interop_callbacks_user_data_, interop_handle_, config, &callbacks);
+    data_channel_interop_handle =
+        (*create_cb)(interop_handle_, config, &callbacks);
     if (data_channel_interop_handle) {
       // Register the interop callbacks
       data_channel->SetMessageCallback(DataChannel::MessageCallback{

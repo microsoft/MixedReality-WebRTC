@@ -745,7 +745,7 @@ namespace Microsoft.MixedReality.WebRTC
                             DataChannelCreateObjectCallback = _interopCallbacks.DataChannelCreateObjectCallback
                         };
                         PeerConnectionInterop.PeerConnection_RegisterInteropCallbacks(
-                            _nativePeerhandle, ref interopCallbacks, self);
+                            _nativePeerhandle, ref interopCallbacks);
                         PeerConnectionInterop.PeerConnection_RegisterConnectedCallback(
                             _nativePeerhandle, _peerCallbackArgs.ConnectedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterLocalSdpReadytoSendCallback(
