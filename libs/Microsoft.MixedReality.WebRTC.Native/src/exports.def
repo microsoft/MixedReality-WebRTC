@@ -2,6 +2,7 @@ EXPORTS
 	mrsCloseEnum
 	mrsEnumVideoCaptureDevicesAsync
 	mrsPeerConnectionCreate
+	mrsPeerConnectionRegisterInteropCallbacks
 	mrsPeerConnectionRegisterConnectedCallback
 	mrsPeerConnectionRegisterLocalSdpReadytoSendCallback
 	mrsPeerConnectionRegisterIceCandidateReadytoSendCallback
@@ -19,14 +20,13 @@ EXPORTS
 	mrsPeerConnectionAddDataChannel
 	mrsPeerConnectionRemoveLocalVideoTrack
 	mrsPeerConnectionRemoveLocalAudioTrack
-	mrsPeerConnectionRemoveDataChannelById
-	mrsPeerConnectionRemoveDataChannelByLabel
-	mrsPeerConnectionSendDataChannelMessage
+	mrsPeerConnectionRemoveDataChannel
 	mrsPeerConnectionAddIceCandidate
 	mrsPeerConnectionCreateOffer
 	mrsPeerConnectionCreateAnswer
 	mrsPeerConnectionSetRemoteDescription
 	mrsPeerConnectionClose
+	mrsDataChannelSendMessage
 	mrsSdpForceCodecs
 	mrsMemCpy
 	mrsMemCpyStride

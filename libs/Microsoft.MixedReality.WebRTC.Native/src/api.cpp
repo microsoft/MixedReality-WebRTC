@@ -7,6 +7,7 @@
 #include "pch.h"
 
 #include "api.h"
+#include "data_channel.h"
 #include "peer_connection.h"
 #include "sdp_utils.h"
 
@@ -18,6 +19,22 @@ struct mrsEnumerator {
 };
 
 namespace {
+
+mrsResult RTCToAPIError(const webrtc::RTCError& error) {
+  if (error.ok()) {
+    return MRS_SUCCESS;
+  }
+  switch (error.type()) {
+    case webrtc::RTCErrorType::INVALID_PARAMETER:
+    case webrtc::RTCErrorType::INVALID_RANGE:
+      return MRS_E_INVALID_PARAMETER;
+    case webrtc::RTCErrorType::INVALID_STATE:
+      return MRS_E_INVALID_OPERATION;
+    case webrtc::RTCErrorType::INTERNAL_ERROR:
+    default:
+      return MRS_E_UNKNOWN;
+  }
+}
 
 /// Global factory for PeerConnection objects.
 rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
@@ -483,10 +500,10 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
   // ready to process messages. Because the enumeration is async, and this
   // function can return before the enumeration completed, if called on the
   // main UI thread then defer all of it to a different thread.
-  //auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
-  //auto cw = mw.CoreWindow();
-  //auto dispatcher = cw.Dispatcher();
-  //if (dispatcher.HasThreadAccess()) {
+  // auto mw =
+  // winrt::Windows::ApplicationModel::Core::CoreApplication::MainView(); auto
+  // cw = mw.CoreWindow(); auto dispatcher = cw.Dispatcher(); if
+  // (dispatcher.HasThreadAccess()) {
   //  if (completedCallback) {
   //    (*completedCallback)(MRS_E_WRONG_THREAD, completedCallbackUserData);
   //  }
@@ -616,8 +633,9 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 }
 mrsResult MRS_CALL
 mrsPeerConnectionCreate(PeerConnectionConfiguration config,
+                        mrsPeerConnectionInteropHandle interop_handle,
                         PeerConnectionHandle* peerHandleOut) noexcept {
-  if (!peerHandleOut) {
+  if (!peerHandleOut || !interop_handle) {
     return MRS_E_INVALID_PARAMETER;
   }
   *peerHandleOut = nullptr;
@@ -679,12 +697,25 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
                                   : webrtc::SdpSemantics::kPlanB);
 
   // Create the new peer connection
-  rtc::scoped_refptr<PeerConnection> peer =
-      PeerConnection::create(*g_peer_connection_factory, rtc_config);
+  rtc::scoped_refptr<PeerConnection> peer = PeerConnection::create(
+      *g_peer_connection_factory, rtc_config, interop_handle);
   const PeerConnectionHandle handle{peer.get()};
   g_peer_connection_map.insert({handle, std::move(peer)});
   *peerHandleOut = handle;
   return MRS_SUCCESS;
+}
+
+mrsResult MRS_CALL mrsPeerConnectionRegisterInteropCallbacks(
+    PeerConnectionHandle peerHandle,
+    mrsPeerConnectionInteropCallbacks* callbacks,
+    void* user_data) noexcept {
+  if (!callbacks) {
+    return MRS_E_INVALID_PARAMETER;
+  }
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    return peer->RegisterInteropCallbacks(*callbacks, user_data);
+  }
+  return MRS_E_INVALID_PEER_HANDLE;
 }
 
 void MRS_CALL mrsPeerConnectionRegisterConnectedCallback(
@@ -897,27 +928,38 @@ mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept {
 
 mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     PeerConnectionHandle peerHandle,
-    int id,
-    const char* label,
-    bool ordered,
-    bool reliable,
-    PeerConnectionDataChannelMessageCallback message_callback,
-    void* message_user_data,
-    PeerConnectionDataChannelBufferingCallback buffering_callback,
-    void* buffering_user_data,
-    PeerConnectionDataChannelStateCallback state_callback,
-    void* state_user_data) noexcept
+    mrsDataChannelConfig config,
+    mrsDataChannelCallbacks callbacks,
+    DataChannelHandle* dataChannelHandleOut) noexcept
 
 {
+  if (!dataChannelHandleOut) {
+    return MRS_E_INVALID_PARAMETER;
+  }
+  *dataChannelHandleOut = nullptr;
+
   auto peer = static_cast<PeerConnection*>(peerHandle);
   if (!peer) {
     return MRS_E_INVALID_PEER_HANDLE;
   }
-  return peer->AddDataChannel(
-      id, label, ordered, reliable,
-      DataChannelMessageCallback{message_callback, message_user_data},
-      DataChannelBufferingCallback{buffering_callback, buffering_user_data},
-      DataChannelStateCallback{state_callback, state_user_data});
+
+  const bool ordered =
+      ((uint32_t)config.flags & (uint32_t)mrsDataChannelConfigFlags::kOrdered);
+  const bool reliable =
+      ((uint32_t)config.flags & (uint32_t)mrsDataChannelConfigFlags::kReliable);
+  webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> data_channel =
+      peer->AddDataChannel(config.id, config.label, ordered, reliable);
+  if (data_channel.ok()) {
+    data_channel.value()->SetMessageCallback(DataChannel::MessageCallback{
+        callbacks.message_callback, callbacks.message_user_data});
+    data_channel.value()->SetBufferingCallback(DataChannel::BufferingCallback{
+        callbacks.buffering_callback, callbacks.buffering_user_data});
+    data_channel.value()->SetStateCallback(DataChannel::StateCallback{
+        callbacks.state_callback, callbacks.state_user_data});
+    *dataChannelHandleOut = data_channel.value().operator->();
+    return MRS_SUCCESS;
+  }
+  return RTCToAPIError(data_channel.error());
 }
 
 void MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
@@ -934,34 +976,30 @@ void MRS_CALL mrsPeerConnectionRemoveLocalAudioTrack(
   }
 }
 
-mrsResult MRS_CALL
-mrsPeerConnectionRemoveDataChannelById(PeerConnectionHandle peerHandle,
-                                       int id) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return (peer->RemoveDataChannel(id) ? MRS_SUCCESS : MRS_E_UNKNOWN);
+mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
+    PeerConnectionHandle peerHandle,
+    DataChannelHandle dataChannelHandle) noexcept {
+  auto peer = static_cast<PeerConnection*>(peerHandle);
+  if (!peer) {
+    return MRS_E_INVALID_PEER_HANDLE;
   }
-  return MRS_E_INVALID_PEER_HANDLE;
+  auto data_channel = static_cast<DataChannel*>(dataChannelHandle);
+  if (!data_channel) {
+    return MRS_E_INVALID_PEER_HANDLE;
+  }
+  peer->RemoveDataChannel(*data_channel);
+  return MRS_SUCCESS;
 }
 
 mrsResult MRS_CALL
-mrsPeerConnectionRemoveDataChannelByLabel(PeerConnectionHandle peerHandle,
-                                          const char* label) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return (peer->RemoveDataChannel(label) ? MRS_SUCCESS : MRS_E_UNKNOWN);
+mrsDataChannelSendMessage(DataChannelHandle dataChannelHandle,
+                          const void* data,
+                          uint64_t size) noexcept {
+  auto data_channel = static_cast<DataChannel*>(dataChannelHandle);
+  if (!data_channel) {
+    return MRS_E_INVALID_PEER_HANDLE;
   }
-  return MRS_E_INVALID_PEER_HANDLE;
-}
-
-mrsResult MRS_CALL
-mrsPeerConnectionSendDataChannelMessage(PeerConnectionHandle peerHandle,
-                                        int id,
-                                        const void* data,
-                                        uint64_t size) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return (peer->SendDataChannelMessage(id, data, size) ? MRS_SUCCESS
-                                                         : MRS_E_UNKNOWN);
-  }
-  return MRS_E_INVALID_PEER_HANDLE;
+  return (data_channel->Send(data, size) ? MRS_SUCCESS : MRS_E_UNKNOWN);
 }
 
 mrsResult MRS_CALL

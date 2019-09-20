@@ -40,4 +40,34 @@ struct Callback {
   }
 };
 
+/// Same as |Callback|, with a return value.
+template <typename Ret, typename... Args>
+struct RetCallback {
+  /// Type of the return value.
+  using return_type = Ret;
+
+  /// Type of the raw callback function.
+  /// The first parameter is the opaque user data pointer.
+  using callback_type = return_type(MRS_CALL*)(void*, Args...);
+
+  /// Pointer to the raw function to invoke.
+  callback_type callback_{};
+
+  /// User-provided opaque pointer passed as first argument to the raw function.
+  void* user_data_{};
+
+  /// Check if the callback has a valid function pointer.
+  constexpr explicit operator bool() const noexcept {
+    return (callback_ != nullptr);
+  }
+
+  /// Invoke the callback with the given arguments |args|.
+  constexpr return_type operator()(Args... args) const noexcept {
+    if (callback_ != nullptr) {
+      return (*callback_)(user_data_, std::forward<Args>(args)...);
+    }
+    return return_type{};
+  }
+};
+
 }  // namespace Microsoft::MixedReality::WebRTC

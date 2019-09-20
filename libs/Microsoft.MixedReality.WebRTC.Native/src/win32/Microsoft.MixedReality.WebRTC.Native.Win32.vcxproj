@@ -123,7 +123,7 @@
     <ClInclude Include="../../include/api.h" />
     <ClInclude Include="../audio_frame_observer.h" />
     <ClInclude Include="../callback.h" />
-    <ClInclude Include="../data_channel_observer.h" />
+    <ClInclude Include="../data_channel.h" />
     <ClInclude Include="../pch.h" />
     <ClInclude Include="../peer_connection.h" />
     <ClInclude Include="../targetver.h" />
@@ -133,7 +133,7 @@
   <ItemGroup>
     <ClCompile Include="../api.cpp" />
     <ClCompile Include="../audio_frame_observer.cpp" />
-    <ClCompile Include="../data_channel_observer.cpp" />
+    <ClCompile Include="../data_channel.cpp" />
     <ClCompile Include="../pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>

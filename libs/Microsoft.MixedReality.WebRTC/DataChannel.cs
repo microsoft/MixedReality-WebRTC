@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.MixedReality.WebRTC.Interop;
 
 namespace Microsoft.MixedReality.WebRTC
 {
@@ -104,6 +105,11 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private GCHandle _handle;
 
+        /// <summary>
+        /// Handle to the native object this wrapper is associated with.
+        /// </summary>
+        internal IntPtr _interopHandle = IntPtr.Zero;
+
         internal DataChannel(PeerConnection peer, GCHandle handle,
             int id, string label, bool ordered, bool reliable)
         {
@@ -131,7 +137,8 @@ namespace Microsoft.MixedReality.WebRTC
         public void Dispose()
         {
             State = ChannelState.Closing;
-            PeerConnection.RemoveDataChannel(this);
+            PeerConnection.RemoveDataChannel(_interopHandle);
+            _interopHandle = IntPtr.Zero;
             State = ChannelState.Closed;
             _handle.Free();
             GC.SuppressFinalize(this);
@@ -146,7 +153,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <seealso cref="PeerConnection.Initialized"/>
         public void SendMessage(byte[] message)
         {
-            PeerConnection.SendDataChannelMessage(ID, message);
+            DataChannelInterop.DataChannel_SendMessage(_interopHandle, message, (ulong)message.LongLength);
         }
 
         internal void OnMessageReceived(IntPtr data, ulong size)

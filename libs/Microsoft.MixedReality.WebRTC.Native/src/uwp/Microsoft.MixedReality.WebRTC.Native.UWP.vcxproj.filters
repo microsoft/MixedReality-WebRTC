@@ -35,10 +35,10 @@
   </ItemGroup>
   <ItemGroup>
     <Filter Include="interop">
-      <UniqueIdentifier>{95d22db7-d9c3-4693-829c-ce75385a454b}</UniqueIdentifier>
+      <UniqueIdentifier>{3313d587-9205-4a7e-989b-699a8d91d7d6}</UniqueIdentifier>
     </Filter>
     <Filter Include="media">
-      <UniqueIdentifier>{57001c36-2fbb-485c-9221-14b016526ede}</UniqueIdentifier>
+      <UniqueIdentifier>{f75c7170-eb40-43f9-b14a-45a8ef81b975}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

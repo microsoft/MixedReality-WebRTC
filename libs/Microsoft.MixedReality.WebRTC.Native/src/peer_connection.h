@@ -6,12 +6,13 @@
 
 #include "audio_frame_observer.h"
 #include "callback.h"
-#include "data_channel_observer.h"
+#include "data_channel.h"
 #include "video_frame_observer.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 
 class PeerConnection;
+class DataChannel;
 
 /// The PeerConnection class is the entry point to most of WebRTC.
 /// It encapsulates a single connection between a local peer and a remote peer,
@@ -50,7 +51,8 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// |config|. This serves as the constructor for PeerConnection.
   static rtc::scoped_refptr<PeerConnection> create(
       webrtc::PeerConnectionFactoryInterface& factory,
-      const webrtc::PeerConnectionInterface::RTCConfiguration& config);
+      const webrtc::PeerConnectionInterface::RTCConfiguration& config,
+      mrsPeerConnectionInteropHandle interop_handle);
 
   ~PeerConnection() noexcept override;
 
@@ -248,21 +250,51 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   // Data channel
   //
 
-  mrsResult AddDataChannel(int id,
-                           const char* label,
-                           bool ordered,
-                           bool reliable,
-                           DataChannelMessageCallback message_callback,
-                           DataChannelBufferingCallback buffering_callback,
-                           DataChannelStateCallback state_callback) noexcept;
-  bool RemoveDataChannel(int id) noexcept;
-  bool RemoveDataChannel(const char* label) noexcept;
+  /// Callback invoked by the native layer when a new data channel is received
+  /// from the remote peer and added locally.
+  using DataChannelAddedCallback =
+      Callback<mrsPeerConnectionInteropHandle, mrsDataChannelInteropHandle>;
 
-  bool SendDataChannelMessage(int id, const void* data, uint64_t size) noexcept;
+  /// Callback invoked by the native layer when a data channel is removed from
+  /// the remote peer and removed locally.
+  using DataChannelRemovedCallback =
+      Callback<mrsPeerConnectionInteropHandle, mrsDataChannelInteropHandle>;
+
+  /// Register a custom callback invoked when a new data channel is received
+  /// from the remote peer and added locally.
+  void RegisterDataChannelAddedCallback(
+      DataChannelAddedCallback callback) noexcept {
+    auto lock = std::lock_guard{data_channel_added_callback_mutex_};
+    data_channel_added_callback_ = std::move(callback);
+  }
+
+  /// Register a custom callback invoked when a data channel is removed by the
+  /// remote peer and removed locally.
+  void RegisterDataChannelRemovedCallback(
+      DataChannelRemovedCallback callback) noexcept {
+    auto lock = std::lock_guard{data_channel_removed_callback_mutex_};
+    data_channel_removed_callback_ = std::move(callback);
+  }
+
+  webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> AddDataChannel(
+      int id,
+      std::string_view label,
+      bool ordered,
+      bool reliable) noexcept;
+  void RemoveDataChannel(const DataChannel& data_channel) noexcept;
 
   //
   // Advanced use
   //
+
+  mrsResult RegisterInteropCallbacks(
+      const mrsPeerConnectionInteropCallbacks& callbacks,
+      void* user_data) {
+    // Make a full copy of all callbacks
+    interop_callbacks_ = callbacks;
+    interop_callbacks_user_data_ = user_data;
+    return MRS_SUCCESS;
+  }
 
   /// Retrieve the underlying PeerConnectionInterface from the core
   /// implementation, for direct manipulation. This allows direct access to the
@@ -289,14 +321,8 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
                           stream) noexcept override;
 
   // Triggered when a remote peer opens a data channel.
-  void OnDataChannel(
-      rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel)
-#if defined(WINUWP)
-      noexcept(false)
-#else
-      noexcept
-#endif
-          override;
+  void OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface>
+                         data_channel) noexcept override;
 
   /// Triggered when renegotiation is needed. For example, an ICE restart
   /// has begun, or a track has been added or removed.
@@ -331,7 +357,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
                          receiver) noexcept override;
 
   /// Protected constructor. Use PeerConnection::create() instead.
-  PeerConnection();
+  PeerConnection(mrsPeerConnectionInteropHandle interop_handle);
 
   //
   // CreateSessionDescriptionObserver interface
@@ -354,6 +380,22 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
  protected:
   /// The underlying PC object from the core implementation.
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_;
+
+  /// Handle to the interop wrapper associated with this object.
+  mrsPeerConnectionInteropHandle interop_handle_;
+
+  mrsPeerConnectionInteropCallbacks interop_callbacks_{};
+  void* interop_callbacks_user_data_{};
+
+  /// User callback invoked when the peer connection received a new data channel
+  /// from the remote peer and added it locally.
+  DataChannelAddedCallback data_channel_added_callback_
+      RTC_GUARDED_BY(data_channel_added_callback_mutex_);
+
+  /// User callback invoked when the peer connection received a data channel
+  /// remove message from the remote peer and removed it locally.
+  DataChannelAddedCallback data_channel_removed_callback_
+      RTC_GUARDED_BY(data_channel_removed_callback_mutex_);
 
   /// User callback invoked when the peer connection is established.
   /// This is generally invoked even if ICE didn't finish.
@@ -386,6 +428,8 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   TrackRemovedCallback track_removed_callback_
       RTC_GUARDED_BY(track_removed_callback_mutex_);
 
+  std::mutex data_channel_added_callback_mutex_;
+  std::mutex data_channel_removed_callback_mutex_;
   std::mutex connected_callback_mutex_;
   std::mutex local_sdp_ready_to_send_callback_mutex_;
   std::mutex ice_candidate_ready_to_send_callback_mutex_;
@@ -403,12 +447,12 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// Collection of data channels from their unique ID.
   /// This contains only data channels pre-negotiated or opened by the remote
   /// peer, as data channels opened locally won't have immediately a unique ID.
-  std::unordered_map<int, std::shared_ptr<DataChannelObserver>>
+  std::unordered_map<int, std::shared_ptr<DataChannel>>
       data_channel_from_id_;
 
   /// Collection of data channels from their label.
   /// This contains only data channels with a non-empty label.
-  std::unordered_multimap<std::string, std::shared_ptr<DataChannelObserver>>
+  std::unordered_multimap<std::string, std::shared_ptr<DataChannel>>
       data_channel_from_label_;
 
   //< TODO - Clarify lifetime of those, for now same as this PeerConnection
