@@ -485,6 +485,11 @@ enum class mrsDataChannelConfigFlags : uint32_t {
   kReliable = 0x2,
 };
 
+inline mrsDataChannelConfigFlags operator|(mrsDataChannelConfigFlags a,
+                                    mrsDataChannelConfigFlags b) {
+  return (mrsDataChannelConfigFlags)((uint32_t)a | (uint32_t)b);
+}
+
 struct mrsDataChannelConfig {
   int32_t id = -1;      // -1 for auto; >=0 for negotiated
   const char* label{};  // optional; can be null or empty string

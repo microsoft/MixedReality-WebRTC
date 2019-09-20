@@ -16,21 +16,6 @@ using Microsoft.MixedReality.WebRTC.Interop;
 namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
-    /// Attribute to decorate managed delegates used as native callbacks (reverse P/Invoke).
-    /// Required by Mono in Ahead-Of-Time (AOT) compiling, and Unity with the IL2CPP backend.
-    /// </summary>
-    /// 
-    /// This attribute is required by Mono AOT and Unity IL2CPP, but not by .NET Core or Framework.
-    /// The implementation was copied from the Mono source code (https://github.com/mono/mono).
-    /// The type argument does not seem to be used anywhere in the code, and a stub implementation
-    /// like this seems to be enough for IL2CPP to be able to marshal the delegate (untested on Mono).
-    [AttributeUsage(AttributeTargets.Method)]
-    sealed class MonoPInvokeCallbackAttribute : Attribute
-    {
-        public MonoPInvokeCallbackAttribute(Type t) { }
-    }
-
-    /// <summary>
     /// Type of ICE candidates offered to the remote peer.
     /// </summary>
     public enum IceTransportType : int
@@ -262,10 +247,6 @@ namespace Microsoft.MixedReality.WebRTC
     /// </summary>
     public class PeerConnection : IDisposable
     {
-        //public delegate void DataChannelMessageDelegate(byte[] data);
-        //public delegate void DataChannelBufferingDelegate(ulong previous, ulong current, ulong limit);
-        //public delegate void DataChannelStateDelegate(WebRTCDataChannel.State state);
-
         /// <summary>
         /// Delegate for <see cref="DataChannelAdded"/> event.
         /// </summary>
@@ -596,295 +577,6 @@ namespace Microsoft.MixedReality.WebRTC
         public event AudioFrameDelegate RemoteAudioFrameReady;
 
         /// <summary>
-        /// Static wrappers for native callbacks to invoke instance methods on objects.
-        /// </summary>
-        private static class CallbacksWrappers
-        {
-            // Types of trampolines for MonoPInvokeCallback
-            private delegate void VideoCaptureDeviceEnumDelegate(string id, string name, IntPtr handle);
-            private delegate void VideoCaptureDeviceEnumCompletedDelegate(IntPtr handle);
-            private delegate void VideoCaptureFormatEnumDelegate(uint width, uint height, double framerate, string encoding, IntPtr handle);
-            private delegate void VideoCaptureFormatEnumCompletedDelegate(IntPtr handle);
-            private delegate void ConnectedDelegate(IntPtr peer);
-            private delegate void DataChannelCreateObjectDelegate(IntPtr peer, DataChannelInterop.CreateConfig config,
-                out DataChannelInterop.Callbacks callbacks);
-            private delegate void DataChannelAddedDelegate(IntPtr peer, IntPtr dataChannel);
-            private delegate void DataChannelRemovedDelegate(IntPtr peer, IntPtr dataChannel);
-            private delegate void LocalSdpReadytoSendDelegate(IntPtr peer, string type, string sdp);
-            private delegate void IceCandidateReadytoSendDelegate(IntPtr peer, string candidate, int sdpMlineindex, string sdpMid);
-            private delegate void IceStateChangedDelegate(IntPtr peer, IceConnectionState newState);
-            private delegate void RenegotiationNeededDelegate(IntPtr peer);
-            private delegate void TrackAddedDelegate(IntPtr peer, TrackKind trackKind);
-            private delegate void TrackRemovedDelegate(IntPtr peer, TrackKind trackKind);
-            private delegate void DataChannelMessageDelegate(IntPtr peer, IntPtr data, ulong size);
-            private delegate void DataChannelBufferingDelegate(IntPtr peer, ulong previous, ulong current, ulong limit);
-            private delegate void DataChannelStateDelegate(IntPtr peer, int state, int id);
-
-            // Callbacks for internal enumeration implementation only
-            public delegate void VideoCaptureDeviceEnumCallbackImpl(string id, string name);
-            public delegate void VideoCaptureDeviceEnumCompletedCallbackImpl();
-            public delegate void VideoCaptureFormatEnumCallbackImpl(uint width, uint height, double framerate, uint fourcc);
-            public delegate void VideoCaptureFormatEnumCompletedCallbackImpl(Exception e);
-
-            public class EnumVideoCaptureDeviceWrapper
-            {
-                public VideoCaptureDeviceEnumCallbackImpl enumCallback;
-                public VideoCaptureDeviceEnumCompletedCallbackImpl completedCallback;
-            }
-
-            [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumDelegate))]
-            public static void VideoCaptureDeviceEnumCallback(string id, string name, IntPtr userData)
-            {
-                var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
-                wrapper.enumCallback(id, name); // this is mandatory, never null
-            }
-
-            [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCompletedDelegate))]
-            public static void VideoCaptureDeviceEnumCompletedCallback(IntPtr userData)
-            {
-                var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
-                wrapper.completedCallback?.Invoke(); // this is optional, allows to be null
-            }
-
-            public class EnumVideoCaptureFormatsWrapper
-            {
-                public VideoCaptureFormatEnumCallbackImpl enumCallback;
-                public VideoCaptureFormatEnumCompletedCallbackImpl completedCallback;
-            }
-
-            [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumDelegate))]
-            public static void VideoCaptureFormatEnumCallback(uint width, uint height, double framerate, uint fourcc, IntPtr userData)
-            {
-                var wrapper = Utils.ToWrapper<EnumVideoCaptureFormatsWrapper>(userData);
-                wrapper.enumCallback(width, height, framerate, fourcc); // this is mandatory, never null
-            }
-
-            [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCompletedDelegate))]
-            public static void VideoCaptureFormatEnumCompletedCallback(uint resultCode, IntPtr userData)
-            {
-                var exception = (resultCode == /*MRS_SUCCESS*/0 ? null : new Exception());
-                var wrapper = Utils.ToWrapper<EnumVideoCaptureFormatsWrapper>(userData);
-                wrapper.completedCallback?.Invoke(exception); // this is optional, allows to be null
-            }
-
-            /// <summary>
-            /// Utility to lock all low-level interop delegates registered with the native plugin for the duration
-            /// of the peer connection wrapper lifetime, and prevent their garbage collection.
-            /// </summary>
-            /// <remarks>
-            /// The delegate don't need to be pinned, just referenced to prevent garbage collection.
-            /// So referencing them from this class is enough to keep them alive and usable.
-            /// </remarks>
-            public class InteropCallbacks
-            {
-                public PeerConnection Peer;
-                public DataChannelInterop.CreateObjectCallback DataChannelCreateObjectCallback;
-            }
-
-            /// <summary>
-            /// Utility to lock all optional delegates registered with the native plugin for the duration
-            /// of the peer connection wrapper lifetime, and prevent their garbage collection.
-            /// </summary>
-            /// <remarks>
-            /// The delegate don't need to be pinned, just referenced to prevent garbage collection.
-            /// So referencing them from this class is enough to keep them alive and usable.
-            /// </remarks>
-            public class PeerCallbackArgs
-            {
-                public PeerConnection Peer;
-                public NativeMethods.PeerConnectionDataChannelAddedCallback DataChannelAddedCallback;
-                public NativeMethods.PeerConnectionDataChannelRemovedCallback DataChannelRemovedCallback;
-                public NativeMethods.PeerConnectionConnectedCallback ConnectedCallback;
-                public NativeMethods.PeerConnectionLocalSdpReadytoSendCallback LocalSdpReadytoSendCallback;
-                public NativeMethods.PeerConnectionIceCandidateReadytoSendCallback IceCandidateReadytoSendCallback;
-                public NativeMethods.PeerConnectionIceStateChangedCallback IceStateChangedCallback;
-                public NativeMethods.PeerConnectionRenegotiationNeededCallback RenegotiationNeededCallback;
-                public NativeMethods.PeerConnectionTrackAddedCallback TrackAddedCallback;
-                public NativeMethods.PeerConnectionTrackRemovedCallback TrackRemovedCallback;
-                public NativeMethods.PeerConnectionI420VideoFrameCallback I420LocalVideoFrameCallback;
-                public NativeMethods.PeerConnectionI420VideoFrameCallback I420RemoteVideoFrameCallback;
-                public NativeMethods.PeerConnectionARGBVideoFrameCallback ARGBLocalVideoFrameCallback;
-                public NativeMethods.PeerConnectionARGBVideoFrameCallback ARGBRemoteVideoFrameCallback;
-                public NativeMethods.PeerConnectionAudioFrameCallback LocalAudioFrameCallback;
-                public NativeMethods.PeerConnectionAudioFrameCallback RemoteAudioFrameCallback;
-            }
-
-            [MonoPInvokeCallback(typeof(ConnectedDelegate))]
-            public static void ConnectedCallback(IntPtr userData)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                peer.IsConnected = true;
-                peer.Connected?.Invoke();
-            }
-
-            [MonoPInvokeCallback(typeof(DataChannelAddedDelegate))]
-            public static void DataChannelAddedCallback(IntPtr peer, IntPtr dataChannel)
-            {
-                var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
-                var dataChannelWrapper = Utils.ToWrapper<DataChannel>(dataChannel);
-                peerWrapper.DataChannelAdded?.Invoke(dataChannelWrapper);
-            }
-
-            [MonoPInvokeCallback(typeof(DataChannelRemovedDelegate))]
-            public static void DataChannelRemovedCallback(IntPtr peer, IntPtr dataChannel)
-            {
-                var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
-                var dataChannelWrapper = Utils.ToWrapper<DataChannel>(dataChannel);
-                peerWrapper.DataChannelRemoved?.Invoke(dataChannelWrapper);
-            }
-
-            [MonoPInvokeCallback(typeof(LocalSdpReadytoSendDelegate))]
-            public static void LocalSdpReadytoSendCallback(IntPtr userData, string type, string sdp)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                peer.OnLocalSdpReadytoSend(type, sdp);
-            }
-
-            [MonoPInvokeCallback(typeof(IceCandidateReadytoSendDelegate))]
-            public static void IceCandidateReadytoSendCallback(IntPtr userData, string candidate, int sdpMlineindex, string sdpMid)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                peer.IceCandidateReadytoSend?.Invoke(candidate, sdpMlineindex, sdpMid);
-            }
-
-            [MonoPInvokeCallback(typeof(IceStateChangedDelegate))]
-            public static void IceStateChangedCallback(IntPtr userData, IceConnectionState newState)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                peer.IceStateChanged?.Invoke(newState);
-            }
-
-            [MonoPInvokeCallback(typeof(RenegotiationNeededDelegate))]
-            public static void RenegotiationNeededCallback(IntPtr userData)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                peer.RenegotiationNeeded?.Invoke();
-            }
-
-            [MonoPInvokeCallback(typeof(TrackAddedDelegate))]
-            public static void TrackAddedCallback(IntPtr userData, TrackKind trackKind)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                peer.TrackAdded?.Invoke(trackKind);
-            }
-
-            [MonoPInvokeCallback(typeof(TrackRemovedDelegate))]
-            public static void TrackRemovedCallback(IntPtr userData, TrackKind trackKind)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                peer.TrackRemoved?.Invoke(trackKind);
-            }
-
-            [MonoPInvokeCallback(typeof(I420VideoFrameDelegate))]
-            public static void I420LocalVideoFrameCallback(IntPtr userData,
-                IntPtr dataY, IntPtr dataU, IntPtr dataV, IntPtr dataA,
-                int strideY, int strideU, int strideV, int strideA,
-                int width, int height)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                var frame = new I420AVideoFrame()
-                {
-                    width = (uint)width,
-                    height = (uint)height,
-                    dataY = dataY,
-                    dataU = dataU,
-                    dataV = dataV,
-                    dataA = dataA,
-                    strideY = strideY,
-                    strideU = strideU,
-                    strideV = strideV,
-                    strideA = strideA
-                };
-                peer.I420LocalVideoFrameReady?.Invoke(frame);
-            }
-
-            [MonoPInvokeCallback(typeof(I420VideoFrameDelegate))]
-            public static void I420RemoteVideoFrameCallback(IntPtr userData,
-                IntPtr dataY, IntPtr dataU, IntPtr dataV, IntPtr dataA,
-                int strideY, int strideU, int strideV, int strideA,
-                int width, int height)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                var frame = new I420AVideoFrame()
-                {
-                    width = (uint)width,
-                    height = (uint)height,
-                    dataY = dataY,
-                    dataU = dataU,
-                    dataV = dataV,
-                    dataA = dataA,
-                    strideY = strideY,
-                    strideU = strideU,
-                    strideV = strideV,
-                    strideA = strideA
-                };
-                peer.I420RemoteVideoFrameReady?.Invoke(frame);
-            }
-
-            [MonoPInvokeCallback(typeof(ARGBVideoFrameDelegate))]
-            public static void ARGBLocalVideoFrameCallback(IntPtr userData,
-                IntPtr data, int stride, int width, int height)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                var frame = new ARGBVideoFrame()
-                {
-                    width = (uint)width,
-                    height = (uint)height,
-                    data = data,
-                    stride = stride
-                };
-                peer.ARGBLocalVideoFrameReady?.Invoke(frame);
-            }
-
-            [MonoPInvokeCallback(typeof(ARGBVideoFrameDelegate))]
-            public static void ARGBRemoteVideoFrameCallback(IntPtr userData,
-                IntPtr data, int stride, int width, int height)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                var frame = new ARGBVideoFrame()
-                {
-                    width = (uint)width,
-                    height = (uint)height,
-                    data = data,
-                    stride = stride
-                };
-                peer.ARGBRemoteVideoFrameReady?.Invoke(frame);
-            }
-
-            [MonoPInvokeCallback(typeof(AudioFrameDelegate))]
-            public static void LocalAudioFrameCallback(IntPtr userData, IntPtr audioData, uint bitsPerSample,
-                uint sampleRate, uint channelCount, uint frameCount)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                var frame = new AudioFrame()
-                {
-                    bitsPerSample = bitsPerSample,
-                    sampleRate = sampleRate,
-                    channelCount = channelCount,
-                    frameCount = frameCount,
-                    audioData = audioData
-                };
-                peer.LocalAudioFrameReady?.Invoke(frame);
-            }
-
-            [MonoPInvokeCallback(typeof(AudioFrameDelegate))]
-            public static void RemoteAudioFrameCallback(IntPtr userData, IntPtr audioData, uint bitsPerSample,
-                uint sampleRate, uint channelCount, uint frameCount)
-            {
-                var peer = Utils.ToWrapper<PeerConnection>(userData);
-                var frame = new AudioFrame()
-                {
-                    bitsPerSample = bitsPerSample,
-                    sampleRate = sampleRate,
-                    channelCount = channelCount,
-                    frameCount = frameCount,
-                    audioData = audioData
-                };
-                peer.RemoteAudioFrameReady?.Invoke(frame);
-            }
-        }
-
-        /// <summary>
         /// GCHandle to self for the various native callbacks.
         /// This also acts as a marker of a connection created or in the process of being created.
         /// </summary>
@@ -918,8 +610,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private object _openCloseLock = new object();
 
-        private CallbacksWrappers.InteropCallbacks _interopCallbacks;
-        private CallbacksWrappers.PeerCallbackArgs _peerCallbackArgs;
+        private PeerConnectionInterop.InteropCallbacks _interopCallbacks;
+        private PeerConnectionInterop.PeerCallbackArgs _peerCallbackArgs;
 
 
         #region Initializing and shutdown
@@ -960,35 +652,35 @@ namespace Microsoft.MixedReality.WebRTC
                 // Create and lock in memory delegates for all the static callback wrappers (see below).
                 // This avoids delegates being garbage-collected, since the P/Invoke mechanism by itself
                 // does not guarantee their lifetime.
-                _interopCallbacks = new CallbacksWrappers.InteropCallbacks()
+                _interopCallbacks = new PeerConnectionInterop.InteropCallbacks()
                 {
                     Peer = this,
                     DataChannelCreateObjectCallback = DataChannelInterop.DataChannelCreateObjectCallback,
                 };
-                _peerCallbackArgs = new CallbacksWrappers.PeerCallbackArgs()
+                _peerCallbackArgs = new PeerConnectionInterop.PeerCallbackArgs()
                 {
                     Peer = this,
-                    DataChannelAddedCallback = CallbacksWrappers.DataChannelAddedCallback,
-                    DataChannelRemovedCallback = CallbacksWrappers.DataChannelRemovedCallback,
-                    ConnectedCallback = CallbacksWrappers.ConnectedCallback,
-                    LocalSdpReadytoSendCallback = CallbacksWrappers.LocalSdpReadytoSendCallback,
-                    IceCandidateReadytoSendCallback = CallbacksWrappers.IceCandidateReadytoSendCallback,
-                    IceStateChangedCallback = CallbacksWrappers.IceStateChangedCallback,
-                    RenegotiationNeededCallback = CallbacksWrappers.RenegotiationNeededCallback,
-                    TrackAddedCallback = CallbacksWrappers.TrackAddedCallback,
-                    TrackRemovedCallback = CallbacksWrappers.TrackRemovedCallback,
-                    I420LocalVideoFrameCallback = CallbacksWrappers.I420LocalVideoFrameCallback,
-                    I420RemoteVideoFrameCallback = CallbacksWrappers.I420RemoteVideoFrameCallback,
-                    ARGBLocalVideoFrameCallback = CallbacksWrappers.ARGBLocalVideoFrameCallback,
-                    ARGBRemoteVideoFrameCallback = CallbacksWrappers.ARGBRemoteVideoFrameCallback,
-                    LocalAudioFrameCallback = CallbacksWrappers.LocalAudioFrameCallback,
-                    RemoteAudioFrameCallback = CallbacksWrappers.RemoteAudioFrameCallback
+                    DataChannelAddedCallback = PeerConnectionInterop.DataChannelAddedCallback,
+                    DataChannelRemovedCallback = PeerConnectionInterop.DataChannelRemovedCallback,
+                    ConnectedCallback = PeerConnectionInterop.ConnectedCallback,
+                    LocalSdpReadytoSendCallback = PeerConnectionInterop.LocalSdpReadytoSendCallback,
+                    IceCandidateReadytoSendCallback = PeerConnectionInterop.IceCandidateReadytoSendCallback,
+                    IceStateChangedCallback = PeerConnectionInterop.IceStateChangedCallback,
+                    RenegotiationNeededCallback = PeerConnectionInterop.RenegotiationNeededCallback,
+                    TrackAddedCallback = PeerConnectionInterop.TrackAddedCallback,
+                    TrackRemovedCallback = PeerConnectionInterop.TrackRemovedCallback,
+                    I420LocalVideoFrameCallback = PeerConnectionInterop.I420LocalVideoFrameCallback,
+                    I420RemoteVideoFrameCallback = PeerConnectionInterop.I420RemoteVideoFrameCallback,
+                    ARGBLocalVideoFrameCallback = PeerConnectionInterop.ARGBLocalVideoFrameCallback,
+                    ARGBRemoteVideoFrameCallback = PeerConnectionInterop.ARGBRemoteVideoFrameCallback,
+                    LocalAudioFrameCallback = PeerConnectionInterop.LocalAudioFrameCallback,
+                    RemoteAudioFrameCallback = PeerConnectionInterop.RemoteAudioFrameCallback
                 };
 
                 // Cache values in local variables before starting async task, to avoid any
                 // subsequent external change from affecting that task.
                 // Also set default values, as the native call doesn't handle NULL.
-                var nativeConfig = new NativeMethods.PeerConnectionConfiguration
+                var nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration
                 {
                     EncodedIceServers = string.Join("\n\n", config.IceServers),
                     IceTransportType = config.IceTransportType,
@@ -1004,12 +696,12 @@ namespace Microsoft.MixedReality.WebRTC
                     token.ThrowIfCancellationRequested();
 
                     IntPtr nativeHandle = IntPtr.Zero;
-                    uint res = NativeMethods.PeerConnectionCreate(nativeConfig, GCHandle.ToIntPtr(_selfHandle), out nativeHandle);
+                    uint res = PeerConnectionInterop.PeerConnection_Create(nativeConfig, GCHandle.ToIntPtr(_selfHandle), out nativeHandle);
 
                     lock (_openCloseLock)
                     {
                         // Handle errors
-                        if ((res != NativeMethods.MRS_SUCCESS) || (nativeHandle == IntPtr.Zero))
+                        if ((res != Utils.MRS_SUCCESS) || (nativeHandle == IntPtr.Zero))
                         {
                             if (_selfHandle.IsAllocated)
                             {
@@ -1018,7 +710,7 @@ namespace Microsoft.MixedReality.WebRTC
                                 _selfHandle.Free();
                             }
 
-                            ThrowOnErrorCode(res);
+                            Utils.ThrowOnErrorCode(res);
                             throw new Exception(); // if res == MRS_SUCCESS but handle is NULL
                         }
 
@@ -1028,13 +720,13 @@ namespace Microsoft.MixedReality.WebRTC
                         if (token.IsCancellationRequested)
                         {
                             // Cancelled by token
-                            NativeMethods.PeerConnectionClose(ref nativeHandle);
+                            PeerConnectionInterop.PeerConnection_Close(ref nativeHandle);
                             throw new OperationCanceledException(token);
                         }
                         if (!_selfHandle.IsAllocated)
                         {
                             // Cancelled by calling Close()
-                            NativeMethods.PeerConnectionClose(ref nativeHandle);
+                            PeerConnectionInterop.PeerConnection_Close(ref nativeHandle);
                             throw new OperationCanceledException();
                         }
 
@@ -1048,37 +740,37 @@ namespace Microsoft.MixedReality.WebRTC
                         // Since the current PeerConnection instance is already locked via _selfHandle,
                         // and it references all delegates via _peerCallbackArgs, those also can't be GC'd.
                         var self = GCHandle.ToIntPtr(_selfHandle);
-                        var interopCallbacks = new NativeMethods.MarshaledInteropCallbacks
+                        var interopCallbacks = new PeerConnectionInterop.MarshaledInteropCallbacks
                         {
                             DataChannelCreateObjectCallback = _interopCallbacks.DataChannelCreateObjectCallback
                         };
-                        NativeMethods.PeerConnectionRegisterInteropCallbacks(
+                        PeerConnectionInterop.PeerConnection_RegisterInteropCallbacks(
                             _nativePeerhandle, ref interopCallbacks, self);
-                        NativeMethods.PeerConnectionRegisterConnectedCallback(
+                        PeerConnectionInterop.PeerConnection_RegisterConnectedCallback(
                             _nativePeerhandle, _peerCallbackArgs.ConnectedCallback, self);
-                        NativeMethods.PeerConnectionRegisterLocalSdpReadytoSendCallback(
+                        PeerConnectionInterop.PeerConnection_RegisterLocalSdpReadytoSendCallback(
                             _nativePeerhandle, _peerCallbackArgs.LocalSdpReadytoSendCallback, self);
-                        NativeMethods.PeerConnectionRegisterIceCandidateReadytoSendCallback(
+                        PeerConnectionInterop.PeerConnection_RegisterIceCandidateReadytoSendCallback(
                             _nativePeerhandle, _peerCallbackArgs.IceCandidateReadytoSendCallback, self);
-                        NativeMethods.PeerConnectionRegisterIceStateChangedCallback(
+                        PeerConnectionInterop.PeerConnection_RegisterIceStateChangedCallback(
                             _nativePeerhandle, _peerCallbackArgs.IceStateChangedCallback, self);
-                        NativeMethods.PeerConnectionRegisterRenegotiationNeededCallback(
+                        PeerConnectionInterop.PeerConnection_RegisterRenegotiationNeededCallback(
                             _nativePeerhandle, _peerCallbackArgs.RenegotiationNeededCallback, self);
-                        NativeMethods.PeerConnectionRegisterTrackAddedCallback(
+                        PeerConnectionInterop.PeerConnection_RegisterTrackAddedCallback(
                             _nativePeerhandle, _peerCallbackArgs.TrackAddedCallback, self);
-                        NativeMethods.PeerConnectionRegisterTrackRemovedCallback(
+                        PeerConnectionInterop.PeerConnection_RegisterTrackRemovedCallback(
                             _nativePeerhandle, _peerCallbackArgs.TrackRemovedCallback, self);
-                        NativeMethods.PeerConnectionRegisterI420LocalVideoFrameCallback(
+                        PeerConnectionInterop.PeerConnection_RegisterI420LocalVideoFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.I420LocalVideoFrameCallback, self);
-                        NativeMethods.PeerConnectionRegisterI420RemoteVideoFrameCallback(
+                        PeerConnectionInterop.PeerConnection_RegisterI420RemoteVideoFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.I420RemoteVideoFrameCallback, self);
-                        //NativeMethods.PeerConnectionRegisterARGBLocalVideoFrameCallback(
+                        //PeerConnectionInterop.PeerConnection_RegisterARGBLocalVideoFrameCallback(
                         //    _nativePeerhandle, _peerCallbackArgs.ARGBLocalVideoFrameCallback, self);
-                        //NativeMethods.PeerConnectionRegisterARGBRemoteVideoFrameCallback(
+                        //PeerConnectionInterop.PeerConnection_RegisterARGBRemoteVideoFrameCallback(
                         //    _nativePeerhandle, _peerCallbackArgs.ARGBRemoteVideoFrameCallback, self);
-                        NativeMethods.PeerConnectionRegisterLocalAudioFrameCallback(
+                        PeerConnectionInterop.PeerConnection_RegisterLocalAudioFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.LocalAudioFrameCallback, self);
-                        NativeMethods.PeerConnectionRegisterRemoteAudioFrameCallback(
+                        PeerConnectionInterop.PeerConnection_RegisterRemoteAudioFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.RemoteAudioFrameCallback, self);
                     }
                 }, token);
@@ -1120,7 +812,7 @@ namespace Microsoft.MixedReality.WebRTC
                 {
                     // Close the native WebRTC peer connection and destroy the native object.
                     // This will un-register all callbacks automatically.
-                    NativeMethods.PeerConnectionClose(ref _nativePeerhandle);
+                    PeerConnectionInterop.PeerConnection_Close(ref _nativePeerhandle);
                     _nativePeerhandle = IntPtr.Zero;
                 }
 
@@ -1165,7 +857,7 @@ namespace Microsoft.MixedReality.WebRTC
             return Task.Run(() => {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
-                var config = (settings != null ? new NativeMethods.VideoDeviceConfiguration
+                var config = (settings != null ? new PeerConnectionInterop.VideoDeviceConfiguration
                 {
                     VideoDeviceId = settings.videoDevice.id,
                     VideoProfileId = settings.videoProfileId,
@@ -1174,9 +866,9 @@ namespace Microsoft.MixedReality.WebRTC
                     Height = settings.height.GetValueOrDefault(0),
                     Framerate = settings.framerate.GetValueOrDefault(0.0),
                     EnableMixedRealityCapture = settings.enableMrc
-                } : new NativeMethods.VideoDeviceConfiguration());
-                uint res = NativeMethods.PeerConnectionAddLocalVideoTrack(_nativePeerhandle, config);
-                ThrowOnErrorCode(res);
+                } : new PeerConnectionInterop.VideoDeviceConfiguration());
+                uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, config);
+                Utils.ThrowOnErrorCode(res);
             });
         }
 
@@ -1187,7 +879,7 @@ namespace Microsoft.MixedReality.WebRTC
         public void RemoveLocalVideoTrack()
         {
             ThrowIfConnectionNotOpen();
-            NativeMethods.PeerConnectionRemoveLocalVideoTrack(_nativePeerhandle);
+            PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerhandle);
         }
 
         /// <summary>
@@ -1206,7 +898,7 @@ namespace Microsoft.MixedReality.WebRTC
             return Task.Run(() => {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
-                if (NativeMethods.PeerConnectionAddLocalAudioTrack(_nativePeerhandle) != NativeMethods.MRS_SUCCESS)
+                if (PeerConnectionInterop.PeerConnection_AddLocalAudioTrack(_nativePeerhandle) != Utils.MRS_SUCCESS)
                 {
                     throw new Exception();
                 }
@@ -1220,7 +912,7 @@ namespace Microsoft.MixedReality.WebRTC
         public void RemoveLocalAudioTrack()
         {
             ThrowIfConnectionNotOpen();
-            NativeMethods.PeerConnectionRemoveLocalAudioTrack(_nativePeerhandle);
+            PeerConnectionInterop.PeerConnection_RemoveLocalAudioTrack(_nativePeerhandle);
         }
 
         #endregion
@@ -1318,8 +1010,8 @@ namespace Microsoft.MixedReality.WebRTC
             // Create the native channel
             return await Task.Run(() => {
                 IntPtr handle = IntPtr.Zero;
-                uint res = NativeMethods.PeerConnectionAddDataChannel(_nativePeerhandle, config, callbacks, ref handle);
-                if (res == NativeMethods.MRS_SUCCESS)
+                uint res = PeerConnectionInterop.PeerConnection_AddDataChannel(_nativePeerhandle, config, callbacks, ref handle);
+                if (res == Utils.MRS_SUCCESS)
                 {
                     DataChannelInterop.SetHandle(dataChannel, handle);
                     return dataChannel;
@@ -1329,7 +1021,7 @@ namespace Microsoft.MixedReality.WebRTC
                 dataChannel.Dispose();
                 dataChannel = null;
 
-                ThrowOnErrorCode(res);
+                Utils.ThrowOnErrorCode(res);
                 return null; // for the compiler
             });
         }
@@ -1337,7 +1029,7 @@ namespace Microsoft.MixedReality.WebRTC
         internal bool RemoveDataChannel(IntPtr dataChannelHandle)
         {
             ThrowIfConnectionNotOpen();
-            return (NativeMethods.PeerConnectionRemoveDataChannel(_nativePeerhandle, dataChannelHandle) == NativeMethods.MRS_SUCCESS);
+            return (PeerConnectionInterop.PeerConnection_RemoveDataChannel(_nativePeerhandle, dataChannelHandle) == Utils.MRS_SUCCESS);
         }
 
         #endregion
@@ -1355,7 +1047,7 @@ namespace Microsoft.MixedReality.WebRTC
         public void AddIceCandidate(string sdpMid, int sdpMlineindex, string candidate)
         {
             ThrowIfConnectionNotOpen();
-            NativeMethods.PeerConnectionAddIceCandidate(_nativePeerhandle, sdpMid, sdpMlineindex, candidate);
+            PeerConnectionInterop.PeerConnection_AddIceCandidate(_nativePeerhandle, sdpMid, sdpMlineindex, candidate);
         }
 
         /// <summary>
@@ -1366,7 +1058,7 @@ namespace Microsoft.MixedReality.WebRTC
         public bool CreateOffer()
         {
             ThrowIfConnectionNotOpen();
-            return (NativeMethods.PeerConnectionCreateOffer(_nativePeerhandle) == NativeMethods.MRS_SUCCESS);
+            return (PeerConnectionInterop.PeerConnection_CreateOffer(_nativePeerhandle) == Utils.MRS_SUCCESS);
         }
 
         /// <summary>
@@ -1377,7 +1069,7 @@ namespace Microsoft.MixedReality.WebRTC
         public bool CreateAnswer()
         {
             ThrowIfConnectionNotOpen();
-            return (NativeMethods.PeerConnectionCreateAnswer(_nativePeerhandle) == NativeMethods.MRS_SUCCESS);
+            return (PeerConnectionInterop.PeerConnection_CreateAnswer(_nativePeerhandle) == Utils.MRS_SUCCESS);
         }
 
         /// <summary>
@@ -1392,7 +1084,7 @@ namespace Microsoft.MixedReality.WebRTC
         public void SetRemoteDescription(string type, string sdp)
         {
             ThrowIfConnectionNotOpen();
-            NativeMethods.PeerConnectionSetRemoteDescription(_nativePeerhandle, type, sdp);
+            PeerConnectionInterop.PeerConnection_SetRemoteDescription(_nativePeerhandle, type, sdp);
         }
 
         #endregion
@@ -1415,323 +1107,6 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Collection of native P/Invoke static functions.
-        /// </summary>
-        internal static class NativeMethods
-        {
-#if MR_SHARING_WIN
-            internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.dll";
-#elif MR_SHARING_ANDROID
-            internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.so";
-#endif
-
-            // Error codes returned by the C API -- see api.h
-            internal const uint MRS_SUCCESS = 0u;
-            internal const uint MRS_E_UNKNOWN = 0x80000000u;
-            internal const uint MRS_E_INVALID_PARAMETER = 0x80000001u;
-            internal const uint MRS_E_INVALID_OPERATION = 0x80000002u;
-            internal const uint MRS_E_WRONG_THREAD = 0x80000003u;
-            internal const uint MRS_E_INVALID_PEER_HANDLE = 0x80000101u;
-            internal const uint MRS_E_PEER_NOT_INITIALIZED = 0x80000102u;
-            internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
-            internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
-
-            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-            internal struct MarshaledInteropCallbacks
-            {
-                public DataChannelInterop.CreateObjectCallback DataChannelCreateObjectCallback;
-            }
-
-            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-            internal struct PeerConnectionConfiguration
-            {
-                public string EncodedIceServers;
-                public IceTransportType IceTransportType;
-                public BundlePolicy BundlePolicy;
-                public SdpSemantic SdpSemantic;
-            }
-
-            /// <summary>
-            /// Helper structure to pass video capture device configuration to the underlying C++ library.
-            /// </summary>
-            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-            internal struct VideoDeviceConfiguration
-            {
-                /// <summary>
-                /// Video capture device unique identifier, as returned by <see cref="GetVideoCaptureDevicesAsync"/>.
-                /// </summary>
-                public string VideoDeviceId;
-
-                public string VideoProfileId;
-                public VideoProfileKind VideoProfileKind;
-                public uint Width;
-                public uint Height;
-                public double Framerate;
-
-                /// <summary>
-                /// Enable Mixed Reality Capture (MRC). This flag is ignored if the platform doesn't support MRC.
-                /// </summary>
-                public bool EnableMixedRealityCapture;
-            }
-
-            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-            internal struct SdpFilter
-            {
-                public string CodecName;
-                public string ExtraParams;
-            }
-
-
-            #region Unmanaged delegates
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void VideoCaptureDeviceEnumCallback(string id, string name, IntPtr userData);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void VideoCaptureDeviceEnumCompletedCallback(IntPtr userData);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void VideoCaptureFormatEnumCallback(uint width, uint height, double framerate, uint fourcc, IntPtr userData);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void VideoCaptureFormatEnumCompletedCallback(uint resultCode, IntPtr userData);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionDataChannelAddedCallback(IntPtr peer, IntPtr dataChannel);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionDataChannelRemovedCallback(IntPtr peer, IntPtr dataChannel);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionInteropCallbacks(IntPtr userData);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionConnectedCallback(IntPtr userData);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionLocalSdpReadytoSendCallback(IntPtr userData,
-                string type, string sdp);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionIceCandidateReadytoSendCallback(IntPtr userData,
-                string candidate, int sdpMlineindex, string sdpMid);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionIceStateChangedCallback(IntPtr userData,
-                IceConnectionState newState);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionRenegotiationNeededCallback(IntPtr userData);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionTrackAddedCallback(IntPtr userData, TrackKind trackKind);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionTrackRemovedCallback(IntPtr userData, TrackKind trackKind);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionI420VideoFrameCallback(IntPtr userData,
-                IntPtr ydata, IntPtr udata, IntPtr vdata, IntPtr adata,
-                int ystride, int ustride, int vstride, int astride,
-                int frameWidth, int frameHeight);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionARGBVideoFrameCallback(IntPtr userData,
-                IntPtr data, int stride, int frameWidth, int frameHeight);
-
-            [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-            public delegate void PeerConnectionAudioFrameCallback(IntPtr userData,
-                IntPtr data, uint bitsPerSample, uint sampleRate, uint channelCount, uint frameCount);
-
-            #endregion
-
-
-            #region P/Invoke static functions
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsEnumVideoCaptureDevicesAsync")]
-            public static extern void EnumVideoCaptureDevicesAsync(VideoCaptureDeviceEnumCallback enumCallback, IntPtr userData,
-                VideoCaptureDeviceEnumCompletedCallback completedCallback, IntPtr completedUserData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsEnumVideoCaptureFormatsAsync")]
-            public static extern uint EnumVideoCaptureFormatsAsync(string deviceId, VideoCaptureFormatEnumCallback enumCallback,
-                IntPtr userData, VideoCaptureFormatEnumCompletedCallback completedCallback, IntPtr completedUserData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionCreate")]
-            public static extern uint PeerConnectionCreate(PeerConnectionConfiguration config, IntPtr peer, out IntPtr peerHandleOut);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterInteropCallbacks")]
-            public static extern void PeerConnectionRegisterInteropCallbacks(IntPtr peerHandle,
-                ref MarshaledInteropCallbacks callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterConnectedCallback")]
-            public static extern void PeerConnectionRegisterConnectedCallback(IntPtr peerHandle,
-                PeerConnectionConnectedCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterLocalSdpReadytoSendCallback")]
-            public static extern void PeerConnectionRegisterLocalSdpReadytoSendCallback(IntPtr peerHandle,
-                PeerConnectionLocalSdpReadytoSendCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterIceCandidateReadytoSendCallback")]
-            public static extern void PeerConnectionRegisterIceCandidateReadytoSendCallback(IntPtr peerHandle,
-                PeerConnectionIceCandidateReadytoSendCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterIceStateChangedCallback")]
-            public static extern void PeerConnectionRegisterIceStateChangedCallback(IntPtr peerHandle,
-                PeerConnectionIceStateChangedCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterRenegotiationNeededCallback")]
-            public static extern void PeerConnectionRegisterRenegotiationNeededCallback(IntPtr peerHandle,
-                PeerConnectionRenegotiationNeededCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterTrackAddedCallback")]
-            public static extern void PeerConnectionRegisterTrackAddedCallback(IntPtr peerHandle,
-                PeerConnectionTrackAddedCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterTrackRemovedCallback")]
-            public static extern void PeerConnectionRegisterTrackRemovedCallback(IntPtr peerHandle,
-                PeerConnectionTrackRemovedCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterI420LocalVideoFrameCallback")]
-            public static extern void PeerConnectionRegisterI420LocalVideoFrameCallback(IntPtr peerHandle,
-                PeerConnectionI420VideoFrameCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterI420RemoteVideoFrameCallback")]
-            public static extern void PeerConnectionRegisterI420RemoteVideoFrameCallback(IntPtr peerHandle,
-                PeerConnectionI420VideoFrameCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterARGBLocalVideoFrameCallback")]
-            public static extern void PeerConnectionRegisterARGBLocalVideoFrameCallback(IntPtr peerHandle,
-                PeerConnectionARGBVideoFrameCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback")]
-            public static extern void PeerConnectionRegisterARGBRemoteVideoFrameCallback(IntPtr peerHandle,
-                PeerConnectionARGBVideoFrameCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterLocalAudioFrameCallback")]
-            public static extern void PeerConnectionRegisterLocalAudioFrameCallback(IntPtr peerHandle,
-                PeerConnectionAudioFrameCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRegisterRemoteAudioFrameCallback")]
-            public static extern void PeerConnectionRegisterRemoteAudioFrameCallback(IntPtr peerHandle,
-                PeerConnectionAudioFrameCallback callback, IntPtr userData);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
-            public static extern uint PeerConnectionAddLocalVideoTrack(IntPtr peerHandle, VideoDeviceConfiguration config);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionAddLocalAudioTrack")]
-            public static extern uint PeerConnectionAddLocalAudioTrack(IntPtr peerHandle);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionAddDataChannel")]
-            public static extern uint PeerConnectionAddDataChannel(IntPtr peerHandle,
-                DataChannelInterop.CreateConfig config, DataChannelInterop.Callbacks callbacks,
-                ref IntPtr dataChannelHandle);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRemoveLocalVideoTrack")]
-            public static extern void PeerConnectionRemoveLocalVideoTrack(IntPtr peerHandle);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRemoveLocalAudioTrack")]
-            public static extern void PeerConnectionRemoveLocalAudioTrack(IntPtr peerHandle);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionRemoveDataChannel")]
-            public static extern uint PeerConnectionRemoveDataChannel(IntPtr peerHandle, IntPtr dataChannelHandle);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionAddIceCandidate")]
-            public static extern void PeerConnectionAddIceCandidate(IntPtr peerHandle, string sdpMid,
-                int sdpMlineindex, string candidate);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionCreateOffer")]
-            public static extern uint PeerConnectionCreateOffer(IntPtr peerHandle);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionCreateAnswer")]
-            public static extern uint PeerConnectionCreateAnswer(IntPtr peerHandle);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionSetRemoteDescription")]
-            public static extern uint PeerConnectionSetRemoteDescription(IntPtr peerHandle, string type, string sdp);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsPeerConnectionClose")]
-            public static extern void PeerConnectionClose(ref IntPtr peerHandle);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsSdpForceCodecs")]
-            public static unsafe extern uint SdpForceCodecs(string message, SdpFilter audioFilter, SdpFilter videoFilter, StringBuilder messageOut, ref ulong messageOutLength);
-
-            [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-                EntryPoint = "mrsMemCpyStride")]
-            public static unsafe extern void MemCpyStride(void* dst, int dst_stride, void* src, int src_stride, int elem_size, int elem_count);
-
-            #endregion
-        }
-
-        /// <summary>
-        /// Callback invoked by the internal WebRTC implementation when it needs a SDP message
-        /// to be dispatched to the remote peer.
-        /// </summary>
-        /// <param name="type">The SDP message type.</param>
-        /// <param name="sdp">The SDP message content.</param>
-        private void OnLocalSdpReadytoSend(string type, string sdp)
-        {
-            // If the user specified a preferred audio or video codec, manipulate the SDP message
-            // to exclude other codecs if the preferred one is supported.
-            if ((PreferredAudioCodec.Length > 0) || (PreferredVideoCodec.Length > 0))
-            {
-                // Only filter offers, so that both peers think it's each other's fault
-                // for only supporting a single codec.
-                // Filtering an answer will not work because the internal implementation
-                // already decided what codec to use before this callback is called, so
-                // that will only confuse the other peer.
-                if (type == "offer")
-                {
-                    var builder = new StringBuilder(sdp.Length);
-                    ulong lengthInOut = (ulong)builder.Capacity;
-                    var audioFilter = new NativeMethods.SdpFilter
-                    {
-                        CodecName = PreferredAudioCodec,
-                        ExtraParams = PreferredAudioCodecExtraParams
-                    };
-                    var videoFilter = new NativeMethods.SdpFilter
-                    {
-                        CodecName = PreferredVideoCodec,
-                        ExtraParams = PreferredVideoCodecExtraParams
-                    };
-                    uint res = NativeMethods.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut);
-                    ThrowOnErrorCode(res);
-                    builder.Length = (int)lengthInOut;
-                    sdp = builder.ToString();
-                }
-            }
-
-            LocalSdpReadytoSend?.Invoke(type, sdp);
-        }
-
-        /// <summary>
         /// Get the list of available video capture devices.
         /// </summary>
         /// <returns>The list of available video capture devices.</returns>
@@ -1739,7 +1114,7 @@ namespace Microsoft.MixedReality.WebRTC
         {
             var devices = new List<VideoCaptureDevice>();
             var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-            var wrapper = new CallbacksWrappers.EnumVideoCaptureDeviceWrapper()
+            var wrapper = new PeerConnectionInterop.EnumVideoCaptureDeviceWrapper()
             {
                 enumCallback = (id, name) => {
                     devices.Add(new VideoCaptureDevice() { id = id, name = name });
@@ -1756,8 +1131,9 @@ namespace Microsoft.MixedReality.WebRTC
 
             return Task.Run(() => {
                 // Execute the native async callback
-                NativeMethods.EnumVideoCaptureDevicesAsync(CallbacksWrappers.VideoCaptureDeviceEnumCallback, userData,
-                    CallbacksWrappers.VideoCaptureDeviceEnumCompletedCallback, userData);
+                PeerConnectionInterop.EnumVideoCaptureDevicesAsync(
+                    PeerConnectionInterop.VideoCaptureDevice_EnumCallback, userData,
+                    PeerConnectionInterop.VideoCaptureDevice_EnumCompletedCallback, userData);
 
                 // Wait for end of enumerating
                 eventWaitHandle.WaitOne();
@@ -1780,7 +1156,7 @@ namespace Microsoft.MixedReality.WebRTC
         {
             var formats = new List<VideoCaptureFormat>();
             var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-            var wrapper = new CallbacksWrappers.EnumVideoCaptureFormatsWrapper()
+            var wrapper = new PeerConnectionInterop.EnumVideoCaptureFormatsWrapper()
             {
                 enumCallback = (width, height, framerate, fourcc) => {
                     formats.Add(new VideoCaptureFormat() { width = width, height = height, framerate = framerate, fourcc = fourcc });
@@ -1796,14 +1172,15 @@ namespace Microsoft.MixedReality.WebRTC
             IntPtr userData = GCHandle.ToIntPtr(handle);
 
             // Execute the native async callback
-            uint res = NativeMethods.EnumVideoCaptureFormatsAsync(deviceId, CallbacksWrappers.VideoCaptureFormatEnumCallback, userData,
-                CallbacksWrappers.VideoCaptureFormatEnumCompletedCallback, userData);
-            if (res != NativeMethods.MRS_SUCCESS)
+            uint res = PeerConnectionInterop.EnumVideoCaptureFormatsAsync(deviceId,
+                PeerConnectionInterop.VideoCaptureFormat_EnumCallback, userData,
+                PeerConnectionInterop.VideoCaptureFormat_EnumCompletedCallback, userData);
+            if (res != Utils.MRS_SUCCESS)
             {
                 // Clean-up and release the wrapper delegates
                 handle.Free();
 
-                ThrowOnErrorCode(res);
+                Utils.ThrowOnErrorCode(res);
                 return null; // for the compiler
             }
 
@@ -1818,82 +1195,116 @@ namespace Microsoft.MixedReality.WebRTC
             });
         }
 
-        /// <summary>
-        /// Unsafe utility to copy a contiguous block of memory.
-        /// This is equivalent to the C function <c>memcpy()</c>, and is provided for optimization purpose only.
-        /// </summary>
-        /// <param name="dst">Pointer to the beginning of the destination buffer data is copied to.</param>
-        /// <param name="src">Pointer to the beginning of the source buffer data is copied from.</param>
-        /// <param name="size">Size of the memory block, in bytes.</param>
-        [DllImport(NativeMethods.dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsMemCpy")]
-        public static unsafe extern void MemCpy(void* dst, void* src, ulong size);
-
-        /// <summary>
-        /// Unsafe utility to copy a memory block with stride.
-        /// 
-        /// This utility loops over the rows of the input memory block, and copy them to the output
-        /// memory block, then increment the read and write pointers by the source and destination
-        /// strides, respectively. For each row, exactly <paramref name="elem_size"/> bytes are copied,
-        /// even if the row stride is higher. The extra bytes in the destination buffer past the row
-        /// size until the row stride are left untouched.
-        /// 
-        /// This is equivalent to the following pseudo-code:
-        /// <code>
-        /// for (int row = 0; row &lt; elem_count; ++row) {
-        ///   memcpy(dst, src, elem_size);
-        ///   dst += dst_stride;
-        ///   src += src_stride;
-        /// }
-        /// </code>
-        /// </summary>
-        /// <param name="dst">Pointer to the beginning of the destination buffer data is copied to.</param>
-        /// <param name="dst_stride">Stride in bytes of the destination rows. This must be greater than
-        /// or equal to the row size <paramref name="elem_size"/>.</param>
-        /// <param name="src">Pointer to the beginning of the source buffer data is copied from.</param>
-        /// <param name="src_stride">Stride in bytes of the source rows. This must be greater than
-        /// or equal to the row size <paramref name="elem_size"/>.</param>
-        /// <param name="elem_size">Size of each row, in bytes.</param>
-        /// <param name="elem_count">Total number of rows to copy.</param>
-        [DllImport(NativeMethods.dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsMemCpyStride")]
-        public static unsafe extern void MemCpyStride(void* dst, int dst_stride, void* src, int src_stride,
-            int elem_size, int elem_count);
-
-        /// <summary>
-        /// Helper to throw an exception based on an error code.
-        /// </summary>
-        /// <param name="res">The error code to turn into an exception, if not zero (MRS_SUCCESS).</param>
-        private static void ThrowOnErrorCode(uint res)
+        internal void OnConnected()
         {
-            switch (res)
+            IsConnected = true;
+            Connected?.Invoke();
+        }
+
+        internal void OnDataChannelAdded(DataChannel dataChannel)
+        {
+            DataChannelAdded?.Invoke(dataChannel);
+        }
+
+        internal void OnDataChannelRemoved(DataChannel dataChannel)
+        {
+            DataChannelRemoved?.Invoke(dataChannel);
+        }
+
+        /// <summary>
+        /// Callback invoked by the internal WebRTC implementation when it needs a SDP message
+        /// to be dispatched to the remote peer.
+        /// </summary>
+        /// <param name="type">The SDP message type.</param>
+        /// <param name="sdp">The SDP message content.</param>
+        internal void OnLocalSdpReadytoSend(string type, string sdp)
+        {
+            // If the user specified a preferred audio or video codec, manipulate the SDP message
+            // to exclude other codecs if the preferred one is supported.
+            if ((PreferredAudioCodec.Length > 0) || (PreferredVideoCodec.Length > 0))
             {
-            case NativeMethods.MRS_SUCCESS:
-                return;
-
-            case NativeMethods.MRS_E_UNKNOWN:
-            default:
-                throw new Exception();
-
-            case NativeMethods.MRS_E_INVALID_PARAMETER:
-                throw new ArgumentException();
-
-            case NativeMethods.MRS_E_INVALID_OPERATION:
-                throw new InvalidOperationException();
-
-            case NativeMethods.MRS_E_WRONG_THREAD:
-                throw new InvalidOperationException("This method cannot be called on that thread.");
-
-            case NativeMethods.MRS_E_INVALID_PEER_HANDLE:
-                throw new InvalidOperationException("Invalid peer connection handle.");
-
-            case NativeMethods.MRS_E_PEER_NOT_INITIALIZED:
-                throw new InvalidOperationException("Peer connection not initialized.");
-
-            case NativeMethods.MRS_E_SCTP_NOT_NEGOTIATED:
-                throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
-
-            case NativeMethods.MRS_E_INVALID_DATA_CHANNEL_ID:
-                throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
+                // Only filter offers, so that both peers think it's each other's fault
+                // for only supporting a single codec.
+                // Filtering an answer will not work because the internal implementation
+                // already decided what codec to use before this callback is called, so
+                // that will only confuse the other peer.
+                if (type == "offer")
+                {
+                    var builder = new StringBuilder(sdp.Length);
+                    ulong lengthInOut = (ulong)builder.Capacity;
+                    var audioFilter = new Utils.SdpFilter
+                    {
+                        CodecName = PreferredAudioCodec,
+                        ExtraParams = PreferredAudioCodecExtraParams
+                    };
+                    var videoFilter = new Utils.SdpFilter
+                    {
+                        CodecName = PreferredVideoCodec,
+                        ExtraParams = PreferredVideoCodecExtraParams
+                    };
+                    uint res = Utils.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut);
+                    Utils.ThrowOnErrorCode(res);
+                    builder.Length = (int)lengthInOut;
+                    sdp = builder.ToString();
+                }
             }
+
+            LocalSdpReadytoSend?.Invoke(type, sdp);
+        }
+
+        internal void OnIceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
+        {
+            IceCandidateReadytoSend?.Invoke(candidate, sdpMlineindex, sdpMid);
+        }
+
+        internal void OnIceStateChanged(IceConnectionState newState)
+        {
+            IceStateChanged?.Invoke(newState);
+        }
+
+        internal void OnRenegotiationNeeded()
+        {
+            RenegotiationNeeded?.Invoke();
+        }
+
+        internal void OnTrackAdded(TrackKind trackKind)
+        {
+            TrackAdded?.Invoke(trackKind);
+        }
+
+        internal void OnTrackRemoved(TrackKind trackKind)
+        {
+            TrackRemoved?.Invoke(trackKind);
+        }
+
+        internal void OnI420LocalVideoFrameReady(I420AVideoFrame frame)
+        {
+            I420LocalVideoFrameReady?.Invoke(frame);
+        }
+
+        internal void OnI420RemoteVideoFrameReady(I420AVideoFrame frame)
+        {
+            I420RemoteVideoFrameReady?.Invoke(frame);
+        }
+
+        internal void OnARGBLocalVideoFrameReady(ARGBVideoFrame frame)
+        {
+            ARGBLocalVideoFrameReady?.Invoke(frame);
+        }
+
+        internal void OnARGBRemoteVideoFrameReady(ARGBVideoFrame frame)
+        {
+            ARGBRemoteVideoFrameReady?.Invoke(frame);
+        }
+
+        internal void OnLocalAudioFrameReady(AudioFrame frame)
+        {
+            LocalAudioFrameReady?.Invoke(frame);
+        }
+
+        internal void OnRemoteAudioFrameReady(AudioFrame frame)
+        {
+            RemoteAudioFrameReady?.Invoke(frame);
         }
     }
 }

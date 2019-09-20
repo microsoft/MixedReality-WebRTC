@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.MixedReality.WebRTC.Interop;
 
 namespace Microsoft.MixedReality.WebRTC
 {
@@ -82,17 +83,17 @@ namespace Microsoft.MixedReality.WebRTC
                     // especially in Debug config where one can lose 5-10 FPS just because of this.
                     void* dst = ptr;
                     ulong sizeY = (ulong)strideY * height;
-                    PeerConnection.MemCpyStride(dst, strideY, (void*)dataY, strideY, (int)width, (int)height);
+                    Utils.MemCpyStride(dst, strideY, (void*)dataY, strideY, (int)width, (int)height);
                     dst = (void*)((ulong)dst + sizeY);
                     ulong sizeU = (ulong)strideU * height / 2;
-                    PeerConnection.MemCpyStride(dst, strideU, (void*)dataU, strideU, (int)width / 2, (int)height / 2);
+                    Utils.MemCpyStride(dst, strideU, (void*)dataU, strideU, (int)width / 2, (int)height / 2);
                     dst = (void*)((ulong)dst + sizeU);
                     ulong sizeV = (ulong)strideV * height / 2;
-                    PeerConnection.MemCpyStride(dst, strideV, (void*)dataV, strideV, (int)width / 2, (int)height / 2);
+                    Utils.MemCpyStride(dst, strideV, (void*)dataV, strideV, (int)width / 2, (int)height / 2);
                     if (dataA.ToPointer() != null)
                     {
                         dst = (void*)((ulong)dst + sizeV);
-                        PeerConnection.MemCpyStride(dst, strideA, (void*)dataA, strideA, (int)width, (int)height);
+                        Utils.MemCpyStride(dst, strideA, (void*)dataA, strideA, (int)width, (int)height);
                     }
                 }
             }

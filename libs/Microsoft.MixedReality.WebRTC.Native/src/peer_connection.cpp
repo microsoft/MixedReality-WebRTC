@@ -396,9 +396,9 @@ void PeerConnection::OnDataChannel(
   // Creat the interop wrapper if needed
   mrsDataChannelCallbacks callbacks;
   mrsDataChannelInteropHandle data_channel_interop_handle{};
-  if (auto cb = interop_callbacks_.data_channel_create_object) {
-    data_channel_interop_handle = (*cb)(interop_callbacks_user_data_,
-                                        interop_handle_, config, &callbacks);
+  if (auto create_cb = interop_callbacks_.data_channel_create_object) {
+    data_channel_interop_handle = (*create_cb)(
+        interop_callbacks_user_data_, interop_handle_, config, &callbacks);
     if (data_channel_interop_handle) {
       // Register the interop callbacks
       data_channel->SetMessageCallback(DataChannel::MessageCallback{
@@ -411,9 +411,9 @@ void PeerConnection::OnDataChannel(
       // Invoke the DataChannelAdded callback on the wrapper
       {
         auto lock = std::lock_guard{data_channel_added_callback_mutex_};
-        auto cb = data_channel_added_callback_;
-        if (cb) {
-          cb(interop_handle_, data_channel_interop_handle);
+        auto added_cb = data_channel_added_callback_;
+        if (added_cb) {
+          added_cb(interop_handle_, data_channel_interop_handle);
         }
       }
     }

@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.MixedReality.WebRTC;
+using Microsoft.MixedReality.WebRTC.Interop;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 
@@ -88,10 +89,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         {
             ulong len = (ulong)kSdpFullString.Length + 1; // exact size + null terminator
             StringBuilder buffer = new StringBuilder((int)len);
-            var audioFilter = new PeerConnection.NativeMethods.SdpFilter();
-            var videoFilter = new PeerConnection.NativeMethods.SdpFilter();
-            uint res = PeerConnection.NativeMethods.SdpForceCodecs(kSdpFullString, audioFilter, videoFilter, buffer, ref len);
-            Assert.AreEqual(PeerConnection.NativeMethods.MRS_SUCCESS, res);
+            var audioFilter = new Utils.SdpFilter();
+            var videoFilter = new Utils.SdpFilter();
+            uint res = Utils.SdpForceCodecs(kSdpFullString, audioFilter, videoFilter, buffer, ref len);
+            Assert.AreEqual(Utils.MRS_SUCCESS, res);
             Assert.AreEqual(kSdpFullString, buffer.ToString());
         }
 
@@ -100,10 +101,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         {
             ulong len = (ulong)kSdpFullString.Length; // missing space for null terminator
             StringBuilder buffer = new StringBuilder((int)len);
-            var audioFilter = new PeerConnection.NativeMethods.SdpFilter();
-            var videoFilter = new PeerConnection.NativeMethods.SdpFilter();
-            uint res = PeerConnection.NativeMethods.SdpForceCodecs(kSdpFullString, audioFilter, videoFilter, buffer, ref len);
-            Assert.AreEqual(PeerConnection.NativeMethods.MRS_E_INVALID_PARAMETER, res);
+            var audioFilter = new Utils.SdpFilter();
+            var videoFilter = new Utils.SdpFilter();
+            uint res = Utils.SdpForceCodecs(kSdpFullString, audioFilter, videoFilter, buffer, ref len);
+            Assert.AreEqual(Utils.MRS_E_INVALID_PARAMETER, res);
         }
 
         [Test]
@@ -111,16 +112,16 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         {
             ulong len = (ulong)kSdpFullString.Length + 1; // at least as big as input (+ null terminator)
             StringBuilder buffer = new StringBuilder((int)len);
-            var audioFilter = new PeerConnection.NativeMethods.SdpFilter
+            var audioFilter = new Utils.SdpFilter
             {
                 CodecName = "opus"
             };
-            var videoFilter = new PeerConnection.NativeMethods.SdpFilter
+            var videoFilter = new Utils.SdpFilter
             {
                 CodecName = "a non-existing codec name causing no change"
             };
-            uint res = PeerConnection.NativeMethods.SdpForceCodecs(kSdpFullString, audioFilter, videoFilter, buffer, ref len);
-            Assert.AreEqual(res, PeerConnection.NativeMethods.MRS_SUCCESS);
+            uint res = Utils.SdpForceCodecs(kSdpFullString, audioFilter, videoFilter, buffer, ref len);
+            Assert.AreEqual(res, Utils.MRS_SUCCESS);
             string output = buffer.ToString();
 
             // Audio codec should be "opus" alone

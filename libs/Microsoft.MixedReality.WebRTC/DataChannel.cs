@@ -163,17 +163,18 @@ namespace Microsoft.MixedReality.WebRTC
             //var span = new ReadOnlySpan<byte>(data, size);
             //MessageReceived?.Invoke(span);
 
-            if (MessageReceived != null)
+            var callback = MessageReceived;
+            if (callback != null)
             {
                 byte[] msg = new byte[size];
                 unsafe
                 {
                     fixed (void* ptr = msg)
                     {
-                        PeerConnection.MemCpy(ptr, (void*)data, size);
+                        Utils.MemCpy(ptr, (void*)data, size);
                     }
                 }
-                MessageReceived.Invoke(msg);
+                callback.Invoke(msg);
             }
         }
 

@@ -7,9 +7,10 @@
 class PCRaii {
  public:
   PCRaii() {
-    PeerConnectionConfiguration config {};
-	config.encoded_ice_servers = "stun:stun.l.google.com:19302";
-    mrsPeerConnectionCreate(config, &handle_);
+    PeerConnectionConfiguration config{};
+    config.encoded_ice_servers = "stun:stun.l.google.com:19302";
+    mrsPeerConnectionInteropHandle interop_handle = nullptr;  // no interop
+    mrsPeerConnectionCreate(config, interop_handle, &handle_);
   }
   ~PCRaii() { mrsPeerConnectionClose(&handle_); }
   PeerConnectionHandle handle() const { return handle_; }
