@@ -58,6 +58,7 @@
     <ClInclude Include="peer_connection_test_helpers.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="peer_connection_tests.cpp" />
     <ClCompile Include="sdp_utils_tests.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

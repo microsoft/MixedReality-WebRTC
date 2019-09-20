@@ -7,6 +7,12 @@
 #include <cassert>
 #include <SDKDDKVer.h>
 
+#include <condition_variable>
+#include <functional>
+#include <mutex>
+
+using namespace std::chrono_literals;
+
 #if defined(MR_SHARING_WIN)
 
 #define WEBRTC_WIN 1
