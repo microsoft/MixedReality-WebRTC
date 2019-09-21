@@ -56,7 +56,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   size_t GetMaxBufferingSize() const noexcept;
 
   /// Send a blob of data through the data channel.
-  bool Send(const void* data, uint64_t size) noexcept;
+  bool Send(const void* data, size_t size) noexcept;
 
   //
   // Advanced use

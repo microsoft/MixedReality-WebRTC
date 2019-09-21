@@ -52,6 +52,8 @@ void DataChannel::SetStateCallback(StateCallback callback) noexcept {
 }
 
 size_t DataChannel::GetMaxBufferingSize() const noexcept {
+  // See BufferingCallback; current WebRTC implementation has a limit of 16MB
+  // for the internal data track buffer capacity.
   static constexpr size_t kMaxBufferingSize = 0x1000000uLL;  // 16 MB
   return kMaxBufferingSize;
 }
@@ -60,7 +62,7 @@ bool DataChannel::Send(const void* data, size_t size) noexcept {
   if (data_channel_->buffered_amount() + size > GetMaxBufferingSize()) {
     return false;
   }
-  rtc::CopyOnWriteBuffer bufferStorage((const char*)data, (size_t)size);
+  rtc::CopyOnWriteBuffer bufferStorage((const char*)data, size);
   webrtc::DataBuffer buffer(bufferStorage, /* binary = */ true);
   return data_channel_->Send(buffer);
 }
