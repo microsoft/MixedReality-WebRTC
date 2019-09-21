@@ -998,7 +998,7 @@ mrsDataChannelSendMessage(DataChannelHandle dataChannelHandle,
   if (!data_channel) {
     return MRS_E_INVALID_PEER_HANDLE;
   }
-  return (data_channel->Send(data, size) ? MRS_SUCCESS : MRS_E_UNKNOWN);
+  return (data_channel->Send(data, (size_t)size) ? MRS_SUCCESS : MRS_E_UNKNOWN);
 }
 
 mrsResult MRS_CALL
