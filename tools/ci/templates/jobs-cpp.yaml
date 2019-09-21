@@ -85,3 +85,24 @@ jobs:
     inputs:
       artifactName: 'Microsoft.MixedReality.WebRTC.Native_$(buildTriple)'
       targetPath: bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}
+
+  # Build the C++ tests
+  - task: MSBuild@1
+    condition: eq('${{parameters.buildPlatform}}', 'Win32')
+    displayName: 'Build C++ tests ($(buildTriple))'
+    inputs:
+      solution: 'libs/Microsoft.MixedReality.WebRTC.Native/test/Microsoft.MixedReality.WebRTC.Native.Tests.vcxproj'
+      msbuildVersion: 15.0
+      msbuildArchitecture: x64
+      platform: '${{parameters.msbuildPlatform}}'
+      configuration: '${{parameters.buildConfig}}'
+    timeoutInMinutes: 20
+
+  # Run C++ test
+  - task: VSTest@2
+    condition: eq('${{parameters.buildPlatform}}', 'Win32')
+    displayName: 'Run C++ tests ($(buildTriple))'
+    inputs:
+      testAssemblyVer2: 'Microsoft.MixedReality.WebRTC.Native.Tests.exe'
+      searchFolder: '$(Build.SourcesDirectory)/bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+      pathtoCustomTestAdapters: '$(Build.SourcesDirectory)/packages/GoogleTestAdapter.0.16.1/build/_common'
