@@ -219,19 +219,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 framerate = 0; // auto
 
                 // For HoloLens, use video profile to reduce resolution and save power/CPU/bandwidth
-                if (!Windows.Graphics.Holographic.HolographicDisplay.GetDefault().IsOpaque)
+                if (Windows.Graphics.Holographic.HolographicSpace.IsAvailable)
                 {
-                    if (Windows.ApplicationModel.Package.Current.Id.Architecture == Windows.System.ProcessorArchitecture.X86)
+                    if (!Windows.Graphics.Holographic.HolographicDisplay.GetDefault().IsOpaque)
                     {
-                        // Holographic AR (transparent) x86 platform - Assume HoloLens 1
-                        videoProfileKind = WebRTC.PeerConnection.VideoProfileKind.VideoRecording; // No profile in VideoConferencing
-                        width = 896; // Target 896 x 504
-                    }
-                    else
-                    {
-                        // Holographic AR (transparent) non-x86 platform - Assume HoloLens 2
-                        videoProfileKind = WebRTC.PeerConnection.VideoProfileKind.VideoConferencing;
-                        width = 1280; // Target 1280 x 720
+                        if (Windows.ApplicationModel.Package.Current.Id.Architecture == Windows.System.ProcessorArchitecture.X86)
+                        {
+                            // Holographic AR (transparent) x86 platform - Assume HoloLens 1
+                            videoProfileKind = WebRTC.PeerConnection.VideoProfileKind.VideoRecording; // No profile in VideoConferencing
+                            width = 896; // Target 896 x 504
+                        }
+                        else
+                        {
+                            // Holographic AR (transparent) non-x86 platform - Assume HoloLens 2
+                            videoProfileKind = WebRTC.PeerConnection.VideoProfileKind.VideoConferencing;
+                            width = 1280; // Target 1280 x 720
+                        }
                     }
                 }
             }
