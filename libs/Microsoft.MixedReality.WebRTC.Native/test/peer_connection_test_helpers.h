@@ -20,38 +20,48 @@ struct Event {
 };
 
 /// Wrapper around an interop callback taking an extra raw pointer argument, to
-/// trampoline its call to a generic std::function for convenience.
+/// trampoline its call to a generic std::function for convenience (including
+/// lambda functions).
 /// Use the CB() macro to register the callback with the interop layer.
+/// Note that the Callback<> variable must stay in scope for the duration of the
+/// use, so that its static callback function is kept alive while registered.
 /// Usage:
-///   Callback<int> cb([](int i) { ... });
-///   mrsRegisterXxxCallback(h, CB(cb));
+///   {
+///     Callback<int> cb([](int i) { ... });
+///     mrsRegisterXxxCallback(h, CB(cb));
+///     [...]
+///     mrsRegisterXxxCallback(h, nullptr, nullptr);
+///   }
 template <typename... Args>
 struct Callback {
+  /// Callback function signature type.
   using function_type = void(Args...);
+
+  /// Type of the static interop callback, which prepends a void* user data
+  /// opaque argument.
   using static_type = void(MRS_CALL*)(void*, Args...);
-  using method_type = void (Callback::*)(Args...);
-  Callback() { callback_ = &StaticExec; }
-  Callback(std::function<function_type> func) : func_(std::move(func)) {
-    callback_ = &StaticExec;
-  }
+
+  Callback() = default;
+
+  /// Constructor from any std::function-compatible object, including lambdas.
   template <typename U>
-  Callback(U func) : func_(std::forward<std::function<function_type>>(func)) {
-    callback_ = &StaticExec;
-  }
+  Callback(U func) : func_(std::forward<std::function<function_type>>(func)) {}
+
   Callback& operator=(std::function<function_type> func) {
     func_ = std::move(func);
     return (*this);
   }
+
   static void StaticExec(void* user_data, Args... args) {
     auto self = (Callback*)user_data;
     self->func_(std::forward<Args>(args)...);
   }
+
   std::function<function_type> func_;
-  static_type callback_;
 };
 
 /// Convenience macro to fill the interop callback registration arguments.
-#define CB(x) x.callback_, &x
+#define CB(x) &x.StaticExec, &x
 
 /// Helper to create and close a peer connection.
 class PCRaii {
