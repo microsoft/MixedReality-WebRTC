@@ -52,7 +52,8 @@ struct Callback {
     return (*this);
   }
 
-  static void StaticExec(void* user_data, Args... args) {
+  /// Adapter for generic std::function<> to interop callback.
+  static void MRS_CALL StaticExec(void* user_data, Args... args) {
     auto self = (Callback*)user_data;
     self->func_(std::forward<Args>(args)...);
   }
