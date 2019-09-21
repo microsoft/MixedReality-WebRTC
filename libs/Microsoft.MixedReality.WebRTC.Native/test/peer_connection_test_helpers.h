@@ -6,17 +6,31 @@
 
 /// Simple wait event, similar to rtc::Event.
 struct Event {
-  void Set() { cv_.notify_one(); }
+  void Reset() {
+    std::unique_lock<std::mutex> lk(m_);
+    signaled_ = false;
+  }
+  void Set() {
+    std::unique_lock<std::mutex> lk(m_);
+    signaled_ = true;
+    cv_.notify_one();
+  }
   void Wait() {
     std::unique_lock<std::mutex> lk(m_);
-    cv_.wait(lk);
+    if (!signaled_) {
+      cv_.wait(lk);
+    }
   }
   bool WaitFor(std::chrono::seconds seconds) {
     std::unique_lock<std::mutex> lk(m_);
-    return (cv_.wait_for(lk, seconds) == std::cv_status::no_timeout);
+    if (!signaled_) {
+      return (cv_.wait_for(lk, seconds) == std::cv_status::no_timeout);
+    }
+    return true;
   }
   std::mutex m_;
   std::condition_variable cv_;
+  bool signaled_{false};
 };
 
 /// Wrapper around an interop callback taking an extra raw pointer argument, to
@@ -42,6 +56,7 @@ struct Callback {
   using static_type = void(MRS_CALL*)(void*, Args...);
 
   Callback() = default;
+  ~Callback() { assert(!is_registered_); }
 
   /// Constructor from any std::function-compatible object, including lambdas.
   template <typename U>
@@ -59,6 +74,7 @@ struct Callback {
   }
 
   std::function<function_type> func_;
+  bool is_registered_{false};
 };
 
 /// Convenience macro to fill the interop callback registration arguments.
