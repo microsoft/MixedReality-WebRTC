@@ -129,6 +129,7 @@
     <ClInclude Include="../targetver.h" />
     <ClInclude Include="../video_frame_observer.h" />
     <ClInclude Include="../sdp_utils.h" />
+    <ClInclude Include="../../include/export.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../api.cpp" />

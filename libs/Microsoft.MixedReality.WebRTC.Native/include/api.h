@@ -11,16 +11,7 @@
 rtc::Thread* UnsafeGetWorkerThread();
 #endif
 
-// P/Invoke uses stdcall by default. This can be changed, but Unity's IL2CPP
-// does not understand the CallingConvention attribute and instead
-// unconditionally forces stdcall. So use stdcall in the API to be compatible.
-#if defined(MR_SHARING_WIN)
-#define MRS_API __declspec(dllexport)
-#define MRS_CALL __stdcall
-#elif defined(MR_SHARING_ANDROID)
-#define MRS_API __attribute__((visibility("default")))
-#define MRS_CALL __attribute__((stdcall))
-#endif
+#include "export.h"
 
 extern "C" {
 
@@ -191,6 +182,19 @@ using PeerConnectionTrackAddedCallback = void(MRS_CALL*)(void* user_data,
 using PeerConnectionTrackRemovedCallback =
     void(MRS_CALL*)(void* user_data, TrackKind track_kind);
 
+/// Callback fired when a data channel is added to the peer connection after
+/// being negotiated with the remote peer.
+using PeerConnectionDataChannelAddedCallback =
+    void(MRS_CALL*)(void* user_data,
+                    mrsDataChannelInteropHandle data_channel_wrapper,
+                    DataChannelHandle data_channel);
+
+/// Callback fired when a data channel is remoted from the peer connection.
+using PeerConnectionDataChannelRemovedCallback =
+    void(MRS_CALL*)(void* user_data,
+                    mrsDataChannelInteropHandle data_channel_wrapper,
+                    DataChannelHandle data_channel);
+
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 /// The video frame is encoded in I420 triplanar format (NV12).
@@ -301,6 +305,7 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
                         PeerConnectionHandle* peerHandleOut) noexcept;
 
 struct mrsPeerConnectionInteropCallbacks {
+  /// Construct an interop object for a DataChannel instance.
   mrsPeerConnectionDataChannelCreateObjectCallback data_channel_create_object;
 };
 
@@ -342,18 +347,32 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRenegotiationNeededCallback(
     PeerConnectionRenegotiationNeededCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a remote track is added to the current peer
-/// connection.
+/// Register a callback fired when a remote media track is added to the current
+/// peer connection.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterTrackAddedCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionTrackAddedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a remote track is removed from the current
-/// peer connection.
+/// Register a callback fired when a remote media track is removed from the
+/// current peer connection.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterTrackRemovedCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionTrackRemovedCallback callback,
+    void* user_data) noexcept;
+
+/// Register a callback fired when a remote data channel is removed from the
+/// current peer connection.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelAddedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionDataChannelAddedCallback callback,
+    void* user_data) noexcept;
+
+/// Register a callback fired when a remote data channel is removed from the
+/// current peer connection.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionDataChannelRemovedCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a video frame is available from a local video
@@ -484,8 +503,13 @@ enum class mrsDataChannelConfigFlags : uint32_t {
 };
 
 inline mrsDataChannelConfigFlags operator|(mrsDataChannelConfigFlags a,
-                                    mrsDataChannelConfigFlags b) {
+                                           mrsDataChannelConfigFlags b) {
   return (mrsDataChannelConfigFlags)((uint32_t)a | (uint32_t)b);
+}
+
+inline uint32_t operator&(mrsDataChannelConfigFlags a,
+                          mrsDataChannelConfigFlags b) {
+  return ((uint32_t)a | (uint32_t)b);
 }
 
 struct mrsDataChannelConfig {
@@ -514,6 +538,7 @@ struct mrsDataChannelCallbacks {
 /// the same ID on the remote peer to be able to use the channel.
 MRS_API mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     PeerConnectionHandle peerHandle,
+    mrsDataChannelInteropHandle dataChannelInteropHandle,
     mrsDataChannelConfig config,
     mrsDataChannelCallbacks callbacks,
     DataChannelHandle* dataChannelHandleOut) noexcept;

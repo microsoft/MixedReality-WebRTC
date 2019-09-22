@@ -5,6 +5,7 @@
 #include "pch.h"
 
 #include "data_channel.h"
+#include "peer_connection.h"
 
 namespace {
 
@@ -27,13 +28,22 @@ inline ApiDataState apiStateFromRtcState(RtcDataState rtcState) {
 namespace Microsoft::MixedReality::WebRTC {
 
 DataChannel::DataChannel(
-    rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) noexcept
-    : data_channel_(std::move(data_channel)) {
+    PeerConnection* owner,
+    rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel,
+    mrsDataChannelInteropHandle interop_handle) noexcept
+    : owner_(owner),
+      data_channel_(std::move(data_channel)),
+      interop_handle_(interop_handle) {
+  RTC_CHECK(owner_);
   data_channel_->RegisterObserver(this);
 }
 
 DataChannel::~DataChannel() {
   data_channel_->UnregisterObserver();
+  if (owner_) {
+    owner_->RemoveDataChannel(*this);
+  }
+  RTC_CHECK(!owner_);
 }
 
 void DataChannel::SetMessageCallback(MessageCallback callback) noexcept {
@@ -68,10 +78,25 @@ bool DataChannel::Send(const void* data, size_t size) noexcept {
 }
 
 void DataChannel::OnStateChange() noexcept {
-  auto lock = std::lock_guard{mutex_};
-  if (state_callback_) {
-    auto apiState = apiStateFromRtcState(data_channel_->state());
-    state_callback_((int)apiState, data_channel_->id());
+  const webrtc::DataChannelInterface::DataState state = data_channel_->state();
+  switch (state) {
+    case webrtc::DataChannelInterface::DataState::kOpen:
+      // Negotiated (out-of-band) data channels never generate an
+      // OnDataChannel() message, so simulate it for the DataChannelAdded event
+      // to be consistent.
+      if (data_channel_->negotiated()) {
+        owner_->OnDataChannelAdded(*this);
+      }
+      break;
+  }
+
+  // Invoke the StateChanged event
+  {
+    auto lock = std::lock_guard{mutex_};
+    if (state_callback_) {
+      auto apiState = apiStateFromRtcState(state);
+      state_callback_((int)apiState, data_channel_->id());
+    }
   }
 }
 

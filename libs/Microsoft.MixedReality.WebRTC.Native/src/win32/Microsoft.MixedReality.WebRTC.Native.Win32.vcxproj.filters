@@ -27,6 +27,7 @@
     <ClInclude Include="../data_channel.h">
       <Filter>media</Filter>
     </ClInclude>
+    <ClInclude Include="../../include/export.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

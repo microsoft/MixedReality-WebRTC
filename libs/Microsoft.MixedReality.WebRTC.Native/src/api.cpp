@@ -784,6 +784,28 @@ void MRS_CALL mrsPeerConnectionRegisterTrackRemovedCallback(
   }
 }
 
+void MRS_CALL mrsPeerConnectionRegisterDataChannelAddedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionDataChannelAddedCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterDataChannelAddedCallback(
+        Callback<mrsDataChannelInteropHandle, DataChannelHandle>{callback,
+                                                                 user_data});
+  }
+}
+
+void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionDataChannelRemovedCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterDataChannelRemovedCallback(
+        Callback<mrsDataChannelInteropHandle, DataChannelHandle>{callback,
+                                                                 user_data});
+  }
+}
+
 void MRS_CALL mrsPeerConnectionRegisterI420LocalVideoFrameCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionI420VideoFrameCallback callback,
@@ -927,12 +949,13 @@ mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept {
 
 mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     PeerConnectionHandle peerHandle,
+    mrsDataChannelInteropHandle dataChannelInteropHandle,
     mrsDataChannelConfig config,
     mrsDataChannelCallbacks callbacks,
     DataChannelHandle* dataChannelHandleOut) noexcept
 
 {
-  if (!dataChannelHandleOut) {
+  if (!dataChannelHandleOut || !dataChannelInteropHandle) {
     return MRS_E_INVALID_PARAMETER;
   }
   *dataChannelHandleOut = nullptr;
@@ -942,12 +965,11 @@ mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     return MRS_E_INVALID_PEER_HANDLE;
   }
 
-  const bool ordered =
-      ((uint32_t)config.flags & (uint32_t)mrsDataChannelConfigFlags::kOrdered);
-  const bool reliable =
-      ((uint32_t)config.flags & (uint32_t)mrsDataChannelConfigFlags::kReliable);
+  const bool ordered = (config.flags & mrsDataChannelConfigFlags::kOrdered);
+  const bool reliable = (config.flags & mrsDataChannelConfigFlags::kReliable);
   webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> data_channel =
-      peer->AddDataChannel(config.id, config.label, ordered, reliable);
+      peer->AddDataChannel(config.id, config.label, ordered, reliable,
+                           dataChannelInteropHandle);
   if (data_channel.ok()) {
     data_channel.value()->SetMessageCallback(DataChannel::MessageCallback{
         callbacks.message_callback, callbacks.message_user_data});

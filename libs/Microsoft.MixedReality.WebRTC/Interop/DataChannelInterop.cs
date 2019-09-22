@@ -143,7 +143,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void SetHandle(DataChannel dataChannel, IntPtr handle)
         {
             Debug.Assert(handle != IntPtr.Zero);
-            Debug.Assert(dataChannel._interopHandle == IntPtr.Zero);
+            // Either first-time assign or no-op (assign same value again)
+            Debug.Assert((dataChannel._interopHandle == IntPtr.Zero) || (dataChannel._interopHandle == handle));
             dataChannel._interopHandle = handle;
         }
 

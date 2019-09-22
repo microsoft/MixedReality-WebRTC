@@ -4,11 +4,11 @@
 
 #include "pch.h"
 
-#include "../include/api.h"
+#include "api.h"
+#include "data_channel.h"
 
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 
-// Fail to add channel before the PeerConnection is initialized
 TEST(DataChannel, AddChannelBeforeInit) {
   PCRaii pc;
   ASSERT_NE(nullptr, pc.handle());

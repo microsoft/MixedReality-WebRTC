@@ -38,4 +38,6 @@ using namespace std::chrono_literals;
 
 #include "gtest/gtest.h"
 
+#include "rtc_base/thread_annotations.h"
+
 #include "peer_connection_test_helpers.h"

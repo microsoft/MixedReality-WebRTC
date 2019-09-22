@@ -58,6 +58,11 @@
                 </TextBlock>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="ChatChannelItemTemplate" x:DataType="local:ChatChannel">
+            <StackPanel Orientation="Horizontal" Margin="2,0,0,0" AutomationProperties.Name="{x:Bind Label}">
+                <TextBlock Text="{x:Bind Label}" Margin="24,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+        </DataTemplate>
     </Page.Resources>
     <Grid x:Name="LayoutRoot" Margin="0,0,0,12">
         <Pivot SelectedIndex="0">
@@ -115,6 +120,7 @@
                         <RadioButton x:Name="sdpSemanticPlanB" Content="Plan B (deprecated)" GroupName="SdpSemanticGroup" />
                     </StackPanel>
                     <Button Name="createOfferButton" IsEnabled="False" Content="Create offer" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="CreateOfferButtonClicked" Width="125" Margin="0,12,0,0"/>
+                    <Button Name="addExtraDataChannelButton" Content="Add extra data channel" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="AddExtraDataChannelButtonClicked" Width="250" Margin="0,12,0,0"/>
                 </StackPanel>
             </PivotItem>
             <PivotItem Header="Webcam">
@@ -224,9 +230,18 @@
                         <TextBlock Text="Data channel" VerticalAlignment="Bottom" FontWeight="Bold" />
                         <TextBlock x:Name="sessionStatusText" Text="(not connected)" VerticalAlignment="Bottom" Margin="6,0,0,0" />
                     </StackPanel>
-                    <ScrollViewer x:Name="chatScrollViewer"  Grid.Row="4" Grid.ColumnSpan="3">
-                        <TextBox x:Name="chatTextBox" IsEnabled="False" IsReadOnly="True" AcceptsReturn="True" />
-                    </ScrollViewer>
+                    <Grid Grid.Row="4" Grid.ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <ListView x:Name="chatList" Width="200" ItemClick="ChatList_ItemClick" IsItemClickEnabled="True"
+                    ItemsSource="{x:Bind ChatChannels}" ItemTemplate="{StaticResource ChatChannelItemTemplate}"/>
+                        <ScrollViewer x:Name="chatScrollViewer" Grid.Column="2" >
+                            <TextBox x:Name="chatTextBox" IsEnabled="False" IsReadOnly="True" AcceptsReturn="True" />
+                        </ScrollViewer>
+                    </Grid>
                     <Grid Grid.Row="5" Grid.ColumnSpan="3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>

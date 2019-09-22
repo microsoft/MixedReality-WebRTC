@@ -5,6 +5,10 @@
 #pragma once
 
 #include <cassert>
+#include <cstdint>
+#include <functional>
+#include <string>
+#include <string_view>
 
 #include "targetver.h"
 

@@ -495,11 +495,18 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Event fired when a data channel is added to the peer connection.
+        /// This event is always fired, whether the data channel is created by the local peer
+        /// or the remote peer, and is negotiated (out-of-band) or not (in-band).
+        /// If an in-band data channel is created by the local peer, the <see cref="DataChannel.ID"/>
+        /// field is not yet available when this event is fired, because the ID has not been
+        /// agreed upon with the remote peer yet.
         /// </summary>
         public event DataChannelAddedDelegate DataChannelAdded;
 
         /// <summary>
         /// Event fired when a data channel is removed from the peer connection.
+        /// This event is always fired, whatever its creation method (negotiated or not)
+        /// and original creator (local or remote peer).
         /// </summary>
         public event DataChannelRemovedDelegate DataChannelRemoved;
 
@@ -760,6 +767,10 @@ namespace Microsoft.MixedReality.WebRTC
                             _nativePeerhandle, _peerCallbackArgs.TrackAddedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterTrackRemovedCallback(
                             _nativePeerhandle, _peerCallbackArgs.TrackRemovedCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterDataChannelAddedCallback(
+                            _nativePeerhandle, _peerCallbackArgs.DataChannelAddedCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterDataChannelRemovedCallback(
+                            _nativePeerhandle, _peerCallbackArgs.DataChannelRemovedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterI420LocalVideoFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.I420LocalVideoFrameCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterI420RemoteVideoFrameCallback(
@@ -1009,15 +1020,18 @@ namespace Microsoft.MixedReality.WebRTC
 
             // Create the native channel
             return await Task.Run(() => {
-                IntPtr handle = IntPtr.Zero;
-                uint res = PeerConnectionInterop.PeerConnection_AddDataChannel(_nativePeerhandle, config, callbacks, ref handle);
+                IntPtr nativeHandle = IntPtr.Zero;
+                var wrapperGCHandle = GCHandle.Alloc(dataChannel, GCHandleType.Normal);
+                var wrapperHandle = GCHandle.ToIntPtr(wrapperGCHandle);
+                uint res = PeerConnectionInterop.PeerConnection_AddDataChannel(_nativePeerhandle, wrapperHandle, config, callbacks, ref nativeHandle);
                 if (res == Utils.MRS_SUCCESS)
                 {
-                    DataChannelInterop.SetHandle(dataChannel, handle);
+                    DataChannelInterop.SetHandle(dataChannel, nativeHandle);
                     return dataChannel;
                 }
 
                 // Some error occurred, callbacks are not registered, so remove the GC lock.
+                wrapperGCHandle.Free();
                 dataChannel.Dispose();
                 dataChannel = null;
 

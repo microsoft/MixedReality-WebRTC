@@ -47,6 +47,13 @@ namespace TestAppUwp
         }
     }
 
+    public class ChatChannel
+    {
+        public DataChannel DataChannel;
+        public string Text = "";
+        public string Label { get { return DataChannel?.Label; } }
+    }
+
     /// <summary>
     /// The main application page.
     /// </summary>
@@ -79,11 +86,6 @@ namespace TestAppUwp
         /// The underlying <see cref="PeerConnection"/> object.
         /// </summary>
         private PeerConnection _peerConnection;
-
-        /// <summary>
-        /// Data channel used to send and receive text messages, as an example use.
-        /// </summary>
-        private DataChannel _chatDataChannel = null;
 
         /// <summary>
         /// Enable automatically creating a new SDP offer when the renegotiation event is fired.
@@ -183,6 +185,22 @@ namespace TestAppUwp
         public ObservableCollection<NavLink> NavLinks { get; }
             = new ObservableCollection<NavLink>();
 
+        public ObservableCollection<ChatChannel> ChatChannels { get; private set; }
+            = new ObservableCollection<ChatChannel>();
+
+        public ChatChannel SelectedChatChannel
+        {
+            get
+            {
+                var chatIndex = chatList.SelectedIndex;
+                if ((chatIndex < 0) || (chatIndex >= ChatChannels.Count))
+                {
+                    return null;
+                }
+                return ChatChannels[chatIndex];
+            }
+        }
+
         private VideoBridge localVideoBridge = new VideoBridge(3);
         private VideoBridge remoteVideoBridge = new VideoBridge(5);
 
@@ -218,6 +236,8 @@ namespace TestAppUwp
 
             _peerConnection = new PeerConnection();
             _peerConnection.Connected += OnPeerConnected;
+            _peerConnection.DataChannelAdded += OnDataChannelAdded;
+            _peerConnection.DataChannelRemoved += OnDataChannelRemoved;
             _peerConnection.LocalSdpReadytoSend += OnLocalSdpReadyToSend;
             _peerConnection.IceCandidateReadytoSend += OnIceCandidateReadyToSend;
             _peerConnection.IceStateChanged += OnIceStateChanged;
@@ -232,6 +252,33 @@ namespace TestAppUwp
             //Window.Current.Closed += Shutdown; // doesn't work
 
             this.Loaded += OnLoaded;
+        }
+
+        private void OnDataChannelAdded(DataChannel channel)
+        {
+            LogMessage($"Added data channel '{channel.Label}' (#{channel.ID}).");
+            RunOnMainThread(() => {
+                var chat = new ChatChannel { DataChannel = channel };
+                ChatChannels.Add(chat);
+                if (ChatChannels.Count == 1)
+                {
+                    chatList.SelectedIndex = 0;
+                }
+                channel.MessageReceived += (byte[] message) =>
+                    RunOnMainThread(() => {
+                        string text = System.Text.Encoding.UTF8.GetString(message);
+                        ChatMessageReceived(chat, text);
+                    });
+            });
+        }
+
+        private void OnDataChannelRemoved(DataChannel channel)
+        {
+            LogMessage($"Removed data channel '{channel.Label}' (#{channel.ID}).");
+            RunOnMainThread(() => {
+                var chat = ChatChannels.Where((c) => c.DataChannel == channel).First();
+                ChatChannels.Remove(chat);
+            });
         }
 
         private void OnLocalSdpReadyToSend(string type, string sdp)
@@ -258,8 +305,7 @@ namespace TestAppUwp
 
         private void OnIceStateChanged(IceConnectionState newState)
         {
-            RunOnMainThread(() =>
-            {
+            RunOnMainThread(() => {
                 LogMessage($"ICE state changed to {newState}.");
                 iceStateText.Text = newState.ToString();
             });
@@ -301,8 +347,7 @@ namespace TestAppUwp
             // This is more for demo purpose here because using the UWP API is nicer.
             {
                 // Use a local list accessible from a background thread
-                PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((prevTask) =>
-                {
+                PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((prevTask) => {
                     if (prevTask.Exception != null)
                     {
                         throw prevTask.Exception;
@@ -322,8 +367,7 @@ namespace TestAppUwp
                     }
 
                     // Assign on main UI thread because of XAML binding; otherwise it fails.
-                    RunOnMainThread(() =>
-                    {
+                    RunOnMainThread(() => {
                         VideoCaptureDevices.Clear();
                         foreach (var vcd in vcds)
                         {
@@ -364,15 +408,13 @@ namespace TestAppUwp
                 };
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
                 mediaAccessRequester.InitializeAsync(mediaSettings).AsTask()
-                    .ContinueWith((accessTask) =>
-                    {
+                    .ContinueWith((accessTask) => {
                         if (accessTask.Exception != null)
                         {
                             LogMessage($"Access to A/V denied, check app permissions: {accessTask.Exception.Message}");
                             throw accessTask.Exception;
                         }
-                        _peerConnection.InitializeAsync(config).ContinueWith((initTask) =>
-                        {
+                        _peerConnection.InitializeAsync(config).ContinueWith((initTask) => {
                             if (initTask.Exception != null)
                             {
                                 LogMessage($"WebRTC native plugin init failed: {initTask.Exception.Message}");
@@ -449,8 +491,7 @@ namespace TestAppUwp
 
                 // List resolutions
                 var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                PeerConnection.GetVideoCaptureFormatsAsync(device.Id).ContinueWith((listTask) =>
-                {
+                PeerConnection.GetVideoCaptureFormatsAsync(device.Id).ContinueWith((listTask) => {
                     if (listTask.Exception != null)
                     {
                         throw listTask.Exception;
@@ -528,8 +569,7 @@ namespace TestAppUwp
         /// </summary>
         private void OnPeerConnected()
         {
-            RunOnMainThread(() =>
-            {
+            RunOnMainThread(() => {
                 sessionStatusText.Text = "(session joined)";
                 chatTextBox.IsEnabled = true;
             });
@@ -564,8 +604,7 @@ namespace TestAppUwp
 
         private void DssSignaler_OnFailure(Exception e)
         {
-            RunOnMainThread(() =>
-            {
+            RunOnMainThread(() => {
                 LogMessage($"DSS polling failed: {e.Message}");
                 // TODO - differentiate between StartPollingAsync() failure and SendMessageAsync() ones!
                 if (dssSignaler.IsPolling)
@@ -580,8 +619,7 @@ namespace TestAppUwp
 
         private void DssSignaler_OnPollingDone()
         {
-            RunOnMainThread(() =>
-            {
+            RunOnMainThread(() => {
                 isDssPolling = false;
                 pollDssButton.IsEnabled = true;
                 LogMessage($"Polling DSS server stopped.");
@@ -596,8 +634,7 @@ namespace TestAppUwp
         private void LogMessage(string message)
         {
             Debugger.Log(4, "TestAppUWP", message);
-            RunOnMainThread(() =>
-            {
+            RunOnMainThread(() => {
                 debugMessages.Text += message + "\n";
             });
         }
@@ -743,17 +780,13 @@ namespace TestAppUwp
             // to be used at all. Otherwise the SCTP will not be negotiated, and then all channels will
             // stay forever in the kConnecting state.
             // https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
-            _peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true).ContinueWith((prevTask) =>
-            {
+            _peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true).ContinueWith((prevTask) => {
                 if (prevTask.Exception != null)
                 {
                     throw prevTask.Exception;
                 }
                 var newDataChannel = prevTask.Result;
-                RunOnMainThread(() =>
-                {
-                    _chatDataChannel = newDataChannel;
-                    _chatDataChannel.MessageReceived += ChatMessageReceived;
+                RunOnMainThread(() => {
                     chatInputBox.IsEnabled = true;
                     chatSendButton.IsEnabled = true;
                 });
@@ -785,8 +818,7 @@ namespace TestAppUwp
 
         private void OnMediaStateChanged(Windows.Media.Playback.MediaPlayer sender, object args)
         {
-            RunOnMainThread(() =>
-            {
+            RunOnMainThread(() => {
                 if (sender == localVideoPlayer)
                 {
                     localVideoStateText.Text = $"State: {sender.PlaybackSession.PlaybackState}";
@@ -809,8 +841,7 @@ namespace TestAppUwp
             // Now it is safe to call Play() on the MediaElement
             if (sender == localVideoPlayer)
             {
-                RunOnMainThread(() =>
-                {
+                RunOnMainThread(() => {
                     localVideo.MediaPlayer.Play();
                     //startLocalVideo.IsEnabled = true;
                 });
@@ -835,8 +866,7 @@ namespace TestAppUwp
         /// <remarks>This appears to never be called for live sources.</remarks>
         private void OnMediaEnded(MediaPlayer sender, object args)
         {
-            RunOnMainThread(() =>
-            {
+            RunOnMainThread(() => {
                 LogMessage("Local MediaElement video playback ended.");
                 //StopLocalVideo();
                 sender.Pause();
@@ -873,8 +903,7 @@ namespace TestAppUwp
                     // Avoid deadlock in audio processing stack, as this call is delegated to the WebRTC
                     // signaling thread (and will block the caller thread), and audio processing will
                     // delegate to the UI thread for UWP operations (and will block the signaling thread).
-                    RunOnWorkerThread(() =>
-                    {
+                    RunOnWorkerThread(() => {
                         _peerConnection.RemoveLocalAudioTrack();
                         _peerConnection.RemoveLocalVideoTrack();
                     });
@@ -913,8 +942,7 @@ namespace TestAppUwp
                     if (_isRemoteVideoPlaying)
                     {
                         // Schedule on the main UI thread to access STA objects.
-                        RunOnMainThread(() =>
-                        {
+                        RunOnMainThread(() => {
                             // Check that the remote video is still playing.
                             // This ensures that rapid calls to add/remove the video track
                             // are serialized, and an earlier remove call doesn't remove the
@@ -963,8 +991,7 @@ namespace TestAppUwp
                     _isRemoteVideoPlaying = true;
                     uint width = frame.width;
                     uint height = frame.height;
-                    RunOnMainThread(() =>
-                    {
+                    RunOnMainThread(() => {
                         remoteVideoSource = CreateVideoStreamSource(width, height);
                         remoteVideoPlayer.Source = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
                         remoteVideoPlayer.Play();
@@ -1093,8 +1120,7 @@ namespace TestAppUwp
                 // and is in kStable state, and it will get discarded so remote video will not start).
                 _renegotiationOfferEnabled = false;
 
-                _peerConnection.AddLocalAudioTrackAsync().ContinueWith(addAudioTask =>
-                {
+                _peerConnection.AddLocalAudioTrackAsync().ContinueWith(addAudioTask => {
                     // Continue on worker thread here
                     if (addAudioTask.Exception != null)
                     {
@@ -1113,8 +1139,7 @@ namespace TestAppUwp
                         framerate = framerate,
                         enableMrc = false
                     };
-                    _peerConnection.AddLocalVideoTrackAsync(trackConfig).ContinueWith(addVideoTask =>
-                    {
+                    _peerConnection.AddLocalVideoTrackAsync(trackConfig).ContinueWith(addVideoTask => {
                         // Continue inside UI thread here
                         if (addVideoTask.Exception != null)
                         {
@@ -1182,6 +1207,16 @@ namespace TestAppUwp
             _peerConnection.CreateOffer();
         }
 
+        private async void AddExtraDataChannelButtonClicked(object sender, RoutedEventArgs e)
+        {
+            if (!PluginInitialized)
+            {
+                return;
+            }
+
+            await _peerConnection.AddDataChannelAsync("extra_channel", true, true);
+        }
+
         /// <summary>
         /// Retrieve a unique ID that is stable across application instances, similar to what
         /// Unity does with SystemInfo.deviceUniqueIdentifier.
@@ -1244,6 +1279,14 @@ namespace TestAppUwp
 
         }
 
+        private void ChatList_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is ChatChannel chat)
+            {
+                chatTextBox.Text = chat.Text;
+            }
+        }
+
         /// <summary>
         /// Callback on Send button from text chat clicker.
         /// If connected, this sends the text message to the remote peer using
@@ -1255,9 +1298,19 @@ namespace TestAppUwp
         {
             if (string.IsNullOrWhiteSpace(chatInputBox.Text))
                 return;
+
+            var chat = SelectedChatChannel;
+            if (chat == null)
+                return;
+
+            // Send the message through the data channel
             byte[] chatMessage = System.Text.Encoding.UTF8.GetBytes(chatInputBox.Text);
-            _chatDataChannel.SendMessage(chatMessage);
-            chatTextBox.Text += $"[local] {chatInputBox.Text}\n";
+            chat.DataChannel.SendMessage(chatMessage);
+
+            // Save and display in the UI
+            var newLine = $"[local] {chatInputBox.Text}\n";
+            chat.Text += newLine;
+            chatTextBox.Text = chat.Text; // reassign or append? not sure...
             chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
                 chatScrollViewer.ScrollableHeight,
                 chatScrollViewer.ZoomFactor); // scroll to end
@@ -1268,16 +1321,16 @@ namespace TestAppUwp
         /// Callback on text message received through the data channel.
         /// </summary>
         /// <param name="message">The raw data channel message.</param>
-        private void ChatMessageReceived(byte[] message)
+        private void ChatMessageReceived(ChatChannel chat, string text)
         {
-            string text = System.Text.Encoding.UTF8.GetString(message);
-            RunOnMainThread(() =>
+            chat.Text += $"[remote] {text}\n";
+            if (SelectedChatChannel == chat)
             {
-                chatTextBox.Text += $"[remote] {text}\n";
+                chatTextBox.Text = chat.Text; // reassign or append? not sure...
                 chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
                     chatScrollViewer.ScrollableHeight,
                     chatScrollViewer.ZoomFactor); // scroll to end
-            });
+            }
         }
 
         /// <summary>

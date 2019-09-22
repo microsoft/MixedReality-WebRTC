@@ -253,12 +253,12 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// Callback invoked by the native layer when a new data channel is received
   /// from the remote peer and added locally.
   using DataChannelAddedCallback =
-      Callback<mrsPeerConnectionInteropHandle, mrsDataChannelInteropHandle>;
+      Callback<mrsDataChannelInteropHandle, DataChannelHandle>;
 
   /// Callback invoked by the native layer when a data channel is removed from
   /// the remote peer and removed locally.
   using DataChannelRemovedCallback =
-      Callback<mrsPeerConnectionInteropHandle, mrsDataChannelInteropHandle>;
+      Callback<mrsDataChannelInteropHandle, DataChannelHandle>;
 
   /// Register a custom callback invoked when a new data channel is received
   /// from the remote peer and added locally.
@@ -280,8 +280,15 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
       int id,
       std::string_view label,
       bool ordered,
-      bool reliable) noexcept;
+      bool reliable,
+      mrsDataChannelInteropHandle dataChannelInteropHandle) noexcept;
+
   void RemoveDataChannel(const DataChannel& data_channel) noexcept;
+
+  /// Notification from a non-negotiated DataChannel that it is open, so that
+  /// the PeerConnection can fire a DataChannelAdded event. This is called
+  /// automatically by non-negotiated data channels; do not call manually.
+  void OnDataChannelAdded(const DataChannel& data_channel) noexcept;
 
   //
   // Advanced use
@@ -441,11 +448,13 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   rtc::scoped_refptr<webrtc::RtpSenderInterface> local_audio_sender_;
   std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> remote_streams_;
 
+  /// Collection of all data channels associated with this peer connection.
+  std::vector<std::shared_ptr<DataChannel>> data_channels_;
+
   /// Collection of data channels from their unique ID.
   /// This contains only data channels pre-negotiated or opened by the remote
   /// peer, as data channels opened locally won't have immediately a unique ID.
-  std::unordered_map<int, std::shared_ptr<DataChannel>>
-      data_channel_from_id_;
+  std::unordered_map<int, std::shared_ptr<DataChannel>> data_channel_from_id_;
 
   /// Collection of data channels from their label.
   /// This contains only data channels with a non-empty label.

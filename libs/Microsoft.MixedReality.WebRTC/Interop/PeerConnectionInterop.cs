@@ -13,8 +13,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         private delegate void ConnectedDelegate(IntPtr peer);
         private delegate void DataChannelCreateObjectDelegate(IntPtr peer, DataChannelInterop.CreateConfig config,
             out DataChannelInterop.Callbacks callbacks);
-        private delegate void DataChannelAddedDelegate(IntPtr peer, IntPtr dataChannel);
-        private delegate void DataChannelRemovedDelegate(IntPtr peer, IntPtr dataChannel);
+        private delegate void DataChannelAddedDelegate(IntPtr peer, IntPtr dataChannel, IntPtr dataChannelHandle);
+        private delegate void DataChannelRemovedDelegate(IntPtr peer, IntPtr dataChannel, IntPtr dataChannelHandle);
         private delegate void LocalSdpReadytoSendDelegate(IntPtr peer, string type, string sdp);
         private delegate void IceCandidateReadytoSendDelegate(IntPtr peer, string candidate, int sdpMlineindex, string sdpMid);
         private delegate void IceStateChangedDelegate(IntPtr peer, IceConnectionState newState);
@@ -122,15 +122,19 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [MonoPInvokeCallback(typeof(DataChannelAddedDelegate))]
-        public static void DataChannelAddedCallback(IntPtr peer, IntPtr dataChannel)
+        public static void DataChannelAddedCallback(IntPtr peer, IntPtr dataChannel, IntPtr dataChannelHandle)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
             var dataChannelWrapper = Utils.ToWrapper<DataChannel>(dataChannel);
+            // Ensure that the DataChannel wrapper knows about its native object.
+            // This is not always the case, if created via the interop constructor,
+            // as the wrapper is created before the native object exists.
+            DataChannelInterop.SetHandle(dataChannelWrapper, dataChannelHandle);
             peerWrapper.OnDataChannelAdded(dataChannelWrapper);
         }
 
         [MonoPInvokeCallback(typeof(DataChannelRemovedDelegate))]
-        public static void DataChannelRemovedCallback(IntPtr peer, IntPtr dataChannel)
+        public static void DataChannelRemovedCallback(IntPtr peer, IntPtr dataChannel, IntPtr dataChannelHandle)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
             var dataChannelWrapper = Utils.ToWrapper<DataChannel>(dataChannel);
@@ -342,10 +346,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public delegate void VideoCaptureFormatEnumCompletedCallback(uint resultCode, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionDataChannelAddedCallback(IntPtr peer, IntPtr dataChannel);
+        public delegate void PeerConnectionDataChannelAddedCallback(IntPtr peer, IntPtr dataChannel, IntPtr dataChannelHandle);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionDataChannelRemovedCallback(IntPtr peer, IntPtr dataChannel);
+        public delegate void PeerConnectionDataChannelRemovedCallback(IntPtr peer, IntPtr dataChannel, IntPtr dataChannelHandle);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionInteropCallbacks(IntPtr userData);
@@ -448,6 +452,16 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             PeerConnectionTrackRemovedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionRegisterDataChannelAddedCallback")]
+        public static extern void PeerConnection_RegisterDataChannelAddedCallback(IntPtr peerHandle,
+            PeerConnectionDataChannelAddedCallback callback, IntPtr userData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionRegisterDataChannelRemovedCallback")]
+        public static extern void PeerConnection_RegisterDataChannelRemovedCallback(IntPtr peerHandle,
+            PeerConnectionDataChannelRemovedCallback callback, IntPtr userData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterI420LocalVideoFrameCallback")]
         public static extern void PeerConnection_RegisterI420LocalVideoFrameCallback(IntPtr peerHandle,
             PeerConnectionI420VideoFrameCallback callback, IntPtr userData);
@@ -487,7 +501,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddDataChannel")]
-        public static extern uint PeerConnection_AddDataChannel(IntPtr peerHandle,
+        public static extern uint PeerConnection_AddDataChannel(IntPtr peerHandle, IntPtr dataChannel,
             DataChannelInterop.CreateConfig config, DataChannelInterop.Callbacks callbacks,
             ref IntPtr dataChannelHandle);
 
