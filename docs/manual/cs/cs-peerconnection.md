@@ -47,7 +47,7 @@ In general it is recommended to subscribe to these events before starting to est
 - **Recommended** means those events are typically handled, although not mandatory.
 - **Optional** means those events are informational only, and it is entirely optional to subscribe to them.
 
-## Track and channel events
+### Track and channel events
 
 | Event | Status* | Description |
 |---|---|---|
@@ -58,7 +58,7 @@ In general it is recommended to subscribe to these events before starting to est
 
 *_Status_ - See above.
 
-## Frame events
+### Frame events
 
 | Event | Status* | Description |
 |---|---|---|

@@ -17,6 +17,7 @@
 # [Audio and video playback](avplayback.md)
 # [C# Library](cs/cs.md)
 ## [PeerConnection](cs/cs-peerconnection.md)
+## [Signaling](cs/cs-signaling.md)
 # [Unity integration](unity-integration.md)
 ## [Peer connection](unity-peerconnection.md)
 ## [Signaler](unity-signaler.md)
