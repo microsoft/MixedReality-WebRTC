@@ -12,6 +12,7 @@
     <ClCompile Include="../data_channel.cpp">
       <Filter>media</Filter>
     </ClCompile>
+    <ClCompile Include="../str.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../audio_frame_observer.h" />
@@ -27,6 +28,7 @@
     <ClInclude Include="../data_channel.h">
       <Filter>media</Filter>
     </ClInclude>
+    <ClInclude Include="../../include/str.h" />
     <ClInclude Include="../../include/export.h" />
   </ItemGroup>
   <ItemGroup>

@@ -46,6 +46,10 @@ DataChannel::~DataChannel() {
   RTC_CHECK(!owner_);
 }
 
+str DataChannel::label() const {
+  return str{data_channel_->label()};
+}
+
 void DataChannel::SetMessageCallback(MessageCallback callback) noexcept {
   auto lock = std::lock_guard{mutex_};
   message_callback_ = callback;

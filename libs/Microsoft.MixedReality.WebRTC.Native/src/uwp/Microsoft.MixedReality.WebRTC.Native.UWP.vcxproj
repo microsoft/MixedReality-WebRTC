@@ -84,7 +84,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>_WINDLL;MR_SHARING_WIN;WINUWP;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDLL;MR_SHARING_WIN;MRS_USE_STR_WRAPPER;WINUWP;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <WarningLevel>Level4</WarningLevel>
@@ -121,6 +121,7 @@
     <ClInclude Include="../video_frame_observer.h" />
     <ClInclude Include="../sdp_utils.h" />
     <ClInclude Include="../../include/export.h" />
+    <ClInclude Include="../../include/str.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../api.cpp" />
@@ -132,6 +133,7 @@
     <ClCompile Include="../peer_connection.cpp" />
     <ClCompile Include="../video_frame_observer.cpp" />
     <ClCompile Include="../sdp_utils.cpp" />
+    <ClCompile Include="../str.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

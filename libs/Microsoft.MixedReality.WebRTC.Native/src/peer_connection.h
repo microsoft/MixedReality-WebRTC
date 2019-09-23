@@ -458,7 +458,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
 
   /// Collection of data channels from their label.
   /// This contains only data channels with a non-empty label.
-  std::unordered_multimap<std::string, std::shared_ptr<DataChannel>>
+  std::unordered_multimap<str, std::shared_ptr<DataChannel>>
       data_channel_from_label_;
 
   //< TODO - Clarify lifetime of those, for now same as this PeerConnection

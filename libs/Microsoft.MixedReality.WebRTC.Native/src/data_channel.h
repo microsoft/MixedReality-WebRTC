@@ -10,6 +10,7 @@
 
 #include "callback.h"
 #include "data_channel.h"
+#include "str.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 
@@ -71,7 +72,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   [[nodiscard]] int id() const { return data_channel_->id(); }
 
   /// Get the friendly channel name.
-  [[nodiscard]] std::string label() const { return data_channel_->label(); }
+  [[nodiscard]] MRS_API str label() const;
 
   void SetMessageCallback(MessageCallback callback) noexcept;
   void SetBufferingCallback(BufferingCallback callback) noexcept;
