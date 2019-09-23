@@ -128,8 +128,9 @@ PeerConnection::~PeerConnection() noexcept {
     }
   }
 
-  for (auto&& ptr : data_channels_) {
-    RemoveDataChannel(*ptr);
+  // Beware, RemoveDataChannel() erases from data_channels_
+  while (!data_channels_.empty()) {
+    RemoveDataChannel(*data_channels_.back());
   }
 }
 
