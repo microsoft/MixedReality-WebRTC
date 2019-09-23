@@ -260,7 +260,7 @@ void PeerConnection::RemoveDataChannel(
     if (it_id != data_channel_from_id_.end()) {
       data_channel_from_id_.erase(it_id);
     }
-    const std::string label = data_channel.label();
+    const str label = data_channel.label();
     if (!label.empty()) {
       auto it_label = data_channel_from_label_.find(label);
       if (it_label != data_channel_from_label_.end()) {
