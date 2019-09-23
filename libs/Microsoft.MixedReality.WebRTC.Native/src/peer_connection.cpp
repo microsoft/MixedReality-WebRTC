@@ -324,12 +324,12 @@ bool PeerConnection::CreateOffer() noexcept {
   if (!peer_)
     return false;
   webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options;
-  /*if (mandatory_receive_)*/ {  //< TODO - This is legacy, should use
+   /*if (mandatory_receive_)*/ {  //< TODO - This is legacy, should use
                                  // transceivers
     options.offer_to_receive_audio = true;
     options.offer_to_receive_video = true;
   }
-  if (data_channel_from_id_.empty()) {
+  if (data_channels_.empty()) {
     sctp_negotiated_ = false;
   }
   peer_->CreateOffer(this, options);
