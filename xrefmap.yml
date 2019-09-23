@@ -541,49 +541,6 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.IceTransportType.Relay
   fullName: Microsoft.MixedReality.WebRTC.IceTransportType.Relay
   nameWithType: IceTransportType.Relay
-- uid: Microsoft.MixedReality.WebRTC.ISignaler
-  name: ISignaler
-  href: api/Microsoft.MixedReality.WebRTC.ISignaler.html
-  commentId: T:Microsoft.MixedReality.WebRTC.ISignaler
-  fullName: Microsoft.MixedReality.WebRTC.ISignaler
-  nameWithType: ISignaler
-- uid: Microsoft.MixedReality.WebRTC.ISignaler.OnConnect
-  name: OnConnect
-  href: api/Microsoft.MixedReality.WebRTC.ISignaler.html#Microsoft_MixedReality_WebRTC_ISignaler_OnConnect
-  commentId: E:Microsoft.MixedReality.WebRTC.ISignaler.OnConnect
-  fullName: Microsoft.MixedReality.WebRTC.ISignaler.OnConnect
-  nameWithType: ISignaler.OnConnect
-- uid: Microsoft.MixedReality.WebRTC.ISignaler.OnDisconnect
-  name: OnDisconnect
-  href: api/Microsoft.MixedReality.WebRTC.ISignaler.html#Microsoft_MixedReality_WebRTC_ISignaler_OnDisconnect
-  commentId: E:Microsoft.MixedReality.WebRTC.ISignaler.OnDisconnect
-  fullName: Microsoft.MixedReality.WebRTC.ISignaler.OnDisconnect
-  nameWithType: ISignaler.OnDisconnect
-- uid: Microsoft.MixedReality.WebRTC.ISignaler.OnFailure
-  name: OnFailure
-  href: api/Microsoft.MixedReality.WebRTC.ISignaler.html#Microsoft_MixedReality_WebRTC_ISignaler_OnFailure
-  commentId: E:Microsoft.MixedReality.WebRTC.ISignaler.OnFailure
-  fullName: Microsoft.MixedReality.WebRTC.ISignaler.OnFailure
-  nameWithType: ISignaler.OnFailure
-- uid: Microsoft.MixedReality.WebRTC.ISignaler.OnMessage
-  name: OnMessage
-  href: api/Microsoft.MixedReality.WebRTC.ISignaler.html#Microsoft_MixedReality_WebRTC_ISignaler_OnMessage
-  commentId: E:Microsoft.MixedReality.WebRTC.ISignaler.OnMessage
-  fullName: Microsoft.MixedReality.WebRTC.ISignaler.OnMessage
-  nameWithType: ISignaler.OnMessage
-- uid: Microsoft.MixedReality.WebRTC.ISignaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.SignalerMessage)
-  name: SendMessageAsync(SignalerMessage)
-  href: api/Microsoft.MixedReality.WebRTC.ISignaler.html#Microsoft_MixedReality_WebRTC_ISignaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_SignalerMessage_
-  commentId: M:Microsoft.MixedReality.WebRTC.ISignaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.SignalerMessage)
-  fullName: Microsoft.MixedReality.WebRTC.ISignaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.SignalerMessage)
-  nameWithType: ISignaler.SendMessageAsync(SignalerMessage)
-- uid: Microsoft.MixedReality.WebRTC.ISignaler.SendMessageAsync*
-  name: SendMessageAsync
-  href: api/Microsoft.MixedReality.WebRTC.ISignaler.html#Microsoft_MixedReality_WebRTC_ISignaler_SendMessageAsync_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.ISignaler.SendMessageAsync
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.ISignaler.SendMessageAsync
-  nameWithType: ISignaler.SendMessageAsync
 - uid: Microsoft.MixedReality.WebRTC.IVideoFrameQueue
   name: IVideoFrameQueue
   href: api/Microsoft.MixedReality.WebRTC.IVideoFrameQueue.html
@@ -764,19 +721,6 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection
   nameWithType: PeerConnection
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.#ctor(Microsoft.MixedReality.WebRTC.ISignaler)
-  name: PeerConnection(ISignaler)
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection__ctor_Microsoft_MixedReality_WebRTC_ISignaler_
-  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.#ctor(Microsoft.MixedReality.WebRTC.ISignaler)
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PeerConnection(Microsoft.MixedReality.WebRTC.ISignaler)
-  nameWithType: PeerConnection.PeerConnection(ISignaler)
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.#ctor*
-  name: PeerConnection
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection__ctor_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.#ctor
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PeerConnection
-  nameWithType: PeerConnection.PeerConnection
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.AddDataChannelAsync(System.String,System.Boolean,System.Boolean)
   name: AddDataChannelAsync(String, Boolean, Boolean)
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_String_System_Boolean_System_Boolean_
@@ -892,6 +836,30 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.CreateOffer
   nameWithType: PeerConnection.CreateOffer
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAdded
+  name: DataChannelAdded
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAdded
+  commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAdded
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAdded
+  nameWithType: PeerConnection.DataChannelAdded
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate
+  name: PeerConnection.DataChannelAddedDelegate
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate
+  nameWithType: PeerConnection.DataChannelAddedDelegate
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemoved
+  name: DataChannelRemoved
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelRemoved
+  commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemoved
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemoved
+  nameWithType: PeerConnection.DataChannelRemoved
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemovedDelegate
+  name: PeerConnection.DataChannelRemovedDelegate
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemovedDelegate.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemovedDelegate
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemovedDelegate
+  nameWithType: PeerConnection.DataChannelRemovedDelegate
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.Dispose
   name: Dispose()
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Dispose
@@ -1072,30 +1040,6 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.width
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.width
   nameWithType: PeerConnection.LocalVideoTrackSettings.width
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.MemCpy(System.Void*,System.Void*,System.UInt64)
-  name: MemCpy(Void*, Void*, UInt64)
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_MemCpy_System_Void__System_Void__System_UInt64_
-  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.MemCpy(System.Void*,System.Void*,System.UInt64)
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.MemCpy(System.Void*, System.Void*, System.UInt64)
-  nameWithType: PeerConnection.MemCpy(Void*, Void*, UInt64)
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.MemCpy*
-  name: MemCpy
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_MemCpy_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.MemCpy
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.MemCpy
-  nameWithType: PeerConnection.MemCpy
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.MemCpyStride(System.Void*,System.Int32,System.Void*,System.Int32,System.Int32,System.Int32)
-  name: MemCpyStride(Void*, Int32, Void*, Int32, Int32, Int32)
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_MemCpyStride_System_Void__System_Int32_System_Void__System_Int32_System_Int32_System_Int32_
-  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.MemCpyStride(System.Void*,System.Int32,System.Void*,System.Int32,System.Int32,System.Int32)
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.MemCpyStride(System.Void*, System.Int32, System.Void*, System.Int32, System.Int32, System.Int32)
-  nameWithType: PeerConnection.MemCpyStride(Void*, Int32, Void*, Int32, Int32, Int32)
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.MemCpyStride*
-  name: MemCpyStride
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_MemCpyStride_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.MemCpyStride
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.MemCpyStride
-  nameWithType: PeerConnection.MemCpyStride
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodec
   name: PreferredAudioCodec
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_PreferredAudioCodec
@@ -1171,19 +1115,6 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription
   nameWithType: PeerConnection.SetRemoteDescription
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.Signaler
-  name: Signaler
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Signaler
-  commentId: P:Microsoft.MixedReality.WebRTC.PeerConnection.Signaler
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.Signaler
-  nameWithType: PeerConnection.Signaler
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.Signaler*
-  name: Signaler
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Signaler_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.Signaler
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.Signaler
-  nameWithType: PeerConnection.Signaler
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.TrackAdded
   name: TrackAdded
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackAdded
@@ -1346,73 +1277,6 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.SdpSemantic.UnifiedPlan
   fullName: Microsoft.MixedReality.WebRTC.SdpSemantic.UnifiedPlan
   nameWithType: SdpSemantic.UnifiedPlan
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage
-  name: SignalerMessage
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.html
-  commentId: T:Microsoft.MixedReality.WebRTC.SignalerMessage
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage
-  nameWithType: SignalerMessage
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.Data
-  name: Data
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.html#Microsoft_MixedReality_WebRTC_SignalerMessage_Data
-  commentId: F:Microsoft.MixedReality.WebRTC.SignalerMessage.Data
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.Data
-  nameWithType: SignalerMessage.Data
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.IceDataSeparator
-  name: IceDataSeparator
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.html#Microsoft_MixedReality_WebRTC_SignalerMessage_IceDataSeparator
-  commentId: F:Microsoft.MixedReality.WebRTC.SignalerMessage.IceDataSeparator
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.IceDataSeparator
-  nameWithType: SignalerMessage.IceDataSeparator
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.MessageType
-  name: MessageType
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.html#Microsoft_MixedReality_WebRTC_SignalerMessage_MessageType
-  commentId: F:Microsoft.MixedReality.WebRTC.SignalerMessage.MessageType
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.MessageType
-  nameWithType: SignalerMessage.MessageType
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType
-  name: SignalerMessage.WireMessageType
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.html
-  commentId: T:Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType
-  nameWithType: SignalerMessage.WireMessageType
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Answer
-  name: Answer
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.html#Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_Answer
-  commentId: F:Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Answer
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Answer
-  nameWithType: SignalerMessage.WireMessageType.Answer
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Ice
-  name: Ice
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.html#Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_Ice
-  commentId: F:Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Ice
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Ice
-  nameWithType: SignalerMessage.WireMessageType.Ice
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Offer
-  name: Offer
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.html#Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_Offer
-  commentId: F:Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Offer
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Offer
-  nameWithType: SignalerMessage.WireMessageType.Offer
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Unknown
-  name: Unknown
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.html#Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_Unknown
-  commentId: F:Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Unknown
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType.Unknown
-  nameWithType: SignalerMessage.WireMessageType.Unknown
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString(System.String)
-  name: WireMessageTypeFromString(String)
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.html#Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageTypeFromString_System_String_
-  commentId: M:Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString(System.String)
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString(System.String)
-  nameWithType: SignalerMessage.WireMessageTypeFromString(String)
-- uid: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString*
-  name: WireMessageTypeFromString
-  href: api/Microsoft.MixedReality.WebRTC.SignalerMessage.html#Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageTypeFromString_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageTypeFromString
-  nameWithType: SignalerMessage.WireMessageTypeFromString
 - uid: Microsoft.MixedReality.WebRTC.TaskExtensions
   name: TaskExtensions
   href: api/Microsoft.MixedReality.WebRTC.TaskExtensions.html
@@ -1931,12 +1795,12 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.RemotePeerId
   fullName: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.RemotePeerId
   nameWithType: NodeDssSignaler.RemotePeerId
-- uid: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.SendMessageAsync(SignalerMessage)
-  name: SendMessageAsync(SignalerMessage)
-  href: api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html#Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_SendMessageAsync_SignalerMessage_
-  commentId: M:Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.SendMessageAsync(SignalerMessage)
-  fullName: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.SendMessageAsync(SignalerMessage)
-  nameWithType: NodeDssSignaler.SendMessageAsync(SignalerMessage)
+- uid: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)
+  name: SendMessageAsync(Signaler.Message)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html#Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)
+  nameWithType: NodeDssSignaler.SendMessageAsync(Signaler.Message)
 - uid: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.SendMessageAsync*
   name: SendMessageAsync
   href: api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html#Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_SendMessageAsync_
@@ -2273,6 +2137,73 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.Signaler._nativePeer
   fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler._nativePeer
   nameWithType: Signaler._nativePeer
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message
+  name: Signaler.Message
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.Signaler.Message
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message
+  nameWithType: Signaler.Message
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.Data
+  name: Data
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_Data
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.Data
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.Data
+  nameWithType: Signaler.Message.Data
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.IceDataSeparator
+  name: IceDataSeparator
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_IceDataSeparator
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.IceDataSeparator
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.IceDataSeparator
+  nameWithType: Signaler.Message.IceDataSeparator
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.MessageType
+  name: MessageType
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_MessageType
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.MessageType
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.MessageType
+  nameWithType: Signaler.Message.MessageType
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType
+  name: Signaler.Message.WireMessageType
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType
+  nameWithType: Signaler.Message.WireMessageType
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Answer
+  name: Answer
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_WireMessageType_Answer
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Answer
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Answer
+  nameWithType: Signaler.Message.WireMessageType.Answer
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Ice
+  name: Ice
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_WireMessageType_Ice
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Ice
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Ice
+  nameWithType: Signaler.Message.WireMessageType.Ice
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Offer
+  name: Offer
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_WireMessageType_Offer
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Offer
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Offer
+  nameWithType: Signaler.Message.WireMessageType.Offer
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Unknown
+  name: Unknown
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_WireMessageType_Unknown
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Unknown
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageType.Unknown
+  nameWithType: Signaler.Message.WireMessageType.Unknown
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageTypeFromString(System.String)
+  name: WireMessageTypeFromString(String)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_WireMessageTypeFromString_System_String_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageTypeFromString(System.String)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageTypeFromString(System.String)
+  nameWithType: Signaler.Message.WireMessageTypeFromString(String)
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageTypeFromString*
+  name: WireMessageTypeFromString
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_WireMessageTypeFromString_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageTypeFromString
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.WireMessageTypeFromString
+  nameWithType: Signaler.Message.WireMessageTypeFromString
 - uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.OnConnect
   name: OnConnect
   href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnConnect
@@ -2375,12 +2306,12 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.PeerConnection
   nameWithType: Signaler.PeerConnection
-- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(SignalerMessage)
-  name: SendMessageAsync(SignalerMessage)
-  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_SignalerMessage_
-  commentId: M:Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(SignalerMessage)
-  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(SignalerMessage)
-  nameWithType: Signaler.SendMessageAsync(SignalerMessage)
+- uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)
+  name: SendMessageAsync(Signaler.Message)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)
+  nameWithType: Signaler.SendMessageAsync(Signaler.Message)
 - uid: Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync*
   name: SendMessageAsync
   href: api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_
@@ -2669,22 +2600,3 @@ references:
   fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).TryDequeue
   nameWithType: VideoFrameQueue<T>.TryDequeue
   nameWithType.vb: VideoFrameQueue(Of T).TryDequeue
-- uid: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions
-  name: WireMessageTypeExtensions
-  href: api/Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.html
-  commentId: T:Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions
-  fullName: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions
-  nameWithType: WireMessageTypeExtensions
-- uid: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString(Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType)
-  name: ToString(SignalerMessage.WireMessageType)
-  href: api/Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.html#Microsoft_MixedReality_WebRTC_WireMessageTypeExtensions_ToString_Microsoft_MixedReality_WebRTC_SignalerMessage_WireMessageType_
-  commentId: M:Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString(Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType)
-  fullName: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString(Microsoft.MixedReality.WebRTC.SignalerMessage.WireMessageType)
-  nameWithType: WireMessageTypeExtensions.ToString(SignalerMessage.WireMessageType)
-- uid: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString*
-  name: ToString
-  href: api/Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.html#Microsoft_MixedReality_WebRTC_WireMessageTypeExtensions_ToString_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.WireMessageTypeExtensions.ToString
-  nameWithType: WireMessageTypeExtensions.ToString

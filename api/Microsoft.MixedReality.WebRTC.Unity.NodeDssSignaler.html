@@ -93,10 +93,6 @@ This is based on <a href="https://github.com/bengreenier/node-dss">https://githu
     <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html">Signaler</a></div>
     <div class="level2"><span class="xref">NodeDssSignaler</span></div>
   </div>
-  <div classs="implements">
-    <h5>Implements</h5>
-    <div><span class="xref">ISignaler</span></div>
-  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -128,7 +124,7 @@ This is based on <a href="https://github.com/bengreenier/node-dss">https://githu
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class NodeDssSignaler : Signaler, ISignaler</code></pre>
+    <pre><code class="lang-csharp hljs">public class NodeDssSignaler : Signaler</code></pre>
   </div>
   <h3 id="fields">Fields
   </h3>
@@ -368,13 +364,13 @@ be sent to the remote peer by the signaling object.</p>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_SendMessageAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.SendMessageAsync*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_SendMessageAsync_SignalerMessage_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.SendMessageAsync(SignalerMessage)">SendMessageAsync(SignalerMessage)</h4>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)">SendMessageAsync(Signaler.Message)</h4>
   <div class="markdown level1 summary"><p>Asynchronously send a signaling message to the remote peer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Task SendMessageAsync(SignalerMessage message)</code></pre>
+    <pre><code class="lang-csharp hljs">public override Task SendMessageAsync(Signaler.Message message)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -387,7 +383,7 @@ be sent to the remote peer by the signaling object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">SignalerMessage</span></td>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html">Signaler.Message</a></td>
         <td><span class="parametername">message</span></td>
         <td><p>The signaling message to send to the remote peer.</p>
 </td>
@@ -412,7 +408,7 @@ but not necessarily delivered.</p>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_SignalerMessage_">Signaler.SendMessageAsync(SignalerMessage)</a></div>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_">Signaler.SendMessageAsync(Signaler.Message)</a></div>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_Update_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.Update*"></a>
@@ -429,10 +425,6 @@ but not necessarily delivered.</p>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_Update_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p><a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html">https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html</a></p>
 </div>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <span class="xref">ISignaler</span>
-  </div>
 </article>
           </div>
           

@@ -83,7 +83,8 @@
   
   <h1 id="Microsoft_MixedReality_WebRTC_IceConnectionState" data-uid="Microsoft.MixedReality.WebRTC.IceConnectionState" class="text-break">Enum IceConnectionState
   </h1>
-  <div class="markdown level0 summary"><p>ICE connection state.</p>
+  <div class="markdown level0 summary"><p>ICE connection state. This is currently a mix of the RTPIceGatheringState
+and the RTPPeerConnectionState from the WebRTC 1.0 standard.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
@@ -104,34 +105,46 @@
     <tbody>
       <tr>
         <td id="Microsoft_MixedReality_WebRTC_IceConnectionState_Checking">Checking</td>
-        <td></td>
+        <td><p>ICE connection received an offer, but transports are not writable yet.</p>
+</td>
       </tr>
       <tr>
         <td id="Microsoft_MixedReality_WebRTC_IceConnectionState_Closed">Closed</td>
-        <td></td>
+        <td><p>The peer connection was closed entirely.</p>
+</td>
       </tr>
       <tr>
         <td id="Microsoft_MixedReality_WebRTC_IceConnectionState_Completed">Completed</td>
-        <td></td>
+        <td><p>ICE connection finisehd establishing.</p>
+</td>
       </tr>
       <tr>
         <td id="Microsoft_MixedReality_WebRTC_IceConnectionState_Connected">Connected</td>
-        <td></td>
+        <td><p>Transports are writable.</p>
+</td>
       </tr>
       <tr>
         <td id="Microsoft_MixedReality_WebRTC_IceConnectionState_Disconnected">Disconnected</td>
-        <td></td>
+        <td><p>ICE connection is disconnected, there is no more writable transport.</p>
+</td>
       </tr>
       <tr>
         <td id="Microsoft_MixedReality_WebRTC_IceConnectionState_Failed">Failed</td>
-        <td></td>
+        <td><p>Failed establishing an ICE connection.</p>
+</td>
       </tr>
       <tr>
         <td id="Microsoft_MixedReality_WebRTC_IceConnectionState_New">New</td>
-        <td></td>
+        <td><p>Newly created ICE connection. This is the starting state.</p>
+</td>
       </tr>
     </tbody>
   </thead></thead></table>
+  <h5 id="Microsoft_MixedReality_WebRTC_IceConnectionState_seealso">See Also</h5>
+  <div class="seealso">
+      <div><span><a href="https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum">https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum</a></span></div>
+      <div><span><a href="https://www.w3.org/TR/webrtc/#rtcpeerconnectionstate-enum">https://www.w3.org/TR/webrtc/#rtcpeerconnectionstate-enum</a></span></div>
+  </div>
 </article>
           </div>
           
@@ -143,7 +156,7 @@
                     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_IceConnectionState.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.IceConnectionState%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L171" class="contribution-link">View Source</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L163" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -92,15 +92,11 @@
     <div class="level1"><span class="xref">Signaler</span></div>
       <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html">NodeDssSignaler</a></div>
   </div>
-  <div classs="implements">
-    <h5>Implements</h5>
-    <div><span class="xref">ISignaler</span></div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class Signaler : MonoBehaviour, ISignaler</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class Signaler : MonoBehaviour</code></pre>
   </div>
   <h3 id="fields">Fields
   </h3>
@@ -324,13 +320,13 @@ be sent to the remote peer by the signaling object.</p>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_SignalerMessage_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(SignalerMessage)">SendMessageAsync(SignalerMessage)</h4>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)">SendMessageAsync(Signaler.Message)</h4>
   <div class="markdown level1 summary"><p>Asynchronously send a signaling message to the remote peer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract Task SendMessageAsync(SignalerMessage message)</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract Task SendMessageAsync(Signaler.Message message)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -343,7 +339,7 @@ be sent to the remote peer by the signaling object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">SignalerMessage</span></td>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html">Signaler.Message</a></td>
         <td><span class="parametername">message</span></td>
         <td><p>The signaling message to send to the remote peer.</p>
 </td>
@@ -458,7 +454,7 @@ but not necessarily delivered.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public event Action&lt;SignalerMessage&gt; OnMessage</code></pre>
+    <pre><code class="lang-csharp hljs">public event Action&lt;Signaler.Message&gt; OnMessage</code></pre>
   </div>
   <h5 class="eventType">Event Type</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -470,15 +466,11 @@ but not necessarily delivered.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<span class="xref">SignalerMessage</span>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html">Signaler.Message</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <span class="xref">ISignaler</span>
-  </div>
 </article>
           </div>
           

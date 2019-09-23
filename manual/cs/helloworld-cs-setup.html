@@ -119,7 +119,7 @@
 &lt;/ItemGroup&gt;
 </code></pre>
 <h2 id="test-the-reference">Test the reference</h2>
-<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a href="xref:PeerConnection.GetVideoCaptureDevicesAsync"><code>PeerConnection.GetVideoCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
+<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a href="cref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync"><code>PeerConnection.GetVideoCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
 <p>In <code>MainWindows.xaml.cs</code>:</p>
 <ol>
 <li><p>At the top of the file, add some <code>using</code> statement to import the <code>Microsoft.MixedReality.WebRTC</code> assembly.</p>
@@ -162,9 +162,9 @@
 <p>Launch the app again. The main window is still empty, but the <strong>Output window</strong> of Visual Studio 2019 should show a list of devices. This list depends on the actual host device running the app, but looks something like:</p>
 <pre><code>Found video capture device &lt;some webcam name&gt; (id: &lt;some long ID&gt;)
 </code></pre>
-<p>Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see <a href="xref:PeerConnection.AddLocalVideoTrackAsync"><code>PeerConnection.AddLocalVideoTrackAsync</code></a>).</p>
+<p>Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see <a href="cref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings)"><code>PeerConnection.AddLocalVideoTrackAsync</code></a>).</p>
 <hr>
-<p>Next : <a href="helloworld-cs-peerconnection">Creating a peer connection</a></p>
+<p>Next : <a href="helloworld-cs-peerconnection.html">Creating a peer connection</a></p>
 </article>
           </div>
           

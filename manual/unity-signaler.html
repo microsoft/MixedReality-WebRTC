@@ -94,19 +94,19 @@
 </tr>
 <tr>
 <td>OnConnect</td>
-<td>Event fired when the peer connection is established. Implemented for the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.ISignaler.html"><code>ISignaler</code></a> interface. Derived classes must invoke this event when appropriate.</td>
+<td>Event fired when the peer connection is established. Derived classes must invoke this event when appropriate.</td>
 </tr>
 <tr>
 <td>OnDisconnect</td>
-<td>Event fired when the peer connection is closed. Implemented for the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.ISignaler.html"><code>ISignaler</code></a> interface. Derived classes must invoke this event when appropriate.</td>
+<td>Event fired when the peer connection is closed. Derived classes must invoke this event when appropriate.</td>
 </tr>
 <tr>
 <td>OnMessage</td>
-<td>Event fired when a signaling message is received. Implemented for the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.ISignaler.html"><code>ISignaler</code></a> interface. Derived classes must invoke this event when appropriate to deliver incoming messages to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a>.</td>
+<td>Event fired when a signaling message is received. Derived classes must invoke this event when appropriate to deliver incoming messages to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a>.</td>
 </tr>
 <tr>
 <td>OnFailure</td>
-<td>Event fired when an error occurs inside the signaler. Implemented for the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.ISignaler.html"><code>ISignaler</code></a> interface. Derived classes may invoke this event when appropriate.</td>
+<td>Event fired when an error occurs inside the signaler. Derived classes may invoke this event when appropriate.</td>
 </tr>
 </tbody>
 </table>
@@ -115,7 +115,7 @@
 <p>Derived classes implementing a particular signaling solution must:</p>
 <ul>
 <li>invoke the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnConnect"><code>OnConnect</code></a> and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnDisconnect"><code>OnDisconnect</code></a> events to notify both the user and the peer connection of the state of signaling.</li>
-<li>invoke the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnMessage"><code>OnMessage</code></a> event and implement the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_SignalerMessage_"><code>SendMessageAsync</code></a> method to respectively deliver incoming messages to the local peer and send outgoing message to the remote peer.</li>
+<li>invoke the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnMessage"><code>OnMessage</code></a> event and implement the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_"><code>SendMessageAsync</code></a> method to respectively deliver incoming messages to the local peer and send outgoing message to the remote peer.</li>
 </ul>
 <p>Aditionally it is recommended that implementations also invoke the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnFailure"><code>OnFailure</code></a> event so that the user can be notified.</p>
 </article>
