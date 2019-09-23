@@ -127,6 +127,10 @@ PeerConnection::~PeerConnection() noexcept {
       }
     }
   }
+
+  for (auto&& ptr : data_channels_) {
+    RemoveDataChannel(*ptr);
+  }
 }
 
 bool PeerConnection::AddLocalVideoTrack(
@@ -222,8 +226,7 @@ webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
                                                       dataChannelInteropHandle);
     data_channels_.push_back(data_channel);
     if (!labelString.empty()) {
-      data_channel_from_label_.emplace(
-          std::make_pair(std::move(labelString), data_channel));
+      data_channel_from_label_.emplace(std::move(labelString), data_channel);
     }
     if (config.id >= 0) {
       data_channel_from_id_.try_emplace(config.id, data_channel);
@@ -256,9 +259,12 @@ void PeerConnection::RemoveDataChannel(
     if (it_id != data_channel_from_id_.end()) {
       data_channel_from_id_.erase(it_id);
     }
-    auto it_label = data_channel_from_label_.find(data_channel.label());
-    if (it_label != data_channel_from_label_.end()) {
-      data_channel_from_label_.erase(it_label);
+    const std::string label = data_channel.label();
+    if (!label.empty()) {
+      auto it_label = data_channel_from_label_.find(label);
+      if (it_label != data_channel_from_label_.end()) {
+        data_channel_from_label_.erase(it_label);
+      }
     }
   }
 
@@ -324,7 +330,7 @@ bool PeerConnection::CreateOffer() noexcept {
   if (!peer_)
     return false;
   webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options;
-   /*if (mandatory_receive_)*/ {  //< TODO - This is legacy, should use
+  /*if (mandatory_receive_)*/ {  //< TODO - This is legacy, should use
                                  // transceivers
     options.offer_to_receive_audio = true;
     options.offer_to_receive_video = true;
