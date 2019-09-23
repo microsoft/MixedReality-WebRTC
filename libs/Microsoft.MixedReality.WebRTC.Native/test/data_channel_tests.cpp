@@ -18,8 +18,10 @@ TEST(DataChannel, AddChannelBeforeInit) {
                  mrsDataChannelConfigFlags::kReliable;
   mrsDataChannelCallbacks callbacks{};
   DataChannelHandle handle;
-  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddDataChannel(pc.handle(), config,
-                                                         callbacks, &handle));
+  mrsDataChannelInteropHandle interopHandle = (void*)0x2;  // fake
+  ASSERT_EQ(MRS_SUCCESS,
+            mrsPeerConnectionAddDataChannel(pc.handle(), interopHandle, config,
+                                            callbacks, &handle));
 }
 
 #endif  // MRSW_EXCLUDE_DEVICE_TESTS
