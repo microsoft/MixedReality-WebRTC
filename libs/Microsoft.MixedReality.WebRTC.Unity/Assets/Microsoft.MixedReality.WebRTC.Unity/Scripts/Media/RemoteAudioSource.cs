@@ -67,7 +67,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// video frames.
         /// 
         /// Note that this is independent of whether or not a remote track is actually present.
-        /// In particular this does not fire the <see cref="VideoSource.AudioStreamStopped"/>, which corresponds
+        /// In particular this does not fire the <see cref="AudioSource.AudioStreamStopped"/>, which corresponds
         /// to a track being made available to the local peer by the remote peer.
         /// </summary>
         /// <seealso cref="Play()"/>

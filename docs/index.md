@@ -46,8 +46,6 @@ _Note_ : **The documentation writing is in progress**. Some links are not active
 1. [C# library](xref:Microsoft.MixedReality.WebRTC)
    1. [PeerConnection](xref:Microsoft.MixedReality.WebRTC.PeerConnection)
       - The PeerConnection object is the API entry point to establish a remote connection.
-   2. [ISignaler](xref:Microsoft.MixedReality.WebRTC.ISignaler)
-      - The signaler interface allows using different signaling implementations.
    4. [VideoFrameQueue\<T\>](xref:Microsoft.MixedReality.WebRTC.VideoFrameQueue`1)
       - The video frame queue bridges a video source and a video sink.
 2. [Unity integration](xref:Microsoft.MixedReality.WebRTC.Unity)
