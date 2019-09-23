@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>C# PeerConnection class | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="C# PeerConnection class | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="c-peerconnection-class">C# <code>PeerConnection</code> class</h1>
+
+<p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html"><code>PeerConnection</code></a> class is the entry point to using WebRTC. It encapsulates a connection between a local peer on the local physical device, and a remote peer on the same or, more generally, another physical device.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>The Unity integration also has a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> component, which is based on this class.</p>
+</div>
+<h2 id="initialization">Initialization</h2>
+<p>A <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html"><code>PeerConnection</code></a> instance can be created with the default constructor, but initially most of its properties, methods, and events, cannot be used until it is initialized with a call to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_"><code>InitializeAsync()</code></a>. Once intialized, the  <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Initialized"><code>Initialized</code></a> property returns <code>true</code> and it is safe to use the peer connection.</p>
+<p><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_"><code>InitializeAsync()</code></a> takes a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html"><code>PeerConnectionConfiguration</code></a> and a <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken"><code>CancellationToken</code></a>. The former allows configuring the peer connection about to be established, while the later allows cancelling that task while it is being processed.</p>
+<p><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html"><code>PeerConnectionConfiguration</code></a> contains several fields, but the most important are:</p>
+<ul>
+<li><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html#Microsoft_MixedReality_WebRTC_PeerConnectionConfiguration_IceServers"><code>IceServers</code></a> contains an optional collection of STUN and/or TURN servers used by the Interactive Connectivity Establishment (ICE) to establish a connection with the remote peer through routing devices (NATs). Without these, only direct connections to the remote peer can be established, which can be enough if the application knows in advance the network topology surrounding the two peers, but is generally recommended otherwise to increase the chances of establishing a connection over the Internet.</li>
+<li><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html#Microsoft_MixedReality_WebRTC_PeerConnectionConfiguration_SdpSemantic"><code>SdpSemantic</code></a> describes the semantic used by the Session Description Protocol (SDP) while trying to establish a connection. This is a compatibility feature, which allows connecting with older peers supporting only the deprecated <em>Plan B</em> semantic. New code should always use the default <em>Unified Plan</em>, which is the only one accepted by the WebRTC 1.0 standard.</li>
+</ul>
+<p>The other fields are for advanced use, and can be left with their default values.</p>
+<p>Once the connection is initialized, two categories of actions can be performed, in any order:</p>
+<ul>
+<li>Attempt to establish a connection with the remote peer.</li>
+<li>Add some media tracks and/or data channels.</li>
+</ul>
+<p>Media (audio and/or video) tracks and data channels added before the connection is established will be available immediately on connection. Other tracks and channels can be added later during the lifetime of the peer connection, while it remains open.</p>
+<h2 id="events">Events</h2>
+<p>A <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html"><code>PeerConnection</code></a> exposes several categories of events:</p>
+<ul>
+<li><strong>Signaling events</strong> are related to establishing a connection to the remote peer.</li>
+<li><strong>Track and channel events</strong> provide informational notifications about adding and removing media tracks and data channels.</li>
+<li><strong>Frame events</strong> are high frequency per-frame callbacks invoked when and audio or video frame is available for local rendering.</li>
+</ul>
+<p>In general it is recommended to subscribe to these events before starting to establish a connection with the remote peer.</p>
+<h3 id="signaling-events">Signaling events</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Status*</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a></td>
+<td>Recommended</td>
+<td>Invoked when the connection with the remote peer is established. This indicates that tracks and channel are ready for use, although ICE can continue its discovery in the background.</td>
+</tr>
+<tr>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend"><code>LocalSdpReadytoSend</code></a></td>
+<td>Mandatory</td>
+<td>Invoked when the local peer finished crafting an SDP message, to request the user to send that message to the remote peer via its chosen signaling solution.</td>
+</tr>
+<tr>
+<td><span style="white-space: pre; word-break: break-word"><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend"><code>IceCandidateReadytoSend</code></a></span></td>
+<td>Mandatory</td>
+<td>Invoked when the local peer finished crafting an ICE candidate message, to request the user to send that message to the remote peer via its chosen signaling solution.</td>
+</tr>
+<tr>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend"><code>IceStateChanged</code></a></td>
+<td>Optional</td>
+<td>Invoked when the state of the local ICE connection changed.</td>
+</tr>
+<tr>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend"><code>RenegotiationNeeded</code></a></td>
+<td>Recommended</td>
+<td>Invoked when the peer connection detected that the current session is obsolete, and needs to be renegotiated. This is generally the result of some media tracks or data channels being added or removed, and <strong>must</strong> be handled to make those changes available to the remote peer. However, it is perfectly acceptable to ignore <strong>some</strong> of those events, if several changes are expected in a short period of time, to avoid triggering multiple unnecessary renegotiations. However a renegotiation eventually needs to happen for the newly added tracks and channel to become open.</td>
+</tr>
+</tbody>
+</table>
+<p>*<em>Status</em> indicates the recommended subscription status for a working peer connection:</p>
+<ul>
+<li><strong>Mandatory</strong> means those events must be handled, otherwise the connection cannot be established.</li>
+<li><strong>Recommended</strong> means those events are typically handled, although not mandatory.</li>
+<li><strong>Optional</strong> means those events are informational only, and it is entirely optional to subscribe to them.</li>
+</ul>
+<h2 id="track-and-channel-events">Track and channel events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Status*</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackAdded"><code>TrackAdded</code></a></td>
+<td>Optional</td>
+<td>Invoked when a media track (audio or video) was added on the remote peer, and received on the local peer after a renegotiation. This only concerns remotely-created tracks. Tracks whose creation was initied locally with <em>e.g.</em> <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalVideoTrackAsync_Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_"><code>AddLocalVideoTrackAsync()</code></a> do not generate a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackAdded"><code>TrackAdded</code></a> event.</td>
+</tr>
+<tr>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackRemoved"><code>TrackRemoved</code></a></td>
+<td>Optional</td>
+<td>Invoked when a media track (audio or video) was removed on the remote peer, and a remove message was received on the local peer after a renegotiation. This only concerns remotely-deleted tracks. Tracks removed locally with <em>e.g.</em> <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalVideoTrack"><code>RemoveLocalVideoTrack()</code></a> do not generate a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackRemoved"><code>TrackRemoved</code></a> event.</td>
+</tr>
+<tr>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAdded"><code>DataChannelAdded</code></a></td>
+<td>Optional</td>
+<td>Invoked when a data channel was added to the local peer connection. This is always fired, irrelevant of how the data channel was initially created (in-band or out-of-band).</td>
+</tr>
+<tr>
+<td><span style="white-space: pre; word-break: break-word"><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelRemoved"><code>DataChannelRemoved</code></a></span></td>
+<td>Optional</td>
+<td>Invoked when a data channel was removed from the local peer connection. This is always fired, irrelevant of how the data channel was initially created (in-band or out-of-band).</td>
+</tr>
+</tbody>
+</table>
+<p>*<em>Status</em> - See above.</p>
+<h2 id="frame-events">Frame events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Status*</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a></td>
+<td>Optional</td>
+<td>Invoked when a video frame, encoded in I420 format, has been captured by a local video capture device and is ready to be rendered locally. This is optional, as some application will chose to only transmit local video frames to the remote peer without rendering them, whereas others like a video chat application will often provide a feedback to the user showing the video from a local webcam.</td>
+</tr>
+<tr>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420RemoteVideoFrameReady"><code>I420RemoteVideoFrameReady</code></a></td>
+<td>Optional</td>
+<td>Invoked when a video frame, encoded in I420 format, has been received from the remote peer and is ready to be rendered locally. This is optional, as the local peer does not have control on video tracks added by the remote peer, although most applications will genrally want to render those frames (or do any other kind of procesing on them).</td>
+</tr>
+<tr>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_ARGBLocalVideoFrameReady"><code>ARGBLocalVideoFrameReady</code></a></td>
+<td>Optional</td>
+<td>Variant of <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a> where the frame is encoded in raw ARGB 32-bits-per-pixel format. This generally requires an extra conversion from I420, performed internally.</td>
+</tr>
+<tr>
+<td><span style="white-space: pre; word-break: break-word"><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_ARGBRemoteVideoFrameReady"><code>ARGBRemoteVideoFrameReady</code></a></span></td>
+<td>Optional</td>
+<td>Variant of <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420RemoteVideoFrameReady"><code>I420RemoteVideoFrameReady</code></a> where the frame is encoded in raw ARGB 32-bits-per-pixel format. This generally requires an extra conversion from I420, performed internally.</td>
+</tr>
+</tbody>
+</table>
+<p>*<em>Status</em> - See above.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>It is generally recommended to use the I420 callbacks instead of the ARGB ones. Even in situations where the processing (<em>e.g.</em> local rendering) requires ARGB frames, I420 frames are smaller thanks to the chroma downsampling, so faster to upload to GPU. And GPU-based I420-to-ARGB conversion via a custom pixel shader (fragment shader) is more efficient than the CPU conversion provided by the ARGB callbacks, even with the use of SIMD. See <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Microsoft.MixedReality.WebRTC.Unity/Shaders/YUVFeedShaderUnlit.shader"><code>YUVFeedShaderUnlit.shader</code></a> in the Unity integration for an example of such conversion shader.</p>
+</div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/manual/cs/cs-peerconnection.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
