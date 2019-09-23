@@ -2,6 +2,9 @@
 
 The [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) Unity component encapsulates a single peer connection between the local application and another remote Unity peer application.
 
+> [!NOTE]
+> The C# library also has a [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.PeerConnection) class, which this components build upon.
+
 ![The PeerConnection Unity component](unity-peerconnection.png)
 
 | Property | Description |

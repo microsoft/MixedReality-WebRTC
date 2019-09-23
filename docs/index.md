@@ -16,8 +16,9 @@ _Note_ : **The documentation writing is in progress**. Some links are not active
   - [Building from sources](manual/building.md)
   - [C# tutorial](manual/helloworld-cs.md)
   - [Unity tutorial](manual/helloworld-unity.md)
-- C# library (coming soon)
-  - Feature Overview
+- C# library (under writing)
+  - [Feature Overview](manual/cs/cs.md)
+  - [Peer Connection](manual/cs/cs-peerconnection.md)
   - Signaling
   - Audio
     - Streaming
@@ -25,8 +26,8 @@ _Note_ : **The documentation writing is in progress**. Some links are not active
   - Video
     - Streaming
     - Rendering
-- [Unity integration](manual/unity-integration.md)
-  - Feature Overview
+- Unity integration
+  - [Feature Overview](manual/unity-integration.md)
   - [Tutorial](manual/helloworld-unity.md)
   - Samples
   - [Peer Connection](manual/unity-peerconnection.md)

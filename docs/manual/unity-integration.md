@@ -1,6 +1,6 @@
 # Unity integration overview
 
-The Unity integration offers a simple way to add real-time communcation to an existing Unity application. MixedReality-WebRTC provides a collection of Unity componenents ([`MonoBehaviour`](https://docs.unity3d.com/ScriptReference/MonoBehaviour.html)-derived classes) which encapsulate objects from the underlying C# library an allow both in-editor configuration and connection establishing in [Play mode](https://docs.unity3d.com/Manual/GameView.html).
+The Unity integration offers a simple way to add real-time communication to an existing Unity application. MixedReality-WebRTC provides a collection of Unity componenents ([`MonoBehaviour`](https://docs.unity3d.com/ScriptReference/MonoBehaviour.html)-derived classes) which encapsulate objects from the [underlying C# library](cs/cs.md), and allow in-editor configuration as well as establishing a connection to a remote peer both in standalone and in [Play mode](https://docs.unity3d.com/Manual/GameView.html).
 
 ![Diagram of the Unity components](unity-components-diagram.png)
 
