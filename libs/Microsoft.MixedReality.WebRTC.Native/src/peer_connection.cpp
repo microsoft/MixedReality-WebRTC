@@ -177,6 +177,19 @@ bool PeerConnection::IsLocalVideoTrackEnabled() const noexcept {
   return false;
 }
 
+void PeerConnection::SetLocalAudioTrackEnabled(bool enabled) noexcept {
+  if (local_audio_track_) {
+    local_audio_track_->set_enabled(enabled);
+  }
+}
+
+bool PeerConnection::IsLocalAudioTrackEnabled() const noexcept {
+  if (local_audio_track_) {
+    return local_audio_track_->enabled();
+  }
+  return false;
+}
+
 bool PeerConnection::AddLocalAudioTrack(
     rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track) noexcept {
   if (local_audio_track_) {

@@ -263,6 +263,17 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
       rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track) noexcept;
   void RemoveLocalAudioTrack() noexcept;
 
+  /// Enable or disable the local audio track. Disable audio tracks are still
+  /// active but are silent.
+  /// Note: currently a single local audio track is supported per peer
+  /// connection.
+  void SetLocalAudioTrackEnabled(bool enabled = true) noexcept;
+
+  /// Check if the local audio frame is enabled.
+  /// Note: currently a single local audio track is supported per peer
+  /// connection.
+  bool IsLocalAudioTrackEnabled() const noexcept;
+
   //
   // Data channel
   //

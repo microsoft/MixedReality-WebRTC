@@ -887,7 +887,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// Enable or disable the local video track associated with this peer connection.
         /// Disable video tracks are still active, but emit only black frames.
         /// </summary>
-        /// <param name="enabled">@c true to enable the track, or @false to disable it</param>
+        /// <param name="enabled"><c>true</c> to enable the track, or <c>false</c> to disable it</param>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void SetLocalVideoTrackEnabled(bool enabled = true)
         {
             ThrowIfConnectionNotOpen();
@@ -899,7 +900,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// Check if the local video track associated with this peer connection is enabled.
         /// Disable video tracks are still active, but emit only black frames.
         /// </summary>
-        /// <returns>@true if the track is enabled, or @false otherwise</returns>
+        /// <returns><c>true</c> if the track is enabled, or <c>false</c> otherwise</returns>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public bool IsLocalVideoTrackEnabled()
         {
             ThrowIfConnectionNotOpen();
@@ -937,6 +939,31 @@ namespace Microsoft.MixedReality.WebRTC
                     throw new Exception();
                 }
             });
+        }
+
+        /// <summary>
+        /// Enable or disable the local audio track associated with this peer connection.
+        /// Disable audio tracks are still active, but are silent.
+        /// </summary>
+        /// <param name="enabled"><c>true</c> to enable the track, or <c>false</c> to disable it</param>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        public void SetLocalAudioTrackEnabled(bool enabled = true)
+        {
+            ThrowIfConnectionNotOpen();
+            uint res = PeerConnectionInterop.PeerConnection_SetLocalAudioTrackEnabled(_nativePeerhandle, enabled ? -1 : 0);
+            Utils.ThrowOnErrorCode(res);
+        }
+
+        /// <summary>
+        /// Check if the local audio track associated with this peer connection is enabled.
+        /// Disable audio tracks are still active, but are silent.
+        /// </summary>
+        /// <returns><c>true</c> if the track is enabled, or <c>false</c> otherwise</returns>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        public bool IsLocalAudioTrackEnabled()
+        {
+            ThrowIfConnectionNotOpen();
+            return (PeerConnectionInterop.PeerConnection_IsLocalAudioTrackEnabled(_nativePeerhandle) != 0);
         }
 
         /// <summary>

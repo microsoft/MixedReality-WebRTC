@@ -5,7 +5,6 @@
 #include "pch.h"
 
 #include "api.h"
-#include "data_channel.h"
 
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 
@@ -31,6 +30,7 @@ TEST(VideoTrack, Simple) {
   VideoDeviceConfiguration config{};
   ASSERT_EQ(MRS_SUCCESS,
             mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), config));
+  ASSERT_NE(0, mrsPeerConnectionIsLocalVideoTrackEnabled(pair.pc1()));
 
   uint32_t frame_count = 0;
   I420VideoFrameCallback i420cb =
@@ -58,7 +58,7 @@ TEST(VideoTrack, Simple) {
                                                         nullptr);
 }
 
-TEST(VideoTrack, Enabled) {
+TEST(VideoTrack, Muted) {
   LocalPeerPairRaii pair;
 
   VideoDeviceConfiguration config{};
@@ -68,6 +68,7 @@ TEST(VideoTrack, Enabled) {
   // Disable the video track; it should output only black frames
   ASSERT_EQ(MRS_SUCCESS,
             mrsPeerConnectionSetLocalVideoTrackEnabled(pair.pc1(), false));
+  ASSERT_EQ(0, mrsPeerConnectionIsLocalVideoTrackEnabled(pair.pc1()));
 
   uint32_t frame_count = 0;
   I420VideoFrameCallback i420cb =
