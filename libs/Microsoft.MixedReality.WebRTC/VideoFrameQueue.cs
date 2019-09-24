@@ -43,7 +43,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// This can be assigned to resize the storage.
         /// </summary>
         /// <remarks>
-        /// Reading this property is equivalent to reading the <see cref="System.Array.LongLength"/>
+        /// Reading this property is equivalent to reading the <see xref="System.Array.LongLength"/>
         /// property of <see cref="Buffer"/>.
         /// </remarks>
         public ulong Capacity {

@@ -861,7 +861,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
         /// </remarks>
-        /// <exception cref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task AddLocalVideoTrackAsync(LocalVideoTrackSettings settings = default)
         {
             ThrowIfConnectionNotOpen();
