@@ -813,6 +813,83 @@
       "version": ""
     },
     {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp1.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp2.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp3.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp4.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp5.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp5.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp6.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp6.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp7.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp7.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Conceptual",
       "source_relative_path": "manual/cs/cs.md",
       "output": {
@@ -871,11 +948,23 @@
     },
     {
       "type": "Conceptual",
-      "source_relative_path": "manual/cs/helloworld-cs-setup.md",
+      "source_relative_path": "manual/cs/helloworld-cs-setup-core3.md",
       "output": {
         ".html": {
-          "relative_path": "manual/cs/helloworld-cs-setup.html",
-          "hash": "R8UXC+dA7jdQ0pauy9Niew=="
+          "relative_path": "manual/cs/helloworld-cs-setup-core3.html",
+          "hash": "O4hp2Rg2R8Uy/WuGERiX3Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-setup-uwp.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-setup-uwp.html",
+          "hash": "HYdp8k75B0MqEo5XlN/n5Q=="
         }
       },
       "is_incremental": false,
@@ -1524,18 +1613,6 @@
         "full_build_reason_code": "ForceRebuild"
       },
       "processors": {
-        "ManagedReferenceDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 56,
-          "skipped_file_count": 0
-        },
-        "ConceptualDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 33,
-          "skipped_file_count": 0
-        },
         "ResourceDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
@@ -1543,11 +1620,23 @@
           "total_file_count": 0,
           "skipped_file_count": 0
         },
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 34,
+          "skipped_file_count": 0
+        },
         "TocDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build",
           "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 56,
           "skipped_file_count": 0
         }
       }
