@@ -974,6 +974,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.IsConnected
   nameWithType: PeerConnection.IsConnected
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.IsLocalVideoTrackEnabled
+  name: IsLocalVideoTrackEnabled()
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IsLocalVideoTrackEnabled
+  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.IsLocalVideoTrackEnabled
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.IsLocalVideoTrackEnabled()
+  nameWithType: PeerConnection.IsLocalVideoTrackEnabled()
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.IsLocalVideoTrackEnabled*
+  name: IsLocalVideoTrackEnabled
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IsLocalVideoTrackEnabled_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.IsLocalVideoTrackEnabled
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.IsLocalVideoTrackEnabled
+  nameWithType: PeerConnection.IsLocalVideoTrackEnabled
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.LocalAudioFrameReady
   name: LocalAudioFrameReady
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalAudioFrameReady
@@ -1102,6 +1115,19 @@ references:
   commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.RenegotiationNeeded
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.RenegotiationNeeded
   nameWithType: PeerConnection.RenegotiationNeeded
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalVideoTrackEnabled(System.Boolean)
+  name: SetLocalVideoTrackEnabled(Boolean)
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetLocalVideoTrackEnabled_System_Boolean_
+  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalVideoTrackEnabled(System.Boolean)
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalVideoTrackEnabled(System.Boolean)
+  nameWithType: PeerConnection.SetLocalVideoTrackEnabled(Boolean)
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalVideoTrackEnabled*
+  name: SetLocalVideoTrackEnabled
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetLocalVideoTrackEnabled_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalVideoTrackEnabled
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalVideoTrackEnabled
+  nameWithType: PeerConnection.SetLocalVideoTrackEnabled
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription(System.String,System.String)
   name: SetRemoteDescription(String, String)
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescription_System_String_System_String_
