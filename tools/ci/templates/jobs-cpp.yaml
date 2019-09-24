@@ -108,6 +108,7 @@ jobs:
       msbuildArchitecture: x64
       platform: '${{parameters.msbuildPlatform}}'
       configuration: '${{parameters.buildConfig}}'
+      msbuildArguments: '/p:DisableDeviceTests=1' # Disable tests requiring a webcam or microphone
     timeoutInMinutes: 15
 
   # Run C++ test
