@@ -1013,6 +1013,26 @@ mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
 }
 
 mrsResult MRS_CALL
+mrsPeerConnectionSetLocalVideoTrackEnabled(PeerConnectionHandle peerHandle,
+                                           int32_t enabled) noexcept {
+  auto peer = static_cast<PeerConnection*>(peerHandle);
+  if (!peer) {
+    return MRS_E_INVALID_PEER_HANDLE;
+  }
+  peer->SetLocalVideoTrackEnabled(enabled != 0);
+  return MRS_SUCCESS;
+}
+
+int32_t MRS_CALL mrsPeerConnectionIsLocalVideoTrackEnabled(
+    PeerConnectionHandle peerHandle) noexcept {
+  auto peer = static_cast<PeerConnection*>(peerHandle);
+  if (!peer) {
+    return false;
+  }
+  return peer->IsLocalVideoTrackEnabled();
+}
+
+mrsResult MRS_CALL
 mrsDataChannelSendMessage(DataChannelHandle dataChannelHandle,
                           const void* data,
                           uint64_t size) noexcept {

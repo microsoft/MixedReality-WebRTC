@@ -884,6 +884,29 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
+        /// Enable or disable the local video track associated with this peer connection.
+        /// Disable video tracks are still active, but emit only black frames.
+        /// </summary>
+        /// <param name="enabled">@c true to enable the track, or @false to disable it</param>
+        public void SetLocalVideoTrackEnabled(bool enabled = true)
+        {
+            ThrowIfConnectionNotOpen();
+            uint res = PeerConnectionInterop.PeerConnection_SetLocalVideoTrackEnabled(_nativePeerhandle, enabled ? -1 : 0);
+            Utils.ThrowOnErrorCode(res);
+        }
+
+        /// <summary>
+        /// Check if the local video track associated with this peer connection is enabled.
+        /// Disable video tracks are still active, but emit only black frames.
+        /// </summary>
+        /// <returns>@true if the track is enabled, or @false otherwise</returns>
+        public bool IsLocalVideoTrackEnabled()
+        {
+            ThrowIfConnectionNotOpen();
+            return (PeerConnectionInterop.PeerConnection_IsLocalVideoTrackEnabled(_nativePeerhandle) != 0);
+        }
+
+        /// <summary>
         /// Remove from the current connection the local video track added with <see cref="AddLocalAudioTrackAsync"/>.
         /// </summary>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>

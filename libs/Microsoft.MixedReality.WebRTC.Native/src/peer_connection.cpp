@@ -164,6 +164,19 @@ void PeerConnection::RemoveLocalVideoTrack() noexcept {
   local_video_sender_ = nullptr;
 }
 
+void PeerConnection::SetLocalVideoTrackEnabled(bool enabled) noexcept {
+  if (local_video_track_) {
+    local_video_track_->set_enabled(enabled);
+  }
+}
+
+bool PeerConnection::IsLocalVideoTrackEnabled() const noexcept {
+  if (local_video_track_) {
+    return local_video_track_->enabled();
+  }
+  return false;
+}
+
 bool PeerConnection::AddLocalAudioTrack(
     rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track) noexcept {
   if (local_audio_track_) {

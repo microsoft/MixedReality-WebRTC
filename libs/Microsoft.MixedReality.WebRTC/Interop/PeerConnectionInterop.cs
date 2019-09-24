@@ -518,6 +518,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static extern uint PeerConnection_RemoveDataChannel(IntPtr peerHandle, IntPtr dataChannelHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionSetLocalVideoTrackEnabled")]
+        public static extern uint PeerConnection_SetLocalVideoTrackEnabled(IntPtr peerHandle, int enabled);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionIsLocalVideoTrackEnabled")]
+        public static extern int PeerConnection_IsLocalVideoTrackEnabled(IntPtr peerHandle);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddIceCandidate")]
         public static extern void PeerConnection_AddIceCandidate(IntPtr peerHandle, string sdpMid,
             int sdpMlineindex, string candidate);

@@ -21,6 +21,8 @@ EXPORTS
 	mrsPeerConnectionRemoveLocalVideoTrack
 	mrsPeerConnectionRemoveLocalAudioTrack
 	mrsPeerConnectionRemoveDataChannel
+	mrsPeerConnectionSetLocalVideoTrackEnabled
+	mrsPeerConnectionIsLocalVideoTrackEnabled
 	mrsPeerConnectionAddIceCandidate
 	mrsPeerConnectionCreateOffer
 	mrsPeerConnectionCreateAnswer

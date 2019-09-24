@@ -56,14 +56,16 @@ struct Callback {
   using static_type = void(MRS_CALL*)(void*, Args...);
 
   Callback() = default;
-  ~Callback() { assert(!is_registered_); }
+  virtual ~Callback() { assert(!is_registered_); }
 
   /// Constructor from any std::function-compatible object, including lambdas.
   template <typename U>
-  Callback(U func) : func_(std::forward<std::function<function_type>>(func)) {}
+  Callback(U func)
+      : func_(std::function<function_type>(std::forward<U>(func))) {}
 
-  Callback& operator=(std::function<function_type> func) {
-    func_ = std::move(func);
+  template <typename U>
+  Callback& operator=(U func) {
+    func_ = std::function<function_type>(std::forward<U>(func));
     return (*this);
   }
 
@@ -98,4 +100,148 @@ class PCRaii {
 
  protected:
   PeerConnectionHandle handle_{};
+};
+
+// OnLocalSdpReadyToSend
+class SdpCallback : public Callback<const char*, const char*> {
+ public:
+  using Base = Callback<const char*, const char*>;
+  using callback_type = void(const char*, const char*);
+  SdpCallback(PeerConnectionHandle pc) : pc_(pc) {}
+  SdpCallback(PeerConnectionHandle pc, std::function<callback_type> func)
+      : Base(std::move(func)), pc_(pc) {
+    mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(pc_, &StaticExec,
+                                                         this);
+    is_registered_ = true;
+  }
+  ~SdpCallback() override {
+    mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(pc_, nullptr, nullptr);
+    is_registered_ = false;
+  }
+  SdpCallback& operator=(std::function<callback_type> func) {
+    Base::operator=(std::move(func));
+    mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(pc_, &StaticExec,
+                                                         this);
+    is_registered_ = true;
+    return (*this);
+  }
+
+ protected:
+  PeerConnectionHandle pc_{};
+};
+
+// OnIceCandidateReadyToSend
+class IceCallback : public Callback<const char*, int, const char*> {
+ public:
+  using Base = Callback<const char*, int, const char*>;
+  using callback_type = void(const char*, int, const char*);
+  IceCallback(PeerConnectionHandle pc) : pc_(pc) {}
+  IceCallback(PeerConnectionHandle pc, std::function<callback_type> func)
+      : Base(std::move(func)), pc_(pc) {
+    mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(pc_, &StaticExec,
+                                                             this);
+    is_registered_ = true;
+  }
+  ~IceCallback() override {
+    mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(pc_, nullptr,
+                                                             nullptr);
+    is_registered_ = false;
+  }
+  IceCallback& operator=(std::function<callback_type> func) {
+    Base::operator=(std::move(func));
+    mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(pc_, &StaticExec,
+                                                             this);
+    is_registered_ = true;
+    return (*this);
+  }
+
+ protected:
+  PeerConnectionHandle pc_{};
+};
+
+constexpr const std::string_view kOfferString{"offer"};
+
+/// Helper to create a pair of peer connections and locally connect them to each
+/// other via simple hard-coded signaling.
+class LocalPeerPairRaii {
+ public:
+  LocalPeerPairRaii()
+      : sdp1_cb_(pc1()), sdp2_cb_(pc2()), ice1_cb_(pc1()), ice2_cb_(pc2()) {
+    setup();
+  }
+  LocalPeerPairRaii(const PeerConnectionConfiguration& config)
+      : pc1_(config),
+        pc2_(config),
+        sdp1_cb_(pc1()),
+        sdp2_cb_(pc2()),
+        ice1_cb_(pc1()),
+        ice2_cb_(pc2()) {
+    setup();
+  }
+  ~LocalPeerPairRaii() { shutdown(); }
+
+  PeerConnectionHandle pc1() const { return pc1_.handle(); }
+  PeerConnectionHandle pc2() const { return pc2_.handle(); }
+
+  void ConnectAndWait() {
+    Event ev1, ev2;
+    connected1_cb_ = [&ev1]() { ev1.Set(); };
+    connected2_cb_ = [&ev2]() { ev2.Set(); };
+    mrsPeerConnectionRegisterConnectedCallback(pc1(), CB(connected1_cb_));
+    connected1_cb_.is_registered_ = true;
+    mrsPeerConnectionRegisterConnectedCallback(pc2(), CB(connected2_cb_));
+    connected2_cb_.is_registered_ = true;
+    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateOffer(pc1()));
+    ASSERT_EQ(true, ev1.WaitFor(60s));
+    ASSERT_EQ(true, ev2.WaitFor(60s));
+  }
+
+ protected:
+  PCRaii pc1_;
+  PCRaii pc2_;
+  SdpCallback sdp1_cb_;
+  SdpCallback sdp2_cb_;
+  IceCallback ice1_cb_;
+  IceCallback ice2_cb_;
+  Callback<> connected1_cb_;
+  Callback<> connected2_cb_;
+  void setup() {
+    sdp1_cb_ = [this](const char* type, const char* sdp_data) {
+      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
+                                 pc2_.handle(), type, sdp_data));
+      if (kOfferString == type) {
+        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc2_.handle()));
+      }
+    };
+    sdp2_cb_ = [this](const char* type, const char* sdp_data) {
+      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
+                                 pc1_.handle(), type, sdp_data));
+      if (kOfferString == type) {
+        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc1_.handle()));
+      }
+    };
+    ice1_cb_ = [this](const char* candidate, int sdpMlineindex,
+                      const char* sdpMid) {
+      ASSERT_EQ(MRS_SUCCESS,
+                mrsPeerConnectionAddIceCandidate(pc2_.handle(), sdpMid,
+                                                 sdpMlineindex, candidate));
+    };
+    ice2_cb_ = [this](const char* candidate, int sdpMlineindex,
+                      const char* sdpMid) {
+      ASSERT_EQ(MRS_SUCCESS,
+                mrsPeerConnectionAddIceCandidate(pc1_.handle(), sdpMid,
+                                                 sdpMlineindex, candidate));
+    };
+  }
+
+  void shutdown() {
+    if (connected1_cb_.is_registered_) {
+      mrsPeerConnectionRegisterConnectedCallback(pc1(), nullptr, nullptr);
+      connected1_cb_.is_registered_ = false;
+    }
+    if (connected2_cb_.is_registered_) {
+      mrsPeerConnectionRegisterConnectedCallback(pc2(), nullptr, nullptr);
+      connected2_cb_.is_registered_ = false;
+    }
+  }
 };

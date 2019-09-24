@@ -8,13 +8,7 @@
 
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 
-constexpr const std::string_view kOfferString{"offer"};
-
-// OnLocalSdpReadyToSend
-using SdpCallback = Callback<const char*, const char*>;
-
-// OnIceCandidateReadyToSend
-using IceCallback = Callback<const char*, int, const char*>;
+// constexpr const std::string_view kOfferString{"offer"};
 
 TEST(PeerConnection, LocalNoIce) {
   // Create PC
@@ -25,24 +19,22 @@ TEST(PeerConnection, LocalNoIce) {
   ASSERT_NE(nullptr, pc2.handle());
 
   // Setup signaling
-  SdpCallback sdp1_cb = [&pc2](const char* type, const char* sdp_data) {
-    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                               pc2.handle(), type, sdp_data));
-    if (kOfferString == type) {
-      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc2.handle()));
-    }
-  };
-  mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(pc1.handle(),
-                                                       CB(sdp1_cb));
-  SdpCallback sdp2_cb = [&pc1](const char* type, const char* sdp_data) {
-    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                               pc1.handle(), type, sdp_data));
-    if (kOfferString == type) {
-      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc1.handle()));
-    }
-  };
-  mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(pc2.handle(),
-                                                       CB(sdp2_cb));
+  SdpCallback sdp1_cb(
+      pc1.handle(), [&pc2](const char* type, const char* sdp_data) {
+        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
+                                   pc2.handle(), type, sdp_data));
+        if (kOfferString == type) {
+          ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc2.handle()));
+        }
+      });
+  SdpCallback sdp2_cb(
+      pc2.handle(), [&pc1](const char* type, const char* sdp_data) {
+        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
+                                   pc1.handle(), type, sdp_data));
+        if (kOfferString == type) {
+          ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc1.handle()));
+        }
+      });
 
   // Connect
   Event ev;
@@ -61,38 +53,34 @@ TEST(PeerConnection, LocalIce) {
   ASSERT_NE(nullptr, pc2.handle());
 
   // Setup signaling
-  SdpCallback sdp1_cb = [&pc2](const char* type, const char* sdp_data) {
-    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                               pc2.handle(), type, sdp_data));
-    if (kOfferString == type) {
-      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc2.handle()));
-    }
-  };
-  mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(pc1.handle(),
-                                                       CB(sdp1_cb));
-  SdpCallback sdp2_cb = [&pc1](const char* type, const char* sdp_data) {
-    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                               pc1.handle(), type, sdp_data));
-    if (kOfferString == type) {
-      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc1.handle()));
-    }
-  };
-  mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(pc2.handle(),
-                                                       CB(sdp2_cb));
-  IceCallback ice1_cb = [&pc2](const char* candidate, int sdpMlineindex,
-                               const char* sdpMid) {
+  SdpCallback sdp1_cb(
+      pc1.handle(), [&pc2](const char* type, const char* sdp_data) {
+        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
+                                   pc2.handle(), type, sdp_data));
+        if (kOfferString == type) {
+          ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc2.handle()));
+        }
+      });
+  SdpCallback sdp2_cb(
+      pc2.handle(), [&pc1](const char* type, const char* sdp_data) {
+        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
+                                   pc1.handle(), type, sdp_data));
+        if (kOfferString == type) {
+          ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc1.handle()));
+        }
+      });
+  IceCallback ice1_cb(pc1.handle(), [&pc2](const char* candidate,
+                                           int sdpMlineindex,
+                                           const char* sdpMid) {
     ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddIceCandidate(
                                pc2.handle(), sdpMid, sdpMlineindex, candidate));
-  };
-  mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(pc1.handle(),
-                                                           CB(ice1_cb));
-  IceCallback ice2_cb = [&pc1](const char* candidate, int sdpMlineindex,
-                               const char* sdpMid) {
+  });
+  IceCallback ice2_cb(pc2.handle(), [&pc1](const char* candidate,
+                                           int sdpMlineindex,
+                                           const char* sdpMid) {
     ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddIceCandidate(
                                pc1.handle(), sdpMid, sdpMlineindex, candidate));
-  };
-  mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(pc2.handle(),
-                                                           CB(ice2_cb));
+  });
 
   // Connect
   Event ev;

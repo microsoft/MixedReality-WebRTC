@@ -554,6 +554,13 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
     DataChannelHandle dataChannelHandle) noexcept;
 
 MRS_API mrsResult MRS_CALL
+mrsPeerConnectionSetLocalVideoTrackEnabled(PeerConnectionHandle peerHandle,
+                                           int32_t enabled) noexcept;
+
+MRS_API int32_t MRS_CALL mrsPeerConnectionIsLocalVideoTrackEnabled(
+    PeerConnectionHandle peerHandle) noexcept;
+
+MRS_API mrsResult MRS_CALL
 mrsDataChannelSendMessage(DataChannelHandle dataChannelHandle,
                           const void* data,
                           uint64_t size) noexcept;

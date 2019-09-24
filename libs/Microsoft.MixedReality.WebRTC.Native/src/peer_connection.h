@@ -213,9 +213,26 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
 
   /// Add to the peer connection an audio track backed by a local audio capture
   /// device.
+  /// Note: currently a single local video track is supported per peer
+  /// connection.
   bool AddLocalVideoTrack(
       rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept;
+
+  /// Remove the existing local video track from the peer connection.
+  /// Note: currently a single local video track is supported per peer
+  /// connection.
   void RemoveLocalVideoTrack() noexcept;
+
+  /// Enable or disable the local video track. Disable video tracks are still
+  /// active but output black frames.
+  /// Note: currently a single local video track is supported per peer
+  /// connection.
+  void SetLocalVideoTrackEnabled(bool enabled = true) noexcept;
+
+  /// Check if the local video frame is enabled.
+  /// Note: currently a single local video track is supported per peer
+  /// connection.
+  bool IsLocalVideoTrackEnabled() const noexcept;
 
   //
   // Audio
