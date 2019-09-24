@@ -11,17 +11,6 @@
 
 namespace {
 
-const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
-    (void*)0x1;
-const mrsDataChannelInteropHandle kFakeInteropDataChannelHandle = (void*)0x2;
-
-mrsDataChannelInteropHandle MRS_CALL
-FakeIterop_DataChannelCreate(mrsPeerConnectionInteropHandle /*parent*/,
-                             mrsDataChannelConfig /*config*/,
-                             mrsDataChannelCallbacks* /*callbacks*/) {
-  return kFakeInteropDataChannelHandle;
-}
-
 // PeerConnectionI420VideoFrameCallback
 using I420VideoFrameCallback = Callback<const void*,
                                         const void*,
@@ -46,9 +35,10 @@ TEST(VideoTrack, Simple) {
   uint32_t frame_count = 0;
   I420VideoFrameCallback i420cb =
       [&frame_count](const void* yptr, const void* uptr, const void* vptr,
-                     const void* aptr, const int ystride, const int ustride,
-                     const int vstride, const int astride,
-                     const int frame_width, const int frame_height) {
+                     const void* /*aptr*/, const int /*ystride*/,
+                     const int /*ustride*/, const int /*vstride*/,
+                     const int /*astride*/, const int frame_width,
+                     const int frame_height) {
         ASSERT_NE(nullptr, yptr);
         ASSERT_NE(nullptr, uptr);
         ASSERT_NE(nullptr, vptr);
@@ -62,7 +52,7 @@ TEST(VideoTrack, Simple) {
 
   Event ev;
   ev.WaitFor(5s);
-  ASSERT_LT(50, frame_count);  // at least 10 FPS
+  ASSERT_LT(50u, frame_count);  // at least 10 FPS
 
   mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(pair.pc2(), nullptr,
                                                         nullptr);
@@ -82,9 +72,10 @@ TEST(VideoTrack, Enabled) {
   uint32_t frame_count = 0;
   I420VideoFrameCallback i420cb =
       [&frame_count](const void* yptr, const void* uptr, const void* vptr,
-                     const void* aptr, const int ystride, const int ustride,
-                     const int vstride, const int astride,
-                     const int frame_width, const int frame_height) {
+                     const void* /*aptr*/, const int ystride,
+                     const int /*ustride*/, const int /*vstride*/,
+                     const int /*astride*/, const int frame_width,
+                     const int frame_height) {
         ASSERT_NE(nullptr, yptr);
         ASSERT_NE(nullptr, uptr);
         ASSERT_NE(nullptr, vptr);
@@ -106,7 +97,7 @@ TEST(VideoTrack, Enabled) {
 
   Event ev;
   ev.WaitFor(5s);
-  ASSERT_LT(50, frame_count);  // at least 10 FPS
+  ASSERT_LT(50u, frame_count);  // at least 10 FPS
 
   mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(pair.pc2(), nullptr,
                                                         nullptr);

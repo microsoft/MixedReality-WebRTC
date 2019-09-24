@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <cassert>
 #include <SDKDDKVer.h>
+#include <cassert>
 
 #include <condition_variable>
 #include <functional>
@@ -38,6 +38,10 @@ using namespace std::chrono_literals;
 
 #include "gtest/gtest.h"
 
+#pragma warning(push)
+#pragma warning(disable : 4100 4127)
+#include "api/datachannelinterface.h"
 #include "rtc_base/thread_annotations.h"
+#pragma warning(pop)
 
 #include "peer_connection_test_helpers.h"

@@ -7,8 +7,6 @@
 #include "api.h"
 #include "data_channel.h"
 
-#if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
-
 namespace {
 
 const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
@@ -21,8 +19,6 @@ FakeIterop_DataChannelCreate(mrsPeerConnectionInteropHandle /*parent*/,
                              mrsDataChannelCallbacks* /*callbacks*/) {
   return kFakeInteropDataChannelHandle;
 }
-
-// constexpr const std::string_view kOfferString{"offer"};
 
 // OnDataChannelAdded
 using DataAddedCallback =
@@ -178,5 +174,3 @@ TEST(DataChannel, InBand) {
     sdp2_cb.is_registered_ = false;
   }
 }
-
-#endif  // MRSW_EXCLUDE_DEVICE_TESTS

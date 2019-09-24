@@ -6,10 +6,6 @@
 
 #include "../include/api.h"
 
-#if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
-
-// constexpr const std::string_view kOfferString{"offer"};
-
 TEST(PeerConnection, LocalNoIce) {
   // Create PC
   PeerConnectionConfiguration config{};  // local connection only
@@ -95,5 +91,3 @@ TEST(PeerConnection, LocalIce) {
   mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(pc2.handle(),
                                                            nullptr, nullptr);
 }
-
-#endif  // MRSW_EXCLUDE_DEVICE_TESTS
