@@ -79,92 +79,97 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="creating-a-project">Creating a project</h1>
 
-<p>In this tutorial we use <a href="https://dotnet.microsoft.com/download/dotnet-core/3.0">.NET Core 3.0</a> to create a C# Desktop application that is mostly platform independent, except for the UI part which requires the Desktop Pack for Windows to use the <a href="https://github.com/dotnet/wpf">Windows Presentation Foundation (WPF)</a> UI framework.</p>
-<p><em>Note</em>: Currently .NET Core 3.0 is still in preview, so some extra Visual Studio 2019 setup is required.</p>
-<p><em>Note</em>: This tutorial assumes that the host device where the app will be running during the tutorial has access to:</p>
+<p>In this tutorial we use <a href="https://dotnet.microsoft.com/download/dotnet-core/3.0">.NET Core 3.0</a> to create a C# Desktop application. Because there is currently no simple solution to display raw video frames from a .NET Core application, like there is with UWP, we will limit this tutorial to creating a simple console application without graphics. Think of it as a recording tool to broadcast audio and/or video to a remote device.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>This tutorial assumes that the host device where the app will be running during the tutorial has access to:</p>
 <ul>
 <li>a webcam, or any other video capture device recognized by WebRTC</li>
 <li>a microphone, or any other audio capture device recognized by WebRTC</li>
 </ul>
+</div>
 <h2 id="install-net-core-30">Install .NET Core 3.0</h2>
 <p>Download the latest .NET Core 3.0 <strong>SDK</strong> (and not Runtime) from its <a href="https://dotnet.microsoft.com/download/dotnet-core/3.0">download page</a> and install it.</p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>Visual Studio v16.3 or later is required, otherwise the console application might not run correctly inside Visual Studio.</p>
+</div>
 <h2 id="generate-the-project">Generate the project</h2>
-<p>Open a terminal and use the <code>dotnet</code> command to create a new project from the WPF template. We will name this tutorial project <code>TestNetCoreWpf</code>.</p>
-<pre><code>dotnet new wpf --name TestNetCoreWpf
+<p>Open a terminal and use the <code>dotnet</code> command to create a new project from the <code>console</code> template. We will name this tutorial project <code>TestNetCoreConsole</code>.</p>
+<pre><code>dotnet new console --name TestNetCoreConsole
 </code></pre>
-<p>This generates a folder named <code>TestNetCoreWpf</code> which contains the following notable files:</p>
+<p>This generates a folder named <code>TestNetCoreConsole</code> which contains the following notable files:</p>
 <ul>
-<li><strong><code>TestNetCoreWpf.csproj</code></strong> : The C# project</li>
-<li><strong><code>MainWindow.xaml</code></strong> : The XAML file describing the user interface of the main application window</li>
-<li><strong><code>MainWindow.xaml.cs</code></strong> : The C# code associated with <code>MainWindow.xaml</code>, where the UI actions are created</li>
+<li><strong><code>TestNetCoreConsole.csproj</code></strong> : The C# project</li>
+<li><strong><code>Program.cs</code></strong> : The C# source code for the application</li>
 </ul>
-<h2 id="configure-visual-studio-2019">Configure Visual Studio 2019</h2>
-<p><em>This step is only needed if using a preview version of .NET Core.</em></p>
-<p>In order to be able to open C# projects created with a preview version of .NET Core 3.0, Visual Studio 2019 must be configured to use preview SDKs. Otherwise it will display a generic error dialog box when trying to open the <code>.csproj</code> project file.</p>
-<p>Open Visual Studio 2019, go to <strong>Tools</strong> &gt; <strong>Options</strong> &gt; <strong>Environment</strong> &gt; <strong>Preview Features</strong>, and check the <strong>Use previews of the .NET Core SDK</strong> option. After that, restart Visual Studio 2019 for changes to take effect.</p>
-<p><img src="cs2.png" alt="Allow preview versions of .NET Core 3.0 SDK"></p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>Starting Visual Studio v16.3, this project can also be generated from the Visual Studio wizard by creating a new project and selecting <strong>Console App (.NET Core)</strong>, which will default to .NET Core 3.0. Previous versions of Visual Studio default to .NET Core 2.1 or lower.</p>
+</div>
 <h2 id="open-the-net-core-project-in-visual-studio-2019">Open the .NET Core project in Visual Studio 2019</h2>
-<p>Open the C# project generated earlier (<code>TestNetCoreWpf.csproj</code>), then build and run it, either by pressing <strong>F5</strong> or selecting in the menu <strong>Debug</strong> &gt; <strong>Start Debugging</strong>. After the project built successfully, an empty main window should appear, with the WPF debug bar at its top. Note that this bar only appears while debugging, not when running the app outside Visual Studio 2019. It can be ignored.</p>
+<p>Open the C# project generated earlier (<code>TestNetCoreConsole.csproj</code>), then build and run it, either by pressing <strong>F5</strong> or selecting in the menu <strong>Debug</strong> &gt; <strong>Start Debugging</strong>. After the project built successfully, a terminal window should appear.</p>
 <p><img src="cs3.png" alt="Empty main window of the newly generated C# project"></p>
-<p><em>Note</em> : The project can alternatively be built on the command line with <code>dotnet build</code>, and launched with <code>dotnet run</code> (which implies building). However because we will be modifying the XAML user interface, Visual Studio 2019 provides a better experience with its integrated visual XAML editor than editing <code>.xaml</code> files from code.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>The project can alternatively be built on the command line with <code>dotnet build</code>, and launched with <code>dotnet run</code> (which implies building). Executing a <code>dotnet run</code> returns immediately, since the empty generated program does not currently output anything.</p>
+</div>
 <h2 id="add-a-dependency-to-mixedreality-webrtc">Add a dependency to MixedReality-WebRTC</h2>
-<p>In order to use the MixedReality-WebRTC project in this new <code>TestNetCoreWpf</code> app, we will add a dependency to its C# NuGet package hosted on <a href="https://www.nuget.org/">nuget.org</a>. This is by far the easiest way, although a locally-built copy of the <code>Microsoft.MixedReality.WebRTC.dll</code> assembly could also be alternatively used (but this is out of the scope of this tutorial).</p>
-<p>There are again multiple ways to add a reference to this NuGet package, in particular via the Visual Studio NuGet package manager for the project, or via the <code>dotnet</code> command line. For simplicity, we show here how to do so the <code>dotnet</code> way, which simply involves typing a single command.</p>
-<pre><code>dotnet add TestNetCoreWpf.csproj package Microsoft.MixedReality.WebRTC
+<p>In order to use the MixedReality-WebRTC project in this new <code>TestNetCoreConsole</code> app, we will add a dependency to its C# NuGet package hosted on <a href="https://www.nuget.org/">nuget.org</a>. This is by far the easiest way, although a locally-built copy of the <code>Microsoft.MixedReality.WebRTC.dll</code> assembly could also be alternatively used (but this is out of the scope of this tutorial).</p>
+<p>There are again multiple ways to add a reference to this NuGet package, in particular via the Visual Studio NuGet package manager for the project, or via the <code>dotnet</code> command line. For simplicity, we show here how to do so the <code>dotnet</code> way, which simply involves typing a single command from within the project folder.</p>
+<pre><code>dotnet add TestNetCoreConsole.csproj package Microsoft.MixedReality.WebRTC
 </code></pre>
-<p>This will download from <a href="https://www.nuget.org/">nuget.org</a> and install the <code>Microsoft.MixedReality.WebRTC.nupkg</code> NuGet package, which contains the same-named assembly, as well as its native dependencies for both Desktop and UWP platforms.</p>
-<p>After that, <code>TestNetCoreWpf.csproj</code> should contain a reference to the package, with a version corresponding to the latest version found on <a href="https://www.nuget.org/">nuget.org</a>.</p>
+<p>This will download from <a href="https://www.nuget.org/">nuget.org</a> and install the <code>Microsoft.MixedReality.WebRTC.nupkg</code> NuGet package, which contains the same-named assembly, as well as its native dependencies (x86 and x64) for the Windows Desktop platform.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p><code>dotnet</code> may complain about being unable to find a stable package, if no stable package has been released yet. Remember that <code>dotnet</code> only install stable packages by default, you can force a specific non-stable version with the <code>--version</code> option.</p>
+</div>
+<p>After that, <code>TestNetCoreConsole.csproj</code> should contain a reference to the package, with a version corresponding to the latest stable version found on <a href="https://www.nuget.org/">nuget.org</a>, or the one you specified with the <code>--version</code> option.</p>
 <pre><code class="lang-xml">&lt;ItemGroup&gt;
   &lt;PackageReference Include=&quot;Microsoft.MixedReality.WebRTC&quot; Version=&quot;...&quot; /&gt;
 &lt;/ItemGroup&gt;
 </code></pre>
 <h2 id="test-the-reference">Test the reference</h2>
-<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a href="cref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync"><code>PeerConnection.GetVideoCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
-<p>In <code>MainWindows.xaml.cs</code>:</p>
+<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync"><code>PeerConnection.GetVideoCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
+<p>Edit the <code>Program.cs</code> file:</p>
 <ol>
-<li><p>At the top of the file, add some <code>using</code> statement to import the <code>Microsoft.MixedReality.WebRTC</code> assembly.</p>
-<pre><code class="lang-cs">using Microsoft.MixedReality.WebRTC;
+<li><p>At the top of the file, add some <code>using</code> statement to import the <code>Microsoft.MixedReality.WebRTC</code> assembly. Also import the <code>System.Threading.Tasks</code> module, as we will use the <code>async</code> / <code>await</code> construct and the <code>Task</code> object.</p>
+<pre><code class="lang-cs">using System.Threading.Tasks;
+using Microsoft.MixedReality.WebRTC;
 </code></pre>
 </li>
-<li><p>In the <code>MainWindow</code> constructor, register a handler for the <code>OnLoaded</code> event, which will be fired once the XAML user interface finished loading. For now it is not required to wait on the UI to call <code>Microsoft.MixedReality.WebRTC</code> methods. But later when accessing the UI to interact with its controls, either to get user inputs or display results, this will be required. So as a best practice we start doing so right away instead of invoking some code directly in the <code>MainWindow</code> constructor.</p>
-<pre><code class="lang-cs">public MainWindow()
-{
-    InitializeComponent();
-    this.Loaded += OnLoaded;
-}
+<li><p>Modify the signature of the <code>Main</code> function to make it asynchronous, by changing its return type from <code>void</code> to <code>Task</code> and adding the <code>async</code> keyword. This allows using the <code>await</code> keyword inside its body.</p>
+<pre><code class="lang-cs">static async Task Main(string[] args)
 </code></pre>
 </li>
-<li><p>Create the event handler <code>OnLoaded()</code> and use it to enumerate the video capture devices. <code>GetVideoCaptureDevicesAsync()</code> returns a <code>Task</code> object which, once the task is completed successfully, will hold a list of video capture devices found on the host device where the app is running.</p>
-<pre><code class="lang-cs">public void OnLoaded(object sender, RoutedEventArgs e)
+<li><p>Change the body of the <code>Main</code> function to call <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync"><code>GetVideoCaptureDevicesAsync()</code></a> and display the list of devices found on the standard output.</p>
+<pre><code class="lang-cs">static async Task Main(string[] args)
 {
-     // Asynchronously retrieve a list of available video capture devices (webcams).
-     PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((enumTask) =&gt;
-         {
-             // Abort if the device enumeration failed
-             if (enumTask.Exception != null)
-             {
-                 throw enumTask.Exception;
-             }
+    try
+    {
+        // Asynchronously retrieve a list of available video capture devices (webcams).
+        var deviceList = await PeerConnection.GetVideoCaptureDevicesAsync();
 
-             // Get the device list and, for example, print them to the debugger console
-             var devices = enumTask.Result;
-             foreach (var device in devices)
-             {
-                 // This message will show up in the Output window of Visual Studio
-                 Debugger.Log(0, &quot;&quot;, $&quot;Found video capture device {device.name} (id: {device.id})&quot;);
-             }
-         }
-     );
+        // For example, print them to the standard output
+        foreach (var device in deviceList)
+        {
+            Console.WriteLine($&quot;Found webcam {device.name} (id: {device.id})&quot;);
+        }
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e.Message);
+    }
 }
 </code></pre>
 </li>
 </ol>
-<p>Launch the app again. The main window is still empty, but the <strong>Output window</strong> of Visual Studio 2019 should show a list of devices. This list depends on the actual host device running the app, but looks something like:</p>
-<pre><code>Found video capture device &lt;some webcam name&gt; (id: &lt;some long ID&gt;)
+<p>Launch the application again. This time the terminal window shows a list of devices. This list depends on the actual host device (computer) where the application is running, but looks something like:</p>
+<pre><code>Found webcam &lt;some webcam name&gt; (id: &lt;some long ID&gt;)
 </code></pre>
-<p>Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see <a href="cref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings)"><code>PeerConnection.AddLocalVideoTrackAsync</code></a>).</p>
+<p>Note that there might be multiple lines if multiple capture devices are available, which is unusual but can happen <em>e.g.</em> if you plug a USB webcam into a laptop which already has an integrated webcam. In general the first capture device listed will be the default one used by WebRTC, although it is possible to explicitly select a device (see <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalVideoTrackAsync_Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_"><code>PeerConnection.AddLocalVideoTrackAsync()</code></a> for more details).</p>
 <hr>
-<p>Next : <a href="helloworld-cs-peerconnection.html">Creating a peer connection</a></p>
+<p>Next : <a href="helloworld-cs-peerconnection-core3.html">Creating a peer connection</a></p>
 </article>
           </div>
           

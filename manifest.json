@@ -162,7 +162,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IceConnectionState.html",
-          "hash": "QzPofS6uuoWKf5UcUkwrQg=="
+          "hash": "KNyqOlKAtUfKc4LUfzOgvA=="
         }
       },
       "is_incremental": false,
@@ -210,7 +210,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate.html",
-          "hash": "dkE0UFV5TRF9qqBmqMXVIw=="
+          "hash": "ldS3mAXB7C80575XkI/XsA=="
         }
       },
       "is_incremental": false,
@@ -222,7 +222,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemovedDelegate.html",
-          "hash": "ZpHv7B6gGO71GAEmoIwaHA=="
+          "hash": "q3lKjJy3dZRaHQHZJRY+1g=="
         }
       },
       "is_incremental": false,
@@ -234,7 +234,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate.html",
-          "hash": "MulRaXd3TraK6ec8yvy0NA=="
+          "hash": "Y2YocXCQ1C/tWSJutjBjcg=="
         }
       },
       "is_incremental": false,
@@ -246,7 +246,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChangedDelegate.html",
-          "hash": "zXIMOIWMC7aWcIg448Ff7A=="
+          "hash": "EdzAJZYfPscHSiZbPKY4xQ=="
         }
       },
       "is_incremental": false,
@@ -258,7 +258,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadyToSendDelegate.html",
-          "hash": "vjpaCz20GLKrWow8gpX0hA=="
+          "hash": "NHsQOwajF1nokEtTROGoXw=="
         }
       },
       "is_incremental": false,
@@ -270,7 +270,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.html",
-          "hash": "sO/P8b8xTC/vtkjgDEDy7g=="
+          "hash": "G7aJ/YNEtRGFfsIKbbMbWw=="
         }
       },
       "is_incremental": false,
@@ -282,7 +282,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html",
-          "hash": "D04yaM9No71VDrG8dug4wQ=="
+          "hash": "hynOtGH4PPJuFnsGG0USHw=="
         }
       },
       "is_incremental": false,
@@ -294,7 +294,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoProfileKind.html",
-          "hash": "UyqzD4OVK1iVT3Z0VMJ/nw=="
+          "hash": "DR6FeNYrzRwNoF67xq9z5Q=="
         }
       },
       "is_incremental": false,
@@ -306,7 +306,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.html",
-          "hash": "/hOz2GsiycswaTFBjR4/Bg=="
+          "hash": "zicDv+2gyrT0Mp47HZtmJA=="
         }
       },
       "is_incremental": false,
@@ -642,7 +642,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html",
-          "hash": "evmsMzT2I6EQ13TT+/2a5Q=="
+          "hash": "lQnK2YVIe0mBMzgCwMQx0Q=="
         }
       },
       "is_incremental": false,
@@ -654,7 +654,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoCaptureFormat.html",
-          "hash": "vyKaRGGQwc05S+3VY/AfjA=="
+          "hash": "9jiFHm9J0DZpNvkeTCyMDw=="
         }
       },
       "is_incremental": false,
@@ -678,7 +678,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "oavHJ//ekuqbwkh0EvIW9Q=="
+          "hash": "YwJMT2mLqk0wPkij1gH44w=="
         }
       },
       "is_incremental": false,
@@ -702,7 +702,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "9OEFXWt3jy/MtZF0O7rqWA=="
+          "hash": "lywKWOjx5aJYwLtphnyNwA=="
         }
       },
       "is_incremental": false,
@@ -806,7 +806,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/cs-signaling.html",
-          "hash": "5yEtkfi4UuOfgiuU8PlM/Q=="
+          "hash": "1DF02qAsH5tY4Kw+BEJ+vw=="
         }
       },
       "is_incremental": false,
@@ -895,7 +895,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/cs.html",
-          "hash": "2w5K3D6acnIdD7loCBs7kQ=="
+          "hash": "AJWw11sF0ahi+SUUl9nkRg=="
         }
       },
       "is_incremental": false,
@@ -935,12 +935,70 @@
       "version": ""
     },
     {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs4.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs5.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs5.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Conceptual",
-      "source_relative_path": "manual/cs/helloworld-cs-peerconnection.md",
+      "source_relative_path": "manual/cs/helloworld-cs-connection-core3.md",
       "output": {
         ".html": {
-          "relative_path": "manual/cs/helloworld-cs-peerconnection.html",
-          "hash": "f2MIAz+adbn0ueAiDGgvbw=="
+          "relative_path": "manual/cs/helloworld-cs-connection-core3.html",
+          "hash": "of1sUYzAzHd9GMFPny204A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-core3.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-core3.html",
+          "hash": "/0C0WgDWPmbl3PKbMDnn6A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-mediatracks-core3.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-mediatracks-core3.html",
+          "hash": "LoRv7rhJzB15Jqd4owZ4qg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-peerconnection-core3.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-peerconnection-core3.html",
+          "hash": "GSrqSMDy6liTAvwWe77WQw=="
         }
       },
       "is_incremental": false,
@@ -952,7 +1010,22 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-setup-core3.html",
-          "hash": "O4hp2Rg2R8Uy/WuGERiX3Q=="
+          "hash": "7Wnj3QwxH7sRqbMyf6vHGw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-setup-uwp.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-setup-uwp.html",
+          "hash": "LAkAyKfQ4/kM2exnJheuvw=="
         }
       },
       "is_incremental": false,
@@ -960,11 +1033,11 @@
     },
     {
       "type": "Conceptual",
-      "source_relative_path": "manual/cs/helloworld-cs-setup-uwp.md",
+      "source_relative_path": "manual/cs/helloworld-cs-signaling-core3.md",
       "output": {
         ".html": {
-          "relative_path": "manual/cs/helloworld-cs-setup-uwp.html",
-          "hash": "HYdp8k75B0MqEo5XlN/n5Q=="
+          "relative_path": "manual/cs/helloworld-cs-signaling-core3.html",
+          "hash": "MAxAJO+k/hgwnY5ZjH6foA=="
         }
       },
       "is_incremental": false,
@@ -988,19 +1061,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/gettingstarted.html",
-          "hash": "IbLdopvLrcgUs9TbtIi4pQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/helloworld-cs.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/helloworld-cs.html",
-          "hash": "TngTE8GsxugyISGtq1NkDQ=="
+          "hash": "IA26ls5v2l3kVB4C8Uovcw=="
         }
       },
       "is_incremental": false,
@@ -1343,7 +1404,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/toc.html",
-          "hash": "tVdEi8BrxAC0sRezmQWqkA=="
+          "hash": "UeUDzOslkr/WIG1Il/7xsg=="
         }
       },
       "is_incremental": false,
@@ -1613,19 +1674,6 @@
         "full_build_reason_code": "ForceRebuild"
       },
       "processors": {
-        "ResourceDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build",
-          "total_file_count": 0,
-          "skipped_file_count": 0
-        },
-        "ConceptualDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 34,
-          "skipped_file_count": 0
-        },
         "TocDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
@@ -1633,10 +1681,23 @@
           "total_file_count": 0,
           "skipped_file_count": 0
         },
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 37,
+          "skipped_file_count": 0
+        },
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
           "total_file_count": 56,
+          "skipped_file_count": 0
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
           "skipped_file_count": 0
         }
       }

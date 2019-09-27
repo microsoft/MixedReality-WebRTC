@@ -83,8 +83,7 @@
   
   <h1 id="Microsoft_MixedReality_WebRTC_IceConnectionState" data-uid="Microsoft.MixedReality.WebRTC.IceConnectionState" class="text-break">Enum IceConnectionState
   </h1>
-  <div class="markdown level0 summary"><p>ICE connection state. This is currently a mix of the RTPIceGatheringState
-and the RTPPeerConnectionState from the WebRTC 1.0 standard.</p>
+  <div class="markdown level0 summary"><p>State of an ICE connection.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
@@ -93,6 +92,12 @@ and the RTPPeerConnectionState from the WebRTC 1.0 standard.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public enum IceConnectionState : int</code></pre>
   </div>
+  <h5 id="Microsoft_MixedReality_WebRTC_IceConnectionState_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Due to the underlying implementation, this is currently a mix of the
+<a href="https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum">RTPIceGatheringState</a>
+and the <a href="https://www.w3.org/TR/webrtc/#rtcpeerconnectionstate-enum">RTPPeerConnectionState</a>
+from the WebRTC 1.0 standard.</p>
+</div>
   <h3 id="fields">Fields
   </h3>
   <table class="table table-bordered table-striped table-condensed">
@@ -115,7 +120,7 @@ and the RTPPeerConnectionState from the WebRTC 1.0 standard.</p>
       </tr>
       <tr>
         <td id="Microsoft_MixedReality_WebRTC_IceConnectionState_Completed">Completed</td>
-        <td><p>ICE connection finisehd establishing.</p>
+        <td><p>ICE connection finished establishing.</p>
 </td>
       </tr>
       <tr>
@@ -156,7 +161,7 @@ and the RTPPeerConnectionState from the WebRTC 1.0 standard.</p>
                     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_IceConnectionState.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.IceConnectionState%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L163" class="contribution-link">View Source</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L168" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
