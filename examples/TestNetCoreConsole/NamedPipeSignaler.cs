@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.IO.Pipes;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC;
 
@@ -23,6 +25,8 @@ namespace NamedPipeSignaler
         private string _serverName;
         private StreamWriter _sendStream = null;
         private StreamReader _recvStream = null;
+
+        private readonly BlockingCollection<string> _outgoingMessages = new BlockingCollection<string>(new ConcurrentQueue<string>());
 
         public NamedPipeSignaler(PeerConnection peerConnection, string pipeName, string serverName = ".")
         {
@@ -76,10 +80,25 @@ namespace NamedPipeSignaler
 
             // Start signaling
             _sendStream = new StreamWriter(_clientPipe);
+            _sendStream.AutoFlush = true;
             _recvStream = new StreamReader(_serverPipe);
             PeerConnection.LocalSdpReadytoSend += PeerConnection_LocalSdpReadytoSend;
             PeerConnection.IceCandidateReadytoSend += PeerConnection_IceCandidateReadytoSend;
-            _ = Task.Run(ProcessIncomingMessages);
+            _ = Task.Factory.StartNew(ProcessIncomingMessages, TaskCreationOptions.LongRunning);
+            _ = Task.Factory.StartNew(WriteOutgoingMessages, TaskCreationOptions.LongRunning);
+        }
+
+        public void Stop()
+        {
+            _recvStream.Close();
+            _outgoingMessages.CompleteAdding();
+            _outgoingMessages.Dispose();
+            PeerConnection.LocalSdpReadytoSend -= PeerConnection_LocalSdpReadytoSend;
+            PeerConnection.IceCandidateReadytoSend -= PeerConnection_IceCandidateReadytoSend;
+            _sendStream.Dispose();
+            _recvStream.Dispose();
+            _clientPipe.Dispose();
+            _serverPipe.Dispose();
         }
 
         private void ProcessIncomingMessages()
@@ -87,7 +106,7 @@ namespace NamedPipeSignaler
             string line;
             while ((line = _recvStream.ReadLine()) != null)
             {
-                Console.WriteLine($"[remote] {line}");
+                Console.WriteLine($"[<-] {line}");
                 if (line == "ice")
                 {
                     string sdpMid = _recvStream.ReadLine();
@@ -102,7 +121,7 @@ namespace NamedPipeSignaler
                         candidate += line;
                         candidate += "\n";
                     }
-                    Console.WriteLine($"[remote] ICE candidate: {sdpMid} {sdpMlineindex} {candidate}");
+                    Console.WriteLine($"[<-] ICE candidate: {sdpMid} {sdpMlineindex} {candidate}");
                     IceCandidateReceived?.Invoke(sdpMid, sdpMlineindex, candidate);
                 }
                 else if (line == "sdp")
@@ -118,16 +137,33 @@ namespace NamedPipeSignaler
                         sdp += line;
                         sdp += "\n";
                     }
-                    Console.WriteLine($"[remote] SDP message: {type} {sdp}");
+                    Console.WriteLine($"[<-] SDP message: {type} {sdp}");
                     SdpMessageReceived?.Invoke(type, sdp);
                 }
             }
             Console.WriteLine("Finished processing messages");
         }
 
+        public void WriteOutgoingMessages()
+        {
+            foreach (var msg in _outgoingMessages.GetConsumingEnumerable())
+            {
+                _sendStream.Write(msg);
+            }
+        }
+
         private void SendMessage(string msg)
         {
-            _sendStream.Write(msg);
+            try
+            {
+                Console.WriteLine($"[->] {msg}");
+                _outgoingMessages.Add(msg);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception: {e.Message}");
+                Environment.Exit(-1);
+            }
         }
 
         private void PeerConnection_IceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)

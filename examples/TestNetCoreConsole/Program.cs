@@ -20,7 +20,7 @@ namespace TestNetCoreConsole
                 // For example, print them to the standard output
                 foreach (var device in deviceList)
                 {
-                    Console.WriteLine($"Found webcam {device.name} (id: {device.id})");
+                   Console.WriteLine($"Found webcam {device.name} (id: {device.id})");
                 }
 
                 // Create a new peer connection automatically disposed at the end of the program
@@ -60,7 +60,7 @@ namespace TestNetCoreConsole
                         pc.CreateAnswer();
                     }
                 };
-                signaler.IceCandidateReceived += (string candidate, int sdpMlineindex, string sdpMid) => {
+                signaler.IceCandidateReceived += (string sdpMid, int sdpMlineindex, string candidate) => {
                     pc.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
                 };
                 await signaler.StartAsync();
@@ -68,6 +68,14 @@ namespace TestNetCoreConsole
                 // Start peer connection
                 pc.Connected += () => { Console.WriteLine("PeerConnection: connected."); };
                 pc.IceStateChanged += (IceConnectionState newState) => { Console.WriteLine($"ICE state: {newState}"); };
+                int numFrames = 0;
+                pc.I420RemoteVideoFrameReady += (I420AVideoFrame frame) => {
+                    ++numFrames;
+                    if (numFrames % 60 == 0)
+                    {
+                        Console.WriteLine($"Received video frames: {numFrames}");
+                    }
+                };
                 if (signaler.IsClient)
                 {
                     Console.WriteLine("Connecting to remote peer...");
@@ -80,11 +88,15 @@ namespace TestNetCoreConsole
 
                 Console.WriteLine("Press a key to stop recording...");
                 Console.ReadKey(true);
+
+                signaler.Stop();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
+
+            Console.WriteLine("Program termined.");
         }
     }
 }
