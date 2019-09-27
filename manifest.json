@@ -957,12 +957,34 @@
       "version": ""
     },
     {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs6.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs6.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs7.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs7.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-connection-core3.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-connection-core3.html",
-          "hash": "of1sUYzAzHd9GMFPny204A=="
+          "hash": "0QHBTTWHQcw9P+/uuhQXeg=="
         }
       },
       "is_incremental": false,
@@ -1681,16 +1703,16 @@
           "total_file_count": 0,
           "skipped_file_count": 0
         },
-        "ConceptualDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 37,
-          "skipped_file_count": 0
-        },
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
           "total_file_count": 56,
+          "skipped_file_count": 0
+        },
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 37,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
