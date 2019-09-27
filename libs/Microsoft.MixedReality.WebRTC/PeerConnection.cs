@@ -155,9 +155,14 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
-    /// ICE connection state. This is currently a mix of the RTPIceGatheringState
-    /// and the RTPPeerConnectionState from the WebRTC 1.0 standard.
+    /// State of an ICE connection.
     /// </summary>
+    /// <remarks>
+    /// Due to the underlying implementation, this is currently a mix of the
+    /// <see href="https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum">RTPIceGatheringState</see>
+    /// and the <see href="https://www.w3.org/TR/webrtc/#rtcpeerconnectionstate-enum">RTPPeerConnectionState</see>
+    /// from the WebRTC 1.0 standard.
+    /// </remarks>
     /// <seealso href="https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum"/>
     /// <seealso href="https://www.w3.org/TR/webrtc/#rtcpeerconnectionstate-enum"/>
     public enum IceConnectionState : int
@@ -178,7 +183,7 @@ namespace Microsoft.MixedReality.WebRTC
         Connected = 2,
 
         /// <summary>
-        /// ICE connection finisehd establishing.
+        /// ICE connection finished establishing.
         /// </summary>
         Completed = 3,
 
