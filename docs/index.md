@@ -14,10 +14,13 @@ _Note_ : **The documentation writing is in progress**. Some links are not active
   - [Download](manual/download.md)
   - [Installation](manual/installation.md)
   - [Building from sources](manual/building.md)
-  - [C# tutorial](manual/helloworld-cs.md)
+  - [C# tutorial (Desktop)](manual/cs/helloworld-cs-core3.md)
+  - C# tutorial (UWP)
   - [Unity tutorial](manual/helloworld-unity.md)
 - C# library (under writing)
   - [Feature Overview](manual/cs/cs.md)
+  - [Tutorial (Desktop)](manual/cs/helloworld-cs-core3.md)
+  - Tutorial (UWP)
   - [Peer Connection](manual/cs/cs-peerconnection.md)
   - [Signaling](manual/cs/cs-signaling.md)
   - Audio
@@ -42,13 +45,15 @@ _Note_ : **The documentation writing is in progress**. Some links are not active
 - Advanced topics
   - [Building the Core dependencies from sources](manual/building-core.md)
 
-## API documentation
+## API reference
 
 1. [C# library](xref:Microsoft.MixedReality.WebRTC)
    1. [PeerConnection](xref:Microsoft.MixedReality.WebRTC.PeerConnection)
       - The PeerConnection object is the API entry point to establish a remote connection.
-   4. [VideoFrameQueue\<T\>](xref:Microsoft.MixedReality.WebRTC.VideoFrameQueue`1)
+   2. [VideoFrameQueue\<T\>](xref:Microsoft.MixedReality.WebRTC.VideoFrameQueue`1)
       - The video frame queue bridges a video source and a video sink.
+   3. [DataChannel](xref:Microsoft.MixedReality.WebRTC.DataChannel)
+      - Encapsulates a single data channel for transmitting raw blobs of bytes.
 2. [Unity integration](xref:Microsoft.MixedReality.WebRTC.Unity)
    1. [PeerConnection](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection)
       - The PeerConnection component builds on the same-named library class to expose a remote peer connection.
