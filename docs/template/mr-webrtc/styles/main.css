@@ -76,7 +76,7 @@ pre {
 /** Color theme for API **/
 
 /** These are not important, tune down **/
-.decalaration, .fieldValue, .parameters, .returns {
+.decalaration, .fieldValue, .parameters, .returns, .eventType {
   color: #a2a2a2;
 }
 
