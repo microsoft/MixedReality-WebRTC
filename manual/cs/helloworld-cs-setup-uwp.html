@@ -109,15 +109,17 @@
 <p>In order to use the MixedReality-WebRTC project in this new <code>App1</code> application, we will add a dependency to its C# NuGet package hosted on <a href="https://www.nuget.org/">nuget.org</a>. This is by far the easiest way, although a locally-built copy of the <code>Microsoft.MixedReality.WebRTC.dll</code> assembly could also be alternatively used (but this is out of the scope of this tutorial).</p>
 <p>In the <strong>Solution Explorer</strong>, right-click on the <strong>App1 (Universal Windows)</strong> C# project and select the <strong>Manage NuGet Packages...</strong> menu entry. This opens a new tab <strong>NuGet: App1</strong> which allows configuring the NuGet dependencies for this project alone. The <strong>Installed</strong> tab contains the list of NuGet dependencies already installed, and should contain the <strong>Microsoft.NETCore.UniversalWindowsPlatform</strong> which was already installed by Visual Studio when creating the project.</p>
 <p><img src="cs-uwp5.png" alt="Installed NuGet packages"></p>
-<p>Select the <strong>Browse</strong> tab and, after making sure that the <strong>Package source</strong> is set to <strong>nuget.org</strong>, select the <strong>Microsoft.MixedReality.WebRTC</strong> NuGet package and click <strong>Install</strong>.</p>
+<p>Select the <strong>Browse</strong> tab and, after making sure that the <strong>Package source</strong> is set to <strong>nuget.org</strong>, select the <strong>Microsoft.MixedReality.WebRTC.UWP</strong> NuGet package and click <strong>Install</strong>.</p>
 <p><img src="cs-uwp6.png" alt="Install the MixedReality-WebRTC NuGet package"></p>
 <p><em>Note</em>: If you cannot find the package, make sure that <strong>Include prerelease</strong> is checked, which disables filtering out preview packages (those packages with a version containing a suffix like &quot;-preview&quot; after the X.Y.Z version number).</p>
-<p>This will download from <a href="https://www.nuget.org/">nuget.org</a> and install the <code>Microsoft.MixedReality.WebRTC.nupkg</code> NuGet package, which contains the same-named assembly, as well as its native dependencies for both Desktop and UWP platforms.</p>
+<p>This will download from <a href="https://www.nuget.org/">nuget.org</a> and install the <code>Microsoft.MixedReality.WebRTC.UWP.nupkg</code> NuGet package, which contains the <code>Microsoft.MixedReality.WebRTC.dll</code> assembly, as well as its native dependencies (x86, x64, ARM) for the UWP platform.</p>
 <p>After that, the <code>App1</code> project should contain a reference to the package.</p>
 <p><img src="cs-uwp7.png" alt="App1 project references"></p>
 <h2 id="test-the-reference">Test the reference</h2>
 <p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a href="cref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync"><code>PeerConnection.GetVideoCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
-<p>In <code>MainPage.xaml.cs</code>:</p>
+<p>First, because this sample application is a UWP application, it needs to declare some capabilities to access the microphone and webcam on the host device. In the <strong>Solution Explorer</strong> of Visual Studio, double-click on the <code>Package.appxmanifest</code> to open the AppX manifest of the app and select the <strong>Capabilities</strong> tab. Check <strong>Microphone</strong> and <strong>Webcam</strong>, and confirm that <strong>Internet (Client)</strong> is already checked.</p>
+<p><img src="cs-uwp8.png" alt="Configure the UWP app capabilities"></p>
+<p>Next, edit <code>MainPage.xaml.cs</code>:</p>
 <ol>
 <li><p>At the top of the file, add some <code>using</code> statement to import the <code>Microsoft.MixedReality.WebRTC</code> assembly. Also import the <code>System.Diagnostics</code> module, as we will be using the <code>Debugger</code> class to print debug information to the Visual Studio output window.</p>
 <pre><code class="lang-cs">using Microsoft.MixedReality.WebRTC;
@@ -132,34 +134,37 @@ using System.Diagnostics;
 }
 </code></pre>
 </li>
-<li><p>Create the event handler <code>OnLoaded()</code> and use it to enumerate the video capture devices. <code>GetVideoCaptureDevicesAsync()</code> returns a <code>Task</code> object which, once the task is completed successfully, will hold a list of video capture devices found on the host device where the app is running.</p>
+<li><p>Create the event handler <code>OnLoaded()</code> and use it to request access from the user to the microphone and camera, and enumerate the video capture devices. The <code>MediaCapture.InitializeAsync()</code> call will prompt the user with a dialog to authorize access to the microphone and webcam. The latter be must authorized before calling <code>PeerConnection.GetVideoCaptureDevicesAsync()</code>, while the former will be needed in the following of the tutorial for calls like <code>PeerConnection.AddLocalAudioTrackAsync()</code>.</p>
 <pre><code class="lang-cs">private void OnLoaded(object sender, RoutedEventArgs e)
 {
-    // Asynchronously retrieve a list of available video capture devices (webcams).
-    PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((enumTask) =&gt; {
-        // Abort if the device enumeration failed
-        if (enumTask.Exception != null)
-        {
-            throw enumTask.Exception;
-        }
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // Request access to microphone and camera
+        var settings = new MediaCaptureInitializationSettings();
+        settings.StreamingCaptureMode = StreamingCaptureMode.AudioAndVideo;
+        var capture = new MediaCapture();
+        await capture.InitializeAsync(settings);
+
+        // Retrieve a list of available video capture devices (webcams).
+        List&lt;VideoCaptureDevice&gt; deviceList = await PeerConnection.GetVideoCaptureDevicesAsync(); 
+
         // Get the device list and, for example, print them to the debugger console
-        var devices = enumTask.Result;
-        foreach (var device in devices)
+        foreach (var device in deviceList)
         {
             // This message will show up in the Output window of Visual Studio
-            Debugger.Log(0, &quot;&quot;, $&quot;Found video capture device {device.name} (id: {device.id})&quot;);
+            Debugger.Log(0, &quot;&quot;, $&quot;Webcam {device.name} (id: {device.id})\n&quot;);
         }
-    });
+    }
 }
 </code></pre>
 </li>
 </ol>
 <p>Launch the app again. The main window is still empty, but the <strong>Output window</strong> of Visual Studio 2019 (<strong>View</strong> &gt; <strong>Output</strong>, or <strong>Alt + 2</strong>) should show a list of devices. This list depends on the actual host device running the app, but looks something like:</p>
-<pre><code>Found video capture device &lt;some webcam name&gt; (id: &lt;some long ID&gt;)
+<pre><code>Webcam &lt;some device name&gt; (id: &lt;some device ID&gt;)
 </code></pre>
 <p>Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see <a href="cref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings)"><code>PeerConnection.AddLocalVideoTrackAsync</code></a>).</p>
 <hr>
-<p>Next : <a href="helloworld-cs-peerconnection.md">Creating a peer connection</a></p>
+<p>Next : <a href="helloworld-cs-peerconnection-uwp.md">Creating a peer connection</a></p>
 </article>
           </div>
           

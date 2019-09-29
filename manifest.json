@@ -890,6 +890,17 @@
       "version": ""
     },
     {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp8.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp8.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Conceptual",
       "source_relative_path": "manual/cs/cs.md",
       "output": {
@@ -1047,7 +1058,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-setup-uwp.html",
-          "hash": "LAkAyKfQ4/kM2exnJheuvw=="
+          "hash": "k0e20ROfeDHI4SXSUEX2Ag=="
         }
       },
       "is_incremental": false,
@@ -1060,6 +1071,18 @@
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-signaling-core3.html",
           "hash": "MAxAJO+k/hgwnY5ZjH6foA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-uwp.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-uwp.html",
+          "hash": "eS6wWY5m1HUHAqCw6cN7LA=="
         }
       },
       "is_incremental": false,
@@ -1703,16 +1726,10 @@
           "total_file_count": 0,
           "skipped_file_count": 0
         },
-        "ManagedReferenceDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 56,
-          "skipped_file_count": 0
-        },
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 37,
+          "total_file_count": 38,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
@@ -1720,6 +1737,12 @@
           "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build",
           "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 56,
           "skipped_file_count": 0
         }
       }
