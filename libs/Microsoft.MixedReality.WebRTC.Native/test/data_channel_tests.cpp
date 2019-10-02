@@ -86,7 +86,7 @@ TEST(DataChannel, InBand) {
                                pc1.handle(), sdpMid, sdpMlineindex, candidate));
   });
 
-  // Add dummt out-of-band data channel to force SCTP negotiating, otherwise
+  // Add dummy out-of-band data channel to force SCTP negotiating, otherwise
   // further data channel opening after connecting will fail.
   {
     mrsDataChannelConfig data_config{};
@@ -174,3 +174,64 @@ TEST(DataChannel, InBand) {
     sdp2_cb.is_registered_ = false;
   }
 }
+
+// NOTE - This test is flaky, relies on the send loop being faster than what the local
+//        network can send, without setting any explicit congestion control etc. so is
+//        prone to false errors. This is still useful for local testing.
+//
+//TEST(DataChannel, Buffering) {
+//  // Create PC
+//  LocalPeerPairRaii pair;
+//  ASSERT_NE(nullptr, pair.pc1());
+//  ASSERT_NE(nullptr, pair.pc2());
+//
+//  // In order to allow creating interop wrappers from native code, register the
+//  // necessary interop callbacks.
+//  mrsPeerConnectionInteropCallbacks interop{};
+//  interop.data_channel_create_object = &FakeIterop_DataChannelCreate;
+//  ASSERT_EQ(MRS_SUCCESS,
+//            mrsPeerConnectionRegisterInteropCallbacks(pair.pc1(), &interop));
+//  ASSERT_EQ(MRS_SUCCESS,
+//            mrsPeerConnectionRegisterInteropCallbacks(pair.pc2(), &interop));
+//
+//  // Add dummy out-of-band data channel
+//  DataChannelHandle handle1, handle2;
+//  uint64_t peak = 0;
+//  {
+//    mrsDataChannelConfig data_config{};
+//    data_config.id = 25;  // must be >= 0 for negotiated (out-of-band) channel
+//    data_config.label = "out_of_band";
+//    data_config.flags = mrsDataChannelConfigFlags::kOrdered |
+//                        mrsDataChannelConfigFlags::kReliable;
+//    mrsDataChannelCallbacks callbacks{};
+//	callbacks.buffering_user_data = &peak;
+//    callbacks.buffering_callback = [](void* user_data, uint64_t previous,
+//                                      uint64_t current, uint64_t limit) {
+//      ASSERT_LT(previous, limit);
+//      ASSERT_LT(current, limit);
+//      uint64_t* ppeak = (uint64_t*)user_data;
+//      *ppeak = std::max(*ppeak, current);
+//    };
+//
+//    mrsDataChannelInteropHandle interopHandle = kFakeInteropDataChannelHandle;
+//    ASSERT_EQ(MRS_SUCCESS,
+//              mrsPeerConnectionAddDataChannel(
+//                  pair.pc1(), interopHandle, data_config, callbacks, &handle1));
+//    ASSERT_EQ(MRS_SUCCESS,
+//              mrsPeerConnectionAddDataChannel(
+//                  pair.pc2(), interopHandle, data_config, callbacks, &handle2));
+//  }
+//  auto data1 = (Microsoft::MixedReality::WebRTC::DataChannel*)handle1;
+//  auto data2 = (Microsoft::MixedReality::WebRTC::DataChannel*)handle2;
+//
+//  pair.ConnectAndWait();
+//
+//  // Send data too fast, to trigger some buffering
+//  char buffer[4096];
+//  for (int i = 0; i < 10000; ++i)  // current impl has 16 MB buffer
+//  {
+//    ASSERT_TRUE(data1->Send(buffer, 4096));
+//  }
+//
+//  ASSERT_GT(peak, 0);
+//}

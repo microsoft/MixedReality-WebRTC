@@ -51,6 +51,14 @@ namespace Microsoft.MixedReality.WebRTC
             Closed = 3
         }
 
+        /// <summary>
+        /// Delegate for the <see cref="BufferingChanged"/> event.
+        /// </summary>
+        /// <param name="previous">Previous buffering size, in bytes.</param>
+        /// <param name="current">New buffering size, in bytes.</param>
+        /// <param name="limit">Maximum buffering size, in bytes.</param>
+        public delegate void BufferingChangedDelegate(ulong previous, ulong current, ulong limit);
+
         /// <value>The <see cref="PeerConnection"/> object this data channel was created from.</value>
         public PeerConnection PeerConnection { get; }
 
@@ -92,6 +100,16 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <seealso cref="State"/>
         public event Action StateChanged;
+
+        /// <summary>
+        /// Event fired when the data channel buffering changes. Monitor this to ensure calls to
+        /// <see cref="SendMessage(byte[])"/> do not fail. Internally the data channel contains
+        /// a buffer of messages to send that could not be sent immediately, for example due to
+        /// congestion control. Once this buffer is full, any further call to <see cref="SendMessage(byte[])"/>
+        /// will fail until some mesages are processed and removed to make space.
+        /// </summary>
+        /// <seealso cref="SendMessage(byte[])"/>.
+        public event BufferingChangedDelegate BufferingChanged;
 
         /// <summary>
         /// Event fires when a message is received through the data channel.
@@ -145,15 +163,20 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Send a message through the data channel.
+        /// Send a message through the data channel. If the message cannot be sent, for example because of congestion
+        /// control, it is buffered internally. If this buffer gets full, an exception is thrown and this call is aborted.
+        /// The internal buffering is monitored via the <see cref="BufferingChanged"/> event.
         /// </summary>
         /// <param name="message">The message to send to the remote peer.</param>
-        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
+        /// <exception xref="InvalidOperationException">The native data channel is not initialized.</exception>
+        /// <exception xref="Exception">The internal buffer is full.</exception>
         /// <seealso cref="PeerConnection.InitializeAsync"/>
         /// <seealso cref="PeerConnection.Initialized"/>
+        /// <seealso cref="BufferingChanged"/>
         public void SendMessage(byte[] message)
         {
-            DataChannelInterop.DataChannel_SendMessage(_interopHandle, message, (ulong)message.LongLength);
+            uint res = DataChannelInterop.DataChannel_SendMessage(_interopHandle, message, (ulong)message.LongLength);
+            Utils.ThrowOnErrorCode(res);
         }
 
         internal void OnMessageReceived(IntPtr data, ulong size)
@@ -180,7 +203,7 @@ namespace Microsoft.MixedReality.WebRTC
 
         internal void OnBufferingChanged(ulong previous, ulong current, ulong limit)
         {
-
+            BufferingChanged?.Invoke(previous, current, limit);
         }
 
         internal void OnStateChanged(int state, int id)
