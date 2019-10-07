@@ -17,13 +17,6 @@
         <!-- UWP static library wrapper Org.WebRtc.WrapperGlue -->
         <file src="Build\Output\Org.WebRtc.WrapperGlue\Release\x64\Org.WebRtc.WrapperGlue.lib" target="lib\native\lib\uap10.0\x64\release" />
 
-        <!-- UWP WinRT wrapper Org.WebRtc -->
-        <!-- WinMd and IntelliSense -->
-        <file src="Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.winmd" target="lib\uap10.0" />
-        <file src="Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.xml" target="lib\uap10.0" />
-        <!-- DLLs and resources -->
-        <file src="Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.dll" target="runtimes\win10-x64\native" />
-        <file src="Build\Output\Org.WebRtc\Release\x64\Org.WebRtc.pri" target="runtimes\win10-x64\native" />
         <!-- .props -->
         <file src="libs\Microsoft.MixedReality.WebRTC.Native.Core\Microsoft.MixedReality.WebRTC.Native.Core.UWP.x64.props" target="build\native" />
     </files>
