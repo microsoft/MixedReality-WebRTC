@@ -169,14 +169,14 @@ namespace TestAppUwp
         public ObservableCollection<VideoCaptureFormat> VideoCaptureFormats { get; private set; }
             = new ObservableCollection<VideoCaptureFormat>();
 
-        public VideoCaptureFormat SelectedVideoCaptureFormat
+        public VideoCaptureFormat? SelectedVideoCaptureFormat
         {
             get
             {
                 var profileIndex = VideoCaptureFormatList.SelectedIndex;
                 if ((profileIndex < 0) || (profileIndex >= VideoCaptureFormats.Count))
                 {
-                    return default(VideoCaptureFormat);
+                    return null;
                 }
                 return VideoCaptureFormats[profileIndex];
             }
@@ -219,9 +219,6 @@ namespace TestAppUwp
         public MainPage()
         {
             this.InitializeComponent();
-
-            // TEMP - For debugging
-            //remotePeerUidTextBox.Text = "cc937a60143e2a5d4dbb2b2003b3f0177a49d337";
 
             // HACK - For debugging: deterministic 2-instance value paired with each other
             var idx = HACK_GetVideoDeviceIndex();
@@ -321,7 +318,7 @@ namespace TestAppUwp
             }
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private async void OnLoaded(object sender, RoutedEventArgs e)
         {
             LogMessage("Initializing the WebRTC native plugin...");
 
@@ -336,63 +333,9 @@ namespace TestAppUwp
             KnownVideoProfileKindComboBox.SelectionChanged += KnownVideoProfileKindComboBox_SelectionChanged;
             VideoProfileComboBox.SelectionChanged += VideoProfileComboBox_SelectionChanged;
 
-            // Populate the list of video capture devices (webcams).
-            // On UWP this uses internally the API:
-            //   Devices.Enumeration.DeviceInformation.FindAllAsync(VideoCapture)
-            // Note that there's no API to pass a given device to WebRTC,
-            // so there's no way to monitor and update that list if a device
-            // gets plugged or unplugged. Even using DeviceInformation.CreateWatcher()
-            // would yield some devices that might become unavailable by the time
-            // WebRTC internally opens the video capture device.
-            // This is more for demo purpose here because using the UWP API is nicer.
-            {
-                // Use a local list accessible from a background thread
-                PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((prevTask) => {
-                    if (prevTask.Exception != null)
-                    {
-                        throw prevTask.Exception;
-                    }
-
-                    var devices = prevTask.Result;
-
-                    List<VideoCaptureDeviceInfo> vcds = new List<VideoCaptureDeviceInfo>(devices.Count);
-                    foreach (var device in devices)
-                    {
-                        vcds.Add(new VideoCaptureDeviceInfo()
-                        {
-                            Id = device.id,
-                            DisplayName = device.name,
-                            Symbol = Symbol.Video
-                        });
-                    }
-
-                    // Assign on main UI thread because of XAML binding; otherwise it fails.
-                    RunOnMainThread(() => {
-                        VideoCaptureDevices.Clear();
-                        foreach (var vcd in vcds)
-                        {
-                            VideoCaptureDevices.Add(vcd);
-                            LogMessage($"VCD id={vcd.Id} name={vcd.DisplayName}");
-                        }
-
-                        // Select first entry by default
-                        if (vcds.Count > 0)
-                        {
-                            VideoCaptureDeviceList.SelectedIndex = 0;
-                        }
-                    });
-                });
-            }
-
             //localVideo.TransportControls = localVideoControls;
 
             PluginInitialized = false;
-
-            // Assign STUN server(s) before calling InitializeAsync()
-            var config = new PeerConnectionConfiguration();
-            config.IceServers.Add(new IceServer { Urls = { "stun:" + stunServer.Text } });
-            config.SdpSemantic = (sdpSemanticUnifiedPlan.IsChecked.GetValueOrDefault(true)
-                ? SdpSemantic.UnifiedPlan : SdpSemantic.PlanB);
 
             // Ensure that the UWP app was authorized to capture audio (cap:microphone)
             // and video (cap:webcam), otherwise the native plugin will fail.
@@ -406,47 +349,103 @@ namespace TestAppUwp
                     StreamingCaptureMode = StreamingCaptureMode.AudioAndVideo,
                     PhotoCaptureSource = PhotoCaptureSource.VideoPreview
                 };
-                var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                mediaAccessRequester.InitializeAsync(mediaSettings).AsTask()
-                    .ContinueWith((accessTask) => {
-                        if (accessTask.Exception != null)
-                        {
-                            LogMessage($"Access to A/V denied, check app permissions: {accessTask.Exception.Message}");
-                            throw accessTask.Exception;
-                        }
-                        _peerConnection.InitializeAsync(config).ContinueWith((initTask) => {
-                            if (initTask.Exception != null)
-                            {
-                                LogMessage($"WebRTC native plugin init failed: {initTask.Exception.Message}");
-                                throw initTask.Exception;
-                            }
-                            OnPluginPostInit();
-                        }, uiThreadScheduler); // run task on caller (UI) thread
-                    });
+                await mediaAccessRequester.InitializeAsync(mediaSettings);
             }
-            //< TODO - This below shouldn't do anything since exceptions are caught and stored inside Task.Exception...
             catch (UnauthorizedAccessException uae)
             {
-                LogMessage("Access to A/V denied: " + uae.Message);
+                LogMessage("Access to A/V denied, check app permissions:: " + uae.Message);
+                return;
             }
             catch (Exception ex)
             {
-                if (ex.InnerException is UnauthorizedAccessException uae)
+                LogMessage("Failed to initialize A/V with unknown exception: " + ex.Message);
+                return;
+            }
+
+            // Populate the list of video capture devices (webcams).
+            // On UWP this uses internally the API:
+            //   Devices.Enumeration.DeviceInformation.FindAllAsync(VideoCapture)
+            // Note that there's no API to pass a given device to WebRTC,
+            // so there's no way to monitor and update that list if a device
+            // gets plugged or unplugged. Even using DeviceInformation.CreateWatcher()
+            // would yield some devices that might become unavailable by the time
+            // WebRTC internally opens the video capture device.
+            // This is more for demo purpose here because using the UWP API is nicer.
+            {
+                var devices = await PeerConnection.GetVideoCaptureDevicesAsync();
+                VideoCaptureDevices.Clear();
+                List<VideoCaptureDeviceInfo> vcds = new List<VideoCaptureDeviceInfo>(devices.Count);
+                foreach (var device in devices)
                 {
-                    LogMessage("Access to A/V denied: " + uae.Message);
+                    LogMessage($"VCD id={device.id} name={device.name}");
+                    VideoCaptureDevices.Add(new VideoCaptureDeviceInfo()
+                    {
+                        Id = device.id,
+                        DisplayName = device.name,
+                        Symbol = Symbol.Video
+                    });
                 }
-                else
+
+                // Select first entry by default
+                if (VideoCaptureDevices.Count > 0)
                 {
-                    LogMessage("Failed to initialize A/V with unknown exception: " + ex.Message);
+                    VideoCaptureDeviceList.SelectedIndex = 0;
                 }
             }
+
+            // Initialize the native peer connection object
+            try
+            {
+                var config = new PeerConnectionConfiguration();
+                config.IceServers.Add(new IceServer { Urls = { "stun:" + stunServer.Text } });
+                config.SdpSemantic = (sdpSemanticUnifiedPlan.IsChecked.GetValueOrDefault(true)
+                    ? SdpSemantic.UnifiedPlan : SdpSemantic.PlanB);
+                await _peerConnection.InitializeAsync(config);
+            }
+            catch(Exception ex)
+            {
+                LogMessage($"WebRTC native plugin init failed: {ex.Message}");
+                return;
+            }
+
+            PluginInitialized = true;
+            LogMessage("WebRTC native plugin initialized.");
+
+            // It is CRUCIAL to add any data channel BEFORE the SDP offer is sent, if data channels are
+            // to be used at all. Otherwise the SCTP will not be negotiated, and then all channels will
+            // stay forever in the kConnecting state.
+            // https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
+            var newDataChannel = await _peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true);
+            chatInputBox.IsEnabled = true;
+            chatSendButton.IsEnabled = true;
+
+            createOfferButton.IsEnabled = true;
+
+            startLocalVideo.IsEnabled = true;
+
+            localVideoPlayer.CurrentStateChanged += OnMediaStateChanged;
+            localVideoPlayer.MediaOpened += OnMediaOpened;
+            localVideoPlayer.MediaFailed += OnMediaFailed;
+            localVideoPlayer.MediaEnded += OnMediaEnded;
+            localVideoPlayer.RealTimePlayback = true;
+            localVideoPlayer.AutoPlay = false;
+
+            remoteVideoPlayer.CurrentStateChanged += OnMediaStateChanged;
+            remoteVideoPlayer.MediaOpened += OnMediaOpened;
+            remoteVideoPlayer.MediaFailed += OnMediaFailed;
+            remoteVideoPlayer.MediaEnded += OnMediaEnded;
+
+            // Bind the XAML UI control (localVideo) to the MediaFoundation rendering pipeline (localVideoPlayer)
+            // so that the former can render in the UI the video frames produced in the background by the later.
+            localVideo.SetMediaPlayer(localVideoPlayer);
+            remoteVideo.SetMediaPlayer(remoteVideoPlayer);
         }
 
         /// <summary>
         /// Update the list of video profiles stored in <cref>VideoProfiles</cref>
         /// when the selected video capture device or known video profile kind change.
         /// </summary>
-        private void UpdateVideoProfiles()
+        private async void UpdateVideoProfiles()
         {
             VideoProfiles.Clear();
             VideoCaptureFormats.Clear();
@@ -488,21 +487,18 @@ namespace TestAppUwp
             else
             {
                 // Device doesn't support video profiles; fall back on flat list of capture formats.
+                List<VideoCaptureFormat> formatsList = await PeerConnection.GetVideoCaptureFormatsAsync(device.Id);
+                foreach (var format in formatsList)
+                {
+                    VideoCaptureFormats.Add(format);
+                }
 
-                // List resolutions
-                var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                PeerConnection.GetVideoCaptureFormatsAsync(device.Id).ContinueWith((listTask) => {
-                    if (listTask.Exception != null)
-                    {
-                        throw listTask.Exception;
-                    }
-
-                    // Populate the capture format list
-                    foreach (var format in listTask.Result)
-                    {
-                        VideoCaptureFormats.Add(format);
-                    }
-                }, uiThreadScheduler);
+                // Default to first format, so that user can start the video capture even without selecting
+                // explicitly a format in a different application tab.
+                if (formatsList.Count > 0)
+                {
+                    VideoCaptureFormatList.SelectedIndex = 0;
+                }
             }
         }
 
@@ -768,54 +764,6 @@ namespace TestAppUwp
             videoBridge.TryServeVideoFrame(args);
         }
 
-        /// <summary>
-        /// Main UI thread callback on WebRTC native plugin initialized.
-        /// </summary>
-        private void OnPluginPostInit()
-        {
-            PluginInitialized = true;
-            LogMessage("WebRTC native plugin initialized.");
-
-            // It is CRUCIAL to add any data channel BEFORE the SDP offer is sent, if data channels are
-            // to be used at all. Otherwise the SCTP will not be negotiated, and then all channels will
-            // stay forever in the kConnecting state.
-            // https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
-            _peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true).ContinueWith((prevTask) => {
-                if (prevTask.Exception != null)
-                {
-                    throw prevTask.Exception;
-                }
-                var newDataChannel = prevTask.Result;
-                RunOnMainThread(() => {
-                    chatInputBox.IsEnabled = true;
-                    chatSendButton.IsEnabled = true;
-                });
-            });
-
-            createOfferButton.IsEnabled = true;
-
-            ////// Do not allow starting the local video before the MediaElement told us it was
-            ////// safe to do so (see OnMediaOpened). Otherwise Play() will silently fail.
-            startLocalVideo.IsEnabled = true;
-
-            localVideoPlayer.CurrentStateChanged += OnMediaStateChanged;
-            localVideoPlayer.MediaOpened += OnMediaOpened;
-            localVideoPlayer.MediaFailed += OnMediaFailed;
-            localVideoPlayer.MediaEnded += OnMediaEnded;
-            localVideoPlayer.RealTimePlayback = true;
-            localVideoPlayer.AutoPlay = false;
-
-            remoteVideoPlayer.CurrentStateChanged += OnMediaStateChanged;
-            remoteVideoPlayer.MediaOpened += OnMediaOpened;
-            remoteVideoPlayer.MediaFailed += OnMediaFailed;
-            remoteVideoPlayer.MediaEnded += OnMediaEnded;
-
-            // Bind the XAML UI control (localVideo) to the MediaFoundation rendering pipeline (localVideoPlayer)
-            // so that the former can render in the UI the video frames produced in the background by the later.
-            localVideo.SetMediaPlayer(localVideoPlayer);
-            remoteVideo.SetMediaPlayer(remoteVideoPlayer);
-        }
-
         private void OnMediaStateChanged(Windows.Media.Playback.MediaPlayer sender, object args)
         {
             RunOnMainThread(() => {
@@ -1052,7 +1000,7 @@ namespace TestAppUwp
         /// </summary>
         /// <param name="sender">The object which invoked the event.</param>
         /// <param name="e">Event arguments.</param>
-        private void StartLocalVideoClicked(object sender, RoutedEventArgs e)
+        private async void StartLocalVideoClicked(object sender, RoutedEventArgs e)
         {
             // Toggle between start and stop local audio/video feeds
             //< TODO dssStatsTimer.IsEnabled used for toggle, but dssStatsTimer should be
@@ -1083,9 +1031,9 @@ namespace TestAppUwp
                 };
                 var videoProfile = SelectedVideoProfile;
                 string videoProfileId = videoProfile?.Id;
-                uint width = 0;
-                uint height = 0;
-                double framerate = 0.0;
+                uint width;
+                uint height;
+                double framerate;
                 if (videoProfile != null)
                 {
                     var recordMediaDesc = SelectedRecordMediaDesc ?? videoProfile.SupportedRecordMediaDescription[0];
@@ -1096,9 +1044,17 @@ namespace TestAppUwp
                 else
                 {
                     var captureFormat = SelectedVideoCaptureFormat;
-                    width = captureFormat.width;
-                    height = captureFormat.height;
-                    framerate = captureFormat.framerate;
+                    if (captureFormat.HasValue)
+                    {
+                        width = captureFormat.Value.width;
+                        height = captureFormat.Value.height;
+                        framerate = captureFormat.Value.framerate;
+                    }
+                    else
+                    {
+                        LogMessage("Cannot start video capture; no capture format selected.");
+                        return;
+                    }
                 }
 
                 localVideoPlayer.Source = null;
@@ -1110,9 +1066,6 @@ namespace TestAppUwp
                 localVideoPlayer.Source = localMediaSource;
                 localVideo.SetMediaPlayer(localVideoPlayer);
 
-                var uiThreadScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                var videoProfileKind = SelectedVideoProfileKind; // capture on UI thread
-
                 // Disable auto-offer on renegotiation needed event, to bundle the audio + video tracks
                 // change together into a single SDP offer. Otherwise each added track will send a
                 // separate offer message, which is currently not handled correctly (the second message
@@ -1120,63 +1073,58 @@ namespace TestAppUwp
                 // and is in kStable state, and it will get discarded so remote video will not start).
                 _renegotiationOfferEnabled = false;
 
-                _peerConnection.AddLocalAudioTrackAsync().ContinueWith(addAudioTask => {
-                    // Continue on worker thread here
-                    if (addAudioTask.Exception != null)
-                    {
-                        LogMessage(addAudioTask.Exception.Message);
-                        _renegotiationOfferEnabled = true;
-                        return;
-                    }
+                try
+                {
+                    // Add the local audio track captured from the local microphone
+                    await _peerConnection.AddLocalAudioTrackAsync();
 
+                    // Add the local video track captured from the local webcam
                     var trackConfig = new PeerConnection.LocalVideoTrackSettings
                     {
                         videoDevice = captureDeviceInfo,
                         videoProfileId = videoProfileId,
-                        videoProfileKind = videoProfileKind,
+                        videoProfileKind = SelectedVideoProfileKind,
                         width = width,
                         height = height,
                         framerate = framerate,
-                        enableMrc = false
+                        enableMrc = false // TestAppUWP is a shared app, MRC will not get permission anyway
                     };
-                    _peerConnection.AddLocalVideoTrackAsync(trackConfig).ContinueWith(addVideoTask => {
-                        // Continue inside UI thread here
-                        if (addVideoTask.Exception != null)
-                        {
-                            LogMessage(addVideoTask.Exception.Message);
-                            _renegotiationOfferEnabled = true;
-                            return;
-                        }
-                        dssStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
-                        dssStatsTimer.Start();
-                        startLocalVideo.Content = "Stop local video";
+                    await _peerConnection.AddLocalVideoTrackAsync(trackConfig);
+                }
+                catch (Exception ex)
+                {
+                    LogMessage(ex.Message);
+                    _renegotiationOfferEnabled = true;
+                    return;
+                }
 
-                        //< HACK - Generate pseudo-random unique identifiers which are stable
-                        // across sessions (so they can be cached) and are deterministic for each
-                        // of the first 2 instances of the app, so that 2 instances can connect to
-                        // each other without having to setup anything.
-                        {
-                            var idx = HACK_GetVideoDeviceIndex();
-                            localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx);
-                            remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx));
-                        }
+                dssStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
+                dssStatsTimer.Start();
+                startLocalVideo.Content = "Stop local video";
 
-                        localVideoSourceName.Text = $"({SelectedVideoCaptureDevice?.DisplayName})";
-                        //localVideo.MediaPlayer.Play();
-                        lock (_isLocalVideoPlayingLock)
-                        {
-                            _isLocalVideoPlaying = true;
-                        }
+                //< HACK - Generate pseudo-random unique identifiers which are stable
+                // across sessions (so they can be cached) and are deterministic for each
+                // of the first 2 instances of the app, so that 2 instances can connect to
+                // each other without having to setup anything.
+                {
+                    var idx = HACK_GetVideoDeviceIndex();
+                    localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx);
+                    remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx));
+                }
 
-                        // Re-enable auto-offer on track change, and manually apply above changes.
-                        _renegotiationOfferEnabled = true;
-                        if (_peerConnection.IsConnected)
-                        {
-                            _peerConnection.CreateOffer();
-                        }
+                localVideoSourceName.Text = $"({SelectedVideoCaptureDevice?.DisplayName})";
+                lock (_isLocalVideoPlayingLock)
+                {
+                    _isLocalVideoPlaying = true;
+                }
 
-                    }, uiThreadScheduler);
-                });
+                // Re-enable auto-offer on track change, and manually apply above changes
+                // by creating a manual SDP offer to negotiate the new tracks.
+                _renegotiationOfferEnabled = true;
+                if (_peerConnection.IsConnected)
+                {
+                    _peerConnection.CreateOffer();
+                }
             }
         }
 
@@ -1213,7 +1161,6 @@ namespace TestAppUwp
             {
                 return;
             }
-
             await _peerConnection.AddDataChannelAsync("extra_channel", true, true);
         }
 
