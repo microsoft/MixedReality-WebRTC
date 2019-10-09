@@ -82,6 +82,18 @@
     <IntDir>..\..\..\..\build\Microsoft.MixedReality.WebRTC.Native.UWP\UWP\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Microsoft.MixedReality.WebRTC.Native</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(PlatformTarget)' == 'x86'">
+    <UnityPluginDirectory>$(ProjectDir)..\..\..\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\WSA\x86</UnityPluginDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(PlatformTarget)' == 'x64'">
+    <UnityPluginDirectory>$(ProjectDir)..\..\..\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\WSA\x86_64</UnityPluginDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(PlatformTarget)' == 'ARM'">
+    <UnityPluginDirectory>$(ProjectDir)..\..\..\\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\WSA\ARM</UnityPluginDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <NativeUnityPluginSourceFiles Include="$(OutDir)\Microsoft.MixedReality.WebRTC.Native.dll;$(OutDir)\Microsoft.MixedReality.WebRTC.Native.pdb" />
+  </ItemGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>_WINDLL;MR_SHARING_WIN;MRS_USE_STR_WRAPPER;WINUWP;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -103,12 +115,6 @@
       <ModuleDefinitionFile>..\exports.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\$(PlatformTarget)\$(Configuration);$(WebRTCCoreRepoPath)webrtc\windows\projects\msvc\Org.WebRtc.WrapperGlue.Universal\Build\Output\Org.WebRtc.WrapperGlue\$(Configuration)\$(PlatformTarget);$(WebRTCCoreRepoPath)webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\$(Configuration)\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Message>Copying C++ and C# DLLs to Unity plugins folder...</Message>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Command>cd ..\..\..\..\tools\ &amp;&amp; copy_unity_plugins.bat CPP WSA $(PlatformTarget) $(Configuration)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="../../include/api.h" />
@@ -141,6 +147,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="AfterBuild" >
+    <Copy SourceFiles="@(NativeUnityPluginSourceFiles)" DestinationFolder="$(UnityPluginDirectory)" />
+  </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>

@@ -28,9 +28,13 @@
     <PackageTags>webrtc video audio streaming</PackageTags>
     <DocumentationFile>..\..\bin\$(TargetFramework)\$(Configuration)\Microsoft.MixedReality.WebRTC.xml</DocumentationFile>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <NativeUnityPluginSourceFiles Include="$(OutputPath)\Microsoft.MixedReality.WebRTC.dll;$(OutputPath)\Microsoft.MixedReality.WebRTC.pdb" />
+  </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="cd ..\..\tools\ &amp;&amp; copy_unity_plugins.bat CS dummy dummy $(Configuration)" />
+    <Copy SourceFiles="@(NativeUnityPluginSourceFiles)" DestinationFolder="$(ProjectDir)..\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86_64" />
   </Target>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
