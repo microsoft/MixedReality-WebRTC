@@ -21,6 +21,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         SerializedProperty _autoStartCapture;
         SerializedProperty _preferredVideoCodec;
         SerializedProperty _enableMixedRealityCapture;
+        SerializedProperty _enableMrcRecordingIndicator;
         SerializedProperty _autoAddTrack;
         SerializedProperty _mode;
         SerializedProperty _videoProfileId;
@@ -79,6 +80,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             _autoStartCapture = serializedObject.FindProperty("AutoStartCapture");
             _preferredVideoCodec = serializedObject.FindProperty("PreferredVideoCodec");
             _enableMixedRealityCapture = serializedObject.FindProperty("EnableMixedRealityCapture");
+            _enableMrcRecordingIndicator = serializedObject.FindProperty("EnableMRCRecordingIndicator");
             _autoAddTrack = serializedObject.FindProperty("AutoAddTrack");
             _mode = serializedObject.FindProperty("Mode");
             _videoProfileId = serializedObject.FindProperty("VideoProfileId");
@@ -103,12 +105,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             EditorGUILayout.PropertyField(_autoStartCapture);
 
             EditorGUILayout.PropertyField(_enableMixedRealityCapture);
-            if (_enableMixedRealityCapture.boolValue && !PlayerSettings.virtualRealitySupported)
+            if (_enableMixedRealityCapture.boolValue)
             {
-                EditorGUILayout.HelpBox("Mixed Reality Capture can only work in exclusive-mode apps. XR support must be enabled in Project Settings > Player > XR Settings > Virtual Reality Supported, and the project then saved to disk.", MessageType.Error);
-                if (GUILayout.Button("Enable XR support"))
+                EditorGUILayout.PropertyField(_enableMrcRecordingIndicator);
+                if (!PlayerSettings.virtualRealitySupported)
                 {
-                    PlayerSettings.virtualRealitySupported = true;
+                    EditorGUILayout.HelpBox("Mixed Reality Capture can only work in exclusive-mode apps. XR support must be enabled in Project Settings > Player > XR Settings > Virtual Reality Supported, and the project then saved to disk.", MessageType.Error);
+                    if (GUILayout.Button("Enable XR support"))
+                    {
+                        PlayerSettings.virtualRealitySupported = true;
+                    }
                 }
             }
 

@@ -15,6 +15,9 @@ rtc::Thread* UnsafeGetWorkerThread();
 
 extern "C" {
 
+/// 32-bit boolean for interop API.
+enum class mrsBool : int32_t { kTrue = -1, kFalse = 0 };
+
 //
 // Errors
 //
@@ -478,7 +481,11 @@ struct VideoDeviceConfiguration {
   /// shared apps with the restricted capability "rescap:screenDuplication". In
   /// any other case the capability will not be granted and MRC will silently
   /// fail, falling back to a simple webcam video feed without holograms.
-  bool enable_mrc = true;
+  mrsBool enable_mrc = mrsBool::kTrue;
+
+  /// When Mixed Reality Capture is enabled, enable or disable the recording
+  /// indicator shown on screen.
+  mrsBool enable_mrc_recording_indicator = mrsBool::kTrue;
 };
 
 /// Add a local video track from a local video capture device (webcam) to

@@ -5,6 +5,20 @@ using System.Text;
 namespace Microsoft.MixedReality.WebRTC.Interop
 {
     /// <summary>
+    /// Interop boolean.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Size = 4)]
+    internal struct mrsBool
+    {
+        public static readonly mrsBool True = new mrsBool(true);
+        public static readonly mrsBool False = new mrsBool(false);
+        private int _value;
+        public mrsBool(bool value) { _value = (value ? -1 : 0); }
+        public static explicit operator mrsBool(bool b) { return (b ? True : False); }
+        public static explicit operator bool(mrsBool b) { return (b._value != 0); }
+    }
+
+    /// <summary>
     /// Attribute to decorate managed delegates used as native callbacks (reverse P/Invoke).
     /// Required by Mono in Ahead-Of-Time (AOT) compiling, and Unity with the IL2CPP backend.
     /// </summary>

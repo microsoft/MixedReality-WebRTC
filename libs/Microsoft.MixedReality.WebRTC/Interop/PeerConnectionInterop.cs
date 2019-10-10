@@ -318,16 +318,57 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             /// </summary>
             public string VideoDeviceId;
 
+            /// <summary>
+            /// Optional video profile unique identifier to use.
+            /// Ignored if the video capture device specified by <see cref="VideoDeviceId"/> does not
+            /// support video profiles.
+            /// </summary>
+            /// <remarks>
+            /// This is generally preferred over <see cref="VideoProfileKind"/> to get full
+            /// control over the video profile selection. Specifying both this and <see cref="VideoProfileKind"/>
+            /// is discouraged, as it over-constraints the selection algorithm.
+            /// </remarks>
+            /// <seealso xref="MediaCapture.IsVideoProfileSupported(string)"/>
             public string VideoProfileId;
+
+            /// <summary>
+            /// Optional video profile kind to select a video profile from.
+            /// Ignored if the video capture device specified by <see cref="VideoDeviceId"/> does not
+            /// support video profiles.
+            /// </summary>
+            /// <remarks>
+            /// This is generally preferred over <see cref="VideoProfileId"/> to find a matching
+            /// capture format (resolution and/or framerate) when one does not care about which video
+            /// profile provides this capture format. Specifying both this and <see cref="VideoProfileId"/>
+            /// is discouraged, as it over-constraints the selection algorithm.
+            /// </remarks>
+            /// <seealso xref="MediaCapture.IsVideoProfileSupported(string)"/>
             public PeerConnection.VideoProfileKind VideoProfileKind;
+
+            /// <summary>
+            /// Optional capture resolution width, in pixels, or zero for no constraint.
+            /// </summary>
             public uint Width;
+
+            /// <summary>
+            /// Optional capture resolution height, in pixels, or zero for no constraint.
+            /// </summary>
             public uint Height;
+
+            /// <summary>
+            /// Optional capture framerate, in frames per second (FPS), or zero for no constraint.
+            /// </summary>
             public double Framerate;
 
             /// <summary>
             /// Enable Mixed Reality Capture (MRC). This flag is ignored if the platform doesn't support MRC.
             /// </summary>
-            public bool EnableMixedRealityCapture;
+            public mrsBool EnableMixedRealityCapture;
+
+            /// <summary>
+            /// When MRC is enabled, enable the on-screen recording indicator.
+            /// </summary>
+            public mrsBool EnableMRCRecordingIndicator;
         }
 
 

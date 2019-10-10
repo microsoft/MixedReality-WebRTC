@@ -406,22 +406,39 @@ namespace Microsoft.MixedReality.WebRTC
             public VideoProfileKind videoProfileKind = VideoProfileKind.Unspecified;
 
             /// <summary>
-            /// Enable Mixed Reality Capture on devices supporting the feature.
+            /// Enable Mixed Reality Capture (MRC) on devices supporting the feature.
+            /// This setting is silently ignored on device not supporting MRC.
             /// </summary>
+            /// <remarks>
+            /// This is only supported on UWP.
+            /// </remarks>
             public bool enableMrc = true;
 
             /// <summary>
+            /// Display the on-screen recording indicator while MRC is enabled.
+            /// This setting is silently ignored on device not supporting MRC, or if
+            /// <see cref="enableMrc"/> is set to <c>false</c>.
+            /// </summary>
+            /// <remarks>
+            /// This is only supported on UWP.
+            /// </remarks>
+            public bool enableMrcRecordingIndicator = true;
+
+            /// <summary>
             /// Optional capture resolution width, in pixels.
+            /// This must be a resolution width the device supports.
             /// </summary>
             public uint? width;
 
             /// <summary>
             /// Optional capture resolution height, in pixels.
+            /// This must be a resolution width the device supports.
             /// </summary>
             public uint? height;
 
             /// <summary>
             /// Optional capture frame rate, in frames per second (FPS).
+            /// This must be a capture framerate the device supports.
             /// </summary>
             /// <remarks>
             /// This is compared by strict equality, so is best left unspecified or to an exact value
@@ -881,7 +898,8 @@ namespace Microsoft.MixedReality.WebRTC
                     Width = settings.width.GetValueOrDefault(0),
                     Height = settings.height.GetValueOrDefault(0),
                     Framerate = settings.framerate.GetValueOrDefault(0.0),
-                    EnableMixedRealityCapture = settings.enableMrc
+                    EnableMixedRealityCapture = (mrsBool)settings.enableMrc,
+                    EnableMRCRecordingIndicator = (mrsBool)settings.enableMrcRecordingIndicator
                 } : new PeerConnectionInterop.VideoDeviceConfiguration());
                 uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, config);
                 Utils.ThrowOnErrorCode(res);

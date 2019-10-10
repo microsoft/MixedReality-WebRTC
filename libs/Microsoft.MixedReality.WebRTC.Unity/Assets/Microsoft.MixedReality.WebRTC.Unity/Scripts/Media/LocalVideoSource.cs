@@ -78,10 +78,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Enable Mixed Reality Capture (MRC) if available on the local device.
-        /// This option has no effect on devices not supporting MRC.
+        /// This option has no effect on devices not supporting MRC, and is silently ignored.
         /// </summary>
         [Tooltip("Enable Mixed Reality Capture (MRC) if available on the local device")]
         public bool EnableMixedRealityCapture = true;
+
+        /// <summary>
+        /// Enable the on-screen recording indicator when Mixed Reality Capture (MRC) is
+        /// available and enabled.
+        /// This option has no effect on devices not supporting MRC, or if MRC is not enabled.
+        /// </summary>
+        [Tooltip("Enable the on-screen recording indicator when MRC is enabled")]
+        public bool EnableMRCRecordingIndicator = true;
 
         /// <summary>
         /// Peer connection this local video source will add a video track to.
@@ -253,7 +261,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 width = (width > 0 ? (uint?)width : null),
                 height = (height > 0 ? (uint?)height : null),
                 framerate = (framerate > 0 ? (double?)framerate : null),
-                enableMrc = EnableMixedRealityCapture
+                enableMrc = EnableMixedRealityCapture,
+                enableMrcRecordingIndicator = EnableMRCRecordingIndicator
             };
             nativePeer.AddLocalVideoTrackAsync(trackSettings);
             VideoStreamStarted.Invoke();

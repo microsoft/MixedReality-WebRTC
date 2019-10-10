@@ -359,7 +359,9 @@ mrsResult OpenVideoCaptureDevice(
     }
     createParams->videoProfileKind =
         (wrapper::org::webRtc::VideoProfileKind)config.video_profile_kind;
-    createParams->enableMrc = config.enable_mrc;
+    createParams->enableMrc = (config.enable_mrc != mrsBool::kFalse);
+    createParams->enableMrcRecordingIndicator =
+        (config.enable_mrc_recording_indicator != mrsBool::kFalse);
     createParams->width = config.width;
     createParams->height = config.height;
     createParams->framerate = config.framerate;
