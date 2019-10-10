@@ -6,6 +6,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using Windows.Media.Core;
 
 namespace TestAppUwp.Video
@@ -19,6 +20,7 @@ namespace TestAppUwp.Video
     {
         private StreamSamplePool _streamSamplePool = new StreamSamplePool(10);
         private object _deferralLock = new object();
+        private byte[] _deferralBuffer = Array.Empty<byte>();
         private MediaStreamSourceSampleRequest _request = null;
         private MediaStreamSourceSampleRequestDeferral _deferral = null;
         private long _frameCount = 0;
@@ -65,7 +67,7 @@ namespace TestAppUwp.Video
         /// by <see cref="HandleIncomingVideoFrame"/> after it has been requested by
         /// <see cref="TryServeVideoFrame"/>.
         /// </summary>
-        /// 
+        ///
         /// If non-zero, this statistics indicates that the Media Foundation sink is
         /// requesting video frames faster than the WebRTC source can provide them.
         /// This is often the case though, as WebRTC uses a push model (source actively
@@ -193,6 +195,8 @@ namespace TestAppUwp.Video
         /// </remarks>
         private void MakeSampleForPendingRequest(I420AVideoFrame frame)
         {
+            Debug.Assert(Monitor.IsEntered(_deferralLock));
+
             // Calculate frame timestamp
             TimeSpan timestamp = TimeSpan.FromSeconds(_frameCount / 30.0);
             ++_frameCount;
@@ -209,9 +213,13 @@ namespace TestAppUwp.Video
             // Unfortunately the C# interface to Windows.Storage.Streams.Buffer seems to
             // only offer a copy from a byte[] buffer, so need to copy first into a temporary
             // one (packed YUV) before copying into the sample's Buffer object.
-            byte[] buffer = new byte[byteSize];
-            frame.CopyTo(buffer);
-            buffer.CopyTo(0, sample.Buffer, 0, (int)byteSize);
+            if (byteSize != _deferralBuffer.Length)
+            {
+                // Reallocate the buffer. This will only happen if the resolution changes.
+                _deferralBuffer = new byte[byteSize];
+            }
+            frame.CopyTo(_deferralBuffer);
+            _deferralBuffer.CopyTo(0, sample.Buffer, 0, (int)byteSize);
 
             // Assign the sample
             _request.Sample = sample;
