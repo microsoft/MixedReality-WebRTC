@@ -1300,7 +1300,7 @@ namespace Microsoft.MixedReality.WebRTC
                 if (type == "offer")
                 {
                     var builder = new StringBuilder(sdp.Length);
-                    ulong lengthInOut = (ulong)builder.Capacity;
+                    ulong lengthInOut = (ulong)builder.Capacity + 1; // includes null terminator
                     var audioFilter = new Utils.SdpFilter
                     {
                         CodecName = PreferredAudioCodec,
@@ -1313,7 +1313,7 @@ namespace Microsoft.MixedReality.WebRTC
                     };
                     uint res = Utils.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut);
                     Utils.ThrowOnErrorCode(res);
-                    builder.Length = (int)lengthInOut;
+                    builder.Length = (int)lengthInOut - 1; // discard the null terminator
                     sdp = builder.ToString();
                 }
             }
