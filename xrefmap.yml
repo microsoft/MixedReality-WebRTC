@@ -118,6 +118,18 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.DataChannel
   fullName: Microsoft.MixedReality.WebRTC.DataChannel
   nameWithType: DataChannel
+- uid: Microsoft.MixedReality.WebRTC.DataChannel.BufferingChanged
+  name: BufferingChanged
+  href: api/Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged
+  commentId: E:Microsoft.MixedReality.WebRTC.DataChannel.BufferingChanged
+  fullName: Microsoft.MixedReality.WebRTC.DataChannel.BufferingChanged
+  nameWithType: DataChannel.BufferingChanged
+- uid: Microsoft.MixedReality.WebRTC.DataChannel.BufferingChangedDelegate
+  name: DataChannel.BufferingChangedDelegate
+  href: api/Microsoft.MixedReality.WebRTC.DataChannel.BufferingChangedDelegate.html
+  commentId: T:Microsoft.MixedReality.WebRTC.DataChannel.BufferingChangedDelegate
+  fullName: Microsoft.MixedReality.WebRTC.DataChannel.BufferingChangedDelegate
+  nameWithType: DataChannel.BufferingChangedDelegate
 - uid: Microsoft.MixedReality.WebRTC.DataChannel.ChannelState
   name: DataChannel.ChannelState
   href: api/Microsoft.MixedReality.WebRTC.DataChannel.ChannelState.html
