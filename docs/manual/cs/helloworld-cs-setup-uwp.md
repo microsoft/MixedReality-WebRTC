@@ -70,10 +70,11 @@ First, because this sample application is a UWP application, it needs to declare
 
 Next, edit `MainPage.xaml.cs`:
 
-1. At the top of the file, add some `using` statement to import the `Microsoft.MixedReality.WebRTC` assembly. Also import the `System.Diagnostics` module, as we will be using the `Debugger` class to print debug information to the Visual Studio output window.
+1. At the top of the file, add some `using` statement to import the `Microsoft.MixedReality.WebRTC` assembly. Also import the `System.Diagnostics` module, as we will be using the `Debugger` class to print debug information to the Visual Studio output window. Finally, import the `Windows.Media.Capture` module to be able to request access to the microphone and webcam.
    ```cs
    using Microsoft.MixedReality.WebRTC;
    using System.Diagnostics;
+   using Windows.Media.Capture;
    ```
 
 2. In the `MainPage` constructor, register a handler for the `OnLoaded` event, which will be fired once the XAML user interface finished loading. For now it is not required to wait on the UI to call `Microsoft.MixedReality.WebRTC` methods. But later when accessing the UI to interact with its controls, either to get user inputs or display results, this will be required. So as a best practice we start doing so right away instead of invoking some code directly in the `MainPage` constructor.
@@ -87,25 +88,22 @@ Next, edit `MainPage.xaml.cs`:
 
 3. Create the event handler `OnLoaded()` and use it to request access from the user to the microphone and camera, and enumerate the video capture devices. The `MediaCapture.InitializeAsync()` call will prompt the user with a dialog to authorize access to the microphone and webcam. The latter be must authorized before calling `PeerConnection.GetVideoCaptureDevicesAsync()`, while the former will be needed in the following of the tutorial for calls like `PeerConnection.AddLocalAudioTrackAsync()`.
    ```cs
-   private void OnLoaded(object sender, RoutedEventArgs e)
+   private async void OnLoaded(object sender, RoutedEventArgs e)
    {
-       private async void OnLoaded(object sender, RoutedEventArgs e)
+       // Request access to microphone and camera
+       var settings = new MediaCaptureInitializationSettings();
+       settings.StreamingCaptureMode = StreamingCaptureMode.AudioAndVideo;
+       var capture = new MediaCapture();
+       await capture.InitializeAsync(settings);
+
+       // Retrieve a list of available video capture devices (webcams).
+       List<VideoCaptureDevice> deviceList = await PeerConnection.GetVideoCaptureDevicesAsync(); 
+
+       // Get the device list and, for example, print them to the debugger console
+       foreach (var device in deviceList)
        {
-           // Request access to microphone and camera
-           var settings = new MediaCaptureInitializationSettings();
-           settings.StreamingCaptureMode = StreamingCaptureMode.AudioAndVideo;
-           var capture = new MediaCapture();
-           await capture.InitializeAsync(settings);
-  
-           // Retrieve a list of available video capture devices (webcams).
-           List<VideoCaptureDevice> deviceList = await PeerConnection.GetVideoCaptureDevicesAsync(); 
- 
-           // Get the device list and, for example, print them to the debugger console
-           foreach (var device in deviceList)
-           {
-               // This message will show up in the Output window of Visual Studio
-               Debugger.Log(0, "", $"Webcam {device.name} (id: {device.id})\n");
-           }
+           // This message will show up in the Output window of Visual Studio
+           Debugger.Log(0, "", $"Webcam {device.name} (id: {device.id})\n");
        }
    }
    ```
@@ -116,6 +114,14 @@ Webcam <some device name> (id: <some device ID>)
 ```
 
 Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see [`PeerConnection.AddLocalVideoTrackAsync`](cref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings))).
+
+If this is the first time that `MediaCapture.InitializeAsync()` is requesting access to the webcam and microhpone, Windows displays a prompt asking the user for confirmation. You must click **Yes**, otherwise access to the microphone and webcam will be denied, and WebRTC will not be able to use them. This is part of the standard UWP capability mechanism for security and privacy.
+
+![UWP access request to the microphone](cs-uwp9.png)
+
+If you clicked **No** by mistake, the prompt will not appear again and access will be silently denied on next runs. To change this access setting again, go to the Windows **Settings** > **Privacy** > **Microphone**, find the `App1` application and toggle its access **On**. Do the same for the webcam from the **Settings** > **Privacy** > **Camera** page.
+
+![Windows privacy settings for microphone](cs-uwp10.png)
 
 ----
 
