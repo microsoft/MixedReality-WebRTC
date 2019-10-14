@@ -50,3 +50,10 @@ xdoc.meta
 # the tested assembly for DllImport. There is probably a more elegant way but...
 /tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Native.dll
 /tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Native.pdb
+
+# Profiling data
+*.wprp
+*.etl
+
+# TODO - TestNetCoreConsole is misconfigured, builds into its own folder
+examples/TestNetCoreConsole/bin
