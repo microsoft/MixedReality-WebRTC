@@ -108,6 +108,18 @@ await _peerConnection.InitializeAsync(config);
 <pre><code class="lang-cs">Debugger.Log(0, &quot;&quot;, &quot;Peer connection initialized successfully.\n&quot;);
 </code></pre>
 </li>
+<li><p>In the <code>App_Suspending()</code> event handler, add some code to dispose of the peer connection.</p>
+<pre><code class="lang-cs">private void App_Suspending(object sender, SuspendingEventArgs e)
+{
+    if (_peerConnection != null)
+    {
+        _peerConnection.Close();
+        _peerConnection.Dispose();
+        _peerConnection = null;
+    }
+}
+</code></pre>
+</li>
 </ol>
 <p>Run the application again; the printed message should appear after some time in the Visual Studio <strong>Output</strong> window under the <strong>Debug</strong> section. It can take up to a few seconds to initialize the peer connection, depending on the device.</p>
 <p><img src="cs-uwp11.png" alt="Peer connection initialized"></p>

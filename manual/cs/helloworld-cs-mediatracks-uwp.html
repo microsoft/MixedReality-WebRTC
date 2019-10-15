@@ -262,10 +262,14 @@ private object _localVideoLock = new object();
 }
 </code></pre>
 </li>
+<li><p>In the <code>App_Suspending()</code> event handler, clear the media player of the <code>localVideoPlayerElement</code> control so that it repaint itself and avoids keeping the last video frame when the video is turned off.</p>
+<pre><code class="lang-cs">localVideoPlayerElement.SetMediaPlayer(null);
+</code></pre>
+</li>
 </ol>
 <p>At this point the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.ui.xaml.controls.mediaplayerelement">MediaPlayerElement</a> control and the WebRTC local video track are connected together. Launch the application again; the local webcam starts capturing video frame, which are displayed in the main window of the application.</p>
 <hr>
-<p>Next : <a href="helloworld-cs-signaling-uwp.md">A custom signaling solution</a></p>
+<p>Next : <a href="helloworld-cs-signaling-uwp.html">A custom signaling solution</a></p>
 </article>
           </div>
           

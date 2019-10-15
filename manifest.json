@@ -714,7 +714,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "44qVTiJQg/1hINne0j7law=="
+          "hash": "qUF++oNun4xcYIjVWK14xg=="
         }
       },
       "is_incremental": false,
@@ -874,6 +874,17 @@
       "output": {
         "resource": {
           "relative_path": "manual/cs/cs-uwp13.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp14.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp14.png"
         }
       },
       "is_incremental": false,
@@ -1070,6 +1081,18 @@
     },
     {
       "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-connection-uwp.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-connection-uwp.html",
+          "hash": "AUSBTg2JOju13YUJ0Y0rEQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-core3.md",
       "output": {
         ".html": {
@@ -1093,15 +1116,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "InvalidFileLink"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.html",
-          "hash": "4/9ZxZnxIidYasuh5aKc3w=="
+          "hash": "tpYHGfff4+Y0PZmpoAZR5w=="
         }
       },
       "is_incremental": false,
@@ -1125,7 +1145,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-peerconnection-uwp.html",
-          "hash": "vQlyRTSIawUU+A5vr5+Pqg=="
+          "hash": "tlumih27Qvjo1chJF8rTBg=="
         }
       },
       "is_incremental": false,
@@ -1149,7 +1169,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-setup-uwp.html",
-          "hash": "WM+yra0hVXSUq8iQVbhomw=="
+          "hash": "DNyZ3intX5sNRSPy6kqbBw=="
         }
       },
       "is_incremental": false,
@@ -1168,15 +1188,24 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "InvalidFileLink"
-      ],
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-signaling-uwp.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-signaling-uwp.html",
+          "hash": "UWKzDdTvmCsHWsI9A/FXtQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-uwp.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-uwp.html",
-          "hash": "SkPQ7aV1Nkt0+m4uFiwtrA=="
+          "hash": "T5lergHTO0QvRuhbqjCZ2Q=="
         }
       },
       "is_incremental": false,
@@ -1543,7 +1572,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/toc.html",
-          "hash": "UeUDzOslkr/WIG1Il/7xsg=="
+          "hash": "Q9FNQnkXM9L+qFt38lMWRA=="
         }
       },
       "is_incremental": false,
@@ -1813,17 +1842,16 @@
         "full_build_reason_code": "ForceRebuild"
       },
       "processors": {
-        "ResourceDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build",
-          "total_file_count": 0,
-          "skipped_file_count": 0
-        },
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 40,
+          "total_file_count": 42,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 57,
           "skipped_file_count": 0
         },
         "TocDocumentProcessor": {
@@ -1833,10 +1861,11 @@
           "total_file_count": 0,
           "skipped_file_count": 0
         },
-        "ManagedReferenceDocumentProcessor": {
+        "ResourceDocumentProcessor": {
           "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build",
-          "total_file_count": 57,
+          "total_file_count": 0,
           "skipped_file_count": 0
         }
       }

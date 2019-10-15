@@ -80,12 +80,18 @@
 <h1 id="creating-a-project">Creating a project</h1>
 
 <p>In this tutorial we create a C# UWP application with a simple XAML-based UI to render video.</p>
-<p><em>Note</em>: At this time there is no solution to render raw video frames from a .NET Core 3.0 application that is simple and short enough to be used in a turorial. Instead, we use the <code>MediaPlayerElement</code> XAML control from UWP which provides the necessary API. Its WPF equivalent <code>MediaElement</code> unfortunately does not currently allow specifying a custom video source other than an URI-based source like a file on disk.</p>
-<p><em>Note</em>: This tutorial assumes that the host device where the app will be running during the tutorial has access to:</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>At this time there is no solution to render raw video frames from a .NET Core 3.0 application that is simple and short enough to be used in a turorial. Instead, we use the <code>MediaPlayerElement</code> XAML control from UWP which provides the necessary API. Its WPF equivalent <code>MediaElement</code> unfortunately does not currently allow specifying a custom video source other than an URI-based source like a file on disk.</p>
+</div>
+<div class="NOTE">
+<h5>Note</h5>
+<p>This tutorial assumes that the host device where the app will be running during the tutorial has access to:</p>
 <ul>
 <li>a webcam, or any other video capture device recognized by WebRTC</li>
 <li>a microphone, or any other audio capture device recognized by WebRTC</li>
 </ul>
+</div>
 <h2 id="generate-the-project">Generate the project</h2>
 <p>Open Visual Studio 2019 and select <strong>Create a new project</strong>.</p>
 <p><img src="cs-uwp1.png" alt="Create a new project"></p>
@@ -121,17 +127,19 @@
 <p><img src="cs-uwp8.png" alt="Configure the UWP app capabilities"></p>
 <p>Next, edit <code>MainPage.xaml.cs</code>:</p>
 <ol>
-<li><p>At the top of the file, add some <code>using</code> statement to import the <code>Microsoft.MixedReality.WebRTC</code> assembly. Also import the <code>System.Diagnostics</code> module, as we will be using the <code>Debugger</code> class to print debug information to the Visual Studio output window. Finally, import the <code>Windows.Media.Capture</code> module to be able to request access to the microphone and webcam.</p>
+<li><p>At the top of the file, add some <code>using</code> statement to import the <code>Microsoft.MixedReality.WebRTC</code> assembly. Also import the <code>System.Diagnostics</code> module, as we will be using the <code>Debugger</code> class to print debug information to the Visual Studio output window. Finally, import the <code>Windows.Media.Capture</code> module to be able to request access to the microphone and webcam, and the <code>Windows.ApplicationModel</code> module to handle resource clean-up.</p>
 <pre><code class="lang-cs">using Microsoft.MixedReality.WebRTC;
 using System.Diagnostics;
 using Windows.Media.Capture;
+using Windows.ApplicationModel;
 </code></pre>
 </li>
-<li><p>In the <code>MainPage</code> constructor, register a handler for the <code>OnLoaded</code> event, which will be fired once the XAML user interface finished loading. For now it is not required to wait on the UI to call <code>Microsoft.MixedReality.WebRTC</code> methods. But later when accessing the UI to interact with its controls, either to get user inputs or display results, this will be required. So as a best practice we start doing so right away instead of invoking some code directly in the <code>MainPage</code> constructor.</p>
+<li><p>In the <code>MainPage</code> constructor, register a handler for the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.ui.xaml.frameworkelement.loaded"><code>Loaded</code></a> event, which will be fired once the XAML user interface finished loading. For now it is not required to wait on the UI to call <code>Microsoft.MixedReality.WebRTC</code> methods. But later when accessing the UI to interact with its controls, either to get user inputs or display results, this will be required. So as a best practice we start doing so right away instead of invoking some code directly in the <code>MainPage</code> constructor. Also register a handler for the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.ui.xaml.application.suspending"><code>Application.Suspending</code></a> event to clean-up resources on exit.</p>
 <pre><code class="lang-cs">public MainPage()
 {
     this.InitializeComponent();
     this.Loaded += OnLoaded;
+    Application.Current.Suspending += App_Suspending;
 }
 </code></pre>
 </li>
@@ -145,7 +153,8 @@ using Windows.Media.Capture;
     await capture.InitializeAsync(settings);
 
     // Retrieve a list of available video capture devices (webcams).
-    List&lt;VideoCaptureDevice&gt; deviceList = await PeerConnection.GetVideoCaptureDevicesAsync(); 
+    List&lt;VideoCaptureDevice&gt; deviceList =
+        await PeerConnection.GetVideoCaptureDevicesAsync(); 
 
     // Get the device list and, for example, print them to the debugger console
     foreach (var device in deviceList)
@@ -153,6 +162,12 @@ using Windows.Media.Capture;
         // This message will show up in the Output window of Visual Studio
         Debugger.Log(0, &quot;&quot;, $&quot;Webcam {device.name} (id: {device.id})\n&quot;);
     }
+}
+</code></pre>
+</li>
+<li><p>Create the event handler <code>App_Suspending()</code>. For now there is nothing to do from it.</p>
+<pre><code class="lang-cs">private void App_Suspending(object sender, SuspendingEventArgs e)
+{
 }
 </code></pre>
 </li>
