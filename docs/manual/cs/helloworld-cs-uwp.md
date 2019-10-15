@@ -6,3 +6,4 @@ In this tutorial we will create a simple UWP application based on the [MixedReal
 - [Creating a peer connection](helloworld-cs-peerconnection-uwp.md)
 - [Add local media tracks](helloworld-cs-mediatracks-uwp.md)
 - [A custom signaling solution](helloworld-cs-signaling-uwp.md)
+- [Establishing a WebRTC connection](helloworld-cs-connection-uwp.md)

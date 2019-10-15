@@ -36,6 +36,19 @@ Continue editing the `MainPage.xaml.cs` file and append the following:
    Debugger.Log(0, "", "Peer connection initialized successfully.\n");
    ```
 
+5. In the `App_Suspending()` event handler, add some code to dispose of the peer connection.
+   ```cs
+   private void App_Suspending(object sender, SuspendingEventArgs e)
+   {
+       if (_peerConnection != null)
+       {
+           _peerConnection.Close();
+           _peerConnection.Dispose();
+           _peerConnection = null;
+       }
+   }
+   ```
+
 Run the application again; the printed message should appear after some time in the Visual Studio **Output** window under the **Debug** section. It can take up to a few seconds to initialize the peer connection, depending on the device.
 
 ![Peer connection initialized](cs-uwp11.png)

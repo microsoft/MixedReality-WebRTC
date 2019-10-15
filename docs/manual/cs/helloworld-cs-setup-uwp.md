@@ -2,11 +2,13 @@
 
 In this tutorial we create a C# UWP application with a simple XAML-based UI to render video.
 
-_Note_: At this time there is no solution to render raw video frames from a .NET Core 3.0 application that is simple and short enough to be used in a turorial. Instead, we use the `MediaPlayerElement` XAML control from UWP which provides the necessary API. Its WPF equivalent `MediaElement` unfortunately does not currently allow specifying a custom video source other than an URI-based source like a file on disk.
+> [!NOTE]
+> At this time there is no solution to render raw video frames from a .NET Core 3.0 application that is simple and short enough to be used in a turorial. Instead, we use the `MediaPlayerElement` XAML control from UWP which provides the necessary API. Its WPF equivalent `MediaElement` unfortunately does not currently allow specifying a custom video source other than an URI-based source like a file on disk.
 
-_Note_: This tutorial assumes that the host device where the app will be running during the tutorial has access to:
-- a webcam, or any other video capture device recognized by WebRTC
-- a microphone, or any other audio capture device recognized by WebRTC
+> [!NOTE]
+> This tutorial assumes that the host device where the app will be running during the tutorial has access to:
+> - a webcam, or any other video capture device recognized by WebRTC
+> - a microphone, or any other audio capture device recognized by WebRTC
 
 ## Generate the project
 
@@ -70,19 +72,21 @@ First, because this sample application is a UWP application, it needs to declare
 
 Next, edit `MainPage.xaml.cs`:
 
-1. At the top of the file, add some `using` statement to import the `Microsoft.MixedReality.WebRTC` assembly. Also import the `System.Diagnostics` module, as we will be using the `Debugger` class to print debug information to the Visual Studio output window. Finally, import the `Windows.Media.Capture` module to be able to request access to the microphone and webcam.
+1. At the top of the file, add some `using` statement to import the `Microsoft.MixedReality.WebRTC` assembly. Also import the `System.Diagnostics` module, as we will be using the `Debugger` class to print debug information to the Visual Studio output window. Finally, import the `Windows.Media.Capture` module to be able to request access to the microphone and webcam, and the `Windows.ApplicationModel` module to handle resource clean-up.
    ```cs
    using Microsoft.MixedReality.WebRTC;
    using System.Diagnostics;
    using Windows.Media.Capture;
+   using Windows.ApplicationModel;
    ```
 
-2. In the `MainPage` constructor, register a handler for the `OnLoaded` event, which will be fired once the XAML user interface finished loading. For now it is not required to wait on the UI to call `Microsoft.MixedReality.WebRTC` methods. But later when accessing the UI to interact with its controls, either to get user inputs or display results, this will be required. So as a best practice we start doing so right away instead of invoking some code directly in the `MainPage` constructor.
+2. In the `MainPage` constructor, register a handler for the [`Loaded`](xref:Windows.UI.Xaml.FrameworkElement.Loaded) event, which will be fired once the XAML user interface finished loading. For now it is not required to wait on the UI to call `Microsoft.MixedReality.WebRTC` methods. But later when accessing the UI to interact with its controls, either to get user inputs or display results, this will be required. So as a best practice we start doing so right away instead of invoking some code directly in the `MainPage` constructor. Also register a handler for the [`Application.Suspending`](xref:Windows.UI.Xaml.Application.Suspending) event to clean-up resources on exit.
    ```cs
    public MainPage()
    {
        this.InitializeComponent();
        this.Loaded += OnLoaded;
+       Application.Current.Suspending += App_Suspending;
    }
    ```
 
@@ -97,7 +101,8 @@ Next, edit `MainPage.xaml.cs`:
        await capture.InitializeAsync(settings);
 
        // Retrieve a list of available video capture devices (webcams).
-       List<VideoCaptureDevice> deviceList = await PeerConnection.GetVideoCaptureDevicesAsync(); 
+       List<VideoCaptureDevice> deviceList =
+           await PeerConnection.GetVideoCaptureDevicesAsync(); 
 
        // Get the device list and, for example, print them to the debugger console
        foreach (var device in deviceList)
@@ -105,6 +110,13 @@ Next, edit `MainPage.xaml.cs`:
            // This message will show up in the Output window of Visual Studio
            Debugger.Log(0, "", $"Webcam {device.name} (id: {device.id})\n");
        }
+   }
+   ```
+
+4. Create the event handler `App_Suspending()`. For now there is nothing to do from it.
+   ```cs
+   private void App_Suspending(object sender, SuspendingEventArgs e)
+   {
    }
    ```
 
