@@ -33,6 +33,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         internal const uint MRS_E_INVALID_PARAMETER = 0x80000001u;
         internal const uint MRS_E_INVALID_OPERATION = 0x80000002u;
         internal const uint MRS_E_WRONG_THREAD = 0x80000003u;
+        internal const uint MRS_E_NOTFOUND = 0x80000004u;
         internal const uint MRS_E_INVALID_PEER_HANDLE = 0x80000101u;
         internal const uint MRS_E_PEER_NOT_INITIALIZED = 0x80000102u;
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
@@ -121,6 +122,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
             case MRS_E_WRONG_THREAD:
                 throw new InvalidOperationException("This method cannot be called on that thread.");
+
+            case MRS_E_NOTFOUND:
+                throw new Exception("Object not found.");
 
             case MRS_E_INVALID_PEER_HANDLE:
                 throw new InvalidOperationException("Invalid peer connection handle.");

@@ -28,6 +28,7 @@ constexpr const mrsResult MRS_E_UNKNOWN{0x80000000};
 constexpr const mrsResult MRS_E_INVALID_PARAMETER{0x80000001};
 constexpr const mrsResult MRS_E_INVALID_OPERATION{0x80000002};
 constexpr const mrsResult MRS_E_WRONG_THREAD{0x80000003};
+constexpr const mrsResult MRS_E_NOTFOUND{0x80000004};
 
 // Peer conection (0x1xx)
 constexpr const mrsResult MRS_E_INVALID_PEER_HANDLE{0x80000101};

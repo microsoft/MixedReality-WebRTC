@@ -20,6 +20,10 @@ struct mrsEnumerator {
 
 namespace {
 
+inline bool IsStringNullOrEmpty(const char* str) noexcept {
+  return ((str == nullptr) || (str[0] == '\0'));
+}
+
 mrsResult RTCToAPIError(const webrtc::RTCError& error) {
   if (error.ok()) {
     return MRS_SUCCESS;
@@ -332,8 +336,7 @@ mrsResult OpenVideoCaptureDevice(
   auto deviceList = vci->value();
 
   std::wstring video_device_id_str;
-  if ((config.video_device_id != nullptr) &&
-      (config.video_device_id[0] != '\0')) {
+  if (!IsStringNullOrEmpty(config.video_device_id)) {
     video_device_id_str =
         rtc::ToUtf16(config.video_device_id, strlen(config.video_device_id));
   }
@@ -383,8 +386,7 @@ mrsResult OpenVideoCaptureDevice(
     }
   }
 #else
-  // List video capture devices, match by name if specified, or use first one
-  // available otherwise.
+  // List all available video capture devices, or match by ID if specified.
   std::vector<std::string> device_names;
   {
     std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
@@ -393,28 +395,49 @@ mrsResult OpenVideoCaptureDevice(
       return MRS_E_UNKNOWN;
     }
 
-    std::string video_device_id_str;
-    if ((config.video_device_id != nullptr) &&
-        (config.video_device_id[0] != '\0')) {
-      video_device_id_str.assign(config.video_device_id);
-    }
-
     const int num_devices = info->NumberOfDevices();
-    for (int i = 0; i < num_devices; ++i) {
-      constexpr uint32_t kSize = 256;
-      char name[kSize] = {};
-      char id[kSize] = {};
-      if (info->GetDeviceName(i, name, kSize, id, kSize) != -1) {
-        device_names.push_back(name);
-        if (video_device_id_str == name) {
-          break;
+    constexpr uint32_t kSize = 256;
+    if (!IsStringNullOrEmpty(config.video_device_id)) {
+      // Look for the one specific device the user asked for
+      std::string video_device_id_str = config.video_device_id;
+      for (int i = 0; i < num_devices; ++i) {
+        char name[kSize] = {};
+        char id[kSize] = {};
+        if (info->GetDeviceName(i, name, kSize, id, kSize) != -1) {
+          if (video_device_id_str == id) {
+            // Keep only the device the user selected
+            device_names.push_back(name);
+            break;
+          }
         }
+      }
+      if (device_names.empty()) {
+        RTC_LOG(LS_ERROR)
+            << "Could not find video capture device by unique ID: "
+            << config.video_device_id;
+        return MRS_E_NOTFOUND;
+      }
+    } else {
+      // List all available devices
+      for (int i = 0; i < num_devices; ++i) {
+        char name[kSize] = {};
+        char id[kSize] = {};
+        if (info->GetDeviceName(i, name, kSize, id, kSize) != -1) {
+          device_names.push_back(name);
+        }
+      }
+      if (device_names.empty()) {
+        RTC_LOG(LS_ERROR) << "Could not find any video catpure device.";
+        return MRS_E_INVALID_OPERATION;
       }
     }
   }
 
+  // Open the specified capture device, or the first one available if none
+  // specified.
   cricket::WebRtcVideoDeviceCapturerFactory factory;
   for (const auto& name : device_names) {
+    // cricket::Device identifies devices by (friendly) name, not unique ID
     capturer_out = factory.Create(cricket::Device(name, 0));
     if (capturer_out) {
       return MRS_SUCCESS;
@@ -581,7 +604,7 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
     void* enumCallbackUserData,
     mrsVideoCaptureFormatEnumCompletedCallback completedCallback,
     void* completedCallbackUserData) noexcept {
-  if (!device_id || (device_id[0] == '\0')) {
+  if (IsStringNullOrEmpty(device_id)) {
     return MRS_E_INVALID_PARAMETER;
   }
   const std::string device_id_str = device_id;
