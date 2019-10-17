@@ -1,12 +1,9 @@
 # MixedReality-WebRTC
 
 [![Licensed under the MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/microsoft/MixedReality-WebRTC/blob/master/LICENSE)
-![Under active development](https://img.shields.io/badge/status-public_preview-red.svg)
 [![Holodevelopers channel on Slack](https://img.shields.io/badge/slack-@holodevelopers-%23972299.svg?logo=slack)](https://holodevelopers.slack.com/messages/CN1A7JB3R)
-
-**⚠ PUBLIC PREVIEW ⚠**
-
-**This repository currently contains a public preview under active development, intended for early adopters and to gather feedback. While in preview, the API is expected to be unstable and breaking changes will occur. See also the Known Issues section for details.**
+![NuGet](https://img.shields.io/nuget/vpre/Microsoft.MixedReality.WebRTC)
+![Under active development](https://img.shields.io/badge/status-active-green.svg)
 
 MixedReality-WebRTC is a collection of libraries to help mixed reality app developers to integrate peer-to-peer real-time audio and video communication into their application and improve their collaborative experience.
 
@@ -19,6 +16,10 @@ MixedReality-WebRTC is a collection of libraries to help mixed reality app devel
 
 MixedReality-WebRTC is part of the collection of repositories developed and maintained by the [Mixed Reality Sharing team](https://github.com/orgs/microsoft/teams/mixed-reality-sharing).
 
+## Download
+
+See the [Release page on GitHub](https://github.com/microsoft/MixedReality-WebRTC/releases).
+
 ## Build Status
 
 | Branch | WebRTC | C++ Library | C# Library | Docs |
@@ -26,7 +27,7 @@ MixedReality-WebRTC is part of the collection of repositories developed and main
 | [`master`](https://github.com/microsoft/MixedReality-WebRTC/tree/master) | [m71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cpp-ci?branchName=master)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=24&branchName=master) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cs-ci?branchName=master)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=25&branchName=master) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-docs-ci?branchName=master)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=26&branchName=master) |
 | [`feature/m75`](https://github.com/microsoft/MixedReality-WebRTC/tree/feature/m75) | [m75](https://groups.google.com/forum/#!msg/discuss-webrtc/_jlUbYjv-hQ/Wd2mQgpOAgAJ) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cpp-ci?branchName=feature/m75)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=24&branchName=feature/m75) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cs-ci?branchName=feature/m75)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=25&branchName=feature/m75) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-docs-ci?branchName=feature/m75)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=26&branchName=feature/m75) |
 
-The current up-to-date branch with latest developments is the `master` branch. Initial support for WebRTC release M75 started on the `feature/m75` branch, but is not in a working state yet. See [#13](https://github.com/microsoft/MixedReality-WebRTC/issues/13) for details.
+The current up-to-date branch with latest developments is the `master` branch, based off the [M71 milestone](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) of WebRTC. Initial support for the [M75 milestone](https://groups.google.com/forum/#!msg/discuss-webrtc/_jlUbYjv-hQ/mCtjlVyjAgAJ) started on the `feature/m75` branch, but is not in a working state yet. See [#13](https://github.com/microsoft/MixedReality-WebRTC/issues/13) for details.
 
 ## Documentation
 
@@ -34,7 +35,7 @@ The official documentation is hosted at https://microsoft.github.io/MixedReality
 
 - The [User Manual](https://microsoft.github.io/MixedReality-WebRTC/manual/introduction) contains a general overview and some tutorials.
   - The [Hello, Unity world!](https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity) tutorial introduces the Unity integration by building a simple chat client.
-  - The Hello, C# world! tutorial (under construction) introduces the C# API.
+  - The Hello, C# world! tutorial ([Desktop version](https://microsoft.github.io/MixedReality-WebRTC/manual/cs/helloworld-cs-core3.html) and [UWP version](https://microsoft.github.io/MixedReality-WebRTC/manual/cs/helloworld-cs-uwp.html)) introduces the C# API.
 - An [API reference](https://microsoft.github.io/MixedReality-WebRTC/api/Microsoft.MixedReality.WebRTC.html) is also available for the C# library and the Unity integration.
 
 ## Getting Started
@@ -111,6 +112,7 @@ See the user manual section on [Building from sources](https://microsoft.github.
 The current version is a public preview under active development, which contains known issues being addressed:
 
 - HoloLens 2 exhibits some small performance penalty due to the [missing support (#157)](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157) for SIMD-accelerated YUV conversion in WebRTC UWP SDK on ARM.
+- H.264 hardware video encoding (UWP only) exhibits some video freeze and quality degrading (blockiness). See #74 and #101 for details.
 - There is currently no clean C++ API; instead the C API used for C# P/Invoke can be used from C++ code, and opaque handles cast to C++ objects. An actual C++ API will eventually be exposed.
 
 In addition, the Debug config of WebRTC core implementation is known to exhibit some performance issues on most devices, including some higher end PCs. Using the Release config of the core WebRTC implementation usually prevents this.
