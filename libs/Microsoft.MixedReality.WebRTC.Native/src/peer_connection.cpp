@@ -295,14 +295,14 @@ void PeerConnection::RemoveDataChannel(
     }
   }
 
-  // Close the data channel
+  // Close the WebRTC data channel
   webrtc::DataChannelInterface* const impl = data_channel.impl();
   impl->UnregisterObserver();  // force here, as ~DataChannel() didn't run yet
   impl->Close();
 
   // Invoke the DataChannelRemoved callback on the wrapper if any
   if (auto interop_handle = data_channel.GetInteropHandle()) {
-    auto lock = std::lock_guard{data_channel_removed_callback_mutex_};
+    auto lock = std::scoped_lock{data_channel_removed_callback_mutex_};
     auto removed_cb = data_channel_removed_callback_;
     if (removed_cb) {
       DataChannelHandle data_native_handle = (void*)&data_channel;
@@ -329,7 +329,7 @@ void PeerConnection::OnDataChannelAdded(
 
   // Invoke the DataChannelAdded callback on the wrapper if any
   if (auto interop_handle = data_channel.GetInteropHandle()) {
-    auto lock = std::lock_guard{data_channel_added_callback_mutex_};
+    auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
     auto added_cb = data_channel_added_callback_;
     if (added_cb) {
       DataChannelHandle data_native_handle = (void*)&data_channel;
@@ -416,7 +416,7 @@ void PeerConnection::OnSignalingChange(
       // but this callback would not be invoked then because there's no
       // transition.
       {
-        auto lock = std::lock_guard{connected_callback_mutex_};
+        auto lock = std::scoped_lock{connected_callback_mutex_};
         connected_callback_();
       }
       break;
@@ -507,7 +507,7 @@ void PeerConnection::OnDataChannel(
 
     // Invoke the DataChannelAdded callback on the wrapper
     {
-      auto lock = std::lock_guard{data_channel_added_callback_mutex_};
+      auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
       auto added_cb = data_channel_added_callback_;
       if (added_cb) {
         const DataChannelHandle data_native_handle = data_channel.get();
@@ -518,7 +518,7 @@ void PeerConnection::OnDataChannel(
 }
 
 void PeerConnection::OnRenegotiationNeeded() noexcept {
-  auto lock = std::lock_guard{renegotiation_needed_callback_mutex_};
+  auto lock = std::scoped_lock{renegotiation_needed_callback_mutex_};
   auto cb = renegotiation_needed_callback_;
   if (cb) {
     cb();
@@ -527,7 +527,7 @@ void PeerConnection::OnRenegotiationNeeded() noexcept {
 
 void PeerConnection::OnIceConnectionChange(
     webrtc::PeerConnectionInterface::IceConnectionState new_state) noexcept {
-  auto lock = std::lock_guard{ice_state_changed_callback_mutex_};
+  auto lock = std::scoped_lock{ice_state_changed_callback_mutex_};
   auto cb = ice_state_changed_callback_;
   if (cb) {
     cb(IceStateFromImpl(new_state));
@@ -536,7 +536,7 @@ void PeerConnection::OnIceConnectionChange(
 
 void PeerConnection::OnIceCandidate(
     const webrtc::IceCandidateInterface* candidate) noexcept {
-  auto lock = std::lock_guard{ice_candidate_ready_to_send_callback_mutex_};
+  auto lock = std::scoped_lock{ice_candidate_ready_to_send_callback_mutex_};
   auto cb = ice_candidate_ready_to_send_callback_;
   if (cb) {
     std::string sdp;
@@ -586,7 +586,7 @@ void PeerConnection::OnAddTrack(
 
   // Invoke the TrackAdded callback
   {
-    auto lock = std::lock_guard{track_added_callback_mutex_};
+    auto lock = std::scoped_lock{track_added_callback_mutex_};
     auto cb = track_added_callback_;
     if (cb) {
       cb(trackKind);
@@ -626,7 +626,7 @@ void PeerConnection::OnRemoveTrack(
 
   // Invoke the TrackRemoved callback
   {
-    auto lock = std::lock_guard{track_removed_callback_mutex_};
+    auto lock = std::scoped_lock{track_removed_callback_mutex_};
     auto cb = track_removed_callback_;
     if (cb) {
       cb(trackKind);
@@ -636,7 +636,7 @@ void PeerConnection::OnRemoveTrack(
 
 void PeerConnection::OnSuccess(
     webrtc::SessionDescriptionInterface* desc) noexcept {
-  auto lock = std::lock_guard{local_sdp_ready_to_send_callback_mutex_};
+  auto lock = std::scoped_lock{local_sdp_ready_to_send_callback_mutex_};
   auto cb = local_sdp_ready_to_send_callback_;
   rtc::scoped_refptr<webrtc::SetSessionDescriptionObserver> observer;
   if (cb) {

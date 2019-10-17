@@ -70,7 +70,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// Register a custom LocalSdpReadytoSendCallback.
   void RegisterLocalSdpReadytoSendCallback(
       LocalSdpReadytoSendCallback&& callback) noexcept {
-    auto lock = std::lock_guard{local_sdp_ready_to_send_callback_mutex_};
+    auto lock = std::scoped_lock{local_sdp_ready_to_send_callback_mutex_};
     local_sdp_ready_to_send_callback_ = std::move(callback);
   }
 
@@ -85,7 +85,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// Register a custom IceCandidateReadytoSendCallback.
   void RegisterIceCandidateReadytoSendCallback(
       IceCandidateReadytoSendCallback&& callback) noexcept {
-    auto lock = std::lock_guard{ice_candidate_ready_to_send_callback_mutex_};
+    auto lock = std::scoped_lock{ice_candidate_ready_to_send_callback_mutex_};
     ice_candidate_ready_to_send_callback_ = std::move(callback);
   }
 
@@ -97,7 +97,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// Register a custom IceStateChangedCallback.
   void RegisterIceStateChangedCallback(
       IceStateChangedCallback&& callback) noexcept {
-    auto lock = std::lock_guard{ice_state_changed_callback_mutex_};
+    auto lock = std::scoped_lock{ice_state_changed_callback_mutex_};
     ice_state_changed_callback_ = std::move(callback);
   }
 
@@ -112,7 +112,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// Register a custom RenegotiationNeededCallback.
   void RegisterRenegotiationNeededCallback(
       RenegotiationNeededCallback&& callback) noexcept {
-    auto lock = std::lock_guard{renegotiation_needed_callback_mutex_};
+    auto lock = std::scoped_lock{renegotiation_needed_callback_mutex_};
     renegotiation_needed_callback_ = std::move(callback);
   }
 
@@ -135,7 +135,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
 
   /// Register a custom ConnectedCallback.
   void RegisterConnectedCallback(ConnectedCallback&& callback) noexcept {
-    auto lock = std::lock_guard{connected_callback_mutex_};
+    auto lock = std::scoped_lock{connected_callback_mutex_};
     connected_callback_ = std::move(callback);
   }
 
@@ -158,7 +158,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
 
   /// Register a custom TrackAddedCallback.
   void RegisterTrackAddedCallback(TrackAddedCallback&& callback) noexcept {
-    auto lock = std::lock_guard{track_added_callback_mutex_};
+    auto lock = std::scoped_lock{track_added_callback_mutex_};
     track_added_callback_ = std::move(callback);
   }
 
@@ -167,7 +167,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
 
   /// Register a custom TrackRemovedCallback.
   void RegisterTrackRemovedCallback(TrackRemovedCallback&& callback) noexcept {
-    auto lock = std::lock_guard{track_removed_callback_mutex_};
+    auto lock = std::scoped_lock{track_removed_callback_mutex_};
     track_removed_callback_ = std::move(callback);
   }
 
@@ -292,7 +292,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// from the remote peer and added locally.
   void RegisterDataChannelAddedCallback(
       DataChannelAddedCallback callback) noexcept {
-    auto lock = std::lock_guard{data_channel_added_callback_mutex_};
+    auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
     data_channel_added_callback_ = std::move(callback);
   }
 
@@ -300,10 +300,12 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// remote peer and removed locally.
   void RegisterDataChannelRemovedCallback(
       DataChannelRemovedCallback callback) noexcept {
-    auto lock = std::lock_guard{data_channel_removed_callback_mutex_};
+    auto lock = std::scoped_lock{data_channel_removed_callback_mutex_};
     data_channel_removed_callback_ = std::move(callback);
   }
 
+  /// Create a new data channel and add it to the peer connection.
+  /// This invokes the DataChannelAdded callback.
   webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> AddDataChannel(
       int id,
       std::string_view label,
@@ -311,6 +313,8 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
       bool reliable,
       mrsDataChannelInteropHandle dataChannelInteropHandle) noexcept;
 
+  /// Close and remove a given data channel.
+  /// This invokes the DataChannelRemoved callback.
   void RemoveDataChannel(const DataChannel& data_channel) noexcept;
 
   /// Notification from a non-negotiated DataChannel that it is open, so that

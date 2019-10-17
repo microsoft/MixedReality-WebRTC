@@ -40,12 +40,12 @@ ArgbBuffer::ToI420() {
 }
 
 void VideoFrameObserver::SetCallback(I420FrameReadyCallback callback) noexcept {
-  auto lock = std::lock_guard{mutex_};
+  auto lock = std::scoped_lock{mutex_};
   i420_callback_ = std::move(callback);
 }
 
 void VideoFrameObserver::SetCallback(ARGBFrameReadyCallback callback) noexcept {
-  auto lock = std::lock_guard{mutex_};
+  auto lock = std::scoped_lock{mutex_};
   argb_callback_ = std::move(callback);
 }
 
@@ -63,7 +63,7 @@ ArgbBuffer* VideoFrameObserver::GetArgbScratchBuffer(
 }
 
 void VideoFrameObserver::OnFrame(const webrtc::VideoFrame& frame) noexcept {
-  auto lock = std::lock_guard{mutex_};
+  auto lock = std::scoped_lock{mutex_};
   if (!i420_callback_ && !argb_callback_)
     return;
 
