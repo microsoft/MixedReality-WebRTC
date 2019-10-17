@@ -128,10 +128,7 @@ PeerConnection::~PeerConnection() noexcept {
     }
   }
 
-  // Beware, RemoveDataChannel() erases from data_channels_
-  while (!data_channels_.empty()) {
-    RemoveDataChannel(*data_channels_.back());
-  }
+  RemoveAllDataChannels();
 }
 
 bool PeerConnection::AddLocalVideoTrack(
@@ -251,12 +248,15 @@ webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
     // Create the native object
     auto data_channel = std::make_shared<DataChannel>(this, std::move(impl),
                                                       dataChannelInteropHandle);
-    data_channels_.push_back(data_channel);
-    if (!labelString.empty()) {
-      data_channel_from_label_.emplace(std::move(labelString), data_channel);
-    }
-    if (config.id >= 0) {
-      data_channel_from_id_.try_emplace(config.id, data_channel);
+    {
+      auto lock = std::scoped_lock{data_channel_mutex_};
+      data_channels_.push_back(data_channel);
+      if (!labelString.empty()) {
+        data_channel_from_label_.emplace(std::move(labelString), data_channel);
+      }
+      if (config.id >= 0) {
+        data_channel_from_id_.try_emplace(config.id, data_channel);
+      }
     }
 
     // For in-band channels, the creating side (here) doesn't receive an
@@ -272,16 +272,25 @@ webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
 
 void PeerConnection::RemoveDataChannel(
     const DataChannel& data_channel) noexcept {
-  // The channel must be owned by this PeerConnection, so must be known already
-  auto const it =
-      std::find_if(data_channels_.begin(), data_channels_.end(),
-                   [&data_channel](const std::shared_ptr<DataChannel>& other) {
-                     return other.get() == &data_channel;
-                   });
-  RTC_CHECK(it != data_channels_.end());
-
-  // Clean-up interop maps
+  // Move the channel to destroy out of the internal data structures
+  std::shared_ptr<DataChannel> data_channel_ptr;
   {
+    auto lock = std::scoped_lock{data_channel_mutex_};
+
+    // The channel must be owned by this PeerConnection, so must be known
+    // already
+    auto const it = std::find_if(
+        std::begin(data_channels_), std::end(data_channels_),
+        [&data_channel](const std::shared_ptr<DataChannel>& other) {
+          return other.get() == &data_channel;
+        });
+    RTC_DCHECK(it != data_channels_.end());
+    // Be sure a reference is kept. This should not be a problem in theory
+    // because the caller should have a reference to it, but this is safer.
+    data_channel_ptr = std::move(*it);
+    data_channels_.erase(it);
+
+    // Clean-up interop maps
     auto it_id = data_channel_from_id_.find(data_channel.id());
     if (it_id != data_channel_from_id_.end()) {
       data_channel_from_id_.erase(it_id);
@@ -310,22 +319,51 @@ void PeerConnection::RemoveDataChannel(
     }
   }
 
-  // Remove the channel last, to be sure a reference is kept.
-  // This should not be a problem in theory because the caller should have a
-  // reference to it, but this is safer.
-  (*it)->OnRemovedFromPeerConnection();  // clear back pointer
-  data_channels_.erase(it);
+  // Clear the back pointer to the peer connection, and let the shared pointer
+  // go out of scope and destroy the object if that was the last reference.
+  data_channel_ptr->OnRemovedFromPeerConnection();
+}
+
+void PeerConnection::RemoveAllDataChannels() noexcept {
+  auto lock_cb = std::scoped_lock{data_channel_removed_callback_mutex_};
+  auto removed_cb = data_channel_removed_callback_;
+  auto lock = std::scoped_lock{data_channel_mutex_};
+  for (auto&& data_channel : data_channels_) {
+    // Close the WebRTC data channel
+    webrtc::DataChannelInterface* const impl = data_channel->impl();
+    impl->UnregisterObserver();  // force here, as ~DataChannel() didn't run yet
+    impl->Close();
+
+    // Invoke the DataChannelRemoved callback on the wrapper if any
+    if (removed_cb) {
+      if (auto interop_handle = data_channel->GetInteropHandle()) {
+        DataChannelHandle data_native_handle = (void*)&data_channel;
+        removed_cb(interop_handle, data_native_handle);
+      }
+    }
+
+    // Clear the back pointer
+    data_channel->OnRemovedFromPeerConnection();
+  }
+  data_channel_from_id_.clear();
+  data_channel_from_label_.clear();
+  data_channels_.clear();
 }
 
 void PeerConnection::OnDataChannelAdded(
     const DataChannel& data_channel) noexcept {
   // The channel must be owned by this PeerConnection, so must be known already.
   // It was added in AddDataChannel() when the DataChannel object was created.
-  RTC_CHECK(
-      std::find_if(data_channels_.begin(), data_channels_.end(),
+#if RTC_DCHECK_IS_ON
+  {
+    auto lock = std::scoped_lock{data_channel_mutex_};
+    RTC_DCHECK(std::find_if(
+                   data_channels_.begin(), data_channels_.end(),
                    [&data_channel](const std::shared_ptr<DataChannel>& other) {
                      return other.get() == &data_channel;
                    }) != data_channels_.end());
+  }
+#endif  // RTC_DCHECK_IS_ON
 
   // Invoke the DataChannelAdded callback on the wrapper if any
   if (auto interop_handle = data_channel.GetInteropHandle()) {
@@ -362,8 +400,11 @@ bool PeerConnection::CreateOffer() noexcept {
     options.offer_to_receive_audio = true;
     options.offer_to_receive_video = true;
   }
-  if (data_channels_.empty()) {
-    sctp_negotiated_ = false;
+  {
+    auto lock = std::scoped_lock{data_channel_mutex_};
+    if (data_channels_.empty()) {
+      sctp_negotiated_ = false;
+    }
   }
   peer_->CreateOffer(this, options);
   return true;
@@ -386,8 +427,11 @@ bool PeerConnection::SetRemoteDescription(const char* type,
                                           const char* sdp) noexcept {
   if (!peer_)
     return false;
-  if (data_channels_.empty()) {
-    sctp_negotiated_ = false;
+  {
+    auto lock = std::scoped_lock{data_channel_mutex_};
+    if (data_channels_.empty()) {
+      sctp_negotiated_ = false;
+    }
   }
   std::string sdp_type_str(type);
   auto sdp_type = webrtc::SdpTypeFromString(sdp_type_str);
@@ -483,15 +527,19 @@ void PeerConnection::OnDataChannel(
   // Create a new native object
   auto data_channel =
       std::make_shared<DataChannel>(this, impl, data_channel_interop_handle);
-  data_channels_.push_back(data_channel);
-  if (!label.empty()) {
-    // Move |label| into the map to avoid copy
-    auto it = data_channel_from_label_.emplace(std::move(label), data_channel);
-    // Update the address to the moved item in case it changed
-    config.label = it->first.c_str();
-  }
-  if (data_channel->id() >= 0) {
-    data_channel_from_id_.try_emplace(data_channel->id(), data_channel);
+  {
+    auto lock = std::scoped_lock{data_channel_mutex_};
+    data_channels_.push_back(data_channel);
+    if (!label.empty()) {
+      // Move |label| into the map to avoid copy
+      auto it =
+          data_channel_from_label_.emplace(std::move(label), data_channel);
+      // Update the address to the moved item in case it changed
+      config.label = it->first.c_str();
+    }
+    if (data_channel->id() >= 0) {
+      data_channel_from_id_.try_emplace(data_channel->id(), data_channel);
+    }
   }
 
   // TODO -- Invoke some callback on the C++ side

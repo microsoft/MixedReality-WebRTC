@@ -175,17 +175,40 @@ TEST(DataChannel, InBand) {
   }
 }
 
-// NOTE - This test is flaky, relies on the send loop being faster than what the local
-//        network can send, without setting any explicit congestion control etc. so is
-//        prone to false errors. This is still useful for local testing.
+TEST(DataChannel, MultiThreadCreate) {
+  PCRaii pc;
+  constexpr int kNumThreads = 16;
+  std::thread threads[kNumThreads];
+  Event ev_start;
+  for (std::thread& t : threads) {
+    t = std::move(*new std::thread([&ev_start, &pc]() {
+      ev_start.Wait();
+      mrsDataChannelConfig config{};
+      DataChannelHandle handle;
+      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddDataChannel(
+                                 pc.handle(), (mrsDataChannelInteropHandle)0x1,
+                                 config, {}, &handle));
+    }));
+  }
+  ev_start.SetBroadcast();
+  for (std::thread& t : threads) {
+    t.join();
+  }
+}
+
+// NOTE - This test is flaky, relies on the send loop being faster than what the
+// local
+//        network can send, without setting any explicit congestion control etc.
+//        so is prone to false errors. This is still useful for local testing.
 //
-//TEST(DataChannel, Buffering) {
+// TEST(DataChannel, Buffering) {
 //  // Create PC
 //  LocalPeerPairRaii pair;
 //  ASSERT_NE(nullptr, pair.pc1());
 //  ASSERT_NE(nullptr, pair.pc2());
 //
-//  // In order to allow creating interop wrappers from native code, register the
+//  // In order to allow creating interop wrappers from native code, register
+//  the
 //  // necessary interop callbacks.
 //  mrsPeerConnectionInteropCallbacks interop{};
 //  interop.data_channel_create_object = &FakeIterop_DataChannelCreate;
@@ -216,10 +239,12 @@ TEST(DataChannel, InBand) {
 //    mrsDataChannelInteropHandle interopHandle = kFakeInteropDataChannelHandle;
 //    ASSERT_EQ(MRS_SUCCESS,
 //              mrsPeerConnectionAddDataChannel(
-//                  pair.pc1(), interopHandle, data_config, callbacks, &handle1));
+//                  pair.pc1(), interopHandle, data_config, callbacks,
+//                  &handle1));
 //    ASSERT_EQ(MRS_SUCCESS,
 //              mrsPeerConnectionAddDataChannel(
-//                  pair.pc2(), interopHandle, data_config, callbacks, &handle2));
+//                  pair.pc2(), interopHandle, data_config, callbacks,
+//                  &handle2));
 //  }
 //  auto data1 = (Microsoft::MixedReality::WebRTC::DataChannel*)handle1;
 //  auto data2 = (Microsoft::MixedReality::WebRTC::DataChannel*)handle2;

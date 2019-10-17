@@ -317,6 +317,10 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// This invokes the DataChannelRemoved callback.
   void RemoveDataChannel(const DataChannel& data_channel) noexcept;
 
+  /// Close and remove all data channels at once.
+  /// This invokes the DataChannelRemoved callback for each data channel.
+  void RemoveAllDataChannels() noexcept;
+
   /// Notification from a non-negotiated DataChannel that it is open, so that
   /// the PeerConnection can fire a DataChannelAdded event. This is called
   /// automatically by non-negotiated data channels; do not call manually.
@@ -481,17 +485,22 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> remote_streams_;
 
   /// Collection of all data channels associated with this peer connection.
-  std::vector<std::shared_ptr<DataChannel>> data_channels_;
+  std::vector<std::shared_ptr<DataChannel>> data_channels_
+      RTC_GUARDED_BY(data_channel_mutex_);
 
   /// Collection of data channels from their unique ID.
   /// This contains only data channels pre-negotiated or opened by the remote
   /// peer, as data channels opened locally won't have immediately a unique ID.
-  std::unordered_map<int, std::shared_ptr<DataChannel>> data_channel_from_id_;
+  std::unordered_map<int, std::shared_ptr<DataChannel>> data_channel_from_id_
+      RTC_GUARDED_BY(data_channel_mutex_);
 
   /// Collection of data channels from their label.
   /// This contains only data channels with a non-empty label.
   std::unordered_multimap<str, std::shared_ptr<DataChannel>>
-      data_channel_from_label_;
+      data_channel_from_label_ RTC_GUARDED_BY(data_channel_mutex_);
+
+  /// Mutex for data structures related to data channels.
+  std::mutex data_channel_mutex_;
 
   //< TODO - Clarify lifetime of those, for now same as this PeerConnection
   std::unique_ptr<AudioFrameObserver> local_audio_observer_;

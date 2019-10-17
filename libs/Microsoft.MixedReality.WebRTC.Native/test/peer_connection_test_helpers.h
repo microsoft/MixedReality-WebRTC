@@ -15,6 +15,11 @@ struct Event {
     signaled_ = true;
     cv_.notify_one();
   }
+  void SetBroadcast() {
+    std::unique_lock<std::mutex> lk(m_);
+    signaled_ = true;
+    cv_.notify_all();
+  }
   void Wait() {
     std::unique_lock<std::mutex> lk(m_);
     if (!signaled_) {
