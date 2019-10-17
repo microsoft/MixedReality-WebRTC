@@ -2,8 +2,8 @@
 
 [![Licensed under the MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/microsoft/MixedReality-WebRTC/blob/master/LICENSE)
 [![Holodevelopers channel on Slack](https://img.shields.io/badge/slack-@holodevelopers-%23972299.svg?logo=slack)](https://holodevelopers.slack.com/messages/CN1A7JB3R)
-![NuGet](https://img.shields.io/nuget/vpre/Microsoft.MixedReality.WebRTC)
-![Under active development](https://img.shields.io/badge/status-active-green.svg)
+[![NuGet](https://img.shields.io/nuget/vpre/Microsoft.MixedReality.WebRTC)](https://github.com/microsoft/MixedReality-WebRTC/releases)
+[![Under active development](https://img.shields.io/badge/status-active-green.svg)](https://github.com/microsoft/MixedReality-WebRTC/commits/master)
 
 MixedReality-WebRTC is a collection of libraries to help mixed reality app developers to integrate peer-to-peer real-time audio and video communication into their application and improve their collaborative experience.
 
