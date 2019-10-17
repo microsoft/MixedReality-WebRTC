@@ -1070,8 +1070,9 @@ mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
 
   const bool ordered = (config.flags & mrsDataChannelConfigFlags::kOrdered);
   const bool reliable = (config.flags & mrsDataChannelConfigFlags::kReliable);
+  const std::string_view label = (config.label ? config.label : "");
   webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> data_channel =
-      peer->AddDataChannel(config.id, config.label, ordered, reliable,
+      peer->AddDataChannel(config.id, label, ordered, reliable,
                            dataChannelInteropHandle);
   if (data_channel.ok()) {
     data_channel.value()->SetMessageCallback(DataChannel::MessageCallback{
