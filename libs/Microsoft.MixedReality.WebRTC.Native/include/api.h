@@ -126,6 +126,9 @@ using PeerConnectionHandle = void*;
 /// Opaque handle to a native DataChannel C++ object.
 using DataChannelHandle = void*;
 
+/// Opaque handle to a native AudioReadStream C++ object.
+using AudioReadStreamHandle = void*;
+
 /// Callback fired when the peer connection is connected, that is it finished
 /// the JSEP offer/answer exchange successfully.
 using PeerConnectionConnectedCallback = void(MRS_CALL*)(void* user_data);
@@ -548,6 +551,20 @@ MRS_API void MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
 
 MRS_API void MRS_CALL mrsPeerConnectionRemoveLocalAudioTrack(
     PeerConnectionHandle peerHandle) noexcept;
+
+MRS_API void MRS_CALL
+mrsAudioReadStreamCreate(PeerConnectionHandle peerHandle,
+                         int bufferMs,
+                         AudioReadStreamHandle* readStreamOut);
+
+MRS_API int MRS_CALL mrsAudioReadStreamRead(AudioReadStreamHandle readStream,
+                                             int sampleRate,
+                                             float data[],
+                                             int dataLen,
+                                             int numChannels);
+
+MRS_API void MRS_CALL
+mrsAudioReadStreamDestroy(AudioReadStreamHandle readStream);
 
 MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
     PeerConnectionHandle peerHandle,

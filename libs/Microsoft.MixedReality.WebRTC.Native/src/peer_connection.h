@@ -508,4 +508,36 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   PeerConnection& operator=(const PeerConnection&) = delete;
 };
 
+class AudioReadStream {
+ public:
+  AudioReadStream(PeerConnection*, int bufferMs);
+
+  int Read(int sampleRate, float data[], int dataLen, int numChannels) noexcept;
+
+ private:
+  static void staticAudioFrameCallback(void* user_data,
+                                 const void* audio_data,
+                                 const uint32_t bits_per_sample,
+                                 const uint32_t sample_rate,
+                                 const uint32_t number_of_channels,
+                                 const uint32_t number_of_frames);
+  void audioFrameCallback(const void* audio_data,
+                          const uint32_t bits_per_sample,
+                          const uint32_t sample_rate,
+                          const uint32_t number_of_channels,
+                          const uint32_t number_of_frames);
+  struct Frame {
+    std::vector<std::byte> audio_data;
+    uint32_t bits_per_sample;
+    uint32_t sample_rate;
+    uint32_t number_of_channels;
+    uint32_t number_of_frames;
+    uint32_t read_pos_ = 0;
+  };
+  std::deque<Frame> frames;
+  int read_index = 0;
+  std::mutex mutex_;
+  // int write_index = 0;
+};
+
 }  // namespace Microsoft::MixedReality::WebRTC

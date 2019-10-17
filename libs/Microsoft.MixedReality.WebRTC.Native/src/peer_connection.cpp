@@ -220,6 +220,56 @@ void PeerConnection::RemoveLocalAudioTrack() noexcept {
   local_audio_sender_ = nullptr;
 }
 
+void AudioReadStream::audioFrameCallback(const void* audio_data,
+                                         const uint32_t bits_per_sample,
+                                         const uint32_t sample_rate,
+                                         const uint32_t number_of_channels,
+                                         const uint32_t number_of_frames) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  // FIXME - no recycling frames yet
+  auto& frame = frames.emplace_back();
+  frame.bits_per_sample = bits_per_sample;
+  frame.sample_rate = sample_rate;
+  frame.number_of_channels = number_of_channels;
+  frame.number_of_frames = number_of_frames;
+  frame.read_pos_ = 0;
+  size_t size = (size_t)bits_per_sample * number_of_channels * number_of_frames;
+  auto src_bytes = static_cast<const std::byte*>(audio_data);
+  frame.audio_data.insert( frame.audio_data.begin(), src_bytes, src_bytes+size);
+}
+
+void AudioReadStream::staticAudioFrameCallback(
+    void* user_data,
+    const void* audio_data,
+    const uint32_t bits_per_sample,
+    const uint32_t sample_rate,
+    const uint32_t number_of_channels,
+    const uint32_t number_of_frames) {
+  auto ars = static_cast<AudioReadStream*>(user_data);
+  ars->audioFrameCallback(audio_data, bits_per_sample, sample_rate,
+                          number_of_channels, number_of_frames);
+}
+
+AudioReadStream::AudioReadStream(PeerConnection* peer, int bufferMs) {
+  peer->RegisterRemoteAudioFrameCallback(
+      AudioFrameReadyCallback{&staticAudioFrameCallback, this});
+}
+
+int AudioReadStream::Read(int sampleRate,
+                          float data[],
+                          int dataLen,
+                          int channels) noexcept {
+  std::lock_guard<std::mutex> lock(mutex_);
+  // FIXME - placeholder just fills with static
+  while(frames.size()) {
+    frames.pop_front();
+  }
+  for (int i = 0; i < dataLen; ++i) {
+    data[i] = ((rand() & 0x1ffff) - 0xffff) / 65536.0f;
+  }
+  return 0;
+}
+
 webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
     int id,
     std::string_view label,
