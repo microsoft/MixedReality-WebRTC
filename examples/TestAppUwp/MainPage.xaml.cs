@@ -15,6 +15,7 @@ using Windows.Media.Capture;
 using Windows.Media.Core;
 using Windows.Media.MediaProperties;
 using Windows.Media.Playback;
+using Windows.Storage;
 using Windows.System.Profile;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -102,7 +103,6 @@ namespace TestAppUwp
         private bool isDssPolling = false;
         private NodeDssSignaler dssSignaler = new NodeDssSignaler();
         private DispatcherTimer dssStatsTimer = new DispatcherTimer();
-        private string remotePeerId; // local copy of remotePeerUidTextBox.Text accessible from non-UI thread
 
         public ObservableCollection<VideoCaptureDeviceInfo> VideoCaptureDevices { get; private set; }
             = new ObservableCollection<VideoCaptureDeviceInfo>();
@@ -204,26 +204,16 @@ namespace TestAppUwp
         private VideoBridge localVideoBridge = new VideoBridge(3);
         private VideoBridge remoteVideoBridge = new VideoBridge(5);
 
-        // HACK - For debugging 2 instances on the same machine and 2 webcams
-        private int HACK_GetVideoDeviceIndex()
+        public static string GetDeviceName()
         {
-            var firstInstance = AppInstance.FindOrRegisterInstanceForKey("{44CD414E-B604-482E-8CFD-A9E09076CABD}");
-            int idx = 0;
-            if (!firstInstance.IsCurrentInstance)
-            {
-                idx++;
-            }
-            return idx;
+            return Environment.MachineName;
         }
 
         public MainPage()
         {
             this.InitializeComponent();
 
-            // HACK - For debugging: deterministic 2-instance value paired with each other
-            var idx = HACK_GetVideoDeviceIndex();
-            localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx);
-            remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx));
+            RestoreLocalAndRemotePeerIDs();
 
             dssSignaler.OnMessage += DssSignaler_OnMessage;
             dssSignaler.OnFailure += DssSignaler_OnFailure;
@@ -249,6 +239,44 @@ namespace TestAppUwp
             //Window.Current.Closed += Shutdown; // doesn't work
 
             this.Loaded += OnLoaded;
+            Application.Current.Suspending += App_Suspending;
+            Application.Current.Resuming += App_Resuming;
+        }
+
+        private void App_Suspending(object sender, SuspendingEventArgs e)
+        {
+            // Save local and remote peer IDs for next launch for convenience
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values["LocalPeerID"] = localPeerUidTextBox.Text;
+            localSettings.Values["RemotePeerID"] = remotePeerUidTextBox.Text;
+        }
+
+        private void App_Resuming(object sender, object e)
+        {
+            RestoreLocalAndRemotePeerIDs();
+        }
+
+        private void RestoreLocalAndRemotePeerIDs()
+        {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.TryGetValue("LocalPeerID", out object localObj))
+            {
+                if (localObj is string str)
+                {
+                    localPeerUidTextBox.Text = str;
+                }
+            }
+            if (localPeerUidTextBox.Text.Length == 0)
+            {
+                localPeerUidTextBox.Text = GetDeviceName();
+            }
+            if (localSettings.Values.TryGetValue("RemotePeerID", out object remoteObj))
+            {
+                if (remoteObj is string str)
+                {
+                    remotePeerUidTextBox.Text = str;
+                }
+            }
         }
 
         private void OnDataChannelAdded(DataChannel channel)
@@ -1102,16 +1130,6 @@ namespace TestAppUwp
                 dssStatsTimer.Start();
                 startLocalVideo.Content = "Stop local video";
 
-                //< HACK - Generate pseudo-random unique identifiers which are stable
-                // across sessions (so they can be cached) and are deterministic for each
-                // of the first 2 instances of the app, so that 2 instances can connect to
-                // each other without having to setup anything.
-                {
-                    var idx = HACK_GetVideoDeviceIndex();
-                    localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx);
-                    remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx));
-                }
-
                 localVideoSourceName.Text = $"({SelectedVideoCaptureDevice?.DisplayName})";
                 lock (_isLocalVideoPlayingLock)
                 {
@@ -1164,31 +1182,6 @@ namespace TestAppUwp
             await _peerConnection.AddDataChannelAsync("extra_channel", true, true);
         }
 
-        /// <summary>
-        /// Retrieve a unique ID that is stable across application instances, similar to what
-        /// Unity does with SystemInfo.deviceUniqueIdentifier.
-        /// </summary>
-        /// <param name="variant">Optional variation quantity to modify the unique ID,
-        /// to allow multiple instances of the application to run in parallel with different IDs.</param>
-        /// <returns>A unique string ID stable across multiple runs of the application</returns>
-        /// <remarks>
-        /// This is a debugging utility useful to generate deterministic WebRTC peers for node-dss
-        /// signaling, to avoid manual input during testing. This is not a production-level solution.
-        /// </remarks>
-        private string GetDeviceUniqueIdLikeUnity(byte variant = 0)
-        {
-            // More or less like Unity, which can use HardwareIdentification.GetPackageSpecificToken() in some cases,
-            // although it's unclear how they convert that to a string.
-            Windows.Storage.Streams.IBuffer buffer = HardwareIdentification.GetPackageSpecificToken(null).Id;
-            using (var dataReader = Windows.Storage.Streams.DataReader.FromBuffer(buffer))
-            {
-                byte[] bytes = new byte[buffer.Length];
-                dataReader.ReadBytes(bytes);
-                bytes[0] += variant;
-                return BitConverter.ToString(bytes).Replace("-", string.Empty).Remove(32);
-            }
-        }
-
         private void PollDssButtonClicked(object sender, RoutedEventArgs e)
         {
             // If already polling, stop
@@ -1210,10 +1203,8 @@ namespace TestAppUwp
 
             dssSignaler.HttpServerAddress = dssServer.Text;
             dssSignaler.LocalPeerId = localPeerUidTextBox.Text;
+            dssSignaler.RemotePeerId = remotePeerUidTextBox.Text;
             dssSignaler.PollTimeMs = pollTimeMs;
-            remotePeerId = remotePeerUidTextBox.Text;
-            dssSignaler.RemotePeerId = remotePeerId;
-
             if (dssSignaler.StartPollingAsync())
             {
                 pollDssButton.Content = "Stop polling";
