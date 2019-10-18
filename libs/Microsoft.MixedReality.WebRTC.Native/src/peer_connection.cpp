@@ -255,7 +255,7 @@ AudioReadStream::AudioReadStream(PeerConnection* peer, int bufferMs) {
       AudioFrameReadyCallback{&staticAudioFrameCallback, this});
 }
 
-int AudioReadStream::Read(int sampleRate,
+void AudioReadStream::Read(int sampleRate,
                           float data[],
                           int dataLen,
                           int channels) noexcept {
@@ -267,7 +267,6 @@ int AudioReadStream::Read(int sampleRate,
   for (int i = 0; i < dataLen; ++i) {
     data[i] = ((rand() & 0x1ffff) - 0xffff) / 65536.0f;
   }
-  return 0;
 }
 
 webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(

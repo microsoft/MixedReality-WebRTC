@@ -552,16 +552,17 @@ MRS_API void MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
 MRS_API void MRS_CALL mrsPeerConnectionRemoveLocalAudioTrack(
     PeerConnectionHandle peerHandle) noexcept;
 
-MRS_API void MRS_CALL
+MRS_API mrsResult MRS_CALL
 mrsAudioReadStreamCreate(PeerConnectionHandle peerHandle,
                          int bufferMs,
                          AudioReadStreamHandle* readStreamOut);
 
-MRS_API int MRS_CALL mrsAudioReadStreamRead(AudioReadStreamHandle readStream,
-                                             int sampleRate,
-                                             float data[],
-                                             int dataLen,
-                                             int numChannels);
+MRS_API mrsResult MRS_CALL
+mrsAudioReadStreamRead(AudioReadStreamHandle readStream,
+                       int sampleRate,
+                       float data[],
+                       int dataLen,
+                       int numChannels);
 
 MRS_API void MRS_CALL
 mrsAudioReadStreamDestroy(AudioReadStreamHandle readStream);

@@ -508,19 +508,31 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   PeerConnection& operator=(const PeerConnection&) = delete;
 };
 
+/// High level interface for consuming WebRTC audio streams.
+/// The implementation builds on top of the low-level AudioFrame callbacks
+/// and handles all buffering and resampling.
 class AudioReadStream {
  public:
+  /// Create a new stream which buffers 'bufferMs' milliseconds of audio.
+  /// WebRTC delivers audio at 10ms intervals so Pass -1 for
   AudioReadStream(PeerConnection*, int bufferMs);
 
-  int Read(int sampleRate, float data[], int dataLen, int numChannels) noexcept;
+  /// Fill data with samples at the given sampleRate and number of channels.
+  /// If the internal buffer overruns, the oldest data will be dropped.
+  /// If the internal buffer is exhausted, the data is padded with white noise.
+  /// In any case the entire data array is filled.
+  void Read(int sampleRate,
+            float data[],
+            int dataLen,
+            int numChannels) noexcept;
 
  private:
   static void staticAudioFrameCallback(void* user_data,
-                                 const void* audio_data,
-                                 const uint32_t bits_per_sample,
-                                 const uint32_t sample_rate,
-                                 const uint32_t number_of_channels,
-                                 const uint32_t number_of_frames);
+                                       const void* audio_data,
+                                       const uint32_t bits_per_sample,
+                                       const uint32_t sample_rate,
+                                       const uint32_t number_of_channels,
+                                       const uint32_t number_of_frames);
   void audioFrameCallback(const void* audio_data,
                           const uint32_t bits_per_sample,
                           const uint32_t sample_rate,

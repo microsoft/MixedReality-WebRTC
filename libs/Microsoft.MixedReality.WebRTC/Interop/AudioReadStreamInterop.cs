@@ -7,11 +7,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     {
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsAudioReadStreamCreate")]
-        public static extern void Create(IntPtr peerHandle, int bufferMs, ref IntPtr audioReadStream);
+        public static extern uint Create(IntPtr peerHandle, int bufferMs, ref IntPtr audioReadStream);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsAudioReadStreamRead")]
-        public static extern void Read(IntPtr audioReadStream, int sampleRate, float[] data, int dataLen, int numChannels);
+        public static extern uint Read(IntPtr audioReadStream, int sampleRate, float[] data, int dataLen, int numChannels);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsAudioReadStreamDestroy")]

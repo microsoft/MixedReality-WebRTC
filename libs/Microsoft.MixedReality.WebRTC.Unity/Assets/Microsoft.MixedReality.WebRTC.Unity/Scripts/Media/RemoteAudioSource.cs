@@ -46,6 +46,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private IAudioReadStream _audioReadStream = null;
 
         /// <summary>
+        /// Cached sample rate since we can't access this in OnAudioFilterRead.
+        /// </summary>
+        private int _audioSampleRate = 0;
+
+        /// <summary>
         /// Manually start playback of the remote audio feed by registering some listeners
         /// to the peer connection and starting to enqueue audio frames as they become ready.
         /// 
@@ -63,8 +68,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (!IsPlaying)
             {
                 IsPlaying = true;
+                OnAudioConfigurationChanged(false);
                 _audioReadStream = PeerConnection.Peer.CreateAudioReadStream();
             }
+        }
+
+        private void OnAudioConfigurationChanged(bool deviceWasChanged)
+        {
+            _audioSampleRate = AudioSettings.outputSampleRate;
         }
 
         /// <summary>
@@ -99,6 +110,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             PeerConnection.OnInitialized.AddListener(OnPeerInitialized);
             PeerConnection.OnShutdown.AddListener(OnPeerShutdown);
+            AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
         }
 
         /// <summary>
@@ -107,6 +119,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         protected void OnDestroy()
         {
+            AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
             PeerConnection.OnInitialized.RemoveListener(OnPeerInitialized);
             PeerConnection.OnShutdown.RemoveListener(OnPeerShutdown);
         }
@@ -185,7 +198,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (_audioReadStream != null)
             {
-                _audioReadStream.ReadAudio(AudioSettings.outputSampleRate, data, channels);
+                _audioReadStream.ReadAudio(_audioSampleRate, data, channels);
             }
             else
             {

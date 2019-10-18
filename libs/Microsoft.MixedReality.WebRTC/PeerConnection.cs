@@ -704,7 +704,8 @@ namespace Microsoft.MixedReality.WebRTC
                 // connection asynchronously from a background worker thread.
                 //using (var cancelOrCloseToken = CancellationTokenSource.CreateLinkedTokenSource(_initCTS.Token, token))
                 //{
-                _initTask = Task.Run(() => {
+                _initTask = Task.Run(() =>
+                {
                     token.ThrowIfCancellationRequested();
 
                     IntPtr nativeHandle = IntPtr.Zero;
@@ -870,7 +871,8 @@ namespace Microsoft.MixedReality.WebRTC
         public Task AddLocalVideoTrackAsync(LocalVideoTrackSettings settings = default)
         {
             ThrowIfConnectionNotOpen();
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
                 var config = (settings != null ? new PeerConnectionInterop.VideoDeviceConfiguration
@@ -936,7 +938,8 @@ namespace Microsoft.MixedReality.WebRTC
         public Task AddLocalAudioTrackAsync()
         {
             ThrowIfConnectionNotOpen();
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
                 if (PeerConnectionInterop.PeerConnection_AddLocalAudioTrack(_nativePeerhandle) != Utils.MRS_SUCCESS)
@@ -983,10 +986,15 @@ namespace Microsoft.MixedReality.WebRTC
 
         class AudioReadStream : IAudioReadStream
         {
-            IntPtr _nativeStreamHandle;
+            IntPtr _nativeStreamHandle = IntPtr.Zero;
             internal AudioReadStream(IntPtr nativePeerHandle, int bufferMs)
             {
-                AudioReadStreamInterop.Create(nativePeerHandle, bufferMs, ref _nativeStreamHandle);
+                uint res = AudioReadStreamInterop.Create(nativePeerHandle, bufferMs, ref _nativeStreamHandle);
+                Utils.ThrowOnErrorCode(res);
+            }
+            ~AudioReadStream()
+            {
+                Dispose(false);
             }
 
             public void ReadAudio(int sampleRate, float[] data, int channels)
@@ -996,7 +1004,16 @@ namespace Microsoft.MixedReality.WebRTC
 
             public void Dispose()
             {
-                AudioReadStreamInterop.Destroy(_nativeStreamHandle);
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+            protected void Dispose(bool disposing)
+            {
+                if (this._nativeStreamHandle != IntPtr.Zero)
+                {
+                    AudioReadStreamInterop.Destroy(_nativeStreamHandle);
+                    this._nativeStreamHandle = IntPtr.Zero;
+                }
             }
         }
 
@@ -1006,7 +1023,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// and handles all buffering and resampling.
         /// </summary>
         /// <param name="bufferMs">Size of the buffer in milliseconds or -1 for default.</param>
-        public IAudioReadStream CreateAudioReadStream(int bufferMs=-1)
+        public IAudioReadStream CreateAudioReadStream(int bufferMs = -1)
         {
             return new AudioReadStream(_nativePeerhandle, bufferMs);
         }
@@ -1104,7 +1121,8 @@ namespace Microsoft.MixedReality.WebRTC
             }
 
             // Create the native channel
-            return await Task.Run(() => {
+            return await Task.Run(() =>
+            {
                 IntPtr nativeHandle = IntPtr.Zero;
                 var wrapperGCHandle = GCHandle.Alloc(dataChannel, GCHandleType.Normal);
                 var wrapperHandle = GCHandle.ToIntPtr(wrapperGCHandle);
@@ -1215,10 +1233,12 @@ namespace Microsoft.MixedReality.WebRTC
             var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
             var wrapper = new PeerConnectionInterop.EnumVideoCaptureDeviceWrapper()
             {
-                enumCallback = (id, name) => {
+                enumCallback = (id, name) =>
+                {
                     devices.Add(new VideoCaptureDevice() { id = id, name = name });
                 },
-                completedCallback = () => {
+                completedCallback = () =>
+                {
                     // On enumeration end, signal the caller thread
                     eventWaitHandle.Set();
                 }
@@ -1228,7 +1248,8 @@ namespace Microsoft.MixedReality.WebRTC
             var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
             IntPtr userData = GCHandle.ToIntPtr(handle);
 
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 // Execute the native async callback
                 PeerConnectionInterop.EnumVideoCaptureDevicesAsync(
                     PeerConnectionInterop.VideoCaptureDevice_EnumCallback, userData,
@@ -1257,10 +1278,12 @@ namespace Microsoft.MixedReality.WebRTC
             var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
             var wrapper = new PeerConnectionInterop.EnumVideoCaptureFormatsWrapper()
             {
-                enumCallback = (width, height, framerate, fourcc) => {
+                enumCallback = (width, height, framerate, fourcc) =>
+                {
                     formats.Add(new VideoCaptureFormat() { width = width, height = height, framerate = framerate, fourcc = fourcc });
                 },
-                completedCallback = (Exception _) => {
+                completedCallback = (Exception _) =>
+                {
                     // On enumeration end, signal the caller thread
                     eventWaitHandle.Set();
                 }
@@ -1283,7 +1306,8 @@ namespace Microsoft.MixedReality.WebRTC
                 return null; // for the compiler
             }
 
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 // Wait for end of enumerating
                 eventWaitHandle.WaitOne();
 
