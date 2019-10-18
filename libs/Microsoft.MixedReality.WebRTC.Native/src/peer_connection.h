@@ -514,8 +514,9 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
 class AudioReadStream {
  public:
   /// Create a new stream which buffers 'bufferMs' milliseconds of audio.
-  /// WebRTC delivers audio at 10ms intervals so Pass -1 for
-  AudioReadStream(PeerConnection*, int bufferMs);
+  /// WebRTC delivers audio at 10ms intervals so pass a multiple of 10.
+  /// Or pass -1 for automaticlly chosen buffer size.
+  AudioReadStream(PeerConnection* peer, int bufferMs);
 
   /// Fill data with samples at the given sampleRate and number of channels.
   /// If the internal buffer overruns, the oldest data will be dropped.
