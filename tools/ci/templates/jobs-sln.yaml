@@ -1,0 +1,66 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
+# [TEMPLATE] Compile the Microsoft.MixedReality.WebRTC.sln Visual Studio solution without testing
+
+parameters:
+  buildAgent: ''
+  buildPlatform: ''    # Win32|UWP
+  buildArch: ''        # x86|x64|ARM|ARM64
+  msbuildPlatform: ''  # Win32|x64|ARM|ARM64
+  buildConfig: ''      # Debug|Release
+ 
+jobs:
+
+# Compile Microsoft.MixedReality.WebRTC.sln
+- job: sln_${{parameters.buildPlatform}}_${{parameters.buildArch}}_${{parameters.buildConfig}}
+  timeoutInMinutes: 360
+  pool:
+    name: ${{parameters.buildAgent}}
+    demands: msbuild, visualstudio
+  variables:
+  - group: MixedReality-WebRTC-ArtifactConfig
+  - name: buildTriple
+    value: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
+  steps:
+  - checkout: self
+    submodules: recursive
+
+  # Use NuGet 5.2.0
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 5.2.0'
+    inputs:
+      versionSpec: 5.2.0
+
+  # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
+  - task: UsePythonVersion@0
+    displayName: 'Use Python 2.7.16 x64 for Google GN'
+    inputs:
+      versionSpec: 2.7.16
+    timeoutInMinutes: 5
+
+  # Map build* variables to script* ones
+  - task: PowerShell@2
+    displayName: Map script variables
+    inputs:
+      targetType: filePath
+      filePath: tools/ci/mapVariables.ps1
+      arguments: '${{parameters.buildPlatform}} ${{parameters.buildArch}} ${{parameters.buildConfig}}'
+
+  # Prepare the environment with the setup script from Google
+  - task: PythonScript@0
+    displayName: Prepare WebRTC env
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a prepare -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig)'
+    timeoutInMinutes: 10
+
+  # 
+  - task: VSBuild@1
+    inputs:
+      solution: Microsoft.MixedReality.WebRTC.sln
+      vsVersion: 15.0
+      platform: '${{parameters.buildArch}}'
+      configuration: '${{parameters.buildConfig}}'
+      restoreNugetPackages: true #deprecated

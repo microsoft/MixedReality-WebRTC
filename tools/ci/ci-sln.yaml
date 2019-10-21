@@ -1,0 +1,96 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
+# MixedReality-WebRTC build pipeline for CI
+# Build the MixedReality-WebRTC.sln Visual Studio solution without any testing
+
+# Trigger CI on push changes
+trigger:
+  branches:
+    include:
+    - master
+    exclude:
+    - docs/*
+  paths:
+    include:
+    - examples/*
+    - libs/*
+    - tests/*
+
+# Do not trigger CI on PRs
+pr: none
+
+# Give a unique name to the build each time it runs
+name: ci-sln-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+
+jobs:
+- template: templates/jobs-sln.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'Win32'
+    buildArch: 'x86'
+    msbuildPlatform: 'Win32'
+    buildConfig: 'Debug'
+- template: templates/jobs-sln.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'Win32'
+    buildArch: 'x86'
+    msbuildPlatform: 'Win32'
+    buildConfig: 'Release'
+- template: templates/jobs-sln.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'Win32'
+    buildArch: 'x64'
+    msbuildPlatform: 'x64'
+    buildConfig: 'Debug'
+- template: templates/jobs-sln.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'Win32'
+    buildArch: 'x64'
+    msbuildPlatform: 'x64'
+    buildConfig: 'Release'
+- template: templates/jobs-sln.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
+    buildArch: 'x86'
+    msbuildPlatform: 'Win32'
+    buildConfig: 'Debug'
+- template: templates/jobs-sln.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
+    buildArch: 'x86'
+    msbuildPlatform: 'Win32'
+    buildConfig: 'Release'
+- template: templates/jobs-sln.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
+    buildArch: 'x64'
+    msbuildPlatform: 'x64'
+    buildConfig: 'Debug'
+- template: templates/jobs-sln.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
+    buildArch: 'x64'
+    msbuildPlatform: 'x64'
+    buildConfig: 'Release'
+- template: templates/jobs-sln.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
+    buildArch: 'ARM'
+    msbuildPlatform: 'ARM'
+    buildConfig: 'Debug'
+- template: templates/jobs-sln.yaml
+  parameters:
+    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildPlatform: 'UWP'
+    buildArch: 'ARM'
+    msbuildPlatform: 'ARM'
+    buildConfig: 'Release'
