@@ -17,7 +17,9 @@ jobs:
   timeoutInMinutes: 360
   pool:
     name: ${{parameters.buildAgent}}
-    demands: msbuild, visualstudio
+    demands:
+    - msbuild
+    - visualstudio
   variables:
   - group: MixedReality-WebRTC-ArtifactConfig
   - name: buildTriple
