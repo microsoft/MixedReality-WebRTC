@@ -8,6 +8,7 @@
 
 #include "api.h"
 #include "audio_frame_observer.h"
+#include "common_audio/resampler/include/resampler.h"
 #include "data_channel.h"
 #include "peer_connection.h"
 #include "video_frame_observer.h"
@@ -225,17 +226,21 @@ void AudioReadStream::audioFrameCallback(const void* audio_data,
                                          const uint32_t sample_rate,
                                          const uint32_t number_of_channels,
                                          const uint32_t number_of_frames) {
-  std::lock_guard<std::mutex> lock(mutex_);
-  // FIXME - no recycling frames yet
-  auto& frame = frames.emplace_back();
+  std::lock_guard<std::mutex> lock(frames_mutex_);
+  // maintain buffering limits, after adding this frame
+  while (frames_.size() && ((frames_.size() + 1) * 10) > buffer_ms_) {
+    frames_.pop_front();
+  }
+  // add the new frame
+  auto& frame = frames_.emplace_back();
   frame.bits_per_sample = bits_per_sample;
   frame.sample_rate = sample_rate;
   frame.number_of_channels = number_of_channels;
   frame.number_of_frames = number_of_frames;
-  frame.read_pos_ = 0;
   size_t size = (size_t)bits_per_sample * number_of_channels * number_of_frames;
   auto src_bytes = static_cast<const std::byte*>(audio_data);
-  frame.audio_data.insert( frame.audio_data.begin(), src_bytes, src_bytes+size);
+  frame.audio_data.insert(frame.audio_data.begin(), src_bytes,
+                          src_bytes + size);
 }
 
 void AudioReadStream::staticAudioFrameCallback(
@@ -250,22 +255,142 @@ void AudioReadStream::staticAudioFrameCallback(
                           number_of_channels, number_of_frames);
 }
 
-AudioReadStream::AudioReadStream(PeerConnection* peer, int bufferMs) {
+AudioReadStream::AudioReadStream(PeerConnection* peer, int bufferMs)
+    : buffer_ms_(bufferMs >= 10 ? bufferMs : 500 /*TODO good value?*/) {
   peer->RegisterRemoteAudioFrameCallback(
       AudioFrameReadyCallback{&staticAudioFrameCallback, this});
 }
 
-void AudioReadStream::Read(int sampleRate,
-                          float data[],
-                          int dataLen,
-                          int channels) noexcept {
-  std::lock_guard<std::mutex> lock(mutex_);
-  // FIXME - placeholder just fills with static
-  while(frames.size()) {
-    frames.pop_front();
+AudioReadStream::Buffer::Buffer() {
+  resampler_ = std::make_unique<webrtc::Resampler>();
+}
+AudioReadStream::Buffer::~Buffer() {}
+
+void AudioReadStream::Buffer::addFrame(const Frame& frame,
+                                       int dstSampleRate,
+                                       int dstChannels) {
+  // We may require up to 2 intermediate buffers
+  // We always write into buffer_next and then swap front/back buffers
+  std::vector<short> buffer_front;
+  std::vector<short> buffer_back;
+
+  // tmpData will eventually hold u16 data with the correct number of channels
+  const short* srcData;
+  size_t srcCount;
+
+  // promote to 16 bit
+  if (frame.bits_per_sample == 16) {
+    srcData = (short*)frame.audio_data.data();
+    srcCount = frame.number_of_frames * frame.number_of_channels;
+  } else if (frame.bits_per_sample == 8) {
+    buffer_front.resize(frame.audio_data.size());
+    short* data = buffer_front.data();
+    for (int i = 0; i < frame.audio_data.size(); ++i) {
+      data[i] = ((int)frame.audio_data[i] * 256) - 32768;
+    }
+    srcData = data;
+    srcCount = buffer_front.size();
+    swap(buffer_front, buffer_back);
+  } else {
+    assert(false);
+    return;
   }
-  for (int i = 0; i < dataLen; ++i) {
-    data[i] = ((rand() & 0x1ffff) - 0xffff) / 65536.0f;
+
+  // match number of channels
+  switch (frame.number_of_channels * 16 + dstChannels) {
+    case 0x11:
+    case 0x22:
+      break;      // nop
+    case 0x12: {  // duplicate
+      buffer_front.resize(srcCount * 2);
+      short* data = buffer_front.data();
+      for (int i = 0; i < srcCount; ++i) {
+        data[2 * i + 0] = srcData[i];
+        data[2 * i + 1] = srcData[i];
+      }
+      srcData = data;
+      srcCount = buffer_front.size();
+      swap(buffer_front, buffer_back);
+      break;
+    }
+    case 0x21: {  // average L&R
+      buffer_front.resize(srcCount / 2);
+      short* data = buffer_front.data();
+      for (int i = 0; i < srcCount; ++i) {
+        data[i] = (srcData[2 * i] + srcData[2 * i + 1]) / 2;
+      }
+      srcData = data;
+      srcCount = buffer_front.size();
+      swap(buffer_front, buffer_back);
+      break;
+    }
+  }
+
+  // match sample rate
+  if ((int)frame.sample_rate != dstSampleRate) {
+    buffer_front.resize((srcCount * dstSampleRate / frame.sample_rate) + 1);
+    short* data = buffer_front.data();
+
+    resampler_->ResetIfNeeded(frame.sample_rate, dstSampleRate, dstChannels);
+    size_t count;
+    resampler_->Push(srcData, srcCount, data, buffer_front.size(), count);
+    srcData = data;
+    srcCount = count;
+    swap(buffer_front, buffer_back);
+  }
+
+  // Convert s16 to f32
+  data_.resize(srcCount);
+  for (size_t i = 0; i < srcCount; ++i) {
+    data_[i] = (float)srcData[i] / 32768.0f;
+  }
+  used_ = 0;
+  channels_ = dstChannels;
+  rate_ = dstSampleRate;
+}
+
+void AudioReadStream::Read(int sampleRate,
+                           float dataOrig[],
+                           int dataLenOrig,
+                           int channels) noexcept {
+  float* dst = dataOrig;
+  int dstLen = dataLenOrig;  // number of points remaining
+
+  while (dstLen > 0) {
+    if (sampleRate == buffer_.rate_ && channels == buffer_.channels_ &&
+        buffer_.available()) {
+      // format matches, fill some from the buffer. If the format doesn't
+      // match we will fall through and ensure the next frame matches. This
+      // may drop some data but will only happen when the output
+      // sampleRate/channels change (i.e. rarely)
+      int len = buffer_.readSome(dst, dstLen);
+      dst += len;
+      dstLen -= len;
+    } else {
+      Frame frame;
+      {
+        std::unique_lock<std::mutex> lock(frames_mutex_);
+        if (frames_.empty()) {  // no more input! fill with sin wave
+          lock.unlock();
+          constexpr float freq = 2 * 222 * float(M_PI);
+          for (int i = 0; i < dstLen; ++i) {
+            dst[i] = 0.25f * sinf((freq * (sinwave_iter_ + i)) /
+                                  (sampleRate * channels));
+          }
+          sinwave_iter_ = (sinwave_iter_ + dstLen) % 628318530;
+          sinwave_iter_ += dstLen;
+          return;  // and return
+        }
+        Frame& f = frames_.front();
+        frame.audio_data.swap(f.audio_data);
+        frame.bits_per_sample = f.bits_per_sample;
+        frame.sample_rate = f.sample_rate;
+        frame.number_of_channels = f.number_of_channels;
+        frame.number_of_frames = f.number_of_frames;
+        frames_.pop_front();
+      }
+      buffer_.addFrame(frame, sampleRate, channels);
+    }
   }
 }
 
