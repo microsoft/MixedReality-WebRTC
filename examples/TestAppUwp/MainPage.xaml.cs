@@ -212,6 +212,8 @@ namespace TestAppUwp
         public MainPage()
         {
             this.InitializeComponent();
+            muteLocalVideoStroke.Visibility = Visibility.Collapsed;
+            muteLocalAudioStroke.Visibility = Visibility.Collapsed;
 
             RestoreLocalAndRemotePeerIDs();
 
@@ -449,7 +451,7 @@ namespace TestAppUwp
 
             createOfferButton.IsEnabled = true;
 
-            startLocalVideo.IsEnabled = true;
+            startLocalMedia.IsEnabled = true;
 
             localVideoPlayer.CurrentStateChanged += OnMediaStateChanged;
             localVideoPlayer.MediaOpened += OnMediaOpened;
@@ -819,7 +821,7 @@ namespace TestAppUwp
             {
                 RunOnMainThread(() => {
                     localVideo.MediaPlayer.Play();
-                    //startLocalVideo.IsEnabled = true;
+                    //startLocalMedia.IsEnabled = true;
                 });
             }
         }
@@ -1029,12 +1031,40 @@ namespace TestAppUwp
             remoteAudioSampleRate.Text = $"{sampleRate} Hz";
         }
 
+        private void MuteLocalVideoClicked(object sender, RoutedEventArgs e)
+        {
+            if (_peerConnection.IsLocalVideoTrackEnabled())
+            {
+                _peerConnection.SetLocalVideoTrackEnabled(false);
+                muteLocalVideoStroke.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                _peerConnection.SetLocalVideoTrackEnabled(true);
+                muteLocalVideoStroke.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void MuteLocalAudioClicked(object sender, RoutedEventArgs e)
+        {
+            if (_peerConnection.IsLocalAudioTrackEnabled())
+            {
+                _peerConnection.SetLocalAudioTrackEnabled(false);
+                muteLocalAudioStroke.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                _peerConnection.SetLocalAudioTrackEnabled(true);
+                muteLocalAudioStroke.Visibility = Visibility.Collapsed;
+            }
+        }
+
         /// <summary>
         /// Toggle local audio and video playback on/off, adding or removing tracks as needed.
         /// </summary>
         /// <param name="sender">The object which invoked the event.</param>
         /// <param name="e">Event arguments.</param>
-        private async void StartLocalVideoClicked(object sender, RoutedEventArgs e)
+        private async void StartLocalMediaClicked(object sender, RoutedEventArgs e)
         {
             // Toggle between start and stop local audio/video feeds
             //< TODO dssStatsTimer.IsEnabled used for toggle, but dssStatsTimer should be
@@ -1051,7 +1081,11 @@ namespace TestAppUwp
                 remotePresentText.Text = "Present: -";
                 remoteSkipText.Text = "Skip: -";
                 remoteLateText.Text = "Late: -";
-                startLocalVideo.Content = "Start local video";
+                muteLocalVideo.IsEnabled = false;
+                muteLocalAudio.IsEnabled = false;
+                startLocalMediaIcon.Symbol = Symbol.Play;
+                muteLocalAudioStroke.Visibility = Visibility.Collapsed;
+                muteLocalVideoStroke.Visibility = Visibility.Collapsed;
             }
             else
             {
@@ -1134,7 +1168,11 @@ namespace TestAppUwp
 
                 dssStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
                 dssStatsTimer.Start();
-                startLocalVideo.Content = "Stop local video";
+                muteLocalVideo.IsEnabled = true;
+                muteLocalAudio.IsEnabled = true;
+                startLocalMediaIcon.Symbol = Symbol.Stop;
+                muteLocalAudioStroke.Visibility = Visibility.Collapsed;
+                muteLocalVideoStroke.Visibility = Visibility.Collapsed;
 
                 localVideoSourceName.Text = $"({SelectedVideoCaptureDevice?.DisplayName})";
                 lock (_isLocalVideoPlayingLock)
