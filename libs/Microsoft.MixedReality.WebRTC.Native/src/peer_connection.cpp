@@ -294,6 +294,11 @@ webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
 
 void PeerConnection::RemoveDataChannel(
     const DataChannel& data_channel) noexcept {
+  // Cache variables which require a dispatch to the signaling thread
+  // to minimize the risk of a deadlock with the data channel lock below.
+  const int id = data_channel.id();
+  const str label = data_channel.label();
+
   // Move the channel to destroy out of the internal data structures
   std::shared_ptr<DataChannel> data_channel_ptr;
   {
@@ -313,11 +318,10 @@ void PeerConnection::RemoveDataChannel(
     data_channels_.erase(it);
 
     // Clean-up interop maps
-    auto it_id = data_channel_from_id_.find(data_channel.id());
+    auto it_id = data_channel_from_id_.find(id);
     if (it_id != data_channel_from_id_.end()) {
       data_channel_from_id_.erase(it_id);
     }
-    const str label = data_channel.label();
     if (!label.empty()) {
       auto it_label = data_channel_from_label_.find(label);
       if (it_label != data_channel_from_label_.end()) {
