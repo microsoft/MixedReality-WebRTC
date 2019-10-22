@@ -228,7 +228,8 @@ void AudioReadStream::audioFrameCallback(const void* audio_data,
                                          const uint32_t number_of_frames) {
   std::lock_guard<std::mutex> lock(frames_mutex_);
   // maintain buffering limits, after adding this frame
-  while (frames_.size() && ((frames_.size() + 1) * 10) > buffer_ms_) {
+  const size_t maxFrames = std::max(buffer_ms_ / 10, 1);
+  while (frames_.size() > maxFrames) {
     frames_.pop_front();
   }
   // add the new frame
