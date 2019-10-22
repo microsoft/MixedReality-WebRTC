@@ -211,25 +211,34 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
     }
   }
 
-  /// Add to the peer connection an audio track backed by a local audio capture
-  /// device.
+  /// Add to the peer connection a video track backed by a local video capture
+  /// device. If no RTP sender/transceiver exist, create a new one for that
+  /// track.
+  ///
   /// Note: currently a single local video track is supported per peer
   /// connection.
   bool AddLocalVideoTrack(
       rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept;
 
   /// Remove the existing local video track from the peer connection.
+  /// The underlying RTP sender/transceiver are kept alive but inactive.
+  ///
   /// Note: currently a single local video track is supported per peer
   /// connection.
   void RemoveLocalVideoTrack() noexcept;
 
-  /// Enable or disable the local video track. Disable video tracks are still
-  /// active but output black frames.
+  /// Enable or disable the local video track. Disabled video tracks are still
+  /// active but output black frames, and do not consume network bandwidth.
+  /// Additionally, enabling/disabling the local video track does not require an
+  /// SDP exchange. Therefore this is a cheaper alternative to removing and
+  /// re-adding the track.
+  ///
   /// Note: currently a single local video track is supported per peer
   /// connection.
   void SetLocalVideoTrackEnabled(bool enabled = true) noexcept;
 
   /// Check if the local video frame is enabled.
+  ///
   /// Note: currently a single local video track is supported per peer
   /// connection.
   bool IsLocalVideoTrackEnabled() const noexcept;
@@ -259,17 +268,34 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
     }
   }
 
+  /// Add to the peer connection an audio track backed by a local audio capture
+  /// device. If no RTP sender/transceiver exist, create a new one for that
+  /// track.
+  ///
+  /// Note: currently a single local video track is supported per peer
+  /// connection.
   bool AddLocalAudioTrack(
       rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track) noexcept;
+
+  /// Remove the existing local audio track from the peer connection.
+  /// The underlying RTP sender/transceiver are kept alive but inactive.
+  ///
+  /// Note: currently a single local audio track is supported per peer
+  /// connection.
   void RemoveLocalAudioTrack() noexcept;
 
-  /// Enable or disable the local audio track. Disable audio tracks are still
-  /// active but are silent.
+  /// Enable or disable the local audio track. Disabled audio tracks are still
+  /// active but are silent, and do not consume network bandwidth. Additionally,
+  /// enabling/disabling the local audio track does not require an SDP exchange.
+  /// Therefore this is a cheaper alternative to removing and re-adding the
+  /// track.
+  ///
   /// Note: currently a single local audio track is supported per peer
   /// connection.
   void SetLocalAudioTrackEnabled(bool enabled = true) noexcept;
 
   /// Check if the local audio frame is enabled.
+  ///
   /// Note: currently a single local audio track is supported per peer
   /// connection.
   bool IsLocalAudioTrackEnabled() const noexcept;

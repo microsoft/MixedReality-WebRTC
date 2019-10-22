@@ -136,18 +136,28 @@ bool PeerConnection::AddLocalVideoTrack(
   if (local_video_track_) {
     return false;
   }
-  auto result = peer_->AddTrack(video_track, {kAudioVideoStreamId});
-  if (result.ok()) {
-    if (local_video_observer_) {
-      rtc::VideoSinkWants sink_settings{};
-      sink_settings.rotation_applied = true;
-      video_track->AddOrUpdateSink(local_video_observer_.get(), sink_settings);
+  if (local_video_sender_) {
+    // Reuse the existing sender.
+    if (!local_video_sender_->SetTrack(video_track.get())) {
+      return false;
     }
-    local_video_sender_ = result.value();
-    local_video_track_ = std::move(video_track);
-    return true;
+  } else {
+    // Create a new sender.
+    auto result = peer_->AddTrack(video_track, {kAudioVideoStreamId});
+    if (result.ok()) {
+      local_video_sender_ = result.value();
+    } else {
+      return false;
+    }
   }
-  return false;
+  local_video_track_ = std::move(video_track);
+  if (local_video_observer_) {
+    rtc::VideoSinkWants sink_settings{};
+    sink_settings.rotation_applied = true;
+    local_video_track_->AddOrUpdateSink(local_video_observer_.get(),
+                                        sink_settings);
+  }
+  return true;
 }
 
 void PeerConnection::RemoveLocalVideoTrack() noexcept {
@@ -156,9 +166,8 @@ void PeerConnection::RemoveLocalVideoTrack() noexcept {
   if (auto* sink = local_video_observer_.get()) {
     local_video_track_->RemoveSink(sink);
   }
-  peer_->RemoveTrack(local_video_sender_);
+  local_video_sender_->SetTrack(nullptr);
   local_video_track_ = nullptr;
-  local_video_sender_ = nullptr;
 }
 
 void PeerConnection::SetLocalVideoTrackEnabled(bool enabled) noexcept {
@@ -192,16 +201,30 @@ bool PeerConnection::AddLocalAudioTrack(
   if (local_audio_track_) {
     return false;
   }
-  auto result = peer_->AddTrack(audio_track, {kAudioVideoStreamId});
-  if (result.ok()) {
-    if (auto* sink = local_audio_observer_.get()) {
-      // FIXME - Current implementation of AddSink() for the local audio
-      // capture device is no-op. So this callback is never fired.
-      audio_track->AddSink(sink);
+  if (local_audio_sender_) {
+    // Reuse the existing sender.
+    if (local_audio_sender_->SetTrack(audio_track.get())) {
+      if (auto* sink = local_audio_observer_.get()) {
+        // FIXME - Current implementation of AddSink() for the local audio
+        // capture device is no-op. So this callback is never fired.
+        audio_track->AddSink(sink);
+      }
+      local_audio_track_ = std::move(audio_track);
+      return true;
     }
-    local_audio_sender_ = result.value();
-    local_audio_track_ = std::move(audio_track);
-    return true;
+  } else {
+    // Create a new sender.
+    auto result = peer_->AddTrack(audio_track, {kAudioVideoStreamId});
+    if (result.ok()) {
+      if (auto* sink = local_audio_observer_.get()) {
+        // FIXME - Current implementation of AddSink() for the local audio
+        // capture device is no-op. So this callback is never fired.
+        audio_track->AddSink(sink);
+      }
+      local_audio_sender_ = result.value();
+      local_audio_track_ = std::move(audio_track);
+      return true;
+    }
   }
   return false;
 }
@@ -212,9 +235,8 @@ void PeerConnection::RemoveLocalAudioTrack() noexcept {
   if (auto* sink = local_audio_observer_.get()) {
     local_audio_track_->RemoveSink(sink);
   }
-  peer_->RemoveTrack(local_audio_sender_);
+  local_audio_sender_->SetTrack(nullptr);
   local_audio_track_ = nullptr;
-  local_audio_sender_ = nullptr;
 }
 
 webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
