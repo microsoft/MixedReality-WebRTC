@@ -880,8 +880,14 @@ namespace TestAppUwp
                     // signaling thread (and will block the caller thread), and audio processing will
                     // delegate to the UI thread for UWP operations (and will block the signaling thread).
                     RunOnWorkerThread(() => {
+                        _renegotiationOfferEnabled = false;
                         _peerConnection.RemoveLocalAudioTrack();
                         _peerConnection.RemoveLocalVideoTrack();
+                        _renegotiationOfferEnabled = true;
+                        if (_peerConnection.IsConnected)
+                        {
+                            _peerConnection.CreateOffer();
+                        }
                     });
                 }
             }
