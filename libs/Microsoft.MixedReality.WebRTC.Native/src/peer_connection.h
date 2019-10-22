@@ -521,6 +521,7 @@ class AudioReadStream {
   /// WebRTC delivers audio at 10ms intervals so pass a multiple of 10.
   /// Or pass -1 for automaticlly chosen buffer size.
   AudioReadStream(PeerConnection* peer, int bufferMs);
+  ~AudioReadStream();
 
   /// Fill data with samples at the given sampleRate and number of channels.
   /// If the internal buffer overruns, the oldest data will be dropped.
@@ -546,6 +547,7 @@ class AudioReadStream {
                           const uint32_t number_of_channels,
                           const uint32_t number_of_frames);
 
+  PeerConnection* peer_ = nullptr;
   struct Frame {
     std::vector<std::byte> audio_data;
     uint32_t bits_per_sample;

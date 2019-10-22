@@ -237,7 +237,8 @@ void AudioReadStream::audioFrameCallback(const void* audio_data,
   frame.sample_rate = sample_rate;
   frame.number_of_channels = number_of_channels;
   frame.number_of_frames = number_of_frames;
-  size_t size = (size_t)bits_per_sample * number_of_channels * number_of_frames;
+  size_t size =
+      (size_t)(bits_per_sample / 8) * number_of_channels * number_of_frames;
   auto src_bytes = static_cast<const std::byte*>(audio_data);
   frame.audio_data.insert(frame.audio_data.begin(), src_bytes,
                           src_bytes + size);
@@ -256,9 +257,14 @@ void AudioReadStream::staticAudioFrameCallback(
 }
 
 AudioReadStream::AudioReadStream(PeerConnection* peer, int bufferMs)
-    : buffer_ms_(bufferMs >= 10 ? bufferMs : 500 /*TODO good value?*/) {
+    : peer_(peer),
+      buffer_ms_(bufferMs >= 10 ? bufferMs : 500 /*TODO good value?*/) {
   peer->RegisterRemoteAudioFrameCallback(
       AudioFrameReadyCallback{&staticAudioFrameCallback, this});
+}
+
+AudioReadStream::~AudioReadStream() {
+  peer_->RegisterRemoteAudioFrameCallback(AudioFrameReadyCallback{});
 }
 
 AudioReadStream::Buffer::Buffer() {
@@ -324,6 +330,9 @@ void AudioReadStream::Buffer::addFrame(const Frame& frame,
       swap(buffer_front, buffer_back);
       break;
     }
+    default:
+      assert(false);
+      return;
   }
 
   // match sample rate
@@ -356,6 +365,11 @@ void AudioReadStream::Read(int sampleRate,
   float* dst = dataOrig;
   int dstLen = dataLenOrig;  // number of points remaining
 
+  // TODO: to make the logic simpler, we currently match the expected number of
+  // output
+  // channels in buffer_.addFrame(). We could save a bit of work and memory by
+  // moving any 1->2 channel conversions into buffer_.readSome().
+
   while (dstLen > 0) {
     if (sampleRate == buffer_.rate_ && channels == buffer_.channels_ &&
         buffer_.available()) {
@@ -374,7 +388,7 @@ void AudioReadStream::Read(int sampleRate,
           lock.unlock();
           constexpr float freq = 2 * 222 * float(M_PI);
           for (int i = 0; i < dstLen; ++i) {
-            dst[i] = 0.25f * sinf((freq * (sinwave_iter_ + i)) /
+            dst[i] = 0.15f * sinf((freq * (sinwave_iter_ + i)) /
                                   (sampleRate * channels));
           }
           sinwave_iter_ = (sinwave_iter_ + dstLen) % 628318530;
