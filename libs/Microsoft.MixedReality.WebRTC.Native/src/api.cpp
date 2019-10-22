@@ -191,7 +191,7 @@ class GlobalFactory {
       factoryConfig->thisWeak_ = factoryConfig;  // mimic wrapper_create()
       factoryConfig->audioCapturingEnabled = true;
       factoryConfig->audioRenderingEnabled = true;
-      factoryConfig->enableAudioBufferEvents = true;
+      factoryConfig->enableAudioBufferEvents = false;
       impl_ = std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
       impl_->thisWeak_ = impl_;  // mimic wrapper_create()
       impl_->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
