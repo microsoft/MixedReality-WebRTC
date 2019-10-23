@@ -92,7 +92,7 @@ The `Microsoft.MixedReality.WebRTC.sln` Visual Studio 2019 solution located at t
 - A C# unit tests project `Microsoft.MixedReality.WebRTC.Tests`
 - A UWP C# sample app project `Microsoft.MixedReality.WebRTC.TestAppUWP` based on WPF and XAML which demonstrates audio / video / data communication by mean of a simple video chat app.
 
-_Note_ - Currently due to CI limitations some projects are downgraded to VS 2017, but will be reverted to VS 2019 eventually (see [#14](https://github.com/microsoft/MixedReality-WebRTC/issues/14)).
+_Note_ - Currently due to CI limitations some projects are downgraded to VS 2017, as the Google M71 milestone the `master` branch is building upon does not support VS 2019, and Azure DevOps CI agents do not support multiple Visual Studio versions on the same agent. This will be reverted to VS 2019 eventually (see [#14](https://github.com/microsoft/MixedReality-WebRTC/issues/14)).
 
 ## Building MixedReality-WebRTC
 
@@ -113,9 +113,9 @@ The current version is a public preview under active development, which contains
 
 - HoloLens 2 exhibits some small performance penalty due to the [missing support (#157)](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157) for SIMD-accelerated YUV conversion in WebRTC UWP SDK on ARM.
 - H.264 hardware video encoding (UWP only) exhibits some video freeze and quality degrading (blockiness). See #74 and #101 for details.
-- There is currently no clean C++ API; instead the C API used for C# P/Invoke can be used from C++ code, and opaque handles cast to C++ objects. An actual C++ API will eventually be exposed.
+- There is currently no clean C++ API; instead the C API used for C# P/Invoke can be used from C++ code, and opaque handles cast to C++ objects. An actual C++ API will eventually be exposed. The C++ library public API is found in [`libs\Microsoft.MixedReality.WebRTC.Native\include`](https://github.com/microsoft/MixedReality-WebRTC/tree/master/libs/Microsoft.MixedReality.WebRTC.Native/include) and already contains some classes, but is not 100% functional at this time (cannot create a peer connection for example).
 
-In addition, the Debug config of WebRTC core implementation is known to exhibit some performance issues on most devices, including some higher end PCs. Using the Release config of the core WebRTC implementation usually prevents this.
+In addition, the Debug config of WebRTC core implementation is known to exhibit some performance issues on most devices, including some higher-end PCs. Using the Release config of the core WebRTC implementation usually prevents this.
 
 ## Contributing
 

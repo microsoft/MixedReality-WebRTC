@@ -15,6 +15,7 @@ Those changes are available on the `master` branch but have not yet been release
 
 ### Changed
 
+- (89fc337) Promoted the C++ classes headers as public API by moving them to the `include/` folder of `libs/Microsoft.MixedReality.WebRTC.Native/`. Conversely, demoted `api.h` to private and renamed to `interop_api.h` to reflect the fact it is an internal API for interop with C# and it is not part of the MixedReality-WebRTC public API (as in, changes in the interop API do not constitute a breaking change from the point of view of MixedReality-WebRTC release versioning).
 - (5740ab7,d26706d) Make the local peer ID for `node-dss` configurable by the user, and default the local peer ID to the machine name. Drop usage of generated IDs to make it clear that the user is in charge of chosing those IDs and ensure their unicity. (#38)
 - (1d34965) Make the `AudioSource` and `VideoSource` Unity components, which serve as base classes, abstract to prevent Unity from listing them in the list of components and prevent the user from trying to instantiate them. (#103)
 - (2b44e67) Replaced all uses of `std::lock_guard` with `std::scoped_lock`.
