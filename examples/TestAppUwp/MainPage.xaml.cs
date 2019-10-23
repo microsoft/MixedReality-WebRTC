@@ -705,7 +705,7 @@ namespace TestAppUwp
         /// <param name="width">The width of the video in pixels.</param>
         /// <param name="height">The height of the video in pixels.</param>
         /// <returns>The newly created video source.</returns>
-        private MediaStreamSource CreateVideoStreamSource(uint width, uint height)
+        private MediaStreamSource CreateVideoStreamSource(uint width, uint height, uint framerate)
         {
             if (width == 0)
             {
@@ -720,7 +720,7 @@ namespace TestAppUwp
             // https://docs.microsoft.com/en-us/windows/desktop/medfound/video-subtype-guids
             var videoProperties = VideoEncodingProperties.CreateUncompressed(MediaEncodingSubtypes.Iyuv, width, height);
             var videoStreamDesc = new VideoStreamDescriptor(videoProperties);
-            videoStreamDesc.EncodingProperties.FrameRate.Numerator = 30;
+            videoStreamDesc.EncodingProperties.FrameRate.Numerator = framerate;
             videoStreamDesc.EncodingProperties.FrameRate.Denominator = 1;
             videoStreamDesc.EncodingProperties.Bitrate = (30 * width * height * 8 * 8 / 12); // 30-fps 8bits/byte NV12=12bpp
             var videoStreamSource = new MediaStreamSource(videoStreamDesc);
@@ -975,8 +975,10 @@ namespace TestAppUwp
                     _isRemoteVideoPlaying = true;
                     uint width = frame.width;
                     uint height = frame.height;
+                    // We don't know the remote video framerate yet, so use a default.
+                    uint framerate = 30;
                     RunOnMainThread(() => {
-                        remoteVideoSource = CreateVideoStreamSource(width, height);
+                        remoteVideoSource = CreateVideoStreamSource(width, height, framerate);
                         remoteVideoPlayer.Source = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
                         remoteVideoPlayer.Play();
                     });
@@ -1129,7 +1131,7 @@ namespace TestAppUwp
                 localMediaSource?.Reset();
                 localVideo.SetMediaPlayer(null);
                 localVideoSource = null;
-                localVideoSource = CreateVideoStreamSource(width, height);
+                localVideoSource = CreateVideoStreamSource(width, height, (uint)framerate);
                 localMediaSource = MediaSource.CreateFromMediaStreamSource(localVideoSource);
                 localVideoPlayer.Source = localMediaSource;
                 localVideo.SetMediaPlayer(localVideoPlayer);
