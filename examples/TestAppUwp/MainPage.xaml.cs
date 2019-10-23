@@ -1145,6 +1145,10 @@ namespace TestAppUwp
 
                 try
                 {
+                    // The default start bitrate is quite low (300 kbps); use a higher value to get
+                    // better quality on local network.
+                    _peerConnection.SetBitrate(startBitrateBps: (uint)(width * height * framerate / 20));
+
                     // Add the local audio track captured from the local microphone
                     await _peerConnection.AddLocalAudioTrackAsync();
 
