@@ -601,6 +601,20 @@ mrsPeerConnectionCreateOffer(PeerConnectionHandle peerHandle) noexcept;
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionCreateAnswer(PeerConnectionHandle peerHandle) noexcept;
 
+/// Set the bitrate allocated to all RTP streams sent by this connection.
+/// Other limitations might affect these limits and are respected (for example
+/// "b=AS" in SDP).
+///
+/// Setting |start_bitrate_bps| will reset the current bitrate estimate to the
+/// provided value.
+///
+/// If any of the arguments has a negative value, it will be ignored.
+MRS_API mrsResult MRS_CALL
+mrsPeerConnectionSetBitrate(PeerConnectionHandle peer_handle,
+                            int min_bitrate_bps,
+                            int start_bitrate_bps,
+                            int max_bitrate_bps) noexcept;
+
 /// Set a remote description received from a remote peer via the signaling
 /// service.
 MRS_API mrsResult MRS_CALL

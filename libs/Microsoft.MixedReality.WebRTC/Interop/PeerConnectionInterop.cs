@@ -588,6 +588,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static extern uint PeerConnection_CreateAnswer(IntPtr peerHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionSetBitrate")]
+        public static extern uint PeerConnection_SetBitrate(IntPtr peerHandle, int minBitrate, int startBitrate, int maxBitrate);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionSetRemoteDescription")]
         public static extern uint PeerConnection_SetRemoteDescription(IntPtr peerHandle, string type, string sdp);
 

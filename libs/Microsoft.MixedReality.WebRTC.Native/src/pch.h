@@ -46,6 +46,7 @@
 #include "api/mediaconstraintsinterface.h"
 #include "api/mediastreaminterface.h"
 #include "api/peerconnectioninterface.h"
+#include "api/transport/bitrate_settings.h"
 #include "api/video/i420_buffer.h"
 #include "api/videosourceproxy.h"
 #include "media/engine/internaldecoderfactory.h"
