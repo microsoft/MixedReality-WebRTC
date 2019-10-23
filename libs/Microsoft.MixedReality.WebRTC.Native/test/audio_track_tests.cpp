@@ -4,7 +4,7 @@
 
 #include "pch.h"
 
-#include "api.h"
+#include "interop/interop_api.h"
 
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 

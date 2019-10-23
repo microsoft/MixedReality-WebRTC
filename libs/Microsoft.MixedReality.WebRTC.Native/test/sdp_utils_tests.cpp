@@ -4,7 +4,7 @@
 
 #include "pch.h"
 
-#include "../include/api.h"
+#include "interop/interop_api.h"
 
 // Copied from webrtc\pc\webrtcsdp_unittest.cc
 static const char kSdpFullString[] =

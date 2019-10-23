@@ -6,11 +6,13 @@
 // line, to prevent clang-format from reordering it with other headers.
 #include "pch.h"
 
-#include "api.h"
 #include "audio_frame_observer.h"
 #include "data_channel.h"
 #include "peer_connection.h"
 #include "video_frame_observer.h"
+
+// Internal
+#include "interop/interop_api.h"
 
 #include <functional>
 

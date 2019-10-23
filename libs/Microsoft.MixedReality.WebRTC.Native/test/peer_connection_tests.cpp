@@ -4,7 +4,7 @@
 
 #include "pch.h"
 
-#include "../include/api.h"
+#include "interop/interop_api.h"
 
 TEST(PeerConnection, LocalNoIce) {
   // Create PC

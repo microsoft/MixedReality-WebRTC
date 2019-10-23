@@ -6,7 +6,7 @@
 // line, to prevent clang-format from reordering it with other headers.
 #include "pch.h"
 
-#include "api.h"
+#include "interop/interop_api.h"
 #include "data_channel.h"
 #include "peer_connection.h"
 #include "sdp_utils.h"

@@ -101,7 +101,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>..\..\include;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
@@ -117,20 +117,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="../../include/api.h" />
-    <ClInclude Include="../audio_frame_observer.h" />
-    <ClInclude Include="../callback.h" />
-    <ClInclude Include="../data_channel.h" />
+    <ClInclude Include="../interop/interop_api.h" />
+    <ClInclude Include="../../include/audio_frame_observer.h" />
+    <ClInclude Include="../../include/callback.h" />
+    <ClInclude Include="../../include/data_channel.h" />
     <ClInclude Include="../pch.h" />
-    <ClInclude Include="../peer_connection.h" />
+    <ClInclude Include="../../include/peer_connection.h" />
     <ClInclude Include="../targetver.h" />
-    <ClInclude Include="../video_frame_observer.h" />
-    <ClInclude Include="../sdp_utils.h" />
+    <ClInclude Include="../../include/video_frame_observer.h" />
+    <ClInclude Include="../../include/sdp_utils.h" />
     <ClInclude Include="../../include/export.h" />
     <ClInclude Include="../../include/str.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="../api.cpp" />
+    <ClCompile Include="../interop/interop_api.cpp" />
     <ClCompile Include="../audio_frame_observer.cpp" />
     <ClCompile Include="../data_channel.cpp" />
     <ClCompile Include="../pch.cpp">

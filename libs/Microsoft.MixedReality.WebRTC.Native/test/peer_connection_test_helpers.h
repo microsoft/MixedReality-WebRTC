@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license
 // information.
 
-#include "../include/api.h"
+#include "../src/interop/interop_api.h"
 
 /// Simple wait event, similar to rtc::Event.
 struct Event {

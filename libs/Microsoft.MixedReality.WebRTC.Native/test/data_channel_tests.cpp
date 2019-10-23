@@ -4,8 +4,8 @@
 
 #include "pch.h"
 
-#include "api.h"
 #include "data_channel.h"
+#include "interop/interop_api.h"
 
 namespace {
 
