@@ -608,6 +608,7 @@ mrsPeerConnectionCreateAnswer(PeerConnectionHandle peerHandle) noexcept;
 /// Setting |start_bitrate_bps| will reset the current bitrate estimate to the
 /// provided value.
 ///
+/// The values are in bits per second.
 /// If any of the arguments has a negative value, it will be ignored.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionSetBitrate(PeerConnectionHandle peer_handle,

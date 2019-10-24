@@ -1164,20 +1164,18 @@ namespace Microsoft.MixedReality.WebRTC
         /// Other limitations might affect these limits and are respected (for example
         /// "b=AS" in SDP).
         /// </summary>
-        /// <param name="minBitrateBps">Minimum bitrate.</param>
-        /// <param name="startBitrateBps">Start/current target bitrate.</param>
-        /// <param name="maxBitrateBps">Maximum bitrate.</param>
+        /// <param name="minBitrateBps">Minimum bitrate in bits per second.</param>
+        /// <param name="startBitrateBps">Start/current target bitrate in bits per second.</param>
+        /// <param name="maxBitrateBps">Maximum bitrate in bits per second.</param>
         public void SetBitrate(uint? minBitrateBps = null, uint? startBitrateBps = null, uint? maxBitrateBps = null)
         {
             ThrowIfConnectionNotOpen();
             int signedMinBitrateBps = minBitrateBps.HasValue ? (int)minBitrateBps.Value : -1;
             int signedStartBitrateBps = startBitrateBps.HasValue ? (int)startBitrateBps.Value : -1;
             int signedMaxBitrateBps = maxBitrateBps.HasValue ? (int)maxBitrateBps.Value : -1;
-            if (PeerConnectionInterop.PeerConnection_SetBitrate(_nativePeerhandle,
-                signedMinBitrateBps, signedStartBitrateBps, signedMaxBitrateBps) != Utils.MRS_SUCCESS)
-            {
-                throw new InvalidOperationException();
-            }
+            uint res = PeerConnectionInterop.PeerConnection_SetBitrate(_nativePeerhandle,
+                signedMinBitrateBps, signedStartBitrateBps, signedMaxBitrateBps);
+            Utils.ThrowOnErrorCode(res);
         }
 
         /// <summary>
