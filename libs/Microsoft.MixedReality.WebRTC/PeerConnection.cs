@@ -1006,11 +1006,11 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Add a new out-of-band data channel with the given ID.
-        /// 
+        ///
         /// A data channel is negotiated out-of-band when the peers agree on an identifier by any mean
         /// not known to WebRTC, and both open a data channel with that ID. The WebRTC will match the
         /// incoming and outgoing pipes by this ID to allow sending and receiving through that channel.
-        /// 
+        ///
         /// This requires some external mechanism to agree on an available identifier not otherwise taken
         /// by another channel, and also requires to ensure that both peers explicitly open that channel.
         /// </summary>
@@ -1035,13 +1035,13 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Add a new in-band data channel whose ID will be determined by the implementation.
-        /// 
+        ///
         /// A data channel is negotiated in-band when one peer requests its creation to the WebRTC core,
         /// and the implementation negotiates with the remote peer an appropriate ID by sending some
         /// SDP offer message. In that case once accepted the other peer will automatically create the
         /// appropriate data channel on its side with that negotiated ID, and the ID will be returned on
         /// both sides to the user for information.
-        /// 
+        ///
         /// Compares to out-of-band messages, this requires exchanging some SDP messages, but avoids having
         /// to determine a common unused ID and having to explicitly open the data channel on both sides.
         /// </summary>
@@ -1160,9 +1160,28 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
+        /// Set the bitrate allocated to all RTP streams sent by this connection.
+        /// Other limitations might affect these limits and are respected (for example
+        /// "b=AS" in SDP).
+        /// </summary>
+        /// <param name="minBitrateBps">Minimum bitrate in bits per second.</param>
+        /// <param name="startBitrateBps">Start/current target bitrate in bits per second.</param>
+        /// <param name="maxBitrateBps">Maximum bitrate in bits per second.</param>
+        public void SetBitrate(uint? minBitrateBps = null, uint? startBitrateBps = null, uint? maxBitrateBps = null)
+        {
+            ThrowIfConnectionNotOpen();
+            int signedMinBitrateBps = minBitrateBps.HasValue ? (int)minBitrateBps.Value : -1;
+            int signedStartBitrateBps = startBitrateBps.HasValue ? (int)startBitrateBps.Value : -1;
+            int signedMaxBitrateBps = maxBitrateBps.HasValue ? (int)maxBitrateBps.Value : -1;
+            uint res = PeerConnectionInterop.PeerConnection_SetBitrate(_nativePeerhandle,
+                signedMinBitrateBps, signedStartBitrateBps, signedMaxBitrateBps);
+            Utils.ThrowOnErrorCode(res);
+        }
+
+        /// <summary>
         /// Pass the given SDP description received from the remote peer via signaling to the
         /// underlying WebRTC implementation, which will parse and use it.
-        /// 
+        ///
         /// This must be called by the signaler when receiving a message.
         /// </summary>
         /// <param name="type">The type of SDP message ("offer", "answer", "ice")</param>

@@ -1196,6 +1196,27 @@ mrsPeerConnectionCreateAnswer(PeerConnectionHandle peerHandle) noexcept {
   return MRS_E_INVALID_PEER_HANDLE;
 }
 
+MRS_API mrsResult MRS_CALL mrsPeerConnectionSetBitrate(
+    PeerConnectionHandle peer_handle,
+    int min_bitrate_bps,
+    int start_bitrate_bps,
+    int max_bitrate_bps) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
+    webrtc::BitrateSettings settings;
+    if (min_bitrate_bps >= 0) {
+      settings.min_bitrate_bps = min_bitrate_bps;
+    }
+    if (start_bitrate_bps >= 0) {
+      settings.start_bitrate_bps = start_bitrate_bps;
+    }
+    if (max_bitrate_bps >= 0) {
+      settings.max_bitrate_bps = max_bitrate_bps;
+    }
+    return peer->GetImpl()->SetBitrate(settings).ok() ? MRS_SUCCESS : MRS_E_UNKNOWN;
+  }
+  return MRS_E_INVALID_PEER_HANDLE;
+}
+
 mrsResult MRS_CALL
 mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
                                       const char* type,
