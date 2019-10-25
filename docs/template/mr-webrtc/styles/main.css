@@ -1,4 +1,7 @@
 
+* {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
 /* Customizing for the top-level index.html */
 
@@ -71,6 +74,75 @@ a code:hover {
 
 pre {
   border: 0;
+}
+
+/** Title bar **/
+
+.navbar-brand > img {
+  width: 32px;
+  margin: 10px 10px 10px 0;
+}
+
+/** TOC nav bar (left) **/
+
+#toc span.expand-stub {
+  display: none;
+}
+
+#toc ul.nav.level1 > li {
+  color: #707070;
+  border-left: 1px solid #ccc;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 0;
+  padding: 10px 0 10px 0;
+}
+
+#toc ul.nav.level1 > li > a {
+  padding-left: 10px;
+}
+
+#toc ul.nav.level1 > li.active {
+  border-color: #0071bc;
+}
+
+#toc ul.nav.level2 {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+#toc ul.nav.level2 > li {
+  text-transform: capitalize;
+  font-size: 1.1rem;
+  padding: 5px 25px 5px 0px;
+}
+
+#toc ul.nav.level2 > li > a {
+  padding-left: 25px;
+}
+
+#toc ul.nav.level2 > li.active > a::before {
+  content: '';
+  position: absolute;
+  height: 7px;
+  width: 7px;
+  background-color: #0071BC;
+  top: 5px;
+  left: -9px;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  -o-border-radius: 100%;
+  border-radius: 100%;
+}
+
+#toc ul.nav.level2 > li.active > a {
+  font-weight: bold;
+  color: #0071bc !important;
+}
+
+#toc ul.nav.level3 > li > a {
+  padding-left: 35px;
 }
 
 /** Color theme for API **/
