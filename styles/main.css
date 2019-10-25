@@ -24,7 +24,7 @@ article[data-uid="index"] h2 ~ * {
 
 article[data-uid="index"] h2 ~ * > li {
   float: left;
-  width: 285px;
+  width: 280px;
   margin-right: 30px;
   font-size: 18px;
   font-weight: bold;
