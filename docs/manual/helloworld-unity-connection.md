@@ -33,7 +33,3 @@ This string needs to be pasted into the **Remote Peer Id** property of the _remo
 
 > [!Warning]
 > This step is critical, and there is no safeguard. If any of the two signalers doesn't have the correct value for the identifier of the remote peer then the peer connection will not be established.
-
-## Testing the remote connection
-
-
