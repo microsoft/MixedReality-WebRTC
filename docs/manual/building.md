@@ -2,6 +2,8 @@
 
 The MixedReality-WebRTC libraries are built from the `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution located at the root of the repository.
 
+If you want to start right away with MixedReality-WebRTC, the recommended approach is to consume the precompiled binaries distributed as NuGet packages instead. See [Download](download.md) for details.
+
 ## Prerequisites
 
 ### Environment and tooling
