@@ -3,15 +3,16 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-Those changes are available on the `master` branch but have not yet been released as part of an official release / NuGet packages. They will be integrated into the next release.
+## [1.0.0-rc2] - 2019-10-25
 
 ### Fixed
 
+- (b9ae69b, 7e463c0) Integrate upstream fixes for the H.264 hardware encoder stalls. (#74)
 - (8782834) Integrate an upstream fix for a race condition on UWP in the WebRTC task queue initializing via APC leading to a deadlock. (#95)
 - (8863ec6) Fix crash in interop call to `mrsPeerConnectionAddDataChannel` when passing a NULL channel name.
 - (8b84e21) Guard data channel creation against race condition. (#89)
+- (0e3cf8e) Avoid unnecessary rebuilds of TestAppUWP when there is no code change. (#112)
+- (766d27e) Fix solution build error on first build due to missing project build dependency.
 
 ### Changed
 
@@ -22,7 +23,9 @@ Those changes are available on the `master` branch but have not yet been release
 
 ### Added
 
+- (28dfdf1) Expose `webrtc::PeerConnection::SetBitrates()` to be able in particular to configure the initial bitrate of the video encoding to work around #107.
 - (8782834) Integrate 2 upstream optimizations in the UWP local video capture code to reduce CPU usage and memory allocations.
+- (fa268d2) Expose audio and video track mute in TestAppUWP.
 
 ## [1.0.0-rc1] - 2019-10-16
 
