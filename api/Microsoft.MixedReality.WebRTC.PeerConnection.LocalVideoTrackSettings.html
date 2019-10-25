@@ -104,10 +104,11 @@
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_enableMrc.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.enableMrc%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L411">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L415">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_enableMrc" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.enableMrc">enableMrc</h4>
-  <div class="markdown level1 summary"><p>Enable Mixed Reality Capture on devices supporting the feature.</p>
+  <div class="markdown level1 summary"><p>Enable Mixed Reality Capture (MRC) on devices supporting the feature.
+This setting is silently ignored on device not supporting MRC.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -129,15 +130,54 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_enableMrc_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This is only supported on UWP.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_enableMrcRecordingIndicator.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.enableMrcRecordingIndicator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L425">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_enableMrcRecordingIndicator" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.enableMrcRecordingIndicator">enableMrcRecordingIndicator</h4>
+  <div class="markdown level1 summary"><p>Display the on-screen recording indicator while MRC is enabled.
+This setting is silently ignored on device not supporting MRC, or if
+<a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_enableMrc">enableMrc</a> is set to <code>false</code>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool enableMrcRecordingIndicator</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_enableMrcRecordingIndicator_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This is only supported on UWP.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_framerate.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.framerate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L430">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L447">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_framerate" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.framerate">framerate</h4>
-  <div class="markdown level1 summary"><p>Optional capture frame rate, in frames per second (FPS).</p>
+  <div class="markdown level1 summary"><p>Optional capture frame rate, in frames per second (FPS).
+This must be a capture framerate the device supports.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -168,10 +208,11 @@ retrieved by <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_height.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.height%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L421">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L437">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_height" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.height">height</h4>
-  <div class="markdown level1 summary"><p>Optional capture resolution height, in pixels.</p>
+  <div class="markdown level1 summary"><p>Optional capture resolution height, in pixels.
+This must be a resolution width the device supports.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -298,10 +339,11 @@ This requires <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_width.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.width%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L416">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L431">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_width" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.width">width</h4>
-  <div class="markdown level1 summary"><p>Optional capture resolution width, in pixels.</p>
+  <div class="markdown level1 summary"><p>Optional capture resolution width, in pixels.
+This must be a resolution width the device supports.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>

@@ -282,7 +282,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.html",
-          "hash": "qv59KlJz+Zwo12i8jVf+Bg=="
+          "hash": "6DVciSLyb8955UzH6E+Hhg=="
         }
       },
       "is_incremental": false,
@@ -318,7 +318,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.html",
-          "hash": "a+sRca6ZK6kIEe5rJTJi7w=="
+          "hash": "r451R62TZDYFOSHn45Yg2A=="
         }
       },
       "is_incremental": false,
@@ -366,7 +366,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioSource.html",
-          "hash": "UPUHOwdPF105NLnW+rWR8g=="
+          "hash": "a2h1TCugFUZE20SlD4sQUg=="
         }
       },
       "is_incremental": false,
@@ -462,7 +462,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html",
-          "hash": "SB9cqIt1DZel5adnz3NxqA=="
+          "hash": "x7MX4Zgo/XRtSS7XFvy26Q=="
         }
       },
       "is_incremental": false,
@@ -498,7 +498,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html",
-          "hash": "GK2ysGjDIgcYO92JiXFGLA=="
+          "hash": "R6WIChfCYc9dqicDOd5o2Q=="
         }
       },
       "is_incremental": false,
@@ -594,7 +594,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoSource.html",
-          "hash": "9zttzMcsx/jRg5bvOcX+Ug=="
+          "hash": "kYIdXJ8gSgG/Baqo+joG5Q=="
         }
       },
       "is_incremental": false,
@@ -714,7 +714,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "qUF++oNun4xcYIjVWK14xg=="
+          "hash": "sj84kfLWhhOoxJV6bYvyBQ=="
         }
       },
       "is_incremental": false,
@@ -782,7 +782,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/building.html",
-          "hash": "IVpFIkc1T1M14rgunNYRDw=="
+          "hash": "MpywsmDbjVeOgvl7NCRD5Q=="
         }
       },
       "is_incremental": false,
@@ -972,7 +972,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/cs.html",
-          "hash": "ck8lpiBJ71cQMKskeKJtVw=="
+          "hash": "f5wtQcZFX2Vc2+uEZ0HkLw=="
         }
       },
       "is_incremental": false,
@@ -1205,7 +1205,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/download.html",
-          "hash": "aGfQIsvgFcvWbQOKRrUNcw=="
+          "hash": "J/S0FlvBMp2cGsBvhtcdtA=="
         }
       },
       "is_incremental": false,
@@ -1416,7 +1416,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/helloworld-unity-connection.html",
-          "hash": "lOYkd01qYJKvyD8etb4phg=="
+          "hash": "sMgRpvU7/KwYukKoRYx9PA=="
         }
       },
       "is_incremental": false,
@@ -1507,12 +1507,34 @@
       "version": ""
     },
     {
+      "type": "Resource",
+      "source_relative_path": "manual/install-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/install-1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/install-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/install-2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Conceptual",
       "source_relative_path": "manual/installation.md",
       "output": {
         ".html": {
           "relative_path": "manual/installation.html",
-          "hash": "MAkZn1JOlQJnxlzzl98pEQ=="
+          "hash": "BHLUGqv+CwZd2c3mhpQ7rw=="
         }
       },
       "is_incremental": false,
@@ -1651,7 +1673,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-mediaplayer.html",
-          "hash": "2YrrimazhZAJ5HbvGRN+xg=="
+          "hash": "7UE2KA52OrF32ixq4jbJ+w=="
         }
       },
       "is_incremental": false,
@@ -1697,7 +1719,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity-remoteaudiosource.html",
-          "hash": "6FPwp6a3ZvkVWvZbQ5p2cg=="
+          "hash": "ZQ/Y9NCCp8vSkWx2F6wmGg=="
         }
       },
       "is_incremental": false,
@@ -1819,17 +1841,17 @@
           "total_file_count": 39,
           "skipped_file_count": 0
         },
-        "ManagedReferenceDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 57,
-          "skipped_file_count": 0
-        },
         "ResourceDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build",
           "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 57,
           "skipped_file_count": 0
         }
       }

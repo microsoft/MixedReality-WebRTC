@@ -1042,6 +1042,12 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.enableMrc
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.enableMrc
   nameWithType: PeerConnection.LocalVideoTrackSettings.enableMrc
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.enableMrcRecordingIndicator
+  name: enableMrcRecordingIndicator
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_enableMrcRecordingIndicator
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.enableMrcRecordingIndicator
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.enableMrcRecordingIndicator
+  nameWithType: PeerConnection.LocalVideoTrackSettings.enableMrcRecordingIndicator
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.framerate
   name: framerate
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_framerate
@@ -1140,6 +1146,22 @@ references:
   commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.RenegotiationNeeded
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.RenegotiationNeeded
   nameWithType: PeerConnection.RenegotiationNeeded
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetBitrate(System.Nullable{System.UInt32},System.Nullable{System.UInt32},System.Nullable{System.UInt32})
+  name: SetBitrate(Nullable<UInt32>, Nullable<UInt32>, Nullable<UInt32>)
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetBitrate_System_Nullable_System_UInt32__System_Nullable_System_UInt32__System_Nullable_System_UInt32__
+  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.SetBitrate(System.Nullable{System.UInt32},System.Nullable{System.UInt32},System.Nullable{System.UInt32})
+  name.vb: SetBitrate(Nullable(Of UInt32), Nullable(Of UInt32), Nullable(Of UInt32))
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetBitrate(System.Nullable<System.UInt32>, System.Nullable<System.UInt32>, System.Nullable<System.UInt32>)
+  fullName.vb: Microsoft.MixedReality.WebRTC.PeerConnection.SetBitrate(System.Nullable(Of System.UInt32), System.Nullable(Of System.UInt32), System.Nullable(Of System.UInt32))
+  nameWithType: PeerConnection.SetBitrate(Nullable<UInt32>, Nullable<UInt32>, Nullable<UInt32>)
+  nameWithType.vb: PeerConnection.SetBitrate(Nullable(Of UInt32), Nullable(Of UInt32), Nullable(Of UInt32))
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetBitrate*
+  name: SetBitrate
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetBitrate_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.SetBitrate
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetBitrate
+  nameWithType: PeerConnection.SetBitrate
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalAudioTrackEnabled(System.Boolean)
   name: SetLocalAudioTrackEnabled(Boolean)
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetLocalAudioTrackEnabled_System_Boolean_
@@ -1636,6 +1658,12 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.EnableMixedRealityCapture
   fullName: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.EnableMixedRealityCapture
   nameWithType: LocalVideoSource.EnableMixedRealityCapture
+- uid: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.EnableMRCRecordingIndicator
+  name: EnableMRCRecordingIndicator
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_EnableMRCRecordingIndicator
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.EnableMRCRecordingIndicator
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.EnableMRCRecordingIndicator
+  nameWithType: LocalVideoSource.EnableMRCRecordingIndicator
 - uid: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.Mode
   name: Mode
   href: api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Mode
@@ -1798,14 +1826,7 @@ references:
 - uid: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.LocalPeerId
   name: LocalPeerId
   href: api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html#Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_LocalPeerId
-  commentId: P:Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.LocalPeerId
-  fullName: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.LocalPeerId
-  nameWithType: NodeDssSignaler.LocalPeerId
-- uid: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.LocalPeerId*
-  name: LocalPeerId
-  href: api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html#Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_LocalPeerId_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.LocalPeerId
-  isSpec: "True"
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.LocalPeerId
   fullName: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.LocalPeerId
   nameWithType: NodeDssSignaler.LocalPeerId
 - uid: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.OnIceCandiateReadyToSend(System.String,System.Int32,System.String)
