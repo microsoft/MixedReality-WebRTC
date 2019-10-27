@@ -31,66 +31,66 @@ jobs:
     buildArch: 'x86'
     msbuildPlatform: 'Win32'
     buildConfig: 'Debug'
-- template: templates/jobs-sln.yaml
-  parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
-    buildPlatform: 'Win32'
-    buildArch: 'x86'
-    msbuildPlatform: 'Win32'
-    buildConfig: 'Release'
-- template: templates/jobs-sln.yaml
-  parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
-    buildPlatform: 'Win32'
-    buildArch: 'x64'
-    msbuildPlatform: 'x64'
-    buildConfig: 'Debug'
-- template: templates/jobs-sln.yaml
-  parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
-    buildPlatform: 'Win32'
-    buildArch: 'x64'
-    msbuildPlatform: 'x64'
-    buildConfig: 'Release'
-- template: templates/jobs-sln.yaml
-  parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
-    buildPlatform: 'UWP'
-    buildArch: 'x86'
-    msbuildPlatform: 'Win32'
-    buildConfig: 'Debug'
-- template: templates/jobs-sln.yaml
-  parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
-    buildPlatform: 'UWP'
-    buildArch: 'x86'
-    msbuildPlatform: 'Win32'
-    buildConfig: 'Release'
-- template: templates/jobs-sln.yaml
-  parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
-    buildPlatform: 'UWP'
-    buildArch: 'x64'
-    msbuildPlatform: 'x64'
-    buildConfig: 'Debug'
-- template: templates/jobs-sln.yaml
-  parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
-    buildPlatform: 'UWP'
-    buildArch: 'x64'
-    msbuildPlatform: 'x64'
-    buildConfig: 'Release'
-- template: templates/jobs-sln.yaml
-  parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
-    buildPlatform: 'UWP'
-    buildArch: 'ARM'
-    msbuildPlatform: 'ARM'
-    buildConfig: 'Debug'
-- template: templates/jobs-sln.yaml
-  parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
-    buildPlatform: 'UWP'
-    buildArch: 'ARM'
-    msbuildPlatform: 'ARM'
-    buildConfig: 'Release'
+# - template: templates/jobs-sln.yaml
+#   parameters:
+#     buildAgent: 'Hosted VS2017' # vs2017-win2016
+#     buildPlatform: 'Win32'
+#     buildArch: 'x86'
+#     msbuildPlatform: 'Win32'
+#     buildConfig: 'Release'
+# - template: templates/jobs-sln.yaml
+#   parameters:
+#     buildAgent: 'Hosted VS2017' # vs2017-win2016
+#     buildPlatform: 'Win32'
+#     buildArch: 'x64'
+#     msbuildPlatform: 'x64'
+#     buildConfig: 'Debug'
+# - template: templates/jobs-sln.yaml
+#   parameters:
+#     buildAgent: 'Hosted VS2017' # vs2017-win2016
+#     buildPlatform: 'Win32'
+#     buildArch: 'x64'
+#     msbuildPlatform: 'x64'
+#     buildConfig: 'Release'
+# - template: templates/jobs-sln.yaml
+#   parameters:
+#     buildAgent: 'Hosted VS2017' # vs2017-win2016
+#     buildPlatform: 'UWP'
+#     buildArch: 'x86'
+#     msbuildPlatform: 'Win32'
+#     buildConfig: 'Debug'
+# - template: templates/jobs-sln.yaml
+#   parameters:
+#     buildAgent: 'Hosted VS2017' # vs2017-win2016
+#     buildPlatform: 'UWP'
+#     buildArch: 'x86'
+#     msbuildPlatform: 'Win32'
+#     buildConfig: 'Release'
+# - template: templates/jobs-sln.yaml
+#   parameters:
+#     buildAgent: 'Hosted VS2017' # vs2017-win2016
+#     buildPlatform: 'UWP'
+#     buildArch: 'x64'
+#     msbuildPlatform: 'x64'
+#     buildConfig: 'Debug'
+# - template: templates/jobs-sln.yaml
+#   parameters:
+#     buildAgent: 'Hosted VS2017' # vs2017-win2016
+#     buildPlatform: 'UWP'
+#     buildArch: 'x64'
+#     msbuildPlatform: 'x64'
+#     buildConfig: 'Release'
+# - template: templates/jobs-sln.yaml
+#   parameters:
+#     buildAgent: 'Hosted VS2017' # vs2017-win2016
+#     buildPlatform: 'UWP'
+#     buildArch: 'ARM'
+#     msbuildPlatform: 'ARM'
+#     buildConfig: 'Debug'
+# - template: templates/jobs-sln.yaml
+#   parameters:
+#     buildAgent: 'Hosted VS2017' # vs2017-win2016
+#     buildPlatform: 'UWP'
+#     buildArch: 'ARM'
+#     msbuildPlatform: 'ARM'
+#     buildConfig: 'Release'
