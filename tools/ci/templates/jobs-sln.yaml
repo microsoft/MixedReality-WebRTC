@@ -58,7 +58,15 @@ jobs:
       arguments: '-a prepare -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig)'
     timeoutInMinutes: 10
 
-  # 
+  # Restore NuGet packages for .NET Core/Standard projects
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore NuGet (.NET Core)'
+    inputs:
+      command: restore
+      restoreDirectory: 'packages/'
+      projects: 'libs/Microsoft.MixedReality.WebRTC/Microsoft.MixedReality.WebRTC.csproj'
+
+  # Build the entire Microsoft.MixedReality.WebRTC solution
   - task: VSBuild@1
     inputs:
       solution: Microsoft.MixedReality.WebRTC.sln
