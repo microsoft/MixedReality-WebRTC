@@ -78,22 +78,25 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 fixed (void* ptr = buffer)
                 {
+                    // Destination buffer is packed and contiguous
+                    ulong dstSizeYA = (ulong)width * height;
+                    ulong dstSizeUV = dstSizeYA / 4;
+                    int dstStrideYA = (int)width;
+                    int dstStrideUV = dstStrideYA / 2;
+
                     // Note : System.Buffer.MemoryCopy() essentially does the same (without stride), but gets transpiled by IL2CPP
                     // into the C++ corresponding to the IL instead of a single memcpy() call. This results in a large overhead,
                     // especially in Debug config where one can lose 5-10 FPS just because of this.
                     void* dst = ptr;
-                    ulong sizeY = (ulong)strideY * height;
-                    Utils.MemCpyStride(dst, strideY, (void*)dataY, strideY, (int)width, (int)height);
-                    dst = (void*)((ulong)dst + sizeY);
-                    ulong sizeU = (ulong)strideU * height / 2;
-                    Utils.MemCpyStride(dst, strideU, (void*)dataU, strideU, (int)width / 2, (int)height / 2);
-                    dst = (void*)((ulong)dst + sizeU);
-                    ulong sizeV = (ulong)strideV * height / 2;
-                    Utils.MemCpyStride(dst, strideV, (void*)dataV, strideV, (int)width / 2, (int)height / 2);
+                    Utils.MemCpyStride(dst, dstStrideYA, (void*)dataY, strideY, (int)width, (int)height);
+                    dst = (void*)((ulong)dst + dstSizeYA);
+                    Utils.MemCpyStride(dst, dstStrideUV, (void*)dataU, strideU, (int)width / 2, (int)height / 2);
+                    dst = (void*)((ulong)dst + dstSizeUV);
+                    Utils.MemCpyStride(dst, dstStrideUV, (void*)dataV, strideV, (int)width / 2, (int)height / 2);
                     if (dataA.ToPointer() != null)
                     {
-                        dst = (void*)((ulong)dst + sizeV);
-                        Utils.MemCpyStride(dst, strideA, (void*)dataA, strideA, (int)width, (int)height);
+                        dst = (void*)((ulong)dst + dstSizeUV);
+                        Utils.MemCpyStride(dst, dstStrideYA, (void*)dataA, strideA, (int)width, (int)height);
                     }
                 }
             }
