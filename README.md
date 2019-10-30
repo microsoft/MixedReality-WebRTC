@@ -112,7 +112,8 @@ See the user manual section on [Building from sources](https://microsoft.github.
 The current version is a public preview under active development, which contains known issues being addressed:
 
 - HoloLens 2 exhibits some small performance penalty due to the [missing support (#157)](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157) for SIMD-accelerated YUV conversion in WebRTC UWP SDK on ARM.
-- H.264 hardware video encoding (UWP only) exhibits some video freeze and quality degrading (blockiness). See #74 and #101 for details.
+- H.264 hardware video encoding (UWP only) exhibits some quality degrading (blockiness). See #74 and #101 for details.
+- H.264 is not currently available on Desktop. Only VP8 and VP9 are available instead (software).
 - There is currently no clean C++ API; instead the C API used for C# P/Invoke can be used from C++ code, and opaque handles cast to C++ objects. An actual C++ API will eventually be exposed. The C++ library public API is found in [`libs\Microsoft.MixedReality.WebRTC.Native\include`](https://github.com/microsoft/MixedReality-WebRTC/tree/master/libs/Microsoft.MixedReality.WebRTC.Native/include) and already contains some classes, but is not 100% functional at this time (cannot create a peer connection for example).
 
 In addition, the Debug config of WebRTC core implementation is known to exhibit some performance issues on most devices, including some higher-end PCs. Using the Release config of the core WebRTC implementation usually prevents this.
