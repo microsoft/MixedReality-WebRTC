@@ -17,6 +17,7 @@ Shader "Video/YUVFeedShader (standard lit)"
         CGPROGRAM
 
         #pragma surface surf Lambert //alpha
+        #pragma multi_compile_instancing
         #pragma multi_compile __ MIRROR
 
         struct Input
