@@ -797,10 +797,10 @@ namespace Microsoft.MixedReality.WebRTC
                             _nativePeerhandle, _peerCallbackArgs.I420LocalVideoFrameCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterI420RemoteVideoFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.I420RemoteVideoFrameCallback, self);
-                        //PeerConnectionInterop.PeerConnection_RegisterARGBLocalVideoFrameCallback(
-                        //    _nativePeerhandle, _peerCallbackArgs.ARGBLocalVideoFrameCallback, self);
-                        //PeerConnectionInterop.PeerConnection_RegisterARGBRemoteVideoFrameCallback(
-                        //    _nativePeerhandle, _peerCallbackArgs.ARGBRemoteVideoFrameCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterARGBLocalVideoFrameCallback(
+                            _nativePeerhandle, _peerCallbackArgs.ARGBLocalVideoFrameCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterARGBRemoteVideoFrameCallback(
+                            _nativePeerhandle, _peerCallbackArgs.ARGBRemoteVideoFrameCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterLocalAudioFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.LocalAudioFrameCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterRemoteAudioFrameCallback(
