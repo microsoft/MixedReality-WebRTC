@@ -3,6 +3,21 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- (ab67d06) Fix ARGB32 local and remote callbacks not firing due to missing registration.
+
+### Added
+
+- (2f93b05) Optimize Unity shaders with `half` type.
+- (3036c88) Add single-pass stereo instanced rendering support to Unity shaders.
+
+### Changed
+
+- (7d7e8e5) Remove '.' from Unity project name to work around Unity bug in project generation.
+
 ## [1.0.0] - 2019-10-30
 
 deeccbbf269192cd272fdb9bc1822620c3c13a3b
