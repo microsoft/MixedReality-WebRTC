@@ -801,6 +801,9 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
   // Create the new peer connection
   rtc::scoped_refptr<PeerConnection> peer =
       PeerConnection::create(*factory, rtc_config, interop_handle);
+  if (!peer) {
+    return MRS_E_UNKNOWN;
+  }
   const PeerConnectionHandle handle =
       g_factory->AddPeerConnection(std::move(peer));
 

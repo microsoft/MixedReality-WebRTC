@@ -48,7 +48,8 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
                        public webrtc::CreateSessionDescriptionObserver {
  public:
   /// Create a new PeerConnection using the given |factory|, based on the given
-  /// |config|. This serves as the constructor for PeerConnection.
+  /// |config|. This serves as the constructor for PeerConnection, and returns a
+  /// NULL pointer on failure.
   static rtc::scoped_refptr<PeerConnection> create(
       webrtc::PeerConnectionFactoryInterface& factory,
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
