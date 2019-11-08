@@ -76,6 +76,8 @@ namespace TestAppUwp
         private MediaSource remoteMediaSource = null;
         private MediaPlayer remoteVideoPlayer = new MediaPlayer();
         private bool _isRemoteVideoPlaying = false;
+        private uint _remoteVideoWidth = 0;
+        private uint _remoteVideoHeight = 0;
         private object _isRemoteVideoPlayingLock = new object();
 
         private uint _remoteAudioChannelCount = 0;
@@ -464,6 +466,8 @@ namespace TestAppUwp
             remoteVideoPlayer.MediaOpened += OnMediaOpened;
             remoteVideoPlayer.MediaFailed += OnMediaFailed;
             remoteVideoPlayer.MediaEnded += OnMediaEnded;
+            remoteVideoPlayer.RealTimePlayback = true;
+            remoteVideoPlayer.AutoPlay = false;
 
             // Bind the XAML UI control (localVideo) to the MediaFoundation rendering pipeline (localVideoPlayer)
             // so that the former can render in the UI the video frames produced in the background by the later.
@@ -821,7 +825,12 @@ namespace TestAppUwp
             {
                 RunOnMainThread(() => {
                     localVideo.MediaPlayer.Play();
-                    //startLocalMedia.IsEnabled = true;
+                });
+            }
+            else if (sender == remoteVideoPlayer)
+            {
+                RunOnMainThread(() => {
+                    remoteVideo.MediaPlayer.Play();
                 });
             }
         }
@@ -873,9 +882,12 @@ namespace TestAppUwp
                 if (_isLocalVideoPlaying)
                 {
                     localVideo.MediaPlayer.Pause();
+                    localVideo.MediaPlayer.Source = null;
                     localVideo.SetMediaPlayer(null);
+                    localVideoSource.NotifyError(MediaStreamSourceErrorStatus.Other);
                     localVideoSource = null;
-                    //localMediaSource.Reset();
+                    localMediaSource.Dispose();
+                    localMediaSource = null;
                     _isLocalVideoPlaying = false;
 
                     // Avoid deadlock in audio processing stack, as this call is delegated to the WebRTC
@@ -968,21 +980,38 @@ namespace TestAppUwp
             // will be sending some video track.
             //< TODO - See if we can add an API to enumerate the remote channels,
             //         or an On(Audio|Video|Data)Channel(Added|Removed) event?
+            bool needNewSource = false;
+            uint width = frame.width;
+            uint height = frame.height;
             lock (_isRemoteVideoPlayingLock)
             {
                 if (!_isRemoteVideoPlaying)
                 {
                     _isRemoteVideoPlaying = true;
-                    uint width = frame.width;
-                    uint height = frame.height;
-                    // We don't know the remote video framerate yet, so use a default.
-                    uint framerate = 30;
-                    RunOnMainThread(() => {
-                        remoteVideoSource = CreateVideoStreamSource(width, height, framerate);
-                        remoteVideoPlayer.Source = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
-                        remoteVideoPlayer.Play();
-                    });
+                    needNewSource = true;
                 }
+                else if ((width != _remoteVideoWidth) || (height != _remoteVideoHeight))
+                {
+                    _remoteVideoWidth = width;
+                    _remoteVideoHeight = height;
+                    needNewSource = true;
+                }
+            }
+            if (needNewSource)
+            {
+                // We don't know the remote video framerate yet, so use a default.
+                uint framerate = 30;
+                RunOnMainThread(() => {
+                    remoteVideoPlayer.Pause();
+                    remoteVideoPlayer.Source = null;
+                    remoteVideo.SetMediaPlayer(null);
+                    remoteVideoSource?.NotifyError(MediaStreamSourceErrorStatus.Other);
+                    remoteMediaSource?.Dispose();
+                    remoteVideoSource = CreateVideoStreamSource(width, height, framerate);
+                    remoteMediaSource = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
+                    remoteVideoPlayer.Source = remoteMediaSource;
+                    remoteVideo.SetMediaPlayer(remoteVideoPlayer);
+                });
             }
 
             remoteVideoBridge.HandleIncomingVideoFrame(frame);
@@ -1128,9 +1157,9 @@ namespace TestAppUwp
                 }
 
                 localVideoPlayer.Source = null;
-                localMediaSource?.Reset();
+                localVideoSource?.NotifyError(MediaStreamSourceErrorStatus.Other);
+                localMediaSource?.Dispose();
                 localVideo.SetMediaPlayer(null);
-                localVideoSource = null;
                 localVideoSource = CreateVideoStreamSource(width, height, (uint)framerate);
                 localMediaSource = MediaSource.CreateFromMediaStreamSource(localVideoSource);
                 localVideoPlayer.Source = localMediaSource;
