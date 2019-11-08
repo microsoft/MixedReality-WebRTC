@@ -3,20 +3,18 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.1] - 2019-11-08
+
+7e8a97cfd9df248f3ea1a4304fa0e7b24b883503
 
 ### Fixed
 
-- (ab67d06) Fix ARGB32 local and remote callbacks not firing due to missing registration.
-
-### Added
-
-- (2f93b05) Optimize Unity shaders with `half` type.
-- (3036c88) Add single-pass stereo instanced rendering support to Unity shaders.
-
-### Changed
-
-- (7d7e8e5) Remove '.' from Unity project name to work around Unity bug in project generation.
+- (f5bf1d9) Integrate upstream change fixing the "green band" artifact in the H.264 decoder on UWP when the resolution selected gets padded by the decoder, which often happens with resolution heights not a multiple of 16px.
+- (c3e1107) Fix crash in C# due to NULL pointer dereferencing following any failure to initializing the peer connection. (#122)
+- (ab67d06) Fix ARGB32 local and remote callbacks not firing due to missing registration. (#120)
+- (59c425e) [TestAppUWP] Handle remote video resolution changes by resizing the Media Foundation video stream source to the new frame size.
+- (7d7e8e5) Remove '.' from Unity project name to work around Unity bug in project generation. (#77)
+- (3036c88) Add single-pass stereo instanced rendering support to Unity shaders to fix rendering in HoloLens 1 and 2 when using instanced rendering. (#110)
 
 ## [1.0.0] - 2019-10-30
 
