@@ -81,6 +81,54 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
+    /// Storage for a video frame encoded in ARGB format.
+    /// </summary>
+    public class ARGBVideoFrameStorage : IVideoFrameStorage
+    {
+        /// <summary>
+        /// Total capacity of the storage, in bytes.
+        /// This can be assigned to resize the storage.
+        /// </summary>
+        /// <remarks>
+        /// Reading this property is equivalent to reading the <see xref="System.Array.LongLength"/>
+        /// property of <see cref="Buffer"/>.
+        /// </remarks>
+        public ulong Capacity
+        {
+            get { return (ulong)Buffer.LongLength; }
+            set { Resize(value); }
+        }
+
+        /// <summary>
+        /// Frame width, in pixels.
+        /// </summary>
+        public uint Width { get; set; }
+
+        /// <summary>
+        /// Frame height, in pixels.
+        /// </summary>
+        public uint Height { get; set; }
+
+        /// <summary>
+        /// Raw byte buffer containing the frame data.
+        /// </summary>
+        public byte[] Buffer { get; private set; }
+
+        /// <summary>
+        /// Resize the internal buffer to the given capacity.
+        /// This has no effect if the new capacity is smaller than the current one.
+        /// </summary>
+        /// <param name="capacity">The new desired capacity, in bytes.</param>
+        private void Resize(ulong capacity)
+        {
+            if ((Buffer == null) || (capacity > (ulong)Buffer.LongLength))
+            {
+                Buffer = new byte[capacity];
+            }
+        }
+    }
+
+    /// <summary>
     /// Interface for a queue of video frames.
     /// </summary>
     public interface IVideoFrameQueue
