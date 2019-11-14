@@ -77,7 +77,8 @@ TEST(AudioTrack, Simple) {
   LocalPeerPairRaii pair;
 
   ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
-  ASSERT_NE(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+  ASSERT_NE(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   uint32_t call_count = 0;
   AudioFrameCallback audio_cb = [&call_count](const void* audio_data,
@@ -117,14 +118,16 @@ TEST(AudioTrack, Simple) {
   // Check several times this, because the audio "mute" is flaky, does not
   // really mute the audio, so check that the reported status is still
   // correct.
-  ASSERT_NE(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+  ASSERT_NE(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   Event ev;
   ev.WaitFor(5s);
   ASSERT_LT(50u, call_count);  // at least 10 CPS
 
   // Same as above
-  ASSERT_NE(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+  ASSERT_NE(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   mrsPeerConnectionRegisterRemoteAudioFrameCallback(pair.pc2(), nullptr,
                                                     nullptr);
@@ -137,8 +140,9 @@ TEST(AudioTrack, Muted) {
 
   // Disable the audio track; it should output only silence
   ASSERT_EQ(MRS_SUCCESS,
-            mrsPeerConnectionSetLocalAudioTrackEnabled(pair.pc1(), false));
-  ASSERT_EQ(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+            mrsPeerConnectionSetLocalAudioTrackEnabled(pair.pc1(), mrsBool::kFalse));
+  ASSERT_EQ(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   uint32_t call_count = 0;
   AudioFrameCallback audio_cb =
@@ -178,14 +182,16 @@ TEST(AudioTrack, Muted) {
   // Check several times this, because the audio "mute" is flaky, does not
   // really mute the audio, so check that the reported status is still
   // correct.
-  ASSERT_EQ(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+  ASSERT_EQ(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   Event ev;
   ev.WaitFor(5s);
   ASSERT_LT(50u, call_count);  // at least 10 CPS
 
   // Same as above
-  ASSERT_EQ(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+  ASSERT_EQ(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   mrsPeerConnectionRegisterRemoteAudioFrameCallback(pair.pc2(), nullptr,
                                                     nullptr);

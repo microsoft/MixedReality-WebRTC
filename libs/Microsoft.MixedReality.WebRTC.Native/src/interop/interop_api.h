@@ -563,16 +563,16 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
 
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionSetLocalVideoTrackEnabled(PeerConnectionHandle peerHandle,
-                                           int32_t enabled) noexcept;
+                                           mrsBool enabled) noexcept;
 
-MRS_API int32_t MRS_CALL mrsPeerConnectionIsLocalVideoTrackEnabled(
+MRS_API mrsBool MRS_CALL mrsPeerConnectionIsLocalVideoTrackEnabled(
     PeerConnectionHandle peerHandle) noexcept;
 
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionSetLocalAudioTrackEnabled(PeerConnectionHandle peerHandle,
-                                           int32_t enabled) noexcept;
+                                           mrsBool enabled) noexcept;
 
-MRS_API int32_t MRS_CALL mrsPeerConnectionIsLocalAudioTrackEnabled(
+MRS_API mrsBool MRS_CALL mrsPeerConnectionIsLocalAudioTrackEnabled(
     PeerConnectionHandle peerHandle) noexcept;
 
 MRS_API mrsResult MRS_CALL

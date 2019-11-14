@@ -1121,42 +1121,42 @@ mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
 
 mrsResult MRS_CALL
 mrsPeerConnectionSetLocalVideoTrackEnabled(PeerConnectionHandle peerHandle,
-                                           int32_t enabled) noexcept {
+                                           mrsBool enabled) noexcept {
   auto peer = static_cast<PeerConnection*>(peerHandle);
   if (!peer) {
     return MRS_E_INVALID_PEER_HANDLE;
   }
-  peer->SetLocalVideoTrackEnabled(enabled != 0);
+  peer->SetLocalVideoTrackEnabled(enabled != mrsBool::kFalse);
   return MRS_SUCCESS;
 }
 
-int32_t MRS_CALL mrsPeerConnectionIsLocalVideoTrackEnabled(
+mrsBool MRS_CALL mrsPeerConnectionIsLocalVideoTrackEnabled(
     PeerConnectionHandle peerHandle) noexcept {
   auto peer = static_cast<PeerConnection*>(peerHandle);
   if (!peer) {
-    return false;
+    return mrsBool::kFalse;
   }
-  return peer->IsLocalVideoTrackEnabled();
+  return (peer->IsLocalVideoTrackEnabled() ? mrsBool::kTrue : mrsBool::kFalse);
 }
 
 mrsResult MRS_CALL
 mrsPeerConnectionSetLocalAudioTrackEnabled(PeerConnectionHandle peerHandle,
-                                           int32_t enabled) noexcept {
+                                           mrsBool enabled) noexcept {
   auto peer = static_cast<PeerConnection*>(peerHandle);
   if (!peer) {
     return MRS_E_INVALID_PEER_HANDLE;
   }
-  peer->SetLocalAudioTrackEnabled(enabled != 0);
+  peer->SetLocalAudioTrackEnabled(enabled != mrsBool::kFalse);
   return MRS_SUCCESS;
 }
 
-int32_t MRS_CALL mrsPeerConnectionIsLocalAudioTrackEnabled(
+mrsBool MRS_CALL mrsPeerConnectionIsLocalAudioTrackEnabled(
     PeerConnectionHandle peerHandle) noexcept {
   auto peer = static_cast<PeerConnection*>(peerHandle);
   if (!peer) {
-    return false;
+    return mrsBool::kFalse;
   }
-  return peer->IsLocalAudioTrackEnabled();
+  return (peer->IsLocalAudioTrackEnabled() ? mrsBool::kTrue : mrsBool::kFalse);
 }
 
 mrsResult MRS_CALL

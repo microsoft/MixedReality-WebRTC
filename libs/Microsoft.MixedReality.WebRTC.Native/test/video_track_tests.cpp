@@ -30,7 +30,8 @@ TEST(VideoTrack, Simple) {
   VideoDeviceConfiguration config{};
   ASSERT_EQ(MRS_SUCCESS,
             mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), config));
-  ASSERT_NE(0, mrsPeerConnectionIsLocalVideoTrackEnabled(pair.pc1()));
+  ASSERT_NE(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalVideoTrackEnabled(pair.pc1()));
 
   uint32_t frame_count = 0;
   I420VideoFrameCallback i420cb =
@@ -66,9 +67,10 @@ TEST(VideoTrack, Muted) {
             mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), config));
 
   // Disable the video track; it should output only black frames
-  ASSERT_EQ(MRS_SUCCESS,
-            mrsPeerConnectionSetLocalVideoTrackEnabled(pair.pc1(), false));
-  ASSERT_EQ(0, mrsPeerConnectionIsLocalVideoTrackEnabled(pair.pc1()));
+  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetLocalVideoTrackEnabled(
+                             pair.pc1(), mrsBool::kFalse));
+  ASSERT_EQ(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalVideoTrackEnabled(pair.pc1()));
 
   uint32_t frame_count = 0;
   I420VideoFrameCallback i420cb =
@@ -116,7 +118,7 @@ void MRS_CALL enumDeviceCallbackCompleted(void* user_data) {
 }
 
 // FIXME - PeerConnection currently doesn't support multiple local video tracks
-//TEST(VideoTrack, DeviceIdAll) {
+// TEST(VideoTrack, DeviceIdAll) {
 //  LocalPeerPairRaii pair;
 //
 //  Event ev;
