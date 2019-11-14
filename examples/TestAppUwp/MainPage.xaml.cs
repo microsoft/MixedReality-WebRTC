@@ -726,7 +726,7 @@ namespace TestAppUwp
             var videoStreamDesc = new VideoStreamDescriptor(videoProperties);
             videoStreamDesc.EncodingProperties.FrameRate.Numerator = framerate;
             videoStreamDesc.EncodingProperties.FrameRate.Denominator = 1;
-            videoStreamDesc.EncodingProperties.Bitrate = (30 * width * height * 8 * 8 / 12); // 30-fps 8bits/byte NV12=12bpp
+            videoStreamDesc.EncodingProperties.Bitrate = (framerate * width * height * 12); // NV12=12bpp
             var videoStreamSource = new MediaStreamSource(videoStreamDesc);
             videoStreamSource.BufferTime = TimeSpan.Zero; // TODO : playback breaks if buffering, need to investigate
             videoStreamSource.Starting += OnMediaStreamSourceStarting;
