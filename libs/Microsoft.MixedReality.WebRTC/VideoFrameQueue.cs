@@ -260,6 +260,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>This should only be used if the queue has storage for a compatible video frame encoding.</remarks>
         public bool Enqueue(ARGBVideoFrame frame)
         {
+            Debug.Assert(frame.stride >= frame.width * 4);
+
             double curTime = _stopwatch.Elapsed.TotalMilliseconds;
 
             // Always update queued time, which refers to calling Enqueue(), even
@@ -268,7 +270,7 @@ namespace Microsoft.MixedReality.WebRTC
             _lastQueuedTimeMs = curTime;
 
             // Try to get some storage for that new frame
-            ulong byteSize = (ulong)frame.stride * frame.height * 4;
+            ulong byteSize = (ulong)frame.stride * frame.height;
             T storage = GetStorageFor(byteSize);
             if (storage == null)
             {
