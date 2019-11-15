@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC.Interop;
+using Microsoft.MixedReality.WebRTC.Tracing;
 
 [assembly: InternalsVisibleTo("Microsoft.MixedReality.WebRTC.Tests")]
 
@@ -646,6 +647,16 @@ namespace Microsoft.MixedReality.WebRTC
         #region Initializing and shutdown
 
         /// <summary>
+        /// Create a new peer connection object. The object is initially created empty, and cannot be used
+        /// until <see cref="InitializeAsync(PeerConnectionConfiguration, CancellationToken)"/> has completed
+        /// successfully.
+        /// </summary>
+        public PeerConnection()
+        {
+            MainEventSource.Log.Initialize();
+        }
+
+        /// <summary>
         /// Initialize the current peer connection object asynchronously.
         /// </summary>
         /// <param name="config">Configuration for initializing the peer connection.</param>
@@ -1133,6 +1144,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void AddIceCandidate(string sdpMid, int sdpMlineindex, string candidate)
         {
+            MainEventSource.Log.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
             ThrowIfConnectionNotOpen();
             PeerConnectionInterop.PeerConnection_AddIceCandidate(_nativePeerhandle, sdpMid, sdpMlineindex, candidate);
         }
@@ -1144,6 +1156,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public bool CreateOffer()
         {
+            MainEventSource.Log.CreateOffer();
             ThrowIfConnectionNotOpen();
             return (PeerConnectionInterop.PeerConnection_CreateOffer(_nativePeerhandle) == Utils.MRS_SUCCESS);
         }
@@ -1155,6 +1168,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public bool CreateAnswer()
         {
+            MainEventSource.Log.CreateAnswer();
             ThrowIfConnectionNotOpen();
             return (PeerConnectionInterop.PeerConnection_CreateAnswer(_nativePeerhandle) == Utils.MRS_SUCCESS);
         }
@@ -1207,6 +1221,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 if (_nativePeerhandle == IntPtr.Zero)
                 {
+                    MainEventSource.Log.PeerConnectionNotOpenError();
                     throw new InvalidOperationException("Cannot invoke native method with invalid peer connection handle.");
                 }
             }
@@ -1218,6 +1233,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <returns>The list of available video capture devices.</returns>
         public static Task<List<VideoCaptureDevice>> GetVideoCaptureDevicesAsync()
         {
+            // Ensure the logging system is ready before using PInvoke.
+            MainEventSource.Log.Initialize();
+
             var devices = new List<VideoCaptureDevice>();
             var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
             var wrapper = new PeerConnectionInterop.EnumVideoCaptureDeviceWrapper()
@@ -1260,6 +1278,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <returns>The list of available video capture formats for the specified video capture device.</returns>
         public static Task<List<VideoCaptureFormat>> GetVideoCaptureFormatsAsync(string deviceId)
         {
+            // Ensure the logging system is ready before using PInvoke.
+            MainEventSource.Log.Initialize();
+
             var formats = new List<VideoCaptureFormat>();
             var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
             var wrapper = new PeerConnectionInterop.EnumVideoCaptureFormatsWrapper()
@@ -1303,17 +1324,20 @@ namespace Microsoft.MixedReality.WebRTC
 
         internal void OnConnected()
         {
+            MainEventSource.Log.Connected();
             IsConnected = true;
             Connected?.Invoke();
         }
 
         internal void OnDataChannelAdded(DataChannel dataChannel)
         {
+            MainEventSource.Log.DataChannelAdded(dataChannel.ID, dataChannel.Label);
             DataChannelAdded?.Invoke(dataChannel);
         }
 
         internal void OnDataChannelRemoved(DataChannel dataChannel)
         {
+            MainEventSource.Log.DataChannelRemoved(dataChannel.ID, dataChannel.Label);
             DataChannelRemoved?.Invoke(dataChannel);
         }
 
@@ -1325,6 +1349,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="sdp">The SDP message content.</param>
         internal void OnLocalSdpReadytoSend(string type, string sdp)
         {
+            MainEventSource.Log.LocalSdpReady(type, sdp);
+
             // If the user specified a preferred audio or video codec, manipulate the SDP message
             // to exclude other codecs if the preferred one is supported.
             if ((PreferredAudioCodec.Length > 0) || (PreferredVideoCodec.Length > 0))
@@ -1360,56 +1386,67 @@ namespace Microsoft.MixedReality.WebRTC
 
         internal void OnIceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
         {
+            MainEventSource.Log.IceCandidateReady(sdpMid, sdpMlineindex, candidate);
             IceCandidateReadytoSend?.Invoke(candidate, sdpMlineindex, sdpMid);
         }
 
         internal void OnIceStateChanged(IceConnectionState newState)
         {
+            MainEventSource.Log.IceStateChanged(newState);
             IceStateChanged?.Invoke(newState);
         }
 
         internal void OnRenegotiationNeeded()
         {
+            MainEventSource.Log.RenegotiationNeeded();
             RenegotiationNeeded?.Invoke();
         }
 
         internal void OnTrackAdded(TrackKind trackKind)
         {
+            MainEventSource.Log.TrackAdded(trackKind);
             TrackAdded?.Invoke(trackKind);
         }
 
         internal void OnTrackRemoved(TrackKind trackKind)
         {
+            MainEventSource.Log.TrackRemoved(trackKind);
             TrackRemoved?.Invoke(trackKind);
         }
 
         internal void OnI420LocalVideoFrameReady(I420AVideoFrame frame)
         {
+            MainEventSource.Log.I420LocalVideoFrameReady(frame.width, frame.height);
             I420LocalVideoFrameReady?.Invoke(frame);
         }
 
         internal void OnI420RemoteVideoFrameReady(I420AVideoFrame frame)
         {
+            MainEventSource.Log.I420RemoteVideoFrameReady(frame.width, frame.height);
             I420RemoteVideoFrameReady?.Invoke(frame);
         }
 
         internal void OnARGBLocalVideoFrameReady(ARGBVideoFrame frame)
         {
+            MainEventSource.Log.Argb32LocalVideoFrameReady(frame.width, frame.height);
             ARGBLocalVideoFrameReady?.Invoke(frame);
         }
 
         internal void OnARGBRemoteVideoFrameReady(ARGBVideoFrame frame)
         {
+            MainEventSource.Log.Argb32RemoteVideoFrameReady(frame.width, frame.height);
             ARGBRemoteVideoFrameReady?.Invoke(frame);
         }
 
         internal void OnLocalAudioFrameReady(AudioFrame frame)
         {
+            MainEventSource.Log.LocalAudioFrameReady(frame.bitsPerSample, frame.channelCount, frame.frameCount);
             LocalAudioFrameReady?.Invoke(frame);
         }
 
         internal void OnRemoteAudioFrameReady(AudioFrame frame)
         {
+            MainEventSource.Log.RemoteAudioFrameReady(frame.bitsPerSample, frame.channelCount, frame.frameCount);
             RemoteAudioFrameReady?.Invoke(frame);
         }
     }

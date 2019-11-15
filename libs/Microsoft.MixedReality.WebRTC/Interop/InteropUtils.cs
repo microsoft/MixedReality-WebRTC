@@ -1,3 +1,4 @@
+using Microsoft.MixedReality.WebRTC.Tracing;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -119,11 +120,15 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         /// <param name="res">The error code to turn into an exception, if not zero (MRS_SUCCESS).</param>
         public static void ThrowOnErrorCode(uint res)
         {
+            if (res == MRS_SUCCESS)
+            {
+                return;
+            }
+
+            MainEventSource.Log.NativeError(res);
+
             switch (res)
             {
-            case MRS_SUCCESS:
-                return;
-
             case MRS_E_UNKNOWN:
             default:
                 throw new Exception();

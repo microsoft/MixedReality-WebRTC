@@ -52,7 +52,6 @@ xdoc.meta
 /tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Native.pdb
 
 # Profiling data
-*.wprp
 *.etl
 
 # TODO - TestNetCoreConsole is misconfigured, builds into its own folder
