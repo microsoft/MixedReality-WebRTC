@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -696,4 +695,5 @@ MRS_API void MRS_CALL mrsMemCpyStride(void* dst,
                                       int32_t src_stride,
                                       int32_t elem_size,
                                       int32_t elem_count);
-}
+
+}  // extern "C"

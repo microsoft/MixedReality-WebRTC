@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -149,6 +148,15 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// connection wit the remote peer. Once the answer message is ready, the
   /// LocalSdpReadytoSendCallback callback is invoked to deliver the message.
   bool CreateAnswer() noexcept;
+
+  /// Close the peer connection. After the connection is closed, it cannot be
+  /// opened again with the same C++ object. Instantiate a new |PeerConnection|
+  /// object instead to create a new connection. No-op if already closed.
+  void Close() noexcept;
+
+  /// Check if the connection is closed. This returns |true| once |Close()| has
+  /// been called.
+  bool IsClosed() const noexcept;
 
   //
   // Remote tracks
@@ -366,7 +374,9 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
 
   /// Retrieve the underlying PeerConnectionInterface from the core
   /// implementation, for direct manipulation. This allows direct access to the
-  /// core PeerConnection API, but will break this class if not used carefully.
+  /// core PeerConnection API, but will break this class and the lifetime
+  /// management logic of GlobalFactory if not used carefully. This is NULL
+  /// after |Close()| is called.
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> GetImpl() const {
     return peer_;
   }
@@ -446,7 +456,8 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   void OnFailure(webrtc::RTCError error) noexcept override {}
 
  protected:
-  /// The underlying PC object from the core implementation.
+  /// The underlying PC object from the core implementation. This is NULL after
+  /// |Close()| is called.
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_;
 
   /// Handle to the interop wrapper associated with this object.

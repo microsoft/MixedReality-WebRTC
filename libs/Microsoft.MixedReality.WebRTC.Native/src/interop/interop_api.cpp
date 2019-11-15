@@ -1,13 +1,13 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 // This is a precompiled header, it must be on its own, followed by a blank
 // line, to prevent clang-format from reordering it with other headers.
 #include "pch.h"
 
-#include "interop/interop_api.h"
 #include "data_channel.h"
+#include "interop/global_factory.h"
+#include "interop/interop_api.h"
 #include "peer_connection.h"
 #include "sdp_utils.h"
 
@@ -44,222 +44,6 @@ mrsResult RTCToAPIError(const webrtc::RTCError& error) {
 using WebRtcFactoryPtr =
     std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>;
 #endif  // defined(WINUWP)
-
-class GlobalFactory;
-
-/// Global factory of all global objects, including the peer connection factory
-/// itself, with added thread safety.
-std::unique_ptr<GlobalFactory> g_factory = std::make_unique<GlobalFactory>();
-
-/// Global factory wrapper adding thread safety to all global objects, including
-/// the peer connection factory, and on UWP the so-called "WebRTC factory".
-class GlobalFactory {
- public:
-  ~GlobalFactory() { Shutdown(); }
-
-  /// Get or create the peer connection factory.
-  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> GetOrCreate() {
-    std::scoped_lock lock(mutex_);
-    if (!factory_) {
-      if (Initialize() != MRS_SUCCESS) {
-        return nullptr;
-      }
-    }
-    return factory_;
-  }
-
-  /// Get or create the peer connection factory.
-  mrsResult GetOrCreate(
-      rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>& factory) {
-    factory = nullptr;
-    std::scoped_lock lock(mutex_);
-    if (!factory_) {
-      mrsResult res = Initialize();
-      if (res != MRS_SUCCESS) {
-        return res;
-      }
-    }
-    factory = factory_;
-    return (factory ? MRS_SUCCESS : MRS_E_UNKNOWN);
-  }
-
-  /// Get the existing peer connection factory, or NULL if not created.
-  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
-  GetExisting() noexcept {
-    std::scoped_lock lock(mutex_);
-    return factory_;
-  }
-
-  /// Get the worker thread. This is only valid if initialized.
-  rtc::Thread* GetWorkerThread() noexcept {
-    std::scoped_lock lock(mutex_);
-#if defined(WINUWP)
-    return impl_->workerThread.get();
-#else   // defined(WINUWP)
-    return worker_thread_.get();
-#endif  // defined(WINUWP)
-  }
-
-  PeerConnectionHandle AddPeerConnection(
-      rtc::scoped_refptr<PeerConnection> peer) {
-    RTC_CHECK(peer);
-    const PeerConnectionHandle handle{peer.get()};
-    {
-      std::scoped_lock lock(mutex_);
-      peer_connection_map_.emplace(handle, std::move(peer));
-    }
-    return handle;
-  }
-
-  void RemovePeerConnection(PeerConnectionHandle* handle) {
-    if (auto peer = static_cast<PeerConnection*>(*handle)) {
-      std::scoped_lock lock(mutex_);
-      auto it = peer_connection_map_.find(*handle);
-      if (it != peer_connection_map_.end()) {
-        *handle = nullptr;
-        // This generally removes the last reference to the PeerConnection and
-        // leads to its destruction, unless some background running task is
-        // still using the connection.
-        peer_connection_map_.erase(it);
-
-        // Release the global objects inside the factory so that the threads are
-        // stopped and the DLL can be unloaded. This is mandatory to be able to
-        // unload/reload in the Unity Editor and be able to Play/Stop multiple
-        // times while the Editor process runs.
-        if (peer_connection_map_.empty()) {
-          Shutdown();
-        }
-      }
-    }
-  }
-
-#if defined(WINUWP)
-  WebRtcFactoryPtr get() {
-    std::scoped_lock lock(mutex_);
-    if (!impl_) {
-      if (Initialize() != MRS_SUCCESS) {
-        return nullptr;
-      }
-    }
-    return impl_;
-  }
-  mrsResult GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory) {
-    factory.reset();
-    std::scoped_lock lock(mutex_);
-    if (!impl_) {
-      mrsResult res = Initialize();
-      if (res != MRS_SUCCESS) {
-        return res;
-      }
-    }
-    factory = impl_;
-    return (factory ? MRS_SUCCESS : MRS_E_UNKNOWN);
-  }
-#endif  // defined(WINUWP)
-
- private:
-  mrsResult Initialize() {
-    RTC_CHECK(!factory_);
-
-#if defined(WINUWP)
-    RTC_CHECK(!impl_);
-    auto mw =
-        winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
-    auto cw = mw.CoreWindow();
-    auto dispatcher = cw.Dispatcher();
-    if (dispatcher.HasThreadAccess()) {
-      // WebRtcFactory::setup() will deadlock if called from main UI thread
-      // See https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/143
-      return MRS_E_WRONG_THREAD;
-    }
-    auto dispatcherQueue =
-        wrapper::impl::org::webRtc::EventQueue::toWrapper(dispatcher);
-
-    // Setup the WebRTC library
-    {
-      auto libConfig = std::make_shared<
-          wrapper::impl::org::webRtc::WebRtcLibConfiguration>();
-      libConfig->thisWeak_ = libConfig;  // mimic wrapper_create()
-      libConfig->queue = dispatcherQueue;
-      wrapper::impl::org::webRtc::WebRtcLib::setup(libConfig);
-    }
-
-    // Create the UWP factory
-    {
-      auto factoryConfig = std::make_shared<
-          wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
-      factoryConfig->thisWeak_ = factoryConfig;  // mimic wrapper_create()
-      factoryConfig->audioCapturingEnabled = true;
-      factoryConfig->audioRenderingEnabled = true;
-      factoryConfig->enableAudioBufferEvents = false;
-      impl_ = std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
-      impl_->thisWeak_ = impl_;  // mimic wrapper_create()
-      impl_->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
-    }
-    impl_->internalSetup();
-
-    // Cache the peer connection factory
-    factory_ = impl_->peerConnectionFactory();
-#else   // defined(WINUWP)
-    network_thread_ = rtc::Thread::CreateWithSocketServer();
-    RTC_CHECK(network_thread_.get());
-    network_thread_->SetName("WebRTC network thread", network_thread_.get());
-    network_thread_->Start();
-    worker_thread_ = rtc::Thread::Create();
-    RTC_CHECK(worker_thread_.get());
-    worker_thread_->SetName("WebRTC worker thread", worker_thread_.get());
-    worker_thread_->Start();
-    signaling_thread_ = rtc::Thread::Create();
-    RTC_CHECK(signaling_thread_.get());
-    signaling_thread_->SetName("WebRTC signaling thread",
-                               signaling_thread_.get());
-    signaling_thread_->Start();
-
-    factory_ = webrtc::CreatePeerConnectionFactory(
-        network_thread_.get(), worker_thread_.get(), signaling_thread_.get(),
-        nullptr, webrtc::CreateBuiltinAudioEncoderFactory(),
-        webrtc::CreateBuiltinAudioDecoderFactory(),
-        std::unique_ptr<webrtc::VideoEncoderFactory>(
-            new webrtc::MultiplexEncoderFactory(
-                absl::make_unique<webrtc::InternalEncoderFactory>())),
-        std::unique_ptr<webrtc::VideoDecoderFactory>(
-            new webrtc::MultiplexDecoderFactory(
-                absl::make_unique<webrtc::InternalDecoderFactory>())),
-        nullptr, nullptr);
-#endif  // defined(WINUWP)
-    return (factory_.get() != nullptr ? MRS_SUCCESS : MRS_E_UNKNOWN);
-  }
-
-  void Shutdown() {
-    std::scoped_lock lock(mutex_);
-    factory_ = nullptr;
-#if defined(WINUWP)
-    impl_ = nullptr;
-#else   // defined(WINUWP)
-    network_thread_.reset();
-    worker_thread_.reset();
-    signaling_thread_.reset();
-#endif  // defined(WINUWP)
-  }
-
- private:
-  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory_
-      RTC_GUARDED_BY(mutex_);
-#if defined(WINUWP)
-  WebRtcFactoryPtr impl_ RTC_GUARDED_BY(mutex_);
-#else   // defined(WINUWP)
-  std::unique_ptr<rtc::Thread> network_thread_ RTC_GUARDED_BY(mutex_);
-  std::unique_ptr<rtc::Thread> worker_thread_ RTC_GUARDED_BY(mutex_);
-  std::unique_ptr<rtc::Thread> signaling_thread_ RTC_GUARDED_BY(mutex_);
-#endif  // defined(WINUWP)
-  std::recursive_mutex mutex_;
-
-  /// Collection of all peer connection objects alive.
-  std::unordered_map<
-      PeerConnectionHandle,
-      rtc::scoped_refptr<Microsoft::MixedReality::WebRTC::PeerConnection>>
-      peer_connection_map_;
-};
 
 /// Predefined name of the local video track.
 const std::string kLocalVideoLabel("local_video");
@@ -313,7 +97,8 @@ mrsResult OpenVideoCaptureDevice(
 #if defined(WINUWP)
   WebRtcFactoryPtr uwp_factory;
   {
-    mrsResult res = g_factory->GetOrCreateWebRtcFactory(uwp_factory);
+    mrsResult res =
+        GlobalFactory::Instance()->GetOrCreateWebRtcFactory(uwp_factory);
     if (res != MRS_SUCCESS) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
       return res;
@@ -532,7 +317,7 @@ uint32_t FourCCFromVideoType(webrtc::VideoType videoType) {
 }  // namespace
 
 inline rtc::Thread* GetWorkerThread() {
-  return g_factory->GetWorkerThread();
+  return GlobalFactory::Instance()->GetWorkerThread();
 }
 
 void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {
@@ -555,7 +340,7 @@ void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
   }
 #if defined(WINUWP)
   // The UWP factory needs to be initialized for getDevices() to work.
-  if (!g_factory->GetOrCreate()) {
+  if (!GlobalFactory::Instance()->GetOrCreate()) {
     RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
     return;
   }
@@ -619,7 +404,8 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
   // The UWP factory needs to be initialized for getDevices() to work.
   WebRtcFactoryPtr uwp_factory;
   {
-    mrsResult res = g_factory->GetOrCreateWebRtcFactory(uwp_factory);
+    mrsResult res =
+        GlobalFactory::Instance()->GetOrCreateWebRtcFactory(uwp_factory);
     if (res != MRS_SUCCESS) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
       return res;
@@ -774,7 +560,7 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
   // Ensure the factory exists
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory;
   {
-    mrsResult res = g_factory->GetOrCreate(factory);
+    mrsResult res = GlobalFactory::Instance()->GetOrCreate(factory);
     if (res != MRS_SUCCESS) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the peer connection factory.";
       return res;
@@ -805,7 +591,7 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
     return MRS_E_UNKNOWN;
   }
   const PeerConnectionHandle handle =
-      g_factory->AddPeerConnection(std::move(peer));
+      GlobalFactory::Instance()->AddPeerConnection(std::move(peer));
 
   *peerHandleOut = handle;
   return MRS_SUCCESS;
@@ -979,7 +765,7 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
   if (!peer) {
     return MRS_E_INVALID_PEER_HANDLE;
   }
-  auto pc_factory = g_factory->GetExisting();
+  auto pc_factory = GlobalFactory::Instance()->GetExisting();
   if (!pc_factory) {
     return MRS_E_INVALID_OPERATION;
   }
@@ -1033,7 +819,7 @@ mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
 mrsResult MRS_CALL
 mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    auto pc_factory = g_factory->GetExisting();
+    auto pc_factory = GlobalFactory::Instance()->GetExisting();
     if (!pc_factory) {
       return MRS_E_INVALID_OPERATION;
     }
@@ -1199,11 +985,11 @@ mrsPeerConnectionCreateAnswer(PeerConnectionHandle peerHandle) noexcept {
   return MRS_E_INVALID_PEER_HANDLE;
 }
 
-MRS_API mrsResult MRS_CALL mrsPeerConnectionSetBitrate(
-    PeerConnectionHandle peer_handle,
-    int min_bitrate_bps,
-    int start_bitrate_bps,
-    int max_bitrate_bps) noexcept {
+MRS_API mrsResult MRS_CALL
+mrsPeerConnectionSetBitrate(PeerConnectionHandle peer_handle,
+                            int min_bitrate_bps,
+                            int start_bitrate_bps,
+                            int max_bitrate_bps) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     webrtc::BitrateSettings settings;
     if (min_bitrate_bps >= 0) {
@@ -1215,7 +1001,8 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionSetBitrate(
     if (max_bitrate_bps >= 0) {
       settings.max_bitrate_bps = max_bitrate_bps;
     }
-    return peer->GetImpl()->SetBitrate(settings).ok() ? MRS_SUCCESS : MRS_E_UNKNOWN;
+    return peer->GetImpl()->SetBitrate(settings).ok() ? MRS_SUCCESS
+                                                      : MRS_E_UNKNOWN;
   }
   return MRS_E_INVALID_PEER_HANDLE;
 }
@@ -1234,7 +1021,7 @@ mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
 void MRS_CALL
 mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
   if (peerHandlePtr) {
-    g_factory->RemovePeerConnection(peerHandlePtr);
+    GlobalFactory::Instance()->RemovePeerConnection(peerHandlePtr);
   }
 }
 

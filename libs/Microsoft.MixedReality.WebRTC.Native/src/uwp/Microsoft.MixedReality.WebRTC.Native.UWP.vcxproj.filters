@@ -13,6 +13,12 @@
       <Filter>media</Filter>
     </ClCompile>
     <ClCompile Include="../str.cpp" />
+    <ClCompile Include="../interop/peer_connection_interop.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
+    <ClCompile Include="../interop/global_factory.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../../include/audio_frame_observer.h" />
@@ -25,11 +31,15 @@
     <ClInclude Include="../interop/interop_api.h">
       <Filter>interop</Filter>
     </ClInclude>
-    <ClInclude Include="../data_channel.h">
-      <Filter>media</Filter>
-    </ClInclude>
     <ClInclude Include="../../include/str.h" />
     <ClInclude Include="../../include/export.h" />
+    <ClInclude Include="../../include/data_channel.h" />
+    <ClInclude Include="../interop/peer_connection_interop.h">
+      <Filter>interop</Filter>
+    </ClInclude>
+    <ClInclude Include="../interop/global_factory.h">
+      <Filter>interop</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />
