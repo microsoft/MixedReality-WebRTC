@@ -33,7 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />
-    <None Include="../exports.def" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

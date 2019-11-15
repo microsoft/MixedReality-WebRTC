@@ -93,7 +93,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <ModuleDefinitionFile>..\exports.def</ModuleDefinitionFile>
       <AdditionalDependencies>strmiids.lib;Msdmo.lib;dmoguids.lib;wmcodecdspuuid.lib;Secur32.lib;winmm.lib;Ole32.lib;Evr.lib;mfreadwrite.lib;mf.lib;mfuuid.lib;mfplat.lib;mfplay.lib;webrtc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\OUTPUT\webrtc\win\$(PlatformTarget)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -150,7 +149,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />
-    <None Include="../exports.def" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
