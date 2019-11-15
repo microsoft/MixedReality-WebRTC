@@ -625,8 +625,6 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private Task _initTask = null;
 
-        private CancellationTokenSource _initCTS = new CancellationTokenSource();
-
         /// <summary>
         /// Boolean to indicate if <see cref="Close"/> has been called and is waiting for a pending
         /// initializing task <see cref="_initTask"/> to complete or cancel.
@@ -730,8 +728,6 @@ namespace Microsoft.MixedReality.WebRTC
 
                 // On UWP PeerConnectionCreate() fails on main UI thread, so always initialize the native peer
                 // connection asynchronously from a background worker thread.
-                //using (var cancelOrCloseToken = CancellationTokenSource.CreateLinkedTokenSource(_initCTS.Token, token))
-                //{
                 _initTask = Task.Run(() => {
                     token.ThrowIfCancellationRequested();
 
