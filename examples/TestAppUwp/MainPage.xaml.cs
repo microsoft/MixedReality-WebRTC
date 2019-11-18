@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -71,6 +71,7 @@ namespace TestAppUwp
         private MediaPlayer localVideoPlayer = new MediaPlayer();
         private bool _isLocalVideoPlaying = false;
         private object _isLocalVideoPlayingLock = new object();
+        private LocalVideoTrack _localVideoTrack = null;
 
         private MediaStreamSource remoteVideoSource = null;
         private MediaSource remoteMediaSource = null;
@@ -235,7 +236,6 @@ namespace TestAppUwp
             _peerConnection.RenegotiationNeeded += OnPeerRenegotiationNeeded;
             _peerConnection.TrackAdded += Peer_RemoteTrackAdded;
             _peerConnection.TrackRemoved += Peer_RemoteTrackRemoved;
-            _peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
             _peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
             _peerConnection.LocalAudioFrameReady += Peer_LocalAudioFrameReady;
             _peerConnection.RemoteAudioFrameReady += Peer_RemoteAudioFrameReady;
@@ -855,7 +855,7 @@ namespace TestAppUwp
         {
             RunOnMainThread(() => {
                 LogMessage("Local MediaElement video playback ended.");
-                //StopLocalVideo();
+                //StopLocalMedia();
                 sender.Pause();
                 sender.Source = null;
                 if (sender == localVideoPlayer)
@@ -875,7 +875,7 @@ namespace TestAppUwp
         /// audio and video tracks from the peer connection.
         /// This is called on the UI thread.
         /// </summary>
-        private void StopLocalVideo()
+        private async void StopLocalMedia()
         {
             lock (_isLocalVideoPlayingLock)
             {
@@ -889,22 +889,29 @@ namespace TestAppUwp
                     localMediaSource.Dispose();
                     localMediaSource = null;
                     _isLocalVideoPlaying = false;
-
-                    // Avoid deadlock in audio processing stack, as this call is delegated to the WebRTC
-                    // signaling thread (and will block the caller thread), and audio processing will
-                    // delegate to the UI thread for UWP operations (and will block the signaling thread).
-                    RunOnWorkerThread(() => {
-                        _renegotiationOfferEnabled = false;
-                        _peerConnection.RemoveLocalAudioTrack();
-                        _peerConnection.RemoveLocalVideoTrack();
-                        _renegotiationOfferEnabled = true;
-                        if (_peerConnection.IsConnected)
-                        {
-                            _peerConnection.CreateOffer();
-                        }
-                    });
+                    _localVideoTrack.I420VideoFrameReady -= LocalVideoTrack_I420FrameReady;
                 }
             }
+
+            // Avoid deadlock in audio processing stack, as this call is delegated to the WebRTC
+            // signaling thread (and will block the caller thread), and audio processing will
+            // delegate to the UI thread for UWP operations (and will block the signaling thread).
+            await RunOnWorkerThread(() => {
+                lock (_isLocalVideoPlayingLock)
+                {
+                    _peerConnection.RemoveLocalAudioTrack();
+                    _peerConnection.RemoveLocalVideoTrack(_localVideoTrack); // TODO - this doesn't unregister the callbacks...
+                    _renegotiationOfferEnabled = true;
+                    if (_peerConnection.IsConnected)
+                    {
+                        _peerConnection.CreateOffer();
+                    }
+                    _localVideoTrack.Dispose();
+                    _localVideoTrack = null;
+                }
+            });
+
+            startLocalMedia.IsEnabled = true;
         }
 
         /// <summary>
@@ -962,7 +969,7 @@ namespace TestAppUwp
         /// for local rendering before (or in parallel of) being sent to the remote peer.
         /// </summary>
         /// <param name="frame">The newly captured video frame.</param>
-        private void Peer_LocalI420FrameReady(I420AVideoFrame frame)
+        private void LocalVideoTrack_I420FrameReady(I420AVideoFrame frame)
         {
             localVideoBridge.HandleIncomingVideoFrame(frame);
         }
@@ -1064,14 +1071,14 @@ namespace TestAppUwp
 
         private void MuteLocalVideoClicked(object sender, RoutedEventArgs e)
         {
-            if (_peerConnection.IsLocalVideoTrackEnabled())
+            if (_localVideoTrack.Enabled)
             {
-                _peerConnection.SetLocalVideoTrackEnabled(false);
+                _localVideoTrack.Enabled = false;
                 muteLocalVideoStroke.Visibility = Visibility.Visible;
             }
             else
             {
-                _peerConnection.SetLocalVideoTrackEnabled(true);
+                _localVideoTrack.Enabled = true;
                 muteLocalVideoStroke.Visibility = Visibility.Collapsed;
             }
         }
@@ -1097,12 +1104,15 @@ namespace TestAppUwp
         /// <param name="e">Event arguments.</param>
         private async void StartLocalMediaClicked(object sender, RoutedEventArgs e)
         {
+            // The button will be re-enabled once the current action is finished
+            startLocalMedia.IsEnabled = false;
+
             // Toggle between start and stop local audio/video feeds
             //< TODO dssStatsTimer.IsEnabled used for toggle, but dssStatsTimer should be
             // used also for remote statistics display (so even when no local video active)
-            if (dssStatsTimer.IsEnabled)
+            if (dssStatsTimer.IsEnabled && (_localVideoTrack != null))
             {
-                StopLocalVideo();
+                StopLocalMedia();
                 dssStatsTimer.Stop();
                 localLoadText.Text = "Load: -";
                 localPresentText.Text = "Present: -";
@@ -1117,8 +1127,11 @@ namespace TestAppUwp
                 startLocalMediaIcon.Symbol = Symbol.Play;
                 muteLocalAudioStroke.Visibility = Visibility.Collapsed;
                 muteLocalVideoStroke.Visibility = Visibility.Collapsed;
+                return;
             }
-            else
+
+            // Only start video if previous track was completely shutdown
+            if (_localVideoTrack == null)
             {
                 LogMessage("Opening local A/V stream...");
 
@@ -1192,7 +1205,8 @@ namespace TestAppUwp
                         framerate = framerate,
                         enableMrc = false // TestAppUWP is a shared app, MRC will not get permission anyway
                     };
-                    await _peerConnection.AddLocalVideoTrackAsync(trackConfig);
+                    _localVideoTrack = await _peerConnection.AddLocalVideoTrackAsync("local_video", trackConfig);
+                    _localVideoTrack.I420VideoFrameReady += LocalVideoTrack_I420FrameReady;
                 }
                 catch (Exception ex)
                 {
@@ -1222,6 +1236,9 @@ namespace TestAppUwp
                 {
                     _peerConnection.CreateOffer();
                 }
+
+                // Enable stopping the local audio and video
+                startLocalMedia.IsEnabled = true;
             }
         }
 

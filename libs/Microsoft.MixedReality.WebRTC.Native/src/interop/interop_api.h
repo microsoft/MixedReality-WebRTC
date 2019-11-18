@@ -64,6 +64,9 @@ struct mrsDataChannelCallbacks;
 /// Opaque handle to the interop wrapper of a peer connection.
 using mrsPeerConnectionInteropHandle = void*;
 
+/// Opaque handle to the interop wrapper of a local video track.
+using mrsLocalVideoTrackInteropHandle = void*;
+
 /// Opaque handle to the interop wrapper of a data channel.
 using mrsDataChannelInteropHandle = void*;
 
@@ -125,6 +128,9 @@ MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 
 /// Opaque handle to a native PeerConnection C++ object.
 using PeerConnectionHandle = void*;
+
+/// Opaque handle to a native LocalVideoTrack C++ object.
+using LocalVideoTrackHandle = void*;
 
 /// Opaque handle to a native DataChannel C++ object.
 using DataChannelHandle = void*;
@@ -378,20 +384,6 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
     PeerConnectionDataChannelRemovedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a video frame is available from a local video
-/// track, usually from a local video capture device (local webcam).
-MRS_API void MRS_CALL mrsPeerConnectionRegisterI420LocalVideoFrameCallback(
-    PeerConnectionHandle peerHandle,
-    PeerConnectionI420VideoFrameCallback callback,
-    void* user_data) noexcept;
-
-/// Register a callback fired when a video frame is available from a local video
-/// track, usually from a local video capture device (local webcam).
-MRS_API void MRS_CALL mrsPeerConnectionRegisterARGBLocalVideoFrameCallback(
-    PeerConnectionHandle peerHandle,
-    PeerConnectionARGBVideoFrameCallback callback,
-    void* user_data) noexcept;
-
 /// Register a callback fired when a video frame from a video track was received
 /// from the remote peer.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(
@@ -495,9 +487,11 @@ struct VideoDeviceConfiguration {
 /// |enable_mrc| allows enabling Mixed Reality Capture on HoloLens devices, and
 /// is otherwise ignored for other video capture devices. On UWP this must be
 /// invoked from another thread than the main UI thread.
-MRS_API mrsResult MRS_CALL
-mrsPeerConnectionAddLocalVideoTrack(PeerConnectionHandle peerHandle,
-                                    VideoDeviceConfiguration config) noexcept;
+MRS_API mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
+    PeerConnectionHandle peerHandle,
+    const char* track_name,
+    VideoDeviceConfiguration config,
+    LocalVideoTrackHandle* trackHandle) noexcept;
 
 /// Add a local audio track from a local audio capture device (microphone) to
 /// the collection of tracks to send to the remote peer.
@@ -550,8 +544,9 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     mrsDataChannelCallbacks callbacks,
     DataChannelHandle* dataChannelHandleOut) noexcept;
 
-MRS_API void MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
-    PeerConnectionHandle peerHandle) noexcept;
+MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
+    PeerConnectionHandle peerHandle,
+    LocalVideoTrackHandle trackHandle) noexcept;
 
 MRS_API void MRS_CALL mrsPeerConnectionRemoveLocalAudioTrack(
     PeerConnectionHandle peerHandle) noexcept;

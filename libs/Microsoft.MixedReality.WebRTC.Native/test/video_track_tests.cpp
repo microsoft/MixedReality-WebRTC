@@ -5,6 +5,7 @@
 #include "pch.h"
 
 #include "interop/interop_api.h"
+#include "interop/local_video_track_interop.h"
 
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 
@@ -28,10 +29,11 @@ TEST(VideoTrack, Simple) {
   LocalPeerPairRaii pair;
 
   VideoDeviceConfiguration config{};
+  LocalVideoTrackHandle track_handle{};
   ASSERT_EQ(MRS_SUCCESS,
-            mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), config));
-  ASSERT_NE(mrsBool::kFalse,
-            mrsPeerConnectionIsLocalVideoTrackEnabled(pair.pc1()));
+            mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), "local_video_track",
+                                                config, &track_handle));
+  ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 
   uint32_t frame_count = 0;
   I420VideoFrameCallback i420cb =
@@ -57,20 +59,25 @@ TEST(VideoTrack, Simple) {
 
   mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(pair.pc2(), nullptr,
                                                         nullptr);
+  mrsLocalVideoTrackRemoveRef(track_handle);
 }
 
 TEST(VideoTrack, Muted) {
   LocalPeerPairRaii pair;
 
   VideoDeviceConfiguration config{};
+  LocalVideoTrackHandle track_handle{};
   ASSERT_EQ(MRS_SUCCESS,
-            mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), config));
+            mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), "local_video_track",
+                                                config, &track_handle));
+
+  // New tracks are enabled by default
+  ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 
   // Disable the video track; it should output only black frames
-  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetLocalVideoTrackEnabled(
-                             pair.pc1(), mrsBool::kFalse));
-  ASSERT_EQ(mrsBool::kFalse,
-            mrsPeerConnectionIsLocalVideoTrackEnabled(pair.pc1()));
+  ASSERT_EQ(MRS_SUCCESS,
+            mrsLocalVideoTrackSetEnabled(track_handle, mrsBool::kFalse));
+  ASSERT_EQ(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 
   uint32_t frame_count = 0;
   I420VideoFrameCallback i420cb =
@@ -104,6 +111,7 @@ TEST(VideoTrack, Muted) {
 
   mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(pair.pc2(), nullptr,
                                                         nullptr);
+  mrsLocalVideoTrackRemoveRef(track_handle);
 }
 
 void MRS_CALL enumDeviceCallback(const char* id,
@@ -139,9 +147,12 @@ TEST(VideoTrack, DeviceIdInvalid) {
   LocalPeerPairRaii pair;
 
   VideoDeviceConfiguration config{};
+  LocalVideoTrackHandle track_handle{};
   config.video_device_id = "[[INVALID DEVICE ID]]";
   ASSERT_EQ(MRS_E_NOTFOUND,
-            mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), config));
+            mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), "invalid_track",
+                                                config, &track_handle));
+  ASSERT_EQ(nullptr, track_handle);
 }
 
 #endif  // MRSW_EXCLUDE_DEVICE_TESTS

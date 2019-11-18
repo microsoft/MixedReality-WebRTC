@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -567,22 +567,10 @@ namespace Microsoft.MixedReality.WebRTC
         public event Action<TrackKind> TrackRemoved;
 
         /// <summary>
-        /// Event that occurs when a video frame from a local track has been
-        /// produced locally and is available for render.
-        /// </summary>
-        public event I420VideoFrameDelegate I420LocalVideoFrameReady;
-
-        /// <summary>
         /// Event that occurs when a video frame from a remote peer has been
         /// received and is available for render.
         /// </summary>
         public event I420VideoFrameDelegate I420RemoteVideoFrameReady;
-
-        /// <summary>
-        /// Event that occurs when a video frame from a local track has been
-        /// produced locally and is available for render.
-        /// </summary>
-        public event ARGBVideoFrameDelegate ARGBLocalVideoFrameReady;
 
         /// <summary>
         /// Event that occurs when a video frame from a remote peer has been
@@ -707,9 +695,7 @@ namespace Microsoft.MixedReality.WebRTC
                     RenegotiationNeededCallback = PeerConnectionInterop.RenegotiationNeededCallback,
                     TrackAddedCallback = PeerConnectionInterop.TrackAddedCallback,
                     TrackRemovedCallback = PeerConnectionInterop.TrackRemovedCallback,
-                    I420LocalVideoFrameCallback = PeerConnectionInterop.I420LocalVideoFrameCallback,
                     I420RemoteVideoFrameCallback = PeerConnectionInterop.I420RemoteVideoFrameCallback,
-                    ARGBLocalVideoFrameCallback = PeerConnectionInterop.ARGBLocalVideoFrameCallback,
                     ARGBRemoteVideoFrameCallback = PeerConnectionInterop.ARGBRemoteVideoFrameCallback,
                     LocalAudioFrameCallback = PeerConnectionInterop.LocalAudioFrameCallback,
                     RemoteAudioFrameCallback = PeerConnectionInterop.RemoteAudioFrameCallback
@@ -800,12 +786,8 @@ namespace Microsoft.MixedReality.WebRTC
                             _nativePeerhandle, _peerCallbackArgs.DataChannelAddedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterDataChannelRemovedCallback(
                             _nativePeerhandle, _peerCallbackArgs.DataChannelRemovedCallback, self);
-                        PeerConnectionInterop.PeerConnection_RegisterI420LocalVideoFrameCallback(
-                            _nativePeerhandle, _peerCallbackArgs.I420LocalVideoFrameCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterI420RemoteVideoFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.I420RemoteVideoFrameCallback, self);
-                        PeerConnectionInterop.PeerConnection_RegisterARGBLocalVideoFrameCallback(
-                            _nativePeerhandle, _peerCallbackArgs.ARGBLocalVideoFrameCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterARGBRemoteVideoFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.ARGBRemoteVideoFrameCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterLocalAudioFrameCallback(
@@ -883,6 +865,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Add to the current connection a video track from a local video capture device (webcam).
         /// </summary>
+        /// <param name="trackName">Name of the newly created track.</param>
         /// <param name="settings">Video capture settings for the local video track.</param>
         /// <returns>Asynchronous task completed once the device is capturing and the track is added.</returns>
         /// <remarks>
@@ -891,7 +874,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// for more details.
         /// </remarks>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        public Task AddLocalVideoTrackAsync(LocalVideoTrackSettings settings = default)
+        public Task<LocalVideoTrack> AddLocalVideoTrackAsync(string trackName, LocalVideoTrackSettings settings = default)
         {
             ThrowIfConnectionNotOpen();
             return Task.Run(() => {
@@ -908,44 +891,22 @@ namespace Microsoft.MixedReality.WebRTC
                     EnableMixedRealityCapture = (mrsBool)settings.enableMrc,
                     EnableMRCRecordingIndicator = (mrsBool)settings.enableMrcRecordingIndicator
                 } : new PeerConnectionInterop.VideoDeviceConfiguration());
-                uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, config);
+                uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, trackName, config,
+                    out IntPtr trackHandle);
                 Utils.ThrowOnErrorCode(res);
+                var track = new LocalVideoTrack(this, _nativePeerhandle, trackHandle, trackName);
+                return track;
             });
-        }
-
-        /// <summary>
-        /// Enable or disable the local video track associated with this peer connection.
-        /// Disable video tracks are still active, but emit only black frames.
-        /// </summary>
-        /// <param name="enabled"><c>true</c> to enable the track, or <c>false</c> to disable it</param>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        public void SetLocalVideoTrackEnabled(bool enabled = true)
-        {
-            ThrowIfConnectionNotOpen();
-            uint res = PeerConnectionInterop.PeerConnection_SetLocalVideoTrackEnabled(_nativePeerhandle, enabled ? -1 : 0);
-            Utils.ThrowOnErrorCode(res);
-        }
-
-        /// <summary>
-        /// Check if the local video track associated with this peer connection is enabled.
-        /// Disable video tracks are still active, but emit only black frames.
-        /// </summary>
-        /// <returns><c>true</c> if the track is enabled, or <c>false</c> otherwise</returns>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        public bool IsLocalVideoTrackEnabled()
-        {
-            ThrowIfConnectionNotOpen();
-            return (PeerConnectionInterop.PeerConnection_IsLocalVideoTrackEnabled(_nativePeerhandle) != 0);
         }
 
         /// <summary>
         /// Remove from the current connection the local video track added with <see cref="AddLocalAudioTrackAsync"/>.
         /// </summary>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        public void RemoveLocalVideoTrack()
+        public void RemoveLocalVideoTrack(LocalVideoTrack track)
         {
             ThrowIfConnectionNotOpen();
-            PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerhandle);
+            PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerhandle, track._nativeHandle);
         }
 
         /// <summary>
@@ -1410,22 +1371,10 @@ namespace Microsoft.MixedReality.WebRTC
             TrackRemoved?.Invoke(trackKind);
         }
 
-        internal void OnI420LocalVideoFrameReady(I420AVideoFrame frame)
-        {
-            MainEventSource.Log.I420LocalVideoFrameReady(frame.width, frame.height);
-            I420LocalVideoFrameReady?.Invoke(frame);
-        }
-
         internal void OnI420RemoteVideoFrameReady(I420AVideoFrame frame)
         {
             MainEventSource.Log.I420RemoteVideoFrameReady(frame.width, frame.height);
             I420RemoteVideoFrameReady?.Invoke(frame);
-        }
-
-        internal void OnARGBLocalVideoFrameReady(ARGBVideoFrame frame)
-        {
-            MainEventSource.Log.Argb32LocalVideoFrameReady(frame.width, frame.height);
-            ARGBLocalVideoFrameReady?.Invoke(frame);
         }
 
         internal void OnARGBRemoteVideoFrameReady(ARGBVideoFrame frame)

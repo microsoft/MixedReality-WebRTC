@@ -758,16 +758,6 @@ MonoBehaviour:
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   PeerConnection: {fileID: 114452439610826054}
   AutoPlayOnAdded: 1
-  AudioTrackAdded:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackAddedEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-  AudioTrackRemoved:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackRemovedEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &114601036757887320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1187,7 +1177,9 @@ MonoBehaviour:
   AutoStartCapture: 1
   PreferredVideoCodec: 
   EnableMixedRealityCapture: 1
+  EnableMRCRecordingIndicator: 1
   PeerConnection: {fileID: 114452439610826054}
+  TrackName: 
   AutoAddTrack: 1
   Mode: 0
   VideoProfileId: 
@@ -1323,6 +1315,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AutoLogErrors: 1
+  LocalPeerId: 
   RemotePeerId: 
   HttpServerAddress: http://127.0.0.1:3000/
   PollTimeMs: 500

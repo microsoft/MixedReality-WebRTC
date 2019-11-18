@@ -19,6 +19,12 @@
     <ClCompile Include="../interop/peer_connection_interop.cpp">
       <Filter>interop</Filter>
     </ClCompile>
+    <ClCompile Include="../interop/local_video_track_interop.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
+    <ClCompile Include="../media/local_video_track.cpp">
+      <Filter>media</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../../include/audio_frame_observer.h" />
@@ -33,12 +39,20 @@
     </ClInclude>
     <ClInclude Include="../../include/str.h" />
     <ClInclude Include="../../include/export.h" />
-    <ClInclude Include="../../include/data_channel.h" />
     <ClInclude Include="../interop/global_factory.h">
       <Filter>interop</Filter>
     </ClInclude>
     <ClInclude Include="../interop/peer_connection_interop.h">
       <Filter>interop</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/data_channel.h">
+      <Filter>media</Filter>
+    </ClInclude>
+    <ClInclude Include="../interop/local_video_track_interop.h">
+      <Filter>interop</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/local_video_track.h">
+      <Filter>media</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

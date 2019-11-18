@@ -11,6 +11,7 @@
 namespace Microsoft::MixedReality::WebRTC {
 
 class PeerConnection;
+class LocalVideoTrack;
 class DataChannel;
 
 /// The PeerConnection class is the entry point to most of WebRTC.
@@ -184,24 +185,6 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   // Video
   //
 
-  /// Register a custom callback invoked when a local video frame is ready to be
-  /// displayed.
-  void RegisterLocalVideoFrameCallback(
-      I420FrameReadyCallback callback) noexcept {
-    if (local_video_observer_) {
-      local_video_observer_->SetCallback(std::move(callback));
-    }
-  }
-
-  /// Register a custom callback invoked when a local video frame is ready to be
-  /// displayed.
-  void RegisterLocalVideoFrameCallback(
-      ARGBFrameReadyCallback callback) noexcept {
-    if (local_video_observer_) {
-      local_video_observer_->SetCallback(std::move(callback));
-    }
-  }
-
   /// Register a custom callback invoked when a remote video frame has been
   /// received and decompressed, and is ready to be displayed locally.
   void RegisterRemoteVideoFrameCallback(
@@ -220,37 +203,14 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
     }
   }
 
-  /// Add to the peer connection a video track backed by a local video capture
-  /// device. If no RTP sender/transceiver exist, create a new one for that
-  /// track.
-  ///
-  /// Note: currently a single local video track is supported per peer
-  /// connection.
-  bool AddLocalVideoTrack(
+  /// Add a video track to the peer connection. If no RTP sender/transceiver
+  /// exist, create a new one for that track.
+  webrtc::RTCErrorOr<rtc::scoped_refptr<LocalVideoTrack>> AddLocalVideoTrack(
       rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept;
 
-  /// Remove the existing local video track from the peer connection.
+  /// Remove a local video track from the peer connection.
   /// The underlying RTP sender/transceiver are kept alive but inactive.
-  ///
-  /// Note: currently a single local video track is supported per peer
-  /// connection.
-  void RemoveLocalVideoTrack() noexcept;
-
-  /// Enable or disable the local video track. Disabled video tracks are still
-  /// active but output black frames, and do not consume network bandwidth.
-  /// Additionally, enabling/disabling the local video track does not require an
-  /// SDP exchange. Therefore this is a cheaper alternative to removing and
-  /// re-adding the track.
-  ///
-  /// Note: currently a single local video track is supported per peer
-  /// connection.
-  void SetLocalVideoTrackEnabled(bool enabled = true) noexcept;
-
-  /// Check if the local video frame is enabled.
-  ///
-  /// Note: currently a single local video track is supported per peer
-  /// connection.
-  bool IsLocalVideoTrackEnabled() const noexcept;
+  webrtc::RTCError RemoveLocalVideoTrack(LocalVideoTrack& video_track) noexcept;
 
   //
   // Audio
@@ -522,6 +482,13 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   rtc::scoped_refptr<webrtc::RtpSenderInterface> local_audio_sender_;
   std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> remote_streams_;
 
+  /// Collection of all local video tracks associated with this peer connection.
+  std::vector<rtc::scoped_refptr<LocalVideoTrack>> local_video_tracks_
+      RTC_GUARDED_BY(tracks_mutex_);
+
+  /// Mutex for all collections of all tracks.
+  rtc::CriticalSection tracks_mutex_;
+
   /// Collection of all data channels associated with this peer connection.
   std::vector<std::shared_ptr<DataChannel>> data_channels_
       RTC_GUARDED_BY(data_channel_mutex_);
@@ -543,7 +510,6 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   //< TODO - Clarify lifetime of those, for now same as this PeerConnection
   std::unique_ptr<AudioFrameObserver> local_audio_observer_;
   std::unique_ptr<AudioFrameObserver> remote_audio_observer_;
-  std::unique_ptr<VideoFrameObserver> local_video_observer_;
   std::unique_ptr<VideoFrameObserver> remote_video_observer_;
 
   /// Flag to indicate if SCTP was negotiated during the initial SDP handshake

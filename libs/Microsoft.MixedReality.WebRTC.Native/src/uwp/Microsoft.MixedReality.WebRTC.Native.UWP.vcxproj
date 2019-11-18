@@ -129,6 +129,8 @@
     <ClInclude Include="../../include/str.h" />
     <ClInclude Include="../interop/global_factory.h" />
     <ClInclude Include="../interop/peer_connection_interop.h" />
+    <ClInclude Include="../../include/local_video_track.h" />
+    <ClInclude Include="../interop/local_video_track_interop.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../interop/interop_api.cpp" />
@@ -143,6 +145,8 @@
     <ClCompile Include="../str.cpp" />
     <ClCompile Include="../interop/global_factory.cpp" />
     <ClCompile Include="../interop/peer_connection_interop.cpp" />
+    <ClCompile Include="../interop/local_video_track_interop.cpp" />
+    <ClCompile Include="../media/local_video_track.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

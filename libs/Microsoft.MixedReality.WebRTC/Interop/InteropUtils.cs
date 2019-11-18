@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using Microsoft.MixedReality.WebRTC.Tracing;
 using System;
 using System.Runtime.InteropServices;
@@ -53,6 +56,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         internal const uint MRS_E_PEER_NOT_INITIALIZED = 0x80000102u;
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
         internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
+
+        public static IntPtr MakeWrapperRef<T>(T obj) where T : class
+        {
+            var handle = GCHandle.Alloc(obj, GCHandleType.Normal);
+            var arg = GCHandle.ToIntPtr(handle);
+            return arg;
+        }
 
         public static T ToWrapper<T>(IntPtr peer) where T : class
         {

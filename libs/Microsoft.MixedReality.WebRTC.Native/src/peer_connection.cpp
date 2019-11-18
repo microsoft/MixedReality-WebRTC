@@ -7,6 +7,7 @@
 
 #include "audio_frame_observer.h"
 #include "data_channel.h"
+#include "local_video_track.h"
 #include "peer_connection.h"
 #include "video_frame_observer.h"
 
@@ -99,7 +100,6 @@ rtc::scoped_refptr<PeerConnection> PeerConnection::create(
 
   // Acquire ownership of the underlying implementation
   peer->peer_ = std::move(impl);
-  peer->local_video_observer_.reset(new VideoFrameObserver());
   peer->remote_video_observer_.reset(new VideoFrameObserver());
   peer->local_audio_observer_.reset(new AudioFrameObserver());
   peer->remote_audio_observer_.reset(new AudioFrameObserver());
@@ -118,59 +118,46 @@ PeerConnection::~PeerConnection() noexcept {
   GlobalFactory::Instance()->NotifyPeerConnectionDestroyed();
 }
 
-bool PeerConnection::AddLocalVideoTrack(
+webrtc::RTCErrorOr<rtc::scoped_refptr<LocalVideoTrack>>
+PeerConnection::AddLocalVideoTrack(
     rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept {
   if (IsClosed()) {
-    return false;
+    return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION,
+                            "The peer connection is closed.");
   }
-  if (local_video_track_) {
-    return false;
-  }
-  if (local_video_sender_) {
-    // Reuse the existing sender.
-    if (!local_video_sender_->SetTrack(video_track.get())) {
-      return false;
+  auto result = peer_->AddTrack(video_track, {kAudioVideoStreamId});
+  if (result.ok()) {
+    rtc::scoped_refptr<LocalVideoTrack> track =
+        new rtc::RefCountedObject<LocalVideoTrack>(
+            *this, std::move(video_track), std::move(result.MoveValue()),
+            nullptr);
+    {
+      rtc::CritScope lock(&tracks_mutex_);
+      local_video_tracks_.push_back(track);
     }
-  } else {
-    // Create a new sender.
-    auto result = peer_->AddTrack(video_track, {kAudioVideoStreamId});
-    if (result.ok()) {
-      local_video_sender_ = result.value();
-    } else {
-      return false;
-    }
+    return track;
   }
-  local_video_track_ = std::move(video_track);
-  if (local_video_observer_) {
-    rtc::VideoSinkWants sink_settings{};
-    sink_settings.rotation_applied = true;
-    local_video_track_->AddOrUpdateSink(local_video_observer_.get(),
-                                        sink_settings);
-  }
-  return true;
+  return result.MoveError();
 }
 
-void PeerConnection::RemoveLocalVideoTrack() noexcept {
-  if (!local_video_track_)
-    return;
-  if (auto* sink = local_video_observer_.get()) {
-    local_video_track_->RemoveSink(sink);
+webrtc::RTCError PeerConnection::RemoveLocalVideoTrack(
+    LocalVideoTrack& video_track) noexcept {
+  rtc::CritScope lock(&tracks_mutex_);
+  auto it = std::find_if(
+      local_video_tracks_.begin(), local_video_tracks_.end(),
+      [&video_track](const rtc::scoped_refptr<LocalVideoTrack>& track) {
+        return track.get() == &video_track;
+      });
+  if (it == local_video_tracks_.end()) {
+    return webrtc::RTCError(
+        webrtc::RTCErrorType::INVALID_PARAMETER,
+        "The video track is not associated with the peer connection.");
   }
-  local_video_sender_->SetTrack(nullptr);
-  local_video_track_ = nullptr;
-}
-
-void PeerConnection::SetLocalVideoTrackEnabled(bool enabled) noexcept {
-  if (local_video_track_) {
-    local_video_track_->set_enabled(enabled);
+  if (peer_) {
+    video_track.RemoveFromPeerConnection(*peer_);
   }
-}
-
-bool PeerConnection::IsLocalVideoTrackEnabled() const noexcept {
-  if (local_video_track_) {
-    return local_video_track_->enabled();
-  }
-  return false;
+  local_video_tracks_.erase(it);
+  return webrtc::RTCError::OK();
 }
 
 void PeerConnection::SetLocalAudioTrackEnabled(bool enabled) noexcept {
@@ -456,11 +443,19 @@ void PeerConnection::Close() noexcept {
   // Close the connection
   peer_->Close();
 
+  // Remove local tracks
+  {
+    rtc::CritScope lock(&tracks_mutex_);
+    while (!local_video_tracks_.empty()) {
+      rtc::scoped_refptr<LocalVideoTrack>& ptr = local_video_tracks_.back();
+      RemoveLocalVideoTrack(*ptr);
+    }
+  }
+
   // Ensure that observers (sinks) are removed, otherwise the media pipelines
   // will continue to try to feed them with data after they're destroyed
   // RemoveLocalVideoTrack(); TODO - do we need to keep a list of local tracks
   // and do something here?
-  RemoveLocalVideoTrack();
   RemoveLocalAudioTrack();
   local_video_sender_ = nullptr;
   local_audio_sender_ = nullptr;
