@@ -114,28 +114,29 @@ namespace Microsoft.MixedReality.WebRTC
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
-            if (_selfHandle != IntPtr.Zero)
-            {
-                LocalVideoTrackInterop.LocalVideoTrack_RegisterI420FrameCallback(_nativeHandle, null, IntPtr.Zero);
-                LocalVideoTrackInterop.LocalVideoTrack_RegisterARGBFrameCallback(_nativeHandle, null, IntPtr.Zero);
-                GCHandle.FromIntPtr(_selfHandle).Free();
-                if (disposing)
-                {
-                    _interopCallbackArgs = null;
-                }
-                _selfHandle = IntPtr.Zero;
-            }
-
             if (_nativeHandle != IntPtr.Zero)
             {
-                // Remove from peer connection. Currently this is equivalent to destroying from
-                // the point of view of C# because the native object is kept alive by the peer
-                // connection and never lives on its own.
-                PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerHandle, _nativeHandle);
+                // Unregister the callbacks
+                if (_selfHandle != IntPtr.Zero)
+                {
+                    LocalVideoTrackInterop.LocalVideoTrack_RegisterI420FrameCallback(_nativeHandle, null, IntPtr.Zero);
+                    LocalVideoTrackInterop.LocalVideoTrack_RegisterARGBFrameCallback(_nativeHandle, null, IntPtr.Zero);
+                    GCHandle.FromIntPtr(_selfHandle).Free();
+                    if (disposing)
+                    {
+                        _interopCallbackArgs = null;
+                    }
+                    _selfHandle = IntPtr.Zero;
+                }
 
-                // Release the reference to the peer connection owning the track
-                PeerConnectionInterop.PeerConnection_RemoveRef(_nativePeerHandle);
-                _nativePeerHandle = IntPtr.Zero;
+                // Remove the track from the peer connection, and release the reference
+                // to the peer connection.
+                if (_nativePeerHandle != IntPtr.Zero)
+                {
+                    PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerHandle, _nativeHandle);
+                    PeerConnectionInterop.PeerConnection_RemoveRef(_nativePeerHandle);
+                    _nativePeerHandle = IntPtr.Zero;
+                }
             }
 
             if (disposing)

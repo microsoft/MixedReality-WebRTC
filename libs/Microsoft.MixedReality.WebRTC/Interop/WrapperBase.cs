@@ -37,8 +37,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         /// resources can safely be accessed to be disposed.</param>
         protected virtual void Dispose(bool disposing)
         {
-            RemoveRef();
-            _nativeHandle = IntPtr.Zero;
+            if (_nativeHandle != IntPtr.Zero)
+            {
+                RemoveRef();
+                _nativeHandle = IntPtr.Zero;
+            }
         }
 
         /// <summary>
