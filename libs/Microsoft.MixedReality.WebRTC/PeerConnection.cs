@@ -907,6 +907,7 @@ namespace Microsoft.MixedReality.WebRTC
         {
             ThrowIfConnectionNotOpen();
             PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerhandle, track._nativeHandle);
+            track.OnTrackRemoved(this);
         }
 
         /// <summary>

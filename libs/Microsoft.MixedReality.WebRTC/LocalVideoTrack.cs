@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.MixedReality.WebRTC.Interop;
 using Microsoft.MixedReality.WebRTC.Tracing;
@@ -159,6 +160,21 @@ namespace Microsoft.MixedReality.WebRTC
         {
             MainEventSource.Log.Argb32LocalVideoFrameReady(frame.width, frame.height);
             ARGBVideoFrameReady?.Invoke(frame);
+        }
+
+        internal void OnTrackRemoved(PeerConnection previousConnection)
+        {
+            Debug.Assert(PeerConnection == previousConnection);
+            Debug.Assert(_nativeHandle != IntPtr.Zero);
+
+            if (_nativePeerHandle != IntPtr.Zero)
+            {
+                PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerHandle, _nativeHandle);
+                PeerConnectionInterop.PeerConnection_RemoveRef(_nativePeerHandle);
+                _nativePeerHandle = IntPtr.Zero;
+            }
+
+            PeerConnection = null;
         }
     }
 }
