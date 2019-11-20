@@ -503,13 +503,14 @@ enum class mrsDataChannelConfigFlags : uint32_t {
   kReliable = 0x2,
 };
 
-inline mrsDataChannelConfigFlags operator|(mrsDataChannelConfigFlags a,
-                                           mrsDataChannelConfigFlags b) {
+inline mrsDataChannelConfigFlags operator|(
+    mrsDataChannelConfigFlags a,
+    mrsDataChannelConfigFlags b) noexcept {
   return (mrsDataChannelConfigFlags)((uint32_t)a | (uint32_t)b);
 }
 
 inline uint32_t operator&(mrsDataChannelConfigFlags a,
-                          mrsDataChannelConfigFlags b) {
+                          mrsDataChannelConfigFlags b) noexcept {
   return ((uint32_t)a | (uint32_t)b);
 }
 
@@ -554,13 +555,6 @@ MRS_API void MRS_CALL mrsPeerConnectionRemoveLocalAudioTrack(
 MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
     PeerConnectionHandle peerHandle,
     DataChannelHandle dataChannelHandle) noexcept;
-
-MRS_API mrsResult MRS_CALL
-mrsPeerConnectionSetLocalVideoTrackEnabled(PeerConnectionHandle peerHandle,
-                                           mrsBool enabled) noexcept;
-
-MRS_API mrsBool MRS_CALL mrsPeerConnectionIsLocalVideoTrackEnabled(
-    PeerConnectionHandle peerHandle) noexcept;
 
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionSetLocalAudioTrackEnabled(PeerConnectionHandle peerHandle,
@@ -672,7 +666,7 @@ MRS_API mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
                                              SdpFilter audio_filter,
                                              SdpFilter video_filter,
                                              char* buffer,
-                                             uint64_t* buffer_size);
+                                             uint64_t* buffer_size) noexcept;
 
 //
 // Generic utilities
@@ -680,7 +674,9 @@ MRS_API mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
 
 /// Optimized helper to copy a contiguous block of memory.
 /// This is equivalent to the standard malloc() function.
-MRS_API void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size);
+MRS_API void MRS_CALL mrsMemCpy(void* dst,
+                                const void* src,
+                                uint64_t size) noexcept;
 
 /// Optimized helper to copy a block of memory with source and destination
 /// stride.
@@ -689,6 +685,6 @@ MRS_API void MRS_CALL mrsMemCpyStride(void* dst,
                                       const void* src,
                                       int32_t src_stride,
                                       int32_t elem_size,
-                                      int32_t elem_count);
+                                      int32_t elem_count) noexcept;
 
 }  // extern "C"

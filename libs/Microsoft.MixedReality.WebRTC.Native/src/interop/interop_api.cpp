@@ -999,8 +999,7 @@ mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
   return MRS_E_INVALID_PEER_HANDLE;
 }
 
-void MRS_CALL
-mrsPeerConnectionClose(PeerConnectionHandle peerHandle) noexcept {
+void MRS_CALL mrsPeerConnectionClose(PeerConnectionHandle peerHandle) noexcept {
   GlobalFactory::Instance()->RemovePeerConnection(peerHandle);
 }
 
@@ -1008,7 +1007,7 @@ mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
                                      SdpFilter audio_filter,
                                      SdpFilter video_filter,
                                      char* buffer,
-                                     uint64_t* buffer_size) {
+                                     uint64_t* buffer_size) noexcept {
   RTC_CHECK(message);
   RTC_CHECK(buffer);
   RTC_CHECK(buffer_size);
@@ -1044,7 +1043,7 @@ mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
   return MRS_SUCCESS;
 }
 
-void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size) {
+void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size) noexcept {
   memcpy(dst, src, static_cast<size_t>(size));
 }
 
@@ -1053,7 +1052,7 @@ void MRS_CALL mrsMemCpyStride(void* dst,
                               const void* src,
                               int32_t src_stride,
                               int32_t elem_size,
-                              int32_t elem_count) {
+                              int32_t elem_count) noexcept {
   RTC_CHECK(dst);
   RTC_CHECK(dst_stride >= elem_size);
   RTC_CHECK(src);

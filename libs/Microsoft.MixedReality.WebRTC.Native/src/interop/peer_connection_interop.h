@@ -13,9 +13,11 @@ extern "C" {
 //
 
 /// Add a reference to the native object associated with the given handle.
-MRS_API void MRS_CALL mrsPeerConnectionAddRef(PeerConnectionHandle handle);
+MRS_API void MRS_CALL
+mrsPeerConnectionAddRef(PeerConnectionHandle handle) noexcept;
 
 /// Remove a reference from the native object associated with the given handle.
-MRS_API void MRS_CALL mrsPeerConnectionRemoveRef(PeerConnectionHandle handle);
+MRS_API void MRS_CALL
+mrsPeerConnectionRemoveRef(PeerConnectionHandle handle) noexcept;
 
 }  // extern "C"

@@ -13,7 +13,7 @@ using namespace Microsoft::MixedReality::WebRTC;
 
 extern std::unique_ptr<GlobalFactory> g_factory;
 
-void MRS_CALL mrsPeerConnectionAddRef(PeerConnectionHandle handle) {
+void MRS_CALL mrsPeerConnectionAddRef(PeerConnectionHandle handle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(handle)) {
     peer->AddRef();
   } else {
@@ -22,7 +22,7 @@ void MRS_CALL mrsPeerConnectionAddRef(PeerConnectionHandle handle) {
   }
 }
 
-void MRS_CALL mrsPeerConnectionRemoveRef(PeerConnectionHandle handle) {
+void MRS_CALL mrsPeerConnectionRemoveRef(PeerConnectionHandle handle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(handle)) {
     peer->Release();
   } else {
