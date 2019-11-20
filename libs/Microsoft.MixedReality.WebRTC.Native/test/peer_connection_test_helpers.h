@@ -100,7 +100,7 @@ class PCRaii {
          mrsPeerConnectionInteropHandle interop_handle = (void*)0x1) {
     mrsPeerConnectionCreate(config, interop_handle, &handle_);
   }
-  ~PCRaii() { mrsPeerConnectionClose(&handle_); }
+  ~PCRaii() { mrsPeerConnectionClose(handle_); }
   PeerConnectionHandle handle() const { return handle_; }
 
  protected:
