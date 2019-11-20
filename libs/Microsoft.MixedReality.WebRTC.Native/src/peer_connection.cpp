@@ -457,7 +457,6 @@ void PeerConnection::Close() noexcept {
   // RemoveLocalVideoTrack(); TODO - do we need to keep a list of local tracks
   // and do something here?
   RemoveLocalAudioTrack();
-  local_video_sender_ = nullptr;
   local_audio_sender_ = nullptr;
   for (auto stream : remote_streams_) {
     if (auto* sink = remote_video_observer_.get()) {

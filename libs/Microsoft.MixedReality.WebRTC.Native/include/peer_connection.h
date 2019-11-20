@@ -476,9 +476,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   std::mutex track_added_callback_mutex_;
   std::mutex track_removed_callback_mutex_;
 
-  rtc::scoped_refptr<webrtc::VideoTrackInterface> local_video_track_;
   rtc::scoped_refptr<webrtc::AudioTrackInterface> local_audio_track_;
-  rtc::scoped_refptr<webrtc::RtpSenderInterface> local_video_sender_;
   rtc::scoped_refptr<webrtc::RtpSenderInterface> local_audio_sender_;
   std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> remote_streams_;
 
