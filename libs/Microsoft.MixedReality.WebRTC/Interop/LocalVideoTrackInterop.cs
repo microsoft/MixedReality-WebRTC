@@ -19,9 +19,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static unsafe extern void LocalVideoTrack_RemoveRef(IntPtr handle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsLocalVideoTrackRegisterI420FrameCallback")]
-        public static extern void LocalVideoTrack_RegisterI420FrameCallback(IntPtr trackHandle,
-            I420VideoFrameCallback callback, IntPtr userData);
+            EntryPoint = "mrsLocalVideoTrackRegisterI420AFrameCallback")]
+        public static extern void LocalVideoTrack_RegisterI420AFrameCallback(IntPtr trackHandle,
+            I420AVideoFrameCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsLocalVideoTrackRegisterARGBFrameCallback")]
@@ -41,7 +41,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         #region Native callbacks
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void I420VideoFrameCallback(IntPtr userData,
+        public delegate void I420AVideoFrameCallback(IntPtr userData,
             IntPtr ydata, IntPtr udata, IntPtr vdata, IntPtr adata,
             int ystride, int ustride, int vstride, int astride,
             int frameWidth, int frameHeight);
@@ -55,12 +55,12 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public class InteropCallbackArgs
         {
             public LocalVideoTrack Track;
-            public I420VideoFrameCallback I420FrameCallback;
+            public I420AVideoFrameCallback I420AFrameCallback;
             public ARGBVideoFrameCallback ARGBFrameCallback;
         }
 
-        [MonoPInvokeCallback(typeof(I420VideoFrameDelegate))]
-        public static void I420FrameCallback(IntPtr userData,
+        [MonoPInvokeCallback(typeof(I420AVideoFrameDelegate))]
+        public static void I420AFrameCallback(IntPtr userData,
             IntPtr dataY, IntPtr dataU, IntPtr dataV, IntPtr dataA,
             int strideY, int strideU, int strideV, int strideA,
             int width, int height)
@@ -79,7 +79,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 strideV = strideV,
                 strideA = strideA
             };
-            track.OnI420FrameReady(frame);
+            track.OnI420AFrameReady(frame);
         }
 
         [MonoPInvokeCallback(typeof(ARGBVideoFrameDelegate))]

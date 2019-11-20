@@ -108,7 +108,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// and is ready for consumption.
     /// </summary>
     /// <param name="frame">The newly available I420-encoded video frame.</param>
-    public delegate void I420VideoFrameDelegate(I420AVideoFrame frame);
+    public delegate void I420AVideoFrameDelegate(I420AVideoFrame frame);
 
     /// <summary>
     /// Single video frame encoded in ARGB interleaved format (32 bits per pixel).

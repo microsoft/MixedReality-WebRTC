@@ -207,7 +207,7 @@ using PeerConnectionDataChannelRemovedCallback =
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 /// The video frame is encoded in I420 triplanar format (NV12).
-using PeerConnectionI420VideoFrameCallback =
+using PeerConnectionI420AVideoFrameCallback =
     void(MRS_CALL*)(void* user_data,
                     const void* yptr,
                     const void* uptr,
@@ -386,9 +386,9 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
 
 /// Register a callback fired when a video frame from a video track was received
 /// from the remote peer.
-MRS_API void MRS_CALL mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(
+MRS_API void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionI420VideoFrameCallback callback,
+    PeerConnectionI420AVideoFrameCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a video frame from a video track was received

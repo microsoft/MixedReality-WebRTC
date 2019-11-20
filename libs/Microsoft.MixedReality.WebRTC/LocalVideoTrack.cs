@@ -50,7 +50,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Event that occurs when a video frame has been produced by the underlying source and is available.
         /// </summary>
-        public event I420VideoFrameDelegate I420VideoFrameReady;
+        public event I420AVideoFrameDelegate I420AVideoFrameReady;
 
         /// <summary>
         /// Event that occurs when a video frame has been produced by the underlying source and is available.
@@ -88,12 +88,12 @@ namespace Microsoft.MixedReality.WebRTC
             _interopCallbackArgs = new LocalVideoTrackInterop.InteropCallbackArgs()
             {
                 Track = this,
-                I420FrameCallback = LocalVideoTrackInterop.I420FrameCallback,
+                I420AFrameCallback = LocalVideoTrackInterop.I420AFrameCallback,
                 ARGBFrameCallback = LocalVideoTrackInterop.ARGBFrameCallback,
             };
             _selfHandle = Utils.MakeWrapperRef(this);
-            LocalVideoTrackInterop.LocalVideoTrack_RegisterI420FrameCallback(
-                _nativeHandle, _interopCallbackArgs.I420FrameCallback, _selfHandle);
+            LocalVideoTrackInterop.LocalVideoTrack_RegisterI420AFrameCallback(
+                _nativeHandle, _interopCallbackArgs.I420AFrameCallback, _selfHandle);
             LocalVideoTrackInterop.LocalVideoTrack_RegisterARGBFrameCallback(
                 _nativeHandle, _interopCallbackArgs.ARGBFrameCallback, _selfHandle);
         }
@@ -120,7 +120,7 @@ namespace Microsoft.MixedReality.WebRTC
                 // Unregister the callbacks
                 if (_selfHandle != IntPtr.Zero)
                 {
-                    LocalVideoTrackInterop.LocalVideoTrack_RegisterI420FrameCallback(_nativeHandle, null, IntPtr.Zero);
+                    LocalVideoTrackInterop.LocalVideoTrack_RegisterI420AFrameCallback(_nativeHandle, null, IntPtr.Zero);
                     LocalVideoTrackInterop.LocalVideoTrack_RegisterARGBFrameCallback(_nativeHandle, null, IntPtr.Zero);
                     GCHandle.FromIntPtr(_selfHandle).Free();
                     if (disposing)
@@ -149,10 +149,10 @@ namespace Microsoft.MixedReality.WebRTC
 
         #endregion
 
-        internal void OnI420FrameReady(I420AVideoFrame frame)
+        internal void OnI420AFrameReady(I420AVideoFrame frame)
         {
-            MainEventSource.Log.I420LocalVideoFrameReady(frame.width, frame.height);
-            I420VideoFrameReady?.Invoke(frame);
+            MainEventSource.Log.I420ALocalVideoFrameReady(frame.width, frame.height);
+            I420AVideoFrameReady?.Invoke(frame);
         }
 
         internal void OnARGBFrameReady(ARGBVideoFrame frame)

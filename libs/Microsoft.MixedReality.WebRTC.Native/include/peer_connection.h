@@ -188,7 +188,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// Register a custom callback invoked when a remote video frame has been
   /// received and decompressed, and is ready to be displayed locally.
   void RegisterRemoteVideoFrameCallback(
-      I420FrameReadyCallback callback) noexcept {
+      I420AFrameReadyCallback callback) noexcept {
     if (remote_video_observer_) {
       remote_video_observer_->SetCallback(std::move(callback));
     }

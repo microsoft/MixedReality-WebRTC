@@ -27,8 +27,7 @@ ArgbBuffer::ArgbBuffer(int width, int height, int stride) noexcept
   RTC_DCHECK_GE(stride, 4 * width);
 }
 
-rtc::scoped_refptr<webrtc::I420BufferInterface>
-ArgbBuffer::ToI420() {
+rtc::scoped_refptr<webrtc::I420BufferInterface> ArgbBuffer::ToI420() {
   rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer =
       webrtc::I420Buffer::Create(width_, height_, stride_, stride_ / 2,
                                  stride_ / 2);
@@ -39,9 +38,10 @@ ArgbBuffer::ToI420() {
   return i420_buffer;
 }
 
-void VideoFrameObserver::SetCallback(I420FrameReadyCallback callback) noexcept {
+void VideoFrameObserver::SetCallback(
+    I420AFrameReadyCallback callback) noexcept {
   auto lock = std::scoped_lock{mutex_};
-  i420_callback_ = std::move(callback);
+  i420a_callback_ = std::move(callback);
 }
 
 void VideoFrameObserver::SetCallback(ARGBFrameReadyCallback callback) noexcept {
@@ -49,9 +49,7 @@ void VideoFrameObserver::SetCallback(ARGBFrameReadyCallback callback) noexcept {
   argb_callback_ = std::move(callback);
 }
 
-ArgbBuffer* VideoFrameObserver::GetArgbScratchBuffer(
-    int width,
-    int height) {
+ArgbBuffer* VideoFrameObserver::GetArgbScratchBuffer(int width, int height) {
   const size_t needed_size = ArgbDataSize(width, height);
   if (auto* buffer = argb_scratch_buffer_.get()) {
     if (buffer->Size() >= needed_size) {
@@ -64,7 +62,7 @@ ArgbBuffer* VideoFrameObserver::GetArgbScratchBuffer(
 
 void VideoFrameObserver::OnFrame(const webrtc::VideoFrame& frame) noexcept {
   auto lock = std::scoped_lock{mutex_};
-  if (!i420_callback_ && !argb_callback_)
+  if (!i420a_callback_ && !argb_callback_)
     return;
 
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer(
@@ -84,10 +82,10 @@ void VideoFrameObserver::OnFrame(const webrtc::VideoFrame& frame) noexcept {
     const uint8_t* vptr = i420_buffer->DataV();
     const uint8_t* aptr = nullptr;
 
-    if (i420_callback_) {
-      i420_callback_(yptr, uptr, vptr, aptr, i420_buffer->StrideY(),
-                     i420_buffer->StrideU(), i420_buffer->StrideV(), 0, width,
-                     height);
+    if (i420a_callback_) {
+      i420a_callback_(yptr, uptr, vptr, aptr, i420_buffer->StrideY(),
+                      i420_buffer->StrideU(), i420_buffer->StrideV(), 0, width,
+                      height);
     }
 
     if (argb_callback_) {
@@ -107,10 +105,10 @@ void VideoFrameObserver::OnFrame(const webrtc::VideoFrame& frame) noexcept {
     const uint8_t* vptr = i420a_buffer->DataV();
     const uint8_t* aptr = i420a_buffer->DataA();
 
-    if (i420_callback_) {
-      i420_callback_(yptr, uptr, vptr, aptr, i420a_buffer->StrideY(),
-                     i420a_buffer->StrideU(), i420a_buffer->StrideV(),
-                     i420a_buffer->StrideA(), width, height);
+    if (i420a_callback_) {
+      i420a_callback_(yptr, uptr, vptr, aptr, i420a_buffer->StrideY(),
+                      i420a_buffer->StrideU(), i420a_buffer->StrideV(),
+                      i420a_buffer->StrideA(), width, height);
     }
 
     if (argb_callback_) {

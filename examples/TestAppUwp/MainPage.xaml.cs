@@ -236,7 +236,7 @@ namespace TestAppUwp
             _peerConnection.RenegotiationNeeded += OnPeerRenegotiationNeeded;
             _peerConnection.TrackAdded += Peer_RemoteTrackAdded;
             _peerConnection.TrackRemoved += Peer_RemoteTrackRemoved;
-            _peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
+            _peerConnection.I420ARemoteVideoFrameReady += Peer_RemoteI420AFrameReady;
             _peerConnection.LocalAudioFrameReady += Peer_LocalAudioFrameReady;
             _peerConnection.RemoteAudioFrameReady += Peer_RemoteAudioFrameReady;
 
@@ -889,7 +889,7 @@ namespace TestAppUwp
                     localMediaSource.Dispose();
                     localMediaSource = null;
                     _isLocalVideoPlaying = false;
-                    _localVideoTrack.I420VideoFrameReady -= LocalVideoTrack_I420FrameReady;
+                    _localVideoTrack.I420AVideoFrameReady -= LocalVideoTrack_I420AFrameReady;
                 }
             }
 
@@ -920,7 +920,7 @@ namespace TestAppUwp
         /// per-frame callback.
         /// </summary>
         /// <param name="trackKind">The kind of media track added (audio or video only).</param>
-        /// <seealso cref="Peer_RemoteI420FrameReady"/>
+        /// <seealso cref="Peer_RemoteI420AFrameReady"/>
         private void Peer_RemoteTrackAdded(PeerConnection.TrackKind trackKind)
         {
             LogMessage($"Added remote {trackKind} track.");
@@ -969,7 +969,7 @@ namespace TestAppUwp
         /// for local rendering before (or in parallel of) being sent to the remote peer.
         /// </summary>
         /// <param name="frame">The newly captured video frame.</param>
-        private void LocalVideoTrack_I420FrameReady(I420AVideoFrame frame)
+        private void LocalVideoTrack_I420AFrameReady(I420AVideoFrame frame)
         {
             localVideoBridge.HandleIncomingVideoFrame(frame);
         }
@@ -979,7 +979,7 @@ namespace TestAppUwp
         /// (or any other use).
         /// </summary>
         /// <param name="frame">The newly received video frame.</param>
-        private void Peer_RemoteI420FrameReady(I420AVideoFrame frame)
+        private void Peer_RemoteI420AFrameReady(I420AVideoFrame frame)
         {
             // Lazily start the remote video media player when receiving
             // the first video frame from the remote peer. Currently there
@@ -1206,7 +1206,7 @@ namespace TestAppUwp
                         enableMrc = false // TestAppUWP is a shared app, MRC will not get permission anyway
                     };
                     _localVideoTrack = await _peerConnection.AddLocalVideoTrackAsync("local_video", trackConfig);
-                    _localVideoTrack.I420VideoFrameReady += LocalVideoTrack_I420FrameReady;
+                    _localVideoTrack.I420AVideoFrameReady += LocalVideoTrack_I420AFrameReady;
                 }
                 catch (Exception ex)
                 {

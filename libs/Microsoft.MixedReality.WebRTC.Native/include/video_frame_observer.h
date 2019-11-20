@@ -16,16 +16,16 @@ namespace Microsoft::MixedReality::WebRTC {
 /// Callback fired on newly available video frame, encoded as I420.
 /// The first 4 pointers are buffers for the YUVA planes (in that order),
 /// followed by the 4 byte strides, and the width and height of the frame.
-using I420FrameReadyCallback = Callback<const void*,
-                                        const void*,
-                                        const void*,
-                                        const void*,
-                                        int,
-                                        int,
-                                        int,
-                                        int,
-                                        int,
-                                        int>;
+using I420AFrameReadyCallback = Callback<const void*,
+                                         const void*,
+                                         const void*,
+                                         const void*,
+                                         int,
+                                         int,
+                                         int,
+                                         int,
+                                         int,
+                                         int>;
 
 /// Callback fired on newly available video frame, encoded as ARGB.
 /// The first parameters are the buffer pointer and byte stride of the
@@ -88,7 +88,7 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   /// Register a callback to get notified on frame available,
   /// and received that frame as a I420-encoded buffer.
   /// This is not exclusive and can be used along another ARGB callback.
-  void SetCallback(I420FrameReadyCallback callback) noexcept;
+  void SetCallback(I420AFrameReadyCallback callback) noexcept;
 
   /// Register a callback to get notified on frame available,
   /// and received that frame as a raw decoded ARGB buffer.
@@ -103,7 +103,7 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
 
  private:
   /// Registered callback for receiving I420-encoded frame.
-  I420FrameReadyCallback i420_callback_;
+  I420AFrameReadyCallback i420a_callback_;
 
   /// Registered callback for receiving raw decoded ARGB frame.
   ARGBFrameReadyCallback argb_callback_;

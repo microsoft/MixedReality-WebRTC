@@ -49,7 +49,8 @@ TEST(VideoTrack, Simple) {
         ASSERT_LT(0, frame_height);
         ++frame_count;
       };
-  mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(pair.pc2(), CB(i420cb));
+  mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(pair.pc2(),
+                                                         CB(i420cb));
 
   pair.ConnectAndWait();
 
@@ -57,8 +58,8 @@ TEST(VideoTrack, Simple) {
   ev.WaitFor(5s);
   ASSERT_LT(50u, frame_count);  // at least 10 FPS
 
-  mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(pair.pc2(), nullptr,
-                                                        nullptr);
+  mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(pair.pc2(), nullptr,
+                                                         nullptr);
   mrsLocalVideoTrackRemoveRef(track_handle);
 }
 
@@ -101,7 +102,8 @@ TEST(VideoTrack, Muted) {
         ASSERT_TRUE(all_black);
         ++frame_count;
       };
-  mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(pair.pc2(), CB(i420cb));
+  mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(pair.pc2(),
+                                                         CB(i420cb));
 
   pair.ConnectAndWait();
 
@@ -109,8 +111,8 @@ TEST(VideoTrack, Muted) {
   ev.WaitFor(5s);
   ASSERT_LT(50u, frame_count);  // at least 10 FPS
 
-  mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(pair.pc2(), nullptr,
-                                                        nullptr);
+  mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(pair.pc2(), nullptr,
+                                                         nullptr);
   mrsLocalVideoTrackRemoveRef(track_handle);
 }
 

@@ -696,13 +696,13 @@ void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
   }
 }
 
-void MRS_CALL mrsPeerConnectionRegisterI420RemoteVideoFrameCallback(
+void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionI420VideoFrameCallback callback,
+    PeerConnectionI420AVideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RegisterRemoteVideoFrameCallback(
-        I420FrameReadyCallback{callback, user_data});
+        I420AFrameReadyCallback{callback, user_data});
   }
 }
 

@@ -128,13 +128,13 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         public void TrackRemoved(PeerConnection.TrackKind trackKind) { WriteEvent(0x3002, (int)trackKind); }
 
         [Event(0x3003, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void I420LocalVideoFrameReady(uint width, uint height) { WriteEvent(0x3003, (int)width, (int)height); }
+        public void I420ALocalVideoFrameReady(uint width, uint height) { WriteEvent(0x3003, (int)width, (int)height); }
 
         [Event(0x3004, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
         public void Argb32LocalVideoFrameReady(uint width, uint height) { WriteEvent(0x3004, (int)width, (int)height); }
 
         [Event(0x3005, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void I420RemoteVideoFrameReady(uint width, uint height) { WriteEvent(0x3005, (int)width, (int)height); }
+        public void I420ARemoteVideoFrameReady(uint width, uint height) { WriteEvent(0x3005, (int)width, (int)height); }
 
         [Event(0x3006, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
         public void Argb32RemoteVideoFrameReady(uint width, uint height) { WriteEvent(0x3006, (int)width, (int)height); }

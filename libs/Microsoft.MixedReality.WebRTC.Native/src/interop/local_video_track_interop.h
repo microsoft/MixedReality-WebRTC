@@ -23,9 +23,9 @@ mrsLocalVideoTrackRemoveRef(LocalVideoTrackHandle handle) noexcept;
 /// Register a custom callback to be called when the local video track captured
 /// a frame. The captured frames is passed to the registered callback in I420
 /// encoding.
-MRS_API void MRS_CALL mrsLocalVideoTrackRegisterI420FrameCallback(
+MRS_API void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
     LocalVideoTrackHandle trackHandle,
-    PeerConnectionI420VideoFrameCallback callback,
+    PeerConnectionI420AVideoFrameCallback callback,
     void* user_data) noexcept;
 
 /// Register a custom callback to be called when the local video track captured
