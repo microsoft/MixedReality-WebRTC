@@ -214,6 +214,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             connectedEvent2_.Reset();
         }
 
+#if !MRSW_EXCLUDE_DEVICE_TESTS
+
         [Test]
         public async Task BeforeConnect()
         {
@@ -286,5 +288,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             // Wait until SDP renegotiation finished
             WaitForSdpExchangeCompleted();
         }
+
+#endif // !MRSW_EXCLUDE_DEVICE_TESTS
     }
 }
