@@ -40,7 +40,7 @@ class GlobalFactory {
   /// factory's reference to it. This may or may not destroy the peer
   /// connection. If the peer connection was the last one, the factory shuts
   /// itself down.
-  void RemovePeerConnection(PeerConnectionHandle* handle);
+  void RemovePeerConnection(PeerConnectionHandle handle);
 
   /// Notify the factory that a peer connection was destroyed after being
   /// removed from the factory map, so that the factory can check again if this

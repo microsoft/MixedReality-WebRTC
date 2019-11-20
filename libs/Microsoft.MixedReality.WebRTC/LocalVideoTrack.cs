@@ -60,7 +60,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Handle to native peer connection C++ object the native track is added to, if any.
         /// </summary>
-        protected IntPtr _nativePeerHandle = IntPtr.Zero;
+        protected PeerConnectionHandle _nativePeerHandle;
 
         /// <summary>
         /// Handle to self for interop callbacks. This adds a reference to the current object, preventing
@@ -73,12 +73,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private LocalVideoTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
-        internal LocalVideoTrack(PeerConnection peer, IntPtr nativePeerHandle, IntPtr nativeHandle, string trackName)
+        internal LocalVideoTrack(PeerConnection peer, PeerConnectionHandle nativePeerHandle, IntPtr nativeHandle, string trackName)
             : base(nativeHandle)
         {
             PeerConnection = peer;
             PeerConnectionInterop.PeerConnection_AddRef(nativePeerHandle);
-            _nativePeerHandle = nativePeerHandle;
+            _nativePeerHandle = nativePeerHandle.MakeCopy();
             Name = trackName;
             RegisterInteropCallbacks();
         }
@@ -132,11 +132,10 @@ namespace Microsoft.MixedReality.WebRTC
 
                 // Remove the track from the peer connection, and release the reference
                 // to the peer connection.
-                if (_nativePeerHandle != IntPtr.Zero)
+                if (!_nativePeerHandle.IsClosed)
                 {
                     PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerHandle, _nativeHandle);
-                    PeerConnectionInterop.PeerConnection_RemoveRef(_nativePeerHandle);
-                    _nativePeerHandle = IntPtr.Zero;
+                    _nativePeerHandle.Close();
                 }
             }
 
@@ -167,11 +166,10 @@ namespace Microsoft.MixedReality.WebRTC
             Debug.Assert(PeerConnection == previousConnection);
             Debug.Assert(_nativeHandle != IntPtr.Zero);
 
-            if (_nativePeerHandle != IntPtr.Zero)
+            if (!_nativePeerHandle.IsInvalid)
             {
                 PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerHandle, _nativeHandle);
-                PeerConnectionInterop.PeerConnection_RemoveRef(_nativePeerHandle);
-                _nativePeerHandle = IntPtr.Zero;
+                _nativePeerHandle.Close();
             }
 
             PeerConnection = null;

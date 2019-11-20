@@ -86,17 +86,16 @@ PeerConnectionHandle GlobalFactory::AddPeerConnection(
   return handle;
 }
 
-void GlobalFactory::RemovePeerConnection(PeerConnectionHandle* handle) {
-  if (auto peer = static_cast<PeerConnection*>(*handle)) {
+void GlobalFactory::RemovePeerConnection(PeerConnectionHandle handle) {
+  if (auto peer = static_cast<PeerConnection*>(handle)) {
     std::scoped_lock lock(mutex_);
-    auto it = peer_connection_map_.find(*handle);
+    auto it = peer_connection_map_.find(handle);
     if (it == peer_connection_map_.end()) {
       RTC_LOG(LS_WARNING) << "Trying to remove unknown PeerConnection object "
                              "from global map has no effect.";
       return;
     }
     peer_connection_map_.erase(it);
-    *handle = nullptr;
   }
 }
 

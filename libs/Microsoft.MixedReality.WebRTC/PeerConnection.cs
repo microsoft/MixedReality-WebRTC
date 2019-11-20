@@ -495,7 +495,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 lock (_openCloseLock)
                 {
-                    return (_nativePeerhandle != IntPtr.Zero);
+                    return (_initTask != null);
                 }
             }
         }
@@ -606,7 +606,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>
         /// In native land this is a <code>Microsoft::MixedReality::WebRTC::PeerConnectionHandle</code>.
         /// </remarks>
-        private IntPtr _nativePeerhandle = IntPtr.Zero;
+        private PeerConnectionHandle _nativePeerhandle = new PeerConnectionHandle();
 
         /// <summary>
         /// Initialization task returned by <see cref="InitializeAsync"/>.
@@ -717,13 +717,12 @@ namespace Microsoft.MixedReality.WebRTC
                 _initTask = Task.Run(() => {
                     token.ThrowIfCancellationRequested();
 
-                    IntPtr nativeHandle = IntPtr.Zero;
-                    uint res = PeerConnectionInterop.PeerConnection_Create(nativeConfig, GCHandle.ToIntPtr(_selfHandle), out nativeHandle);
+                    uint res = PeerConnectionInterop.PeerConnection_Create(nativeConfig, GCHandle.ToIntPtr(_selfHandle), out _nativePeerhandle);
 
                     lock (_openCloseLock)
                     {
                         // Handle errors
-                        if ((res != Utils.MRS_SUCCESS) || (nativeHandle == IntPtr.Zero))
+                        if ((res != Utils.MRS_SUCCESS) || _nativePeerhandle.IsInvalid)
                         {
                             if (_selfHandle.IsAllocated)
                             {
@@ -742,17 +741,15 @@ namespace Microsoft.MixedReality.WebRTC
                         if (token.IsCancellationRequested)
                         {
                             // Cancelled by token
-                            PeerConnectionInterop.PeerConnection_Close(ref nativeHandle);
+                            _nativePeerhandle.Close();
                             throw new OperationCanceledException(token);
                         }
                         if (!_selfHandle.IsAllocated)
                         {
                             // Cancelled by calling Close()
-                            PeerConnectionInterop.PeerConnection_Close(ref nativeHandle);
+                            _nativePeerhandle.Close();
                             throw new OperationCanceledException();
                         }
-
-                        _nativePeerhandle = nativeHandle;
 
                         // Register all trampoline callbacks. Note that even passing a static managed method
                         // for the callback is not safe, because the compiler implicitly creates a delegate
@@ -767,7 +764,7 @@ namespace Microsoft.MixedReality.WebRTC
                             DataChannelCreateObjectCallback = _interopCallbacks.DataChannelCreateObjectCallback
                         };
                         PeerConnectionInterop.PeerConnection_RegisterInteropCallbacks(
-                            _nativePeerhandle, ref interopCallbacks);
+                            _nativePeerhandle, in interopCallbacks);
                         PeerConnectionInterop.PeerConnection_RegisterConnectedCallback(
                             _nativePeerhandle, _peerCallbackArgs.ConnectedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterLocalSdpReadytoSendCallback(
@@ -807,6 +804,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>This is equivalent to <see cref="Dispose"/>.</remarks>
         public void Close()
         {
+            // Begin shutdown sequence
+            Task initTask = null;
             lock (_openCloseLock)
             {
                 // If the connection is not initialized, return immediately.
@@ -815,39 +814,67 @@ namespace Microsoft.MixedReality.WebRTC
                     return;
                 }
 
-                // Indicate to InitializeAsync() that it should stop returning _initTask,
-                // as it is about to become invalid.
+                // Indicate to InitializeAsync() that it should stop returning _initTask
+                // or create a new instance of it, even if it is NULL.
                 _isClosing = true;
-            }
 
-            // Wait for any pending initializing to finish.
-            // This must be outside of the lock because the initialization task will
-            // eventually need to acquire the lock to complete.
-            _initTask.Wait();
+                // Ensure both Initialized and IsConnected return false
+                initTask = _initTask;
+                _initTask = null; // This marks the Initialized property as false
+                IsConnected = false;
 
-            lock (_openCloseLock)
-            {
-                _initTask = null;
-
-                // This happens on connected connection only
-                if (_nativePeerhandle != IntPtr.Zero)
-                {
-                    // Close the native WebRTC peer connection and destroy the native object.
-                    // This will un-register all callbacks automatically.
-                    PeerConnectionInterop.PeerConnection_Close(ref _nativePeerhandle);
-                    _nativePeerhandle = IntPtr.Zero;
-                }
-
-                // This happens on connected or connecting connection
+                // Unregister all callbacks and free the delegates
+                var interopCallbacks = new PeerConnectionInterop.MarshaledInteropCallbacks();
+                PeerConnectionInterop.PeerConnection_RegisterInteropCallbacks(
+                    _nativePeerhandle, in interopCallbacks);
+                PeerConnectionInterop.PeerConnection_RegisterConnectedCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterLocalSdpReadytoSendCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterIceCandidateReadytoSendCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterIceStateChangedCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterRenegotiationNeededCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterTrackAddedCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterTrackRemovedCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterDataChannelAddedCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterDataChannelRemovedCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterI420RemoteVideoFrameCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterARGBRemoteVideoFrameCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterLocalAudioFrameCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterRemoteAudioFrameCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
                 if (_selfHandle.IsAllocated)
                 {
                     _interopCallbacks = null;
                     _peerCallbackArgs = null;
                     _selfHandle.Free();
                 }
+            }
 
+            // Wait for any pending initializing to finish.
+            // This must be outside of the lock because the initialization task will
+            // eventually need to acquire the lock to complete.
+            initTask.Wait();
+
+            // Close the native peer connection. This may be delayed if a P/Invoke callback
+            // is underway, but will be handled at some point anyway, even if the PeerConnection
+            // managed instance is gone.
+            _nativePeerhandle.Close();
+
+            // Complete shutdown sequence and re-enable InitializeAsync()
+            lock (_openCloseLock)
+            {
                 _isClosing = false;
-                IsConnected = false;
             }
         }
 
@@ -1177,7 +1204,7 @@ namespace Microsoft.MixedReality.WebRTC
         {
             lock (_openCloseLock)
             {
-                if (_nativePeerhandle == IntPtr.Zero)
+                if (_nativePeerhandle.IsClosed)
                 {
                     MainEventSource.Log.PeerConnectionNotOpenError();
                     throw new InvalidOperationException("Cannot invoke native method with invalid peer connection handle.");

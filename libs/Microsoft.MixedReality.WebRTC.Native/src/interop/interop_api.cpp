@@ -1000,10 +1000,8 @@ mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
 }
 
 void MRS_CALL
-mrsPeerConnectionClose(PeerConnectionHandle* peerHandlePtr) noexcept {
-  if (peerHandlePtr) {
-    GlobalFactory::Instance()->RemovePeerConnection(peerHandlePtr);
-  }
+mrsPeerConnectionClose(PeerConnectionHandle peerHandle) noexcept {
+  GlobalFactory::Instance()->RemovePeerConnection(peerHandle);
 }
 
 mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,

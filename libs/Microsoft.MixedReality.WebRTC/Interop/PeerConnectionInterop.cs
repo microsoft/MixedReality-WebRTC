@@ -6,6 +6,37 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.MixedReality.WebRTC.Interop
 {
+    public sealed class PeerConnectionHandle : SafeHandle
+    {
+        public PeerConnectionHandle MakeCopy()
+        {
+            return new PeerConnectionHandle(handle);
+        }
+
+        public override bool IsInvalid
+        {
+            get
+            {
+                return (handle == IntPtr.Zero);
+            }
+        }
+
+        public PeerConnectionHandle() : base(IntPtr.Zero, ownsHandle: true)
+        {
+        }
+
+        public PeerConnectionHandle(IntPtr handle) : base(IntPtr.Zero, ownsHandle: true)
+        {
+            SetHandle(handle);
+        }
+
+        protected override bool ReleaseHandle()
+        {
+            PeerConnectionInterop.PeerConnection_RemoveRef(handle);
+            return true;
+        }
+    }
+
     internal class PeerConnectionInterop
     {
         // Types of trampolines for MonoPInvokeCallback
@@ -414,145 +445,147 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddRef")]
-        public static unsafe extern void PeerConnection_AddRef(IntPtr handle);
+        public static unsafe extern void PeerConnection_AddRef(PeerConnectionHandle handle);
 
+        // Note - This is used during SafeHandle.ReleaseHandle(), so cannot use PeerConnectionHandle
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRemoveRef")]
         public static unsafe extern void PeerConnection_RemoveRef(IntPtr handle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionCreate")]
-        public static extern uint PeerConnection_Create(PeerConnectionConfiguration config, IntPtr peer, out IntPtr peerHandleOut);
+        public static extern uint PeerConnection_Create(PeerConnectionConfiguration config, IntPtr peer,
+            out PeerConnectionHandle peerHandleOut);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterInteropCallbacks")]
-        public static extern void PeerConnection_RegisterInteropCallbacks(IntPtr peerHandle,
-            ref MarshaledInteropCallbacks callback);
+        public static extern void PeerConnection_RegisterInteropCallbacks(PeerConnectionHandle peerHandle,
+            in MarshaledInteropCallbacks callback);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterConnectedCallback")]
-        public static extern void PeerConnection_RegisterConnectedCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterConnectedCallback(PeerConnectionHandle peerHandle,
             PeerConnectionConnectedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterLocalSdpReadytoSendCallback")]
-        public static extern void PeerConnection_RegisterLocalSdpReadytoSendCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterLocalSdpReadytoSendCallback(PeerConnectionHandle peerHandle,
             PeerConnectionLocalSdpReadytoSendCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterIceCandidateReadytoSendCallback")]
-        public static extern void PeerConnection_RegisterIceCandidateReadytoSendCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterIceCandidateReadytoSendCallback(PeerConnectionHandle peerHandle,
             PeerConnectionIceCandidateReadytoSendCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterIceStateChangedCallback")]
-        public static extern void PeerConnection_RegisterIceStateChangedCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterIceStateChangedCallback(PeerConnectionHandle peerHandle,
             PeerConnectionIceStateChangedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterRenegotiationNeededCallback")]
-        public static extern void PeerConnection_RegisterRenegotiationNeededCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterRenegotiationNeededCallback(PeerConnectionHandle peerHandle,
             PeerConnectionRenegotiationNeededCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterTrackAddedCallback")]
-        public static extern void PeerConnection_RegisterTrackAddedCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterTrackAddedCallback(PeerConnectionHandle peerHandle,
             PeerConnectionTrackAddedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterTrackRemovedCallback")]
-        public static extern void PeerConnection_RegisterTrackRemovedCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterTrackRemovedCallback(PeerConnectionHandle peerHandle,
             PeerConnectionTrackRemovedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterDataChannelAddedCallback")]
-        public static extern void PeerConnection_RegisterDataChannelAddedCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterDataChannelAddedCallback(PeerConnectionHandle peerHandle,
             PeerConnectionDataChannelAddedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterDataChannelRemovedCallback")]
-        public static extern void PeerConnection_RegisterDataChannelRemovedCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterDataChannelRemovedCallback(PeerConnectionHandle peerHandle,
             PeerConnectionDataChannelRemovedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterI420RemoteVideoFrameCallback")]
-        public static extern void PeerConnection_RegisterI420RemoteVideoFrameCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterI420RemoteVideoFrameCallback(PeerConnectionHandle peerHandle,
             PeerConnectionI420VideoFrameCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback")]
-        public static extern void PeerConnection_RegisterARGBRemoteVideoFrameCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterARGBRemoteVideoFrameCallback(PeerConnectionHandle peerHandle,
             PeerConnectionARGBVideoFrameCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterLocalAudioFrameCallback")]
-        public static extern void PeerConnection_RegisterLocalAudioFrameCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterLocalAudioFrameCallback(PeerConnectionHandle peerHandle,
             PeerConnectionAudioFrameCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterRemoteAudioFrameCallback")]
-        public static extern void PeerConnection_RegisterRemoteAudioFrameCallback(IntPtr peerHandle,
+        public static extern void PeerConnection_RegisterRemoteAudioFrameCallback(PeerConnectionHandle peerHandle,
             PeerConnectionAudioFrameCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
-        public static extern uint PeerConnection_AddLocalVideoTrack(IntPtr peerHandle,
+        public static extern uint PeerConnection_AddLocalVideoTrack(PeerConnectionHandle peerHandle,
             string trackName, VideoDeviceConfiguration config, out IntPtr trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalAudioTrack")]
-        public static extern uint PeerConnection_AddLocalAudioTrack(IntPtr peerHandle);
+        public static extern uint PeerConnection_AddLocalAudioTrack(PeerConnectionHandle peerHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddDataChannel")]
-        public static extern uint PeerConnection_AddDataChannel(IntPtr peerHandle, IntPtr dataChannel,
+        public static extern uint PeerConnection_AddDataChannel(PeerConnectionHandle peerHandle, IntPtr dataChannel,
             DataChannelInterop.CreateConfig config, DataChannelInterop.Callbacks callbacks,
             ref IntPtr dataChannelHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRemoveLocalAudioTrack")]
-        public static extern void PeerConnection_RemoveLocalAudioTrack(IntPtr peerHandle);
+        public static extern void PeerConnection_RemoveLocalAudioTrack(PeerConnectionHandle peerHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRemoveLocalVideoTrack")]
-        public static extern uint PeerConnection_RemoveLocalVideoTrack(IntPtr peerHandle, IntPtr trackHandle);
+        public static extern uint PeerConnection_RemoveLocalVideoTrack(PeerConnectionHandle peerHandle, IntPtr trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRemoveDataChannel")]
-        public static extern uint PeerConnection_RemoveDataChannel(IntPtr peerHandle, IntPtr dataChannelHandle);
+        public static extern uint PeerConnection_RemoveDataChannel(PeerConnectionHandle peerHandle, IntPtr dataChannelHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionSetLocalAudioTrackEnabled")]
-        public static extern uint PeerConnection_SetLocalAudioTrackEnabled(IntPtr peerHandle, int enabled);
+        public static extern uint PeerConnection_SetLocalAudioTrackEnabled(PeerConnectionHandle peerHandle, int enabled);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionIsLocalAudioTrackEnabled")]
-        public static extern int PeerConnection_IsLocalAudioTrackEnabled(IntPtr peerHandle);
+        public static extern int PeerConnection_IsLocalAudioTrackEnabled(PeerConnectionHandle peerHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddIceCandidate")]
-        public static extern void PeerConnection_AddIceCandidate(IntPtr peerHandle, string sdpMid,
+        public static extern void PeerConnection_AddIceCandidate(PeerConnectionHandle peerHandle, string sdpMid,
             int sdpMlineindex, string candidate);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionCreateOffer")]
-        public static extern uint PeerConnection_CreateOffer(IntPtr peerHandle);
+        public static extern uint PeerConnection_CreateOffer(PeerConnectionHandle peerHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionCreateAnswer")]
-        public static extern uint PeerConnection_CreateAnswer(IntPtr peerHandle);
+        public static extern uint PeerConnection_CreateAnswer(PeerConnectionHandle peerHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionSetBitrate")]
-        public static extern uint PeerConnection_SetBitrate(IntPtr peerHandle, int minBitrate, int startBitrate, int maxBitrate);
+        public static extern uint PeerConnection_SetBitrate(PeerConnectionHandle peerHandle, int minBitrate, int startBitrate, int maxBitrate);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionSetRemoteDescription")]
-        public static extern uint PeerConnection_SetRemoteDescription(IntPtr peerHandle, string type, string sdp);
+        public static extern uint PeerConnection_SetRemoteDescription(PeerConnectionHandle peerHandle, string type, string sdp);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionClose")]
-        public static extern void PeerConnection_Close(ref IntPtr peerHandle);
+        public static extern void PeerConnection_Close(PeerConnectionHandle peerHandle);
 
         #endregion
     }

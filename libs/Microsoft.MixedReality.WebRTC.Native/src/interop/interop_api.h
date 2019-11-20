@@ -619,7 +619,7 @@ mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
 
 /// Close a peer connection and free all resources associated with it.
 MRS_API void MRS_CALL
-mrsPeerConnectionClose(PeerConnectionHandle* peerHandle) noexcept;
+mrsPeerConnectionClose(PeerConnectionHandle peerHandle) noexcept;
 
 //
 // SDP utilities
