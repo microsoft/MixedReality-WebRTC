@@ -280,6 +280,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             var trackSettings = new WebRTC.PeerConnection.LocalVideoTrackSettings
             {
+                trackName = trackName,
                 videoDevice = default,
                 videoProfileId = videoProfileId,
                 videoProfileKind = videoProfileKind,
@@ -289,7 +290,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 enableMrc = EnableMixedRealityCapture,
                 enableMrcRecordingIndicator = EnableMRCRecordingIndicator
             };
-            Track = await nativePeer.AddLocalVideoTrackAsync(trackName, trackSettings);
+            Track = await nativePeer.AddLocalVideoTrackAsync(trackSettings);
             if (Track != null)
             {
                 VideoStreamStarted.Invoke();

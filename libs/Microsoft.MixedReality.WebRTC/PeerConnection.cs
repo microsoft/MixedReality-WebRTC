@@ -384,6 +384,16 @@ namespace Microsoft.MixedReality.WebRTC
         public class LocalVideoTrackSettings
         {
             /// <summary>
+            /// Name of the track to create, as used for the SDP negotiation.
+            /// This name needs to comply with the requirements of an SDP token, as described in the SDP RFC
+            /// https://tools.ietf.org/html/rfc4566#page-43. In particular the name cannot contain spaces nor
+            /// double quotes <code>"</code>.
+            /// The track name can optionally be empty, in which case the implementation will create a valid
+            /// random track name.
+            /// </summary>
+            public string trackName = string.Empty;
+
+            /// <summary>
             /// Optional video capture device to use for capture.
             /// Use the default device if not specified.
             /// </summary>
@@ -892,7 +902,6 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Add to the current connection a video track from a local video capture device (webcam).
         /// </summary>
-        /// <param name="trackName">Name of the newly created track.</param>
         /// <param name="settings">Video capture settings for the local video track.</param>
         /// <returns>Asynchronous task completed once the device is capturing and the track is added.</returns>
         /// <remarks>
@@ -901,7 +910,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// for more details.
         /// </remarks>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        public Task<LocalVideoTrack> AddLocalVideoTrackAsync(string trackName, LocalVideoTrackSettings settings = default)
+        public Task<LocalVideoTrack> AddLocalVideoTrackAsync(LocalVideoTrackSettings settings = default)
         {
             ThrowIfConnectionNotOpen();
             return Task.Run(() => {
@@ -918,10 +927,15 @@ namespace Microsoft.MixedReality.WebRTC
                     EnableMixedRealityCapture = (mrsBool)settings.enableMrc,
                     EnableMRCRecordingIndicator = (mrsBool)settings.enableMrcRecordingIndicator
                 } : new PeerConnectionInterop.VideoDeviceConfiguration());
+                string trackName = settings.trackName;
+                if (trackName.Length == 0)
+                {
+                    trackName = Guid.NewGuid().ToString();
+                }
                 uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, trackName, config,
                     out IntPtr trackHandle);
                 Utils.ThrowOnErrorCode(res);
-                var track = new LocalVideoTrack(this, _nativePeerhandle, trackHandle, trackName);
+                var track = new LocalVideoTrack(this, _nativePeerhandle, trackHandle, settings.trackName);
                 return track;
             });
         }

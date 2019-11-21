@@ -1197,6 +1197,7 @@ namespace TestAppUwp
                     // Add the local video track captured from the local webcam
                     var trackConfig = new PeerConnection.LocalVideoTrackSettings
                     {
+                        trackName = "local_video",
                         videoDevice = captureDeviceInfo,
                         videoProfileId = videoProfileId,
                         videoProfileKind = SelectedVideoProfileKind,
@@ -1205,7 +1206,7 @@ namespace TestAppUwp
                         framerate = framerate,
                         enableMrc = false // TestAppUWP is a shared app, MRC will not get permission anyway
                     };
-                    _localVideoTrack = await _peerConnection.AddLocalVideoTrackAsync("local_video", trackConfig);
+                    _localVideoTrack = await _peerConnection.AddLocalVideoTrackAsync(trackConfig);
                     _localVideoTrack.I420AVideoFrameReady += LocalVideoTrack_I420AFrameReady;
                 }
                 catch (Exception ex)

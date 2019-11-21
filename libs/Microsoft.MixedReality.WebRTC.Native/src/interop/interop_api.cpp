@@ -741,7 +741,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     const char* track_name,
     VideoDeviceConfiguration config,
     LocalVideoTrackHandle* trackHandle) noexcept {
-  if (!track_name || (track_name[0] == '\0')) {
+  if (IsStringNullOrEmpty(track_name)) {
     return MRS_E_INVALID_PARAMETER;
   }
   if (!trackHandle) {
