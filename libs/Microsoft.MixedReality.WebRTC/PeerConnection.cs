@@ -1413,7 +1413,7 @@ namespace Microsoft.MixedReality.WebRTC
             TrackRemoved?.Invoke(trackKind);
         }
 
-        internal void OnI420RemoteVideoFrameReady(I420AVideoFrame frame)
+        internal void OnI420ARemoteVideoFrameReady(I420AVideoFrame frame)
         {
             MainEventSource.Log.I420ARemoteVideoFrameReady(frame.width, frame.height);
             I420ARemoteVideoFrameReady?.Invoke(frame);

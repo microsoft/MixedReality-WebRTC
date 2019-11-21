@@ -61,7 +61,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// The frame queue from which frames will be rendered.
         /// </summary>
-        public VideoFrameQueue<I420VideoFrameStorage> FrameQueue = null;
+        public VideoFrameQueue<I420AVideoFrameStorage> FrameQueue = null;
 
         /// <summary>
         /// Internal reference to the attached texture
@@ -203,7 +203,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private void TryProcessFrame()
         {
-            if (FrameQueue.TryDequeue(out I420VideoFrameStorage frame))
+            if (FrameQueue.TryDequeue(out I420AVideoFrameStorage frame))
             {
                 int lumaWidth = (int)frame.Width;
                 int lumaHeight = (int)frame.Height;

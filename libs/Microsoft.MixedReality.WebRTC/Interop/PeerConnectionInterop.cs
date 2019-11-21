@@ -237,7 +237,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 strideV = strideV,
                 strideA = strideA
             };
-            peer.OnI420RemoteVideoFrameReady(frame);
+            peer.OnI420ARemoteVideoFrameReady(frame);
         }
 
         [MonoPInvokeCallback(typeof(ARGBVideoFrameDelegate))]

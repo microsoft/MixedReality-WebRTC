@@ -34,9 +34,9 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
-    /// Storage for a video frame encoded in I420 format.
+    /// Storage for a video frame encoded in I420+Alpha format.
     /// </summary>
-    public class I420VideoFrameStorage : IVideoFrameStorage
+    public class I420AVideoFrameStorage : IVideoFrameStorage
     {
         /// <summary>
         /// Total capacity of the storage, in bytes.
@@ -260,7 +260,7 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Enqueue a new video frame encoded in I420 format.
+        /// Enqueue a new video frame encoded in I420+Alpha format.
         /// If the internal queue reached its maximum capacity, do nothing and drop the frame.
         /// </summary>
         /// <param name="frame">The video frame to enqueue</param>

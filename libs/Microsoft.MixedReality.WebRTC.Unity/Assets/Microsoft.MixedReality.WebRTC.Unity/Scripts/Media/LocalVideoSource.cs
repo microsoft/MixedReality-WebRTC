@@ -152,7 +152,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected void Awake()
         {
-            FrameQueue = new VideoFrameQueue<I420VideoFrameStorage>(3);
+            FrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(3);
             PeerConnection.OnInitialized.AddListener(OnPeerInitialized);
             PeerConnection.OnShutdown.AddListener(OnPeerShutdown);
         }
@@ -186,7 +186,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if ((nativePeer != null) && nativePeer.Initialized)
             {
                 VideoStreamStopped.Invoke();
-                Track.I420VideoFrameReady -= I420LocalVideoFrameReady;
+                Track.I420AVideoFrameReady -= I420ALocalVideoFrameReady;
                 nativePeer.RemoveLocalVideoTrack(Track);
                 Track.Dispose();
                 Track = null;
@@ -217,7 +217,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             if (AutoStartCapture && (Track != null))
             {
-                Track.I420VideoFrameReady += I420LocalVideoFrameReady;
+                Track.I420AVideoFrameReady += I420ALocalVideoFrameReady;
                 // TODO - Currently AddLocalVideoTrackAsync() both open the capture device AND add a video track
             }
         }
@@ -303,7 +303,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (Track != null)
             {
                 VideoStreamStopped.Invoke();
-                Track.I420VideoFrameReady -= I420LocalVideoFrameReady;
+                Track.I420AVideoFrameReady -= I420ALocalVideoFrameReady;
                 nativePeer.RemoveLocalVideoTrack(Track);
                 Track.Dispose();
                 Track = null;
@@ -311,7 +311,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             FrameQueue.Clear();
         }
 
-        private void I420LocalVideoFrameReady(I420AVideoFrame frame)
+        private void I420ALocalVideoFrameReady(I420AVideoFrame frame)
         {
             FrameQueue.Enqueue(frame);
         }
