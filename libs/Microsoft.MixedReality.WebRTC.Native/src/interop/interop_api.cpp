@@ -1043,6 +1043,17 @@ mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
   return MRS_SUCCESS;
 }
 
+// Defined in
+// external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/winuwp_h264/H264Encoder/H264Encoder.cc
+extern bool webrtc__WinUWPH264EncoderImpl__add_padding;
+
+void MRS_CALL
+mrsSetHololensH264EncoderWorkaround(HololensH264EncoderWorkaround value) {
+  webrtc__WinUWPH264EncoderImpl__add_padding =
+      (value == HololensH264EncoderWorkaround::PAD);
+}
+
+
 void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size) noexcept {
   memcpy(dst, src, static_cast<size_t>(size));
 }

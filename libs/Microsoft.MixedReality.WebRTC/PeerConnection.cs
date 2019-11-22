@@ -1321,6 +1321,30 @@ namespace Microsoft.MixedReality.WebRTC
             });
         }
 
+        /// <summary>
+        /// Configuration for the Hololens H.264 hardware encoder workaround.
+        /// </summary>
+        /// <seealso cref="SetHololensH264EncoderWorkaround"/>
+        public enum HololensH264EncoderWorkaround
+        {
+            // Crop frame height to the nearest multiple of 16.
+            CROP,
+            // Pad frame height to the nearest multiple of 16.
+            PAD
+        }
+
+        /// <summary>
+        /// The Hololens H.264 hardware encoder produces severe artifacts on resolutions where the
+        /// height is not multiple of 16. For this reason on Hololens these resolutions are either
+        /// cropped or padded before being encoded and streamed. Use this function to select the
+        /// rounding mode. Default is <see cref="HololensH264EncoderWorkaround.CROP"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        public static void SetHololensH264EncoderWorkaround(HololensH264EncoderWorkaround value)
+        {
+            Utils.SetHololensH264EncoderWorkaround(value == HololensH264EncoderWorkaround.CROP ? 0 : 1);
+        }
+
         internal void OnConnected()
         {
             MainEventSource.Log.Connected();
