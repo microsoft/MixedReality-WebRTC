@@ -8,6 +8,7 @@
 #include "data_channel.h"
 #include "interop/global_factory.h"
 #include "interop/interop_api.h"
+#include "interop/peer_connection_interop.h"
 #include "local_video_track.h"
 #include "peer_connection.h"
 #include "sdp_utils.h"
@@ -588,9 +589,7 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
   if (!peer) {
     return MRS_E_UNKNOWN;
   }
-  const PeerConnectionHandle handle =
-      GlobalFactory::Instance()->AddPeerConnection(std::move(peer));
-
+  const PeerConnectionHandle handle = peer.release();
   *peerHandleOut = handle;
   return MRS_SUCCESS;
 }
@@ -1000,7 +999,11 @@ mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
 }
 
 void MRS_CALL mrsPeerConnectionClose(PeerConnectionHandle peerHandle) noexcept {
-  GlobalFactory::Instance()->RemovePeerConnection(peerHandle);
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->Close();
+  }
+  // Note: currently "close" in interop means releasing native resources
+  mrsPeerConnectionRemoveRef(peerHandle);
 }
 
 mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,

@@ -6,6 +6,8 @@
 #include "pch.h"
 
 #include "interop/global_factory.h"
+#include "local_video_track.h"
+#include "peer_connection.h"
 
 namespace {
 
@@ -14,6 +16,24 @@ using namespace Microsoft::MixedReality::WebRTC;
 /// Global factory of all global objects, including the peer connection factory
 /// itself, with added thread safety.
 std::unique_ptr<GlobalFactory> g_factory = std::make_unique<GlobalFactory>();
+
+/// Utility to format a tracked object into a string, for debugging purpose.
+std::string ObjectToString(ObjectType type, void* ptr) {
+  rtc::StringBuilder builder;
+  switch (type) {
+    case ObjectType::kPeerConnection:
+      builder << "(PeerConnection) 0x";
+      break;
+    case ObjectType::kLocalVideoTrack:
+      builder << "(LocalVideoTrack) 0x";
+      break;
+    default:
+      builder << "(" << (int)type << ") 0x";
+      break;
+  }
+  builder.AppendFormat("%p", ptr);
+  return builder.Release();
+}
 
 }  // namespace
 
@@ -25,12 +45,15 @@ const std::unique_ptr<GlobalFactory>& GlobalFactory::Instance() {
 
 GlobalFactory::~GlobalFactory() {
   std::scoped_lock lock(mutex_);
-  if (!alive_objects_.empty() || !peer_connection_map_.empty()) {
+  if (!alive_objects_.empty()) {
     // WebRTC object destructors are also dispatched to the signaling thread,
     // but the threads are stopped by the shutdown, so dispatching will never
     // complete.
     RTC_LOG(LS_ERROR) << "Shutting down the global factory while some objects "
                          "are alive. This will likely deadlock.";
+    for (auto&& pair : alive_objects_) {
+      RTC_LOG(LS_ERROR) << "- " << ObjectToString(pair.second, pair.first);
+    }
   }
   ShutdownNoLock();
 }
@@ -75,43 +98,27 @@ rtc::Thread* GlobalFactory::GetWorkerThread() noexcept {
 #endif  // defined(WINUWP)
 }
 
-PeerConnectionHandle GlobalFactory::AddPeerConnection(
-    rtc::scoped_refptr<PeerConnection> peer) {
-  RTC_CHECK(peer);
-  const PeerConnectionHandle handle{peer.get()};
-  {
+void GlobalFactory::AddObject(ObjectType type, void* ptr) noexcept {
+  try {
     std::scoped_lock lock(mutex_);
-    peer_connection_map_.emplace(handle, std::move(peer));
+    alive_objects_.emplace(ptr, type);
+  } catch (...) {
   }
-  return handle;
 }
 
-void GlobalFactory::RemovePeerConnection(PeerConnectionHandle handle) {
-  if (auto peer = static_cast<PeerConnection*>(handle)) {
+void GlobalFactory::RemoveObject(ObjectType type, void* ptr) noexcept {
+  try {
     std::scoped_lock lock(mutex_);
-    auto it = peer_connection_map_.find(handle);
-    if (it == peer_connection_map_.end()) {
-      RTC_LOG(LS_WARNING) << "Trying to remove unknown PeerConnection object "
-                             "from global map has no effect.";
-      return;
+    auto it = alive_objects_.find(ptr);
+    if (it != alive_objects_.end()) {
+      RTC_CHECK(it->second == type);
+      alive_objects_.erase(it);
+      if (alive_objects_.empty()) {
+        ShutdownNoLock();
+      }
     }
-    peer_connection_map_.erase(it);
+  } catch (...) {
   }
-}
-
-void GlobalFactory::NotifyPeerConnectionDestroyed() {
-  CheckForShutdown();
-}
-
-void GlobalFactory::AddObject(void* ptr) {
-  std::scoped_lock lock(mutex_);
-  alive_objects_.insert(ptr);
-}
-
-void GlobalFactory::RemoveObject(void* ptr) {
-  std::scoped_lock lock(mutex_);
-  alive_objects_.erase(ptr);
-  CheckForShutdown();
 }
 
 #if defined(WINUWP)
@@ -213,13 +220,6 @@ mrsResult GlobalFactory::Initialize() {
       nullptr, nullptr);
 #endif  // defined(WINUWP)
   return (factory_.get() != nullptr ? MRS_SUCCESS : MRS_E_UNKNOWN);
-}
-
-void GlobalFactory::CheckForShutdown() {
-  std::scoped_lock lock(mutex_);
-  if (alive_objects_.empty() && peer_connection_map_.empty()) {
-    ShutdownNoLock();
-  }
 }
 
 void GlobalFactory::ShutdownNoLock() {

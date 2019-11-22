@@ -107,15 +107,13 @@ rtc::scoped_refptr<PeerConnection> PeerConnection::create(
 }
 
 PeerConnection::PeerConnection(mrsPeerConnectionInteropHandle interop_handle)
-    : interop_handle_(interop_handle) {}
+    : interop_handle_(interop_handle) {
+  GlobalFactory::Instance()->AddObject(ObjectType::kPeerConnection, this);
+}
 
 PeerConnection::~PeerConnection() noexcept {
   Close();
-
-  // Notify the global factory in case this is the last alive object, so it can
-  // terminate the WebRTC threads, in particular to allow the DLL to unload and
-  // not deadlock the Unity editor.
-  GlobalFactory::Instance()->NotifyPeerConnectionDestroyed();
+  GlobalFactory::Instance()->RemoveObject(ObjectType::kPeerConnection, this);
 }
 
 webrtc::RTCErrorOr<rtc::scoped_refptr<LocalVideoTrack>>
