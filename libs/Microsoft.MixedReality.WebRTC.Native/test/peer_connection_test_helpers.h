@@ -1,8 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+#include "../include/mrs_errors.h"
 #include "../src/interop/interop_api.h"
 #include "../src/interop/peer_connection_interop.h"
+
+using namespace Microsoft::MixedReality::WebRTC;
 
 /// Simple wait event, similar to rtc::Event.
 struct Event {
@@ -201,7 +204,7 @@ class LocalPeerPairRaii {
     connected1_cb_.is_registered_ = true;
     mrsPeerConnectionRegisterConnectedCallback(pc2(), CB(connected2_cb_));
     connected2_cb_.is_registered_ = true;
-    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateOffer(pc1()));
+    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateOffer(pc1()));
     ASSERT_EQ(true, ev1.WaitFor(60s));
     ASSERT_EQ(true, ev2.WaitFor(60s));
   }
@@ -217,28 +220,28 @@ class LocalPeerPairRaii {
   InteropCallback<> connected2_cb_;
   void setup() {
     sdp1_cb_ = [this](const char* type, const char* sdp_data) {
-      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
+      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
                                  pc2_.handle(), type, sdp_data));
       if (kOfferString == type) {
-        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc2_.handle()));
+        ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc2_.handle()));
       }
     };
     sdp2_cb_ = [this](const char* type, const char* sdp_data) {
-      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
+      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
                                  pc1_.handle(), type, sdp_data));
       if (kOfferString == type) {
-        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc1_.handle()));
+        ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc1_.handle()));
       }
     };
     ice1_cb_ = [this](const char* candidate, int sdpMlineindex,
                       const char* sdpMid) {
-      ASSERT_EQ(MRS_SUCCESS,
+      ASSERT_EQ(Result::kSuccess,
                 mrsPeerConnectionAddIceCandidate(pc2_.handle(), sdpMid,
                                                  sdpMlineindex, candidate));
     };
     ice2_cb_ = [this](const char* candidate, int sdpMlineindex,
                       const char* sdpMid) {
-      ASSERT_EQ(MRS_SUCCESS,
+      ASSERT_EQ(Result::kSuccess,
                 mrsPeerConnectionAddIceCandidate(pc1_.handle(), sdpMid,
                                                  sdpMlineindex, candidate));
     };

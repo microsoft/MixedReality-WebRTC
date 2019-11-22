@@ -62,7 +62,7 @@ rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
 GlobalFactory::GetOrCreate() {
   std::scoped_lock lock(mutex_);
   if (!factory_) {
-    if (Initialize() != MRS_SUCCESS) {
+    if (Initialize() != Result::kSuccess) {
       return nullptr;
     }
   }
@@ -75,12 +75,12 @@ mrsResult GlobalFactory::GetOrCreate(
   std::scoped_lock lock(mutex_);
   if (!factory_) {
     mrsResult res = Initialize();
-    if (res != MRS_SUCCESS) {
+    if (res != Result::kSuccess) {
       return res;
     }
   }
   factory = factory_;
-  return (factory ? MRS_SUCCESS : MRS_E_UNKNOWN);
+  return (factory ? Result::kSuccess : Result::kUnknownError);
 }
 
 rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
@@ -129,7 +129,7 @@ using WebRtcFactoryPtr =
 WebRtcFactoryPtr GlobalFactory::get() {
   std::scoped_lock lock(mutex_);
   if (!impl_) {
-    if (Initialize() != MRS_SUCCESS) {
+    if (Initialize() != Result::kSuccess) {
       return nullptr;
     }
   }
@@ -141,12 +141,12 @@ mrsResult GlobalFactory::GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory) {
   std::scoped_lock lock(mutex_);
   if (!impl_) {
     mrsResult res = Initialize();
-    if (res != MRS_SUCCESS) {
+    if (res != Result::kSuccess) {
       return res;
     }
   }
   factory = impl_;
-  return (factory ? MRS_SUCCESS : MRS_E_UNKNOWN);
+  return (factory ? Result::kSuccess : Result::kUnknownError);
 }
 
 #endif  // defined(WINUWP)
@@ -162,7 +162,7 @@ mrsResult GlobalFactory::Initialize() {
   if (dispatcher.HasThreadAccess()) {
     // WebRtcFactory::setup() will deadlock if called from main UI thread
     // See https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/143
-    return MRS_E_WRONG_THREAD;
+    return Result::kWrongThread;
   }
   auto dispatcherQueue =
       wrapper::impl::org::webRtc::EventQueue::toWrapper(dispatcher);
@@ -219,7 +219,8 @@ mrsResult GlobalFactory::Initialize() {
               absl::make_unique<webrtc::InternalDecoderFactory>())),
       nullptr, nullptr);
 #endif  // defined(WINUWP)
-  return (factory_.get() != nullptr ? MRS_SUCCESS : MRS_E_UNKNOWN);
+  return (factory_.get() != nullptr ? Result::kSuccess
+                                    : Result::kUnknownError);
 }
 
 void GlobalFactory::ShutdownNoLock() {

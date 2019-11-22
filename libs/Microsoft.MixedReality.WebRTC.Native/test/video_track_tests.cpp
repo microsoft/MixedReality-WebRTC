@@ -29,7 +29,7 @@ TEST(VideoTrack, Simple) {
 
   VideoDeviceConfiguration config{};
   LocalVideoTrackHandle track_handle{};
-  ASSERT_EQ(MRS_SUCCESS,
+  ASSERT_EQ(Result::kSuccess,
             mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), "local_video_track",
                                                 config, &track_handle));
   ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
@@ -67,7 +67,7 @@ TEST(VideoTrack, Muted) {
 
   VideoDeviceConfiguration config{};
   LocalVideoTrackHandle track_handle{};
-  ASSERT_EQ(MRS_SUCCESS,
+  ASSERT_EQ(Result::kSuccess,
             mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), "local_video_track",
                                                 config, &track_handle));
 
@@ -75,7 +75,7 @@ TEST(VideoTrack, Muted) {
   ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 
   // Disable the video track; it should output only black frames
-  ASSERT_EQ(MRS_SUCCESS,
+  ASSERT_EQ(Result::kSuccess,
             mrsLocalVideoTrackSetEnabled(track_handle, mrsBool::kFalse));
   ASSERT_EQ(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 
@@ -139,7 +139,7 @@ void MRS_CALL enumDeviceCallbackCompleted(void* user_data) {
 //  for (auto&& id : device_ids) {
 //    VideoDeviceConfiguration config{};
 //    config.video_device_id = id.c_str();
-//    ASSERT_EQ(MRS_SUCCESS,
+//    ASSERT_EQ(Result::kSuccess,
 //              mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), config));
 //  }
 //}
@@ -150,7 +150,7 @@ TEST(VideoTrack, DeviceIdInvalid) {
   VideoDeviceConfiguration config{};
   LocalVideoTrackHandle track_handle{};
   config.video_device_id = "[[INVALID DEVICE ID]]";
-  ASSERT_EQ(MRS_E_NOTFOUND,
+  ASSERT_EQ(Result::kNotFound,
             mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), "invalid_track",
                                                 config, &track_handle));
   ASSERT_EQ(nullptr, track_handle);

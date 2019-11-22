@@ -75,7 +75,8 @@ bool IsSilent_int16(const int16_t* data,
 TEST(AudioTrack, Simple) {
   LocalPeerPairRaii pair;
 
-  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
   ASSERT_NE(mrsBool::kFalse,
             mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
@@ -135,11 +136,12 @@ TEST(AudioTrack, Simple) {
 TEST(AudioTrack, Muted) {
   LocalPeerPairRaii pair;
 
-  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
 
   // Disable the audio track; it should output only silence
-  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetLocalAudioTrackEnabled(
-                             pair.pc1(), mrsBool::kFalse));
+  ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetLocalAudioTrackEnabled(
+                                         pair.pc1(), mrsBool::kFalse));
   ASSERT_EQ(mrsBool::kFalse,
             mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 

@@ -329,7 +329,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
       const mrsPeerConnectionInteropCallbacks& callbacks) {
     // Make a full copy of all callbacks
     interop_callbacks_ = callbacks;
-    return MRS_SUCCESS;
+    return Result::kSuccess;
   }
 
   /// Retrieve the underlying PeerConnectionInterface from the core

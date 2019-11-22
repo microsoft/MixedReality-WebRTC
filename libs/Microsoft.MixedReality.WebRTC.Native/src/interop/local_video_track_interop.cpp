@@ -52,10 +52,10 @@ mrsLocalVideoTrackSetEnabled(LocalVideoTrackHandle track_handle,
                              mrsBool enabled) noexcept {
   auto track = static_cast<LocalVideoTrack*>(track_handle);
   if (!track) {
-    return MRS_E_INVALID_PARAMETER;
+    return Result::kInvalidParameter;
   }
   track->SetEnabled(enabled != mrsBool::kFalse);
-  return MRS_SUCCESS;
+  return Result::kSuccess;
 }
 
 mrsBool MRS_CALL

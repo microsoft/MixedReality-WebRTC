@@ -45,15 +45,15 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.so";
 #endif
 
-        // Error codes returned by the C API -- see api.h
+        // Error codes returned by the interop API -- see mrs_errors.h
         internal const uint MRS_SUCCESS = 0u;
         internal const uint MRS_E_UNKNOWN = 0x80000000u;
         internal const uint MRS_E_INVALID_PARAMETER = 0x80000001u;
         internal const uint MRS_E_INVALID_OPERATION = 0x80000002u;
         internal const uint MRS_E_WRONG_THREAD = 0x80000003u;
         internal const uint MRS_E_NOTFOUND = 0x80000004u;
-        internal const uint MRS_E_INVALID_PEER_HANDLE = 0x80000101u;
-        internal const uint MRS_E_PEER_NOT_INITIALIZED = 0x80000102u;
+        internal const uint MRS_E_INVALID_NATIVE_HANDLE = 0x80000005u;
+        internal const uint MRS_E_NOT_INITIALIZED = 0x80000006u;
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
         internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
 
@@ -155,11 +155,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             case MRS_E_NOTFOUND:
                 throw new Exception("Object not found.");
 
-            case MRS_E_INVALID_PEER_HANDLE:
-                throw new InvalidOperationException("Invalid peer connection handle.");
+            case MRS_E_INVALID_NATIVE_HANDLE:
+                throw new InvalidOperationException("Invalid native interop handle.");
 
-            case MRS_E_PEER_NOT_INITIALIZED:
-                throw new InvalidOperationException("Peer connection not initialized.");
+            case MRS_E_NOT_INITIALIZED:
+                throw new InvalidOperationException("Object not initialized.");
 
             case MRS_E_SCTP_NOT_NEGOTIATED:
                 throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");

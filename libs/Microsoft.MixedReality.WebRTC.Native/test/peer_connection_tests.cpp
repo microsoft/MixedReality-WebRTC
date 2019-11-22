@@ -17,18 +17,20 @@ TEST(PeerConnection, LocalNoIce) {
     // Setup signaling
     SdpCallback sdp1_cb(
         pc1.handle(), [&pc2](const char* type, const char* sdp_data) {
-          ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                                     pc2.handle(), type, sdp_data));
+          ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
+                                          pc2.handle(), type, sdp_data));
           if (kOfferString == type) {
-            ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc2.handle()));
+            ASSERT_EQ(Result::kSuccess,
+                      mrsPeerConnectionCreateAnswer(pc2.handle()));
           }
         });
     SdpCallback sdp2_cb(
         pc2.handle(), [&pc1](const char* type, const char* sdp_data) {
-          ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                                     pc1.handle(), type, sdp_data));
+          ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
+                                          pc1.handle(), type, sdp_data));
           if (kOfferString == type) {
-            ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc1.handle()));
+            ASSERT_EQ(Result::kSuccess,
+                      mrsPeerConnectionCreateAnswer(pc1.handle()));
           }
         });
 
@@ -36,7 +38,7 @@ TEST(PeerConnection, LocalNoIce) {
     Event ev;
     InteropCallback<> on_connected([&ev]() { ev.Set(); });
     mrsPeerConnectionRegisterConnectedCallback(pc1.handle(), CB(on_connected));
-    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateOffer(pc1.handle()));
+    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateOffer(pc1.handle()));
     ASSERT_EQ(true, ev.WaitFor(5s));  // should complete within 5s (usually ~1s)
   }
 }
@@ -53,31 +55,33 @@ TEST(PeerConnection, LocalIce) {
     // Setup signaling
     SdpCallback sdp1_cb(
         pc1.handle(), [&pc2](const char* type, const char* sdp_data) {
-          ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                                     pc2.handle(), type, sdp_data));
+          ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
+                                          pc2.handle(), type, sdp_data));
           if (kOfferString == type) {
-            ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc2.handle()));
+            ASSERT_EQ(Result::kSuccess,
+                      mrsPeerConnectionCreateAnswer(pc2.handle()));
           }
         });
     SdpCallback sdp2_cb(
         pc2.handle(), [&pc1](const char* type, const char* sdp_data) {
-          ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                                     pc1.handle(), type, sdp_data));
+          ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
+                                          pc1.handle(), type, sdp_data));
           if (kOfferString == type) {
-            ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc1.handle()));
+            ASSERT_EQ(Result::kSuccess,
+                      mrsPeerConnectionCreateAnswer(pc1.handle()));
           }
         });
     IceCallback ice1_cb(
         pc1.handle(),
         [&pc2](const char* candidate, int sdpMlineindex, const char* sdpMid) {
-          ASSERT_EQ(MRS_SUCCESS,
+          ASSERT_EQ(Result::kSuccess,
                     mrsPeerConnectionAddIceCandidate(pc2.handle(), sdpMid,
                                                      sdpMlineindex, candidate));
         });
     IceCallback ice2_cb(
         pc2.handle(),
         [&pc1](const char* candidate, int sdpMlineindex, const char* sdpMid) {
-          ASSERT_EQ(MRS_SUCCESS,
+          ASSERT_EQ(Result::kSuccess,
                     mrsPeerConnectionAddIceCandidate(pc1.handle(), sdpMid,
                                                      sdpMlineindex, candidate));
         });
@@ -86,7 +90,7 @@ TEST(PeerConnection, LocalIce) {
     Event ev;
     InteropCallback<> on_connected([&ev]() { ev.Set(); });
     mrsPeerConnectionRegisterConnectedCallback(pc1.handle(), CB(on_connected));
-    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateOffer(pc1.handle()));
+    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateOffer(pc1.handle()));
     ASSERT_EQ(true, ev.WaitFor(5s));  // should complete within 5s (usually ~1s)
 
     // Clean-up, because ICE candidates continue to arrive

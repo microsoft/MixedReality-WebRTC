@@ -11,34 +11,14 @@ rtc::Thread* UnsafeGetWorkerThread();
 #endif
 
 #include "export.h"
+#include "mrs_errors.h"
 
 extern "C" {
 
 /// 32-bit boolean for interop API.
 enum class mrsBool : int32_t { kTrue = -1, kFalse = 0 };
 
-//
-// Errors
-//
-
-using mrsResult = std::uint32_t;
-
-constexpr const mrsResult MRS_SUCCESS{0};
-
-// Generic errors
-constexpr const mrsResult MRS_E_UNKNOWN{0x80000000};
-constexpr const mrsResult MRS_E_INVALID_PARAMETER{0x80000001};
-constexpr const mrsResult MRS_E_INVALID_OPERATION{0x80000002};
-constexpr const mrsResult MRS_E_WRONG_THREAD{0x80000003};
-constexpr const mrsResult MRS_E_NOTFOUND{0x80000004};
-
-// Peer conection (0x1xx)
-constexpr const mrsResult MRS_E_INVALID_PEER_HANDLE{0x80000101};
-constexpr const mrsResult MRS_E_PEER_NOT_INITIALIZED{0x80000102};
-
-// Data (0x3xx)
-constexpr const mrsResult MRS_E_SCTP_NOT_NEGOTIATED{0x80000301};
-constexpr const mrsResult MRS_E_INVALID_DATA_CHANNEL_ID{0x80000302};
+using mrsResult = Microsoft::MixedReality::WebRTC::Result;
 
 //
 // Generic utilities
