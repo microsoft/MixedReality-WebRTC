@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #include "../src/interop/interop_api.h"
 
@@ -52,7 +51,7 @@ struct Event {
 ///     mrsRegisterXxxCallback(h, nullptr, nullptr);
 ///   }
 template <typename... Args>
-struct Callback {
+struct InteropCallback {
   /// Callback function signature type.
   using function_type = void(Args...);
 
@@ -60,23 +59,23 @@ struct Callback {
   /// opaque argument.
   using static_type = void(MRS_CALL*)(void*, Args...);
 
-  Callback() = default;
-  virtual ~Callback() { assert(!is_registered_); }
+  InteropCallback() = default;
+  virtual ~InteropCallback() { assert(!is_registered_); }
 
   /// Constructor from any std::function-compatible object, including lambdas.
   template <typename U>
-  Callback(U func)
+  InteropCallback(U func)
       : func_(std::function<function_type>(std::forward<U>(func))) {}
 
   template <typename U>
-  Callback& operator=(U func) {
+  InteropCallback& operator=(U func) {
     func_ = std::function<function_type>(std::forward<U>(func));
     return (*this);
   }
 
   /// Adapter for generic std::function<> to interop callback.
   static void MRS_CALL StaticExec(void* user_data, Args... args) {
-    auto self = (Callback*)user_data;
+    auto self = (InteropCallback*)user_data;
     self->func_(std::forward<Args>(args)...);
   }
 
@@ -108,9 +107,9 @@ class PCRaii {
 };
 
 // OnLocalSdpReadyToSend
-class SdpCallback : public Callback<const char*, const char*> {
+class SdpCallback : public InteropCallback<const char*, const char*> {
  public:
-  using Base = Callback<const char*, const char*>;
+  using Base = InteropCallback<const char*, const char*>;
   using callback_type = void(const char*, const char*);
   SdpCallback(PeerConnectionHandle pc) : pc_(pc) {}
   SdpCallback(PeerConnectionHandle pc, std::function<callback_type> func)
@@ -136,9 +135,9 @@ class SdpCallback : public Callback<const char*, const char*> {
 };
 
 // OnIceCandidateReadyToSend
-class IceCallback : public Callback<const char*, int, const char*> {
+class IceCallback : public InteropCallback<const char*, int, const char*> {
  public:
-  using Base = Callback<const char*, int, const char*>;
+  using Base = InteropCallback<const char*, int, const char*>;
   using callback_type = void(const char*, int, const char*);
   IceCallback(PeerConnectionHandle pc) : pc_(pc) {}
   IceCallback(PeerConnectionHandle pc, std::function<callback_type> func)
@@ -208,8 +207,8 @@ class LocalPeerPairRaii {
   SdpCallback sdp2_cb_;
   IceCallback ice1_cb_;
   IceCallback ice2_cb_;
-  Callback<> connected1_cb_;
-  Callback<> connected2_cb_;
+  InteropCallback<> connected1_cb_;
+  InteropCallback<> connected2_cb_;
   void setup() {
     sdp1_cb_ = [this](const char* type, const char* sdp_data) {
       ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(

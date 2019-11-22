@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
@@ -22,7 +21,7 @@ FakeIterop_DataChannelCreate(mrsPeerConnectionInteropHandle /*parent*/,
 
 // OnDataChannelAdded
 using DataAddedCallback =
-    Callback<mrsDataChannelInteropHandle, DataChannelHandle>;
+    InteropCallback<mrsDataChannelInteropHandle, DataChannelHandle>;
 
 }  // namespace
 
@@ -107,8 +106,8 @@ TEST(DataChannel, InBand) {
 
   // Connect
   Event ev1, ev2;
-  Callback<> connectec1_cb([&ev1]() { ev1.Set(); });
-  Callback<> connectec2_cb([&ev2]() { ev2.Set(); });
+  InteropCallback<> connectec1_cb([&ev1]() { ev1.Set(); });
+  InteropCallback<> connectec2_cb([&ev2]() { ev2.Set(); });
   mrsPeerConnectionRegisterConnectedCallback(pc1.handle(), CB(connectec1_cb));
   connectec1_cb.is_registered_ = true;
   mrsPeerConnectionRegisterConnectedCallback(pc2.handle(), CB(connectec2_cb));

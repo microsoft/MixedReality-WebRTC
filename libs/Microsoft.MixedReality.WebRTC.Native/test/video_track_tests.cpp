@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
@@ -12,16 +11,16 @@
 namespace {
 
 // PeerConnectionI420VideoFrameCallback
-using I420VideoFrameCallback = Callback<const void*,
-                                        const void*,
-                                        const void*,
-                                        const void*,
-                                        const int,
-                                        const int,
-                                        const int,
-                                        const int,
-                                        const int,
-                                        const int>;
+using I420VideoFrameCallback = InteropCallback<const void*,
+                                               const void*,
+                                               const void*,
+                                               const void*,
+                                               const int,
+                                               const int,
+                                               const int,
+                                               const int,
+                                               const int,
+                                               const int>;
 
 }  // namespace
 

@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
@@ -34,7 +33,7 @@ TEST(PeerConnection, LocalNoIce) {
 
   // Connect
   Event ev;
-  Callback<> on_connected([&ev]() { ev.Set(); });
+  InteropCallback<> on_connected([&ev]() { ev.Set(); });
   mrsPeerConnectionRegisterConnectedCallback(pc1.handle(), CB(on_connected));
   ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateOffer(pc1.handle()));
   ASSERT_EQ(true, ev.WaitFor(5s));  // should complete within 5s (usually ~1s)
@@ -80,7 +79,7 @@ TEST(PeerConnection, LocalIce) {
 
   // Connect
   Event ev;
-  Callback<> on_connected([&ev]() { ev.Set(); });
+  InteropCallback<> on_connected([&ev]() { ev.Set(); });
   mrsPeerConnectionRegisterConnectedCallback(pc1.handle(), CB(on_connected));
   ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateOffer(pc1.handle()));
   ASSERT_EQ(true, ev.WaitFor(5s));  // should complete within 5s (usually ~1s)
