@@ -8,7 +8,7 @@
     <title>A custom signaling solution | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="A custom signaling solution | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.46.0.0">
+    <meta name="generator" content="docfx 2.47.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -106,7 +106,7 @@
 <pre><code class="lang-cs">private NodeDssSignaler _signaler;
 </code></pre>
 </li>
-<li><p>In the <code>OnLoaded()</code> method, after subscribing to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a> event, add some more subscriptions to the signaling events.</p>
+<li><p>In the <code>OnLoaded()</code> method, after subscribing to the <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a> event, add some more subscriptions to the signaling events.</p>
 <pre><code class="lang-cs">_peerConnection.LocalSdpReadytoSend += Peer_LocalSdpReadytoSend;
 _peerConnection.IceCandidateReadytoSend += Peer_IceCandidateReadytoSend;
 </code></pre>

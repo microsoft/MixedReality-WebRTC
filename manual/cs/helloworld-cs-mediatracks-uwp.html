@@ -8,7 +8,7 @@
     <title>Add local media tracks | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Add local media tracks | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.46.0.0">
+    <meta name="generator" content="docfx 2.47.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -183,7 +183,7 @@ private VideoBridge _localVideoBridge = new VideoBridge(3);
 }
 </code></pre>
 </li>
-<li><p>In the <code>OnLoaded()</code> method where the peer connection was initialized, subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a> event just after the call to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_Microsoft_MixedReality_WebRTC_PeerConnectionConfiguration_CancellationToken_"><code>InitializeAsync()</code></a> returned.</p>
+<li><p>In the <code>OnLoaded()</code> method where the peer connection was initialized, subscribe to the <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a> event just after the call to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_Microsoft_MixedReality_WebRTC_PeerConnectionConfiguration_CancellationToken_"><code>InitializeAsync()</code></a> returned.</p>
 <pre><code class="lang-cs">await _peerConnection.InitializeAsync(config);
 _peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
 Debugger.Log(0, &quot;&quot;, &quot;Peer connection initialized successfully.\n&quot;);
@@ -205,7 +205,7 @@ Debugger.Log(0, &quot;&quot;, &quot;Peer connection initialized successfully.\n&
 </ul>
 <p>Unfortunately at this time the capture framerate is not available, so we assume a framerate of 30 frames per second (FPS).</p>
 <ol>
-<li><p>At the top of the <code>MainPage</code> class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a> and the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.media.core.mediastreamsource.samplerequested"><code>SampleRequested</code></a> events can be fired in parallel from multiple threads.</p>
+<li><p>At the top of the <code>MainPage</code> class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a> and the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.media.core.mediastreamsource.samplerequested"><code>SampleRequested</code></a> events can be fired in parallel from multiple threads.</p>
 <pre><code class="lang-cs">private bool _localVideoPlaying = false;
 private object _localVideoLock = new object();
 </code></pre>

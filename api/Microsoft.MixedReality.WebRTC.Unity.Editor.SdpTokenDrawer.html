@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class AudioSource
+    <title>Class SdpTokenDrawer
    | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class AudioSource
+    <meta name="title" content="Class SdpTokenDrawer
    | MixedReality-WebRTC Documentation ">
     <meta name="generator" content="docfx 2.47.0.0">
     
@@ -78,40 +78,61 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSource">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.Editor.SdpTokenDrawer">
   
   
-  <h1 id="Microsoft_MixedReality_WebRTC_Unity_AudioSource" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSource" class="text-break">Class AudioSource
+  <h1 id="Microsoft_MixedReality_WebRTC_Unity_Editor_SdpTokenDrawer" data-uid="Microsoft.MixedReality.WebRTC.Unity.Editor.SdpTokenDrawer" class="text-break">Class SdpTokenDrawer
   </h1>
-  <div class="markdown level0 summary"><p>Base class for audio sources plugging into the internal peer connection API to
-expose a single audio stream to a renderer (<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html">MediaPlayer</a> or custom).</p>
+  <div class="markdown level0 summary"><p>Property drawer for <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.html">SdpTokenAttribute</a>, to validate the associated string
+property content and display an error message box if invalid characters are found.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">AudioSource</span></div>
-      <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.html">LocalAudioSource</a></div>
-      <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html">RemoteAudioSource</a></div>
+    <div class="level1"><span class="xref">SdpTokenDrawer</span></div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Editor.html">Microsoft.MixedReality.WebRTC.Unity.Editor</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioSource_syntax">Syntax</h5>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_Editor_SdpTokenDrawer_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class AudioSource : MonoBehaviour</code></pre>
+    <pre><code class="lang-csharp hljs">public class SdpTokenDrawer : PropertyDrawer</code></pre>
   </div>
-  <h3 id="fields">Fields
+  <h3 id="methods">Methods
   </h3>
   
   
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSource_AudioStreamStarted" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSource.AudioStreamStarted">AudioStreamStarted</h4>
+  <a id="Microsoft_MixedReality_WebRTC_Unity_Editor_SdpTokenDrawer_GetPropertyHeight_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Editor.SdpTokenDrawer.GetPropertyHeight*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Editor_SdpTokenDrawer_GetPropertyHeight_SerializedProperty_GUIContent_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Editor.SdpTokenDrawer.GetPropertyHeight(SerializedProperty,GUIContent)">GetPropertyHeight(SerializedProperty, GUIContent)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AudioStreamStartedEvent AudioStreamStarted</code></pre>
+    <pre><code class="lang-csharp hljs">public override float GetPropertyHeight(SerializedProperty property, GUIContent label)</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">SerializedProperty</span></td>
+        <td><span class="parametername">property</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">GUIContent</span></td>
+        <td><span class="parametername">label</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -121,31 +142,44 @@ expose a single audio stream to a renderer (<a class="xref" href="Microsoft.Mixe
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent.html">AudioStreamStartedEvent</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   
   
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSource_AudioStreamStopped" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSource.AudioStreamStopped">AudioStreamStopped</h4>
+  <a id="Microsoft_MixedReality_WebRTC_Unity_Editor_SdpTokenDrawer_OnGUI_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Editor.SdpTokenDrawer.OnGUI*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Editor_SdpTokenDrawer_OnGUI_Rect_SerializedProperty_GUIContent_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Editor.SdpTokenDrawer.OnGUI(Rect,SerializedProperty,GUIContent)">OnGUI(Rect, SerializedProperty, GUIContent)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AudioStreamStoppedEvent AudioStreamStopped</code></pre>
+    <pre><code class="lang-csharp hljs">public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
+        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent.html">AudioStreamStoppedEvent</a></td>
+        <td><span class="xref">Rect</span></td>
+        <td><span class="parametername">position</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">SerializedProperty</span></td>
+        <td><span class="parametername">property</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">GUIContent</span></td>
+        <td><span class="parametername">label</span></td>
         <td></td>
       </tr>
     </tbody>

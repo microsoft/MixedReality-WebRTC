@@ -8,7 +8,7 @@
     <title>Establishing a WebRTC connection | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Establishing a WebRTC connection | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.46.0.0">
+    <meta name="generator" content="docfx 2.47.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -92,7 +92,7 @@ _peerConnection.IceStateChanged += (IceConnectionState newState) =&gt; {
 </code></pre>
 <p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event is invoked when the peer connection is established, that is when an offer/answer pair is successfully exchanged. The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceStateChanged"><code>IceStateChanged</code></a> is invoked each time the ICE status changes. Note that the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event can be invoked before the ICE status reaches its <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.IceConnectionState.html"><code>IceConnectionState.Connected</code></a> state.</p>
 </li>
-<li><p>In order to render the remote video, we also subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420RemoteVideoFrameReady"><code>I420RemoteVideoFrameReady</code></a> event.</p>
+<li><p>In order to render the remote video, we also subscribe to the <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420RemoteVideoFrameReady"><code>I420RemoteVideoFrameReady</code></a> event.</p>
 <pre><code class="lang-cs">_peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
 </code></pre>
 </li>

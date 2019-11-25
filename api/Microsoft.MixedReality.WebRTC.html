@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace Microsoft.MixedReality.WebRTC
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.46.0.0">
+    <meta name="generator" content="docfx 2.47.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -87,6 +87,9 @@
   <div class="markdown level0 remarks"></div>
     <h3 id="classes">Classes
   </h3>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html">ARGBVideoFrameStorage</a></h4>
+      <section><p>Storage for a video frame encoded in ARGB format.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a></h4>
       <section><p>Encapsulates a data channel of a peer connection.</p>
 <p>A data channel is a pipe allowing to send and receive arbitrary data to the
@@ -97,11 +100,15 @@ and the WebRTC standard itself.</p>
 <p>An instance of <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a> is created by calling <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_String_System_Boolean_System_Boolean_">AddDataChannelAsync(String, Boolean, Boolean)</a>
 or one of its variants. <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a> cannot be instantiated directly.</p>
 </section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.I420VideoFrameStorage.html">I420VideoFrameStorage</a></h4>
-      <section><p>Storage for a video frame encoded in I420 format.</p>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.I420AVideoFrameStorage.html">I420AVideoFrameStorage</a></h4>
+      <section><p>Storage for a video frame encoded in I420+Alpha format.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IceServer.html">IceServer</a></h4>
       <section><p>ICE server configuration (STUN and/or TURN).</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html">LocalVideoTrack</a></h4>
+      <section><p>Video track sending to the remote peer video frames originating from
+a local track source.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.MovingAverage.html">MovingAverage</a></h4>
       <section><p>Utility to manage a moving average of a time series.</p>
@@ -189,7 +196,7 @@ and is ready for consumption.</p>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.BufferingChangedDelegate.html">DataChannel.BufferingChangedDelegate</a></h4>
       <section><p>Delegate for the <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged">BufferingChanged</a> event.</p>
 </section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.I420VideoFrameDelegate.html">I420VideoFrameDelegate</a></h4>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.I420AVideoFrameDelegate.html">I420AVideoFrameDelegate</a></h4>
       <section><p>Delegate used for events when an I420-encoded video frame has been produced
 and is ready for consumption.</p>
 </section>
