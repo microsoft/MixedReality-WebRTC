@@ -724,7 +724,8 @@ namespace Microsoft.MixedReality.WebRTC
 
                 // On UWP PeerConnectionCreate() fails on main UI thread, so always initialize the native peer
                 // connection asynchronously from a background worker thread.
-                _initTask = Task.Run(() => {
+                _initTask = Task.Run(() =>
+                {
                     token.ThrowIfCancellationRequested();
 
                     uint res = PeerConnectionInterop.PeerConnection_Create(nativeConfig, GCHandle.ToIntPtr(_selfHandle), out _nativePeerhandle);
@@ -876,9 +877,11 @@ namespace Microsoft.MixedReality.WebRTC
             // eventually need to acquire the lock to complete.
             initTask.Wait();
 
-            // Close the native peer connection. This may be delayed if a P/Invoke callback
-            // is underway, but will be handled at some point anyway, even if the PeerConnection
-            // managed instance is gone.
+            // Close the native peer connection, disconnecting from the remote peer if currently connected.
+            PeerConnectionInterop.PeerConnection_Close(_nativePeerhandle);
+
+            // Destroy the native peer connection object. This may be delayed if a P/Invoke callback is underway,
+            // but will be handled at some point anyway, even if the PeerConnection managed instance is gone.
             _nativePeerhandle.Close();
 
             // Complete shutdown sequence and re-enable InitializeAsync()
@@ -913,7 +916,8 @@ namespace Microsoft.MixedReality.WebRTC
         public Task<LocalVideoTrack> AddLocalVideoTrackAsync(LocalVideoTrackSettings settings = default)
         {
             ThrowIfConnectionNotOpen();
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
                 var config = (settings != null ? new PeerConnectionInterop.VideoDeviceConfiguration
@@ -964,7 +968,8 @@ namespace Microsoft.MixedReality.WebRTC
         public Task AddLocalAudioTrackAsync()
         {
             ThrowIfConnectionNotOpen();
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
                 if (PeerConnectionInterop.PeerConnection_AddLocalAudioTrack(_nativePeerhandle) != Utils.MRS_SUCCESS)
@@ -1102,7 +1107,8 @@ namespace Microsoft.MixedReality.WebRTC
             }
 
             // Create the native channel
-            return await Task.Run(() => {
+            return await Task.Run(() =>
+            {
                 IntPtr nativeHandle = IntPtr.Zero;
                 var wrapperGCHandle = GCHandle.Alloc(dataChannel, GCHandleType.Normal);
                 var wrapperHandle = GCHandle.ToIntPtr(wrapperGCHandle);
@@ -1239,10 +1245,12 @@ namespace Microsoft.MixedReality.WebRTC
             var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
             var wrapper = new PeerConnectionInterop.EnumVideoCaptureDeviceWrapper()
             {
-                enumCallback = (id, name) => {
+                enumCallback = (id, name) =>
+                {
                     devices.Add(new VideoCaptureDevice() { id = id, name = name });
                 },
-                completedCallback = () => {
+                completedCallback = () =>
+                {
                     // On enumeration end, signal the caller thread
                     eventWaitHandle.Set();
                 }
@@ -1252,7 +1260,8 @@ namespace Microsoft.MixedReality.WebRTC
             var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
             IntPtr userData = GCHandle.ToIntPtr(handle);
 
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 // Execute the native async callback
                 PeerConnectionInterop.EnumVideoCaptureDevicesAsync(
                     PeerConnectionInterop.VideoCaptureDevice_EnumCallback, userData,
@@ -1284,10 +1293,12 @@ namespace Microsoft.MixedReality.WebRTC
             var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
             var wrapper = new PeerConnectionInterop.EnumVideoCaptureFormatsWrapper()
             {
-                enumCallback = (width, height, framerate, fourcc) => {
+                enumCallback = (width, height, framerate, fourcc) =>
+                {
                     formats.Add(new VideoCaptureFormat() { width = width, height = height, framerate = framerate, fourcc = fourcc });
                 },
-                completedCallback = (Exception _) => {
+                completedCallback = (Exception _) =>
+                {
                     // On enumeration end, signal the caller thread
                     eventWaitHandle.Set();
                 }
@@ -1310,7 +1321,8 @@ namespace Microsoft.MixedReality.WebRTC
                 return null; // for the compiler
             }
 
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 // Wait for end of enumerating
                 eventWaitHandle.WaitOne();
 

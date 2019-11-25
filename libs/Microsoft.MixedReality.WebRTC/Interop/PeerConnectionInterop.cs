@@ -610,7 +610,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionClose")]
-        public static extern void PeerConnection_Close(PeerConnectionHandle peerHandle);
+        public static extern uint PeerConnection_Close(PeerConnectionHandle peerHandle);
 
         #endregion
     }

@@ -998,12 +998,12 @@ mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
   return MRS_E_INVALID_PEER_HANDLE;
 }
 
-void MRS_CALL mrsPeerConnectionClose(PeerConnectionHandle peerHandle) noexcept {
+mrsResult MRS_CALL mrsPeerConnectionClose(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->Close();
+	return MRS_SUCCESS;
   }
-  // Note: currently "close" in interop means releasing native resources
-  mrsPeerConnectionRemoveRef(peerHandle);
+  return MRS_E_INVALID_PEER_HANDLE;
 }
 
 mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,

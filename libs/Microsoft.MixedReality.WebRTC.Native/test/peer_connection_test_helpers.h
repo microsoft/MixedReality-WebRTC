@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "../src/interop/interop_api.h"
+#include "../src/interop/peer_connection_interop.h"
 
 /// Simple wait event, similar to rtc::Event.
 struct Event {
@@ -41,11 +42,12 @@ struct Event {
 /// trampoline its call to a generic std::function for convenience (including
 /// lambda functions).
 /// Use the CB() macro to register the callback with the interop layer.
-/// Note that the Callback<> variable must stay in scope for the duration of the
-/// use, so that its static callback function is kept alive while registered.
+/// Note that the InteropCallback<> variable must stay in scope for the duration
+/// of the use, so that its static callback function is kept alive while
+/// registered.
 /// Usage:
 ///   {
-///     Callback<int> cb([](int i) { ... });
+///     InteropCallback<int> cb([](int i) { ... });
 ///     mrsRegisterXxxCallback(h, CB(cb));
 ///     [...]
 ///     mrsRegisterXxxCallback(h, nullptr, nullptr);
@@ -89,17 +91,21 @@ struct InteropCallback {
 /// Helper to create and close a peer connection.
 class PCRaii {
  public:
+  /// Create a peer connection with a default public STUN server.
   PCRaii() {
     PeerConnectionConfiguration config{};
     config.encoded_ice_servers = "stun:stun.l.google.com:19302";
     mrsPeerConnectionInteropHandle interop_handle = (void*)0x1;
     mrsPeerConnectionCreate(config, interop_handle, &handle_);
   }
+  /// Create a peer connection with a specific configuration.
+  /// Use this constructor with a default-constructed configuration object to
+  /// create a local-only peer connection without STUN/TURN capability.
   PCRaii(const PeerConnectionConfiguration& config,
          mrsPeerConnectionInteropHandle interop_handle = (void*)0x1) {
     mrsPeerConnectionCreate(config, interop_handle, &handle_);
   }
-  ~PCRaii() { mrsPeerConnectionClose(handle_); }
+  ~PCRaii() { mrsPeerConnectionRemoveRef(handle_); }
   PeerConnectionHandle handle() const { return handle_; }
 
  protected:

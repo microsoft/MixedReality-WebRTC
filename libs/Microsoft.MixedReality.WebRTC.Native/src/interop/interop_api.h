@@ -308,6 +308,11 @@ struct PeerConnectionConfiguration {
 
 /// Create a peer connection and return a handle to it.
 /// On UWP this must be invoked from another thread than the main UI thread.
+/// The newly-created peer connection native resource is reference-counted, and
+/// has a single reference when this function returns. Additional references may
+/// be added with |mrsPeerConnectionAddRef| and removed with
+/// |mrsPeerConnectionRemoveRef|. When the last reference is removed, the native
+/// object is destroyed.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionCreate(PeerConnectionConfiguration config,
                         mrsPeerConnectionInteropHandle interop_handle,
@@ -611,8 +616,11 @@ mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
                                       const char* type,
                                       const char* sdp) noexcept;
 
-/// Close a peer connection and free all resources associated with it.
-MRS_API void MRS_CALL
+/// Close a peer connection, removing all tracks and disconnecting from the
+/// remote peer currently connected. This does not invalidate the handle nor
+/// destroy the native peer connection object, but leaves it in a state where it
+/// can only be destroyed.
+MRS_API mrsResult MRS_CALL
 mrsPeerConnectionClose(PeerConnectionHandle peerHandle) noexcept;
 
 //
