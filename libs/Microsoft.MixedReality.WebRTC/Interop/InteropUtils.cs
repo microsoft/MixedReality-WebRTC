@@ -54,6 +54,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         internal const uint MRS_E_NOTFOUND = 0x80000004u;
         internal const uint MRS_E_INVALID_NATIVE_HANDLE = 0x80000005u;
         internal const uint MRS_E_NOT_INITIALIZED = 0x80000006u;
+        internal const uint MRS_E_UNSUPPORTED = 0x80000007u;
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
         internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
 
@@ -139,33 +140,36 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
             switch (res)
             {
-            case MRS_E_UNKNOWN:
-            default:
-                throw new Exception();
+                case MRS_E_UNKNOWN:
+                default:
+                    throw new Exception();
 
-            case MRS_E_INVALID_PARAMETER:
-                throw new ArgumentException();
+                case MRS_E_INVALID_PARAMETER:
+                    throw new ArgumentException();
 
-            case MRS_E_INVALID_OPERATION:
-                throw new InvalidOperationException();
+                case MRS_E_INVALID_OPERATION:
+                    throw new InvalidOperationException();
 
-            case MRS_E_WRONG_THREAD:
-                throw new InvalidOperationException("This method cannot be called on that thread.");
+                case MRS_E_WRONG_THREAD:
+                    throw new InvalidOperationException("This method cannot be called on that thread.");
 
-            case MRS_E_NOTFOUND:
-                throw new Exception("Object not found.");
+                case MRS_E_NOTFOUND:
+                    throw new Exception("Object not found.");
 
-            case MRS_E_INVALID_NATIVE_HANDLE:
-                throw new InvalidOperationException("Invalid native interop handle.");
+                case MRS_E_INVALID_NATIVE_HANDLE:
+                    throw new InvalidOperationException("Invalid native interop handle.");
 
-            case MRS_E_NOT_INITIALIZED:
-                throw new InvalidOperationException("Object not initialized.");
+                case MRS_E_NOT_INITIALIZED:
+                    throw new InvalidOperationException("Object not initialized.");
 
-            case MRS_E_SCTP_NOT_NEGOTIATED:
-                throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
+                case MRS_E_UNSUPPORTED:
+                    throw new NotSupportedException();
 
-            case MRS_E_INVALID_DATA_CHANNEL_ID:
-                throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
+                case MRS_E_SCTP_NOT_NEGOTIATED:
+                    throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
+
+                case MRS_E_INVALID_DATA_CHANNEL_ID:
+                    throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
             }
         }
     }

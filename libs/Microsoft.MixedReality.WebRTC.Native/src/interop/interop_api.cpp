@@ -235,27 +235,6 @@ mrsResult OpenVideoCaptureDevice(
   return Result::kUnknownError;
 }
 
-webrtc::PeerConnectionInterface::IceTransportsType ICETransportTypeToNative(
-    IceTransportType mrsValue) {
-  using Native = webrtc::PeerConnectionInterface::IceTransportsType;
-  using Impl = IceTransportType;
-  static_assert((int)Native::kNone == (int)Impl::kNone);
-  static_assert((int)Native::kNoHost == (int)Impl::kNoHost);
-  static_assert((int)Native::kRelay == (int)Impl::kRelay);
-  static_assert((int)Native::kAll == (int)Impl::kAll);
-  return static_cast<Native>(mrsValue);
-}
-
-webrtc::PeerConnectionInterface::BundlePolicy BundlePolicyToNative(
-    BundlePolicy mrsValue) {
-  using Native = webrtc::PeerConnectionInterface::BundlePolicy;
-  using Impl = BundlePolicy;
-  static_assert((int)Native::kBundlePolicyBalanced == (int)Impl::kBalanced);
-  static_assert((int)Native::kBundlePolicyMaxBundle == (int)Impl::kMaxBundle);
-  static_assert((int)Native::kBundlePolicyMaxCompat == (int)Impl::kMaxCompat);
-  return static_cast<Native>(mrsValue);
-}
-
 //< TODO - Unit test / check if RTC has already a utility like this
 std::vector<std::string> SplitString(const std::string& str, char sep) {
   std::vector<std::string> ret;
@@ -557,40 +536,12 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
   }
   *peerHandleOut = nullptr;
 
-  // Ensure the factory exists
-  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory;
-  {
-    mrsResult res = GlobalFactory::Instance()->GetOrCreate(factory);
-    if (res != Result::kSuccess) {
-      RTC_LOG(LS_ERROR) << "Failed to initialize the peer connection factory.";
-      return res;
-    }
-  }
-  if (!factory.get()) {
-    return Result::kUnknownError;
-  }
-
-  // Setup the connection configuration
-  webrtc::PeerConnectionInterface::RTCConfiguration rtc_config;
-  if (config.encoded_ice_servers != nullptr) {
-    std::string encoded_ice_servers{config.encoded_ice_servers};
-    rtc_config.servers = DecodeIceServers(encoded_ice_servers);
-  }
-  rtc_config.enable_rtp_data_channel = false;  // Always false for security
-  rtc_config.enable_dtls_srtp = true;          // Always true for security
-  rtc_config.type = ICETransportTypeToNative(config.ice_transport_type);
-  rtc_config.bundle_policy = BundlePolicyToNative(config.bundle_policy);
-  rtc_config.sdp_semantics = (config.sdp_semantic == SdpSemantic::kUnifiedPlan
-                                  ? webrtc::SdpSemantics::kUnifiedPlan
-                                  : webrtc::SdpSemantics::kPlanB);
-
   // Create the new peer connection
-  rtc::scoped_refptr<PeerConnection> peer =
-      PeerConnection::create(*factory, rtc_config, interop_handle);
-  if (!peer) {
-    return Result::kUnknownError;
+  auto result = PeerConnection::create(config, interop_handle);
+  if (!result.ok()) {
+    return result.error().result();
   }
-  *peerHandleOut = (PeerConnectionHandle)peer.release();
+  *peerHandleOut = (PeerConnectionHandle)result.value().release();
   return Result::kSuccess;
 }
 
@@ -799,7 +750,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
   }
   auto result = peer->AddLocalVideoTrack(std::move(video_track));
   if (result.ok()) {
-    rtc::scoped_refptr<LocalVideoTrack>& video_track_wrapper = result.value();
+    RefPtr<LocalVideoTrack>& video_track_wrapper = result.value();
     video_track_wrapper->AddRef();  // for the handle
     *trackHandle = video_track_wrapper.get();
     return Result::kSuccess;
@@ -973,7 +924,7 @@ mrsResult MRS_CALL mrsPeerConnectionSetBitrate(PeerConnectionHandle peer_handle,
                                                int start_bitrate_bps,
                                                int max_bitrate_bps) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
-    webrtc::BitrateSettings settings;
+    BitrateSettings settings{};
     if (min_bitrate_bps >= 0) {
       settings.min_bitrate_bps = min_bitrate_bps;
     }
@@ -983,8 +934,7 @@ mrsResult MRS_CALL mrsPeerConnectionSetBitrate(PeerConnectionHandle peer_handle,
     if (max_bitrate_bps >= 0) {
       settings.max_bitrate_bps = max_bitrate_bps;
     }
-    return peer->GetImpl()->SetBitrate(settings).ok() ? Result::kSuccess
-                                                      : Result::kUnknownError;
+    return peer->SetBitrate(settings);
   }
   return Result::kInvalidNativeHandle;
 }

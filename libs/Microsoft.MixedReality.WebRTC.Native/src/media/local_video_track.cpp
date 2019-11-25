@@ -31,12 +31,24 @@ LocalVideoTrack::~LocalVideoTrack() {
   RTC_CHECK(!owner_);
 }
 
+std::string LocalVideoTrack::GetName() const noexcept {
+  return track_->id();
+}
+
 bool LocalVideoTrack::IsEnabled() const noexcept {
   return track_->enabled();
 }
 
 void LocalVideoTrack::SetEnabled(bool enabled) const noexcept {
   track_->set_enabled(enabled);
+}
+
+webrtc::VideoTrackInterface* LocalVideoTrack::impl() const {
+  return track_.get();
+}
+
+webrtc::RtpSenderInterface* LocalVideoTrack::sender() const {
+  return sender_.get();
 }
 
 void LocalVideoTrack::RemoveFromPeerConnection(

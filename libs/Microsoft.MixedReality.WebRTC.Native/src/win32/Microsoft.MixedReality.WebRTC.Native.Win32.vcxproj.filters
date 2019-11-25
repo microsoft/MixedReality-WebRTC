@@ -56,6 +56,9 @@
       <Filter>media</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\mrs_errors.h" />
+    <ClInclude Include="..\..\include\refptr.h" />
+    <ClInclude Include="..\..\include\ref_counted_base.h" />
+    <ClInclude Include="..\..\include\tracked_object.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

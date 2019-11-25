@@ -138,6 +138,9 @@
     <ClInclude Include="../../include/local_video_track.h" />
     <ClInclude Include="../interop/local_video_track_interop.h" />
     <ClInclude Include="..\..\include\mrs_errors.h" />
+    <ClInclude Include="..\..\include\refptr.h" />
+    <ClInclude Include="..\..\include\ref_counted_base.h" />
+    <ClInclude Include="..\..\include\tracked_object.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../interop/interop_api.cpp" />

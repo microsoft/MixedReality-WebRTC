@@ -22,7 +22,7 @@ void MRS_CALL mrsLocalVideoTrackAddRef(LocalVideoTrackHandle handle) noexcept {
 void MRS_CALL
 mrsLocalVideoTrackRemoveRef(LocalVideoTrackHandle handle) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(handle)) {
-    track->Release();
+    track->RemoveRef();
   } else {
     RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
                            "LocalVideoTrack object.";

@@ -9,8 +9,8 @@
 namespace Microsoft::MixedReality::WebRTC {
 
 enum class ObjectType : int {
-	kPeerConnection,
-	kLocalVideoTrack,
+  kPeerConnection,
+  kLocalVideoTrack,
 };
 
 /// Global factory wrapper adding thread safety to all global objects, including
@@ -40,11 +40,11 @@ class GlobalFactory {
   /// Add to the global factory collection an object whose lifetime must be
   /// tracked to know when it is safe to terminate the WebRTC threads. This is
   /// generally called form the object's constructor for safety.
-  void AddObject(ObjectType type, void* ptr) noexcept;
+  void AddObject(ObjectType type, TrackedObject* obj) noexcept;
 
   /// Remove an object added with |AddObject|. This is generally called from the
   /// object's destructor for safety.
-  void RemoveObject(ObjectType type, void* ptr) noexcept;
+  void RemoveObject(ObjectType type, TrackedObject* obj) noexcept;
 
 #if defined(WINUWP)
   using WebRtcFactoryPtr =
@@ -70,7 +70,8 @@ class GlobalFactory {
   std::recursive_mutex mutex_;
 
   /// Collection of all objects alive.
-  std::unordered_map<void*, ObjectType> alive_objects_ RTC_GUARDED_BY(mutex_);
+  std::unordered_map<TrackedObject*, ObjectType> alive_objects_
+      RTC_GUARDED_BY(mutex_);
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

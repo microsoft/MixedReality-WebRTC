@@ -26,6 +26,7 @@ enum class Result : std::uint32_t {
   kNotFound = 0x80000004,
   kInvalidNativeHandle = 0x80000005,
   kNotInitialized = 0x80000006,
+  kUnsupported = 0x80000007,
 
   // Data (0x3xx)
   kSctpNotNegotiated = 0x80000301,

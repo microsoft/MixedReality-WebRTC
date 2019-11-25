@@ -14,25 +14,39 @@ namespace {
 using namespace Microsoft::MixedReality::WebRTC;
 
 /// Global factory of all global objects, including the peer connection factory
-/// itself, with added thread safety.
+/// itself, with added thread safety. This keeps a track of all objects alive,
+/// to determine when it is safe to release the WebRTC threads, thereby allowing
+/// a DLL linking this code to be unloaded.
 std::unique_ptr<GlobalFactory> g_factory = std::make_unique<GlobalFactory>();
 
+/// Utility to convert an ObjectType to a string, for debugging purpose. This
+/// returns a view over a global constant buffer (static storage), which is
+/// always valid, never deallocated.
+std::string_view ObjectTypeToString(ObjectType type) {
+  static_assert((int)ObjectType::kPeerConnection == 0, "");
+  static_assert((int)ObjectType::kLocalVideoTrack == 1, "");
+  constexpr const std::string_view s_types[] = {"PeerConnection",
+                                                "LocalVideoTrack"};
+  return s_types[(int)type];
+}
+
 /// Utility to format a tracked object into a string, for debugging purpose.
-std::string ObjectToString(ObjectType type, void* ptr) {
-  rtc::StringBuilder builder;
-  switch (type) {
-    case ObjectType::kPeerConnection:
-      builder << "(PeerConnection) 0x";
-      break;
-    case ObjectType::kLocalVideoTrack:
-      builder << "(LocalVideoTrack) 0x";
-      break;
-    default:
-      builder << "(" << (int)type << ") 0x";
-      break;
+std::string ObjectToString(ObjectType type, TrackedObject* obj) {
+  // rtc::StringBuilder doesn't support std::string_view, nor Append(). And
+  // asbl::string_view is not constexpr-friendly on MSVC due to strlen().
+  // rtc::SimpleStringBuilder supports Append(), but cannot dynamically resize.
+  // Assume that the object name will not be too long, and use that one.
+  char buffer[512];
+  rtc::SimpleStringBuilder builder(buffer);
+  builder << "(";
+  std::string_view sv = ObjectTypeToString(type);
+  builder.Append(sv.data(), sv.length());
+  if (obj) {
+    builder << ") " << obj->GetName();
+  } else {
+    builder << ") NULL";
   }
-  builder.AppendFormat("%p", ptr);
-  return builder.Release();
+  return builder.str();
 }
 
 }  // namespace
@@ -47,12 +61,15 @@ GlobalFactory::~GlobalFactory() {
   std::scoped_lock lock(mutex_);
   if (!alive_objects_.empty()) {
     // WebRTC object destructors are also dispatched to the signaling thread,
-    // but the threads are stopped by the shutdown, so dispatching will never
-    // complete.
-    RTC_LOG(LS_ERROR) << "Shutting down the global factory while some objects "
-                         "are alive. This will likely deadlock.";
+    // like all method calls, but the threads are stopped by the GlobalFactory
+    // shutdown, so dispatching will never complete.
+    RTC_LOG(LS_ERROR) << "Shutting down the global factory while "
+                      << alive_objects_.size()
+                      << " objects are still alive. This will likely deadlock.";
     for (auto&& pair : alive_objects_) {
-      RTC_LOG(LS_ERROR) << "- " << ObjectToString(pair.second, pair.first);
+      RTC_LOG(LS_ERROR) << "- " << ObjectToString(pair.second, pair.first)
+                        << " [" << pair.first->GetApproxRefCount()
+                        << " ref(s)]";
     }
   }
   ShutdownNoLock();
@@ -98,18 +115,18 @@ rtc::Thread* GlobalFactory::GetWorkerThread() noexcept {
 #endif  // defined(WINUWP)
 }
 
-void GlobalFactory::AddObject(ObjectType type, void* ptr) noexcept {
+void GlobalFactory::AddObject(ObjectType type, TrackedObject* obj) noexcept {
   try {
     std::scoped_lock lock(mutex_);
-    alive_objects_.emplace(ptr, type);
+    alive_objects_.emplace(obj, type);
   } catch (...) {
   }
 }
 
-void GlobalFactory::RemoveObject(ObjectType type, void* ptr) noexcept {
+void GlobalFactory::RemoveObject(ObjectType type, TrackedObject* obj) noexcept {
   try {
     std::scoped_lock lock(mutex_);
-    auto it = alive_objects_.find(ptr);
+    auto it = alive_objects_.find(obj);
     if (it != alive_objects_.end()) {
       RTC_CHECK(it->second == type);
       alive_objects_.erase(it);
@@ -219,8 +236,7 @@ mrsResult GlobalFactory::Initialize() {
               absl::make_unique<webrtc::InternalDecoderFactory>())),
       nullptr, nullptr);
 #endif  // defined(WINUWP)
-  return (factory_.get() != nullptr ? Result::kSuccess
-                                    : Result::kUnknownError);
+  return (factory_.get() != nullptr ? Result::kSuccess : Result::kUnknownError);
 }
 
 void GlobalFactory::ShutdownNoLock() {
