@@ -668,7 +668,7 @@ MRS_API mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
                                              char* buffer,
                                              uint64_t* buffer_size) noexcept;
 
-enum class HololensH264EncoderWorkaround : uint32_t { CROP = 0, PAD = 1};
+enum class HololensH264EncoderWorkaround : int32_t { CROP = 0, PAD = 1};
 
 /// See PeerConnection.SetHololensH264EncoderWorkaround for details.
 MRS_API void MRS_CALL
