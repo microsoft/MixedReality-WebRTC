@@ -260,6 +260,9 @@ namespace TestAppUwp
             muteLocalVideoStroke.Visibility = Visibility.Collapsed;
             muteLocalAudioStroke.Visibility = Visibility.Collapsed;
 
+            // This will be enabled once the signaling is initialized and ready to send data
+            createOfferButton.IsEnabled = false;
+
             // Those are called during InitializeComponent() but before the controls are initialized (!).
             // Force-call again to actually initialize the panels correctly.
             PreferredAudioCodecChecked(null, null);
@@ -498,8 +501,6 @@ namespace TestAppUwp
             chatInputBox.IsEnabled = true;
             chatSendButton.IsEnabled = true;
 
-            createOfferButton.IsEnabled = true;
-
             startLocalMedia.IsEnabled = true;
 
             localVideoPlayer.CurrentStateChanged += OnMediaStateChanged;
@@ -689,6 +690,10 @@ namespace TestAppUwp
             RunOnMainThread(() => {
                 sessionStatusText.Text = "(session joined)";
                 chatTextBox.IsEnabled = true;
+
+                // Reset "Create Offer" button, and re-enable if signaling is available
+                createOfferButton.Content = "Create Offer";
+                createOfferButton.IsEnabled = isDssPolling;
             });
         }
 
@@ -1376,6 +1381,8 @@ namespace TestAppUwp
                 pollDssButton.IsEnabled = false; // will be re-enabled when cancellation is completed, see DssSignaler_OnPollingDone
                 pollDssButton.Content = "Start polling";
                 dssSignaler.StopPollingAsync();
+                // Cannot create offer before signaling is ready
+                createOfferButton.IsEnabled = false;
                 return;
             }
 
@@ -1394,6 +1401,8 @@ namespace TestAppUwp
             {
                 pollDssButton.Content = "Stop polling";
                 isDssPolling = true;
+                // Cannot create offer before signaling is ready
+                createOfferButton.IsEnabled = true;
             }
         }
 
