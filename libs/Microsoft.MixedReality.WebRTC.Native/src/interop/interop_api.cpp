@@ -133,8 +133,8 @@ mrsResult OpenVideoCaptureDevice(
       continue;
     }
 
-    auto createParams = std::make_shared<
-        wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
+    auto createParams =
+        wrapper::org::webRtc::VideoCapturerCreationParameters::wrapper_create();
     createParams->factory = uwp_factory;
     createParams->name = devInfo.Name().c_str();
     createParams->id = id.c_str();
@@ -445,8 +445,8 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 
     // Device found, create an instance to enumerate. Most devices require
     // actually opening the device to enumerate its capture formats.
-    auto createParams = std::make_shared<
-        wrapper::impl::org::webRtc::VideoCapturerCreationParameters>();
+    auto createParams =
+        wrapper::org::webRtc::VideoCapturerCreationParameters::wrapper_create();
     createParams->factory = uwp_factory;
     createParams->name = devInfo.Name().c_str();
     createParams->id = devInfo.Id().c_str();
