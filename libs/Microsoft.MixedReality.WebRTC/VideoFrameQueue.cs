@@ -4,6 +4,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using Microsoft.MixedReality.WebRTC.Interop;
+using Microsoft.MixedReality.WebRTC.Tracing;
 
 namespace Microsoft.MixedReality.WebRTC
 {
@@ -246,6 +247,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public void Clear()
         {
+            MainEventSource.Log.VideoFrameQueueClear();
             _lastQueuedTimeMs = 0f;
             _lastDequeuedTimeMs = 0f;
             _lastDroppedTimeMs = 0f;
@@ -268,6 +270,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>This should only be used if the queue has storage for a compatible video frame encoding.</remarks>
         public bool Enqueue(I420AVideoFrame frame)
         {
+            MainEventSource.Log.VideoFrameQueueEnqueueI420((int)frame.width, (int)frame.height);
+
             double curTime = _stopwatch.Elapsed.TotalMilliseconds;
 
             // Always update queued time, which refers to calling Enqueue(), even
@@ -281,6 +285,7 @@ namespace Microsoft.MixedReality.WebRTC
             if (storage == null)
             {
                 // Too many frames in queue, drop the current one
+                MainEventSource.Log.VideoFrameQueueDropI420((int)frame.width, (int)frame.height);
                 float droppedDt = (float)(curTime - _lastDroppedTimeMs);
                 _lastDroppedTimeMs = curTime;
                 _droppedFrameTimeAverage.Push(1000f / droppedDt);
@@ -308,6 +313,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>This should only be used if the queue has storage for a compatible video frame encoding.</remarks>
         public bool Enqueue(ARGBVideoFrame frame)
         {
+            MainEventSource.Log.VideoFrameQueueEnqueueARGB32((int)frame.width, (int)frame.height);
+
             Debug.Assert(frame.stride >= frame.width * 4);
 
             double curTime = _stopwatch.Elapsed.TotalMilliseconds;
@@ -323,6 +330,7 @@ namespace Microsoft.MixedReality.WebRTC
             if (storage == null)
             {
                 // Too many frames in queue, drop the current one
+                MainEventSource.Log.VideoFrameQueueDropARGB32((int)frame.width, (int)frame.height);
                 float droppedDt = (float)(curTime - _lastDroppedTimeMs);
                 _lastDroppedTimeMs = curTime;
                 _droppedFrameTimeAverage.Push(1000f / droppedDt);
@@ -355,11 +363,19 @@ namespace Microsoft.MixedReality.WebRTC
         /// <returns>Return <c>true</c> on success or <c>false</c> if the queue is empty.</returns>
         public bool TryDequeue(out T frame)
         {
-            double curTime = _stopwatch.Elapsed.TotalMilliseconds;
-            float dequeuedDt = (float)(curTime - _lastDequeuedTimeMs);
-            _lastDequeuedTimeMs = curTime;
-            _dequeuedFrameTimeAverage.Push(1000f / dequeuedDt);
-            return _frameQueue.TryDequeue(out frame);
+            if (_frameQueue.TryDequeue(out frame))
+            {
+                // Only track dequeued time if actually dequeued. Otherwise this will generate
+                // duplicate timings in the buffer (twice or more per frame) and will result in
+                // completely unreliable averages.
+                double curTime = _stopwatch.Elapsed.TotalMilliseconds;
+                float dequeuedDt = (float)(curTime - _lastDequeuedTimeMs);
+                _lastDequeuedTimeMs = curTime;
+                _dequeuedFrameTimeAverage.Push(1000f / dequeuedDt);
+                MainEventSource.Log.VideoFrameQueueDequeue(dequeuedDt);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -370,7 +386,29 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="frame">The unused frame storage to recycle for a later new frame</param>
         public void RecycleStorage(T frame)
         {
+            MainEventSource.Log.VideoFrameQueueRecycleStorage();
             _unusedFramePool.Push(frame);
+        }
+
+        /// <summary>
+        /// Track statistics for a late frame, which short-circuits the queue and is delivered
+        /// as soon as it is received.
+        /// </summary>
+        public void TrackLateFrame()
+        {
+            double curTime = _stopwatch.Elapsed.TotalMilliseconds;
+
+            float queuedDt = (float)(curTime - _lastQueuedTimeMs);
+            _lastQueuedTimeMs = curTime;
+            _queuedFrameTimeAverage.Push(1000f / queuedDt);
+
+            float dequeuedDt = (float)(curTime - _lastDequeuedTimeMs);
+            _lastDequeuedTimeMs = curTime;
+            _dequeuedFrameTimeAverage.Push(1000f / dequeuedDt);
+
+            MainEventSource.Log.VideoFrameQueueTrackLateFrame(queuedDt, dequeuedDt);
+
+            _droppedFrameTimeAverage.Push(0f);
         }
 
         /// <summary>

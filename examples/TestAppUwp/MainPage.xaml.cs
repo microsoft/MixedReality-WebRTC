@@ -1337,14 +1337,14 @@ namespace TestAppUwp
 
         private void OnDssStatsTimerTick(object sender, object e)
         {
-            //localLoadText.Text = $"Load: {localVideoBridge.FrameLoad:F2}";
-            //localPresentText.Text = $"Present: {localVideoBridge.FramePresent:F2}";
-            //localSkipText.Text = $"Skip: {localVideoBridge.FrameSkip:F2}";
+            localLoadText.Text = $"Load: {localVideoBridge.FrameLoad:F2}";
+            localPresentText.Text = $"Present: {localVideoBridge.FramePresent:F2}";
+            localSkipText.Text = $"Skip: {localVideoBridge.FrameSkip:F2}";
             //localLateText.Text = $"Late: {localVideoBridge.LateFrame:F2}";
 
-            //remoteLoadText.Text = $"Load: {remoteVideoBridge.FrameLoad:F2}";
-            //remotePresentText.Text = $"Present: {remoteVideoBridge.FramePresent:F2}";
-            //remoteSkipText.Text = $"Skip: {remoteVideoBridge.FrameSkip:F2}";
+            remoteLoadText.Text = $"Load: {remoteVideoBridge.FrameLoad:F2}";
+            remotePresentText.Text = $"Present: {remoteVideoBridge.FramePresent:F2}";
+            remoteSkipText.Text = $"Skip: {remoteVideoBridge.FrameSkip:F2}";
             //remoteLateText.Text = $"Late: {remoteVideoBridge.LateFrame:F2}";
         }
 

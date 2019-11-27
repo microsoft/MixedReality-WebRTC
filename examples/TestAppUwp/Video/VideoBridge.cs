@@ -114,8 +114,7 @@ namespace TestAppUwp.Video
             {
                 if (_deferral != null)
                 {
-                    //_frameQueue.FrameLoad.Track();
-                    //_frameQueue.FramePresent.Track();
+                    _frameQueue.TrackLateFrame();
                     MakeSampleForPendingRequest(frame);
                     return;
                 }

@@ -151,6 +151,54 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
             WriteEvent(0x3008, (int)bitsPerSample, (int)channelCount, (int)frameCount);
         }
 
+        [Event(0x3100, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
+        public void VideoFrameQueueClear()
+        {
+            WriteEvent(0x3100);
+        }
+
+        [Event(0x3101, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
+        public void VideoFrameQueueEnqueueI420(int width, int height)
+        {
+            WriteEvent(0x3101, width, height);
+        }
+
+        [Event(0x3102, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
+        public void VideoFrameQueueEnqueueARGB32(int width, int height)
+        {
+            WriteEvent(0x3102, width, height);
+        }
+
+        [Event(0x3103, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
+        public void VideoFrameQueueDropI420(int width, int height)
+        {
+            WriteEvent(0x3103, width, height);
+        }
+
+        [Event(0x3104, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
+        public void VideoFrameQueueDropARGB32(int width, int height)
+        {
+            WriteEvent(0x3104, width, height);
+        }
+
+        [Event(0x3105, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
+        public void VideoFrameQueueDequeue(float dequeuedDtMs)
+        {
+            WriteEvent(0x3105, dequeuedDtMs);
+        }
+
+        [Event(0x3106, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
+        public void VideoFrameQueueRecycleStorage()
+        {
+            WriteEvent(0x3106);
+        }
+
+        [Event(0x3107, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
+        public void VideoFrameQueueTrackLateFrame(float queuedDtMs, float dequeuedDtMs)
+        {
+            WriteEvent(0x3107, queuedDtMs, dequeuedDtMs);
+        }
+
         #endregion
 
         #region DataChannel
@@ -212,6 +260,26 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
             dataDesc[3].DataPointer = (IntPtr)(&arg4);
             dataDesc[3].Size = 4;
             WriteEventCore(eventId, 4, dataDesc);
+        }
+
+        [NonEvent]
+        public unsafe void WriteEvent(int eventId, float arg1)
+        {
+            EventData* dataDesc = stackalloc EventData[1];
+            dataDesc[0].DataPointer = (IntPtr)(&arg1);
+            dataDesc[0].Size = 4;
+            WriteEventCore(eventId, 1, dataDesc);
+        }
+
+        [NonEvent]
+        public unsafe void WriteEvent(int eventId, float arg1, float arg2)
+        {
+            EventData* dataDesc = stackalloc EventData[2];
+            dataDesc[0].DataPointer = (IntPtr)(&arg1);
+            dataDesc[0].Size = 4;
+            dataDesc[1].DataPointer = (IntPtr)(&arg2);
+            dataDesc[1].Size = 4;
+            WriteEventCore(eventId, 2, dataDesc);
         }
 
         #endregion
