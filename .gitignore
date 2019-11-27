@@ -3,6 +3,7 @@
 /bin
 /build
 /obj
+/tools/build/userdef.py
 # TODO - Fix location with directory.build
 examples/TestAppUwp/bin
 examples/TestAppUwp/build
