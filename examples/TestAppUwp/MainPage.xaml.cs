@@ -107,6 +107,48 @@ namespace TestAppUwp
         private NodeDssSignaler dssSignaler = new NodeDssSignaler();
         private DispatcherTimer dssStatsTimer = new DispatcherTimer();
 
+        /// <summary>
+        /// Get the string representing the preferred audio codec the user selected.
+        /// </summary>
+        public string PreferredAudioCodec
+        {
+            get
+            {
+                if (PreferredAudioCodec_Custom.IsChecked.GetValueOrDefault(false))
+                {
+                    return CustomPreferredAudioCodec.Text;
+                }
+                else if (PreferredAudioCodec_OPUS.IsChecked.GetValueOrDefault(false))
+                {
+                    return "opus";
+                }
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Get the string representing the preferred video codec the user selected.
+        /// </summary>
+        public string PreferredVideoCodec
+        {
+            get
+            {
+                if (PreferredVideoCodec_Custom.IsChecked.GetValueOrDefault(false))
+                {
+                    return CustomPreferredVideoCodec.Text;
+                }
+                else if (PreferredVideoCodec_H264.IsChecked.GetValueOrDefault(false))
+                {
+                    return "H264";
+                }
+                else if (PreferredVideoCodec_VP8.IsChecked.GetValueOrDefault(false))
+                {
+                    return "VP8";
+                }
+                return string.Empty;
+            }
+        }
+
         public ObservableCollection<VideoCaptureDeviceInfo> VideoCaptureDevices { get; private set; }
             = new ObservableCollection<VideoCaptureDeviceInfo>();
 
@@ -217,6 +259,11 @@ namespace TestAppUwp
             this.InitializeComponent();
             muteLocalVideoStroke.Visibility = Visibility.Collapsed;
             muteLocalAudioStroke.Visibility = Visibility.Collapsed;
+
+            // Those are called during InitializeComponent() but before the controls are initialized (!).
+            // Force-call again to actually initialize the panels correctly.
+            PreferredAudioCodecChecked(null, null);
+            PreferredVideoCodecChecked(null, null);
 
             RestoreLocalAndRemotePeerIDs();
 
@@ -473,6 +520,46 @@ namespace TestAppUwp
             // so that the former can render in the UI the video frames produced in the background by the later.
             localVideo.SetMediaPlayer(localVideoPlayer);
             remoteVideo.SetMediaPlayer(remoteVideoPlayer);
+        }
+
+        private void PreferredAudioCodecChecked(object sender, RoutedEventArgs args)
+        {
+            // Ignore calls during startup, before components are initialized
+            if (PreferredAudioCodec_Custom == null)
+            {
+                return;
+            }
+
+            if (PreferredAudioCodec_Custom.IsChecked.GetValueOrDefault(false))
+            {
+                CustomPreferredAudioCodecHelpText.Visibility = Visibility.Visible;
+                CustomPreferredAudioCodec.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                CustomPreferredAudioCodecHelpText.Visibility = Visibility.Collapsed;
+                CustomPreferredAudioCodec.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void PreferredVideoCodecChecked(object sender, RoutedEventArgs args)
+        {
+            // Ignore calls during startup, before components are initialized
+            if (PreferredVideoCodec_Custom == null)
+            {
+                return;
+            }
+
+            if (PreferredVideoCodec_Custom.IsChecked.GetValueOrDefault(false))
+            {
+                CustomPreferredVideoCodecHelpText.Visibility = Visibility.Visible;
+                CustomPreferredVideoCodec.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                CustomPreferredVideoCodecHelpText.Visibility = Visibility.Collapsed;
+                CustomPreferredVideoCodec.Visibility = Visibility.Collapsed;
+            }
         }
 
         /// <summary>
@@ -1266,7 +1353,8 @@ namespace TestAppUwp
             createOfferButton.IsEnabled = false;
             createOfferButton.Content = "Joining...";
 
-            _peerConnection.PreferredVideoCodec = PreferredVideoCodec.Text;
+            _peerConnection.PreferredAudioCodec = PreferredAudioCodec;
+            _peerConnection.PreferredVideoCodec = PreferredVideoCodec;
             _peerConnection.CreateOffer();
         }
 

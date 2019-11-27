@@ -119,6 +119,32 @@
                         <RadioButton x:Name="sdpSemanticUnifiedPlan" Content="Unified Plan" IsChecked="True" GroupName="SdpSemanticGroup" Margin="0,0,20,0" />
                         <RadioButton x:Name="sdpSemanticPlanB" Content="Plan B (deprecated)" GroupName="SdpSemanticGroup" />
                     </StackPanel>
+                    <TextBlock Text="Preferred codecs" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
+                    <TextBlock FontStyle="Italic" Margin="0,6,0,0">
+                            This option allows filtering the SDP offer to retain only one preferred audio and/or video codec amongst the supported ones, thereby forcing their use.<LineBreak/>This must be set before sending an offer to the remote peer. This has no effect on the receiver side.<LineBreak/>If the selected codec is not supported by the local peer implemention, this does nothing, and the default codec is used.
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Audio :</TextBlock>
+                        <RadioButton x:Name="PreferredAudioCodec_Default" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="(default)" IsChecked="True" />
+                        <RadioButton x:Name="PreferredAudioCodec_OPUS" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="OPUS" />
+                        <RadioButton x:Name="PreferredAudioCodec_Custom" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="Custom value" />
+                    </StackPanel>
+                    <TextBlock x:Name="CustomPreferredAudioCodecHelpText" FontStyle="Italic" Margin="48,6,0,0">
+                            Leave blank to use the default video codec. A partial list is <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.<LineBreak />Common values include "opus" or "ISAC". Names are case sensitive.
+                    </TextBlock>
+                    <TextBox x:Name="CustomPreferredAudioCodec" Text="" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Video :</TextBlock>
+                        <RadioButton x:Name="PreferredVideoCodec_Default" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="(default)" />
+                        <RadioButton x:Name="PreferredVideoCodec_H264" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="H.264" IsChecked="True" />
+                        <RadioButton x:Name="PreferredVideoCodec_VP8" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="VP8" />
+                        <RadioButton x:Name="PreferredVideoCodec_Custom" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="Custom value" />
+                    </StackPanel>
+                    <TextBlock x:Name="CustomPreferredVideoCodecHelpText" FontStyle="Italic" Margin="48,6,0,0">
+                            Leave blank to use the default video codec. A partial list is <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.<LineBreak />Common values include "H264" or "VP8". Names are case sensitive.
+                    </TextBlock>
+                    <TextBox x:Name="CustomPreferredVideoCodec" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
+                    <TextBlock Text="SDP connection offer" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
                     <Button Name="createOfferButton" IsEnabled="False" Content="Create offer" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="CreateOfferButtonClicked" Width="125" Margin="0,12,0,0"/>
                     <Button Name="addExtraDataChannelButton" Content="Add extra data channel" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="AddExtraDataChannelButtonClicked" Width="250" Margin="0,12,0,0"/>
                 </StackPanel>
@@ -136,11 +162,7 @@
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="Video capture device" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
                         <ListView x:Name="VideoCaptureDeviceList" ItemsSource="{x:Bind VideoCaptureDevices}" ItemTemplate="{StaticResource VideoCaptureDeviceTemplate}" MinHeight="120" MinWidth="120" />
-                        <TextBlock Text="Preferred video codec" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
-                        <TextBlock FontStyle="Italic" Margin="0,6,0,0">
-                            Leave blank to use the default video codec. A partial list is <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.<LineBreak />Common values include "H264", "H265", "VP8", "VP9". Names are case sensitive.
-                        </TextBlock>
-                        <TextBox x:Name="PreferredVideoCodec" Text="H264" Margin="0,6,0,6" Width="400" HorizontalAlignment="Left" />
+                        
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Grid.Column="2">
                         <TextBlock Text="Video profile" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
