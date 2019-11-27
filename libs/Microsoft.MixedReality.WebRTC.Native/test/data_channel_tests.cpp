@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
@@ -22,7 +21,7 @@ FakeIterop_DataChannelCreate(mrsPeerConnectionInteropHandle /*parent*/,
 
 // OnDataChannelAdded
 using DataAddedCallback =
-    Callback<mrsDataChannelInteropHandle, DataChannelHandle>;
+    InteropCallback<mrsDataChannelInteropHandle, DataChannelHandle>;
 
 }  // namespace
 
@@ -36,7 +35,7 @@ TEST(DataChannel, AddChannelBeforeInit) {
   mrsDataChannelCallbacks callbacks{};
   DataChannelHandle handle;
   mrsDataChannelInteropHandle interopHandle = kFakeInteropDataChannelHandle;
-  ASSERT_EQ(MRS_SUCCESS,
+  ASSERT_EQ(Result::kSuccess,
             mrsPeerConnectionAddDataChannel(pc.handle(), interopHandle, config,
                                             callbacks, &handle));
 }
@@ -53,38 +52,42 @@ TEST(DataChannel, InBand) {
   // necessary interop callbacks.
   mrsPeerConnectionInteropCallbacks interop{};
   interop.data_channel_create_object = &FakeIterop_DataChannelCreate;
-  ASSERT_EQ(MRS_SUCCESS,
+  ASSERT_EQ(Result::kSuccess,
             mrsPeerConnectionRegisterInteropCallbacks(pc2.handle(), &interop));
 
   // Setup signaling
-  SdpCallback sdp1_cb(
-      pc1.handle(), [&pc2](const char* type, const char* sdp_data) {
-        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                                   pc2.handle(), type, sdp_data));
-        if (kOfferString == type) {
-          ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc2.handle()));
-        }
-      });
-  SdpCallback sdp2_cb(
-      pc2.handle(), [&pc1](const char* type, const char* sdp_data) {
-        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                                   pc1.handle(), type, sdp_data));
-        if (kOfferString == type) {
-          ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc1.handle()));
-        }
-      });
-  IceCallback ice1_cb(pc1.handle(), [&pc2](const char* candidate,
-                                           int sdpMlineindex,
-                                           const char* sdpMid) {
-    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddIceCandidate(
-                               pc2.handle(), sdpMid, sdpMlineindex, candidate));
+  SdpCallback sdp1_cb(pc1.handle(), [&pc2](const char* type,
+                                           const char* sdp_data) {
+    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
+                                           pc2.handle(), type, sdp_data));
+    if (kOfferString == type) {
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionCreateAnswer(pc2.handle()));
+    }
   });
-  IceCallback ice2_cb(pc2.handle(), [&pc1](const char* candidate,
-                                           int sdpMlineindex,
-                                           const char* sdpMid) {
-    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddIceCandidate(
-                               pc1.handle(), sdpMid, sdpMlineindex, candidate));
+  SdpCallback sdp2_cb(pc2.handle(), [&pc1](const char* type,
+                                           const char* sdp_data) {
+    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
+                                           pc1.handle(), type, sdp_data));
+    if (kOfferString == type) {
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionCreateAnswer(pc1.handle()));
+    }
   });
+  IceCallback ice1_cb(
+      pc1.handle(),
+      [&pc2](const char* candidate, int sdpMlineindex, const char* sdpMid) {
+        ASSERT_EQ(Result::kSuccess,
+                  mrsPeerConnectionAddIceCandidate(pc2.handle(), sdpMid,
+                                                   sdpMlineindex, candidate));
+      });
+  IceCallback ice2_cb(
+      pc2.handle(),
+      [&pc1](const char* candidate, int sdpMlineindex, const char* sdpMid) {
+        ASSERT_EQ(Result::kSuccess,
+                  mrsPeerConnectionAddIceCandidate(pc1.handle(), sdpMid,
+                                                   sdpMlineindex, candidate));
+      });
 
   // Add dummy out-of-band data channel to force SCTP negotiating, otherwise
   // further data channel opening after connecting will fail.
@@ -97,23 +100,24 @@ TEST(DataChannel, InBand) {
     mrsDataChannelCallbacks callbacks{};
     DataChannelHandle handle;
     mrsDataChannelInteropHandle interopHandle = kFakeInteropDataChannelHandle;
-    ASSERT_EQ(MRS_SUCCESS,
+    ASSERT_EQ(Result::kSuccess,
               mrsPeerConnectionAddDataChannel(pc1.handle(), interopHandle,
                                               data_config, callbacks, &handle));
-    ASSERT_EQ(MRS_SUCCESS,
+    ASSERT_EQ(Result::kSuccess,
               mrsPeerConnectionAddDataChannel(pc2.handle(), interopHandle,
                                               data_config, callbacks, &handle));
   }
 
   // Connect
   Event ev1, ev2;
-  Callback<> connectec1_cb([&ev1]() { ev1.Set(); });
-  Callback<> connectec2_cb([&ev2]() { ev2.Set(); });
+  InteropCallback<> connectec1_cb([&ev1]() { ev1.Set(); });
+  InteropCallback<> connectec2_cb([&ev2]() { ev2.Set(); });
   mrsPeerConnectionRegisterConnectedCallback(pc1.handle(), CB(connectec1_cb));
   connectec1_cb.is_registered_ = true;
   mrsPeerConnectionRegisterConnectedCallback(pc2.handle(), CB(connectec2_cb));
   connectec2_cb.is_registered_ = true;
-  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateOffer(pc1.handle()));
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionCreateOffer(pc1.handle()));
   ASSERT_EQ(true, ev1.WaitFor(55s));  // should complete within 5s (usually ~1s)
   ASSERT_EQ(true, ev2.WaitFor(55s));
 
@@ -144,9 +148,10 @@ TEST(DataChannel, InBand) {
     mrsDataChannelCallbacks callbacks{};
     DataChannelHandle data1_handle;
     mrsDataChannelInteropHandle interopHandle = kFakeInteropDataChannelHandle;
-    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddDataChannel(
-                               pc1.handle(), interopHandle, data_config,
-                               callbacks, &data1_handle));
+    ASSERT_EQ(
+        Result::kSuccess,
+        mrsPeerConnectionAddDataChannel(pc1.handle(), interopHandle,
+                                        data_config, callbacks, &data1_handle));
     ASSERT_NE(nullptr, data1_handle);
     auto data1 = (Microsoft::MixedReality::WebRTC::DataChannel*)data1_handle;
     ASSERT_EQ(channel_label, data1->label());
@@ -185,9 +190,10 @@ TEST(DataChannel, MultiThreadCreate) {
       ev_start.Wait();
       mrsDataChannelConfig config{};
       DataChannelHandle handle;
-      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddDataChannel(
-                                 pc.handle(), (mrsDataChannelInteropHandle)0x1,
-                                 config, {}, &handle));
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionAddDataChannel(
+                    pc.handle(), (mrsDataChannelInteropHandle)0x1, config, {},
+                    &handle));
     }));
   }
   ev_start.SetBroadcast();
@@ -212,9 +218,9 @@ TEST(DataChannel, MultiThreadCreate) {
 //  // necessary interop callbacks.
 //  mrsPeerConnectionInteropCallbacks interop{};
 //  interop.data_channel_create_object = &FakeIterop_DataChannelCreate;
-//  ASSERT_EQ(MRS_SUCCESS,
+//  ASSERT_EQ(Result::kSuccess,
 //            mrsPeerConnectionRegisterInteropCallbacks(pair.pc1(), &interop));
-//  ASSERT_EQ(MRS_SUCCESS,
+//  ASSERT_EQ(Result::kSuccess,
 //            mrsPeerConnectionRegisterInteropCallbacks(pair.pc2(), &interop));
 //
 //  // Add dummy out-of-band data channel
@@ -237,11 +243,11 @@ TEST(DataChannel, MultiThreadCreate) {
 //    };
 //
 //    mrsDataChannelInteropHandle interopHandle = kFakeInteropDataChannelHandle;
-//    ASSERT_EQ(MRS_SUCCESS,
+//    ASSERT_EQ(Result::kSuccess,
 //              mrsPeerConnectionAddDataChannel(
 //                  pair.pc1(), interopHandle, data_config, callbacks,
 //                  &handle1));
-//    ASSERT_EQ(MRS_SUCCESS,
+//    ASSERT_EQ(Result::kSuccess,
 //              mrsPeerConnectionAddDataChannel(
 //                  pair.pc2(), interopHandle, data_config, callbacks,
 //                  &handle2));

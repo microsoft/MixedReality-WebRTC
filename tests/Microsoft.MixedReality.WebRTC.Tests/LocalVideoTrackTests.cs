@@ -23,7 +23,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         ManualResetEventSlim iceConnectedEvent1_ = null;
         ManualResetEventSlim iceConnectedEvent2_ = null;
 
-        [OneTimeSetUp]
+        [SetUp]
         public void SetupConnection()
         {
             // Create the 2 peers
@@ -62,7 +62,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             pc2_.TrackRemoved += OnTrackRemoved2;
         }
 
-        [OneTimeTearDown]
+        [TearDown]
         public void TearDownConnectin()
         {
             // Unregister all callbacks
@@ -239,6 +239,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             renegotiationEvent1_.Reset();
             pc1_.RemoveLocalVideoTrack(track1);
             Assert.IsNull(track1.PeerConnection);
+            track1.Dispose();
 
             // Wait for local SDP re-negotiation on #1
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
@@ -278,6 +279,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             renegotiationEvent1_.Reset();
             pc1_.RemoveLocalVideoTrack(track1);
             Assert.IsNull(track1.PeerConnection);
+            track1.Dispose();
 
             // Wait for local SDP re-negotiation on #1
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));

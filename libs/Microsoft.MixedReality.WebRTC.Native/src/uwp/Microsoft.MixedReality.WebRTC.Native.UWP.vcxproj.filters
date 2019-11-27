@@ -25,6 +25,7 @@
     <ClCompile Include="../interop/local_video_track_interop.cpp">
       <Filter>interop</Filter>
     </ClCompile>
+    <ClCompile Include="..\mrs_errors.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../../include/audio_frame_observer.h" />
@@ -54,6 +55,10 @@
     <ClInclude Include="../interop/local_video_track_interop.h">
       <Filter>interop</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\tracked_object.h" />
+    <ClInclude Include="..\..\include\ref_counted_base.h" />
+    <ClInclude Include="..\..\include\refptr.h" />
+    <ClInclude Include="..\..\include\mrs_errors.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

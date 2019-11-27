@@ -25,6 +25,7 @@
     <ClCompile Include="../media/local_video_track.cpp">
       <Filter>media</Filter>
     </ClCompile>
+    <ClCompile Include="..\mrs_errors.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../../include/audio_frame_observer.h" />
@@ -54,6 +55,10 @@
     <ClInclude Include="../../include/local_video_track.h">
       <Filter>media</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\mrs_errors.h" />
+    <ClInclude Include="..\..\include\refptr.h" />
+    <ClInclude Include="..\..\include\ref_counted_base.h" />
+    <ClInclude Include="..\..\include\tracked_object.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

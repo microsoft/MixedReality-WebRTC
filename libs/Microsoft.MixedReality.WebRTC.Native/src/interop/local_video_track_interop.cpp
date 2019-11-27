@@ -22,7 +22,7 @@ void MRS_CALL mrsLocalVideoTrackAddRef(LocalVideoTrackHandle handle) noexcept {
 void MRS_CALL
 mrsLocalVideoTrackRemoveRef(LocalVideoTrackHandle handle) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(handle)) {
-    track->Release();
+    track->RemoveRef();
   } else {
     RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
                            "LocalVideoTrack object.";
@@ -52,10 +52,10 @@ mrsLocalVideoTrackSetEnabled(LocalVideoTrackHandle track_handle,
                              mrsBool enabled) noexcept {
   auto track = static_cast<LocalVideoTrack*>(track_handle);
   if (!track) {
-    return MRS_E_INVALID_PARAMETER;
+    return Result::kInvalidParameter;
   }
   track->SetEnabled(enabled != mrsBool::kFalse);
-  return MRS_SUCCESS;
+  return Result::kSuccess;
 }
 
 mrsBool MRS_CALL

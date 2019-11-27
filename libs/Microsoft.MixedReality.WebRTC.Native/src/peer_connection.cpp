@@ -9,6 +9,7 @@
 #include "data_channel.h"
 #include "local_video_track.h"
 #include "peer_connection.h"
+#include "sdp_utils.h"
 #include "video_frame_observer.h"
 
 // Internal
@@ -19,8 +20,395 @@
 
 namespace {
 
+using namespace Microsoft::MixedReality::WebRTC;
+
+Result ResultFromRTCErrorType(webrtc::RTCErrorType type) {
+  using namespace webrtc;
+  switch (type) {
+    case RTCErrorType::NONE:
+      return Result::kSuccess;
+    case RTCErrorType::UNSUPPORTED_OPERATION:
+    case RTCErrorType::UNSUPPORTED_PARAMETER:
+      return Result::kUnsupported;
+    case RTCErrorType::INVALID_PARAMETER:
+    case RTCErrorType::INVALID_RANGE:
+      return Result::kInvalidParameter;
+    case RTCErrorType::INVALID_STATE:
+      return Result::kNotInitialized;
+    default:
+      return Result::kUnknownError;
+  }
+}
+
+Error ErrorFromRTCError(const webrtc::RTCError& error) {
+  return Error(ResultFromRTCErrorType(error.type()), error.message());
+}
+
+Error ErrorFromRTCError(webrtc::RTCError&& error) {
+  // Ideally would move the std::string out of |error|, but doesn't look
+  // possible at the moment.
+  return Error(ResultFromRTCErrorType(error.type()), error.message());
+}
+
+/// Implementation of PeerConnection, which also implements
+/// PeerConnectionObserver at the same time to simplify interaction with
+/// the underlying implementation object.
+class PeerConnectionImpl : public PeerConnection,
+                           public webrtc::PeerConnectionObserver {
+ public:
+  mrsPeerConnectionInteropHandle hhh;
+
+  PeerConnectionImpl(mrsPeerConnectionInteropHandle interop_handle)
+      : interop_handle_(interop_handle) {
+    GlobalFactory::Instance()->AddObject(ObjectType::kPeerConnection, this);
+  }
+
+  ~PeerConnectionImpl() noexcept {
+    Close();
+    GlobalFactory::Instance()->RemoveObject(ObjectType::kPeerConnection, this);
+  }
+
+  void SetPeerImpl(rtc::scoped_refptr<webrtc::PeerConnectionInterface> impl) {
+    peer_ = std::move(impl);
+    remote_video_observer_.reset(new VideoFrameObserver());
+    local_audio_observer_.reset(new AudioFrameObserver());
+    remote_audio_observer_.reset(new AudioFrameObserver());
+  }
+
+  void SetName(std::string_view name) { name_ = name; }
+
+  std::string GetName() const override { return name_; }
+
+  void RegisterLocalSdpReadytoSendCallback(
+      LocalSdpReadytoSendCallback&& callback) noexcept override {
+    auto lock = std::scoped_lock{local_sdp_ready_to_send_callback_mutex_};
+    local_sdp_ready_to_send_callback_ = std::move(callback);
+  }
+
+  void RegisterIceCandidateReadytoSendCallback(
+      IceCandidateReadytoSendCallback&& callback) noexcept override {
+    auto lock = std::scoped_lock{ice_candidate_ready_to_send_callback_mutex_};
+    ice_candidate_ready_to_send_callback_ = std::move(callback);
+  }
+
+  void RegisterIceStateChangedCallback(
+      IceStateChangedCallback&& callback) noexcept override {
+    auto lock = std::scoped_lock{ice_state_changed_callback_mutex_};
+    ice_state_changed_callback_ = std::move(callback);
+  }
+
+  void RegisterRenegotiationNeededCallback(
+      RenegotiationNeededCallback&& callback) noexcept override {
+    auto lock = std::scoped_lock{renegotiation_needed_callback_mutex_};
+    renegotiation_needed_callback_ = std::move(callback);
+  }
+
+  bool AddIceCandidate(const char* sdp_mid,
+                       const int sdp_mline_index,
+                       const char* candidate) noexcept override;
+  bool SetRemoteDescription(const char* type,
+                            const char* sdp) noexcept override;
+
+  void RegisterConnectedCallback(
+      ConnectedCallback&& callback) noexcept override {
+    auto lock = std::scoped_lock{connected_callback_mutex_};
+    connected_callback_ = std::move(callback);
+  }
+
+  mrsResult SetBitrate(const BitrateSettings& settings) noexcept override {
+    webrtc::BitrateSettings bitrate;
+    bitrate.start_bitrate_bps = settings.start_bitrate_bps;
+    bitrate.min_bitrate_bps = settings.min_bitrate_bps;
+    bitrate.max_bitrate_bps = settings.max_bitrate_bps;
+    return ResultFromRTCErrorType(peer_->SetBitrate(bitrate).type());
+  }
+
+  bool CreateOffer() noexcept override;
+  bool CreateAnswer() noexcept override;
+  void Close() noexcept override;
+  bool IsClosed() const noexcept override;
+
+  void RegisterTrackAddedCallback(
+      TrackAddedCallback&& callback) noexcept override {
+    auto lock = std::scoped_lock{track_added_callback_mutex_};
+    track_added_callback_ = std::move(callback);
+  }
+
+  void RegisterTrackRemovedCallback(
+      TrackRemovedCallback&& callback) noexcept override {
+    auto lock = std::scoped_lock{track_removed_callback_mutex_};
+    track_removed_callback_ = std::move(callback);
+  }
+
+  void RegisterRemoteVideoFrameCallback(
+      I420AFrameReadyCallback callback) noexcept override {
+    if (remote_video_observer_) {
+      remote_video_observer_->SetCallback(std::move(callback));
+    }
+  }
+
+  void RegisterRemoteVideoFrameCallback(
+      ARGBFrameReadyCallback callback) noexcept override {
+    if (remote_video_observer_) {
+      remote_video_observer_->SetCallback(std::move(callback));
+    }
+  }
+
+  ErrorOr<RefPtr<LocalVideoTrack>> AddLocalVideoTrack(
+      rtc::scoped_refptr<webrtc::VideoTrackInterface>
+          video_track) noexcept override;
+  webrtc::RTCError RemoveLocalVideoTrack(
+      LocalVideoTrack& video_track) noexcept override;
+
+  void RegisterLocalAudioFrameCallback(
+      AudioFrameReadyCallback callback) noexcept override {
+    if (local_audio_observer_) {
+      local_audio_observer_->SetCallback(std::move(callback));
+    }
+  }
+
+  void RegisterRemoteAudioFrameCallback(
+      AudioFrameReadyCallback callback) noexcept override {
+    if (remote_audio_observer_) {
+      remote_audio_observer_->SetCallback(std::move(callback));
+    }
+  }
+
+  bool AddLocalAudioTrack(rtc::scoped_refptr<webrtc::AudioTrackInterface>
+                              audio_track) noexcept override;
+  void RemoveLocalAudioTrack() noexcept override;
+  void SetLocalAudioTrackEnabled(bool enabled = true) noexcept override;
+  bool IsLocalAudioTrackEnabled() const noexcept override;
+
+  void RegisterDataChannelAddedCallback(
+      DataChannelAddedCallback callback) noexcept override {
+    auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
+    data_channel_added_callback_ = std::move(callback);
+  }
+
+  void RegisterDataChannelRemovedCallback(
+      DataChannelRemovedCallback callback) noexcept override {
+    auto lock = std::scoped_lock{data_channel_removed_callback_mutex_};
+    data_channel_removed_callback_ = std::move(callback);
+  }
+
+  webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> AddDataChannel(
+      int id,
+      std::string_view label,
+      bool ordered,
+      bool reliable,
+      mrsDataChannelInteropHandle dataChannelInteropHandle) noexcept override;
+  void RemoveDataChannel(const DataChannel& data_channel) noexcept override;
+  void RemoveAllDataChannels() noexcept override;
+  void OnDataChannelAdded(const DataChannel& data_channel) noexcept override;
+
+  mrsResult RegisterInteropCallbacks(
+      const mrsPeerConnectionInteropCallbacks& callbacks) noexcept override {
+    // Make a full copy of all callbacks
+    interop_callbacks_ = callbacks;
+    return Result::kSuccess;
+  }
+
+  //
+  // PeerConnectionObserver interface
+  //
+
+  // Triggered when the SignalingState changed.
+  void OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState
+                             new_state) noexcept override;
+
+  // Triggered when media is received on a new stream from remote peer.
+  void OnAddStream(rtc::scoped_refptr<webrtc::MediaStreamInterface>
+                       stream) noexcept override;
+
+  // Triggered when a remote peer closes a stream.
+  void OnRemoveStream(rtc::scoped_refptr<webrtc::MediaStreamInterface>
+                          stream) noexcept override;
+
+  // Triggered when a remote peer opens a data channel.
+  void OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface>
+                         data_channel) noexcept override;
+
+  /// Triggered when renegotiation is needed. For example, an ICE restart
+  /// has begun, or a track has been added or removed.
+  void OnRenegotiationNeeded() noexcept override;
+
+  /// Called any time the IceConnectionState changes.
+  ///
+  /// From the Google implementation:
+  /// "Note that our ICE states lag behind the standard slightly. The most
+  /// notable differences include the fact that "failed" occurs after 15
+  /// seconds, not 30, and this actually represents a combination ICE + DTLS
+  /// state, so it may be "failed" if DTLS fails while ICE succeeds."
+  void OnIceConnectionChange(webrtc::PeerConnectionInterface::IceConnectionState
+                                 new_state) noexcept override;
+
+  /// Called any time the IceGatheringState changes.
+  void OnIceGatheringChange(webrtc::PeerConnectionInterface::IceGatheringState
+                            /*new_state*/) noexcept override {}
+
+  /// A new ICE candidate has been gathered.
+  void OnIceCandidate(
+      const webrtc::IceCandidateInterface* candidate) noexcept override;
+
+  /// Callback on remote track added.
+  void OnAddTrack(
+      rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
+      const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>&
+          streams) noexcept override;
+
+  /// Callback on remote track removed.
+  void OnRemoveTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface>
+                         receiver) noexcept override;
+
+  void OnLocalDescCreated(webrtc::SessionDescriptionInterface* desc) noexcept;
+
+ protected:
+  /// The underlying PC object from the core implementation. This is NULL
+  /// after |Close()| is called.
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_;
+
+  /// Peer connection name assigned by the user. This has no meaning for the
+  /// implementation.
+  std::string name_;
+
+  /// Handle to the interop wrapper associated with this object.
+  mrsPeerConnectionInteropHandle interop_handle_;
+
+  /// Callbacks used for interop management.
+  mrsPeerConnectionInteropCallbacks interop_callbacks_{};
+
+  /// User callback invoked when the peer connection received a new data channel
+  /// from the remote peer and added it locally.
+  DataChannelAddedCallback data_channel_added_callback_
+      RTC_GUARDED_BY(data_channel_added_callback_mutex_);
+
+  /// User callback invoked when the peer connection received a data channel
+  /// remove message from the remote peer and removed it locally.
+  DataChannelAddedCallback data_channel_removed_callback_
+      RTC_GUARDED_BY(data_channel_removed_callback_mutex_);
+
+  /// User callback invoked when the peer connection is established.
+  /// This is generally invoked even if ICE didn't finish.
+  ConnectedCallback connected_callback_
+      RTC_GUARDED_BY(connected_callback_mutex_);
+
+  /// User callback invoked when a local SDP message has been crafted by the
+  /// core engine and is ready to be sent by the signaling solution.
+  LocalSdpReadytoSendCallback local_sdp_ready_to_send_callback_
+      RTC_GUARDED_BY(local_sdp_ready_to_send_callback_mutex_);
+
+  /// User callback invoked when a local ICE message has been crafted by the
+  /// core engine and is ready to be sent by the signaling solution.
+  IceCandidateReadytoSendCallback ice_candidate_ready_to_send_callback_
+      RTC_GUARDED_BY(ice_candidate_ready_to_send_callback_mutex_);
+
+  /// User callback invoked when the ICE connection state changed.
+  IceStateChangedCallback ice_state_changed_callback_
+      RTC_GUARDED_BY(ice_state_changed_callback_mutex_);
+
+  /// User callback invoked when SDP renegotiation is needed.
+  RenegotiationNeededCallback renegotiation_needed_callback_
+      RTC_GUARDED_BY(renegotiation_needed_callback_mutex_);
+
+  /// User callback invoked when a remote audio or video track is added.
+  TrackAddedCallback track_added_callback_
+      RTC_GUARDED_BY(track_added_callback_mutex_);
+
+  /// User callback invoked when a remote audio or video track is removed.
+  TrackRemovedCallback track_removed_callback_
+      RTC_GUARDED_BY(track_removed_callback_mutex_);
+
+  std::mutex data_channel_added_callback_mutex_;
+  std::mutex data_channel_removed_callback_mutex_;
+  std::mutex connected_callback_mutex_;
+  std::mutex local_sdp_ready_to_send_callback_mutex_;
+  std::mutex ice_candidate_ready_to_send_callback_mutex_;
+  std::mutex ice_state_changed_callback_mutex_;
+  std::mutex renegotiation_needed_callback_mutex_;
+  std::mutex track_added_callback_mutex_;
+  std::mutex track_removed_callback_mutex_;
+
+  rtc::scoped_refptr<webrtc::AudioTrackInterface> local_audio_track_;
+  rtc::scoped_refptr<webrtc::RtpSenderInterface> local_audio_sender_;
+  std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> remote_streams_;
+
+  /// Collection of all local video tracks associated with this peer connection.
+  std::vector<RefPtr<LocalVideoTrack>> local_video_tracks_
+      RTC_GUARDED_BY(tracks_mutex_);
+
+  /// Mutex for all collections of all tracks.
+  rtc::CriticalSection tracks_mutex_;
+
+  /// Collection of all data channels associated with this peer connection.
+  std::vector<std::shared_ptr<DataChannel>> data_channels_
+      RTC_GUARDED_BY(data_channel_mutex_);
+
+  /// Collection of data channels from their unique ID.
+  /// This contains only data channels pre-negotiated or opened by the remote
+  /// peer, as data channels opened locally won't have immediately a unique ID.
+  std::unordered_map<int, std::shared_ptr<DataChannel>> data_channel_from_id_
+      RTC_GUARDED_BY(data_channel_mutex_);
+
+  /// Collection of data channels from their label.
+  /// This contains only data channels with a non-empty label.
+  std::unordered_multimap<str, std::shared_ptr<DataChannel>>
+      data_channel_from_label_ RTC_GUARDED_BY(data_channel_mutex_);
+
+  /// Mutex for data structures related to data channels.
+  std::mutex data_channel_mutex_;
+
+  //< TODO - Clarify lifetime of those, for now same as this PeerConnection
+  std::unique_ptr<AudioFrameObserver> local_audio_observer_;
+  std::unique_ptr<AudioFrameObserver> remote_audio_observer_;
+  std::unique_ptr<VideoFrameObserver> remote_video_observer_;
+
+  /// Flag to indicate if SCTP was negotiated during the initial SDP handshake
+  /// (m=application), which allows subsequently to use data channels. If this
+  /// is false then data channels will never connnect. This is set to true if a
+  /// data channel is created before the connection is established, which will
+  /// force the connection to negotiate the necessary SCTP information. See
+  /// https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
+  bool sctp_negotiated_ = true;
+
+ private:
+  PeerConnectionImpl(const PeerConnectionImpl&) = delete;
+  PeerConnectionImpl& operator=(const PeerConnectionImpl&) = delete;
+};
+
+class CreateSessionDescObserver
+    : public webrtc::CreateSessionDescriptionObserver {
+ public:
+  CreateSessionDescObserver(RefPtr<PeerConnectionImpl> peer_connection)
+      : peer_connection_(
+            std::forward<RefPtr<PeerConnectionImpl>>(peer_connection)) {}
+
+  //
+  // CreateSessionDescriptionObserver interface
+  //
+
+  /// This callback transfers the ownership of the |desc|.
+  /// TODO(deadbeef): Make this take an std::unique_ptr<> to avoid confusion
+  /// around ownership.
+  void OnSuccess(webrtc::SessionDescriptionInterface* desc) noexcept override {
+    peer_connection_->OnLocalDescCreated(desc);
+  }
+
+  /// The OnFailure callback takes an RTCError, which consists of an
+  /// error code and a string.
+  /// RTCError is non-copyable, so it must be passed using std::move.
+  /// Earlier versions of the API used a string argument. This version
+  /// is deprecated; in order to let clients remove the old version, it has a
+  /// default implementation. If both versions are unimplemented, the
+  /// result will be a runtime error (stack overflow). This is intentional.
+  void OnFailure(webrtc::RTCError error) noexcept override {}
+
+ protected:
+  RefPtr<PeerConnectionImpl> peer_connection_;
+};
+
 /// Simple observer utility delegating to a given callback on success.
-struct SessionDescObserver : public webrtc::SetSessionDescriptionObserver {
+class SessionDescObserver : public webrtc::SetSessionDescriptionObserver {
  public:
   SessionDescObserver() = default;
   template <typename Closure>
@@ -78,76 +466,31 @@ IceConnectionState IceStateFromImpl(
   return (IceConnectionState)impl_state;
 }
 
-}  // namespace
-
-namespace Microsoft::MixedReality::WebRTC {
-
-rtc::scoped_refptr<PeerConnection> PeerConnection::create(
-    webrtc::PeerConnectionFactoryInterface& factory,
-    const webrtc::PeerConnectionInterface::RTCConfiguration& config,
-    mrsPeerConnectionInteropHandle interop_handle) {
-  // Create the PeerConnection object
-  rtc::scoped_refptr<PeerConnection> peer =
-      new rtc::RefCountedObject<PeerConnection>(interop_handle);
-
-  // Create the underlying implementation
-  webrtc::PeerConnectionDependencies dependencies(peer);
-  rtc::scoped_refptr<webrtc::PeerConnectionInterface> impl =
-      factory.CreatePeerConnection(config, std::move(dependencies));
-  if (impl.get() == nullptr) {
-    return {};
-  }
-
-  // Acquire ownership of the underlying implementation
-  peer->peer_ = std::move(impl);
-  peer->remote_video_observer_.reset(new VideoFrameObserver());
-  peer->local_audio_observer_.reset(new AudioFrameObserver());
-  peer->remote_audio_observer_.reset(new AudioFrameObserver());
-  return peer;
-}
-
-PeerConnection::PeerConnection(mrsPeerConnectionInteropHandle interop_handle)
-    : interop_handle_(interop_handle) {}
-
-PeerConnection::~PeerConnection() noexcept {
-  Close();
-
-  // Notify the global factory in case this is the last alive object, so it can
-  // terminate the WebRTC threads, in particular to allow the DLL to unload and
-  // not deadlock the Unity editor.
-  GlobalFactory::Instance()->NotifyPeerConnectionDestroyed();
-}
-
-webrtc::RTCErrorOr<rtc::scoped_refptr<LocalVideoTrack>>
-PeerConnection::AddLocalVideoTrack(
+ErrorOr<RefPtr<LocalVideoTrack>> PeerConnectionImpl::AddLocalVideoTrack(
     rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept {
   if (IsClosed()) {
-    return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION,
-                            "The peer connection is closed.");
+    return Error(Result::kInvalidOperation, "The peer connection is closed.");
   }
   auto result = peer_->AddTrack(video_track, {kAudioVideoStreamId});
   if (result.ok()) {
-    rtc::scoped_refptr<LocalVideoTrack> track =
-        new rtc::RefCountedObject<LocalVideoTrack>(
-            *this, std::move(video_track), std::move(result.MoveValue()),
-            nullptr);
+    RefPtr<LocalVideoTrack> track = new rtc::RefCountedObject<LocalVideoTrack>(
+        *this, std::move(video_track), std::move(result.MoveValue()), nullptr);
     {
       rtc::CritScope lock(&tracks_mutex_);
       local_video_tracks_.push_back(track);
     }
     return track;
   }
-  return result.MoveError();
+  return ErrorFromRTCError(result.MoveError());
 }
 
-webrtc::RTCError PeerConnection::RemoveLocalVideoTrack(
+webrtc::RTCError PeerConnectionImpl::RemoveLocalVideoTrack(
     LocalVideoTrack& video_track) noexcept {
   rtc::CritScope lock(&tracks_mutex_);
-  auto it = std::find_if(
-      local_video_tracks_.begin(), local_video_tracks_.end(),
-      [&video_track](const rtc::scoped_refptr<LocalVideoTrack>& track) {
-        return track.get() == &video_track;
-      });
+  auto it = std::find_if(local_video_tracks_.begin(), local_video_tracks_.end(),
+                         [&video_track](const RefPtr<LocalVideoTrack>& track) {
+                           return track.get() == &video_track;
+                         });
   if (it == local_video_tracks_.end()) {
     return webrtc::RTCError(
         webrtc::RTCErrorType::INVALID_PARAMETER,
@@ -160,20 +503,20 @@ webrtc::RTCError PeerConnection::RemoveLocalVideoTrack(
   return webrtc::RTCError::OK();
 }
 
-void PeerConnection::SetLocalAudioTrackEnabled(bool enabled) noexcept {
+void PeerConnectionImpl::SetLocalAudioTrackEnabled(bool enabled) noexcept {
   if (local_audio_track_) {
     local_audio_track_->set_enabled(enabled);
   }
 }
 
-bool PeerConnection::IsLocalAudioTrackEnabled() const noexcept {
+bool PeerConnectionImpl::IsLocalAudioTrackEnabled() const noexcept {
   if (local_audio_track_) {
     return local_audio_track_->enabled();
   }
   return false;
 }
 
-bool PeerConnection::AddLocalAudioTrack(
+bool PeerConnectionImpl::AddLocalAudioTrack(
     rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track) noexcept {
   if (local_audio_track_) {
     return false;
@@ -206,7 +549,7 @@ bool PeerConnection::AddLocalAudioTrack(
   return false;
 }
 
-void PeerConnection::RemoveLocalAudioTrack() noexcept {
+void PeerConnectionImpl::RemoveLocalAudioTrack() noexcept {
   if (!local_audio_track_)
     return;
   if (auto* sink = local_audio_observer_.get()) {
@@ -216,7 +559,8 @@ void PeerConnection::RemoveLocalAudioTrack() noexcept {
   local_audio_track_ = nullptr;
 }
 
-webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
+webrtc::RTCErrorOr<std::shared_ptr<DataChannel>>
+PeerConnectionImpl::AddDataChannel(
     int id,
     std::string_view label,
     bool ordered,
@@ -273,7 +617,7 @@ webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
   return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
 }
 
-void PeerConnection::RemoveDataChannel(
+void PeerConnectionImpl::RemoveDataChannel(
     const DataChannel& data_channel) noexcept {
   // Cache variables which require a dispatch to the signaling thread
   // to minimize the risk of a deadlock with the data channel lock below.
@@ -331,7 +675,7 @@ void PeerConnection::RemoveDataChannel(
   data_channel_ptr->OnRemovedFromPeerConnection();
 }
 
-void PeerConnection::RemoveAllDataChannels() noexcept {
+void PeerConnectionImpl::RemoveAllDataChannels() noexcept {
   auto lock_cb = std::scoped_lock{data_channel_removed_callback_mutex_};
   auto removed_cb = data_channel_removed_callback_;
   auto lock = std::scoped_lock{data_channel_mutex_};
@@ -357,7 +701,7 @@ void PeerConnection::RemoveAllDataChannels() noexcept {
   data_channels_.clear();
 }
 
-void PeerConnection::OnDataChannelAdded(
+void PeerConnectionImpl::OnDataChannelAdded(
     const DataChannel& data_channel) noexcept {
   // The channel must be owned by this PeerConnection, so must be known already.
   // It was added in AddDataChannel() when the DataChannel object was created.
@@ -383,9 +727,9 @@ void PeerConnection::OnDataChannelAdded(
   }
 }
 
-bool PeerConnection::AddIceCandidate(const char* sdp_mid,
-                                     const int sdp_mline_index,
-                                     const char* candidate) noexcept {
+bool PeerConnectionImpl::AddIceCandidate(const char* sdp_mid,
+                                         const int sdp_mline_index,
+                                         const char* candidate) noexcept {
   if (!peer_) {
     return false;
   }
@@ -401,7 +745,7 @@ bool PeerConnection::AddIceCandidate(const char* sdp_mid,
   return true;
 }
 
-bool PeerConnection::CreateOffer() noexcept {
+bool PeerConnectionImpl::CreateOffer() noexcept {
   if (!peer_) {
     return false;
   }
@@ -417,11 +761,14 @@ bool PeerConnection::CreateOffer() noexcept {
       sctp_negotiated_ = false;
     }
   }
-  peer_->CreateOffer(this, options);
+  auto observer =
+      new rtc::RefCountedObject<CreateSessionDescObserver>(this);  // 0 ref
+  peer_->CreateOffer(observer, options);
+  RTC_CHECK(observer->HasOneRef());  // should be == 1
   return true;
 }
 
-bool PeerConnection::CreateAnswer() noexcept {
+bool PeerConnectionImpl::CreateAnswer() noexcept {
   if (!peer_) {
     return false;
   }
@@ -431,11 +778,14 @@ bool PeerConnection::CreateAnswer() noexcept {
     options.offer_to_receive_audio = true;
     options.offer_to_receive_video = true;
   }
-  peer_->CreateAnswer(this, options);
+  auto observer =
+      new rtc::RefCountedObject<CreateSessionDescObserver>(this);  // 0 ref
+  peer_->CreateAnswer(observer, options);
+  RTC_CHECK(observer->HasOneRef());  // should be == 1
   return true;
 }
 
-void PeerConnection::Close() noexcept {
+void PeerConnectionImpl::Close() noexcept {
   if (!peer_) {
     return;
   }
@@ -447,7 +797,7 @@ void PeerConnection::Close() noexcept {
   {
     rtc::CritScope lock(&tracks_mutex_);
     while (!local_video_tracks_.empty()) {
-      rtc::scoped_refptr<LocalVideoTrack>& ptr = local_video_tracks_.back();
+      RefPtr<LocalVideoTrack>& ptr = local_video_tracks_.back();
       RemoveLocalVideoTrack(*ptr);
     }
   }
@@ -482,12 +832,12 @@ void PeerConnection::Close() noexcept {
   peer_ = nullptr;
 }
 
-bool PeerConnection::IsClosed() const noexcept {
+bool PeerConnectionImpl::IsClosed() const noexcept {
   return (peer_ == nullptr);
 }
 
-bool PeerConnection::SetRemoteDescription(const char* type,
-                                          const char* sdp) noexcept {
+bool PeerConnectionImpl::SetRemoteDescription(const char* type,
+                                              const char* sdp) noexcept {
   if (!peer_) {
     return false;
   }
@@ -514,7 +864,7 @@ bool PeerConnection::SetRemoteDescription(const char* type,
   return true;
 }
 
-void PeerConnection::OnSignalingChange(
+void PeerConnectionImpl::OnSignalingChange(
     webrtc::PeerConnectionInterface::SignalingState new_state) noexcept {
   // See https://w3c.github.io/webrtc-pc/#rtcsignalingstate-enum
   switch (new_state) {
@@ -539,7 +889,7 @@ void PeerConnection::OnSignalingChange(
   }
 }
 
-void PeerConnection::OnAddStream(
+void PeerConnectionImpl::OnAddStream(
     rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) noexcept {
   RTC_LOG(LS_INFO) << "Added stream #" << stream->id() << " with "
                    << stream->GetAudioTracks().size() << " audio tracks and "
@@ -547,7 +897,7 @@ void PeerConnection::OnAddStream(
   remote_streams_.push_back(stream);
 }
 
-void PeerConnection::OnRemoveStream(
+void PeerConnectionImpl::OnRemoveStream(
     rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) noexcept {
   RTC_LOG(LS_INFO) << "Removed stream #" << stream->id() << " with "
                    << stream->GetAudioTracks().size() << " audio tracks and "
@@ -559,7 +909,7 @@ void PeerConnection::OnRemoveStream(
   remote_streams_.erase(it);
 }
 
-void PeerConnection::OnDataChannel(
+void PeerConnectionImpl::OnDataChannel(
     rtc::scoped_refptr<webrtc::DataChannelInterface> impl) noexcept {
   // If receiving a new data channel, then obviously SCTP has been negotiated so
   // it is safe to create other ones.
@@ -629,7 +979,7 @@ void PeerConnection::OnDataChannel(
   }
 }
 
-void PeerConnection::OnRenegotiationNeeded() noexcept {
+void PeerConnectionImpl::OnRenegotiationNeeded() noexcept {
   auto lock = std::scoped_lock{renegotiation_needed_callback_mutex_};
   auto cb = renegotiation_needed_callback_;
   if (cb) {
@@ -637,7 +987,7 @@ void PeerConnection::OnRenegotiationNeeded() noexcept {
   }
 }
 
-void PeerConnection::OnIceConnectionChange(
+void PeerConnectionImpl::OnIceConnectionChange(
     webrtc::PeerConnectionInterface::IceConnectionState new_state) noexcept {
   auto lock = std::scoped_lock{ice_state_changed_callback_mutex_};
   auto cb = ice_state_changed_callback_;
@@ -646,7 +996,7 @@ void PeerConnection::OnIceConnectionChange(
   }
 }
 
-void PeerConnection::OnIceCandidate(
+void PeerConnectionImpl::OnIceCandidate(
     const webrtc::IceCandidateInterface* candidate) noexcept {
   auto lock = std::scoped_lock{ice_candidate_ready_to_send_callback_mutex_};
   auto cb = ice_candidate_ready_to_send_callback_;
@@ -661,7 +1011,7 @@ void PeerConnection::OnIceCandidate(
   }
 }
 
-void PeerConnection::OnAddTrack(
+void PeerConnectionImpl::OnAddTrack(
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
     const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>&
     /*streams*/) noexcept {
@@ -706,7 +1056,7 @@ void PeerConnection::OnAddTrack(
   }
 }
 
-void PeerConnection::OnRemoveTrack(
+void PeerConnectionImpl::OnRemoveTrack(
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) noexcept {
   RTC_LOG(LS_INFO) << "Removed track #" << receiver->id() << " of type "
                    << (int)receiver->media_type();
@@ -746,7 +1096,7 @@ void PeerConnection::OnRemoveTrack(
   }
 }
 
-void PeerConnection::OnSuccess(
+void PeerConnectionImpl::OnLocalDescCreated(
     webrtc::SessionDescriptionInterface* desc) noexcept {
   if (!peer_) {
     return;
@@ -771,6 +1121,71 @@ void PeerConnection::OnSuccess(
   // will in turn invoke the |local_sdp_ready_to_send_callback_| registered if
   // any, or do nothing otherwise. The observer is a mandatory parameter.
   peer_->SetLocalDescription(observer, desc);
+}
+
+webrtc::PeerConnectionInterface::IceTransportsType ICETransportTypeToNative(
+    IceTransportType mrsValue) {
+  using Native = webrtc::PeerConnectionInterface::IceTransportsType;
+  using Impl = IceTransportType;
+  static_assert((int)Native::kNone == (int)Impl::kNone);
+  static_assert((int)Native::kNoHost == (int)Impl::kNoHost);
+  static_assert((int)Native::kRelay == (int)Impl::kRelay);
+  static_assert((int)Native::kAll == (int)Impl::kAll);
+  return static_cast<Native>(mrsValue);
+}
+
+webrtc::PeerConnectionInterface::BundlePolicy BundlePolicyToNative(
+    BundlePolicy mrsValue) {
+  using Native = webrtc::PeerConnectionInterface::BundlePolicy;
+  using Impl = BundlePolicy;
+  static_assert((int)Native::kBundlePolicyBalanced == (int)Impl::kBalanced);
+  static_assert((int)Native::kBundlePolicyMaxBundle == (int)Impl::kMaxBundle);
+  static_assert((int)Native::kBundlePolicyMaxCompat == (int)Impl::kMaxCompat);
+  return static_cast<Native>(mrsValue);
+}
+
+}  // namespace
+
+namespace Microsoft::MixedReality::WebRTC {
+
+ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
+    const PeerConnectionConfiguration& config,
+    mrsPeerConnectionInteropHandle interop_handle) {
+  // Ensure the factory exists
+  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory;
+  {
+    mrsResult res = GlobalFactory::Instance()->GetOrCreate(factory);
+    if (res != Result::kSuccess) {
+      RTC_LOG(LS_ERROR) << "Failed to initialize the peer connection factory.";
+      return Error(res);
+    }
+  }
+  if (!factory.get()) {
+    return Error(Result::kUnknownError);
+  }
+
+  // Setup the connection configuration
+  webrtc::PeerConnectionInterface::RTCConfiguration rtc_config;
+  if (config.encoded_ice_servers != nullptr) {
+    std::string encoded_ice_servers{config.encoded_ice_servers};
+    rtc_config.servers = DecodeIceServers(encoded_ice_servers);
+  }
+  rtc_config.enable_rtp_data_channel = false;  // Always false for security
+  rtc_config.enable_dtls_srtp = true;          // Always true for security
+  rtc_config.type = ICETransportTypeToNative(config.ice_transport_type);
+  rtc_config.bundle_policy = BundlePolicyToNative(config.bundle_policy);
+  rtc_config.sdp_semantics = (config.sdp_semantic == SdpSemantic::kUnifiedPlan
+                                  ? webrtc::SdpSemantics::kUnifiedPlan
+                                  : webrtc::SdpSemantics::kPlanB);
+  auto peer = new PeerConnectionImpl(interop_handle);
+  webrtc::PeerConnectionDependencies dependencies(peer);
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> impl =
+      factory->CreatePeerConnection(rtc_config, std::move(dependencies));
+  if (impl.get() == nullptr) {
+    return Error(Result::kUnknownError);
+  }
+  peer->SetPeerImpl(std::move(impl));
+  return RefPtr<PeerConnection>(peer);
 }
 
 }  // namespace Microsoft::MixedReality::WebRTC

@@ -3,14 +3,21 @@
 
 #pragma once
 
-#include "api/mediastreaminterface.h"
-#include "api/peerconnectioninterface.h"
-#include "api/rtpsenderinterface.h"
-
 #include "callback.h"
 #include "interop/interop_api.h"
 #include "str.h"
+#include "tracked_object.h"
 #include "video_frame_observer.h"
+
+namespace rtc {
+template <typename T>
+class scoped_refptr;
+}
+
+namespace webrtc {
+class RtpSenderInterface;
+class VideoTrackInterface;
+}  // namespace webrtc
 
 namespace Microsoft::MixedReality::WebRTC {
 
@@ -28,14 +35,16 @@ class PeerConnection;
 /// typically a video capture device (e.g. webcam), but can	also be a source
 /// producing programmatically generated frames. The local video track itself
 /// has no knowledge about how the source produces the frames.
-class LocalVideoTrack : public VideoFrameObserver,
-                        public rtc::RefCountInterface {
+class LocalVideoTrack : public VideoFrameObserver, public TrackedObject {
  public:
   LocalVideoTrack(PeerConnection& owner,
                   rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
                   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
                   mrsLocalVideoTrackInteropHandle interop_handle) noexcept;
   MRS_API ~LocalVideoTrack() override;
+
+  /// Get the name of the local video track.
+  MRS_API std::string GetName() const noexcept override;
 
   /// Enable or disable the video track. An enabled track streams its content
   /// from its source to the remote peer. A disabled video track only sends
@@ -50,13 +59,8 @@ class LocalVideoTrack : public VideoFrameObserver,
   // Advanced use
   //
 
-  [[nodiscard]] webrtc::VideoTrackInterface* impl() const {
-    return track_.get();
-  }
-
-  [[nodiscard]] webrtc::RtpSenderInterface* sender() const {
-    return sender_.get();
-  }
+  [[nodiscard]] webrtc::VideoTrackInterface* impl() const;
+  [[nodiscard]] webrtc::RtpSenderInterface* sender() const;
 
   [[nodiscard]] mrsLocalVideoTrackInteropHandle GetInteropHandle() const
       noexcept {

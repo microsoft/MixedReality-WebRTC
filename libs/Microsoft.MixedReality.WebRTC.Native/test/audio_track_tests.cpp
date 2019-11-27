@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
@@ -11,11 +10,11 @@
 namespace {
 
 // PeerConnectionAudioFrameCallback
-using AudioFrameCallback = Callback<const void*,
-                                    const uint32_t,
-                                    const uint32_t,
-                                    const uint32_t,
-                                    const uint32_t>;
+using AudioFrameCallback = InteropCallback<const void*,
+                                           const uint32_t,
+                                           const uint32_t,
+                                           const uint32_t,
+                                           const uint32_t>;
 
 bool IsSilent_uint8(const uint8_t* data,
                     uint32_t size,
@@ -76,7 +75,8 @@ bool IsSilent_int16(const int16_t* data,
 TEST(AudioTrack, Simple) {
   LocalPeerPairRaii pair;
 
-  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
   ASSERT_NE(mrsBool::kFalse,
             mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
@@ -136,11 +136,12 @@ TEST(AudioTrack, Simple) {
 TEST(AudioTrack, Muted) {
   LocalPeerPairRaii pair;
 
-  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
 
   // Disable the audio track; it should output only silence
-  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetLocalAudioTrackEnabled(
-                             pair.pc1(), mrsBool::kFalse));
+  ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetLocalAudioTrackEnabled(
+                                         pair.pc1(), mrsBool::kFalse));
   ASSERT_EQ(mrsBool::kFalse,
             mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 

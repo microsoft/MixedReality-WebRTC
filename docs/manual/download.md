@@ -21,7 +21,7 @@ The C# library packages contain the C# assembly `Microsoft.MixedReality.WebRTC` 
 The C++ library is distributed as two separate packages for Windows Desktop and Windows UWP:
 
 - [Windows Desktop package `Microsoft.MixedReality.WebRTC.Native.Desktop`](https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Desktop)
-- [Windows UWP package `Microsoft.MixedReality.WebRTC.UWP.Desktop`](https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.UWP.Desktop)
+- [Windows UWP package `Microsoft.MixedReality.WebRTC.Native.UWP`](https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.UWP)
 
 The C++ packages contain the shared library `Microsoft.MixedReality.WebRTC.Native.dll` as well as its import library (`.lib`) and debug symbols database (`*.pdb`).
 
