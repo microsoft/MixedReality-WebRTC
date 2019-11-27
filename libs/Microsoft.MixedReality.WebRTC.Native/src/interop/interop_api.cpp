@@ -999,14 +999,10 @@ mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
   return Result::kSuccess;
 }
 
-// Defined in
-// external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/winuwp_h264/H264Encoder/H264Encoder.cc
-extern bool webrtc__WinUWPH264EncoderImpl__add_padding;
-
 void MRS_CALL
-mrsSetHololensH264EncoderWorkaround(HololensH264EncoderWorkaround value) {
-  webrtc__WinUWPH264EncoderImpl__add_padding =
-      (value == HololensH264EncoderWorkaround::PAD);
+mrsSetFrameHeightRoundMode(FrameHeightRoundMode value) {
+  PeerConnection::SetFrameHeightRoundMode(
+      (PeerConnection::FrameHeightRoundMode)value);
 }
 
 

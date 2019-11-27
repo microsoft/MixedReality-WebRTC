@@ -1334,27 +1334,36 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Configuration for the Hololens H.264 hardware encoder workaround.
+        /// Frame height round mode.
         /// </summary>
-        /// <seealso cref="SetHololensH264EncoderWorkaround"/>
-        public enum HololensH264EncoderWorkaround
+        /// <seealso cref="SetFrameHeightRoundMode(FrameHeightRoundMode)"/>
+        public enum FrameHeightRoundMode
         {
-            // Crop frame height to the nearest multiple of 16.
-            CROP,
-            // Pad frame height to the nearest multiple of 16.
-            PAD
+            /// <summary>
+            /// Leave frames unchanged.
+            /// </summary>
+            NONE = 0,
+            /// <summary>
+            /// Crop frame height to the nearest multiple of 16.
+            /// </summary>
+            CROP = 1,
+            /// <summary>
+            /// Pad frame height to the nearest multiple of 16.
+            /// </summary>
+            PAD = 2
         }
 
         /// <summary>
-        /// The Hololens H.264 hardware encoder produces severe artifacts on resolutions where the
-        /// height is not multiple of 16. For this reason on Hololens these resolutions are either
-        /// cropped or padded before being encoded and streamed. Use this function to select the
-        /// rounding mode. Default is <see cref="HololensH264EncoderWorkaround.CROP"/>.
+        /// Use this function to select whether resolutions where height is not multiple of 16
+        /// should be cropped, padded or left unchanged.
+        /// Default is <see cref="FrameHeightRoundMode.NONE"/>, except on Hololens 1 where it is
+        /// <see cref="FrameHeightRoundMode.CROP"/> to avoid severe artifacts produced by
+        /// the H.264 hardware encoder.  
         /// </summary>
         /// <param name="value"></param>
-        public static void SetHololensH264EncoderWorkaround(HololensH264EncoderWorkaround value)
+        public static void SetFrameHeightRoundMode(FrameHeightRoundMode value)
         {
-            Utils.SetHololensH264EncoderWorkaround(value == HololensH264EncoderWorkaround.CROP ? 0 : 1);
+            Utils.SetFrameHeightRoundMode((int)value);
         }
 
         internal void OnConnected()

@@ -656,11 +656,12 @@ MRS_API mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
                                              char* buffer,
                                              uint64_t* buffer_size) noexcept;
 
-enum class HololensH264EncoderWorkaround : int32_t { CROP = 0, PAD = 1};
+/// Must be the same as PeerConnection::FrameHeightRoundMode.
+enum class FrameHeightRoundMode : int32_t { NONE = 0, CROP = 1, PAD = 2};
 
-/// See PeerConnection.SetHololensH264EncoderWorkaround for details.
+/// See PeerConnection::SetFrameHeightRoundMode.
 MRS_API void MRS_CALL
-mrsSetHololensH264EncoderWorkaround(HololensH264EncoderWorkaround value);
+mrsSetFrameHeightRoundMode(FrameHeightRoundMode value);
 
 //
 // Generic utilities

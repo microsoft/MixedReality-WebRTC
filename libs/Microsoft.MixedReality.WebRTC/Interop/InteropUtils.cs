@@ -174,10 +174,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         /// <summary>
-        /// See <see cref="PeerConnection.SetHololensH264EncoderWorkaround(PeerConnection.HololensH264EncoderWorkaround)"/>.
+        /// See <see cref="PeerConnection.SetFrameHeightRoundMode(PeerConnection.FrameHeightRoundMode)"/>.
         /// </summary>
         /// <param name="value"></param>
-        [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsSetHololensH264EncoderWorkaround")]
-        public static unsafe extern void SetHololensH264EncoderWorkaround(int value);
+        [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsSetFrameHeightRoundMode")]
+        public static unsafe extern void SetFrameHeightRoundMode(int value);
     }
 }
