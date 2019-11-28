@@ -105,7 +105,9 @@ namespace TestAppUwp
 
         private bool isDssPolling = false;
         private NodeDssSignaler dssSignaler = new NodeDssSignaler();
-        private DispatcherTimer dssStatsTimer = new DispatcherTimer();
+
+        private DispatcherTimer localVideoStatsTimer = new DispatcherTimer();
+        private DispatcherTimer remoteVideoStatsTimer = new DispatcherTimer();
 
         /// <summary>
         /// Get the string representing the preferred audio codec the user selected.
@@ -274,7 +276,8 @@ namespace TestAppUwp
             dssSignaler.OnFailure += DssSignaler_OnFailure;
             dssSignaler.OnPollingDone += DssSignaler_OnPollingDone;
 
-            dssStatsTimer.Tick += OnDssStatsTimerTick;
+            localVideoStatsTimer.Tick += OnLocalVideoStatsTimerTicked;
+            remoteVideoStatsTimer.Tick += OnRemoteVideoStatsTimerTicked;
 
             _peerConnection = new PeerConnection();
             _peerConnection.Connected += OnPeerConnected;
@@ -1016,6 +1019,11 @@ namespace TestAppUwp
         private void Peer_RemoteTrackAdded(PeerConnection.TrackKind trackKind)
         {
             LogMessage($"Added remote {trackKind} track.");
+            RunOnMainThread(() =>
+            {
+                remoteVideoStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
+                remoteVideoStatsTimer.Start();
+            });
         }
 
         /// <summary>
@@ -1038,6 +1046,7 @@ namespace TestAppUwp
                     {
                         // Schedule on the main UI thread to access STA objects.
                         RunOnMainThread(() => {
+                            remoteVideoStatsTimer.Stop();
                             // Check that the remote video is still playing.
                             // This ensures that rapid calls to add/remove the video track
                             // are serialized, and an earlier remove call doesn't remove the
@@ -1200,20 +1209,14 @@ namespace TestAppUwp
             startLocalMedia.IsEnabled = false;
 
             // Toggle between start and stop local audio/video feeds
-            //< TODO dssStatsTimer.IsEnabled used for toggle, but dssStatsTimer should be
-            // used also for remote statistics display (so even when no local video active)
-            if (dssStatsTimer.IsEnabled && (_localVideoTrack != null))
+            if (localVideoStatsTimer.IsEnabled && (_localVideoTrack != null))
             {
                 StopLocalMedia();
-                dssStatsTimer.Stop();
-                localLoadText.Text = "Load: -";
-                localPresentText.Text = "Present: -";
+                localVideoStatsTimer.Stop();
+                localLoadText.Text = "Produce: -";
+                localPresentText.Text = "Render: -";
                 localSkipText.Text = "Skip: -";
                 localLateText.Text = "Late: -";
-                remoteLoadText.Text = "Load: -";
-                remotePresentText.Text = "Present: -";
-                remoteSkipText.Text = "Skip: -";
-                remoteLateText.Text = "Late: -";
                 muteLocalVideo.IsEnabled = false;
                 muteLocalAudio.IsEnabled = false;
                 startLocalMediaIcon.Symbol = Symbol.Play;
@@ -1308,8 +1311,8 @@ namespace TestAppUwp
                     return;
                 }
 
-                dssStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
-                dssStatsTimer.Start();
+                localVideoStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
+                localVideoStatsTimer.Start();
                 muteLocalVideo.IsEnabled = true;
                 muteLocalAudio.IsEnabled = true;
                 startLocalMediaIcon.Symbol = Symbol.Stop;
@@ -1335,15 +1338,18 @@ namespace TestAppUwp
             }
         }
 
-        private void OnDssStatsTimerTick(object sender, object e)
+        private void OnLocalVideoStatsTimerTicked(object sender, object e)
         {
-            localLoadText.Text = $"Load: {localVideoBridge.FrameLoad:F2}";
-            localPresentText.Text = $"Present: {localVideoBridge.FramePresent:F2}";
+            localLoadText.Text = $"Produce: {localVideoBridge.FrameLoad:F2}";
+            localPresentText.Text = $"Render: {localVideoBridge.FramePresent:F2}";
             localSkipText.Text = $"Skip: {localVideoBridge.FrameSkip:F2}";
             //localLateText.Text = $"Late: {localVideoBridge.LateFrame:F2}";
+        }
 
-            remoteLoadText.Text = $"Load: {remoteVideoBridge.FrameLoad:F2}";
-            remotePresentText.Text = $"Present: {remoteVideoBridge.FramePresent:F2}";
+        private void OnRemoteVideoStatsTimerTicked(object sender, object e)
+        {
+            remoteLoadText.Text = $"Receive: {remoteVideoBridge.FrameLoad:F2}";
+            remotePresentText.Text = $"Render: {remoteVideoBridge.FramePresent:F2}";
             remoteSkipText.Text = $"Skip: {remoteVideoBridge.FrameSkip:F2}";
             //remoteLateText.Text = $"Late: {remoteVideoBridge.LateFrame:F2}";
         }

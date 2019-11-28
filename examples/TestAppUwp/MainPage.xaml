@@ -236,10 +236,10 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="localLoadText" Text="Load :"   HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="localPresentText" Text="Present :"  Grid.Column="1" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="localSkipText" Text="Skip :" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="localLateText" Text="Late :" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="localLoadText" Text="Produce:" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="localPresentText" Text="Render:"  Grid.Column="1" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="localSkipText" Text="Skip:" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="localLateText" Text="Late:" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     </Grid>
                     <Grid Grid.Row="2" Grid.Column="2">
                         <Grid.ColumnDefinitions>
@@ -248,10 +248,10 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="remoteLoadText" Text="Load :"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="remotePresentText" Text="Present :"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" />
-                        <TextBlock x:Name="remoteSkipText" Text="Skip :" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="2" />
-                        <TextBlock x:Name="remoteLateText" Text="Late :" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="remoteLoadText" Text="Receive:"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="remotePresentText" Text="Render:"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" />
+                        <TextBlock x:Name="remoteSkipText" Text="Skip:" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="2" />
+                        <TextBlock x:Name="remoteLateText" Text="Late:" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     </Grid>
                     <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2">
                         <TextBlock Text="ICE state : " VerticalAlignment="Top" />
