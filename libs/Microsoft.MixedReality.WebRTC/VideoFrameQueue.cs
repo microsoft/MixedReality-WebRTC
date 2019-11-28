@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using Microsoft.MixedReality.WebRTC.Interop;
@@ -47,7 +48,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// Reading this property is equivalent to reading the <see xref="System.Array.LongLength"/>
         /// property of <see cref="Buffer"/>.
         /// </remarks>
-        public ulong Capacity {
+        public ulong Capacity
+        {
             get { return (ulong)Buffer.LongLength; }
             set { Resize(value); }
         }
@@ -191,6 +193,17 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private int _maxQueueLength = 3;
 
+        /// <summary>
+        /// Unique identifier representing the current object instance, to discriminate ETW events.
+        /// </summary>
+        /// <remarks>
+        /// Ideally this would be based on ActivityID and ProcessID, but the former is not easy to use
+        /// with the C# API, while also not fitting really well with the use case, and the latter doesn't
+        /// seem to be recorded at all. So using an explicit GUID works around this, as the only critical
+        /// point is being able to discriminate events from several instances to avoid mixing their results.
+        /// </remarks>
+        private Guid _traceId = Guid.NewGuid();
+
 
         #region Statistics
 
@@ -247,7 +260,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public void Clear()
         {
-            MainEventSource.Log.VideoFrameQueueClear();
+            MainEventSource.Log.VideoFrameQueueClear(_traceId);
+
             _lastQueuedTimeMs = 0f;
             _lastDequeuedTimeMs = 0f;
             _lastDroppedTimeMs = 0f;
@@ -270,7 +284,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>This should only be used if the queue has storage for a compatible video frame encoding.</remarks>
         public bool Enqueue(I420AVideoFrame frame)
         {
-            MainEventSource.Log.VideoFrameQueueEnqueueI420((int)frame.width, (int)frame.height);
+            MainEventSource.Log.VideoFrameQueueEnqueueI420(_traceId, (int)frame.width, (int)frame.height);
 
             double curTime = _stopwatch.Elapsed.TotalMilliseconds;
 
@@ -285,7 +299,7 @@ namespace Microsoft.MixedReality.WebRTC
             if (storage == null)
             {
                 // Too many frames in queue, drop the current one
-                MainEventSource.Log.VideoFrameQueueDropI420((int)frame.width, (int)frame.height);
+                MainEventSource.Log.VideoFrameQueueDropI420(_traceId, (int)frame.width, (int)frame.height);
                 float droppedDt = (float)(curTime - _lastDroppedTimeMs);
                 _lastDroppedTimeMs = curTime;
                 _droppedFrameTimeAverage.Push(droppedDt);
@@ -313,7 +327,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>This should only be used if the queue has storage for a compatible video frame encoding.</remarks>
         public bool Enqueue(ARGBVideoFrame frame)
         {
-            MainEventSource.Log.VideoFrameQueueEnqueueARGB32((int)frame.width, (int)frame.height);
+            MainEventSource.Log.VideoFrameQueueEnqueueARGB32(_traceId, (int)frame.width, (int)frame.height);
 
             Debug.Assert(frame.stride >= frame.width * 4);
 
@@ -330,7 +344,7 @@ namespace Microsoft.MixedReality.WebRTC
             if (storage == null)
             {
                 // Too many frames in queue, drop the current one
-                MainEventSource.Log.VideoFrameQueueDropARGB32((int)frame.width, (int)frame.height);
+                MainEventSource.Log.VideoFrameQueueDropARGB32(_traceId, (int)frame.width, (int)frame.height);
                 float droppedDt = (float)(curTime - _lastDroppedTimeMs);
                 _lastDroppedTimeMs = curTime;
                 _droppedFrameTimeAverage.Push(droppedDt);
@@ -372,7 +386,7 @@ namespace Microsoft.MixedReality.WebRTC
                 float dequeuedDt = (float)(curTime - _lastDequeuedTimeMs);
                 _lastDequeuedTimeMs = curTime;
                 _dequeuedFrameTimeAverage.Push(dequeuedDt);
-                MainEventSource.Log.VideoFrameQueueDequeue(dequeuedDt);
+                MainEventSource.Log.VideoFrameQueueDequeue(_traceId, dequeuedDt);
                 return true;
             }
             return false;
@@ -386,7 +400,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="frame">The unused frame storage to recycle for a later new frame</param>
         public void RecycleStorage(T frame)
         {
-            MainEventSource.Log.VideoFrameQueueRecycleStorage();
+            MainEventSource.Log.VideoFrameQueueRecycleStorage(_traceId);
             _unusedFramePool.Push(frame);
         }
 
@@ -406,7 +420,7 @@ namespace Microsoft.MixedReality.WebRTC
             _lastDequeuedTimeMs = curTime;
             _dequeuedFrameTimeAverage.Push(dequeuedDt);
 
-            MainEventSource.Log.VideoFrameQueueTrackLateFrame(queuedDt, dequeuedDt);
+            MainEventSource.Log.VideoFrameQueueTrackLateFrame(_traceId, queuedDt, dequeuedDt);
 
             _droppedFrameTimeAverage.Push((float)(curTime - _lastDroppedTimeMs));
         }

@@ -152,51 +152,51 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         }
 
         [Event(0x3100, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void VideoFrameQueueClear()
+        public void VideoFrameQueueClear(Guid instanceId)
         {
-            WriteEvent(0x3100);
+            WriteEvent(0x3100, instanceId);
         }
 
         [Event(0x3101, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void VideoFrameQueueEnqueueI420(int width, int height)
+        public void VideoFrameQueueEnqueueI420(Guid instanceId, int width, int height)
         {
-            WriteEvent(0x3101, width, height);
+            WriteEvent(0x3101, instanceId, width, height);
         }
 
         [Event(0x3102, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void VideoFrameQueueEnqueueARGB32(int width, int height)
+        public void VideoFrameQueueEnqueueARGB32(Guid instanceId, int width, int height)
         {
-            WriteEvent(0x3102, width, height);
+            WriteEvent(0x3102, instanceId, width, height);
         }
 
         [Event(0x3103, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void VideoFrameQueueDropI420(int width, int height)
+        public void VideoFrameQueueDropI420(Guid instanceId, int width, int height)
         {
-            WriteEvent(0x3103, width, height);
+            WriteEvent(0x3103, instanceId, width, height);
         }
 
         [Event(0x3104, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void VideoFrameQueueDropARGB32(int width, int height)
+        public void VideoFrameQueueDropARGB32(Guid instanceId, int width, int height)
         {
-            WriteEvent(0x3104, width, height);
+            WriteEvent(0x3104, instanceId, width, height);
         }
 
         [Event(0x3105, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void VideoFrameQueueDequeue(float dequeuedDtMs)
+        public void VideoFrameQueueDequeue(Guid instanceId, float dequeuedDtMs)
         {
-            WriteEvent(0x3105, dequeuedDtMs);
+            WriteEvent(0x3105, instanceId, dequeuedDtMs);
         }
 
         [Event(0x3106, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void VideoFrameQueueRecycleStorage()
+        public void VideoFrameQueueRecycleStorage(Guid instanceId)
         {
-            WriteEvent(0x3106);
+            WriteEvent(0x3106, instanceId);
         }
 
         [Event(0x3107, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void VideoFrameQueueTrackLateFrame(float queuedDtMs, float dequeuedDtMs)
+        public unsafe void VideoFrameQueueTrackLateFrame(Guid instanceId, float queuedDtMs, float dequeuedDtMs)
         {
-            WriteEvent(0x3107, queuedDtMs, dequeuedDtMs);
+            WriteEvent(0x3107, instanceId, queuedDtMs, dequeuedDtMs);
         }
 
         #endregion
@@ -263,7 +263,7 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         }
 
         [NonEvent]
-        public unsafe void WriteEvent(int eventId, float arg1)
+        public unsafe void WriteEvent(int eventId, Guid arg1)
         {
             EventData* dataDesc = stackalloc EventData[1];
             dataDesc[0].DataPointer = (IntPtr)(&arg1);
@@ -272,14 +272,40 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         }
 
         [NonEvent]
-        public unsafe void WriteEvent(int eventId, float arg1, float arg2)
+        public unsafe void WriteEvent(int eventId, Guid arg1, int arg2, int arg3)
+        {
+            EventData* dataDesc = stackalloc EventData[3];
+            dataDesc[0].DataPointer = (IntPtr)(&arg1);
+            dataDesc[0].Size = sizeof(Guid);
+            dataDesc[1].DataPointer = (IntPtr)(&arg2);
+            dataDesc[1].Size = 4;
+            dataDesc[2].DataPointer = (IntPtr)(&arg3);
+            dataDesc[2].Size = 4;
+            WriteEventCore(eventId, 3, dataDesc);
+        }
+
+        [NonEvent]
+        public unsafe void WriteEvent(int eventId, Guid arg1, float arg2)
         {
             EventData* dataDesc = stackalloc EventData[2];
             dataDesc[0].DataPointer = (IntPtr)(&arg1);
-            dataDesc[0].Size = 4;
+            dataDesc[0].Size = sizeof(Guid);
             dataDesc[1].DataPointer = (IntPtr)(&arg2);
             dataDesc[1].Size = 4;
             WriteEventCore(eventId, 2, dataDesc);
+        }
+
+        [NonEvent]
+        public unsafe void WriteEvent(int eventId, Guid arg1, float arg2, float arg3)
+        {
+            EventData* dataDesc = stackalloc EventData[3];
+            dataDesc[0].DataPointer = (IntPtr)(&arg1);
+            dataDesc[0].Size = sizeof(Guid);
+            dataDesc[1].DataPointer = (IntPtr)(&arg2);
+            dataDesc[1].Size = 4;
+            dataDesc[2].DataPointer = (IntPtr)(&arg3);
+            dataDesc[2].Size = 4;
+            WriteEventCore(eventId, 3, dataDesc);
         }
 
         #endregion
