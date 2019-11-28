@@ -168,13 +168,13 @@ namespace Microsoft.MixedReality.WebRTC
         where T : class, IVideoFrameStorage, new()
     {
         /// <inheritdoc/>
-        public float QueuedFramesPerSecond => _queuedFrameTimeAverage.Average;
+        public float QueuedFramesPerSecond => 1000f / _queuedFrameTimeAverage.Average;
 
         /// <inheritdoc/>
-        public float DequeuedFramesPerSecond => _dequeuedFrameTimeAverage.Average;
+        public float DequeuedFramesPerSecond => 1000f / _dequeuedFrameTimeAverage.Average;
 
         /// <inheritdoc/>
-        public float DroppedFramesPerSecond => _droppedFrameTimeAverage.Average;
+        public float DroppedFramesPerSecond => 1000f / _droppedFrameTimeAverage.Average;
 
         /// <summary>
         /// Queue of frames pending delivery to sink.
@@ -288,7 +288,7 @@ namespace Microsoft.MixedReality.WebRTC
                 MainEventSource.Log.VideoFrameQueueDropI420((int)frame.width, (int)frame.height);
                 float droppedDt = (float)(curTime - _lastDroppedTimeMs);
                 _lastDroppedTimeMs = curTime;
-                _droppedFrameTimeAverage.Push(1000f / droppedDt);
+                _droppedFrameTimeAverage.Push(droppedDt);
                 return false;
             }
 
@@ -299,8 +299,8 @@ namespace Microsoft.MixedReality.WebRTC
 
             // Enqueue for later delivery
             _frameQueue.Enqueue(storage);
-            _queuedFrameTimeAverage.Push(1000f / queuedDt);
-            _droppedFrameTimeAverage.Push(0f);
+            _queuedFrameTimeAverage.Push(queuedDt);
+            _droppedFrameTimeAverage.Push((float)(curTime - _lastDroppedTimeMs));
             return true;
         }
 
@@ -333,7 +333,7 @@ namespace Microsoft.MixedReality.WebRTC
                 MainEventSource.Log.VideoFrameQueueDropARGB32((int)frame.width, (int)frame.height);
                 float droppedDt = (float)(curTime - _lastDroppedTimeMs);
                 _lastDroppedTimeMs = curTime;
-                _droppedFrameTimeAverage.Push(1000f / droppedDt);
+                _droppedFrameTimeAverage.Push(droppedDt);
                 return false;
             }
 
@@ -351,8 +351,8 @@ namespace Microsoft.MixedReality.WebRTC
 
             // Enqueue for later delivery
             _frameQueue.Enqueue(storage);
-            _queuedFrameTimeAverage.Push(1000f / queuedDt);
-            _droppedFrameTimeAverage.Push(0f);
+            _queuedFrameTimeAverage.Push(queuedDt);
+            _droppedFrameTimeAverage.Push((float)(curTime - _lastDroppedTimeMs));
             return true;
         }
 
@@ -371,7 +371,7 @@ namespace Microsoft.MixedReality.WebRTC
                 double curTime = _stopwatch.Elapsed.TotalMilliseconds;
                 float dequeuedDt = (float)(curTime - _lastDequeuedTimeMs);
                 _lastDequeuedTimeMs = curTime;
-                _dequeuedFrameTimeAverage.Push(1000f / dequeuedDt);
+                _dequeuedFrameTimeAverage.Push(dequeuedDt);
                 MainEventSource.Log.VideoFrameQueueDequeue(dequeuedDt);
                 return true;
             }
@@ -400,15 +400,15 @@ namespace Microsoft.MixedReality.WebRTC
 
             float queuedDt = (float)(curTime - _lastQueuedTimeMs);
             _lastQueuedTimeMs = curTime;
-            _queuedFrameTimeAverage.Push(1000f / queuedDt);
+            _queuedFrameTimeAverage.Push(queuedDt);
 
             float dequeuedDt = (float)(curTime - _lastDequeuedTimeMs);
             _lastDequeuedTimeMs = curTime;
-            _dequeuedFrameTimeAverage.Push(1000f / dequeuedDt);
+            _dequeuedFrameTimeAverage.Push(dequeuedDt);
 
             MainEventSource.Log.VideoFrameQueueTrackLateFrame(queuedDt, dequeuedDt);
 
-            _droppedFrameTimeAverage.Push(0f);
+            _droppedFrameTimeAverage.Push((float)(curTime - _lastDroppedTimeMs));
         }
 
         /// <summary>
