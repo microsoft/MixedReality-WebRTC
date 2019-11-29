@@ -42,7 +42,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0a6c45b9-76a4-4ab6-947b-0c0519aae67d}</ProjectGuid>
     <Keyword>DynamicLibrary</Keyword>
-    <RootNamespace>Microsoft_MixedReality_Toolkit_Networking_WebRtc_Native</RootNamespace>
+    <RootNamespace>Microsoft_MixedReality_WebRTC</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
