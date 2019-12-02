@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -9,6 +8,7 @@
 #include <functional>
 #include <string>
 #include <string_view>
+#include <unordered_set>
 
 #include "targetver.h"
 
@@ -46,6 +46,8 @@
 #include "api/mediaconstraintsinterface.h"
 #include "api/mediastreaminterface.h"
 #include "api/peerconnectioninterface.h"
+#include "api/rtpsenderinterface.h"
+#include "api/transport/bitrate_settings.h"
 #include "api/video/i420_buffer.h"
 #include "api/videosourceproxy.h"
 #include "media/engine/internaldecoderfactory.h"

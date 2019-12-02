@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ using Windows.Media.Capture;
 using Windows.Media.Core;
 using Windows.Media.MediaProperties;
 using Windows.Media.Playback;
+using Windows.Storage;
 using Windows.System.Profile;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -70,11 +71,14 @@ namespace TestAppUwp
         private MediaPlayer localVideoPlayer = new MediaPlayer();
         private bool _isLocalVideoPlaying = false;
         private object _isLocalVideoPlayingLock = new object();
+        private LocalVideoTrack _localVideoTrack = null;
 
         private MediaStreamSource remoteVideoSource = null;
         private MediaSource remoteMediaSource = null;
         private MediaPlayer remoteVideoPlayer = new MediaPlayer();
         private bool _isRemoteVideoPlaying = false;
+        private uint _remoteVideoWidth = 0;
+        private uint _remoteVideoHeight = 0;
         private object _isRemoteVideoPlayingLock = new object();
 
         private uint _remoteAudioChannelCount = 0;
@@ -101,8 +105,51 @@ namespace TestAppUwp
 
         private bool isDssPolling = false;
         private NodeDssSignaler dssSignaler = new NodeDssSignaler();
-        private DispatcherTimer dssStatsTimer = new DispatcherTimer();
-        private string remotePeerId; // local copy of remotePeerUidTextBox.Text accessible from non-UI thread
+
+        private DispatcherTimer localVideoStatsTimer = new DispatcherTimer();
+        private DispatcherTimer remoteVideoStatsTimer = new DispatcherTimer();
+
+        /// <summary>
+        /// Get the string representing the preferred audio codec the user selected.
+        /// </summary>
+        public string PreferredAudioCodec
+        {
+            get
+            {
+                if (PreferredAudioCodec_Custom.IsChecked.GetValueOrDefault(false))
+                {
+                    return CustomPreferredAudioCodec.Text;
+                }
+                else if (PreferredAudioCodec_OPUS.IsChecked.GetValueOrDefault(false))
+                {
+                    return "opus";
+                }
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Get the string representing the preferred video codec the user selected.
+        /// </summary>
+        public string PreferredVideoCodec
+        {
+            get
+            {
+                if (PreferredVideoCodec_Custom.IsChecked.GetValueOrDefault(false))
+                {
+                    return CustomPreferredVideoCodec.Text;
+                }
+                else if (PreferredVideoCodec_H264.IsChecked.GetValueOrDefault(false))
+                {
+                    return "H264";
+                }
+                else if (PreferredVideoCodec_VP8.IsChecked.GetValueOrDefault(false))
+                {
+                    return "VP8";
+                }
+                return string.Empty;
+            }
+        }
 
         public ObservableCollection<VideoCaptureDeviceInfo> VideoCaptureDevices { get; private set; }
             = new ObservableCollection<VideoCaptureDeviceInfo>();
@@ -204,32 +251,33 @@ namespace TestAppUwp
         private VideoBridge localVideoBridge = new VideoBridge(3);
         private VideoBridge remoteVideoBridge = new VideoBridge(5);
 
-        // HACK - For debugging 2 instances on the same machine and 2 webcams
-        private int HACK_GetVideoDeviceIndex()
+        public static string GetDeviceName()
         {
-            var firstInstance = AppInstance.FindOrRegisterInstanceForKey("{44CD414E-B604-482E-8CFD-A9E09076CABD}");
-            int idx = 0;
-            if (!firstInstance.IsCurrentInstance)
-            {
-                idx++;
-            }
-            return idx;
+            return Environment.MachineName;
         }
 
         public MainPage()
         {
             this.InitializeComponent();
+            muteLocalVideoStroke.Visibility = Visibility.Collapsed;
+            muteLocalAudioStroke.Visibility = Visibility.Collapsed;
 
-            // HACK - For debugging: deterministic 2-instance value paired with each other
-            var idx = HACK_GetVideoDeviceIndex();
-            localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx);
-            remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx));
+            // This will be enabled once the signaling is initialized and ready to send data
+            createOfferButton.IsEnabled = false;
+
+            // Those are called during InitializeComponent() but before the controls are initialized (!).
+            // Force-call again to actually initialize the panels correctly.
+            PreferredAudioCodecChecked(null, null);
+            PreferredVideoCodecChecked(null, null);
+
+            RestoreLocalAndRemotePeerIDs();
 
             dssSignaler.OnMessage += DssSignaler_OnMessage;
             dssSignaler.OnFailure += DssSignaler_OnFailure;
             dssSignaler.OnPollingDone += DssSignaler_OnPollingDone;
 
-            dssStatsTimer.Tick += OnDssStatsTimerTick;
+            localVideoStatsTimer.Tick += OnLocalVideoStatsTimerTicked;
+            remoteVideoStatsTimer.Tick += OnRemoteVideoStatsTimerTicked;
 
             _peerConnection = new PeerConnection();
             _peerConnection.Connected += OnPeerConnected;
@@ -241,14 +289,51 @@ namespace TestAppUwp
             _peerConnection.RenegotiationNeeded += OnPeerRenegotiationNeeded;
             _peerConnection.TrackAdded += Peer_RemoteTrackAdded;
             _peerConnection.TrackRemoved += Peer_RemoteTrackRemoved;
-            _peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
-            _peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
+            _peerConnection.I420ARemoteVideoFrameReady += Peer_RemoteI420AFrameReady;
             _peerConnection.LocalAudioFrameReady += Peer_LocalAudioFrameReady;
             _peerConnection.RemoteAudioFrameReady += Peer_RemoteAudioFrameReady;
 
             //Window.Current.Closed += Shutdown; // doesn't work
 
             this.Loaded += OnLoaded;
+            Application.Current.Suspending += App_Suspending;
+            Application.Current.Resuming += App_Resuming;
+        }
+
+        private void App_Suspending(object sender, SuspendingEventArgs e)
+        {
+            // Save local and remote peer IDs for next launch for convenience
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values["LocalPeerID"] = localPeerUidTextBox.Text;
+            localSettings.Values["RemotePeerID"] = remotePeerUidTextBox.Text;
+        }
+
+        private void App_Resuming(object sender, object e)
+        {
+            RestoreLocalAndRemotePeerIDs();
+        }
+
+        private void RestoreLocalAndRemotePeerIDs()
+        {
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.TryGetValue("LocalPeerID", out object localObj))
+            {
+                if (localObj is string str)
+                {
+                    localPeerUidTextBox.Text = str;
+                }
+            }
+            if (localPeerUidTextBox.Text.Length == 0)
+            {
+                localPeerUidTextBox.Text = GetDeviceName();
+            }
+            if (localSettings.Values.TryGetValue("RemotePeerID", out object remoteObj))
+            {
+                if (remoteObj is string str)
+                {
+                    remotePeerUidTextBox.Text = str;
+                }
+            }
         }
 
         private void OnDataChannelAdded(DataChannel channel)
@@ -419,9 +504,7 @@ namespace TestAppUwp
             chatInputBox.IsEnabled = true;
             chatSendButton.IsEnabled = true;
 
-            createOfferButton.IsEnabled = true;
-
-            startLocalVideo.IsEnabled = true;
+            startLocalMedia.IsEnabled = true;
 
             localVideoPlayer.CurrentStateChanged += OnMediaStateChanged;
             localVideoPlayer.MediaOpened += OnMediaOpened;
@@ -434,11 +517,53 @@ namespace TestAppUwp
             remoteVideoPlayer.MediaOpened += OnMediaOpened;
             remoteVideoPlayer.MediaFailed += OnMediaFailed;
             remoteVideoPlayer.MediaEnded += OnMediaEnded;
+            remoteVideoPlayer.RealTimePlayback = true;
+            remoteVideoPlayer.AutoPlay = false;
 
             // Bind the XAML UI control (localVideo) to the MediaFoundation rendering pipeline (localVideoPlayer)
             // so that the former can render in the UI the video frames produced in the background by the later.
             localVideo.SetMediaPlayer(localVideoPlayer);
             remoteVideo.SetMediaPlayer(remoteVideoPlayer);
+        }
+
+        private void PreferredAudioCodecChecked(object sender, RoutedEventArgs args)
+        {
+            // Ignore calls during startup, before components are initialized
+            if (PreferredAudioCodec_Custom == null)
+            {
+                return;
+            }
+
+            if (PreferredAudioCodec_Custom.IsChecked.GetValueOrDefault(false))
+            {
+                CustomPreferredAudioCodecHelpText.Visibility = Visibility.Visible;
+                CustomPreferredAudioCodec.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                CustomPreferredAudioCodecHelpText.Visibility = Visibility.Collapsed;
+                CustomPreferredAudioCodec.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void PreferredVideoCodecChecked(object sender, RoutedEventArgs args)
+        {
+            // Ignore calls during startup, before components are initialized
+            if (PreferredVideoCodec_Custom == null)
+            {
+                return;
+            }
+
+            if (PreferredVideoCodec_Custom.IsChecked.GetValueOrDefault(false))
+            {
+                CustomPreferredVideoCodecHelpText.Visibility = Visibility.Visible;
+                CustomPreferredVideoCodec.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                CustomPreferredVideoCodecHelpText.Visibility = Visibility.Collapsed;
+                CustomPreferredVideoCodec.Visibility = Visibility.Collapsed;
+            }
         }
 
         /// <summary>
@@ -568,6 +693,10 @@ namespace TestAppUwp
             RunOnMainThread(() => {
                 sessionStatusText.Text = "(session joined)";
                 chatTextBox.IsEnabled = true;
+
+                // Reset "Create Offer" button, and re-enable if signaling is available
+                createOfferButton.Content = "Create Offer";
+                createOfferButton.IsEnabled = isDssPolling;
             });
         }
 
@@ -675,7 +804,7 @@ namespace TestAppUwp
         /// <param name="width">The width of the video in pixels.</param>
         /// <param name="height">The height of the video in pixels.</param>
         /// <returns>The newly created video source.</returns>
-        private MediaStreamSource CreateVideoStreamSource(uint width, uint height)
+        private MediaStreamSource CreateVideoStreamSource(uint width, uint height, uint framerate)
         {
             if (width == 0)
             {
@@ -690,9 +819,9 @@ namespace TestAppUwp
             // https://docs.microsoft.com/en-us/windows/desktop/medfound/video-subtype-guids
             var videoProperties = VideoEncodingProperties.CreateUncompressed(MediaEncodingSubtypes.Iyuv, width, height);
             var videoStreamDesc = new VideoStreamDescriptor(videoProperties);
-            videoStreamDesc.EncodingProperties.FrameRate.Numerator = 30;
+            videoStreamDesc.EncodingProperties.FrameRate.Numerator = framerate;
             videoStreamDesc.EncodingProperties.FrameRate.Denominator = 1;
-            videoStreamDesc.EncodingProperties.Bitrate = (30 * width * height * 8 * 8 / 12); // 30-fps 8bits/byte NV12=12bpp
+            videoStreamDesc.EncodingProperties.Bitrate = (framerate * width * height * 12); // NV12=12bpp
             var videoStreamSource = new MediaStreamSource(videoStreamDesc);
             videoStreamSource.BufferTime = TimeSpan.Zero; // TODO : playback breaks if buffering, need to investigate
             videoStreamSource.Starting += OnMediaStreamSourceStarting;
@@ -791,7 +920,12 @@ namespace TestAppUwp
             {
                 RunOnMainThread(() => {
                     localVideo.MediaPlayer.Play();
-                    //startLocalVideo.IsEnabled = true;
+                });
+            }
+            else if (sender == remoteVideoPlayer)
+            {
+                RunOnMainThread(() => {
+                    remoteVideo.MediaPlayer.Play();
                 });
             }
         }
@@ -816,7 +950,7 @@ namespace TestAppUwp
         {
             RunOnMainThread(() => {
                 LogMessage("Local MediaElement video playback ended.");
-                //StopLocalVideo();
+                //StopLocalMedia();
                 sender.Pause();
                 sender.Source = null;
                 if (sender == localVideoPlayer)
@@ -836,27 +970,43 @@ namespace TestAppUwp
         /// audio and video tracks from the peer connection.
         /// This is called on the UI thread.
         /// </summary>
-        private void StopLocalVideo()
+        private async void StopLocalMedia()
         {
             lock (_isLocalVideoPlayingLock)
             {
                 if (_isLocalVideoPlaying)
                 {
                     localVideo.MediaPlayer.Pause();
+                    localVideo.MediaPlayer.Source = null;
                     localVideo.SetMediaPlayer(null);
+                    localVideoSource.NotifyError(MediaStreamSourceErrorStatus.Other);
                     localVideoSource = null;
-                    //localMediaSource.Reset();
+                    localMediaSource.Dispose();
+                    localMediaSource = null;
                     _isLocalVideoPlaying = false;
-
-                    // Avoid deadlock in audio processing stack, as this call is delegated to the WebRTC
-                    // signaling thread (and will block the caller thread), and audio processing will
-                    // delegate to the UI thread for UWP operations (and will block the signaling thread).
-                    RunOnWorkerThread(() => {
-                        _peerConnection.RemoveLocalAudioTrack();
-                        _peerConnection.RemoveLocalVideoTrack();
-                    });
+                    _localVideoTrack.I420AVideoFrameReady -= LocalVideoTrack_I420AFrameReady;
                 }
             }
+
+            // Avoid deadlock in audio processing stack, as this call is delegated to the WebRTC
+            // signaling thread (and will block the caller thread), and audio processing will
+            // delegate to the UI thread for UWP operations (and will block the signaling thread).
+            await RunOnWorkerThread(() => {
+                lock (_isLocalVideoPlayingLock)
+                {
+                    _peerConnection.RemoveLocalAudioTrack();
+                    _peerConnection.RemoveLocalVideoTrack(_localVideoTrack); // TODO - this doesn't unregister the callbacks...
+                    _renegotiationOfferEnabled = true;
+                    if (_peerConnection.IsConnected)
+                    {
+                        _peerConnection.CreateOffer();
+                    }
+                    _localVideoTrack.Dispose();
+                    _localVideoTrack = null;
+                }
+            });
+
+            startLocalMedia.IsEnabled = true;
         }
 
         /// <summary>
@@ -865,10 +1015,15 @@ namespace TestAppUwp
         /// per-frame callback.
         /// </summary>
         /// <param name="trackKind">The kind of media track added (audio or video only).</param>
-        /// <seealso cref="Peer_RemoteI420FrameReady"/>
+        /// <seealso cref="Peer_RemoteI420AFrameReady"/>
         private void Peer_RemoteTrackAdded(PeerConnection.TrackKind trackKind)
         {
             LogMessage($"Added remote {trackKind} track.");
+            RunOnMainThread(() =>
+            {
+                remoteVideoStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
+                remoteVideoStatsTimer.Start();
+            });
         }
 
         /// <summary>
@@ -891,6 +1046,7 @@ namespace TestAppUwp
                     {
                         // Schedule on the main UI thread to access STA objects.
                         RunOnMainThread(() => {
+                            remoteVideoStatsTimer.Stop();
                             // Check that the remote video is still playing.
                             // This ensures that rapid calls to add/remove the video track
                             // are serialized, and an earlier remove call doesn't remove the
@@ -914,7 +1070,7 @@ namespace TestAppUwp
         /// for local rendering before (or in parallel of) being sent to the remote peer.
         /// </summary>
         /// <param name="frame">The newly captured video frame.</param>
-        private void Peer_LocalI420FrameReady(I420AVideoFrame frame)
+        private void LocalVideoTrack_I420AFrameReady(I420AVideoFrame frame)
         {
             localVideoBridge.HandleIncomingVideoFrame(frame);
         }
@@ -924,7 +1080,7 @@ namespace TestAppUwp
         /// (or any other use).
         /// </summary>
         /// <param name="frame">The newly received video frame.</param>
-        private void Peer_RemoteI420FrameReady(I420AVideoFrame frame)
+        private void Peer_RemoteI420AFrameReady(I420AVideoFrame frame)
         {
             // Lazily start the remote video media player when receiving
             // the first video frame from the remote peer. Currently there
@@ -932,19 +1088,38 @@ namespace TestAppUwp
             // will be sending some video track.
             //< TODO - See if we can add an API to enumerate the remote channels,
             //         or an On(Audio|Video|Data)Channel(Added|Removed) event?
+            bool needNewSource = false;
+            uint width = frame.width;
+            uint height = frame.height;
             lock (_isRemoteVideoPlayingLock)
             {
                 if (!_isRemoteVideoPlaying)
                 {
                     _isRemoteVideoPlaying = true;
-                    uint width = frame.width;
-                    uint height = frame.height;
-                    RunOnMainThread(() => {
-                        remoteVideoSource = CreateVideoStreamSource(width, height);
-                        remoteVideoPlayer.Source = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
-                        remoteVideoPlayer.Play();
-                    });
+                    needNewSource = true;
                 }
+                else if ((width != _remoteVideoWidth) || (height != _remoteVideoHeight))
+                {
+                    _remoteVideoWidth = width;
+                    _remoteVideoHeight = height;
+                    needNewSource = true;
+                }
+            }
+            if (needNewSource)
+            {
+                // We don't know the remote video framerate yet, so use a default.
+                uint framerate = 30;
+                RunOnMainThread(() => {
+                    remoteVideoPlayer.Pause();
+                    remoteVideoPlayer.Source = null;
+                    remoteVideo.SetMediaPlayer(null);
+                    remoteVideoSource?.NotifyError(MediaStreamSourceErrorStatus.Other);
+                    remoteMediaSource?.Dispose();
+                    remoteVideoSource = CreateVideoStreamSource(width, height, framerate);
+                    remoteMediaSource = MediaSource.CreateFromMediaStreamSource(remoteVideoSource);
+                    remoteVideoPlayer.Source = remoteMediaSource;
+                    remoteVideo.SetMediaPlayer(remoteVideoPlayer);
+                });
             }
 
             remoteVideoBridge.HandleIncomingVideoFrame(frame);
@@ -995,31 +1170,63 @@ namespace TestAppUwp
             remoteAudioSampleRate.Text = $"{sampleRate} Hz";
         }
 
+        private void MuteLocalVideoClicked(object sender, RoutedEventArgs e)
+        {
+            if (_localVideoTrack.Enabled)
+            {
+                _localVideoTrack.Enabled = false;
+                muteLocalVideoStroke.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                _localVideoTrack.Enabled = true;
+                muteLocalVideoStroke.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void MuteLocalAudioClicked(object sender, RoutedEventArgs e)
+        {
+            if (_peerConnection.IsLocalAudioTrackEnabled())
+            {
+                _peerConnection.SetLocalAudioTrackEnabled(false);
+                muteLocalAudioStroke.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                _peerConnection.SetLocalAudioTrackEnabled(true);
+                muteLocalAudioStroke.Visibility = Visibility.Collapsed;
+            }
+        }
+
         /// <summary>
         /// Toggle local audio and video playback on/off, adding or removing tracks as needed.
         /// </summary>
         /// <param name="sender">The object which invoked the event.</param>
         /// <param name="e">Event arguments.</param>
-        private async void StartLocalVideoClicked(object sender, RoutedEventArgs e)
+        private async void StartLocalMediaClicked(object sender, RoutedEventArgs e)
         {
+            // The button will be re-enabled once the current action is finished
+            startLocalMedia.IsEnabled = false;
+
             // Toggle between start and stop local audio/video feeds
-            //< TODO dssStatsTimer.IsEnabled used for toggle, but dssStatsTimer should be
-            // used also for remote statistics display (so even when no local video active)
-            if (dssStatsTimer.IsEnabled)
+            if (localVideoStatsTimer.IsEnabled && (_localVideoTrack != null))
             {
-                StopLocalVideo();
-                dssStatsTimer.Stop();
-                localLoadText.Text = "Load: -";
-                localPresentText.Text = "Present: -";
+                StopLocalMedia();
+                localVideoStatsTimer.Stop();
+                localLoadText.Text = "Produce: -";
+                localPresentText.Text = "Render: -";
                 localSkipText.Text = "Skip: -";
                 localLateText.Text = "Late: -";
-                remoteLoadText.Text = "Load: -";
-                remotePresentText.Text = "Present: -";
-                remoteSkipText.Text = "Skip: -";
-                remoteLateText.Text = "Late: -";
-                startLocalVideo.Content = "Start local video";
+                muteLocalVideo.IsEnabled = false;
+                muteLocalAudio.IsEnabled = false;
+                startLocalMediaIcon.Symbol = Symbol.Play;
+                muteLocalAudioStroke.Visibility = Visibility.Collapsed;
+                muteLocalVideoStroke.Visibility = Visibility.Collapsed;
+                return;
             }
-            else
+
+            // Only start video if previous track was completely shutdown
+            if (_localVideoTrack == null)
             {
                 LogMessage("Opening local A/V stream...");
 
@@ -1058,10 +1265,10 @@ namespace TestAppUwp
                 }
 
                 localVideoPlayer.Source = null;
-                localMediaSource?.Reset();
+                localVideoSource?.NotifyError(MediaStreamSourceErrorStatus.Other);
+                localMediaSource?.Dispose();
                 localVideo.SetMediaPlayer(null);
-                localVideoSource = null;
-                localVideoSource = CreateVideoStreamSource(width, height);
+                localVideoSource = CreateVideoStreamSource(width, height, (uint)framerate);
                 localMediaSource = MediaSource.CreateFromMediaStreamSource(localVideoSource);
                 localVideoPlayer.Source = localMediaSource;
                 localVideo.SetMediaPlayer(localVideoPlayer);
@@ -1075,12 +1282,17 @@ namespace TestAppUwp
 
                 try
                 {
+                    // The default start bitrate is quite low (300 kbps); use a higher value to get
+                    // better quality on local network.
+                    _peerConnection.SetBitrate(startBitrateBps: (uint)(width * height * framerate / 20));
+
                     // Add the local audio track captured from the local microphone
                     await _peerConnection.AddLocalAudioTrackAsync();
 
                     // Add the local video track captured from the local webcam
                     var trackConfig = new PeerConnection.LocalVideoTrackSettings
                     {
+                        trackName = "local_video",
                         videoDevice = captureDeviceInfo,
                         videoProfileId = videoProfileId,
                         videoProfileKind = SelectedVideoProfileKind,
@@ -1089,7 +1301,8 @@ namespace TestAppUwp
                         framerate = framerate,
                         enableMrc = false // TestAppUWP is a shared app, MRC will not get permission anyway
                     };
-                    await _peerConnection.AddLocalVideoTrackAsync(trackConfig);
+                    _localVideoTrack = await _peerConnection.AddLocalVideoTrackAsync(trackConfig);
+                    _localVideoTrack.I420AVideoFrameReady += LocalVideoTrack_I420AFrameReady;
                 }
                 catch (Exception ex)
                 {
@@ -1098,19 +1311,13 @@ namespace TestAppUwp
                     return;
                 }
 
-                dssStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
-                dssStatsTimer.Start();
-                startLocalVideo.Content = "Stop local video";
-
-                //< HACK - Generate pseudo-random unique identifiers which are stable
-                // across sessions (so they can be cached) and are deterministic for each
-                // of the first 2 instances of the app, so that 2 instances can connect to
-                // each other without having to setup anything.
-                {
-                    var idx = HACK_GetVideoDeviceIndex();
-                    localPeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)idx);
-                    remotePeerUidTextBox.Text = GetDeviceUniqueIdLikeUnity((byte)(1 - idx));
-                }
+                localVideoStatsTimer.Interval = TimeSpan.FromSeconds(1.0);
+                localVideoStatsTimer.Start();
+                muteLocalVideo.IsEnabled = true;
+                muteLocalAudio.IsEnabled = true;
+                startLocalMediaIcon.Symbol = Symbol.Stop;
+                muteLocalAudioStroke.Visibility = Visibility.Collapsed;
+                muteLocalVideoStroke.Visibility = Visibility.Collapsed;
 
                 localVideoSourceName.Text = $"({SelectedVideoCaptureDevice?.DisplayName})";
                 lock (_isLocalVideoPlayingLock)
@@ -1125,19 +1332,25 @@ namespace TestAppUwp
                 {
                     _peerConnection.CreateOffer();
                 }
+
+                // Enable stopping the local audio and video
+                startLocalMedia.IsEnabled = true;
             }
         }
 
-        private void OnDssStatsTimerTick(object sender, object e)
+        private void OnLocalVideoStatsTimerTicked(object sender, object e)
         {
-            //localLoadText.Text = $"Load: {localVideoBridge.FrameLoad:F2}";
-            //localPresentText.Text = $"Present: {localVideoBridge.FramePresent:F2}";
-            //localSkipText.Text = $"Skip: {localVideoBridge.FrameSkip:F2}";
+            localLoadText.Text = $"Produce: {localVideoBridge.FrameLoad:F2}";
+            localPresentText.Text = $"Render: {localVideoBridge.FramePresent:F2}";
+            localSkipText.Text = $"Skip: {localVideoBridge.FrameSkip:F2}";
             //localLateText.Text = $"Late: {localVideoBridge.LateFrame:F2}";
+        }
 
-            //remoteLoadText.Text = $"Load: {remoteVideoBridge.FrameLoad:F2}";
-            //remotePresentText.Text = $"Present: {remoteVideoBridge.FramePresent:F2}";
-            //remoteSkipText.Text = $"Skip: {remoteVideoBridge.FrameSkip:F2}";
+        private void OnRemoteVideoStatsTimerTicked(object sender, object e)
+        {
+            remoteLoadText.Text = $"Receive: {remoteVideoBridge.FrameLoad:F2}";
+            remotePresentText.Text = $"Render: {remoteVideoBridge.FramePresent:F2}";
+            remoteSkipText.Text = $"Skip: {remoteVideoBridge.FrameSkip:F2}";
             //remoteLateText.Text = $"Late: {remoteVideoBridge.LateFrame:F2}";
         }
 
@@ -1151,7 +1364,8 @@ namespace TestAppUwp
             createOfferButton.IsEnabled = false;
             createOfferButton.Content = "Joining...";
 
-            _peerConnection.PreferredVideoCodec = PreferredVideoCodec.Text;
+            _peerConnection.PreferredAudioCodec = PreferredAudioCodec;
+            _peerConnection.PreferredVideoCodec = PreferredVideoCodec;
             _peerConnection.CreateOffer();
         }
 
@@ -1164,31 +1378,6 @@ namespace TestAppUwp
             await _peerConnection.AddDataChannelAsync("extra_channel", true, true);
         }
 
-        /// <summary>
-        /// Retrieve a unique ID that is stable across application instances, similar to what
-        /// Unity does with SystemInfo.deviceUniqueIdentifier.
-        /// </summary>
-        /// <param name="variant">Optional variation quantity to modify the unique ID,
-        /// to allow multiple instances of the application to run in parallel with different IDs.</param>
-        /// <returns>A unique string ID stable across multiple runs of the application</returns>
-        /// <remarks>
-        /// This is a debugging utility useful to generate deterministic WebRTC peers for node-dss
-        /// signaling, to avoid manual input during testing. This is not a production-level solution.
-        /// </remarks>
-        private string GetDeviceUniqueIdLikeUnity(byte variant = 0)
-        {
-            // More or less like Unity, which can use HardwareIdentification.GetPackageSpecificToken() in some cases,
-            // although it's unclear how they convert that to a string.
-            Windows.Storage.Streams.IBuffer buffer = HardwareIdentification.GetPackageSpecificToken(null).Id;
-            using (var dataReader = Windows.Storage.Streams.DataReader.FromBuffer(buffer))
-            {
-                byte[] bytes = new byte[buffer.Length];
-                dataReader.ReadBytes(bytes);
-                bytes[0] += variant;
-                return BitConverter.ToString(bytes).Replace("-", string.Empty).Remove(32);
-            }
-        }
-
         private void PollDssButtonClicked(object sender, RoutedEventArgs e)
         {
             // If already polling, stop
@@ -1198,6 +1387,8 @@ namespace TestAppUwp
                 pollDssButton.IsEnabled = false; // will be re-enabled when cancellation is completed, see DssSignaler_OnPollingDone
                 pollDssButton.Content = "Start polling";
                 dssSignaler.StopPollingAsync();
+                // Cannot create offer before signaling is ready
+                createOfferButton.IsEnabled = false;
                 return;
             }
 
@@ -1210,14 +1401,14 @@ namespace TestAppUwp
 
             dssSignaler.HttpServerAddress = dssServer.Text;
             dssSignaler.LocalPeerId = localPeerUidTextBox.Text;
+            dssSignaler.RemotePeerId = remotePeerUidTextBox.Text;
             dssSignaler.PollTimeMs = pollTimeMs;
-            remotePeerId = remotePeerUidTextBox.Text;
-            dssSignaler.RemotePeerId = remotePeerId;
-
             if (dssSignaler.StartPollingAsync())
             {
                 pollDssButton.Content = "Stop polling";
                 isDssPolling = true;
+                // Cannot create offer before signaling is ready
+                createOfferButton.IsEnabled = true;
             }
         }
 

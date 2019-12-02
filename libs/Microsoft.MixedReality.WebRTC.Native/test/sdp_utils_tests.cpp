@@ -1,10 +1,9 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
-#include "../include/api.h"
+#include "interop/interop_api.h"
 
 // Copied from webrtc\pc\webrtcsdp_unittest.cc
 static const char kSdpFullString[] =
@@ -163,8 +162,9 @@ TEST(SdpUtils, ForceCodecs) {
   // advertized as supported in the input message
   SdpFilter audio_filter{"opus", ""};
   SdpFilter video_filter{"h264", ""};
-  ASSERT_EQ(MRS_SUCCESS, mrsSdpForceCodecs(kSdpFullString, audio_filter,
-                                           video_filter, buffer._data, &len));
+  ASSERT_EQ(Result::kSuccess,
+            mrsSdpForceCodecs(kSdpFullString, audio_filter, video_filter,
+                              buffer._data, &len));
   ASSERT_EQ(sizeof(kSdpForcedAudioOpus), len);
   ASSERT_EQ(0, memcmp(kSdpForcedAudioOpus, buffer._data, (size_t)len));
 }
@@ -176,8 +176,9 @@ TEST(SdpUtils, ForceCodecsNotSupported) {
   ASSERT_NE(nullptr, buffer._data);
   SdpFilter audio_filter{"random_non_existing_audio_codec", ""};
   SdpFilter video_filter{"random_non_existing_video_codec", ""};
-  ASSERT_EQ(MRS_SUCCESS, mrsSdpForceCodecs(kSdpFullString, audio_filter,
-                                           video_filter, buffer._data, &len));
+  ASSERT_EQ(Result::kSuccess,
+            mrsSdpForceCodecs(kSdpFullString, audio_filter, video_filter,
+                              buffer._data, &len));
   ASSERT_EQ(sizeof(kSdpFullString), len);
   ASSERT_EQ(0, memcmp(kSdpFullString, buffer._data, (size_t)len));
 }
@@ -188,7 +189,7 @@ TEST(SdpUtils, ForceCodecsShortBuffer) {
   char buffer[32];
   SdpFilter audio_filter{"opus", ""};
   SdpFilter video_filter{"h264", ""};
-  ASSERT_EQ(MRS_E_INVALID_PARAMETER,
+  ASSERT_EQ(Result::kInvalidParameter,
             mrsSdpForceCodecs(kSdpFullString, audio_filter, video_filter,
                               buffer, &len));
   ASSERT_EQ(sizeof(kSdpForcedAudioOpus), len);

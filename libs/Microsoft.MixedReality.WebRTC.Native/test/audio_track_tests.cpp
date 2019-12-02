@@ -1,21 +1,17 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #include "pch.h"
 
-#include "api.h"
+#include "interop/interop_api.h"
+#include "audio_frame.h"
 
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 
 namespace {
 
 // PeerConnectionAudioFrameCallback
-using AudioFrameCallback = Callback<const void*,
-                                    const uint32_t,
-                                    const uint32_t,
-                                    const uint32_t,
-                                    const uint32_t>;
+using AudioFrameCallback = InteropCallback<const AudioFrame&>;
 
 bool IsSilent_uint8(const uint8_t* data,
                     uint32_t size,
@@ -76,20 +72,18 @@ bool IsSilent_int16(const int16_t* data,
 TEST(AudioTrack, Simple) {
   LocalPeerPairRaii pair;
 
-  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
-  ASSERT_NE(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
+  ASSERT_NE(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   uint32_t call_count = 0;
-  AudioFrameCallback audio_cb = [&call_count](const void* audio_data,
-                                              const uint32_t bits_per_sample,
-                                              const uint32_t sample_rate,
-                                              const uint32_t number_of_channels,
-                                              const uint32_t number_of_frames) {
-    ASSERT_NE(nullptr, audio_data);
-    ASSERT_LT(0u, bits_per_sample);
-    ASSERT_LT(0u, sample_rate);
-    ASSERT_LT(0u, number_of_channels);
-    ASSERT_LT(0u, number_of_frames);
+  AudioFrameCallback audio_cb = [&call_count](const AudioFrame& frame) {
+    ASSERT_NE(nullptr, frame.data_);
+    ASSERT_LT(0u, frame.bits_per_sample_);
+    ASSERT_LT(0u, frame.sampling_rate_hz_);
+    ASSERT_LT(0u, frame.channel_count_);
+    ASSERT_LT(0u, frame.sample_count_);
     // TODO - See comment above
     // if (bits_per_sample == 8) {
     //  uint8_t min, max;
@@ -117,14 +111,16 @@ TEST(AudioTrack, Simple) {
   // Check several times this, because the audio "mute" is flaky, does not
   // really mute the audio, so check that the reported status is still
   // correct.
-  ASSERT_NE(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+  ASSERT_NE(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   Event ev;
   ev.WaitFor(5s);
   ASSERT_LT(50u, call_count);  // at least 10 CPS
 
   // Same as above
-  ASSERT_NE(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+  ASSERT_NE(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   mrsPeerConnectionRegisterRemoteAudioFrameCallback(pair.pc2(), nullptr,
                                                     nullptr);
@@ -133,24 +129,23 @@ TEST(AudioTrack, Simple) {
 TEST(AudioTrack, Muted) {
   LocalPeerPairRaii pair;
 
-  ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
 
   // Disable the audio track; it should output only silence
-  ASSERT_EQ(MRS_SUCCESS,
-            mrsPeerConnectionSetLocalAudioTrackEnabled(pair.pc1(), false));
-  ASSERT_EQ(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+  ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetLocalAudioTrackEnabled(
+                                         pair.pc1(), mrsBool::kFalse));
+  ASSERT_EQ(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   uint32_t call_count = 0;
   AudioFrameCallback audio_cb =
-      [&call_count, &pair](
-          const void* audio_data, const uint32_t bits_per_sample,
-          const uint32_t sample_rate, const uint32_t number_of_channels,
-          const uint32_t number_of_frames) {
-        ASSERT_NE(nullptr, audio_data);
-        ASSERT_LT(0u, bits_per_sample);
-        ASSERT_LT(0u, sample_rate);
-        ASSERT_LT(0u, number_of_channels);
-        ASSERT_LT(0u, number_of_frames);
+      [&call_count, &pair](const AudioFrame& frame) {
+        ASSERT_NE(nullptr, frame.data_);
+        ASSERT_LT(0u, frame.bits_per_sample_);
+        ASSERT_LT(0u, frame.sampling_rate_hz_);
+        ASSERT_LT(0u, frame.channel_count_);
+        ASSERT_LT(0u, frame.sample_count_);
         // TODO - See comment above
         // if (bits_per_sample == 8) {
         //  uint8_t min, max;
@@ -178,14 +173,16 @@ TEST(AudioTrack, Muted) {
   // Check several times this, because the audio "mute" is flaky, does not
   // really mute the audio, so check that the reported status is still
   // correct.
-  ASSERT_EQ(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+  ASSERT_EQ(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   Event ev;
   ev.WaitFor(5s);
   ASSERT_LT(50u, call_count);  // at least 10 CPS
 
   // Same as above
-  ASSERT_EQ(0, mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
+  ASSERT_EQ(mrsBool::kFalse,
+            mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   mrsPeerConnectionRegisterRemoteAudioFrameCallback(pair.pc2(), nullptr,
                                                     nullptr);

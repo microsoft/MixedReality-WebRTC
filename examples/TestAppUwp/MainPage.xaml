@@ -94,7 +94,7 @@
                         <TextBlock Text="ms" VerticalAlignment="Center" Margin="4,0,0,0" />
                     </StackPanel>
                     <TextBlock Text="Local peer UID" VerticalAlignment="Center" Grid.Row="4" HorizontalAlignment="Right" Margin="0,0,12,0" Height="20"  />
-                    <TextBlock x:Name="localPeerUidTextBox" MinWidth="250" VerticalAlignment="Center" IsTextSelectionEnabled="True" Grid.Row="4" Grid.Column="1" Height="20" Margin="0,6,0,6" />
+                    <TextBox x:Name="localPeerUidTextBox" MinWidth="250" Grid.Row="4" Grid.Column="1" Margin="0,6,0,6" />
                     <TextBlock Text="Remote peer UID" VerticalAlignment="Center" Margin="0,0,12,0" Grid.Row="5" HorizontalAlignment="Right"  />
                     <TextBox x:Name="remotePeerUidTextBox" MinWidth="250" Grid.Row="5" Grid.Column="1" Margin="0,6,0,6" />
                     <!--<SymbolIcon Symbol="Setting" />-->
@@ -119,6 +119,32 @@
                         <RadioButton x:Name="sdpSemanticUnifiedPlan" Content="Unified Plan" IsChecked="True" GroupName="SdpSemanticGroup" Margin="0,0,20,0" />
                         <RadioButton x:Name="sdpSemanticPlanB" Content="Plan B (deprecated)" GroupName="SdpSemanticGroup" />
                     </StackPanel>
+                    <TextBlock Text="Preferred codecs" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
+                    <TextBlock FontStyle="Italic" Margin="0,6,0,0">
+                            This option allows filtering the SDP offer to retain only one preferred audio and/or video codec amongst the supported ones, thereby forcing their use.<LineBreak/>This must be set before sending an offer to the remote peer. This has no effect on the receiver side.<LineBreak/>If the selected codec is not supported by the local peer implemention, this does nothing, and the default codec is used.
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Audio :</TextBlock>
+                        <RadioButton x:Name="PreferredAudioCodec_Default" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="(default)" IsChecked="True" />
+                        <RadioButton x:Name="PreferredAudioCodec_OPUS" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="OPUS" />
+                        <RadioButton x:Name="PreferredAudioCodec_Custom" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="Custom value" />
+                    </StackPanel>
+                    <TextBlock x:Name="CustomPreferredAudioCodecHelpText" FontStyle="Italic" Margin="48,6,0,0">
+                            Leave blank to use the default video codec. A partial list is <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.<LineBreak />Common values include "opus" or "ISAC". Names are case sensitive.
+                    </TextBlock>
+                    <TextBox x:Name="CustomPreferredAudioCodec" Text="" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Video :</TextBlock>
+                        <RadioButton x:Name="PreferredVideoCodec_Default" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="(default)" />
+                        <RadioButton x:Name="PreferredVideoCodec_H264" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="H.264" IsChecked="True" />
+                        <RadioButton x:Name="PreferredVideoCodec_VP8" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="VP8" />
+                        <RadioButton x:Name="PreferredVideoCodec_Custom" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="Custom value" />
+                    </StackPanel>
+                    <TextBlock x:Name="CustomPreferredVideoCodecHelpText" FontStyle="Italic" Margin="48,6,0,0">
+                            Leave blank to use the default video codec. A partial list is <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.<LineBreak />Common values include "H264" or "VP8". Names are case sensitive.
+                    </TextBlock>
+                    <TextBox x:Name="CustomPreferredVideoCodec" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
+                    <TextBlock Text="SDP connection offer" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
                     <Button Name="createOfferButton" IsEnabled="False" Content="Create offer" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="CreateOfferButtonClicked" Width="125" Margin="0,12,0,0"/>
                     <Button Name="addExtraDataChannelButton" Content="Add extra data channel" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="AddExtraDataChannelButtonClicked" Width="250" Margin="0,12,0,0"/>
                 </StackPanel>
@@ -136,11 +162,7 @@
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="Video capture device" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
                         <ListView x:Name="VideoCaptureDeviceList" ItemsSource="{x:Bind VideoCaptureDevices}" ItemTemplate="{StaticResource VideoCaptureDeviceTemplate}" MinHeight="120" MinWidth="120" />
-                        <TextBlock Text="Preferred video codec" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
-                        <TextBlock FontStyle="Italic" Margin="0,6,0,0">
-                            Leave blank to use the default video codec. A partial list is <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.<LineBreak />Common values include "H264", "H265", "VP8", "VP9". Names are case sensitive.
-                        </TextBlock>
-                        <TextBox x:Name="PreferredVideoCodec" Text="H264" Margin="0,6,0,6" Width="400" HorizontalAlignment="Left" />
+                        
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Grid.Column="2">
                         <TextBlock Text="Video profile" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
@@ -187,10 +209,23 @@
                     <Border Grid.Row="1" BorderBrush="#66000000" BorderThickness="2,2,2,2" Background="#AAFFFFFF">
                         <MediaPlayerElement x:Name="localVideo" Height="480" Width="640" />
                     </Border>
-                    <Grid Grid.Row="1">
-                        <Rectangle Width="125" Height="32" VerticalAlignment="Bottom" Margin="0,0,0,20" Fill="#CCFFFFFF" />
-                        <Button Grid.Row="1" Name="startLocalVideo" IsEnabled="False" Content="Start local video" VerticalAlignment="Bottom" Click="StartLocalVideoClicked" Width="125" HorizontalAlignment="Center" Margin="0,0,0,20" Height="32" />
-                    </Grid>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Height="68" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,20" Background="#CCB2D0FF" Padding="10,10,10,10" >
+                        <Button  Name="startLocalMedia" IsEnabled="False" VerticalAlignment="Center" Click="StartLocalMediaClicked" Width="48" HorizontalAlignment="Center" Height="48">
+                            <SymbolIcon x:Name="startLocalMediaIcon" Symbol="Play" />
+                        </Button>
+                        <Button Name="muteLocalVideo" IsEnabled="False" VerticalAlignment="Center" Click="MuteLocalVideoClicked" Width="48" HorizontalAlignment="Center" Height="48" Margin="10,0,0,0" Padding="0,0,0,0">
+                            <Grid Width="32" Height="32" VerticalAlignment="Center">
+                                <SymbolIcon Symbol="Video" />
+                                <Path x:Name="muteLocalVideoStroke" Stroke="Black" Data="M 32,0 L 0,32" Width="32" Height="32" />
+                            </Grid>
+                        </Button>
+                        <Button Name="muteLocalAudio" IsEnabled="False" VerticalAlignment="Center" Click="MuteLocalAudioClicked" Width="48" HorizontalAlignment="Center" Height="48" Margin="10,0,0,0" Padding="0,0,0,0">
+                            <Grid Width="32" Height="32" VerticalAlignment="Center">
+                                <SymbolIcon Symbol="Microphone" />
+                                <Path x:Name="muteLocalAudioStroke" Stroke="Black" Data="M 32,0 L 0,32" Width="32" Height="32" />
+                            </Grid>
+                        </Button>
+                    </StackPanel>
                     <Border Grid.Row="1" BorderBrush="#66000000" BorderThickness="2,2,2,2" Grid.Column="2" Background="#AAFFFFFF">
                         <MediaPlayerElement x:Name="remoteVideo" Height="480" Width="640" />
                     </Border>
@@ -201,10 +236,10 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="localLoadText" Text="Load :"   HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="localPresentText" Text="Present :"  Grid.Column="1" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="localSkipText" Text="Skip :" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="localLateText" Text="Late :" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="localLoadText" Text="Produce:" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="localPresentText" Text="Render:"  Grid.Column="1" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="localSkipText" Text="Skip:" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="localLateText" Text="Late:" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     </Grid>
                     <Grid Grid.Row="2" Grid.Column="2">
                         <Grid.ColumnDefinitions>
@@ -213,10 +248,10 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="remoteLoadText" Text="Load :"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="remotePresentText" Text="Present :"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" />
-                        <TextBlock x:Name="remoteSkipText" Text="Skip :" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="2" />
-                        <TextBlock x:Name="remoteLateText" Text="Late :" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="remoteLoadText" Text="Receive:"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBlock x:Name="remotePresentText" Text="Render:"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" />
+                        <TextBlock x:Name="remoteSkipText" Text="Skip:" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="2" />
+                        <TextBlock x:Name="remoteLateText" Text="Late:" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     </Grid>
                     <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2">
                         <TextBlock Text="ICE state : " VerticalAlignment="Top" />

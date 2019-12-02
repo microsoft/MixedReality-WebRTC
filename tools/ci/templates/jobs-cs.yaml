@@ -129,7 +129,7 @@ jobs:
     displayName: 'Build C# Tests (AnyCPU-${{parameters.testConfig}}) [incremental]'
     inputs:
       projects: tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Tests.csproj
-      arguments: '-c ${{parameters.testConfig}}'
+      arguments: '-c ${{parameters.testConfig}} -p:DisableDeviceTests=1'
       workingDirectory: tests/Microsoft.MixedReality.WebRTC.Tests/
 
   # Run tests (Win32-x64-Release)

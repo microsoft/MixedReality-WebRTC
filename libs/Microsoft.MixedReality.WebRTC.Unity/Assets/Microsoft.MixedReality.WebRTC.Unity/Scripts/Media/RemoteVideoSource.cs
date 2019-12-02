@@ -69,7 +69,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (!IsPlaying)
             {
                 IsPlaying = true;
-                PeerConnection.Peer.I420RemoteVideoFrameReady += I420RemoteVideoFrameReady;
+                PeerConnection.Peer.I420ARemoteVideoFrameReady += I420ARemoteVideoFrameReady;
             }
         }
 
@@ -88,7 +88,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (IsPlaying)
             {
                 IsPlaying = false;
-                PeerConnection.Peer.I420RemoteVideoFrameReady -= I420RemoteVideoFrameReady;
+                PeerConnection.Peer.I420ARemoteVideoFrameReady -= I420ARemoteVideoFrameReady;
             }
         }
 
@@ -99,7 +99,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         protected void Awake()
         {
-            FrameQueue = new VideoFrameQueue<I420VideoFrameStorage>(5);
+            FrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(5);
             PeerConnection.OnInitialized.AddListener(OnPeerInitialized);
             PeerConnection.OnShutdown.AddListener(OnPeerShutdown);
         }
@@ -190,7 +190,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// a video renderer.
         /// </summary>
         /// <param name="frame">The newly-available video frame from the remote peer</param>
-        private void I420RemoteVideoFrameReady(I420AVideoFrame frame)
+        private void I420ARemoteVideoFrameReady(I420AVideoFrame frame)
         {
             // This does not need to enqueue work, because FrameQueue is thread-safe
             // and can be manipulated from any thread (does not access Unity objects).

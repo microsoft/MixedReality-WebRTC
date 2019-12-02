@@ -12,6 +12,9 @@
 #include "data_channel.h"
 #include "str.h"
 
+// Internal
+#include "interop/interop_api.h"
+
 namespace Microsoft::MixedReality::WebRTC {
 
 class PeerConnection;

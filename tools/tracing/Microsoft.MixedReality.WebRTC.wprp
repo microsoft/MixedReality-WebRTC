@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WindowsPerformanceRecorder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1" Copyright="Microsoft Corporation" Company="Microsoft Corporation" Tag="auto-generated">
+  <Profiles>
+    <EventCollector Id="EventCollector_MRWebRTC" Name="EventCollector_MRWebRTC" Realtime="false" Private="false" ProcessPrivate="false" Secure="false">
+      <BufferSize Value="5024" />
+      <Buffers Value="4" PercentageOfTotalMemory="true" MaximumBufferSpace="100" />
+    </EventCollector>
+    <EventProvider Id="EventProvider_MRWebRTC_Light" Name="00AEE89E-B531-4F20-A2C5-D02F37CB6AA1" Level="4">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF" />
+      </Keywords>
+    </EventProvider>
+    <EventProvider Id="EventProvider_MRWebRTC_Verbose" Name="00AEE89E-B531-4F20-A2C5-D02F37CB6AA1" Level="5">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF" />
+      </Keywords>
+    </EventProvider>
+    <Profile Id="WebRTC.Light.Memory" Name="WebRTC" Description="Microsoft.MixedReality.WebRTC" LoggingMode="Memory" DetailLevel="Light">
+      <Collectors>
+        <EventCollectorId Value="EventCollector_MRWebRTC">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_MRWebRTC_Light" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+    <Profile Id="WebRTC.Verbose.Memory" Name="WebRTC" Description="Microsoft.MixedReality.WebRTC" LoggingMode="Memory" DetailLevel="Verbose">
+      <Collectors>
+        <EventCollectorId Value="EventCollector_MRWebRTC">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_MRWebRTC_Verbose" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+    <Profile Id="WebRTC.Light.File" Name="WebRTC" Description="Microsoft.MixedReality.WebRTC" LoggingMode="File" DetailLevel="Light">
+      <Collectors>
+        <EventCollectorId Value="EventCollector_MRWebRTC">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_MRWebRTC_Light" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+    <Profile Id="WebRTC.Verbose.File" Name="WebRTC" Description="Microsoft.MixedReality.WebRTC" LoggingMode="File" DetailLevel="Verbose">
+      <Collectors>
+        <EventCollectorId Value="EventCollector_MRWebRTC">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_MRWebRTC_Verbose" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+  </Profiles>
+</WindowsPerformanceRecorder>

@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 
@@ -14,6 +14,11 @@ namespace Microsoft.MixedReality.WebRTC
     /// </remarks>
     public ref struct AudioFrame
     {
+        /// <summary>
+        /// Buffer of audio samples for all channels.
+        /// </summary>
+        public IntPtr audioData;
+
         /// <summary>
         /// Number of bits per sample, generally 8 or 16.
         /// </summary>
@@ -30,16 +35,11 @@ namespace Microsoft.MixedReality.WebRTC
         public uint channelCount;
 
         /// <summary>
-        /// Number of consecutive frames in the audio data buffer.
+        /// Number of consecutive samples in the audio data buffer.
         /// WebRTC generally delivers frames in 10ms chunks, so for e.g. a 16 kHz
-        /// sample rate the frame count would be 1000.
+        /// sample rate the sample count would be 1000.
         /// </summary>
-        public uint frameCount;
-
-        /// <summary>
-        /// Buffer of audio samples for all channels and all frames.
-        /// </summary>
-        public IntPtr audioData;
+        public uint sampleCount;
     }
 
     /// <summary>

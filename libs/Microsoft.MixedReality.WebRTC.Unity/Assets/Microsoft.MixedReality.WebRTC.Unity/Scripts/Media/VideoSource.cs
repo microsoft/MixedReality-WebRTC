@@ -25,13 +25,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// Base class for video sources plugging into the internal peer connection API to
     /// expose a single video stream to a renderer (<see cref="MediaPlayer"/> or custom).
     /// </summary>
-    public class VideoSource : MonoBehaviour
+    public abstract class VideoSource : MonoBehaviour
     {
         /// <summary>
         /// Frame queue holding the pending frames enqueued by the video source itself,
         /// which a video renderer needs to read and display.
         /// </summary>
-        public VideoFrameQueue<I420VideoFrameStorage> FrameQueue;
+        public VideoFrameQueue<I420AVideoFrameStorage> FrameQueue;
 
         /// <summary>
         /// Event invoked from the main Unity thread when the video stream starts.

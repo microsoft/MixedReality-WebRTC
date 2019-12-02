@@ -1,9 +1,27 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using Microsoft.MixedReality.WebRTC.Tracing;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Microsoft.MixedReality.WebRTC.Interop
 {
+    /// <summary>
+    /// Interop boolean.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Size = 4)]
+    internal struct mrsBool
+    {
+        public static readonly mrsBool True = new mrsBool(true);
+        public static readonly mrsBool False = new mrsBool(false);
+        private int _value;
+        public mrsBool(bool value) { _value = (value ? -1 : 0); }
+        public static explicit operator mrsBool(bool b) { return (b ? True : False); }
+        public static explicit operator bool(mrsBool b) { return (b._value != 0); }
+    }
+
     /// <summary>
     /// Attribute to decorate managed delegates used as native callbacks (reverse P/Invoke).
     /// Required by Mono in Ahead-Of-Time (AOT) compiling, and Unity with the IL2CPP backend.
@@ -27,16 +45,25 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.so";
 #endif
 
-        // Error codes returned by the C API -- see api.h
+        // Error codes returned by the interop API -- see mrs_errors.h
         internal const uint MRS_SUCCESS = 0u;
         internal const uint MRS_E_UNKNOWN = 0x80000000u;
         internal const uint MRS_E_INVALID_PARAMETER = 0x80000001u;
         internal const uint MRS_E_INVALID_OPERATION = 0x80000002u;
         internal const uint MRS_E_WRONG_THREAD = 0x80000003u;
-        internal const uint MRS_E_INVALID_PEER_HANDLE = 0x80000101u;
-        internal const uint MRS_E_PEER_NOT_INITIALIZED = 0x80000102u;
+        internal const uint MRS_E_NOTFOUND = 0x80000004u;
+        internal const uint MRS_E_INVALID_NATIVE_HANDLE = 0x80000005u;
+        internal const uint MRS_E_NOT_INITIALIZED = 0x80000006u;
+        internal const uint MRS_E_UNSUPPORTED = 0x80000007u;
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
         internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
+
+        public static IntPtr MakeWrapperRef<T>(T obj) where T : class
+        {
+            var handle = GCHandle.Alloc(obj, GCHandleType.Normal);
+            var arg = GCHandle.ToIntPtr(handle);
+            return arg;
+        }
 
         public static T ToWrapper<T>(IntPtr peer) where T : class
         {
@@ -104,35 +131,45 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         /// <param name="res">The error code to turn into an exception, if not zero (MRS_SUCCESS).</param>
         public static void ThrowOnErrorCode(uint res)
         {
+            if (res == MRS_SUCCESS)
+            {
+                return;
+            }
+
+            MainEventSource.Log.NativeError(res);
+
             switch (res)
             {
-            case MRS_SUCCESS:
-                return;
+                case MRS_E_UNKNOWN:
+                default:
+                    throw new Exception();
 
-            case MRS_E_UNKNOWN:
-            default:
-                throw new Exception();
+                case MRS_E_INVALID_PARAMETER:
+                    throw new ArgumentException();
 
-            case MRS_E_INVALID_PARAMETER:
-                throw new ArgumentException();
+                case MRS_E_INVALID_OPERATION:
+                    throw new InvalidOperationException();
 
-            case MRS_E_INVALID_OPERATION:
-                throw new InvalidOperationException();
+                case MRS_E_WRONG_THREAD:
+                    throw new InvalidOperationException("This method cannot be called on that thread.");
 
-            case MRS_E_WRONG_THREAD:
-                throw new InvalidOperationException("This method cannot be called on that thread.");
+                case MRS_E_NOTFOUND:
+                    throw new Exception("Object not found.");
 
-            case MRS_E_INVALID_PEER_HANDLE:
-                throw new InvalidOperationException("Invalid peer connection handle.");
+                case MRS_E_INVALID_NATIVE_HANDLE:
+                    throw new InvalidOperationException("Invalid native interop handle.");
 
-            case MRS_E_PEER_NOT_INITIALIZED:
-                throw new InvalidOperationException("Peer connection not initialized.");
+                case MRS_E_NOT_INITIALIZED:
+                    throw new InvalidOperationException("Object not initialized.");
 
-            case MRS_E_SCTP_NOT_NEGOTIATED:
-                throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
+                case MRS_E_UNSUPPORTED:
+                    throw new NotSupportedException();
 
-            case MRS_E_INVALID_DATA_CHANNEL_ID:
-                throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
+                case MRS_E_SCTP_NOT_NEGOTIATED:
+                    throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
+
+                case MRS_E_INVALID_DATA_CHANNEL_ID:
+                    throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
             }
         }
     }

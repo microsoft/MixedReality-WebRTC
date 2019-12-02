@@ -1,7 +1,8 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 #if ENABLE_WINMD_SUPPORT
@@ -78,16 +79,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Enable Mixed Reality Capture (MRC) if available on the local device.
-        /// This option has no effect on devices not supporting MRC.
+        /// This option has no effect on devices not supporting MRC, and is silently ignored.
         /// </summary>
         [Tooltip("Enable Mixed Reality Capture (MRC) if available on the local device")]
         public bool EnableMixedRealityCapture = true;
+
+        /// <summary>
+        /// Enable the on-screen recording indicator when Mixed Reality Capture (MRC) is
+        /// available and enabled.
+        /// This option has no effect on devices not supporting MRC, or if MRC is not enabled.
+        /// </summary>
+        [Tooltip("Enable the on-screen recording indicator when MRC is enabled")]
+        public bool EnableMRCRecordingIndicator = true;
 
         /// <summary>
         /// Peer connection this local video source will add a video track to.
         /// </summary>
         [Header("Video track")]
         public PeerConnection PeerConnection;
+
+        /// <summary>
+        /// Name of the track. This will be sent in the SDP messages.
+        /// </summary>
+        [Tooltip("SDP track name.")]
+        [SdpToken(allowEmpty: true)]
+        public string TrackName;
 
         /// <summary>
         /// Automatically register as a video track when the peer connection is ready.
@@ -117,6 +133,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public WebRTC.PeerConnection.VideoProfileKind VideoProfileKind = WebRTC.PeerConnection.VideoProfileKind.Unspecified;
 
         /// <summary>
+        /// Video track added to the peer connection that this component encapsulates.
+        /// </summary>
+        public LocalVideoTrack Track { get; private set; }
+
+        /// <summary>
         /// For manual <see cref="Mode"/>, optional constraints on the resolution and framerate of
         /// the capture format. These constraints are additive, meaning a matching format must satisfy
         /// all of them at once, in addition of being restricted to the formats supported by the selected
@@ -131,7 +152,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected void Awake()
         {
-            FrameQueue = new VideoFrameQueue<I420VideoFrameStorage>(3);
+            FrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(3);
             PeerConnection.OnInitialized.AddListener(OnPeerInitialized);
             PeerConnection.OnShutdown.AddListener(OnPeerShutdown);
         }
@@ -165,8 +186,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if ((nativePeer != null) && nativePeer.Initialized)
             {
                 VideoStreamStopped.Invoke();
-                nativePeer.I420LocalVideoFrameReady -= I420LocalVideoFrameReady;
-                nativePeer.RemoveLocalVideoTrack();
+                Track.I420AVideoFrameReady -= I420ALocalVideoFrameReady;
+                nativePeer.RemoveLocalVideoTrack(Track);
+                Track.Dispose();
+                Track = null;
                 FrameQueue.Clear();
             }
         }
@@ -184,22 +207,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        private void DoAutoStartActions(WebRTC.PeerConnection nativePeer)
+        private async void DoAutoStartActions(WebRTC.PeerConnection nativePeer)
         {
-            if (AutoStartCapture)
-            {
-                nativePeer.I420LocalVideoFrameReady += I420LocalVideoFrameReady;
-
-                // TODO - Currently AddLocalVideoTrackAsync() both open the capture device AND add a video track
-            }
-
             if (AutoAddTrack)
             {
-                AddLocalVideoTrackImpl(nativePeer);
+                // This needs to be awaited because it will initialize Track, used below
+                await AddLocalVideoTrackImplAsync(nativePeer);
+            }
+
+            if (AutoStartCapture && (Track != null))
+            {
+                Track.I420AVideoFrameReady += I420ALocalVideoFrameReady;
+                // TODO - Currently AddLocalVideoTrackAsync() both open the capture device AND add a video track
             }
         }
 
-        private void AddLocalVideoTrackImpl(WebRTC.PeerConnection nativePeer)
+        private async Task AddLocalVideoTrackImplAsync(WebRTC.PeerConnection nativePeer)
         {
             string videoProfileId = VideoProfileId;
             var videoProfileKind = VideoProfileKind;
@@ -244,31 +267,51 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // accounted for.
             nativePeer.PreferredVideoCodec = PreferredVideoCodec;
 
+            // Ensure the track has a valid name
+            string trackName = TrackName;
+            if (trackName.Length == 0)
+            {
+                trackName = Guid.NewGuid().ToString();
+                TrackName = trackName;
+            }
+            SdpTokenAttribute.Validate(trackName, allowEmpty: false);
+
             FrameQueue.Clear();
+
             var trackSettings = new WebRTC.PeerConnection.LocalVideoTrackSettings
             {
+                trackName = trackName,
                 videoDevice = default,
                 videoProfileId = videoProfileId,
                 videoProfileKind = videoProfileKind,
                 width = (width > 0 ? (uint?)width : null),
                 height = (height > 0 ? (uint?)height : null),
                 framerate = (framerate > 0 ? (double?)framerate : null),
-                enableMrc = EnableMixedRealityCapture
+                enableMrc = EnableMixedRealityCapture,
+                enableMrcRecordingIndicator = EnableMRCRecordingIndicator
             };
-            nativePeer.AddLocalVideoTrackAsync(trackSettings);
-            VideoStreamStarted.Invoke();
+            Track = await nativePeer.AddLocalVideoTrackAsync(trackSettings);
+            if (Track != null)
+            {
+                VideoStreamStarted.Invoke();
+            }
         }
 
         private void OnPeerShutdown()
         {
-            VideoStreamStopped.Invoke();
             var nativePeer = PeerConnection.Peer;
-            nativePeer.I420LocalVideoFrameReady -= I420LocalVideoFrameReady;
-            nativePeer.RemoveLocalVideoTrack();
+            if (Track != null)
+            {
+                VideoStreamStopped.Invoke();
+                Track.I420AVideoFrameReady -= I420ALocalVideoFrameReady;
+                nativePeer.RemoveLocalVideoTrack(Track);
+                Track.Dispose();
+                Track = null;
+            }
             FrameQueue.Clear();
         }
 
-        private void I420LocalVideoFrameReady(I420AVideoFrame frame)
+        private void I420ALocalVideoFrameReady(I420AVideoFrame frame)
         {
             FrameQueue.Enqueue(frame);
         }

@@ -204,6 +204,11 @@ Unfortunately at this time the capture framerate is not available, so we assume 
    }
    ```
 
+4. In the `App_Suspending()` event handler, clear the media player of the `localVideoPlayerElement` control so that it repaint itself and avoids keeping the last video frame when the video is turned off.
+   ```cs
+   localVideoPlayerElement.SetMediaPlayer(null);
+   ```
+
 At this point the [MediaPlayerElement](xref:Windows.UI.Xaml.Controls.MediaPlayerElement) control and the WebRTC local video track are connected together. Launch the application again; the local webcam starts capturing video frame, which are displayed in the main window of the application.
 
 ----

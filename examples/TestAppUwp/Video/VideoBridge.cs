@@ -24,7 +24,7 @@ namespace TestAppUwp.Video
         private MediaStreamSourceSampleRequest _request = null;
         private MediaStreamSourceSampleRequestDeferral _deferral = null;
         private long _frameCount = 0;
-        private VideoFrameQueue<I420VideoFrameStorage> _frameQueue;
+        private VideoFrameQueue<I420AVideoFrameStorage> _frameQueue;
         private float _lateFrameStat = 0f; // new FrameQueueStat(100);
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace TestAppUwp.Video
         /// <param name="queueCapacity">Video frame queue initial capacity</param>
         public VideoBridge(int queueCapacity)
         {
-            _frameQueue = new VideoFrameQueue<I420VideoFrameStorage>(queueCapacity);
+            _frameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(queueCapacity);
         }
 
         /// <summary>
@@ -114,8 +114,7 @@ namespace TestAppUwp.Video
             {
                 if (_deferral != null)
                 {
-                    //_frameQueue.FrameLoad.Track();
-                    //_frameQueue.FramePresent.Track();
+                    _frameQueue.TrackLateFrame();
                     MakeSampleForPendingRequest(frame);
                     return;
                 }
@@ -142,7 +141,7 @@ namespace TestAppUwp.Video
             }
 
             // Try to read the next available frame packet
-            I420VideoFrameStorage frameStorage;
+            I420AVideoFrameStorage frameStorage;
             lock (_deferralLock)
             {
                 if (!_frameQueue.TryDequeue(out frameStorage))

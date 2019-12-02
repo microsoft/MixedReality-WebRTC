@@ -34,6 +34,10 @@ This string needs to be pasted into the **Remote Peer Id** property of the _remo
 > [!Warning]
 > This step is critical, and there is no safeguard. If any of the two signalers doesn't have the correct value for the identifier of the remote peer then the peer connection will not be established.
 
-## Testing the remote connection
+## Starting the WebRTC connection
 
+Now that both peers are connected to the `node-dss` signaling server and can exchange some SDP messages, it is time to start an actual WebRTC connection.
 
+The `VideoChatDemo` sample contains an example of creating a button and using the `NodeDssSignalerUI.cs` script to do that, but the task essentially boils down to one of the two peers, and one only, calling [`PeerConnection.CreateOffer()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.CreateOffer).
+
+Once `CreateOffer()` is called, the local peer will asynchronously generate a new SDP offer message, and invoke the `LocalSdpReadyToSend` event to let the signaler send it. At this point the message should appear in the `node-dss` logs, which will buffer it until the remote peer polls for new data. After delivering the message, the remote peer will process it, and generally create an SDP answer message, which will travel back to the local peer via the `node-dss` server. At this point if everything went right the WebRTC connection is established, and the audio and video tracks should start sending and receiving data, and the data channels become open to do the same with the application's data.

@@ -6,34 +6,68 @@
     <ClCompile Include="../peer_connection.cpp" />
     <ClCompile Include="../video_frame_observer.cpp" />
     <ClCompile Include="../sdp_utils.cpp" />
-    <ClCompile Include="../api.cpp">
+    <ClCompile Include="../interop/interop_api.cpp">
       <Filter>interop</Filter>
     </ClCompile>
     <ClCompile Include="../data_channel.cpp">
       <Filter>media</Filter>
     </ClCompile>
     <ClCompile Include="../str.cpp" />
+    <ClCompile Include="../interop/global_factory.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
+    <ClCompile Include="../interop/peer_connection_interop.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
+    <ClCompile Include="../interop/local_video_track_interop.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
+    <ClCompile Include="../media/local_video_track.cpp">
+      <Filter>media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mrs_errors.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="../audio_frame_observer.h" />
-    <ClInclude Include="../callback.h" />
+    <ClInclude Include="../../include/audio_frame_observer.h" />
+    <ClInclude Include="../../include/callback.h" />
     <ClInclude Include="../pch.h" />
-    <ClInclude Include="../peer_connection.h" />
+    <ClInclude Include="../../include/peer_connection.h" />
     <ClInclude Include="../targetver.h" />
-    <ClInclude Include="../video_frame_observer.h" />
-    <ClInclude Include="../sdp_utils.h" />
-    <ClInclude Include="../../include/api.h">
+    <ClInclude Include="../../include/video_frame_observer.h" />
+    <ClInclude Include="../../include/sdp_utils.h" />
+    <ClInclude Include="../interop/interop_api.h">
       <Filter>interop</Filter>
-    </ClInclude>
-    <ClInclude Include="../data_channel.h">
-      <Filter>media</Filter>
     </ClInclude>
     <ClInclude Include="../../include/str.h" />
     <ClInclude Include="../../include/export.h" />
+    <ClInclude Include="../interop/global_factory.h">
+      <Filter>interop</Filter>
+    </ClInclude>
+    <ClInclude Include="../interop/peer_connection_interop.h">
+      <Filter>interop</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/data_channel.h">
+      <Filter>media</Filter>
+    </ClInclude>
+    <ClInclude Include="../interop/local_video_track_interop.h">
+      <Filter>interop</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/local_video_track.h">
+      <Filter>media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mrs_errors.h" />
+    <ClInclude Include="..\..\include\refptr.h" />
+    <ClInclude Include="..\..\include\ref_counted_base.h" />
+    <ClInclude Include="..\..\include\tracked_object.h" />
+    <ClInclude Include="..\..\include\audio_frame.h">
+      <Filter>media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\video_frame.h">
+      <Filter>media</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />
-    <None Include="../exports.def" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

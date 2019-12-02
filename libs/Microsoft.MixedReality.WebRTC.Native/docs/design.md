@@ -10,7 +10,7 @@ The library takes a dependency on `webrtc.lib`, which already depends on numerou
 
 The library uses `clang-format`. This is the reference and only accepted code formatting.
 
-## API rules
+## Interop API rules
 
 The library provides a set of C functions which can be invoked directly from both C++ and C# (P-invoke). This means that the following restrictions should apply:
 
@@ -23,7 +23,9 @@ The library provides a set of C functions which can be invoked directly from bot
 - Callbacks take an opaque `void* user_data` argument to allow the language wrapper to convert from static function to object method. See the **Callbacks** section more details.
 - Functions are designed in such a way as to avoid as much as possible calls during performance intensive operations. For example, try to pass as much data as possible in a single call instead of performing multiple calls. This reduces the overhead of language transition, which can be high in some cases. See _e.g._ the **Enumeration** section.
 
-Those rules apply to the API surface only (`api.h`). Within the library itself, C++ constructs can be used as needed.
+Those rules apply to the API surface only (`interop_api.h`). Within the library itself, C++ constructs can be used as needed.
+
+Note that the interop API is an **internal API**. Breaking changes to the interop API are considered internal and do not constitute a breaking change from the point of view of the MixedReality-WebRTC API semantic versioning (the major version will _not_ be bumped with those changes).
 
 ## Lifetime and ownership
 
@@ -45,11 +47,17 @@ C* ptr = new C();
 
 ## Strings
 
-To simplify interop with C#, the intent is that strings be passed in C# as `DllImport(CharSet.Ansi)`, meaning UTF-8 in practice. So conversion happens from the native UTF-16 C# `string` type. This means that strings passed as arguments are passed as null-terminated `const char*`.
+### C++ library API
+
+Due to limitations in inlining rules, in particular with templates, and the fact the MSVC compiler ships potentially incompatible versions of `std::string` between its releases, the `std::string` type MUST NOT be used in the C++ library public API. Instead, the convenience wrapper class `str` MUST be used, which exposes the exact same interface as `std::string` (and internally derives from it) while exclusively exposing out-of-line methods, ensuring safety for calls across DLL boundaries.
+
+### Interop API
+
+To simplify interop with C#, the intent is that strings be passed in C# as `DllImport(CharSet.Ansi)`, meaning UTF-8 in practice. So conversion happens from the native UTF-16 C# `string` type. This means that strings passed as arguments MUST be passed as null-terminated `const char*`.
 
 Because of this marshaling, where performance matters string parameters should be avoided.
 
-Returning strings from native side back to wrapper side is more problematic. In general try to use a buffer `char*` allocated by the wrapper, with an explicit capacity `const int`, and return the used size `int*`.
+Returning strings from the native side back to the wrapper side is more problematic. In general, try to use a buffer `char*` allocated by the wrapper, with an explicit capacity `const int`, and return the used size `int*`.
 
 ```cpp
 int GetString(char* buffer, const int capacity);

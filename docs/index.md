@@ -2,9 +2,7 @@
 uid: index
 title: Index
 ---
-# MixedReality-WebRTC 0.1 documentation
-
-_Note_ : **The documentation writing is in progress**. Some links are not active when the associated page is not available yet.
+# MixedReality-WebRTC 1.0.0 documentation
 
 ## User Manual
 
@@ -15,24 +13,17 @@ _Note_ : **The documentation writing is in progress**. Some links are not active
   - [Installation](manual/installation.md)
   - [Building from sources](manual/building.md)
   - [C# tutorial (Desktop)](manual/cs/helloworld-cs-core3.md)
-  - C# tutorial (UWP)
+  - [C# tutorial (UWP)](manual/cs/helloworld-cs-uwp.md)
   - [Unity tutorial](manual/helloworld-unity.md)
-- C# library (under writing)
+- C# library
   - [Feature Overview](manual/cs/cs.md)
   - [Tutorial (Desktop)](manual/cs/helloworld-cs-core3.md)
-  - Tutorial (UWP)
+  - [Tutorial (UWP)](manual/cs/helloworld-cs-uwp.md)
   - [Peer Connection](manual/cs/cs-peerconnection.md)
   - [Signaling](manual/cs/cs-signaling.md)
-  - Audio
-    - Streaming
-    - Rendering
-  - Video
-    - Streaming
-    - Rendering
 - Unity integration
   - [Feature Overview](manual/unity-integration.md)
   - [Tutorial](manual/helloworld-unity.md)
-  - Samples
   - [Peer Connection](manual/unity-peerconnection.md)
   - [Signaler](manual/unity-signaler.md)
   - [Media Player](manual/unity-mediaplayer.md)

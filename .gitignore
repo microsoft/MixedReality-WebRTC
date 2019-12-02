@@ -3,6 +3,7 @@
 /bin
 /build
 /obj
+/tools/build/userdef.py
 # TODO - Fix location with directory.build
 examples/TestAppUwp/bin
 examples/TestAppUwp/build
@@ -50,3 +51,9 @@ xdoc.meta
 # the tested assembly for DllImport. There is probably a more elegant way but...
 /tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Native.dll
 /tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Native.pdb
+
+# Profiling data
+*.etl
+
+# TODO - TestNetCoreConsole is misconfigured, builds into its own folder
+examples/TestNetCoreConsole/bin

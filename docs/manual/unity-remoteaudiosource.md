@@ -5,7 +5,7 @@ The [`RemoteAudioSource`](xref:Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSo
 ![The RemoteAudioSource Unity component](unity-remoteaudiosource.png)
 
 > [!Important]
-> FIXME: This component is not currently functional. The remote audio data is currently sent directly to the local audio out device by the internal WebRTC implementation without any configuration possible.
+> FIXME: This component is not currently functional. The remote audio data is currently sent directly to the local audio out device by the internal WebRTC implementation without any configuration possible. See issue [#92](https://github.com/microsoft/MixedReality-WebRTC/issues/92) for details.
 
 | Property | Description |
 |---|---|

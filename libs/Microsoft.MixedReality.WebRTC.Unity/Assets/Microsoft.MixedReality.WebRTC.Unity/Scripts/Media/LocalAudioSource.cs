@@ -30,7 +30,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Peer connection this local audio source will add an audio track to.
         /// </summary>
-        [Header("Video track")]
+        [Header("Audio track")]
         public PeerConnection PeerConnection;
 
         /// <summary>
