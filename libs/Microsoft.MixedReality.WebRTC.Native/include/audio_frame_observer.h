@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -9,23 +8,14 @@
 #include "api/mediastreaminterface.h"
 
 #include "callback.h"
+#include "audio_frame.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 
 /// Callback fired on newly available audio frame.
-/// The callback parameters are:
-/// - Audio data buffer pointer.
-/// - Number of bits per sample.
-/// - Sampling rate, in Hz.
-/// - Number of channels.
-/// - Number of consecutive audio frames in the buffer.
-using AudioFrameReadyCallback = Callback<const void*,
-                                         const uint32_t,
-                                         const uint32_t,
-                                         const uint32_t,
-                                         const uint32_t>;
+using AudioFrameReadyCallback = Callback<const AudioFrame&>;
 
-/// Video frame observer to get notified of newly available video frames.
+/// Audio frame observer to get notified of newly available audio frames.
 class AudioFrameObserver : public webrtc::AudioTrackSinkInterface {
  public:
   void SetCallback(AudioFrameReadyCallback callback) noexcept;
@@ -39,7 +29,7 @@ class AudioFrameObserver : public webrtc::AudioTrackSinkInterface {
               size_t number_of_frames) noexcept override;
 
  private:
-  AudioFrameReadyCallback callback_;
+  AudioFrameReadyCallback callback_ RTC_GUARDED_BY(mutex_);
   std::mutex mutex_;
 };
 

@@ -4,17 +4,14 @@
 #include "pch.h"
 
 #include "interop/interop_api.h"
+#include "audio_frame.h"
 
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 
 namespace {
 
 // PeerConnectionAudioFrameCallback
-using AudioFrameCallback = InteropCallback<const void*,
-                                           const uint32_t,
-                                           const uint32_t,
-                                           const uint32_t,
-                                           const uint32_t>;
+using AudioFrameCallback = InteropCallback<const AudioFrame&>;
 
 bool IsSilent_uint8(const uint8_t* data,
                     uint32_t size,
@@ -81,16 +78,12 @@ TEST(AudioTrack, Simple) {
             mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
   uint32_t call_count = 0;
-  AudioFrameCallback audio_cb = [&call_count](const void* audio_data,
-                                              const uint32_t bits_per_sample,
-                                              const uint32_t sample_rate,
-                                              const uint32_t number_of_channels,
-                                              const uint32_t number_of_frames) {
-    ASSERT_NE(nullptr, audio_data);
-    ASSERT_LT(0u, bits_per_sample);
-    ASSERT_LT(0u, sample_rate);
-    ASSERT_LT(0u, number_of_channels);
-    ASSERT_LT(0u, number_of_frames);
+  AudioFrameCallback audio_cb = [&call_count](const AudioFrame& frame) {
+    ASSERT_NE(nullptr, frame.data_);
+    ASSERT_LT(0u, frame.bits_per_sample_);
+    ASSERT_LT(0u, frame.sampling_rate_hz_);
+    ASSERT_LT(0u, frame.channel_count_);
+    ASSERT_LT(0u, frame.sample_count_);
     // TODO - See comment above
     // if (bits_per_sample == 8) {
     //  uint8_t min, max;
@@ -147,15 +140,12 @@ TEST(AudioTrack, Muted) {
 
   uint32_t call_count = 0;
   AudioFrameCallback audio_cb =
-      [&call_count, &pair](
-          const void* audio_data, const uint32_t bits_per_sample,
-          const uint32_t sample_rate, const uint32_t number_of_channels,
-          const uint32_t number_of_frames) {
-        ASSERT_NE(nullptr, audio_data);
-        ASSERT_LT(0u, bits_per_sample);
-        ASSERT_LT(0u, sample_rate);
-        ASSERT_LT(0u, number_of_channels);
-        ASSERT_LT(0u, number_of_frames);
+      [&call_count, &pair](const AudioFrame& frame) {
+        ASSERT_NE(nullptr, frame.data_);
+        ASSERT_LT(0u, frame.bits_per_sample_);
+        ASSERT_LT(0u, frame.sampling_rate_hz_);
+        ASSERT_LT(0u, frame.channel_count_);
+        ASSERT_LT(0u, frame.sample_count_);
         // TODO - See comment above
         // if (bits_per_sample == 8) {
         //  uint8_t min, max;

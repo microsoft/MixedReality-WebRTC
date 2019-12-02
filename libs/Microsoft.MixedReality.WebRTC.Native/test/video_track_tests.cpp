@@ -11,16 +11,7 @@
 namespace {
 
 // PeerConnectionI420VideoFrameCallback
-using I420VideoFrameCallback = InteropCallback<const void*,
-                                               const void*,
-                                               const void*,
-                                               const void*,
-                                               const int,
-                                               const int,
-                                               const int,
-                                               const int,
-                                               const int,
-                                               const int>;
+using I420VideoFrameCallback = InteropCallback<const I420AVideoFrame&>;
 
 }  // namespace
 
@@ -35,19 +26,14 @@ TEST(VideoTrack, Simple) {
   ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 
   uint32_t frame_count = 0;
-  I420VideoFrameCallback i420cb =
-      [&frame_count](const void* yptr, const void* uptr, const void* vptr,
-                     const void* /*aptr*/, const int /*ystride*/,
-                     const int /*ustride*/, const int /*vstride*/,
-                     const int /*astride*/, const int frame_width,
-                     const int frame_height) {
-        ASSERT_NE(nullptr, yptr);
-        ASSERT_NE(nullptr, uptr);
-        ASSERT_NE(nullptr, vptr);
-        ASSERT_LT(0, frame_width);
-        ASSERT_LT(0, frame_height);
-        ++frame_count;
-      };
+  I420VideoFrameCallback i420cb = [&frame_count](const I420AVideoFrame& frame) {
+    ASSERT_NE(nullptr, frame.ydata_);
+    ASSERT_NE(nullptr, frame.udata_);
+    ASSERT_NE(nullptr, frame.vdata_);
+    ASSERT_LT(0u, frame.width_);
+    ASSERT_LT(0u, frame.height_);
+    ++frame_count;
+  };
   mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(pair.pc2(),
                                                          CB(i420cb));
 
@@ -80,27 +66,22 @@ TEST(VideoTrack, Muted) {
   ASSERT_EQ(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 
   uint32_t frame_count = 0;
-  I420VideoFrameCallback i420cb =
-      [&frame_count](const void* yptr, const void* uptr, const void* vptr,
-                     const void* /*aptr*/, const int ystride,
-                     const int /*ustride*/, const int /*vstride*/,
-                     const int /*astride*/, const int frame_width,
-                     const int frame_height) {
-        ASSERT_NE(nullptr, yptr);
-        ASSERT_NE(nullptr, uptr);
-        ASSERT_NE(nullptr, vptr);
-        ASSERT_LT(0, frame_width);
-        ASSERT_LT(0, frame_height);
-        const uint8_t* s = (const uint8_t*)yptr;
-        const uint8_t* e = s + ((size_t)ystride * frame_height);
-        bool all_black = true;
-        for (const uint8_t* p = s; p < e; ++p) {
-          all_black = all_black && (*p == 0);
-        }
-        // Note: U and V can be anything, so don't test them.
-        ASSERT_TRUE(all_black);
-        ++frame_count;
-      };
+  I420VideoFrameCallback i420cb = [&frame_count](const I420AVideoFrame& frame) {
+    ASSERT_NE(nullptr, frame.ydata_);
+    ASSERT_NE(nullptr, frame.udata_);
+    ASSERT_NE(nullptr, frame.vdata_);
+    ASSERT_LT(0u, frame.width_);
+    ASSERT_LT(0u, frame.height_);
+    const uint8_t* s = (const uint8_t*)frame.ydata_;
+    const uint8_t* e = s + ((size_t)frame.ystride_ * frame.height_);
+    bool all_black = true;
+    for (const uint8_t* p = s; p < e; ++p) {
+      all_black = all_black && (*p == 0);
+    }
+    // Note: U and V can be anything, so don't test them.
+    ASSERT_TRUE(all_black);
+    ++frame_count;
+  };
   mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(pair.pc2(),
                                                          CB(i420cb));
 

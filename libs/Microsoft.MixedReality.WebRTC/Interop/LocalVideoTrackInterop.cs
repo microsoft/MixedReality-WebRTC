@@ -41,14 +41,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         #region Native callbacks
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void I420AVideoFrameCallback(IntPtr userData,
-            IntPtr ydata, IntPtr udata, IntPtr vdata, IntPtr adata,
-            int ystride, int ustride, int vstride, int astride,
-            int frameWidth, int frameHeight);
+        public delegate void I420AVideoFrameCallback(IntPtr userData, I420AVideoFrame frame);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void ARGBVideoFrameCallback(IntPtr userData,
-            IntPtr data, int stride, int frameWidth, int frameHeight);
+        public delegate void ARGBVideoFrameCallback(IntPtr userData, ARGBVideoFrame frame);
 
         #endregion
 
@@ -60,40 +56,16 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [MonoPInvokeCallback(typeof(I420AVideoFrameDelegate))]
-        public static void I420AFrameCallback(IntPtr userData,
-            IntPtr dataY, IntPtr dataU, IntPtr dataV, IntPtr dataA,
-            int strideY, int strideU, int strideV, int strideA,
-            int width, int height)
+        public static void I420AFrameCallback(IntPtr userData, I420AVideoFrame frame)
         {
             var track = Utils.ToWrapper<LocalVideoTrack>(userData);
-            var frame = new I420AVideoFrame()
-            {
-                width = (uint)width,
-                height = (uint)height,
-                dataY = dataY,
-                dataU = dataU,
-                dataV = dataV,
-                dataA = dataA,
-                strideY = strideY,
-                strideU = strideU,
-                strideV = strideV,
-                strideA = strideA
-            };
             track.OnI420AFrameReady(frame);
         }
 
         [MonoPInvokeCallback(typeof(ARGBVideoFrameDelegate))]
-        public static void ARGBFrameCallback(IntPtr userData,
-            IntPtr data, int stride, int width, int height)
+        public static void ARGBFrameCallback(IntPtr userData, ARGBVideoFrame frame)
         {
             var track = Utils.ToWrapper<LocalVideoTrack>(userData);
-            var frame = new ARGBVideoFrame()
-            {
-                width = (uint)width,
-                height = (uint)height,
-                data = data,
-                stride = stride
-            };
             track.OnARGBFrameReady(frame);
         }
     }

@@ -1439,13 +1439,13 @@ namespace Microsoft.MixedReality.WebRTC
 
         internal void OnLocalAudioFrameReady(AudioFrame frame)
         {
-            MainEventSource.Log.LocalAudioFrameReady(frame.bitsPerSample, frame.channelCount, frame.frameCount);
+            MainEventSource.Log.LocalAudioFrameReady(frame.bitsPerSample, frame.channelCount, frame.sampleCount);
             LocalAudioFrameReady?.Invoke(frame);
         }
 
         internal void OnRemoteAudioFrameReady(AudioFrame frame)
         {
-            MainEventSource.Log.RemoteAudioFrameReady(frame.bitsPerSample, frame.channelCount, frame.frameCount);
+            MainEventSource.Log.RemoteAudioFrameReady(frame.bitsPerSample, frame.channelCount, frame.sampleCount);
             RemoteAudioFrameReady?.Invoke(frame);
         }
     }

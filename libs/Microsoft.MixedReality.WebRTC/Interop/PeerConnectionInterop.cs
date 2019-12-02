@@ -243,72 +243,30 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [MonoPInvokeCallback(typeof(I420AVideoFrameDelegate))]
-        public static void I420ARemoteVideoFrameCallback(IntPtr userData,
-            IntPtr dataY, IntPtr dataU, IntPtr dataV, IntPtr dataA,
-            int strideY, int strideU, int strideV, int strideA,
-            int width, int height)
+        public static void I420ARemoteVideoFrameCallback(IntPtr userData, I420AVideoFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
-            var frame = new I420AVideoFrame()
-            {
-                width = (uint)width,
-                height = (uint)height,
-                dataY = dataY,
-                dataU = dataU,
-                dataV = dataV,
-                dataA = dataA,
-                strideY = strideY,
-                strideU = strideU,
-                strideV = strideV,
-                strideA = strideA
-            };
             peer.OnI420ARemoteVideoFrameReady(frame);
         }
 
         [MonoPInvokeCallback(typeof(ARGBVideoFrameDelegate))]
-        public static void ARGBRemoteVideoFrameCallback(IntPtr userData,
-            IntPtr data, int stride, int width, int height)
+        public static void ARGBRemoteVideoFrameCallback(IntPtr userData, ARGBVideoFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
-            var frame = new ARGBVideoFrame()
-            {
-                width = (uint)width,
-                height = (uint)height,
-                data = data,
-                stride = stride
-            };
             peer.OnARGBRemoteVideoFrameReady(frame);
         }
 
         [MonoPInvokeCallback(typeof(AudioFrameDelegate))]
-        public static void LocalAudioFrameCallback(IntPtr userData, IntPtr audioData, uint bitsPerSample,
-            uint sampleRate, uint channelCount, uint frameCount)
+        public static void LocalAudioFrameCallback(IntPtr userData, AudioFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
-            var frame = new AudioFrame()
-            {
-                bitsPerSample = bitsPerSample,
-                sampleRate = sampleRate,
-                channelCount = channelCount,
-                frameCount = frameCount,
-                audioData = audioData
-            };
             peer.OnLocalAudioFrameReady(frame);
         }
 
         [MonoPInvokeCallback(typeof(AudioFrameDelegate))]
-        public static void RemoteAudioFrameCallback(IntPtr userData, IntPtr audioData, uint bitsPerSample,
-            uint sampleRate, uint channelCount, uint frameCount)
+        public static void RemoteAudioFrameCallback(IntPtr userData, AudioFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
-            var frame = new AudioFrame()
-            {
-                bitsPerSample = bitsPerSample,
-                sampleRate = sampleRate,
-                channelCount = channelCount,
-                frameCount = frameCount,
-                audioData = audioData
-            };
             peer.OnRemoteAudioFrameReady(frame);
         }
 
@@ -440,18 +398,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public delegate void PeerConnectionTrackRemovedCallback(IntPtr userData, PeerConnection.TrackKind trackKind);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionI420AVideoFrameCallback(IntPtr userData,
-            IntPtr ydata, IntPtr udata, IntPtr vdata, IntPtr adata,
-            int ystride, int ustride, int vstride, int astride,
-            int frameWidth, int frameHeight);
+        public delegate void PeerConnectionI420AVideoFrameCallback(IntPtr userData, I420AVideoFrame frame);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionARGBVideoFrameCallback(IntPtr userData,
-            IntPtr data, int stride, int frameWidth, int frameHeight);
+        public delegate void PeerConnectionARGBVideoFrameCallback(IntPtr userData, ARGBVideoFrame frame);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionAudioFrameCallback(IntPtr userData,
-            IntPtr data, uint bitsPerSample, uint sampleRate, uint channelCount, uint frameCount);
+        public delegate void PeerConnectionAudioFrameCallback(IntPtr userData, AudioFrame frame);
 
         #endregion
 

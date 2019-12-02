@@ -12,6 +12,8 @@ rtc::Thread* UnsafeGetWorkerThread();
 
 #include "export.h"
 #include "mrs_errors.h"
+#include "audio_frame.h"
+#include "video_frame.h"
 
 extern "C" {
 
@@ -184,41 +186,28 @@ using PeerConnectionDataChannelRemovedCallback =
                     mrsDataChannelInteropHandle data_channel_wrapper,
                     DataChannelHandle data_channel);
 
+using mrsI420AVideoFrame = Microsoft::MixedReality::WebRTC::I420AVideoFrame;
+
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 /// The video frame is encoded in I420 triplanar format (NV12).
 using PeerConnectionI420AVideoFrameCallback =
-    void(MRS_CALL*)(void* user_data,
-                    const void* yptr,
-                    const void* uptr,
-                    const void* vptr,
-                    const void* aptr,
-                    const int ystride,
-                    const int ustride,
-                    const int vstride,
-                    const int astride,
-                    const int frame_width,  //< TODO : uint?
-                    const int frame_height);
+    void(MRS_CALL*)(void* user_data, const mrsI420AVideoFrame& frame);
+	
+using mrsArgb32VideoFrame = Microsoft::MixedReality::WebRTC::Argb32VideoFrame;
 
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 /// The video frame is encoded in ARGB 32-bit per pixel.
 using PeerConnectionARGBVideoFrameCallback =
-    void(MRS_CALL*)(void* user_data,
-                    const void* data,
-                    const int stride,
-                    const int frame_width,
-                    const int frame_height);
+    void(MRS_CALL*)(void* user_data, const mrsArgb32VideoFrame& frame);
+	
+using mrsAudioFrame = Microsoft::MixedReality::WebRTC::AudioFrame;
 
 /// Callback fired when a local or remote (depending on use) audio frame is
 /// available to be consumed by the caller, usually for local output.
 using PeerConnectionAudioFrameCallback =
-    void(MRS_CALL*)(void* user_data,
-                    const void* audio_data,
-                    const uint32_t bits_per_sample,
-                    const uint32_t sample_rate,
-                    const uint32_t number_of_channels,
-                    const uint32_t number_of_frames);
+    void(MRS_CALL*)(void* user_data, const mrsAudioFrame& frame);
 
 /// Callback fired when a message is received on a data channel.
 using mrsDataChannelMessageCallback = void(MRS_CALL*)(void* user_data,
