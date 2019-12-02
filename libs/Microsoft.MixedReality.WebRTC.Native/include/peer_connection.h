@@ -11,6 +11,10 @@
 #include "tracked_object.h"
 #include "video_frame_observer.h"
 
+namespace webrtc {
+class Resampler;
+}
+
 namespace Microsoft::MixedReality::WebRTC {
 
 class PeerConnection;
@@ -302,6 +306,73 @@ class PeerConnection : public TrackedObject {
 
   virtual mrsResult RegisterInteropCallbacks(
       const mrsPeerConnectionInteropCallbacks& callbacks) noexcept = 0;
+};
+
+/// High level interface for consuming WebRTC audio streams.
+/// The implementation builds on top of the low-level AudioFrame callbacks
+/// and handles all buffering and resampling.
+class AudioReadStream {
+ public:
+  /// Create a new stream which buffers 'bufferMs' milliseconds of audio.
+  /// WebRTC delivers audio at 10ms intervals so pass a multiple of 10.
+  /// Or pass -1 for automaticlly chosen buffer size.
+  AudioReadStream(PeerConnection* peer, int bufferMs);
+  ~AudioReadStream();
+
+  /// Fill data with samples at the given sampleRate and number of channels.
+  /// If the internal buffer overruns, the oldest data will be dropped.
+  /// If the internal buffer is exhausted, the data is padded with white noise.
+  /// In any case the entire data array is filled.
+  void Read(int sampleRate,
+            float data[],
+            int dataLen,
+            int numChannels) noexcept;
+
+ private:
+  // Buffer the next frame. Return false on failure.
+  bool bufferNextFrame(int sampleRate, int channels);
+  static void staticAudioFrameCallback(void* user_data, const AudioFrame& frame);
+  void audioFrameCallback(const void* audio_data,
+                          const uint32_t bits_per_sample,
+                          const uint32_t sample_rate,
+                          const uint32_t number_of_channels,
+                          const uint32_t number_of_frames);
+
+  PeerConnection* peer_ = nullptr;
+  struct Frame {
+    std::vector<std::byte> audio_data;
+    uint32_t bits_per_sample;
+    uint32_t sample_rate;
+    uint32_t number_of_channels;
+    uint32_t number_of_frames;
+  };
+  // Frames received from webrtc
+  std::deque<Frame> frames_;
+  std::mutex
+      frames_mutex_;  // frames accessed by Read() and audioFrameCallback()
+  int buffer_ms_ = 0;
+  int sinwave_iter_ = 0;
+
+  struct Buffer {
+    std::unique_ptr<webrtc::Resampler> resampler_ = nullptr;
+    std::vector<float> data_;
+    int used_ = 0;
+    int channels_ = 0;
+    int rate_ = 0;
+
+    Buffer();
+    ~Buffer();
+    int available() const { return (int)data_.size() - used_; }
+    int readSome(float* dst, int dstLen) {
+      int take = std::min(available(), dstLen);
+      memcpy(dst, data_.data() + used_, take * sizeof(float));
+      used_ += take;
+      return take;
+    }
+    void addFrame(const Frame& frame, int dstSampleRate, int dstChannels);
+  };
+  // Only accessed from callers of Read - no locking needed.
+  Buffer buffer_;
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

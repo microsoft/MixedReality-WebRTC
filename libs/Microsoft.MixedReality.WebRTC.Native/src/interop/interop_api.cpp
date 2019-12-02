@@ -850,9 +850,9 @@ mrsAudioReadStreamCreate(PeerConnectionHandle peerHandle,
   *audioBufferOut = nullptr;
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     *audioBufferOut = new AudioReadStream(peer, bufferMs);
-    return MRS_SUCCESS;
+    return Result::kSuccess;
   }
-  return MRS_E_INVALID_PEER_HANDLE;
+  return Result::kInvalidNativeHandle;
 }
 
 mrsResult MRS_CALL mrsAudioReadStreamRead(AudioReadStreamHandle readStream,
@@ -862,9 +862,9 @@ mrsResult MRS_CALL mrsAudioReadStreamRead(AudioReadStreamHandle readStream,
                                           int numChannels) {
   if (auto stream = static_cast<AudioReadStream*>(readStream)) {
     stream->Read(sampleRate, data, dataLen, numChannels);
-    return MRS_SUCCESS;
+    return Result::kSuccess;
   }
-  return MRS_E_INVALID_PARAMETER;
+  return Result::kInvalidNativeHandle;
 }
 
 void MRS_CALL mrsAudioReadStreamDestroy(AudioReadStreamHandle readStream) {
