@@ -999,6 +999,13 @@ mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
   return Result::kSuccess;
 }
 
+void MRS_CALL
+mrsSetFrameHeightRoundMode(FrameHeightRoundMode value) {
+  PeerConnection::SetFrameHeightRoundMode(
+      (PeerConnection::FrameHeightRoundMode)value);
+}
+
+
 void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size) noexcept {
   memcpy(dst, src, static_cast<size_t>(size));
 }

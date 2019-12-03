@@ -18,6 +18,85 @@
 
 #include <functional>
 
+// Defined in
+// external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/winuwp_h264/H264Encoder/H264Encoder.cc
+static constexpr int kFrameHeightCrop = 1;
+extern int webrtc__WinUWPH264EncoderImpl__frame_height_round_mode;
+
+#if defined(_M_IX86) /* x86 */ && defined(WINAPI_FAMILY) && \
+    (WINAPI_FAMILY == WINAPI_FAMILY_APP) /* UWP app */ &&   \
+    defined(_WIN32_WINNT_WIN10) &&                          \
+    _WIN32_WINNT >= _WIN32_WINNT_WIN10 /* Win10 */
+
+#include <Windows.Foundation.h>
+#include <wrl\wrappers\corewrappers.h>
+#include <wrl\client.h>
+#include <windows.graphics.holographic.h>
+
+namespace {
+
+bool IsHololens() {
+  // The best way to check if we are running on Hololens is checking if this is
+  // a x86 Windows device with a transparent holographic display (AR).
+
+  using namespace Microsoft::WRL;
+  using namespace Microsoft::WRL::Wrappers;
+  using namespace ABI::Windows::Foundation;
+  using namespace ABI::Windows::Graphics::Holographic;
+
+#define RETURN_IF_ERROR(...) \
+  if (FAILED(__VA_ARGS__)) { \
+    return false;            \
+  }
+
+  RoInitializeWrapper initialize(RO_INIT_MULTITHREADED);
+
+  // HolographicSpace.IsAvailable
+  ComPtr<IHolographicSpaceStatics2> holo_space_statics;
+  RETURN_IF_ERROR(GetActivationFactory(
+      HStringReference(
+          RuntimeClass_Windows_Graphics_Holographic_HolographicSpace)
+          .Get(),
+      &holo_space_statics));
+  boolean is_holo_space_available;
+  RETURN_IF_ERROR(
+      holo_space_statics->get_IsAvailable(&is_holo_space_available));
+  if (!is_holo_space_available) {
+    // Not a holographic device.
+    return false;
+  }
+
+  // HolographicDisplay.GetDefault().IsOpaque
+  ComPtr<IHolographicDisplayStatics> holo_display_statics;
+  RETURN_IF_ERROR(GetActivationFactory(
+      HStringReference(
+          RuntimeClass_Windows_Graphics_Holographic_HolographicDisplay)
+          .Get(),
+      &holo_display_statics));
+  ComPtr<IHolographicDisplay> holo_display;
+  RETURN_IF_ERROR(holo_display_statics->GetDefault(&holo_display));
+  boolean is_opaque;
+  RETURN_IF_ERROR(holo_display->get_IsOpaque(&is_opaque));
+  // Hololens if not opaque (otherwise VR).
+  return !is_opaque;
+#undef RETURN_IF_ERROR
+}
+
+void InitHololensH264Workaround() {
+  static bool is_hololens_h264_workaround_initialized = false;
+  if (!is_hololens_h264_workaround_initialized && IsHololens()) {
+    is_hololens_h264_workaround_initialized = true;
+    webrtc__WinUWPH264EncoderImpl__frame_height_round_mode = kFrameHeightCrop;
+  }
+}
+
+}  // namespace
+#else
+namespace {
+void InitHololensH264Workaround() {}
+}  // namespace
+#endif
+
 namespace {
 
 using namespace Microsoft::MixedReality::WebRTC;
@@ -40,14 +119,17 @@ Result ResultFromRTCErrorType(webrtc::RTCErrorType type) {
   }
 }
 
-Error ErrorFromRTCError(const webrtc::RTCError& error) {
-  return Error(ResultFromRTCErrorType(error.type()), error.message());
+Microsoft::MixedReality::WebRTC::Error ErrorFromRTCError(
+    const webrtc::RTCError& error) {
+  return Microsoft::MixedReality::WebRTC::Error(
+      ResultFromRTCErrorType(error.type()), error.message());
 }
 
-Error ErrorFromRTCError(webrtc::RTCError&& error) {
+Microsoft::MixedReality::WebRTC::Error ErrorFromRTCError(webrtc::RTCError&& error) {
   // Ideally would move the std::string out of |error|, but doesn't look
   // possible at the moment.
-  return Error(ResultFromRTCErrorType(error.type()), error.message());
+  return Microsoft::MixedReality::WebRTC::Error(
+      ResultFromRTCErrorType(error.type()), error.message());
 }
 
 /// Implementation of PeerConnection, which also implements
@@ -469,7 +551,8 @@ IceConnectionState IceStateFromImpl(
 ErrorOr<RefPtr<LocalVideoTrack>> PeerConnectionImpl::AddLocalVideoTrack(
     rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept {
   if (IsClosed()) {
-    return Error(Result::kInvalidOperation, "The peer connection is closed.");
+    return Microsoft::MixedReality::WebRTC::Error(
+        Result::kInvalidOperation, "The peer connection is closed.");
   }
   auto result = peer_->AddTrack(video_track, {kAudioVideoStreamId});
   if (result.ok()) {
@@ -1151,6 +1234,10 @@ namespace Microsoft::MixedReality::WebRTC {
 ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
     const PeerConnectionConfiguration& config,
     mrsPeerConnectionInteropHandle interop_handle) {
+  // Set the default value for the HL1 workaround before creating any
+  // connection.
+  InitHololensH264Workaround();
+
   // Ensure the factory exists
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory;
   {
@@ -1186,6 +1273,13 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
   }
   peer->SetPeerImpl(std::move(impl));
   return RefPtr<PeerConnection>(peer);
+}
+
+void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode value) {
+  // Ensure that the default is set. This prevents following calls to
+  // InitHololensH264Workaround from overriding the explicitly set value.
+  InitHololensH264Workaround();
+  webrtc__WinUWPH264EncoderImpl__frame_height_round_mode = (int)value;
 }
 
 }  // namespace Microsoft::MixedReality::WebRTC
