@@ -1234,6 +1234,10 @@ namespace Microsoft::MixedReality::WebRTC {
 ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
     const PeerConnectionConfiguration& config,
     mrsPeerConnectionInteropHandle interop_handle) {
+  // Set the default value for the HL1 workaround before creating any
+  // connection.
+  InitHololensH264Workaround();
+
   // Ensure the factory exists
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory;
   {
@@ -1272,6 +1276,8 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
 }
 
 void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode value) {
+  // Ensure that the default is set. This prevents following calls to
+  // InitHololensH264Workaround from overriding the explicitly set value.
   InitHololensH264Workaround();
   webrtc__WinUWPH264EncoderImpl__frame_height_round_mode = (int)value;
 }
