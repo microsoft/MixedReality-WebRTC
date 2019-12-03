@@ -244,6 +244,30 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// connection.
   bool IsLocalVideoTrackEnabled() const noexcept;
 
+  enum class FrameHeightRoundMode {
+    /// Leave frames unchanged.
+    NONE = 0,
+
+    /// Crop frame height to the nearest multiple of 16.
+    /// ((height - nearestLowerMultipleOf16) / 2) rows are cropped from the top
+    /// and (height - nearestLowerMultipleOf16 - croppedRowsTop) rows are
+    /// cropped from the bottom.
+    CROP = 1,
+
+    /// Pad frame height to the nearest multiple of 16.
+    /// ((nearestHigherMultipleOf16 - height) / 2) rows are added symmetrically
+    /// at the top and (nearestHigherMultipleOf16 - height - addedRowsTop) rows
+    /// are added symmetrically at the bottom.
+    PAD = 2
+  };
+
+  /// Use this function to select whether resolutions where height is not multiple of 16
+  /// should be cropped, padded or left unchanged.
+  /// Default is FrameHeightRoundMode::NONE, except on Hololens 1 where it is
+  /// FrameHeightRoundMode::CROP to avoid severe artifacts produced by
+  /// the H.264 hardware encoder.
+  static void SetFrameHeightRoundMode(FrameHeightRoundMode value);
+
   //
   // Audio
   //

@@ -1301,6 +1301,45 @@ namespace Microsoft.MixedReality.WebRTC
             });
         }
 
+        /// <summary>
+        /// Frame height round mode.
+        /// </summary>
+        /// <seealso cref="SetFrameHeightRoundMode(FrameHeightRoundMode)"/>
+        public enum FrameHeightRoundMode
+        {
+            /// <summary>
+            /// Leave frames unchanged.
+            /// </summary>
+            NONE = 0,
+
+            /// <summary>
+            /// Crop frame height to the nearest multiple of 16.
+            /// ((height - nearestLowerMultipleOf16) / 2) rows are cropped from the top and
+            /// (height - nearestLowerMultipleOf16 - croppedRowsTop) rows are cropped from the bottom.
+            /// </summary>
+            CROP = 1,
+
+            /// <summary>
+            /// Pad frame height to the nearest multiple of 16.
+            /// ((nearestHigherMultipleOf16 - height) / 2) rows are added symmetrically at the top and
+            /// (nearestHigherMultipleOf16 - height - addedRowsTop) rows are added symmetrically at the bottom.
+            /// </summary>
+            PAD = 2
+        }
+
+        /// <summary>
+        /// Use this function to select whether resolutions where height is not multiple of 16
+        /// should be cropped, padded or left unchanged.
+        /// Default is <see cref="FrameHeightRoundMode.NONE"/>, except on Hololens 1 where it is
+        /// <see cref="FrameHeightRoundMode.CROP"/> to avoid severe artifacts produced by
+        /// the H.264 hardware encoder.
+        /// </summary>
+        /// <param name="value"></param>
+        public static void SetFrameHeightRoundMode(FrameHeightRoundMode value)
+        {
+            Utils.SetFrameHeightRoundMode(value);
+        }
+
         internal void OnConnected()
         {
             IsConnected = true;
