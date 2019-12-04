@@ -174,7 +174,7 @@ rtc::scoped_refptr<PeerConnection> PeerConnection::create(
     mrsPeerConnectionInteropHandle interop_handle) {
   // Set the default value for the HL1 workaround before creating any
   // connection. This has no effect on other platforms.
-  SetFrameHeightRoundMode(FrameHeightRoundMode::CROP);
+  SetFrameHeightRoundMode(FrameHeightRoundMode::kCrop);
   
   // Create the PeerConnection object
   rtc::scoped_refptr<PeerConnection> peer =

@@ -244,29 +244,31 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
   /// connection.
   bool IsLocalVideoTrackEnabled() const noexcept;
 
+  /// Rounding mode of video frame height for |SetFrameHeightRoundMode()|.
+  /// This is only used on HoloLens 1 (UWP x86).
   enum class FrameHeightRoundMode {
     /// Leave frames unchanged.
-    NONE = 0,
+    kNone = 0,
 
     /// Crop frame height to the nearest multiple of 16.
     /// ((height - nearestLowerMultipleOf16) / 2) rows are cropped from the top
     /// and (height - nearestLowerMultipleOf16 - croppedRowsTop) rows are
     /// cropped from the bottom.
-    CROP = 1,
+    kCrop = 1,
 
     /// Pad frame height to the nearest multiple of 16.
     /// ((nearestHigherMultipleOf16 - height) / 2) rows are added symmetrically
     /// at the top and (nearestHigherMultipleOf16 - height - addedRowsTop) rows
     /// are added symmetrically at the bottom.
-    PAD = 2
+    kPad = 2
   };
 
   /// [HoloLens 1 only]
-  /// Use this function to select whether resolutions where height is not multiple of 16
-  /// should be cropped, padded or left unchanged.
-  /// Default is FrameHeightRoundMode::NONE, except on Hololens 1 where it is
-  /// FrameHeightRoundMode::CROP to avoid severe artifacts produced by
-  /// the H.264 hardware encoder.
+  /// Use this function to select whether resolutions where height is not
+  /// multiple of 16 should be cropped, padded or left unchanged. Defaults to
+  /// FrameHeightRoundMode::kCrop to avoid severe artifacts produced by the
+  /// H.264 hardware encoder. The default value is applied when creating the
+  /// first peer connection, so can be overridden after it.
   static void SetFrameHeightRoundMode(FrameHeightRoundMode value);
 
   //
