@@ -261,6 +261,7 @@ class PeerConnection : public webrtc::PeerConnectionObserver,
     PAD = 2
   };
 
+  /// [HoloLens 1 only]
   /// Use this function to select whether resolutions where height is not multiple of 16
   /// should be cropped, padded or left unchanged.
   /// Default is FrameHeightRoundMode::NONE, except on Hololens 1 where it is
