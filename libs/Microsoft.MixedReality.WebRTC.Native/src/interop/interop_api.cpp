@@ -5,6 +5,7 @@
 // line, to prevent clang-format from reordering it with other headers.
 #include "pch.h"
 
+#include "api/stats/rtcstats_objects.h"
 #include "data_channel.h"
 #include "external_video_track_source.h"
 #include "interop/external_video_track_source_interop.h"
@@ -1107,4 +1108,95 @@ void MRS_CALL mrsMemCpyStride(void* dst,
       src = (const char*)src + src_stride;
     }
   }
+}
+
+namespace {
+template <class T>
+T& FindOrInsert(std::vector<std::pair<std::string, T>>& vec,
+                std::string_view id) {
+  auto it = std::find_if(vec.begin(), vec.end(),
+                         [&](auto&& pair) { return pair.first == id; });
+  if (it != vec.end()) {
+    return it->second;
+  }
+  return vec.emplace_back(id, T{}).second;
+}
+}  // namespace
+
+mrsResult MRS_CALL
+mrsPeerConnectionGetSimpleStats(PeerConnectionHandle peerHandle,
+                                PeerConnectionSimpleStatsCallback callback,
+                                void* user_data) {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    struct Collector : webrtc::RTCStatsCollectorCallback {
+      Collector(PeerConnectionSimpleStatsCallback callback, void* user_data)
+          : callback_(callback), user_data_(user_data) {}
+
+      PeerConnectionSimpleStatsCallback callback_;
+      void* user_data_;
+      void OnStatsDelivered(
+          const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
+          override {
+        std::vector<std::pair<std::string, mrsAudioSenderStats>>
+            pending_audio_sender_stats;
+        for (auto&& stats : *report) {
+          if (!strcmp(stats.type(), "data-channel")) {
+            const auto& dc_stats = stats.cast_to<webrtc::RTCDataChannelStats>();
+            mrsDataChannelStats simple_stats{
+                dc_stats.timestamp_us(),     *dc_stats.datachannelid,
+                *dc_stats.messages_sent,     *dc_stats.bytes_sent,
+                *dc_stats.messages_received, *dc_stats.bytes_received};
+            (*callback_)(user_data_, "DataChannelStats", &simple_stats);
+          } else if (!strcmp(stats.type(), "outbound-rtp")) {
+            const auto& ortp_stats =
+                stats.cast_to<webrtc::RTCOutboundRTPStreamStats>();
+            if (*ortp_stats.kind == "audio") {
+              auto& audio_sender_stats = FindOrInsert(
+                  pending_audio_sender_stats, *ortp_stats.track_id);
+              audio_sender_stats.RtpStatsTimestampUs =
+                  ortp_stats.timestamp_us();
+              audio_sender_stats.PacketsSent = *ortp_stats.packets_sent;
+              audio_sender_stats.BytesSent = *ortp_stats.bytes_sent;
+            } else if (*ortp_stats.kind == "video") {
+              // TODO
+            }
+          } else if (!strcmp(stats.type(), "track")) {
+            const auto& track_stats =
+                stats.cast_to<webrtc::RTCMediaStreamTrackStats>();
+            if (*track_stats.kind == "audio") {
+              if (*track_stats.remote_source) {
+                // TODO
+              } else {
+                auto& audio_sender_stats =
+                    FindOrInsert(pending_audio_sender_stats, track_stats.id());
+                audio_sender_stats.TimestampUs = track_stats.timestamp_us();
+                audio_sender_stats.TrackIdentifier =
+                    track_stats.track_identifier->c_str();
+                audio_sender_stats.AudioLevel = *track_stats.audio_level;
+                audio_sender_stats.TotalAudioEnergy =
+                    *track_stats.total_audio_energy;
+                audio_sender_stats.TotalSamplesDuration =
+                    *track_stats.total_samples_duration;
+              }
+            } else if (*track_stats.kind == "video") {
+              if (*track_stats.remote_source) {
+                // TODO
+              } else {
+                // TODO
+              }
+            }
+          }
+        }
+
+        for (auto&& stats : pending_audio_sender_stats) {
+          (*callback_)(user_data_, "AudioSenderStats", &stats.second);
+        }
+      }
+    };
+    rtc::scoped_refptr<Collector> collector =
+        new rtc::RefCountedObject<Collector>(callback, user_data);
+
+    peer->GetStats(collector);
+  }
+  return Result::kInvalidNativeHandle;
 }

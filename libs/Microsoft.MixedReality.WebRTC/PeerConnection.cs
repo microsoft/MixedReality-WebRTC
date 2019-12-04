@@ -1428,6 +1428,117 @@ namespace Microsoft.MixedReality.WebRTC
 
         #endregion
 
+        /// <summary>
+        /// RTCDataChannelStats.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct DataChannelStats
+        {
+            public long TimestampUs;
+            public long DataChannelIdentifier;
+            public uint MessagesSent;
+            public ulong BytesSent;
+            public uint MessagesReceived;
+            public ulong BytesReceived;
+        }
+
+        /// <summary>
+        /// RTCMediaStreamTrack (audio sender subset) + RTCOutboundRTPStreamStats.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public unsafe struct AudioSenderStats
+        {
+            public long TimestampUs;
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string TrackIdentifier;
+            public double AudioLevel;
+            public double TotalAudioEnergy;
+            public double TotalSamplesDuration;
+
+            public long RtpStatsTimestampUs;
+            public uint PacketsSent;
+            public ulong BytesSent;
+        }
+
+        /// <summary>
+        /// RTCMediaStreamTrack (audio receiver subset) + RTCInboundRTPStreamStats.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct AudioReceiverStats
+        {
+            public long TimestampUs;
+            public string TrackIdentifier;
+            public double AudioLevel;
+            public double TotalAudioEnergy;
+            public double TotalSamplesReceived;
+            public double TotalSamplesDuration;
+
+            public long RtpStatsTimestampUs;
+            public uint PacketsReceived;
+            public ulong BytesReceived;
+        }
+
+        /// <summary>
+        /// RTCMediaStreamTrack (video sender subset) + RTCOutboundRTPStreamStats.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct VideoSenderStats
+        {
+            public long TimestampUs;
+            public string TrackIdentifier;
+            public uint FramesSent;
+            public uint HugeFramesSent;
+
+            public long RtpStatsTimestampUs;
+            public uint PacketsSent;
+            public ulong BytesSent;
+            public uint FramesEncoded;
+        }
+
+        /// <summary>
+        /// RTCMediaStreamTrack (video receiver subset) + RTCInboundRTPStreamStats.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct VideoReceiverStats
+        {
+            public long TimestampUs;
+            public string TrackIdentifier;
+            public uint FramesReceived;
+            public uint FramesDecoded;
+            public uint FramesDropped;
+
+            public long RtpStatsTimestampUs;
+            public uint PacketsReceived;
+            public ulong BytesReceived;
+        }
+
+        /// <summary>
+        /// RTCTransportStats
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct TransportStats
+        {
+            public long TimestampUs;
+            public ulong BytesSent;
+            public ulong BytesReceived;
+        }
+
+        public interface StatsCollector
+        {
+            void Handle(in DataChannelStats stats);
+            void Handle(in AudioSenderStats stats);
+            void Handle(in AudioReceiverStats stats);
+            void Handle(in VideoSenderStats stats);
+            void Handle(in VideoReceiverStats stats);
+            void Handle(in TransportStats stats);
+        }
+
+        public void GetSimpleStats(StatsCollector collector)
+        {
+            var collectorHandle = GCHandle.Alloc(collector, GCHandleType.Normal);
+            PeerConnectionInterop.PeerConnection_GetSimpleStats(_nativePeerhandle,
+                PeerConnectionInterop.SimpleStatsCallback, GCHandle.ToIntPtr(collectorHandle));
+        }
 
         /// <summary>
         /// Utility to throw an exception if a method is called before the underlying

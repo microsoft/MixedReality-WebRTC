@@ -720,4 +720,34 @@ MRS_API void MRS_CALL mrsMemCpyStride(void* dst,
                                       int32_t elem_size,
                                       int32_t elem_count) noexcept;
 
+
+struct mrsDataChannelStats {
+  int64_t TimestampUs;
+  int64_t DataChannelIdentifier;
+  uint32_t MessagesSent;
+  uint64_t BytesSent;
+  uint32_t MessagesReceived;
+  uint64_t BytesReceived;
+};
+
+struct mrsAudioSenderStats {
+  int64_t TimestampUs;
+  const char* TrackIdentifier;
+  double AudioLevel;
+  double TotalAudioEnergy;
+  double TotalSamplesDuration;
+
+  int64_t RtpStatsTimestampUs;
+  uint32_t PacketsSent;
+  uint64_t BytesSent;
+};
+
+// TODO other stats
+
+using PeerConnectionSimpleStatsCallback = void (MRS_CALL*)(void* user_data, const char* stats_type, void* stats_object);
+
+MRS_API mrsResult MRS_CALL mrsPeerConnectionGetSimpleStats(
+    PeerConnectionHandle peerHandle, PeerConnectionSimpleStatsCallback callback,
+                                void* user_data);
+
 }  // extern "C"
