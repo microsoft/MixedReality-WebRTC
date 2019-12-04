@@ -106,7 +106,7 @@
 <pre><code class="lang-cs">private NodeDssSignaler _signaler;
 </code></pre>
 </li>
-<li><p>In the <code>OnLoaded()</code> method, after subscribing to the <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a> event, add some more subscriptions to the signaling events.</p>
+<li><p>In the <code>OnLoaded()</code> method, add some subscriptions to the signaling events.</p>
 <pre><code class="lang-cs">_peerConnection.LocalSdpReadytoSend += Peer_LocalSdpReadytoSend;
 _peerConnection.IceCandidateReadytoSend += Peer_IceCandidateReadytoSend;
 </code></pre>

@@ -128,12 +128,12 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.AudioFrame.channelCount
   fullName: Microsoft.MixedReality.WebRTC.AudioFrame.channelCount
   nameWithType: AudioFrame.channelCount
-- uid: Microsoft.MixedReality.WebRTC.AudioFrame.frameCount
-  name: frameCount
-  href: api/Microsoft.MixedReality.WebRTC.AudioFrame.html#Microsoft_MixedReality_WebRTC_AudioFrame_frameCount
-  commentId: F:Microsoft.MixedReality.WebRTC.AudioFrame.frameCount
-  fullName: Microsoft.MixedReality.WebRTC.AudioFrame.frameCount
-  nameWithType: AudioFrame.frameCount
+- uid: Microsoft.MixedReality.WebRTC.AudioFrame.sampleCount
+  name: sampleCount
+  href: api/Microsoft.MixedReality.WebRTC.AudioFrame.html#Microsoft_MixedReality_WebRTC_AudioFrame_sampleCount
+  commentId: F:Microsoft.MixedReality.WebRTC.AudioFrame.sampleCount
+  fullName: Microsoft.MixedReality.WebRTC.AudioFrame.sampleCount
+  nameWithType: AudioFrame.sampleCount
 - uid: Microsoft.MixedReality.WebRTC.AudioFrame.sampleRate
   name: sampleRate
   href: api/Microsoft.MixedReality.WebRTC.AudioFrame.html#Microsoft_MixedReality_WebRTC_AudioFrame_sampleRate
@@ -1199,6 +1199,30 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.Dispose
   nameWithType: PeerConnection.Dispose
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode
+  name: PeerConnection.FrameHeightRoundMode
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode
+  nameWithType: PeerConnection.FrameHeightRoundMode
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.Crop
+  name: Crop
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html#Microsoft_MixedReality_WebRTC_PeerConnection_FrameHeightRoundMode_Crop
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.Crop
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.Crop
+  nameWithType: PeerConnection.FrameHeightRoundMode.Crop
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.None
+  name: None
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html#Microsoft_MixedReality_WebRTC_PeerConnection_FrameHeightRoundMode_None
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.None
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.None
+  nameWithType: PeerConnection.FrameHeightRoundMode.None
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.Pad
+  name: Pad
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html#Microsoft_MixedReality_WebRTC_PeerConnection_FrameHeightRoundMode_Pad
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.Pad
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.Pad
+  nameWithType: PeerConnection.FrameHeightRoundMode.Pad
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync
   name: GetVideoCaptureDevicesAsync()
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync
@@ -1463,6 +1487,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetBitrate
   nameWithType: PeerConnection.SetBitrate
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetFrameHeightRoundMode(Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode)
+  name: SetFrameHeightRoundMode(PeerConnection.FrameHeightRoundMode)
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetFrameHeightRoundMode_Microsoft_MixedReality_WebRTC_PeerConnection_FrameHeightRoundMode_
+  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.SetFrameHeightRoundMode(Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode)
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetFrameHeightRoundMode(Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode)
+  nameWithType: PeerConnection.SetFrameHeightRoundMode(PeerConnection.FrameHeightRoundMode)
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetFrameHeightRoundMode*
+  name: SetFrameHeightRoundMode
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetFrameHeightRoundMode_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.SetFrameHeightRoundMode
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetFrameHeightRoundMode
+  nameWithType: PeerConnection.SetFrameHeightRoundMode
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalAudioTrackEnabled(System.Boolean)
   name: SetLocalAudioTrackEnabled(Boolean)
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetLocalAudioTrackEnabled_System_Boolean_
@@ -3051,6 +3088,23 @@ references:
   fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).RecycleStorage
   nameWithType: VideoFrameQueue<T>.RecycleStorage
   nameWithType.vb: VideoFrameQueue(Of T).RecycleStorage
+- uid: Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.TrackLateFrame
+  name: TrackLateFrame()
+  href: api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html#Microsoft_MixedReality_WebRTC_VideoFrameQueue_1_TrackLateFrame
+  commentId: M:Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.TrackLateFrame
+  fullName: Microsoft.MixedReality.WebRTC.VideoFrameQueue<T>.TrackLateFrame()
+  fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).TrackLateFrame()
+  nameWithType: VideoFrameQueue<T>.TrackLateFrame()
+  nameWithType.vb: VideoFrameQueue(Of T).TrackLateFrame()
+- uid: Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.TrackLateFrame*
+  name: TrackLateFrame
+  href: api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html#Microsoft_MixedReality_WebRTC_VideoFrameQueue_1_TrackLateFrame_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.TrackLateFrame
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.VideoFrameQueue<T>.TrackLateFrame
+  fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).TrackLateFrame
+  nameWithType: VideoFrameQueue<T>.TrackLateFrame
+  nameWithType.vb: VideoFrameQueue(Of T).TrackLateFrame
 - uid: Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.TryDequeue(`0@)
   name: TryDequeue(out T)
   href: api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html#Microsoft_MixedReality_WebRTC_VideoFrameQueue_1_TryDequeue__0__

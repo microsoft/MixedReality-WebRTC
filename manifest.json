@@ -42,7 +42,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html",
-          "hash": "7WBpL3jyuKspKsxFszhHFQ=="
+          "hash": "gapkG4xpLmC6bzhXRCMC+w=="
         }
       },
       "is_incremental": false,
@@ -54,7 +54,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioFrame.html",
-          "hash": "TiXCcG0NtJ6yBqtG4hf3jQ=="
+          "hash": "9JSx1+Pr9Z9VUfVugSkV/w=="
         }
       },
       "is_incremental": false,
@@ -150,7 +150,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrameStorage.html",
-          "hash": "ZVLlJzP2j0f0Drn2ImgIdA=="
+          "hash": "aner5HyFIVi1MQbK2wMIag=="
         }
       },
       "is_incremental": false,
@@ -162,7 +162,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoFrameQueue.html",
-          "hash": "3lEhkVyU2p/a2jqZ5F3ZJQ=="
+          "hash": "gVLKaKAKoaRLsWrDJE6Bmg=="
         }
       },
       "is_incremental": false,
@@ -174,7 +174,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoFrameStorage.html",
-          "hash": "696z3gkctzah/4MtGSIZHg=="
+          "hash": "eihkGC5ipTjstCH35Nm7fw=="
         }
       },
       "is_incremental": false,
@@ -302,6 +302,18 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html",
+          "hash": "r/8erVZQLuQtJ3zfBeN6aw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate.yml",
       "output": {
         ".html": {
@@ -378,7 +390,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.html",
-          "hash": "6iPJ5tiRXrQYwjPO7r9Y4A=="
+          "hash": "hyK5xwuPQ2+h2QRw27b5Gg=="
         }
       },
       "is_incremental": false,
@@ -762,7 +774,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html",
-          "hash": "+wQgOBGV6eeQ46/u6q3rrw=="
+          "hash": "jiih151plbnMlv4nypwPAA=="
         }
       },
       "is_incremental": false,
@@ -774,7 +786,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "/XjZ35Jb0PXomd6Hw1nSNw=="
+          "hash": "Wy5Hn8Sg83D57Wqz0xSMrw=="
         }
       },
       "is_incremental": false,
@@ -786,7 +798,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "B3ofWRe0p7bl6Ibowczmgg=="
+          "hash": "mve8CZ1anMiqsQnxMTOZ9w=="
         }
       },
       "is_incremental": false,
@@ -873,15 +885,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/cs-peerconnection.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/cs-peerconnection.html",
-          "hash": "+2lpLvROo4BBwJT7aeQJzA=="
+          "hash": "CV5yzr+IEK+zlrSGrzaZlQ=="
         }
       },
       "is_incremental": false,
@@ -1143,30 +1152,24 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-connection-core3.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-connection-core3.html",
-          "hash": "0/DAfYWRwPcoo6Yps4LJlA=="
+          "hash": "RlEiLcqXdGiq4BqsutLSPw=="
         }
       },
       "is_incremental": false,
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-connection-uwp.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-connection-uwp.html",
-          "hash": "fRc5WzcNpEXUlmZoL/NQUw=="
+          "hash": "7QdsH0vXVL46lKQpoDOO8w=="
         }
       },
       "is_incremental": false,
@@ -1197,15 +1200,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.html",
-          "hash": "w8OD2vX6NDsKVGfRmVjMQA=="
+          "hash": "UzNSFEzbtD4jEzZnFNHr8Q=="
         }
       },
       "is_incremental": false,
@@ -1272,15 +1272,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-signaling-uwp.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-signaling-uwp.html",
-          "hash": "rPen+H4ijCcbT3Rl9zj5jg=="
+          "hash": "+eY5o+GBzm05p0X+wzJiOw=="
         }
       },
       "is_incremental": false,
@@ -1934,12 +1931,6 @@
           "total_file_count": 0,
           "skipped_file_count": 0
         },
-        "ManagedReferenceDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 64,
-          "skipped_file_count": 0
-        },
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
@@ -1951,6 +1942,12 @@
           "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build",
           "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 65,
           "skipped_file_count": 0
         }
       }

@@ -168,7 +168,7 @@
 <tr>
 <td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackRemoved"><code>TrackRemoved</code></a></td>
 <td>Optional</td>
-<td>Invoked when a media track (audio or video) was removed on the remote peer, and a remove message was received on the local peer after a renegotiation. This only concerns remotely-deleted tracks. Tracks removed locally with <em>e.g.</em> <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTrack"><code>RemoveLocalVideoTrack()</code></a> do not generate a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackRemoved"><code>TrackRemoved</code></a> event.</td>
+<td>Invoked when a media track (audio or video) was removed on the remote peer, and a remove message was received on the local peer after a renegotiation. This only concerns remotely-deleted tracks. Tracks removed locally with <em>e.g.</em> <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalVideoTrack_Microsoft_MixedReality_WebRTC_LocalVideoTrack_"><code>RemoveLocalVideoTrack(LocalVideoTrack)</code></a> do not generate a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackRemoved"><code>TrackRemoved</code></a> event.</td>
 </tr>
 <tr>
 <td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAdded"><code>DataChannelAdded</code></a></td>
@@ -194,24 +194,24 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a></td>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_I420AVideoFrameReady"><code>LocalVideoTrack.I420AVideoFrameReady</code></a></td>
 <td>Optional</td>
-<td>Invoked when a video frame, encoded in I420 format, has been captured by a local video capture device and is ready to be rendered locally. This is optional, as some application will chose to only transmit local video frames to the remote peer without rendering them, whereas others like a video chat application will often provide a feedback to the user showing the video from a local webcam.</td>
+<td><em>(Note that this event was moved to LocalVideoTrack)</em> Invoked when a video frame, encoded in I420 format, has been captured by a local video capture device and is ready to be rendered locally. This is optional, as some application will chose to only transmit local video frames to the remote peer without rendering them, whereas others like a video chat application will often provide a feedback to the user showing the video from a local webcam.</td>
 </tr>
 <tr>
-<td><a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420RemoteVideoFrameReady"><code>I420RemoteVideoFrameReady</code></a></td>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420ARemoteVideoFrameReady"><code>I420ARemoteVideoFrameReady</code></a></td>
 <td>Optional</td>
 <td>Invoked when a video frame, encoded in I420 format, has been received from the remote peer and is ready to be rendered locally. This is optional, as the local peer does not have control on video tracks added by the remote peer, although most applications will genrally want to render those frames (or do any other kind of procesing on them).</td>
 </tr>
 <tr>
-<td><a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.ARGBLocalVideoFrameReady"><code>ARGBLocalVideoFrameReady</code></a></td>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_ARGBVideoFrameReady"><code>LocalVideoTrack.ARGBVideoFrameReady</code></a></td>
 <td>Optional</td>
-<td>Variant of <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a> where the frame is encoded in raw ARGB 32-bits-per-pixel format. This generally requires an extra conversion from I420, performed internally.</td>
+<td><em>(Note that this event was moved to LocalVideoTrack)</em> Variant of <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_I420AVideoFrameReady"><code>I420AVideoFrameReady</code></a> where the frame is encoded in raw ARGB 32-bits-per-pixel format. This generally requires an extra conversion from I420, performed internally.</td>
 </tr>
 <tr>
 <td><span style="white-space: pre; word-break: break-word"><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_ARGBRemoteVideoFrameReady"><code>ARGBRemoteVideoFrameReady</code></a></span></td>
 <td>Optional</td>
-<td>Variant of <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420RemoteVideoFrameReady"><code>I420RemoteVideoFrameReady</code></a> where the frame is encoded in raw ARGB 32-bits-per-pixel format. This generally requires an extra conversion from I420, performed internally.</td>
+<td>Variant of <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420ARemoteVideoFrameReady"><code>I420ARemoteVideoFrameReady</code></a> where the frame is encoded in raw ARGB 32-bits-per-pixel format. This generally requires an extra conversion from I420, performed internally.</td>
 </tr>
 </tbody>
 </table>

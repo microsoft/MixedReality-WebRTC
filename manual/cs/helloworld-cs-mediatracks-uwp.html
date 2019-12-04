@@ -89,8 +89,12 @@
 <h2 id="adding-the-tracks">Adding the tracks</h2>
 <p>Continue editing the <code>MainPage.xaml.cs</code> file and append in the <code>OnLoaded</code> method the following:</p>
 <ol>
+<li><p>Create a new <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html"><code>LocalVideoTrack</code></a> private variable.</p>
+<pre><code class="lang-cs">LocalVideoTrack _localVideoTrack;
+</code></pre>
+</li>
 <li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalVideoTrackAsync_Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_"><code>AddLocalVideoTrackAsync()</code></a> method to add to the peer connection a local video track sending to the remote peer some video frames obtained from a local video capture device (webcam).</p>
-<pre><code class="lang-cs">await _peerConnection.AddLocalVideoTrackAsync();
+<pre><code class="lang-cs">_localVideoTrack = await _peerConnection.AddLocalVideoTrackAsync();
 </code></pre>
 <p>This method optionally takes a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.html"><code>LocalVideoTrackSettings</code></a> object to configure the video capture. In this tutorial, we leave that object out and use the default settings, which will open the first available webcam with its default resolution and framerate. This is generally acceptable, although on mobile devices like HoloLens you probably want to limit the resolution and framerate to reduce the power consumption and save on battery.</p>
 </li>
@@ -183,14 +187,13 @@ private VideoBridge _localVideoBridge = new VideoBridge(3);
 }
 </code></pre>
 </li>
-<li><p>In the <code>OnLoaded()</code> method where the peer connection was initialized, subscribe to the <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a> event just after the call to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_Microsoft_MixedReality_WebRTC_PeerConnectionConfiguration_CancellationToken_"><code>InitializeAsync()</code></a> returned.</p>
-<pre><code class="lang-cs">await _peerConnection.InitializeAsync(config);
-_peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
-Debugger.Log(0, &quot;&quot;, &quot;Peer connection initialized successfully.\n&quot;);
+<li><p>In the <code>OnLoaded()</code> method where the local video track was created, subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_I420AVideoFrameReady"><code>I420AVideoFrameReady</code></a> event.</p>
+<pre><code class="lang-cs"> _localVideoTrack = await _peerConnection.AddLocalVideoTrackAsync();
+ _localVideoTrack.I420AVideoFrameReady += Peer_LocalI420AFrameReady;
 </code></pre>
 </li>
 <li><p>Implement the event handler by enqueueing the newly captured video frames into the bridge, which will later deliver them when the Media Foundation playback pipeline requests them.</p>
-<pre><code class="lang-cs">private void Peer_LocalI420FrameReady(I420AVideoFrame frame)
+<pre><code class="lang-cs">private void Peer_LocalI420AFrameReady(I420AVideoFrame frame)
 {
     _localVideoBridge.HandleIncomingVideoFrame(frame);
 }
@@ -205,12 +208,12 @@ Debugger.Log(0, &quot;&quot;, &quot;Peer connection initialized successfully.\n&
 </ul>
 <p>Unfortunately at this time the capture framerate is not available, so we assume a framerate of 30 frames per second (FPS).</p>
 <ol>
-<li><p>At the top of the <code>MainPage</code> class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420LocalVideoFrameReady"><code>I420LocalVideoFrameReady</code></a> and the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.media.core.mediastreamsource.samplerequested"><code>SampleRequested</code></a> events can be fired in parallel from multiple threads.</p>
+<li><p>At the top of the <code>MainPage</code> class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_I420AVideoFrameReady"><code>I420AVideoFrameReady</code></a> and the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.media.core.mediastreamsource.samplerequested"><code>SampleRequested</code></a> events can be fired in parallel from multiple threads.</p>
 <pre><code class="lang-cs">private bool _localVideoPlaying = false;
 private object _localVideoLock = new object();
 </code></pre>
 </li>
-<li><p>Modify the <code>Peer_LocalI420FrameReady()</code> event handler to start the media player when the first WebRTC frame arrives.</p>
+<li><p>Modify the <code>Peer_LocalI420AFrameReady()</code> event handler to start the media player when the first WebRTC frame arrives.</p>
 <pre><code class="lang-cs">private void Peer_LocalI420FrameReady(I420AVideoFrame frame)
 {
     lock (_localVideoLock)
