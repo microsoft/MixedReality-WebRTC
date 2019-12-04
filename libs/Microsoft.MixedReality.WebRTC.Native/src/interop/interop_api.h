@@ -680,6 +680,13 @@ MRS_API mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
                                              char* buffer,
                                              uint64_t* buffer_size);
 
+/// Must be the same as PeerConnection::FrameHeightRoundMode.
+enum class FrameHeightRoundMode : int32_t { NONE = 0, CROP = 1, PAD = 2};
+
+/// See PeerConnection::SetFrameHeightRoundMode.
+MRS_API void MRS_CALL
+mrsSetFrameHeightRoundMode(FrameHeightRoundMode value);
+
 //
 // Generic utilities
 //
