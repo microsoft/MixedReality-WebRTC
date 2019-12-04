@@ -33,7 +33,7 @@ Continue editing the `MainPage.xaml.cs` file.
    private NodeDssSignaler _signaler;
    ```
 
-3. In the `OnLoaded()` method, after subscribing to the [`I420LocalVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420LocalVideoFrameReady) event, add some more subscriptions to the signaling events.
+3. In the `OnLoaded()` method, add some subscriptions to the signaling events.
    ```cs
    _peerConnection.LocalSdpReadytoSend += Peer_LocalSdpReadytoSend;
    _peerConnection.IceCandidateReadytoSend += Peer_IceCandidateReadytoSend;
