@@ -10,9 +10,9 @@
 rtc::Thread* UnsafeGetWorkerThread();
 #endif
 
+#include "audio_frame.h"
 #include "export.h"
 #include "mrs_errors.h"
-#include "audio_frame.h"
 #include "video_frame.h"
 
 extern "C" {
@@ -193,7 +193,7 @@ using mrsI420AVideoFrame = Microsoft::MixedReality::WebRTC::I420AVideoFrame;
 /// The video frame is encoded in I420 triplanar format (NV12).
 using PeerConnectionI420AVideoFrameCallback =
     void(MRS_CALL*)(void* user_data, const mrsI420AVideoFrame& frame);
-	
+
 using mrsArgb32VideoFrame = Microsoft::MixedReality::WebRTC::Argb32VideoFrame;
 
 /// Callback fired when a local or remote (depending on use) video frame is
@@ -201,7 +201,7 @@ using mrsArgb32VideoFrame = Microsoft::MixedReality::WebRTC::Argb32VideoFrame;
 /// The video frame is encoded in ARGB 32-bit per pixel.
 using PeerConnectionARGBVideoFrameCallback =
     void(MRS_CALL*)(void* user_data, const mrsArgb32VideoFrame& frame);
-	
+
 using mrsAudioFrame = Microsoft::MixedReality::WebRTC::AudioFrame;
 
 /// Callback fired when a local or remote (depending on use) audio frame is
@@ -646,11 +646,10 @@ MRS_API mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
                                              uint64_t* buffer_size) noexcept;
 
 /// Must be the same as PeerConnection::FrameHeightRoundMode.
-enum class FrameHeightRoundMode : int32_t { NONE = 0, CROP = 1, PAD = 2};
+enum class FrameHeightRoundMode : int32_t { kNone = 0, kCrop = 1, kPad = 2 };
 
 /// See PeerConnection::SetFrameHeightRoundMode.
-MRS_API void MRS_CALL
-mrsSetFrameHeightRoundMode(FrameHeightRoundMode value);
+MRS_API void MRS_CALL mrsSetFrameHeightRoundMode(FrameHeightRoundMode value);
 
 //
 // Generic utilities
