@@ -12,15 +12,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     public sealed class PeerConnectionHandle : SafeHandle
     {
         /// <summary>
-        /// Make a copy of the current handle.
-        /// </summary>
-        /// <returns>The newly created handle.</returns>
-        public PeerConnectionHandle MakeCopy()
-        {
-            return new PeerConnectionHandle(handle);
-        }
-
-        /// <summary>
         /// Check if the current handle is invalid, which means it is not referencing
         /// an actual native object. Note that a valid handle only means that the internal
         /// handle references a native object, but does not guarantee that the native
@@ -508,7 +499,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
         public static extern uint PeerConnection_AddLocalVideoTrack(PeerConnectionHandle peerHandle,
-            string trackName, VideoDeviceConfiguration config, out IntPtr trackHandle);
+            string trackName, VideoDeviceConfiguration config, out LocalVideoTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalAudioTrack")]
@@ -526,7 +517,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRemoveLocalVideoTrack")]
-        public static extern uint PeerConnection_RemoveLocalVideoTrack(PeerConnectionHandle peerHandle, IntPtr trackHandle);
+        public static extern uint PeerConnection_RemoveLocalVideoTrack(PeerConnectionHandle peerHandle,
+            LocalVideoTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRemoveDataChannel")]

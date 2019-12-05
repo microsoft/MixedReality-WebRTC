@@ -72,6 +72,12 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             return wrapper;
         }
 
+        public static void ReleaseWrapperRef(IntPtr wrapperRef)
+        {
+            var handle = GCHandle.FromIntPtr(wrapperRef);
+            handle.Free();
+        }
+
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         internal struct SdpFilter
         {

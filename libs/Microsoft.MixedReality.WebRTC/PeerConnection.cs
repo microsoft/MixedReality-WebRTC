@@ -937,9 +937,9 @@ namespace Microsoft.MixedReality.WebRTC
                     trackName = Guid.NewGuid().ToString();
                 }
                 uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, trackName, config,
-                    out IntPtr trackHandle);
+                    out LocalVideoTrackHandle trackHandle);
                 Utils.ThrowOnErrorCode(res);
-                var track = new LocalVideoTrack(this, _nativePeerhandle, trackHandle, settings.trackName);
+                var track = new LocalVideoTrack(trackHandle, this, settings.trackName);
                 return track;
             });
         }
@@ -952,7 +952,7 @@ namespace Microsoft.MixedReality.WebRTC
         {
             ThrowIfConnectionNotOpen();
             PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerhandle, track._nativeHandle);
-            track.OnTrackRemoved(this);
+            track.OnTrackRemoved(this); // LocalVideoTrack.PeerConnection = null
         }
 
         /// <summary>
