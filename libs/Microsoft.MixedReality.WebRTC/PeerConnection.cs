@@ -586,7 +586,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Event that occurs when a video frame from a remote peer has been
         /// received and is available for render.
         /// </summary>
-        public event ARGBVideoFrameDelegate ARGBRemoteVideoFrameReady;
+        public event Argb32VideoFrameDelegate Argb32RemoteVideoFrameReady;
 
         /// <summary>
         /// Event that occurs when an audio frame from a local track has been
@@ -706,7 +706,7 @@ namespace Microsoft.MixedReality.WebRTC
                     TrackAddedCallback = PeerConnectionInterop.TrackAddedCallback,
                     TrackRemovedCallback = PeerConnectionInterop.TrackRemovedCallback,
                     I420ARemoteVideoFrameCallback = PeerConnectionInterop.I420ARemoteVideoFrameCallback,
-                    ARGBRemoteVideoFrameCallback = PeerConnectionInterop.ARGBRemoteVideoFrameCallback,
+                    Argb32RemoteVideoFrameCallback = PeerConnectionInterop.Argb32RemoteVideoFrameCallback,
                     LocalAudioFrameCallback = PeerConnectionInterop.LocalAudioFrameCallback,
                     RemoteAudioFrameCallback = PeerConnectionInterop.RemoteAudioFrameCallback
                 };
@@ -796,8 +796,8 @@ namespace Microsoft.MixedReality.WebRTC
                             _nativePeerhandle, _peerCallbackArgs.DataChannelRemovedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterI420ARemoteVideoFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.I420ARemoteVideoFrameCallback, self);
-                        PeerConnectionInterop.PeerConnection_RegisterARGBRemoteVideoFrameCallback(
-                            _nativePeerhandle, _peerCallbackArgs.ARGBRemoteVideoFrameCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterArgb32RemoteVideoFrameCallback(
+                            _nativePeerhandle, _peerCallbackArgs.Argb32RemoteVideoFrameCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterLocalAudioFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.LocalAudioFrameCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterRemoteAudioFrameCallback(
@@ -858,7 +858,7 @@ namespace Microsoft.MixedReality.WebRTC
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterI420ARemoteVideoFrameCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
-                PeerConnectionInterop.PeerConnection_RegisterARGBRemoteVideoFrameCallback(
+                PeerConnectionInterop.PeerConnection_RegisterArgb32RemoteVideoFrameCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterLocalAudioFrameCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
@@ -1471,10 +1471,10 @@ namespace Microsoft.MixedReality.WebRTC
             I420ARemoteVideoFrameReady?.Invoke(frame);
         }
 
-        internal void OnARGBRemoteVideoFrameReady(ARGBVideoFrame frame)
+        internal void OnArgb32RemoteVideoFrameReady(Argb32VideoFrame frame)
         {
             MainEventSource.Log.Argb32RemoteVideoFrameReady(frame.width, frame.height);
-            ARGBRemoteVideoFrameReady?.Invoke(frame);
+            Argb32RemoteVideoFrameReady?.Invoke(frame);
         }
 
         internal void OnLocalAudioFrameReady(AudioFrame frame)

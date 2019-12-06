@@ -55,7 +55,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Event that occurs when a video frame has been produced by the underlying source and is available.
         /// </summary>
-        public event ARGBVideoFrameDelegate ARGBVideoFrameReady;
+        public event Argb32VideoFrameDelegate Argb32VideoFrameReady;
 
         /// <summary>
         /// Handle to the native LocalVideoTrack object.
@@ -90,13 +90,13 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 Track = this,
                 I420AFrameCallback = LocalVideoTrackInterop.I420AFrameCallback,
-                ARGBFrameCallback = LocalVideoTrackInterop.ARGBFrameCallback,
+                Argb32FrameCallback = LocalVideoTrackInterop.Argb32FrameCallback,
             };
             _selfHandle = Utils.MakeWrapperRef(this);
             LocalVideoTrackInterop.LocalVideoTrack_RegisterI420AFrameCallback(
                 _nativeHandle, _interopCallbackArgs.I420AFrameCallback, _selfHandle);
-            LocalVideoTrackInterop.LocalVideoTrack_RegisterARGBFrameCallback(
-                _nativeHandle, _interopCallbackArgs.ARGBFrameCallback, _selfHandle);
+            LocalVideoTrackInterop.LocalVideoTrack_RegisterArgb32FrameCallback(
+                _nativeHandle, _interopCallbackArgs.Argb32FrameCallback, _selfHandle);
         }
 
         /// <inheritdoc/>
@@ -115,7 +115,7 @@ namespace Microsoft.MixedReality.WebRTC
             if (_selfHandle != IntPtr.Zero)
             {
                 LocalVideoTrackInterop.LocalVideoTrack_RegisterI420AFrameCallback(_nativeHandle, null, IntPtr.Zero);
-                LocalVideoTrackInterop.LocalVideoTrack_RegisterARGBFrameCallback(_nativeHandle, null, IntPtr.Zero);
+                LocalVideoTrackInterop.LocalVideoTrack_RegisterArgb32FrameCallback(_nativeHandle, null, IntPtr.Zero);
                 Utils.ReleaseWrapperRef(_selfHandle);
                 _selfHandle = IntPtr.Zero;
                 _interopCallbackArgs = null;
@@ -132,10 +132,10 @@ namespace Microsoft.MixedReality.WebRTC
             I420AVideoFrameReady?.Invoke(frame);
         }
 
-        internal void OnARGBFrameReady(ARGBVideoFrame frame)
+        internal void OnArgb32FrameReady(Argb32VideoFrame frame)
         {
             MainEventSource.Log.Argb32LocalVideoFrameReady(frame.width, frame.height);
-            ARGBVideoFrameReady?.Invoke(frame);
+            Argb32VideoFrameReady?.Invoke(frame);
         }
 
         internal void OnTrackRemoved(PeerConnection previousConnection)

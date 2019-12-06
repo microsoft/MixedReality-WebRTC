@@ -239,7 +239,7 @@ class PeerConnectionImpl : public PeerConnection,
   }
 
   void RegisterRemoteVideoFrameCallback(
-      ARGBFrameReadyCallback callback) noexcept override {
+      Argb32FrameReadyCallback callback) noexcept override {
     if (remote_video_observer_) {
       remote_video_observer_->SetCallback(std::move(callback));
     }

@@ -164,7 +164,7 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         }
 
         [Event(0x3102, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void VideoFrameQueueEnqueueARGB32(Guid instanceId, int width, int height)
+        public void VideoFrameQueueEnqueueArgb32(Guid instanceId, int width, int height)
         {
             WriteEvent(0x3102, instanceId, width, height);
         }
@@ -176,7 +176,7 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         }
 
         [Event(0x3104, Level = EventLevel.Verbose, Keywords = Keywords.Media)]
-        public void VideoFrameQueueDropARGB32(Guid instanceId, int width, int height)
+        public void VideoFrameQueueDropArgb32(Guid instanceId, int width, int height)
         {
             WriteEvent(0x3104, instanceId, width, height);
         }

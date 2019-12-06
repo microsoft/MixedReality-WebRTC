@@ -185,7 +185,7 @@ class PeerConnection : public TrackedObject {
   /// Register a custom callback invoked when a remote video frame has been
   /// received and decompressed, and is ready to be displayed locally.
   virtual void RegisterRemoteVideoFrameCallback(
-      ARGBFrameReadyCallback callback) noexcept = 0;
+      Argb32FrameReadyCallback callback) noexcept = 0;
 
   /// Add a video track to the peer connection. If no RTP sender/transceiver
   /// exist, create a new one for that track.

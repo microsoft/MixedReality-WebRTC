@@ -72,9 +72,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             I420AVideoFrameCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsLocalVideoTrackRegisterARGBFrameCallback")]
-        public static extern void LocalVideoTrack_RegisterARGBFrameCallback(LocalVideoTrackHandle trackHandle,
-            ARGBVideoFrameCallback callback, IntPtr userData);
+            EntryPoint = "mrsLocalVideoTrackRegisterArgb32FrameCallback")]
+        public static extern void LocalVideoTrack_RegisterArgb32FrameCallback(LocalVideoTrackHandle trackHandle,
+            Argb32VideoFrameCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsLocalVideoTrackIsEnabled")]
@@ -92,7 +92,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public delegate void I420AVideoFrameCallback(IntPtr userData, I420AVideoFrame frame);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void ARGBVideoFrameCallback(IntPtr userData, ARGBVideoFrame frame);
+        public delegate void Argb32VideoFrameCallback(IntPtr userData, Argb32VideoFrame frame);
 
         #endregion
 
@@ -100,7 +100,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         {
             public LocalVideoTrack Track;
             public I420AVideoFrameCallback I420AFrameCallback;
-            public ARGBVideoFrameCallback ARGBFrameCallback;
+            public Argb32VideoFrameCallback Argb32FrameCallback;
         }
 
         [MonoPInvokeCallback(typeof(I420AVideoFrameDelegate))]
@@ -110,11 +110,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             track.OnI420AFrameReady(frame);
         }
 
-        [MonoPInvokeCallback(typeof(ARGBVideoFrameDelegate))]
-        public static void ARGBFrameCallback(IntPtr userData, ARGBVideoFrame frame)
+        [MonoPInvokeCallback(typeof(Argb32VideoFrameDelegate))]
+        public static void Argb32FrameCallback(IntPtr userData, Argb32VideoFrame frame)
         {
             var track = Utils.ToWrapper<LocalVideoTrack>(userData);
-            track.OnARGBFrameReady(frame);
+            track.OnArgb32FrameReady(frame);
         }
     }
 }

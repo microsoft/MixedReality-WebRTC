@@ -38,12 +38,12 @@ void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
   }
 }
 
-void MRS_CALL mrsLocalVideoTrackRegisterARGBFrameCallback(
+void MRS_CALL mrsLocalVideoTrackRegisterArgb32FrameCallback(
     LocalVideoTrackHandle trackHandle,
-    PeerConnectionARGBVideoFrameCallback callback,
+    PeerConnectionArgb32VideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(trackHandle)) {
-    track->SetCallback(ARGBFrameReadyCallback{callback, user_data});
+    track->SetCallback(Argb32FrameReadyCallback{callback, user_data});
   }
 }
 
