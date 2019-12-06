@@ -107,6 +107,10 @@ namespace Microsoft.MixedReality.WebRTC
                 return;
             }
 
+            // Remove the track from the peer connection, if any
+            PeerConnection?.RemoveLocalVideoTrack(this);
+            Debug.Assert(PeerConnection == null); // see OnTrackRemoved
+
             // Unregister interop callbacks
             if (_selfHandle != IntPtr.Zero)
             {
