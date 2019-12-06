@@ -132,11 +132,14 @@
     <ClInclude Include="../../include/local_video_track.h" />
     <ClInclude Include="../interop/local_video_track_interop.h" />
     <ClInclude Include="..\..\include\audio_frame.h" />
+    <ClInclude Include="..\..\include\external_video_track_source.h" />
     <ClInclude Include="..\..\include\mrs_errors.h" />
     <ClInclude Include="..\..\include\refptr.h" />
     <ClInclude Include="..\..\include\ref_counted_base.h" />
     <ClInclude Include="..\..\include\tracked_object.h" />
     <ClInclude Include="..\..\include\video_frame.h" />
+    <ClInclude Include="../interop/external_video_track_source_interop.h" />
+    <ClInclude Include="..\media\external_video_track_source_impl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../interop/interop_api.cpp" />
@@ -154,6 +157,8 @@
     <ClCompile Include="../interop/local_video_track_interop.cpp" />
     <ClCompile Include="../media/local_video_track.cpp" />
     <ClCompile Include="..\mrs_errors.cpp" />
+    <ClCompile Include="../interop/external_video_track_source_interop.cpp" />
+    <ClCompile Include="..\media\external_video_track_source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

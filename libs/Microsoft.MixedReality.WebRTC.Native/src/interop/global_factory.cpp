@@ -25,8 +25,9 @@ std::unique_ptr<GlobalFactory> g_factory = std::make_unique<GlobalFactory>();
 std::string_view ObjectTypeToString(ObjectType type) {
   static_assert((int)ObjectType::kPeerConnection == 0, "");
   static_assert((int)ObjectType::kLocalVideoTrack == 1, "");
-  constexpr const std::string_view s_types[] = {"PeerConnection",
-                                                "LocalVideoTrack"};
+  static_assert((int)ObjectType::kExternalVideoTrackSource == 2, "");
+  constexpr const std::string_view s_types[] = {
+      "PeerConnection", "LocalVideoTrack", "ExternalVideoTrackSource"};
   return s_types[(int)type];
 }
 

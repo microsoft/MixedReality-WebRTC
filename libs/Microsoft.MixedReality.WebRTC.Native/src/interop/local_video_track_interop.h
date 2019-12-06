@@ -44,7 +44,7 @@ MRS_API mrsResult MRS_CALL
 mrsLocalVideoTrackSetEnabled(LocalVideoTrackHandle track_handle,
                              mrsBool enabled) noexcept;
 
-/// Query a local video track for its enabled status. Return |mrsBool::kTrue| if the track is enabled, or 
+/// Query a local video track for its enabled status.
 MRS_API mrsBool MRS_CALL
 mrsLocalVideoTrackIsEnabled(LocalVideoTrackHandle track_handle) noexcept;
 

@@ -27,6 +27,12 @@ namespace Microsoft.MixedReality.WebRTC
         public string Name { get; }
 
         /// <summary>
+        /// External source for this video track, or <c>null</c> if the source is
+        /// some internal video capture device.
+        /// </summary>
+        public ExternalVideoTrackSource Source { get; } = null;
+
+        /// <summary>
         /// Enabled status of the track. If enabled, send local video frames to the remote peer as
         /// expected. If disabled, send only black frames instead.
         /// </summary>
@@ -76,11 +82,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private LocalVideoTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
-        internal LocalVideoTrack(LocalVideoTrackHandle nativeHandle, PeerConnection peer, string trackName)
+        internal LocalVideoTrack(LocalVideoTrackHandle nativeHandle, PeerConnection peer, string trackName, ExternalVideoTrackSource source = null)
         {
             _nativeHandle = nativeHandle;
             PeerConnection = peer;
             Name = trackName;
+            Source = source;
             RegisterInteropCallbacks();
         }
 
@@ -120,6 +127,10 @@ namespace Microsoft.MixedReality.WebRTC
                 _selfHandle = IntPtr.Zero;
                 _interopCallbackArgs = null;
             }
+
+            // Currently there is a 1:1 mapping between track and source, so the track owns its
+            // source and must dipose of it.
+            Source?.Dispose();
 
             // Destroy the native object. This may be delayed if a P/Invoke callback is underway,
             // but will be handled at some point anyway, even if the managed instance is gone.

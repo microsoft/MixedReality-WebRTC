@@ -15,6 +15,7 @@ namespace Microsoft::MixedReality::WebRTC {
 
 class PeerConnection;
 class LocalVideoTrack;
+class ExternalVideoTrackSource;
 class DataChannel;
 
 struct BitrateSettings {
@@ -196,6 +197,12 @@ class PeerConnection : public TrackedObject {
   /// The underlying RTP sender/transceiver are kept alive but inactive.
   virtual MRS_API webrtc::RTCError RemoveLocalVideoTrack(
       LocalVideoTrack& video_track) noexcept = 0;
+
+  /// Remove all tracks sharing the given video track source.
+  /// Note that currently video source sharing is not supported, so this will
+  /// remove at most a single track backed by the given source.
+  virtual MRS_API void RemoveLocalVideoTracksFromSource(
+      ExternalVideoTrackSource& source) noexcept = 0;
 
   /// Rounding mode of video frame height for |SetFrameHeightRoundMode()|.
   /// This is only used on HoloLens 1 (UWP x86).

@@ -117,6 +117,9 @@ using LocalVideoTrackHandle = void*;
 /// Opaque handle to a native DataChannel C++ object.
 using DataChannelHandle = void*;
 
+/// Opaque handle to a native ExternalVideoTrackSource C++ object.
+using ExternalVideoTrackSourceHandle = void*;
+
 /// Callback fired when the peer connection is connected, that is it finished
 /// the JSEP offer/answer exchange successfully.
 using PeerConnectionConnectedCallback = void(MRS_CALL*)(void* user_data);
@@ -466,6 +469,69 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     const char* track_name,
     VideoDeviceConfiguration config,
     LocalVideoTrackHandle* trackHandle) noexcept;
+
+using mrsRequestExternalI420AVideoFrameCallback =
+    mrsResult(MRS_CALL*)(void* user_data,
+                         ExternalVideoTrackSourceHandle source_handle,
+                         uint32_t request_id,
+                         int64_t timestamp_ms);
+
+using mrsRequestExternalArgb32VideoFrameCallback =
+    mrsResult(MRS_CALL*)(void* user_data,
+                         ExternalVideoTrackSourceHandle source_handle,
+                         uint32_t request_id,
+                         int64_t timestamp_ms);
+
+/// Add a local video track from a custom video source external to the
+/// implementation. This allows feeding into WebRTC frames from any source,
+/// including generated or synthetic frames, for example for testing.
+/// The frame is provided from a callback as an I420-encoded buffer.
+/// The track source initially starts as capuring. Capture can be stopped with
+/// |mrsExternalVideoTrackSourceShutdown|.
+/// This returns handles to newly allocated objects, which must be released once
+/// not used anymore:
+/// - |source_handle| => |mrsExternalVideoTrackSourceRemoveRef()|
+/// - |track_handle|  => |mrsLocalVideoTrackRemoveRef()|
+MRS_API mrsResult MRS_CALL
+mrsPeerConnectionAddLocalVideoTrackFromExternalI420ASource(
+    PeerConnectionHandle peerHandle,
+    const char* track_name,
+    mrsRequestExternalI420AVideoFrameCallback callback,
+    void* user_data,
+    ExternalVideoTrackSourceHandle* source_handle,
+    LocalVideoTrackHandle* track_handle) noexcept;
+
+/// Add a local video track from a custom video source external to the
+/// implementation. This allows feeding into WebRTC frames from any source,
+/// including generated or synthetic frames, for example for testing.
+/// The frame is provided from a callback as an ARGB 32-bits-per-pixel buffer.
+/// The track source initially starts as capuring. Capture can be stopped with
+/// |mrsExternalVideoTrackSourceShutdown|.
+/// This returns handles to newly allocated objects, which must be released once
+/// not used anymore:
+/// - |source_handle| => |mrsExternalVideoTrackSourceRemoveRef()|
+/// - |track_handle|  => |mrsLocalVideoTrackRemoveRef()|
+MRS_API mrsResult MRS_CALL
+mrsPeerConnectionAddLocalVideoTrackFromExternalArgb32Source(
+    PeerConnectionHandle peerHandle,
+    const char* track_name,
+    mrsRequestExternalArgb32VideoFrameCallback callback,
+    void* user_data,
+    ExternalVideoTrackSourceHandle* source_handle,
+    LocalVideoTrackHandle* track_handle) noexcept;
+
+/// Remove a local video track from the given peer connection and destroy it.
+/// After this call returned, the video track handle is invalid.
+MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
+    PeerConnectionHandle peer_handle,
+    LocalVideoTrackHandle track_handle) noexcept;
+
+/// Remove all local video tracks backed by the given video track source from
+/// the given peer connection and destroy the video track source.
+/// After this call returned, the video track source handle is invalid.
+MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTracksFromSource(
+    PeerConnectionHandle peer_handle,
+    ExternalVideoTrackSourceHandle source_handle) noexcept;
 
 /// Add a local audio track from a local audio capture device (microphone) to
 /// the collection of tracks to send to the remote peer.

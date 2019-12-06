@@ -1,10 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="../audio_frame_observer.cpp" />
+    <ClCompile Include="../audio_frame_observer.cpp">
+      <Filter>media</Filter>
+    </ClCompile>
     <ClCompile Include="../pch.cpp" />
     <ClCompile Include="../peer_connection.cpp" />
-    <ClCompile Include="../video_frame_observer.cpp" />
+    <ClCompile Include="../video_frame_observer.cpp">
+      <Filter>media</Filter>
+    </ClCompile>
     <ClCompile Include="../sdp_utils.cpp" />
     <ClCompile Include="../interop/interop_api.cpp">
       <Filter>interop</Filter>
@@ -12,7 +16,9 @@
     <ClCompile Include="../data_channel.cpp">
       <Filter>media</Filter>
     </ClCompile>
-    <ClCompile Include="../str.cpp" />
+    <ClCompile Include="../str.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
     <ClCompile Include="../interop/global_factory.cpp">
       <Filter>interop</Filter>
     </ClCompile>
@@ -26,19 +32,31 @@
       <Filter>media</Filter>
     </ClCompile>
     <ClCompile Include="..\mrs_errors.cpp" />
+    <ClCompile Include="../media/external_video_track_source.cpp">
+      <Filter>media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interop\external_video_track_source_interop.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="../../include/audio_frame_observer.h" />
+    <ClInclude Include="../../include/audio_frame_observer.h">
+      <Filter>media</Filter>
+    </ClInclude>
     <ClInclude Include="../../include/callback.h" />
     <ClInclude Include="../pch.h" />
     <ClInclude Include="../../include/peer_connection.h" />
     <ClInclude Include="../targetver.h" />
-    <ClInclude Include="../../include/video_frame_observer.h" />
+    <ClInclude Include="../../include/video_frame_observer.h">
+      <Filter>media</Filter>
+    </ClInclude>
     <ClInclude Include="../../include/sdp_utils.h" />
     <ClInclude Include="../interop/interop_api.h">
       <Filter>interop</Filter>
     </ClInclude>
-    <ClInclude Include="../../include/str.h" />
+    <ClInclude Include="../../include/str.h">
+      <Filter>interop</Filter>
+    </ClInclude>
     <ClInclude Include="../../include/export.h" />
     <ClInclude Include="../interop/global_factory.h">
       <Filter>interop</Filter>
@@ -63,6 +81,15 @@
       <Filter>media</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\video_frame.h">
+      <Filter>media</Filter>
+    </ClInclude>
+    <ClInclude Include="../media/external_video_track_source.h">
+      <Filter>media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interop\external_video_track_source_interop.h">
+      <Filter>interop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\media\external_video_track_source_impl.h">
       <Filter>media</Filter>
     </ClInclude>
   </ItemGroup>

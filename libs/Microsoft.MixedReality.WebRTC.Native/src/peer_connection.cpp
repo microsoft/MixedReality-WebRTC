@@ -250,6 +250,8 @@ class PeerConnectionImpl : public PeerConnection,
           video_track) noexcept override;
   webrtc::RTCError RemoveLocalVideoTrack(
       LocalVideoTrack& video_track) noexcept override;
+  void RemoveLocalVideoTracksFromSource(
+      ExternalVideoTrackSource& source) noexcept override;
 
   void RegisterLocalAudioFrameCallback(
       AudioFrameReadyCallback callback) noexcept override {
@@ -593,6 +595,33 @@ webrtc::RTCError PeerConnectionImpl::RemoveLocalVideoTrack(
   }
   local_video_tracks_.erase(it);
   return webrtc::RTCError::OK();
+}
+
+void PeerConnectionImpl::RemoveLocalVideoTracksFromSource(
+    ExternalVideoTrackSource& source) noexcept {
+  if (!peer_) {
+    return;
+  }
+  // Remove all tracks which share this video track source.
+  // Currently there is no support for source sharing, so this should
+  // amount to a single track.
+  std::vector<rtc::scoped_refptr<webrtc::RtpSenderInterface>> senders =
+      peer_->GetSenders();
+  for (auto&& sender : senders) {
+    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
+        sender->track();
+    // Apparently track can be null if destroyed already
+    //< FIXME - Is this an error?
+    if (!track ||
+        (track->kind() != webrtc::MediaStreamTrackInterface::kVideoKind)) {
+      continue;
+    }
+    auto video_track = (webrtc::VideoTrackInterface*)track.get();
+    if (video_track->GetSource() ==
+        (webrtc::VideoTrackSourceInterface*)&source) {
+      peer_->RemoveTrack(sender);
+    }
+  }
 }
 
 void PeerConnectionImpl::SetLocalAudioTrackEnabled(bool enabled) noexcept {
