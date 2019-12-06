@@ -189,13 +189,13 @@ class PeerConnection : public TrackedObject {
 
   /// Add a video track to the peer connection. If no RTP sender/transceiver
   /// exist, create a new one for that track.
-  virtual ErrorOr<RefPtr<LocalVideoTrack>> MRS_API AddLocalVideoTrack(
+  virtual MRS_API ErrorOr<RefPtr<LocalVideoTrack>> AddLocalVideoTrack(
       rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept = 0;
 
   /// Remove a local video track from the peer connection.
   /// The underlying RTP sender/transceiver are kept alive but inactive.
-  virtual webrtc::RTCError MRS_API
-  RemoveLocalVideoTrack(LocalVideoTrack& video_track) noexcept = 0;
+  virtual MRS_API webrtc::RTCError RemoveLocalVideoTrack(
+      LocalVideoTrack& video_track) noexcept = 0;
 
   /// Rounding mode of video frame height for |SetFrameHeightRoundMode()|.
   /// This is only used on HoloLens 1 (UWP x86).

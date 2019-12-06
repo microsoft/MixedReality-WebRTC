@@ -565,7 +565,7 @@ ErrorOr<RefPtr<LocalVideoTrack>> PeerConnectionImpl::AddLocalVideoTrack(
   }
   auto result = peer_->AddTrack(video_track, {kAudioVideoStreamId});
   if (result.ok()) {
-    RefPtr<LocalVideoTrack> track = new rtc::RefCountedObject<LocalVideoTrack>(
+    RefPtr<LocalVideoTrack> track = new LocalVideoTrack(
         *this, std::move(video_track), std::move(result.MoveValue()), nullptr);
     {
       rtc::CritScope lock(&tracks_mutex_);
