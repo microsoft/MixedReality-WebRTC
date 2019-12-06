@@ -1618,6 +1618,18 @@ namespace TestAppUwp
             if (string.IsNullOrWhiteSpace(chatInputBox.Text))
                 return;
 
+            _peerConnection.GetSimpleStatsAsync().ContinueWith((Task<PeerConnection.StatsReport> task) =>
+            {
+                foreach (var ds in task.Result.GetStats<PeerConnection.DataChannelStats>())
+                {
+                    Debug.WriteLine(ds.BytesSent);
+                }
+                foreach (var ast in task.Result.GetStats<PeerConnection.AudioSenderStats>())
+                {
+                    Debug.WriteLine(ast.AudioLevel);
+                }
+            });
+
             var chat = SelectedChatChannel;
             if (chat == null)
                 return;

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -1523,21 +1524,35 @@ namespace Microsoft.MixedReality.WebRTC
             public ulong BytesReceived;
         }
 
-        public interface StatsCollector
+        public class StatsReport : SafeHandle
         {
-            void Handle(in DataChannelStats stats);
-            void Handle(in AudioSenderStats stats);
-            void Handle(in AudioReceiverStats stats);
-            void Handle(in VideoSenderStats stats);
-            void Handle(in VideoReceiverStats stats);
-            void Handle(in TransportStats stats);
+            private IntPtr _handle;
+            public StatsReport(IntPtr handle) : base(IntPtr.Zero, true) { _handle = handle; }
+
+            public override bool IsInvalid => _handle == IntPtr.Zero;
+
+            public IEnumerable<T> GetStats<T>()
+            {
+                var res = new List<T>();
+                var resHandle = GCHandle.Alloc(res, GCHandleType.Normal);
+                PeerConnectionInterop.StatsReport_GetObjects(_handle, typeof(T).Name, PeerConnectionInterop.SimpleStatsObjectCallback, GCHandle.ToIntPtr(resHandle));
+                return res;
+            }
+
+            protected override bool ReleaseHandle()
+            {
+                // TODO
+                PeerConnectionInterop.PeerConnection_RemoveRef(_handle);
+                return true;
+            }
         }
 
-        public void GetSimpleStats(StatsCollector collector)
+        public Task<StatsReport> GetSimpleStatsAsync()
         {
-            var collectorHandle = GCHandle.Alloc(collector, GCHandleType.Normal);
-            PeerConnectionInterop.PeerConnection_GetSimpleStats(_nativePeerhandle,
-                PeerConnectionInterop.SimpleStatsCallback, GCHandle.ToIntPtr(collectorHandle));
+            var tcs = new TaskCompletionSource<StatsReport>();
+            var resHandle = GCHandle.Alloc(tcs, GCHandleType.Normal);
+            PeerConnectionInterop.PeerConnection_GetSimpleStats(_nativePeerhandle, PeerConnectionInterop.SimpleStatsReportCallback, GCHandle.ToIntPtr(resHandle));
+            return tcs.Task;
         }
 
         /// <summary>

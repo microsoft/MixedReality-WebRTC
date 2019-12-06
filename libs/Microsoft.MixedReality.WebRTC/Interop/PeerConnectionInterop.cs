@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Microsoft.MixedReality.WebRTC.Interop
 {
@@ -271,31 +273,24 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnRemoteAudioFrameReady(frame);
         }
-
-        public unsafe static void SimpleStatsCallback(IntPtr userData, string statsType, IntPtr statsObject)
+        public unsafe static void SimpleStatsReportCallback(IntPtr userData, IntPtr report)
         {
-            var collector = Utils.ToWrapper<PeerConnection.StatsCollector>(userData);
-            switch(statsType)
+            var tcs = Utils.ToWrapper<TaskCompletionSource<PeerConnection.StatsReport>>(userData);
+            tcs.SetResult(new PeerConnection.StatsReport(report));
+        }
+
+        public unsafe static void SimpleStatsObjectCallback(IntPtr userData, IntPtr statsObject)
+        {
+            var list = Utils.ToWrapper<object>(userData);
+            if (list is List<PeerConnection.DataChannelStats> dataStatsList)
             {
-                case "DataChannelStats":
-                    collector.Handle(*(PeerConnection.DataChannelStats*)statsObject);
-                    break;
-                case "AudioSenderStats":
-                    collector.Handle(Marshal.PtrToStructure<PeerConnection.AudioSenderStats>(statsObject));
-                    break;
-                case "AudioReceiverStats":
-                    collector.Handle(Marshal.PtrToStructure<PeerConnection.AudioReceiverStats>(statsObject));
-                    break;
-                case "VideoSenderStats":
-                    collector.Handle(Marshal.PtrToStructure<PeerConnection.VideoSenderStats>(statsObject));
-                    break;
-                case "VideoReceiverStats":
-                    collector.Handle(Marshal.PtrToStructure<PeerConnection.VideoReceiverStats>(statsObject));
-                    break;
-                case "TransportStats":
-                    collector.Handle(*(PeerConnection.TransportStats*)statsObject);
-                    break;
+                dataStatsList.Add(*(PeerConnection.DataChannelStats*)statsObject);
             }
+            else if (list is List<PeerConnection.AudioSenderStats> audioSenderStatsList)
+            {
+                audioSenderStatsList.Add(Marshal.PtrToStructure<PeerConnection.AudioSenderStats>(statsObject));
+            }
+            // TODO and so on
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -433,8 +428,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public delegate void AudioFrameUnmanagedCallback(IntPtr userData, ref AudioFrame frame);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionSimpleStatsCallback(IntPtr userData, string statsType, IntPtr statsObject);
+        public delegate void PeerConnectionSimpleStatsCallback(IntPtr userData, IntPtr statsReport);
 
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void PeerConnectionSimpleStatsObjectCallback(IntPtr userData, IntPtr statsObject);
         #endregion
 
 
@@ -614,6 +611,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionGetSimpleStats")]
         public static extern void PeerConnection_GetSimpleStats(PeerConnectionHandle peerHandle, PeerConnectionSimpleStatsCallback callback, IntPtr userData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsStatsReportGetObjects")]
+        public static extern void StatsReport_GetObjects(IntPtr reportHandle, string stats_type, PeerConnectionSimpleStatsObjectCallback callback, IntPtr userData);
 
         #endregion
 

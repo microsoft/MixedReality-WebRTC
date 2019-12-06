@@ -1348,6 +1348,7 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
   return RefPtr<PeerConnection>(peer);
 }
 
+// TODO
 void PeerConnection::GetStats(webrtc::RTCStatsCollectorCallback* callback) {
   ((PeerConnectionImpl*)this)->peer_->GetStats(callback);
 }

@@ -1121,6 +1121,14 @@ T& FindOrInsert(std::vector<std::pair<std::string, T>>& vec,
   }
   return vec.emplace_back(id, T{}).second;
 }
+
+class ReportWrapper : public Microsoft::MixedReality::WebRTC::RefCountedBase {
+ public:
+  ReportWrapper(const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
+      : report_(report) {}
+  rtc::scoped_refptr<const webrtc::RTCStatsReport> report_;
+};
+
 }  // namespace
 
 mrsResult MRS_CALL
@@ -1137,66 +1145,78 @@ mrsPeerConnectionGetSimpleStats(PeerConnectionHandle peerHandle,
       void OnStatsDelivered(
           const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
           override {
-        std::vector<std::pair<std::string, mrsAudioSenderStats>>
-            pending_audio_sender_stats;
-        for (auto&& stats : *report) {
-          if (!strcmp(stats.type(), "data-channel")) {
-            const auto& dc_stats = stats.cast_to<webrtc::RTCDataChannelStats>();
-            mrsDataChannelStats simple_stats{
-                dc_stats.timestamp_us(),     *dc_stats.datachannelid,
-                *dc_stats.messages_sent,     *dc_stats.bytes_sent,
-                *dc_stats.messages_received, *dc_stats.bytes_received};
-            (*callback_)(user_data_, "DataChannelStats", &simple_stats);
-          } else if (!strcmp(stats.type(), "outbound-rtp")) {
-            const auto& ortp_stats =
-                stats.cast_to<webrtc::RTCOutboundRTPStreamStats>();
-            if (*ortp_stats.kind == "audio") {
-              auto& audio_sender_stats = FindOrInsert(
-                  pending_audio_sender_stats, *ortp_stats.track_id);
-              audio_sender_stats.RtpStatsTimestampUs =
-                  ortp_stats.timestamp_us();
-              audio_sender_stats.PacketsSent = *ortp_stats.packets_sent;
-              audio_sender_stats.BytesSent = *ortp_stats.bytes_sent;
-            } else if (*ortp_stats.kind == "video") {
-              // TODO
-            }
-          } else if (!strcmp(stats.type(), "track")) {
-            const auto& track_stats =
-                stats.cast_to<webrtc::RTCMediaStreamTrackStats>();
-            if (*track_stats.kind == "audio") {
-              if (*track_stats.remote_source) {
-                // TODO
-              } else {
-                auto& audio_sender_stats =
-                    FindOrInsert(pending_audio_sender_stats, track_stats.id());
-                audio_sender_stats.TimestampUs = track_stats.timestamp_us();
-                audio_sender_stats.TrackIdentifier =
-                    track_stats.track_identifier->c_str();
-                audio_sender_stats.AudioLevel = *track_stats.audio_level;
-                audio_sender_stats.TotalAudioEnergy =
-                    *track_stats.total_audio_energy;
-                audio_sender_stats.TotalSamplesDuration =
-                    *track_stats.total_samples_duration;
-              }
-            } else if (*track_stats.kind == "video") {
-              if (*track_stats.remote_source) {
-                // TODO
-              } else {
-                // TODO
-              }
-            }
-          }
-        }
-
-        for (auto&& stats : pending_audio_sender_stats) {
-          (*callback_)(user_data_, "AudioSenderStats", &stats.second);
-        }
+        (*callback_)(user_data_, new ReportWrapper(report));
       }
     };
     rtc::scoped_refptr<Collector> collector =
         new rtc::RefCountedObject<Collector>(callback, user_data);
 
     peer->GetStats(collector);
+    return Result::kSuccess;
   }
   return Result::kInvalidNativeHandle;
+}
+
+mrsResult MRS_CALL
+mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
+                         const char* stats_type,
+                         mrsStatsReportGetObjectCallback callback,
+                         void* user_data) {
+  if (!report_handle || !user_data) {
+    return Result::kInvalidNativeHandle;
+  }
+  auto& report = static_cast<ReportWrapper*>(report_handle)->report_;
+
+  if (!strcmp(stats_type, "DataChannelStats")) {
+    for (auto&& stats : *report) {
+      if (!strcmp(stats.type(), "data-channel")) {
+        const auto& dc_stats = stats.cast_to<webrtc::RTCDataChannelStats>();
+        mrsDataChannelStats simple_stats{
+            dc_stats.timestamp_us(),     *dc_stats.datachannelid,
+            *dc_stats.messages_sent,     *dc_stats.bytes_sent,
+            *dc_stats.messages_received, *dc_stats.bytes_received};
+        (*callback)(user_data, &simple_stats);
+      }
+    }
+  } else if (!strcmp(stats_type, "AudioSenderStats")) {
+    std::vector<std::pair<std::string, mrsAudioSenderStats>>
+        pending_audio_sender_stats;
+    for (auto&& stats : *report) {
+      if (!strcmp(stats.type(), "outbound-rtp")) {
+        const auto& ortp_stats =
+            stats.cast_to<webrtc::RTCOutboundRTPStreamStats>();
+        if (*ortp_stats.kind == "audio") {
+          auto& audio_sender_stats =
+              FindOrInsert(pending_audio_sender_stats, *ortp_stats.track_id);
+          audio_sender_stats.RtpStatsTimestampUs = ortp_stats.timestamp_us();
+          audio_sender_stats.PacketsSent = *ortp_stats.packets_sent;
+          audio_sender_stats.BytesSent = *ortp_stats.bytes_sent;
+        }
+      } else if (!strcmp(stats.type(), "track")) {
+        const auto& track_stats =
+            stats.cast_to<webrtc::RTCMediaStreamTrackStats>();
+        if (*track_stats.kind == "audio") {
+          if (*track_stats.remote_source) {
+            // TODO
+          } else {
+            auto& audio_sender_stats =
+                FindOrInsert(pending_audio_sender_stats, track_stats.id());
+            audio_sender_stats.TimestampUs = track_stats.timestamp_us();
+            audio_sender_stats.TrackIdentifier =
+                track_stats.track_identifier->c_str();
+            audio_sender_stats.AudioLevel = *track_stats.audio_level;
+            audio_sender_stats.TotalAudioEnergy =
+                *track_stats.total_audio_energy;
+            audio_sender_stats.TotalSamplesDuration =
+                *track_stats.total_samples_duration;
+          }
+        }
+      }
+    }
+    for (auto&& stats : pending_audio_sender_stats) {
+      (*callback)(user_data, &stats.second);
+    }
+  }
+
+  return Result::kSuccess;
 }

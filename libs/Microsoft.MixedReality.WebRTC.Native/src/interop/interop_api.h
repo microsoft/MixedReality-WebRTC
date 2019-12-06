@@ -744,10 +744,18 @@ struct mrsAudioSenderStats {
 
 // TODO other stats
 
-using PeerConnectionSimpleStatsCallback = void (MRS_CALL*)(void* user_data, const char* stats_type, void* stats_object);
+using mrsStatsReportHandle = void*;
+
+using PeerConnectionSimpleStatsCallback = void (MRS_CALL*)(void* user_data, mrsStatsReportHandle stats_report);
+using mrsStatsReportGetObjectCallback =
+    void(MRS_CALL*)(void* user_data, void* stats_object);
 
 MRS_API mrsResult MRS_CALL mrsPeerConnectionGetSimpleStats(
-    PeerConnectionHandle peerHandle, PeerConnectionSimpleStatsCallback callback,
+    PeerConnectionHandle peer_handle, PeerConnectionSimpleStatsCallback callback,
                                 void* user_data);
 
+MRS_API mrsResult MRS_CALL
+mrsStatsReportGetObjects(mrsStatsReportHandle report_handle, const char* stats_type,
+                                mrsStatsReportGetObjectCallback callback,
+                                void* user_data);
 }  // extern "C"
