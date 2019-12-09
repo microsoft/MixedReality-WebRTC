@@ -56,10 +56,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     internal class PeerConnectionInterop
     {
         // Types of trampolines for MonoPInvokeCallback
-        private delegate void VideoCaptureDeviceEnumDelegate(string id, string name, IntPtr handle);
-        private delegate void VideoCaptureDeviceEnumCompletedDelegate(IntPtr handle);
-        private delegate void VideoCaptureFormatEnumDelegate(uint width, uint height, double framerate, string encoding, IntPtr handle);
-        private delegate void VideoCaptureFormatEnumCompletedDelegate(IntPtr handle);
         private delegate void ConnectedDelegate(IntPtr peer);
         private delegate void DataChannelCreateObjectDelegate(IntPtr peer, DataChannelInterop.CreateConfig config,
             out DataChannelInterop.Callbacks callbacks);
@@ -85,16 +81,19 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         {
             public VideoCaptureDeviceEnumCallbackImpl enumCallback;
             public VideoCaptureDeviceEnumCompletedCallbackImpl completedCallback;
+            // Keep delegates alive!
+            public VideoCaptureDeviceEnumCallback EnumTrampoline;
+            public VideoCaptureDeviceEnumCompletedCallback CompletedTrampoline;
         }
 
-        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumDelegate))]
+        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCallback))]
         public static void VideoCaptureDevice_EnumCallback(string id, string name, IntPtr userData)
         {
             var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
             wrapper.enumCallback(id, name); // this is mandatory, never null
         }
 
-        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCompletedDelegate))]
+        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCompletedCallback))]
         public static void VideoCaptureDevice_EnumCompletedCallback(IntPtr userData)
         {
             var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
@@ -105,16 +104,19 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         {
             public VideoCaptureFormatEnumCallbackImpl enumCallback;
             public VideoCaptureFormatEnumCompletedCallbackImpl completedCallback;
+            // Keep delegates alive!
+            public VideoCaptureFormatEnumCallback EnumTrampoline;
+            public VideoCaptureFormatEnumCompletedCallback CompletedTrampoline;
         }
 
-        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumDelegate))]
+        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCallback))]
         public static void VideoCaptureFormat_EnumCallback(uint width, uint height, double framerate, uint fourcc, IntPtr userData)
         {
             var wrapper = Utils.ToWrapper<EnumVideoCaptureFormatsWrapper>(userData);
             wrapper.enumCallback(width, height, framerate, fourcc); // this is mandatory, never null
         }
 
-        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCompletedDelegate))]
+        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCompletedCallback))]
         public static void VideoCaptureFormat_EnumCompletedCallback(uint resultCode, IntPtr userData)
         {
             var exception = (resultCode == /*MRS_SUCCESS*/0 ? null : new Exception());
@@ -172,6 +174,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public PeerConnection Peer;
             public ExternalVideoTrackSource Source;
             public I420AVideoFrameRequestDelegate FrameRequestCallback;
+            public PeerConnectionRequestExternalI420AVideoFrameCallback TrampolineCallback; // keep delegate alive
         }
 
         /// <summary>
@@ -182,6 +185,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public PeerConnection Peer;
             public ExternalVideoTrackSource Source;
             public Argb32VideoFrameRequestDelegate FrameRequestCallback;
+            public PeerConnectionRequestExternalArgb32VideoFrameCallback TrampolineCallback; // keep delegate alive
         }
 
         [MonoPInvokeCallback(typeof(ConnectedDelegate))]
@@ -642,13 +646,17 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             var args = new ExternalI420AVideoFrameRequestCallbackArgs
             {
                 Peer = peer,
-                FrameRequestCallback = frameRequestCallback
+                FrameRequestCallback = frameRequestCallback,
+                // This wraps the method into a temporary System.Delegate object, which is then assigned to
+                // the field to ensure it is kept alive. The native callback registration below then use that
+                // particular System.Delegate instance.
+                TrampolineCallback = RequestI420AVideoFrameFromExternalSourceCallback
             };
             var argsRef = Utils.MakeWrapperRef(args);
 
             // Add the local track based on the static interop trampoline callback
             uint res = PeerConnection_AddLocalVideoTrackFromExternalI420ASource(peerHandle, trackName,
-                RequestI420AVideoFrameFromExternalSourceCallback, argsRef,
+                args.TrampolineCallback, argsRef,
                 out ExternalVideoTrackSourceHandle sourceHandle, out LocalVideoTrackHandle trackHandle);
             if (res != Utils.MRS_SUCCESS)
             {
@@ -671,13 +679,17 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             var args = new ExternalArgb32VideoFrameRequestCallbackArgs
             {
                 Peer = peer,
-                FrameRequestCallback = frameRequestCallback
+                FrameRequestCallback = frameRequestCallback,
+                // This wraps the method into a temporary System.Delegate object, which is then assigned to
+                // the field to ensure it is kept alive. The native callback registration below then use that
+                // particular System.Delegate instance.
+                TrampolineCallback = RequestArgb32VideoFrameFromExternalSourceCallback
             };
             var argsRef = Utils.MakeWrapperRef(args);
 
             // Add the local track based on the static interop trampoline callback
             uint res = PeerConnection_AddLocalVideoTrackFromExternalArgb32Source(peerHandle, trackName,
-                RequestArgb32VideoFrameFromExternalSourceCallback, argsRef,
+                args.TrampolineCallback, argsRef,
                 out ExternalVideoTrackSourceHandle sourceHandle, out LocalVideoTrackHandle trackHandle);
             if (res != Utils.MRS_SUCCESS)
             {

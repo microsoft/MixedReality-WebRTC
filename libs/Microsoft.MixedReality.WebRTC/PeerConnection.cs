@@ -1298,7 +1298,10 @@ namespace Microsoft.MixedReality.WebRTC
                 {
                     // On enumeration end, signal the caller thread
                     eventWaitHandle.Set();
-                }
+                },
+                // Keep delegates alive
+                EnumTrampoline = PeerConnectionInterop.VideoCaptureDevice_EnumCallback,
+                CompletedTrampoline = PeerConnectionInterop.VideoCaptureDevice_EnumCompletedCallback
             };
 
             // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
@@ -1309,8 +1312,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 // Execute the native async callback
                 PeerConnectionInterop.EnumVideoCaptureDevicesAsync(
-                    PeerConnectionInterop.VideoCaptureDevice_EnumCallback, userData,
-                    PeerConnectionInterop.VideoCaptureDevice_EnumCompletedCallback, userData);
+                    wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
 
                 // Wait for end of enumerating
                 eventWaitHandle.WaitOne();
@@ -1346,7 +1348,10 @@ namespace Microsoft.MixedReality.WebRTC
                 {
                     // On enumeration end, signal the caller thread
                     eventWaitHandle.Set();
-                }
+                },
+                // Keep delegates alive
+                EnumTrampoline = PeerConnectionInterop.VideoCaptureFormat_EnumCallback,
+                CompletedTrampoline = PeerConnectionInterop.VideoCaptureFormat_EnumCompletedCallback
             };
 
             // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
@@ -1355,8 +1360,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             // Execute the native async callback
             uint res = PeerConnectionInterop.EnumVideoCaptureFormatsAsync(deviceId,
-                PeerConnectionInterop.VideoCaptureFormat_EnumCallback, userData,
-                PeerConnectionInterop.VideoCaptureFormat_EnumCompletedCallback, userData);
+                    wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
             if (res != Utils.MRS_SUCCESS)
             {
                 // Clean-up and release the wrapper delegates
