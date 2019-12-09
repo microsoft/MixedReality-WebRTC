@@ -285,9 +285,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             peer.OnRemoteAudioFrameReady(frame);
         }
 
+        // Note: Unity IL2CPP doesn't support reverse-P/Invoke of SafeHandle
         [MonoPInvokeCallback(typeof(PeerConnectionRequestExternalI420AVideoFrameCallback))]
         public static void RequestI420AVideoFrameFromExternalSourceCallback(IntPtr userData,
-            ExternalVideoTrackSourceHandle sourceHandle, uint requestId, long timestampMs)
+            /*ExternalVideoTrackSourceHandle*/IntPtr sourceHandle, uint requestId, long timestampMs)
         {
             var args = Utils.ToWrapper<ExternalI420AVideoFrameRequestCallbackArgs>(userData);
             var request = new FrameRequest
@@ -299,9 +300,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             args.FrameRequestCallback.Invoke(in request);
         }
 
+        // Note: Unity IL2CPP doesn't support reverse-P/Invoke of SafeHandle
         [MonoPInvokeCallback(typeof(PeerConnectionRequestExternalArgb32VideoFrameCallback))]
         public static void RequestArgb32VideoFrameFromExternalSourceCallback(IntPtr userData,
-            ExternalVideoTrackSourceHandle sourceHandle, uint requestId, long timestampMs)
+            /*ExternalVideoTrackSourceHandle*/IntPtr sourceHandle, uint requestId, long timestampMs)
         {
             var args = Utils.ToWrapper<ExternalArgb32VideoFrameRequestCallbackArgs>(userData);
             var request = new FrameRequest
@@ -449,13 +451,15 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionAudioFrameCallback(IntPtr userData, AudioFrame frame);
 
+        // Note: Unity IL2CPP doesn't support reverse-P/Invoke of SafeHandle
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public unsafe delegate void PeerConnectionRequestExternalI420AVideoFrameCallback(IntPtr userData,
-            ExternalVideoTrackSourceHandle sourceHandle, uint requestId, long timestampMs);
+            /*ExternalVideoTrackSourceHandle*/IntPtr sourceHandle, uint requestId, long timestampMs);
 
+        // Note: Unity IL2CPP doesn't support reverse-P/Invoke of SafeHandle
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public unsafe delegate void PeerConnectionRequestExternalArgb32VideoFrameCallback(IntPtr userData,
-            ExternalVideoTrackSourceHandle sourceHandle, uint requestId, long timestampMs);
+            /*ExternalVideoTrackSourceHandle*/IntPtr sourceHandle, uint requestId, long timestampMs);
 
         #endregion
 
