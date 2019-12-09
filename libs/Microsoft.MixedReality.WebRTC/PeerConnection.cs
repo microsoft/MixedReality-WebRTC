@@ -1526,23 +1526,22 @@ namespace Microsoft.MixedReality.WebRTC
 
         public class StatsReport : SafeHandle
         {
-            private IntPtr _handle;
-            public StatsReport(IntPtr handle) : base(IntPtr.Zero, true) { _handle = handle; }
+            public StatsReport(IntPtr h) : base(IntPtr.Zero, true) { handle = h; }
 
-            public override bool IsInvalid => _handle == IntPtr.Zero;
+            public override bool IsInvalid => handle == IntPtr.Zero;
 
             public IEnumerable<T> GetStats<T>()
             {
                 var res = new List<T>();
                 var resHandle = GCHandle.Alloc(res, GCHandleType.Normal);
-                PeerConnectionInterop.StatsReport_GetObjects(_handle, typeof(T).Name, PeerConnectionInterop.SimpleStatsObjectCallback, GCHandle.ToIntPtr(resHandle));
+                PeerConnectionInterop.StatsReport_GetObjects(this, typeof(T).Name, PeerConnectionInterop.SimpleStatsObjectCallback, GCHandle.ToIntPtr(resHandle));
                 return res;
             }
 
             protected override bool ReleaseHandle()
             {
                 // TODO
-                PeerConnectionInterop.PeerConnection_RemoveRef(_handle);
+                PeerConnectionInterop.StatsReport_RemoveRef(handle);
                 return true;
             }
         }

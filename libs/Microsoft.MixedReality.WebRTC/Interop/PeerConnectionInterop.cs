@@ -614,8 +614,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsStatsReportGetObjects")]
-        public static extern void StatsReport_GetObjects(IntPtr reportHandle, string stats_type, PeerConnectionSimpleStatsObjectCallback callback, IntPtr userData);
+        public static extern void StatsReport_GetObjects(PeerConnection.StatsReport reportHandle, string stats_type, PeerConnectionSimpleStatsObjectCallback callback, IntPtr userData);
 
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsStatsReportRemoveRef")]
+        public static extern void StatsReport_RemoveRef(IntPtr reportHandle);
         #endregion
 
 

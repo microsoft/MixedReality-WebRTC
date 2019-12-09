@@ -1122,13 +1122,6 @@ T& FindOrInsert(std::vector<std::pair<std::string, T>>& vec,
   return vec.emplace_back(id, T{}).second;
 }
 
-class ReportWrapper : public Microsoft::MixedReality::WebRTC::RefCountedBase {
- public:
-  ReportWrapper(const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
-      : report_(report) {}
-  rtc::scoped_refptr<const webrtc::RTCStatsReport> report_;
-};
-
 }  // namespace
 
 mrsResult MRS_CALL
@@ -1145,7 +1138,9 @@ mrsPeerConnectionGetSimpleStats(PeerConnectionHandle peerHandle,
       void OnStatsDelivered(
           const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
           override {
-        (*callback_)(user_data_, new ReportWrapper(report));
+        report->AddRef();
+
+        (*callback_)(user_data_, report.get());
       }
     };
     rtc::scoped_refptr<Collector> collector =
@@ -1165,7 +1160,7 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
   if (!report_handle || !user_data) {
     return Result::kInvalidNativeHandle;
   }
-  auto& report = static_cast<ReportWrapper*>(report_handle)->report_;
+  auto report = static_cast<const webrtc::RTCStatsReport*>(report_handle);
 
   if (!strcmp(stats_type, "DataChannelStats")) {
     for (auto&& stats : *report) {
@@ -1219,4 +1214,13 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
   }
 
   return Result::kSuccess;
+}
+
+MRS_API mrsResult MRS_CALL
+mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report) {
+  if (auto rep = static_cast<const webrtc::RTCStatsReport*>(stats_report)) {
+    rep->Release();
+    return Result::kSuccess;
+  }
+  return Result::kInvalidNativeHandle;
 }
