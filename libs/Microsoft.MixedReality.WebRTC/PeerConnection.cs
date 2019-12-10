@@ -115,11 +115,15 @@ namespace Microsoft.MixedReality.WebRTC
         /// <returns>The encoded string of ICE servers.</returns>
         public override string ToString()
         {
+            if (Urls == null)
+            {
+                return string.Empty;
+            }
             string ret = string.Join("\n", Urls);
-            if (TurnUserName.Length > 0)
+            if (!string.IsNullOrEmpty(TurnUserName))
             {
                 ret += $"\nusername:{TurnUserName}";
-                if (TurnPassword.Length > 0)
+                if (!string.IsNullOrEmpty(TurnPassword))
                 {
                     ret += $"\npassword:{TurnPassword}";
                 }
@@ -663,7 +667,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// from the first call to it until the peer connection object is deinitialized. This allows
         /// multiple callers to all execute some action following the initialization, without the need
         /// to force a single caller and to synchronize with it.</remarks>
-        public Task InitializeAsync(PeerConnectionConfiguration config = default, CancellationToken token = default)
+        public Task InitializeAsync(PeerConnectionConfiguration config = null, CancellationToken token = default)
         {
             lock (_openCloseLock)
             {
@@ -714,13 +718,21 @@ namespace Microsoft.MixedReality.WebRTC
                 // Cache values in local variables before starting async task, to avoid any
                 // subsequent external change from affecting that task.
                 // Also set default values, as the native call doesn't handle NULL.
-                var nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration
+                PeerConnectionInterop.PeerConnectionConfiguration nativeConfig;
+                if (config != null)
                 {
-                    EncodedIceServers = string.Join("\n\n", config.IceServers),
-                    IceTransportType = config.IceTransportType,
-                    BundlePolicy = config.BundlePolicy,
-                    SdpSemantic = config.SdpSemantic,
-                };
+                    nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration
+                    {
+                        EncodedIceServers = string.Join("\n\n", config.IceServers),
+                        IceTransportType = config.IceTransportType,
+                        BundlePolicy = config.BundlePolicy,
+                        SdpSemantic = config.SdpSemantic,
+                    };
+                }
+                else
+                {
+                    nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration();
+                }
 
                 // On UWP PeerConnectionCreate() fails on main UI thread, so always initialize the native peer
                 // connection asynchronously from a background worker thread.
