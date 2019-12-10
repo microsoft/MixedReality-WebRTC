@@ -97,7 +97,7 @@ class ExternalVideoTrackSourceImpl : public ExternalVideoTrackSource,
   std::unique_ptr<rtc::Thread> capture_thread_;
 
   /// Collection of pending frame requests
-  std::map<uint32_t, int64_t> pending_requests_ RTC_GUARDED_BY(request_lock_);
+  std::unordered_map<uint32_t, int64_t> pending_requests_ RTC_GUARDED_BY(request_lock_);
 
   /// Next available ID for a frame request.
   uint32_t next_request_id_ RTC_GUARDED_BY(request_lock_){};

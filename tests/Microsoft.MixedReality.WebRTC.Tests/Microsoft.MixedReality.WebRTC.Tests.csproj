@@ -16,6 +16,7 @@
     <LangVersion>7.3</LangVersion>
     <Company>Microsoft</Company>
     <Authors>Mixed Reality Sharing Team</Authors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <!-- Default to x64 if not specified -->

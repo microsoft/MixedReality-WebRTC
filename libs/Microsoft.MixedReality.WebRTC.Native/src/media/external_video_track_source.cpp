@@ -113,6 +113,8 @@ class Argb32BufferAdapter : public detail::BufferAdapter {
 namespace Microsoft::MixedReality::WebRTC {
 namespace detail {
 
+constexpr const size_t kMaxPendingRequestCount = 64;
+
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceImpl::create(
     std::unique_ptr<BufferAdapter> adapter) {
   auto source = new ExternalVideoTrackSourceImpl(std::move(adapter));
@@ -133,6 +135,9 @@ ExternalVideoTrackSourceImpl::ExternalVideoTrackSourceImpl(
   capture_thread_->SetName("ExternalVideoTrackSource capture thread", this);
   GlobalFactory::Instance()->AddObject(ObjectType::kExternalVideoTrackSource,
                                        this);
+  // Expect just a few frames of delay, but reserve 1-2 seconds for peaks.
+  // This container will never grow further, to detect logic errors.
+  pending_requests_.reserve(kMaxPendingRequestCount);
 }
 
 ExternalVideoTrackSourceImpl::~ExternalVideoTrackSourceImpl() {
@@ -149,6 +154,7 @@ void ExternalVideoTrackSourceImpl::StartCapture() {
 
   // Start capture thread
   track_source_->state_ = SourceState::kLive;
+  pending_requests_.clear();
   capture_thread_->Start();
 
   // Schedule first frame request for 10ms from now
@@ -223,6 +229,7 @@ void ExternalVideoTrackSourceImpl::StopCapture() {
     capture_thread_->Stop();
     track_source_->state_ = SourceState::kEnded;
   }
+  pending_requests_.clear();
 }
 
 void ExternalVideoTrackSourceImpl::Shutdown() noexcept {
@@ -237,13 +244,23 @@ void ExternalVideoTrackSourceImpl::OnMessage(rtc::Message* message) {
       const int64_t now = rtc::TimeMillis();
 
       // Request a frame from the external video source
-      uint32_t request_id;
+      bool skip_request = false;
+      uint32_t request_id = 0;
       {
         rtc::CritScope lock(&request_lock_);
-        request_id = next_request_id_++;
-        pending_requests_.emplace(request_id, now);
+        if (pending_requests_.size() >= kMaxPendingRequestCount) {
+          skip_request = true;
+        } else {
+          request_id = next_request_id_++;
+          pending_requests_.emplace(request_id, now);
+        }
       }
-      adapter_->RequestFrame(*this, request_id, now);
+      if (!skip_request) {
+        adapter_->RequestFrame(*this, request_id, now);
+      } else {
+        RTC_LOG(LS_WARNING) << "Skipped external video frame request due to "
+                               "outstanding pending requests.";
+      }
 
       // Schedule a new request for 30ms from now
       //< TODO - this is unreliable and prone to drifting; figure out something

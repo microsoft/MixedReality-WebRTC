@@ -113,13 +113,17 @@ TEST(ExternalVideoTrackSource, Simple) {
   LocalPeerPairRaii pair;
 
   ExternalVideoTrackSourceHandle source_handle = nullptr;
+  ASSERT_EQ(mrsResult::kSuccess,
+            mrsExternalVideoTrackSourceCreateFromArgb32Callback(
+                &GenerateQuadTestFrame, nullptr, &source_handle));
+  ASSERT_NE(nullptr, source_handle);
+
   LocalVideoTrackHandle track_handle = nullptr;
   ASSERT_EQ(mrsResult::kSuccess,
-            mrsPeerConnectionAddLocalVideoTrackFromExternalArgb32Source(
-                pair.pc1(), "gen_track", &GenerateQuadTestFrame, nullptr,
-                &source_handle, &track_handle));
+            mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
+                pair.pc1(), "gen_track", source_handle, &track_handle));
+  ASSERT_NE(nullptr, track_handle);
   ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
-  ASSERT_NE(nullptr, source_handle);
 
   uint32_t frame_count = 0;
   Argb32VideoFrameCallback argb_cb =

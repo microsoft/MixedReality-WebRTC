@@ -31,7 +31,41 @@ void MRS_CALL mrsExternalVideoTrackSourceRemoveRef(
   }
 }
 
-MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteI420AFrameRequest(
+mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromI420ACallback(
+    mrsRequestExternalI420AVideoFrameCallback callback,
+    void* user_data,
+    ExternalVideoTrackSourceHandle* source_handle_out) noexcept {
+  if (!source_handle_out) {
+    return Result::kInvalidParameter;
+  }
+  *source_handle_out = nullptr;
+  RefPtr<ExternalVideoTrackSource> track_source =
+      detail::ExternalVideoTrackSourceCreateFromI420A(callback, user_data);
+  if (!track_source) {
+    return Result::kUnknownError;
+  }
+  *source_handle_out = track_source.release();
+  return Result::kSuccess;
+}
+
+mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromArgb32Callback(
+    mrsRequestExternalArgb32VideoFrameCallback callback,
+    void* user_data,
+    ExternalVideoTrackSourceHandle* source_handle_out) noexcept {
+  if (!source_handle_out) {
+    return Result::kInvalidParameter;
+  }
+  *source_handle_out = nullptr;
+  RefPtr<ExternalVideoTrackSource> track_source =
+      detail::ExternalVideoTrackSourceCreateFromArgb32(callback, user_data);
+  if (!track_source) {
+    return Result::kUnknownError;
+  }
+  *source_handle_out = track_source.release();
+  return Result::kSuccess;
+}
+
+mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteI420AFrameRequest(
     ExternalVideoTrackSourceHandle handle,
     uint32_t request_id,
     int64_t timestamp_ms,
@@ -45,8 +79,7 @@ MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteI420AFrameRequest(
   return mrsResult::kInvalidNativeHandle;
 }
 
-MRS_API mrsResult MRS_CALL
-mrsExternalVideoTrackSourceCompleteArgb32FrameRequest(
+mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteArgb32FrameRequest(
     ExternalVideoTrackSourceHandle handle,
     uint32_t request_id,
     int64_t timestamp_ms,

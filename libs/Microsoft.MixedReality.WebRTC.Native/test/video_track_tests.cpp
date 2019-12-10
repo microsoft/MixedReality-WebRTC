@@ -207,11 +207,17 @@ TEST(VideoTrack, ExternalI420) {
   LocalPeerPairRaii pair;
 
   ExternalVideoTrackSourceHandle source_handle = nullptr;
-  LocalVideoTrackHandle track_handle = nullptr;
   ASSERT_EQ(mrsResult::kSuccess,
-            mrsPeerConnectionAddLocalVideoTrackFromExternalI420ASource(
-                pair.pc1(), "simulated_video_track", &MakeTestFrame, nullptr,
-                &source_handle, &track_handle));
+            mrsExternalVideoTrackSourceCreateFromI420ACallback(
+                &MakeTestFrame, nullptr, &source_handle));
+  ASSERT_NE(nullptr, source_handle);
+
+  LocalVideoTrackHandle track_handle = nullptr;
+  ASSERT_EQ(
+      mrsResult::kSuccess,
+      mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
+          pair.pc1(), "simulated_video_track", source_handle, &track_handle));
+  ASSERT_NE(nullptr, track_handle);
   ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 
   uint32_t frame_count = 0;

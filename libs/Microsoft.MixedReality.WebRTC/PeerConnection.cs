@@ -962,27 +962,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// provides video frames directly to WebRTC when asked to do so via the provided callback.
         /// </summary>
         /// <param name="trackName">Name of the new track.</param>
-        /// <param name="requestCallback">Callback invoked to request new video frames.</param>
-        public LocalVideoTrack AddCustomI420LocalVideoTrack(string trackName, I420AVideoFrameRequestDelegate requestCallback)
+        /// <param name="externalSource">External source providing the frames for the track.</param>
+        public LocalVideoTrack AddCustomLocalVideoTrack(string trackName, ExternalVideoTrackSource externalSource)
         {
             ThrowIfConnectionNotOpen();
-            return PeerConnectionInterop.AddLocalVideoTrackFromExternalI420ASource(this, _nativePeerhandle,
-                trackName, requestCallback);
-        }
-
-        /// <summary>
-        /// Add a local video track backed by an external video source managed by the caller.
-        /// Unlike with <see cref="AddLocalVideoTrackAsync(LocalVideoTrackSettings)"/> which manages
-        /// a local video capture device and automatically produce frames, an external video source
-        /// provides video frames directly to WebRTC when asked to do so via the provided callback.
-        /// </summary>
-        /// <param name="trackName">Name of the new track.</param>
-        /// <param name="requestCallback">Callback invoked to request new video frames.</param>
-        public LocalVideoTrack AddCustomArgb32LocalVideoTrack(string trackName, Argb32VideoFrameRequestDelegate requestCallback)
-        {
-            ThrowIfConnectionNotOpen();
-            return PeerConnectionInterop.AddLocalVideoTrackFromExternalArgb32Source(this, _nativePeerhandle,
-                trackName, requestCallback);
+            return PeerConnectionInterop.AddLocalVideoTrackFromExternalSource(this, _nativePeerhandle,
+                trackName, externalSource);
         }
 
         /// <summary>

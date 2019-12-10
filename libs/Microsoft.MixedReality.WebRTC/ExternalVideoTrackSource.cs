@@ -33,7 +33,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Complete the current request by providing a video frame for it.
         /// This must be used if the video track source was created with
-        /// <see cref="PeerConnection.AddCustomI420LocalVideoTrack(string, I420AVideoFrameRequestDelegate)"/>.
+        /// <see cref="ExternalVideoTrackSource.CreateFromI420ACallback(I420AVideoFrameRequestDelegate)"/>.
         /// </summary>
         /// <param name="frame">The video frame used to complete the request.</param>
         public void CompleteRequest(in I420AVideoFrame frame)
@@ -44,7 +44,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Complete the current request by providing a video frame for it.
         /// This must be used if the video track source was created with
-        /// <see cref="PeerConnection.AddCustomArgb32LocalVideoTrack(string, Argb32VideoFrameRequestDelegate)"/>.
+        /// <see cref="ExternalVideoTrackSource.CreateFromArgb32Callback(Argb32VideoFrameRequestDelegate)"/>.
         /// </summary>
         /// <param name="frame">The video frame used to complete the request.</param>
         public void CompleteRequest(in Argb32VideoFrame frame)
@@ -82,9 +82,10 @@ namespace Microsoft.MixedReality.WebRTC
     public class ExternalVideoTrackSource : IDisposable
     {
         /// <summary>
-        /// Peer connection this video track source is part of.
+        /// Once the external video track source is attached to some video track(s), this returns the peer connection
+        /// the video track(s) are part of. Otherwise this returns <c>null</c>.
         /// </summary>
-        public PeerConnection PeerConnection { get; private set; }
+        public PeerConnection PeerConnection { get; private set; } = null;
 
         /// <summary>
         /// Handle to the native ExternalVideoTrackSource object.
@@ -100,18 +101,35 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         protected IntPtr _frameRequestCallbackArgsHandle;
 
-        internal ExternalVideoTrackSource(ExternalVideoTrackSourceHandle nativeHandle, PeerConnection peer,
-            IntPtr frameRequestCallbackArgsHandle)
+        /// <summary>
+        /// Create a new external video track source from a given user callback providing I420A-encoded frames.
+        /// </summary>
+        /// <param name="frameCallback">The callback that will be used to request frames for tracks.</param>
+        /// <returns>The newly created track source.</returns>
+        public static ExternalVideoTrackSource CreateFromI420ACallback(I420AVideoFrameRequestDelegate frameCallback)
         {
-            _nativeHandle = nativeHandle;
-            PeerConnection = peer;
+            return ExternalVideoTrackSourceInterop.CreateExternalVideoTrackSourceFromI420ACallback(frameCallback);
+        }
+
+        /// <summary>
+        /// Create a new external video track source from a given user callback providing ARGB32-encoded frames.
+        /// </summary>
+        /// <param name="frameCallback">The callback that will be used to request frames for tracks.</param>
+        /// <returns>The newly created track source.</returns>
+        public static ExternalVideoTrackSource CreateFromArgb32Callback(Argb32VideoFrameRequestDelegate frameCallback)
+        {
+            return ExternalVideoTrackSourceInterop.CreateExternalVideoTrackSourceFromArgb32Callback(frameCallback);
+        }
+
+        internal ExternalVideoTrackSource(IntPtr frameRequestCallbackArgsHandle)
+        {
             _frameRequestCallbackArgsHandle = frameRequestCallbackArgsHandle;
         }
 
         /// <summary>
         /// Complete the current request by providing a video frame for it.
         /// This must be used if the video track source was created with
-        /// <see cref="PeerConnection.AddCustomI420LocalVideoTrack(string, I420AVideoFrameRequestDelegate)"/>.
+        /// <see cref="CreateFromI420ACallback(I420AVideoFrameRequestDelegate)"/>.
         /// </summary>
         /// <param name="requestId">The original request ID.</param>
         /// <param name="timestampMs">The video frame timestamp.</param>
@@ -124,7 +142,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Complete the current request by providing a video frame for it.
         /// This must be used if the video track source was created with
-        /// <see cref="PeerConnection.AddCustomArgb32LocalVideoTrack(string, Argb32VideoFrameRequestDelegate)"/>.
+        /// <see cref="CreateFromArgb32Callback(Argb32VideoFrameRequestDelegate)"/>.
         /// </summary>
         /// <param name="requestId">The original request ID.</param>
         /// <param name="timestampMs">The video frame timestamp.</param>
@@ -155,10 +173,26 @@ namespace Microsoft.MixedReality.WebRTC
             _nativeHandle.Dispose();
         }
 
+        internal void OnCreated(ExternalVideoTrackSourceHandle nativeHandle)
+        {
+            _nativeHandle = nativeHandle;
+        }
+
+        internal void OnTracksAddedToSource(PeerConnection newConnection)
+        {
+            Debug.Assert(PeerConnection == null);
+            Debug.Assert(!_nativeHandle.IsClosed);
+            PeerConnection = newConnection;
+            var args = Utils.ToWrapper<ExternalVideoTrackSourceInterop.VideoFrameRequestCallbackArgs>(_frameRequestCallbackArgsHandle);
+            args.Peer = newConnection;
+        }
+
         internal void OnTracksRemovedFromSource(PeerConnection previousConnection)
         {
             Debug.Assert(PeerConnection == previousConnection);
             Debug.Assert(!_nativeHandle.IsClosed);
+            var args = Utils.ToWrapper<ExternalVideoTrackSourceInterop.VideoFrameRequestCallbackArgs>(_frameRequestCallbackArgsHandle);
+            args.Peer = null;
             PeerConnection = null;
         }
     }

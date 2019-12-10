@@ -485,39 +485,15 @@ using mrsRequestExternalArgb32VideoFrameCallback =
 /// Add a local video track from a custom video source external to the
 /// implementation. This allows feeding into WebRTC frames from any source,
 /// including generated or synthetic frames, for example for testing.
-/// The frame is provided from a callback as an I420-encoded buffer.
 /// The track source initially starts as capuring. Capture can be stopped with
 /// |mrsExternalVideoTrackSourceShutdown|.
-/// This returns handles to newly allocated objects, which must be released once
-/// not used anymore:
-/// - |source_handle| => |mrsExternalVideoTrackSourceRemoveRef()|
-/// - |track_handle|  => |mrsLocalVideoTrackRemoveRef()|
+/// This returns a handle to a newly allocated object, which must be released once
+/// not used anymore with |mrsLocalVideoTrackRemoveRef()|.
 MRS_API mrsResult MRS_CALL
-mrsPeerConnectionAddLocalVideoTrackFromExternalI420ASource(
+mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
     PeerConnectionHandle peerHandle,
     const char* track_name,
-    mrsRequestExternalI420AVideoFrameCallback callback,
-    void* user_data,
-    ExternalVideoTrackSourceHandle* source_handle,
-    LocalVideoTrackHandle* track_handle) noexcept;
-
-/// Add a local video track from a custom video source external to the
-/// implementation. This allows feeding into WebRTC frames from any source,
-/// including generated or synthetic frames, for example for testing.
-/// The frame is provided from a callback as an ARGB 32-bits-per-pixel buffer.
-/// The track source initially starts as capuring. Capture can be stopped with
-/// |mrsExternalVideoTrackSourceShutdown|.
-/// This returns handles to newly allocated objects, which must be released once
-/// not used anymore:
-/// - |source_handle| => |mrsExternalVideoTrackSourceRemoveRef()|
-/// - |track_handle|  => |mrsLocalVideoTrackRemoveRef()|
-MRS_API mrsResult MRS_CALL
-mrsPeerConnectionAddLocalVideoTrackFromExternalArgb32Source(
-    PeerConnectionHandle peerHandle,
-    const char* track_name,
-    mrsRequestExternalArgb32VideoFrameCallback callback,
-    void* user_data,
-    ExternalVideoTrackSourceHandle* source_handle,
+    ExternalVideoTrackSourceHandle source_handle,
     LocalVideoTrackHandle* track_handle) noexcept;
 
 /// Remove a local video track from the given peer connection and destroy it.

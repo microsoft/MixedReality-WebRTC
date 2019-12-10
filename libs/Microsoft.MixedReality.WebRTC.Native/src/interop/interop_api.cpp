@@ -761,29 +761,26 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
   return Result::kUnknownError;
 }
 
-mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalI420ASource(
-    PeerConnectionHandle peerHandle,
+mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
+    PeerConnectionHandle peer_handle,
     const char* track_name,
-    mrsRequestExternalI420AVideoFrameCallback callback,
-    void* user_data,
-    ExternalVideoTrackSourceHandle* source_handle,
-    LocalVideoTrackHandle* track_handle) noexcept {
-  if (!source_handle) {
+    ExternalVideoTrackSourceHandle source_handle,
+    LocalVideoTrackHandle* track_handle_out) noexcept {
+  if (!track_handle_out) {
     return Result::kInvalidParameter;
   }
-  *source_handle = nullptr;
-  auto peer = static_cast<PeerConnection*>(peerHandle);
+  *track_handle_out = nullptr;
+  auto peer = static_cast<PeerConnection*>(peer_handle);
   if (!peer) {
+    return Result::kInvalidNativeHandle;
+  }
+  auto track_source =
+      static_cast<detail::ExternalVideoTrackSourceImpl*>(source_handle);
+  if (!track_source) {
     return Result::kInvalidNativeHandle;
   }
   auto pc_factory = GlobalFactory::Instance()->GetExisting();
   if (!pc_factory) {
-    return Result::kUnknownError;
-  }
-
-  RefPtr<ExternalVideoTrackSource> track_source =
-      detail::ExternalVideoTrackSourceCreateFromI420A(callback, user_data);
-  if (!track_source) {
     return Result::kUnknownError;
   }
   std::string track_name_str;
@@ -792,73 +789,17 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalI420ASource(
   } else {
     track_name_str = "external_track";
   }
-  auto track_source_impl =
-      static_cast<detail::ExternalVideoTrackSourceImpl*>(track_source.get());
   // The video track keeps a reference to the video source; let's hope this
   // does not change, because this is not explicitly mentioned in the docs,
   // and the video track is the only one keeping the video source alive.
   rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
-      pc_factory->CreateVideoTrack(track_name_str, track_source_impl->impl());
+      pc_factory->CreateVideoTrack(track_name_str, track_source->impl());
   if (!video_track) {
     return Result::kUnknownError;
   }
   auto result = peer->AddLocalVideoTrack(std::move(video_track));
   if (result.ok()) {
-    *source_handle = track_source.release();
-    *track_handle = result.value().release();
-    return Result::kSuccess;
-  }
-  RTC_LOG(LS_ERROR) << "Failed to add local video track: "
-                    << result.error().message();
-  return Result::kUnknownError;  //< TODO Convert from result.error()?
-}
-
-mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalArgb32Source(
-    PeerConnectionHandle peerHandle,
-    const char* track_name,
-    mrsRequestExternalArgb32VideoFrameCallback callback,
-    void* user_data,
-    ExternalVideoTrackSourceHandle* source_handle,
-    LocalVideoTrackHandle* track_handle) noexcept {
-  if (!source_handle) {
-    return Result::kInvalidParameter;
-  }
-  *source_handle = nullptr;
-  auto peer = static_cast<PeerConnection*>(peerHandle);
-  if (!peer) {
-    return Result::kInvalidNativeHandle;
-  }
-  auto pc_factory = GlobalFactory::Instance()->GetExisting();
-  if (!pc_factory) {
-    return Result::kUnknownError;
-  }
-
-  RefPtr<ExternalVideoTrackSource> track_source =
-      detail::ExternalVideoTrackSourceCreateFromArgb32(callback, user_data);
-  if (!track_source) {
-    return Result::kUnknownError;
-  }
-
-  std::string track_name_str;
-  if (!IsStringNullOrEmpty(track_name)) {
-    track_name_str = track_name;
-  } else {
-    track_name_str = "external_track";
-  }
-  auto track_source_impl =
-      static_cast<detail::ExternalVideoTrackSourceImpl*>(track_source.get());
-  // The video track keeps a reference to the video source; let's hope this
-  // does not change, because this is not explicitly mentioned in the docs,
-  // and the video track is the only one keeping the video source alive.
-  rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
-      pc_factory->CreateVideoTrack(track_name_str, track_source_impl->impl());
-  if (!video_track) {
-    return Result::kUnknownError;
-  }
-  auto result = peer->AddLocalVideoTrack(std::move(video_track));
-  if (result.ok()) {
-    *source_handle = track_source.release();
-    *track_handle = result.value().release();
+    *track_handle_out = result.value().release();
     return Result::kSuccess;
   }
   RTC_LOG(LS_ERROR) << "Failed to add local video track: "
