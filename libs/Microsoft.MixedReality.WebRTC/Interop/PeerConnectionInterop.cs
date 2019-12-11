@@ -273,12 +273,15 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnRemoteAudioFrameReady(frame);
         }
+
+        [MonoPInvokeCallback(typeof(PeerConnectionSimpleStatsCallback))]
         public unsafe static void SimpleStatsReportCallback(IntPtr userData, IntPtr report)
         {
             var tcs = Utils.ToWrapper<TaskCompletionSource<PeerConnection.StatsReport>>(userData);
             tcs.SetResult(new PeerConnection.StatsReport(report));
         }
 
+        [MonoPInvokeCallback(typeof(PeerConnectionSimpleStatsObjectCallback))]
         public unsafe static void SimpleStatsObjectCallback(IntPtr userData, IntPtr statsObject)
         {
             var list = Utils.ToWrapper<object>(userData);
