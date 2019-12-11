@@ -8,11 +8,11 @@
 #include <cstdint>
 #include <functional>
 #include <string>
-#include <string_view>
-
-#include "targetver.h"
+#include <mutex>
 
 #if defined(MR_SHARING_WIN)
+
+#include "targetver.h"
 
 #define WEBRTC_WIN 1
 
@@ -26,9 +26,10 @@
 
 #include <windows.h>
 
-#else defined(MR_SHARING_ANDROID)
+#elif defined(MR_SHARING_ANDROID)
 
 #define WEBRTC_POSIX 1
+#define WEBRTC_ANDROID 1
 
 #endif
 

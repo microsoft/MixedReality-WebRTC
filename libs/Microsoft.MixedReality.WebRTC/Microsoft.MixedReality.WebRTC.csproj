@@ -16,7 +16,7 @@
     <Company>Microsoft</Company>
     <Authors>Mixed Reality Sharing Team</Authors>
     <DefineConstants Condition="'$(Configuration)'=='Debug'">TRACE</DefineConstants>
-    <DefineConstants>MR_SHARING_WIN</DefineConstants>
+    <DefineConstants>MR_SHARING_ANDROID</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Version>0.1.0</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

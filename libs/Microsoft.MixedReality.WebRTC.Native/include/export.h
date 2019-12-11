@@ -11,6 +11,6 @@
 	#define MRS_API __declspec(dllexport)
 	#define MRS_CALL __stdcall
 #elif defined(MR_SHARING_ANDROID)
-	#define MRS_API __attribute__((visibility("default")))
-	#define MRS_CALL __attribute__((stdcall))
+    #define MRS_API __attribute__((visibility("default")))
+	#define MRS_CALL
 #endif
