@@ -135,9 +135,6 @@ ExternalVideoTrackSourceImpl::ExternalVideoTrackSourceImpl(
   capture_thread_->SetName("ExternalVideoTrackSource capture thread", this);
   GlobalFactory::Instance()->AddObject(ObjectType::kExternalVideoTrackSource,
                                        this);
-  // Expect just a few frames of delay, but reserve 1-2 seconds for peaks.
-  // This container will never grow further, to detect logic errors.
-  pending_requests_.reserve(kMaxPendingRequestCount);
 }
 
 ExternalVideoTrackSourceImpl::~ExternalVideoTrackSourceImpl() {
@@ -167,15 +164,22 @@ Result ExternalVideoTrackSourceImpl::CompleteRequest(
     int64_t timestamp_ms,
     const I420AVideoFrame& frame_view) {
   // Validate pending request ID and retrieve frame timestamp
-  int64_t timestamp_ms_original;
+  int64_t timestamp_ms_original = -1;
   {
     rtc::CritScope lock(&request_lock_);
-    auto it = pending_requests_.find(request_id);
-    if (it == pending_requests_.end()) {
+    for (auto it = pending_requests_.begin(); it != pending_requests_.end();
+         ++it) {
+      if (it->first == request_id) {
+        timestamp_ms_original = it->second;
+        // Remove outdated requests, including current one
+        ++it;
+        pending_requests_.erase(pending_requests_.begin(), it);
+        break;
+      }
+    }
+    if (timestamp_ms_original < 0) {
       return Result::kInvalidParameter;
     }
-    timestamp_ms_original = it->second;
-    pending_requests_.erase(it);
   }
 
   // Apply user override if any
@@ -198,15 +202,22 @@ Result ExternalVideoTrackSourceImpl::CompleteRequest(
     int64_t timestamp_ms,
     const Argb32VideoFrame& frame_view) {
   // Validate pending request ID and retrieve frame timestamp
-  int64_t timestamp_ms_original;
+  int64_t timestamp_ms_original = -1;
   {
     rtc::CritScope lock(&request_lock_);
-    auto it = pending_requests_.find(request_id);
-    if (it == pending_requests_.end()) {
+    for (auto it = pending_requests_.begin(); it != pending_requests_.end();
+         ++it) {
+      if (it->first == request_id) {
+        timestamp_ms_original = it->second;
+        // Remove outdated requests, including current one
+        ++it;
+        pending_requests_.erase(pending_requests_.begin(), it);
+        break;
+      }
+    }
+    if (timestamp_ms_original < 0) {
       return Result::kInvalidParameter;
     }
-    timestamp_ms_original = it->second;
-    pending_requests_.erase(it);
   }
 
   // Apply user override if any
@@ -244,23 +255,20 @@ void ExternalVideoTrackSourceImpl::OnMessage(rtc::Message* message) {
       const int64_t now = rtc::TimeMillis();
 
       // Request a frame from the external video source
-      bool skip_request = false;
       uint32_t request_id = 0;
       {
         rtc::CritScope lock(&request_lock_);
+        // Discard an old request if no space available. This allows restarting
+        // after a long delay, otherwise skipping the request generally also
+        // prevent the user from calling CompleteFrame() to make some space for
+        // more. The queue is still useful for just-in-time or short delays.
         if (pending_requests_.size() >= kMaxPendingRequestCount) {
-          skip_request = true;
-        } else {
-          request_id = next_request_id_++;
-          pending_requests_.emplace(request_id, now);
+          pending_requests_.erase(pending_requests_.begin());
         }
+        request_id = next_request_id_++;
+        pending_requests_.emplace_back(request_id, now);
       }
-      if (!skip_request) {
-        adapter_->RequestFrame(*this, request_id, now);
-      } else {
-        RTC_LOG(LS_WARNING) << "Skipped external video frame request due to "
-                               "outstanding pending requests.";
-      }
+      adapter_->RequestFrame(*this, request_id, now);
 
       // Schedule a new request for 30ms from now
       //< TODO - this is unreliable and prone to drifting; figure out something

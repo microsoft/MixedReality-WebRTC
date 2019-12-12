@@ -30,7 +30,8 @@ class BufferAdapter {
       const Argb32VideoFrame& frame_view) = 0;
 };
 
-/// Adapter to bridge a video track source to the underlying core implementation.
+/// Adapter to bridge a video track source to the underlying core
+/// implementation.
 struct CustomTrackSourceAdapter : public rtc::AdaptedVideoTrackSource {
   void DispatchFrame(const webrtc::VideoFrame& frame) { OnFrame(frame); }
 
@@ -97,7 +98,8 @@ class ExternalVideoTrackSourceImpl : public ExternalVideoTrackSource,
   std::unique_ptr<rtc::Thread> capture_thread_;
 
   /// Collection of pending frame requests
-  std::unordered_map<uint32_t, int64_t> pending_requests_ RTC_GUARDED_BY(request_lock_);
+  std::deque<std::pair<uint32_t, int64_t>> pending_requests_
+      RTC_GUARDED_BY(request_lock_);  //< TODO : circular buffer to avoid alloc
 
   /// Next available ID for a frame request.
   uint32_t next_request_id_ RTC_GUARDED_BY(request_lock_){};
