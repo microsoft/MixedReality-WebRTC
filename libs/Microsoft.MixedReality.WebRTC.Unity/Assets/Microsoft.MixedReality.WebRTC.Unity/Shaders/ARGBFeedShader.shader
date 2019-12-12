@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 Shader "Video/ARGBFeedShader"
 {
@@ -24,6 +24,9 @@ Shader "Video/ARGBFeedShader"
 
         void surf(Input IN, inout SurfaceOutput o)
         {
+#if UNITY_UV_STARTS_AT_TOP
+            IN.uv_MainTex.y = 1 - IN.uv_MainTex.y;
+#endif
             o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;
             o.Alpha = 1;
         }

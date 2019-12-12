@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 Shader "Video/YUVFeedShader (standard lit)"
 {
@@ -45,7 +45,7 @@ Shader "Video/YUVFeedShader (standard lit)"
         void surf(Input IN, inout SurfaceOutput o)
         {
             half3 yuv;
-#if !UNITY_UV_STARTS_AT_TOP
+#if UNITY_UV_STARTS_AT_TOP
             IN.uv_YPlane.y = 1 - IN.uv_YPlane.y;
 #endif
 #ifdef MIRROR
