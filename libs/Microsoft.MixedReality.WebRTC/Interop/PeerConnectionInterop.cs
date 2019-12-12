@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -274,11 +275,25 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             peer.OnRemoteAudioFrameReady(frame);
         }
 
+        public static readonly PeerConnectionSimpleStatsCallback SimpleStatsReportDelegate = SimpleStatsReportCallback;
+
         [MonoPInvokeCallback(typeof(PeerConnectionSimpleStatsCallback))]
         public unsafe static void SimpleStatsReportCallback(IntPtr userData, IntPtr report)
         {
-            var tcs = Utils.ToWrapper<TaskCompletionSource<PeerConnection.StatsReport>>(userData);
+            var tcsHandle = GCHandle.FromIntPtr(userData);
+            var tcs = tcsHandle.Target as TaskCompletionSource<PeerConnection.StatsReport>;
             tcs.SetResult(new PeerConnection.StatsReport(report));
+            tcsHandle.Free();
+        }
+
+        public static Task<PeerConnection.StatsReport> GetSimpleStatsAsync(PeerConnectionHandle peerHandle)
+        {
+            var tcs = new TaskCompletionSource<PeerConnection.StatsReport>();
+            var resPtr = Utils.MakeWrapperRef(tcs);
+            PeerConnection_GetSimpleStats(peerHandle, SimpleStatsReportDelegate, resPtr);
+
+            // The Task result will be set by the callback when the report is ready.
+            return tcs.Task;
         }
 
         [MonoPInvokeCallback(typeof(PeerConnectionSimpleStatsObjectCallback))]

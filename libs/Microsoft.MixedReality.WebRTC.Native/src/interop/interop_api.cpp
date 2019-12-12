@@ -1139,7 +1139,6 @@ mrsPeerConnectionGetSimpleStats(PeerConnectionHandle peerHandle,
           const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
           override {
         report->AddRef();
-
         (*callback_)(user_data_, report.get());
       }
     };

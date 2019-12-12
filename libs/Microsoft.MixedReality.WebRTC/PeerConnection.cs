@@ -1535,6 +1535,7 @@ namespace Microsoft.MixedReality.WebRTC
                 var res = new List<T>();
                 var resHandle = GCHandle.Alloc(res, GCHandleType.Normal);
                 PeerConnectionInterop.StatsReport_GetObjects(this, typeof(T).Name, PeerConnectionInterop.SimpleStatsObjectCallback, GCHandle.ToIntPtr(resHandle));
+                resHandle.Free();
                 return res;
             }
 
@@ -1548,10 +1549,7 @@ namespace Microsoft.MixedReality.WebRTC
 
         public Task<StatsReport> GetSimpleStatsAsync()
         {
-            var tcs = new TaskCompletionSource<StatsReport>();
-            var resHandle = GCHandle.Alloc(tcs, GCHandleType.Normal);
-            PeerConnectionInterop.PeerConnection_GetSimpleStats(_nativePeerhandle, PeerConnectionInterop.SimpleStatsReportCallback, GCHandle.ToIntPtr(resHandle));
-            return tcs.Task;
+            return PeerConnectionInterop.GetSimpleStatsAsync(_nativePeerhandle);
         }
 
         /// <summary>
