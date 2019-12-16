@@ -140,7 +140,7 @@ using PeerConnectionIceCandidateReadytoSendCallback =
 /// State of the ICE connection.
 /// See https://www.w3.org/TR/webrtc/#rtciceconnectionstate-enum.
 /// Note that there is a mismatch currently due to the m71 implementation.
-enum IceConnectionState : int32_t {
+enum class IceConnectionState : int32_t {
   kNew = 0,
   kChecking = 1,
   kConnected = 2,
@@ -148,6 +148,14 @@ enum IceConnectionState : int32_t {
   kFailed = 4,
   kDisconnected = 5,
   kClosed = 6,
+};
+
+/// State of the ICE gathering process.
+/// See https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum
+enum class IceGatheringState : int32_t {
+  kNew = 0,
+  kGathering = 1,
+  kComplete = 2,
 };
 
 /// Callback fired when the state of the ICE connection changed.

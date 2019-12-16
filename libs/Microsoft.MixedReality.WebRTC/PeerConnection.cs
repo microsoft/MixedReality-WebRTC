@@ -209,6 +209,34 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
+    /// State of an ICE gathering process.
+    /// </summary>
+    /// <remarks>
+    /// See <see href="https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum">RTPIceGatheringState</see>
+    /// from the WebRTC 1.0 standard.
+    /// </remarks>
+    /// <seealso href="https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum"/>
+    public enum IceGatheringState : int
+    {
+        /// <summary>
+        /// There is no ICE transport, or none of them started gathering ICE candidates.
+        /// </summary>
+        New = 0,
+
+        /// <summary>
+        /// The gathering process started. At least one ICE transport is active and gathering
+        /// some ICE candidates.
+        /// </summary>
+        Gathering = 1,
+
+        /// <summary>
+        /// The gathering process is complete. At least one ICE transport was active, and
+        /// all transports finished gathering ICE candidates.
+        /// </summary>
+        Complete = 2,
+    }
+
+    /// <summary>
     /// Identifier for a video capture device.
     /// </summary>
     [Serializable]
@@ -289,6 +317,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="newState">The new ICE connection state.</param>
         public delegate void IceStateChangedDelegate(IceConnectionState newState);
+
+        /// <summary>
+        /// Delegate for the <see cref="IceGatheringStateChanged"/> event.
+        /// </summary>
+        /// <param name="newState">The new ICE gathering state.</param>
+        public delegate void IceGatheringStateChangedDelegate(IceGatheringState newState);
 
         /// <summary>
         /// Kind of WebRTC track.
@@ -563,6 +597,11 @@ namespace Microsoft.MixedReality.WebRTC
         public event IceStateChangedDelegate IceStateChanged;
 
         /// <summary>
+        /// Event that occurs when the state of the ICE gathering changed.
+        /// </summary>
+        public event IceGatheringStateChangedDelegate IceGatheringStateChanged;
+
+        /// <summary>
         /// Event that occurs when a renegotiation of the session is needed.
         /// This generally occurs as a result of adding or removing tracks,
         /// and the user should call <see cref="CreateOffer"/> to actually
@@ -706,6 +745,7 @@ namespace Microsoft.MixedReality.WebRTC
                     LocalSdpReadytoSendCallback = PeerConnectionInterop.LocalSdpReadytoSendCallback,
                     IceCandidateReadytoSendCallback = PeerConnectionInterop.IceCandidateReadytoSendCallback,
                     IceStateChangedCallback = PeerConnectionInterop.IceStateChangedCallback,
+                    IceGatheringStateChangedCallback = PeerConnectionInterop.IceGatheringStateChangedCallback,
                     RenegotiationNeededCallback = PeerConnectionInterop.RenegotiationNeededCallback,
                     TrackAddedCallback = PeerConnectionInterop.TrackAddedCallback,
                     TrackRemovedCallback = PeerConnectionInterop.TrackRemovedCallback,
@@ -796,6 +836,8 @@ namespace Microsoft.MixedReality.WebRTC
                             _nativePeerhandle, _peerCallbackArgs.IceCandidateReadytoSendCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterIceStateChangedCallback(
                             _nativePeerhandle, _peerCallbackArgs.IceStateChangedCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterIceGatheringStateChangedCallback(
+                            _nativePeerhandle, _peerCallbackArgs.IceGatheringStateChangedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterRenegotiationNeededCallback(
                             _nativePeerhandle, _peerCallbackArgs.RenegotiationNeededCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterTrackAddedCallback(
@@ -857,6 +899,8 @@ namespace Microsoft.MixedReality.WebRTC
                 PeerConnectionInterop.PeerConnection_RegisterIceCandidateReadytoSendCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterIceStateChangedCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterIceGatheringStateChangedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterRenegotiationNeededCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
@@ -1491,6 +1535,12 @@ namespace Microsoft.MixedReality.WebRTC
         {
             MainEventSource.Log.IceStateChanged(newState);
             IceStateChanged?.Invoke(newState);
+        }
+
+        internal void OnIceGatheringStateChanged(IceGatheringState newState)
+        {
+            MainEventSource.Log.IceGatheringStateChanged(newState);
+            IceGatheringStateChanged?.Invoke(newState);
         }
 
         internal void OnRenegotiationNeeded()

@@ -11,8 +11,6 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-extern std::unique_ptr<GlobalFactory> g_factory;
-
 void MRS_CALL mrsPeerConnectionAddRef(PeerConnectionHandle handle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(handle)) {
     peer->AddRef();
@@ -28,5 +26,15 @@ void MRS_CALL mrsPeerConnectionRemoveRef(PeerConnectionHandle handle) noexcept {
   } else {
     RTC_LOG(LS_WARNING)
         << "Trying to remove reference from NULL PeerConnection object.";
+  }
+}
+
+void MRS_CALL mrsPeerConnectionRegisterIceGatheringStateChangedCallback(
+    PeerConnectionHandle peerHandle,
+    mrsPeerConnectionIceGatheringStateChangedCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterIceGatheringStateChangedCallback(
+        Callback<IceGatheringState>{callback, user_data});
   }
 }

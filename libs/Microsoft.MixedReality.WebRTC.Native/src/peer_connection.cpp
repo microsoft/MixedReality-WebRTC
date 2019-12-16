@@ -29,9 +29,9 @@ static constexpr int kFrameHeightCrop = 1;
 extern int webrtc__WinUWPH264EncoderImpl__frame_height_round_mode;
 
 #include <Windows.Foundation.h>
-#include <wrl\wrappers\corewrappers.h>
-#include <wrl\client.h>
 #include <windows.graphics.holographic.h>
+#include <wrl\client.h>
+#include <wrl\wrappers\corewrappers.h>
 
 namespace {
 
@@ -100,8 +100,8 @@ void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode value) {
 #else
 
 namespace Microsoft::MixedReality::WebRTC {
-void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode /*value*/) {
-}
+void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode /*value*/) {}
+
 }  // namespace Microsoft::MixedReality::WebRTC
 
 #endif
@@ -134,7 +134,8 @@ Microsoft::MixedReality::WebRTC::Error ErrorFromRTCError(
       ResultFromRTCErrorType(error.type()), error.message());
 }
 
-Microsoft::MixedReality::WebRTC::Error ErrorFromRTCError(webrtc::RTCError&& error) {
+Microsoft::MixedReality::WebRTC::Error ErrorFromRTCError(
+    webrtc::RTCError&& error) {
   // Ideally would move the std::string out of |error|, but doesn't look
   // possible at the moment.
   return Microsoft::MixedReality::WebRTC::Error(
@@ -186,6 +187,12 @@ class PeerConnectionImpl : public PeerConnection,
       IceStateChangedCallback&& callback) noexcept override {
     auto lock = std::scoped_lock{ice_state_changed_callback_mutex_};
     ice_state_changed_callback_ = std::move(callback);
+  }
+
+  void RegisterIceGatheringStateChangedCallback(
+      IceGatheringStateChangedCallback&& callback) noexcept override {
+    auto lock = std::scoped_lock{ice_gathering_state_changed_callback_mutex_};
+    ice_gathering_state_changed_callback_ = std::move(callback);
   }
 
   void RegisterRenegotiationNeededCallback(
@@ -338,7 +345,7 @@ class PeerConnectionImpl : public PeerConnection,
 
   /// Called any time the IceGatheringState changes.
   void OnIceGatheringChange(webrtc::PeerConnectionInterface::IceGatheringState
-                            /*new_state*/) noexcept override {}
+                                new_state) noexcept override;
 
   /// A new ICE candidate has been gathered.
   void OnIceCandidate(
@@ -400,6 +407,10 @@ class PeerConnectionImpl : public PeerConnection,
   IceStateChangedCallback ice_state_changed_callback_
       RTC_GUARDED_BY(ice_state_changed_callback_mutex_);
 
+  /// User callback invoked when the ICE gathering state changed.
+  IceGatheringStateChangedCallback ice_gathering_state_changed_callback_
+      RTC_GUARDED_BY(ice_gathering_state_changed_callback_mutex_);
+
   /// User callback invoked when SDP renegotiation is needed.
   RenegotiationNeededCallback renegotiation_needed_callback_
       RTC_GUARDED_BY(renegotiation_needed_callback_mutex_);
@@ -418,6 +429,7 @@ class PeerConnectionImpl : public PeerConnection,
   std::mutex local_sdp_ready_to_send_callback_mutex_;
   std::mutex ice_candidate_ready_to_send_callback_mutex_;
   std::mutex ice_state_changed_callback_mutex_;
+  std::mutex ice_gathering_state_changed_callback_mutex_;
   std::mutex renegotiation_needed_callback_mutex_;
   std::mutex track_added_callback_mutex_;
   std::mutex track_removed_callback_mutex_;
@@ -557,6 +569,19 @@ IceConnectionState IceStateFromImpl(
                 (int)Impl::kIceConnectionDisconnected);
   static_assert((int)Native::kClosed == (int)Impl::kIceConnectionClosed);
   return (IceConnectionState)impl_state;
+}
+
+/// Convert an implementation value to a native API value of the ICE gathering
+/// state. This ensures API stability if the implementation changes, although
+/// currently API values are mapped 1:1 with the implementation.
+IceGatheringState IceGatheringStateFromImpl(
+    webrtc::PeerConnectionInterface::IceGatheringState impl_state) {
+  using Native = IceGatheringState;
+  using Impl = webrtc::PeerConnectionInterface::IceGatheringState;
+  static_assert((int)Native::kNew == (int)Impl::kIceGatheringNew);
+  static_assert((int)Native::kGathering == (int)Impl::kIceGatheringGathering);
+  static_assert((int)Native::kComplete == (int)Impl::kIceGatheringComplete);
+  return (IceGatheringState)impl_state;
 }
 
 ErrorOr<RefPtr<LocalVideoTrack>> PeerConnectionImpl::AddLocalVideoTrack(
@@ -1114,6 +1139,15 @@ void PeerConnectionImpl::OnIceConnectionChange(
   auto cb = ice_state_changed_callback_;
   if (cb) {
     cb(IceStateFromImpl(new_state));
+  }
+}
+
+void PeerConnectionImpl::OnIceGatheringChange(
+    webrtc::PeerConnectionInterface::IceGatheringState new_state) noexcept {
+  auto lock = std::scoped_lock{ice_gathering_state_changed_callback_mutex_};
+  auto cb = ice_gathering_state_changed_callback_;
+  if (cb) {
+    cb(IceGatheringStateFromImpl(new_state));
   }
 }
 

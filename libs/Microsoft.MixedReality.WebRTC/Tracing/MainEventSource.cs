@@ -92,6 +92,9 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         [Event(0x1004, Level = EventLevel.Error, Keywords = Keywords.Connection)]
         public void PeerConnectionNotOpenError() { WriteEvent(0x1004); }
 
+        [Event(0x1005, Level = EventLevel.Informational, Keywords = Keywords.Connection)]
+        public void IceGatheringStateChanged(IceGatheringState newState) { WriteEvent(0x1005, (int)newState); }
+
         #endregion
 
         #region SDP

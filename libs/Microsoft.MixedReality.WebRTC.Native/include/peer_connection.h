@@ -101,6 +101,13 @@ class PeerConnection : public TrackedObject {
   virtual void RegisterIceStateChangedCallback(
       IceStateChangedCallback&& callback) noexcept = 0;
 
+  /// Callback fired when the state of the ICE gathering changed.
+  using IceGatheringStateChangedCallback = Callback<IceGatheringState>;
+
+  /// Register a custom IceStateChangedCallback.
+  virtual void RegisterIceGatheringStateChangedCallback(
+      IceGatheringStateChangedCallback&& callback) noexcept = 0;
+
   /// Callback fired when some SDP negotiation needs to be initiated, often
   /// because some tracks have been added to or removed from the peer
   /// connection, to notify the remote peer of the change.

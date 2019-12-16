@@ -256,6 +256,8 @@
                     <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2">
                         <TextBlock Text="ICE state : " VerticalAlignment="Top" />
                         <TextBlock x:Name="iceStateText" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />
+                        <TextBlock Text="ICE gathering : " VerticalAlignment="Top" Margin="20,0,0,0" />
+                        <TextBlock x:Name="iceGatheringStateText" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />
                         <TextBlock Text="Remote Audio Channels : " VerticalAlignment="Top" Margin="20,0,0,0" />
                         <TextBlock x:Name="remoteAudioChannelCount" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />
                         <TextBlock Text="Sample rate : " VerticalAlignment="Top" Margin="20,0,0,0" />

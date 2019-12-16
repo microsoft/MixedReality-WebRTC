@@ -64,6 +64,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         private delegate void LocalSdpReadytoSendDelegate(IntPtr peer, string type, string sdp);
         private delegate void IceCandidateReadytoSendDelegate(IntPtr peer, string candidate, int sdpMlineindex, string sdpMid);
         private delegate void IceStateChangedDelegate(IntPtr peer, IceConnectionState newState);
+        private delegate void IceGatheringStateChangedDelegate(IntPtr peer, IceGatheringState newState);
         private delegate void RenegotiationNeededDelegate(IntPtr peer);
         private delegate void TrackAddedDelegate(IntPtr peer, PeerConnection.TrackKind trackKind);
         private delegate void TrackRemovedDelegate(IntPtr peer, PeerConnection.TrackKind trackKind);
@@ -155,6 +156,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public PeerConnectionLocalSdpReadytoSendCallback LocalSdpReadytoSendCallback;
             public PeerConnectionIceCandidateReadytoSendCallback IceCandidateReadytoSendCallback;
             public PeerConnectionIceStateChangedCallback IceStateChangedCallback;
+            public PeerConnectionIceGatheringStateChangedCallback IceGatheringStateChangedCallback;
             public PeerConnectionRenegotiationNeededCallback RenegotiationNeededCallback;
             public PeerConnectionTrackAddedCallback TrackAddedCallback;
             public PeerConnectionTrackRemovedCallback TrackRemovedCallback;
@@ -212,6 +214,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnIceStateChanged(newState);
+        }
+
+        [MonoPInvokeCallback(typeof(IceGatheringStateChangedDelegate))]
+        public static void IceGatheringStateChangedCallback(IntPtr userData, IceGatheringState newState)
+        {
+            var peer = Utils.ToWrapper<PeerConnection>(userData);
+            peer.OnIceGatheringStateChanged(newState);
         }
 
         [MonoPInvokeCallback(typeof(RenegotiationNeededDelegate))]
@@ -382,6 +391,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             IceConnectionState newState);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void PeerConnectionIceGatheringStateChangedCallback(IntPtr userData,
+            IceGatheringState newState);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionRenegotiationNeededCallback(IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
@@ -452,6 +465,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             EntryPoint = "mrsPeerConnectionRegisterIceStateChangedCallback")]
         public static extern void PeerConnection_RegisterIceStateChangedCallback(PeerConnectionHandle peerHandle,
             PeerConnectionIceStateChangedCallback callback, IntPtr userData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionRegisterIceGatheringStateChangedCallback")]
+        public static extern void PeerConnection_RegisterIceGatheringStateChangedCallback(PeerConnectionHandle peerHandle,
+            PeerConnectionIceGatheringStateChangedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterRenegotiationNeededCallback")]
