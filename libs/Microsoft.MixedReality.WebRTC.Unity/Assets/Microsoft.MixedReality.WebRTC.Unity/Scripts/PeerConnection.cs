@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -229,6 +229,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public Task InitializeAsync(CancellationToken token = default(CancellationToken))
         {
+            // Normally would be initialized by Awake(), but in case the component is disabled
+            if (_nativePeer == null)
+            {
+                _nativePeer = new WebRTC.PeerConnection();
+                _nativePeer.LocalSdpReadytoSend += Signaler_LocalSdpReadyToSend;
+                _nativePeer.IceCandidateReadytoSend += Signaler_IceCandidateReadytoSend;
+            }
+
             // if the peer is already set, we refuse to initialize again.
             // Note: for multi-peer scenarios, use multiple WebRTC components.
             if (_nativePeer.Initialized)
@@ -292,8 +300,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // Fire signals before doing anything else to allow listeners to clean-up,
                 // including un-registering any callback and remove any track from the connection.
                 OnShutdown.Invoke();
-                Signaler.OnMessage -= Signaler_OnMessage;
-                Signaler.OnPeerUninitializing(this);
+
+                if (Signaler != null)
+                {
+                    Signaler.OnMessage -= Signaler_OnMessage;
+                    Signaler.OnPeerUninitializing(this);
+                }
 
                 // Prevent publicly accessing the native peer after it has been deinitialized.
                 // This does not prevent systems caching a reference from accessing it, but it
@@ -480,8 +492,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // However subsequent calls will (and should) work as expected.
             Peer = _nativePeer;
 
-            Signaler.OnPeerInitialized(this);
-            Signaler.OnMessage += Signaler_OnMessage;
+            if (Signaler != null)
+            {
+                Signaler.OnPeerInitialized(this);
+                Signaler.OnMessage += Signaler_OnMessage;
+            }
             OnInitialized.Invoke();
         }
 
