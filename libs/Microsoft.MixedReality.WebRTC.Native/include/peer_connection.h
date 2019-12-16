@@ -372,7 +372,8 @@ class AudioReadStream {
  private:
   // Buffer the next frame. Return false on failure.
   bool bufferNextFrame(int sampleRate, int channels);
-  static void staticAudioFrameCallback(void* user_data, const AudioFrame& frame);
+  static void MRS_CALL staticAudioFrameCallback(void* user_data,
+                                               const AudioFrame& frame);
   void audioFrameCallback(const void* audio_data,
                           const uint32_t bits_per_sample,
                           const uint32_t sample_rate,
