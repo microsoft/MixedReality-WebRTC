@@ -31,9 +31,9 @@ MRS_API void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
 /// Register a custom callback to be called when the local video track captured
 /// a frame. The captured frames is passed to the registered callback in ARGB32
 /// encoding.
-MRS_API void MRS_CALL mrsLocalVideoTrackRegisterARGBFrameCallback(
+MRS_API void MRS_CALL mrsLocalVideoTrackRegisterArgb32FrameCallback(
     LocalVideoTrackHandle trackHandle,
-    PeerConnectionARGBVideoFrameCallback callback,
+    PeerConnectionArgb32VideoFrameCallback callback,
     void* user_data) noexcept;
 
 /// Enable or disable a local video track. Enabled tracks output their media
@@ -44,7 +44,7 @@ MRS_API mrsResult MRS_CALL
 mrsLocalVideoTrackSetEnabled(LocalVideoTrackHandle track_handle,
                              mrsBool enabled) noexcept;
 
-/// Query a local video track for its enabled status. Return |mrsBool::kTrue| if the track is enabled, or 
+/// Query a local video track for its enabled status.
 MRS_API mrsBool MRS_CALL
 mrsLocalVideoTrackIsEnabled(LocalVideoTrackHandle track_handle) noexcept;
 

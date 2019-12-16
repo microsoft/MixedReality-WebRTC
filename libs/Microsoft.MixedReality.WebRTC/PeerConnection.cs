@@ -115,11 +115,15 @@ namespace Microsoft.MixedReality.WebRTC
         /// <returns>The encoded string of ICE servers.</returns>
         public override string ToString()
         {
+            if (Urls == null)
+            {
+                return string.Empty;
+            }
             string ret = string.Join("\n", Urls);
-            if (TurnUserName.Length > 0)
+            if (!string.IsNullOrEmpty(TurnUserName))
             {
                 ret += $"\nusername:{TurnUserName}";
-                if (TurnPassword.Length > 0)
+                if (!string.IsNullOrEmpty(TurnPassword))
                 {
                     ret += $"\npassword:{TurnPassword}";
                 }
@@ -205,6 +209,34 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
+    /// State of an ICE gathering process.
+    /// </summary>
+    /// <remarks>
+    /// See <see href="https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum">RTPIceGatheringState</see>
+    /// from the WebRTC 1.0 standard.
+    /// </remarks>
+    /// <seealso href="https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum"/>
+    public enum IceGatheringState : int
+    {
+        /// <summary>
+        /// There is no ICE transport, or none of them started gathering ICE candidates.
+        /// </summary>
+        New = 0,
+
+        /// <summary>
+        /// The gathering process started. At least one ICE transport is active and gathering
+        /// some ICE candidates.
+        /// </summary>
+        Gathering = 1,
+
+        /// <summary>
+        /// The gathering process is complete. At least one ICE transport was active, and
+        /// all transports finished gathering ICE candidates.
+        /// </summary>
+        Complete = 2,
+    }
+
+    /// <summary>
     /// Identifier for a video capture device.
     /// </summary>
     [Serializable]
@@ -285,6 +317,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="newState">The new ICE connection state.</param>
         public delegate void IceStateChangedDelegate(IceConnectionState newState);
+
+        /// <summary>
+        /// Delegate for the <see cref="IceGatheringStateChanged"/> event.
+        /// </summary>
+        /// <param name="newState">The new ICE gathering state.</param>
+        public delegate void IceGatheringStateChangedDelegate(IceGatheringState newState);
 
         /// <summary>
         /// Kind of WebRTC track.
@@ -559,6 +597,11 @@ namespace Microsoft.MixedReality.WebRTC
         public event IceStateChangedDelegate IceStateChanged;
 
         /// <summary>
+        /// Event that occurs when the state of the ICE gathering changed.
+        /// </summary>
+        public event IceGatheringStateChangedDelegate IceGatheringStateChanged;
+
+        /// <summary>
         /// Event that occurs when a renegotiation of the session is needed.
         /// This generally occurs as a result of adding or removing tracks,
         /// and the user should call <see cref="CreateOffer"/> to actually
@@ -586,7 +629,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Event that occurs when a video frame from a remote peer has been
         /// received and is available for render.
         /// </summary>
-        public event ARGBVideoFrameDelegate ARGBRemoteVideoFrameReady;
+        public event Argb32VideoFrameDelegate Argb32RemoteVideoFrameReady;
 
         /// <summary>
         /// Event that occurs when an audio frame from a local track has been
@@ -663,7 +706,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// from the first call to it until the peer connection object is deinitialized. This allows
         /// multiple callers to all execute some action following the initialization, without the need
         /// to force a single caller and to synchronize with it.</remarks>
-        public Task InitializeAsync(PeerConnectionConfiguration config = default, CancellationToken token = default)
+        public Task InitializeAsync(PeerConnectionConfiguration config = null, CancellationToken token = default)
         {
             lock (_openCloseLock)
             {
@@ -702,11 +745,12 @@ namespace Microsoft.MixedReality.WebRTC
                     LocalSdpReadytoSendCallback = PeerConnectionInterop.LocalSdpReadytoSendCallback,
                     IceCandidateReadytoSendCallback = PeerConnectionInterop.IceCandidateReadytoSendCallback,
                     IceStateChangedCallback = PeerConnectionInterop.IceStateChangedCallback,
+                    IceGatheringStateChangedCallback = PeerConnectionInterop.IceGatheringStateChangedCallback,
                     RenegotiationNeededCallback = PeerConnectionInterop.RenegotiationNeededCallback,
                     TrackAddedCallback = PeerConnectionInterop.TrackAddedCallback,
                     TrackRemovedCallback = PeerConnectionInterop.TrackRemovedCallback,
                     I420ARemoteVideoFrameCallback = PeerConnectionInterop.I420ARemoteVideoFrameCallback,
-                    ARGBRemoteVideoFrameCallback = PeerConnectionInterop.ARGBRemoteVideoFrameCallback,
+                    Argb32RemoteVideoFrameCallback = PeerConnectionInterop.Argb32RemoteVideoFrameCallback,
                     LocalAudioFrameCallback = PeerConnectionInterop.LocalAudioFrameCallback,
                     RemoteAudioFrameCallback = PeerConnectionInterop.RemoteAudioFrameCallback
                 };
@@ -714,13 +758,21 @@ namespace Microsoft.MixedReality.WebRTC
                 // Cache values in local variables before starting async task, to avoid any
                 // subsequent external change from affecting that task.
                 // Also set default values, as the native call doesn't handle NULL.
-                var nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration
+                PeerConnectionInterop.PeerConnectionConfiguration nativeConfig;
+                if (config != null)
                 {
-                    EncodedIceServers = string.Join("\n\n", config.IceServers),
-                    IceTransportType = config.IceTransportType,
-                    BundlePolicy = config.BundlePolicy,
-                    SdpSemantic = config.SdpSemantic,
-                };
+                    nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration
+                    {
+                        EncodedIceServers = string.Join("\n\n", config.IceServers),
+                        IceTransportType = config.IceTransportType,
+                        BundlePolicy = config.BundlePolicy,
+                        SdpSemantic = config.SdpSemantic,
+                    };
+                }
+                else
+                {
+                    nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration();
+                }
 
                 // On UWP PeerConnectionCreate() fails on main UI thread, so always initialize the native peer
                 // connection asynchronously from a background worker thread.
@@ -784,6 +836,8 @@ namespace Microsoft.MixedReality.WebRTC
                             _nativePeerhandle, _peerCallbackArgs.IceCandidateReadytoSendCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterIceStateChangedCallback(
                             _nativePeerhandle, _peerCallbackArgs.IceStateChangedCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterIceGatheringStateChangedCallback(
+                            _nativePeerhandle, _peerCallbackArgs.IceGatheringStateChangedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterRenegotiationNeededCallback(
                             _nativePeerhandle, _peerCallbackArgs.RenegotiationNeededCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterTrackAddedCallback(
@@ -796,8 +850,8 @@ namespace Microsoft.MixedReality.WebRTC
                             _nativePeerhandle, _peerCallbackArgs.DataChannelRemovedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterI420ARemoteVideoFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.I420ARemoteVideoFrameCallback, self);
-                        PeerConnectionInterop.PeerConnection_RegisterARGBRemoteVideoFrameCallback(
-                            _nativePeerhandle, _peerCallbackArgs.ARGBRemoteVideoFrameCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterArgb32RemoteVideoFrameCallback(
+                            _nativePeerhandle, _peerCallbackArgs.Argb32RemoteVideoFrameCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterLocalAudioFrameCallback(
                             _nativePeerhandle, _peerCallbackArgs.LocalAudioFrameCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterRemoteAudioFrameCallback(
@@ -846,6 +900,8 @@ namespace Microsoft.MixedReality.WebRTC
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterIceStateChangedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterIceGatheringStateChangedCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterRenegotiationNeededCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterTrackAddedCallback(
@@ -858,7 +914,7 @@ namespace Microsoft.MixedReality.WebRTC
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterI420ARemoteVideoFrameCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
-                PeerConnectionInterop.PeerConnection_RegisterARGBRemoteVideoFrameCallback(
+                PeerConnectionInterop.PeerConnection_RegisterArgb32RemoteVideoFrameCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterLocalAudioFrameCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
@@ -937,9 +993,9 @@ namespace Microsoft.MixedReality.WebRTC
                     trackName = Guid.NewGuid().ToString();
                 }
                 uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, trackName, config,
-                    out IntPtr trackHandle);
+                    out LocalVideoTrackHandle trackHandle);
                 Utils.ThrowOnErrorCode(res);
-                var track = new LocalVideoTrack(this, _nativePeerhandle, trackHandle, settings.trackName);
+                var track = new LocalVideoTrack(trackHandle, this, settings.trackName);
                 return track;
             });
         }
@@ -952,7 +1008,22 @@ namespace Microsoft.MixedReality.WebRTC
         {
             ThrowIfConnectionNotOpen();
             PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerhandle, track._nativeHandle);
-            track.OnTrackRemoved(this);
+            track.OnTrackRemoved(this); // LocalVideoTrack.PeerConnection = null
+        }
+
+        /// <summary>
+        /// Add a local video track backed by an external video source managed by the caller.
+        /// Unlike with <see cref="AddLocalVideoTrackAsync(LocalVideoTrackSettings)"/> which manages
+        /// a local video capture device and automatically produce frames, an external video source
+        /// provides video frames directly to WebRTC when asked to do so via the provided callback.
+        /// </summary>
+        /// <param name="trackName">Name of the new track.</param>
+        /// <param name="externalSource">External source providing the frames for the track.</param>
+        public LocalVideoTrack AddCustomLocalVideoTrack(string trackName, ExternalVideoTrackSource externalSource)
+        {
+            ThrowIfConnectionNotOpen();
+            return PeerConnectionInterop.AddLocalVideoTrackFromExternalSource(this, _nativePeerhandle,
+                trackName, externalSource);
         }
 
         /// <summary>
@@ -977,6 +1048,21 @@ namespace Microsoft.MixedReality.WebRTC
                     throw new Exception();
                 }
             });
+        }
+
+        /// <summary>
+        /// Remove all the local video tracks associated with the given video track source.
+        /// </summary>
+        /// <param name="source">The video track source.</param>
+        /// <remarks>
+        /// Currently there is a 1:1 mapping between tracks and sources (source sharing is not available),
+        /// therefore this is equivalent to <see cref="RemoveLocalVideoTrack(LocalVideoTrack)"/>.
+        /// </remarks>
+        public void RemoveLocalVideoTracksFromSource(ExternalVideoTrackSource source)
+        {
+            ThrowIfConnectionNotOpen();
+            PeerConnectionInterop.PeerConnection_RemoveLocalVideoTracksFromSource(_nativePeerhandle, source._nativeHandle);
+            source.OnTracksRemovedFromSource(this);
         }
 
         /// <summary>
@@ -1297,7 +1383,10 @@ namespace Microsoft.MixedReality.WebRTC
                 {
                     // On enumeration end, signal the caller thread
                     eventWaitHandle.Set();
-                }
+                },
+                // Keep delegates alive
+                EnumTrampoline = PeerConnectionInterop.VideoCaptureDevice_EnumCallback,
+                CompletedTrampoline = PeerConnectionInterop.VideoCaptureDevice_EnumCompletedCallback
             };
 
             // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
@@ -1308,8 +1397,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 // Execute the native async callback
                 PeerConnectionInterop.EnumVideoCaptureDevicesAsync(
-                    PeerConnectionInterop.VideoCaptureDevice_EnumCallback, userData,
-                    PeerConnectionInterop.VideoCaptureDevice_EnumCompletedCallback, userData);
+                    wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
 
                 // Wait for end of enumerating
                 eventWaitHandle.WaitOne();
@@ -1345,7 +1433,10 @@ namespace Microsoft.MixedReality.WebRTC
                 {
                     // On enumeration end, signal the caller thread
                     eventWaitHandle.Set();
-                }
+                },
+                // Keep delegates alive
+                EnumTrampoline = PeerConnectionInterop.VideoCaptureFormat_EnumCallback,
+                CompletedTrampoline = PeerConnectionInterop.VideoCaptureFormat_EnumCompletedCallback
             };
 
             // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
@@ -1354,8 +1445,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             // Execute the native async callback
             uint res = PeerConnectionInterop.EnumVideoCaptureFormatsAsync(deviceId,
-                PeerConnectionInterop.VideoCaptureFormat_EnumCallback, userData,
-                PeerConnectionInterop.VideoCaptureFormat_EnumCompletedCallback, userData);
+                    wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
             if (res != Utils.MRS_SUCCESS)
             {
                 // Clean-up and release the wrapper delegates
@@ -1375,6 +1465,46 @@ namespace Microsoft.MixedReality.WebRTC
 
                 return formats;
             });
+        }
+
+        /// <summary>
+        /// Frame height round mode.
+        /// </summary>
+        /// <seealso cref="SetFrameHeightRoundMode(FrameHeightRoundMode)"/>
+        public enum FrameHeightRoundMode
+        {
+            /// <summary>
+            /// Leave frames unchanged.
+            /// </summary>
+            None = 0,
+
+            /// <summary>
+            /// Crop frame height to the nearest multiple of 16.
+            /// ((height - nearestLowerMultipleOf16) / 2) rows are cropped from the top and
+            /// (height - nearestLowerMultipleOf16 - croppedRowsTop) rows are cropped from the bottom.
+            /// </summary>
+            Crop = 1,
+
+            /// <summary>
+            /// Pad frame height to the nearest multiple of 16.
+            /// ((nearestHigherMultipleOf16 - height) / 2) rows are added symmetrically at the top and
+            /// (nearestHigherMultipleOf16 - height - addedRowsTop) rows are added symmetrically at the bottom.
+            /// </summary>
+            Pad = 2
+        }
+
+        /// <summary>
+        /// [HoloLens 1 only]
+        /// Use this function to select whether resolutions where height is not multiple of 16
+        /// should be cropped, padded or left unchanged.
+        /// Default is <see cref="FrameHeightRoundMode.Crop"/> to avoid severe artifacts produced by
+        /// the H.264 hardware encoder on HoloLens 1.
+        /// This has no effect on other platforms.
+        /// </summary>
+        /// <param name="value">The rounding mode for video frames.</param>
+        public static void SetFrameHeightRoundMode(FrameHeightRoundMode value)
+        {
+            Utils.SetFrameHeightRoundMode(value);
         }
 
         internal void OnConnected()
@@ -1451,6 +1581,12 @@ namespace Microsoft.MixedReality.WebRTC
             IceStateChanged?.Invoke(newState);
         }
 
+        internal void OnIceGatheringStateChanged(IceGatheringState newState)
+        {
+            MainEventSource.Log.IceGatheringStateChanged(newState);
+            IceGatheringStateChanged?.Invoke(newState);
+        }
+
         internal void OnRenegotiationNeeded()
         {
             MainEventSource.Log.RenegotiationNeeded();
@@ -1475,10 +1611,10 @@ namespace Microsoft.MixedReality.WebRTC
             I420ARemoteVideoFrameReady?.Invoke(frame);
         }
 
-        internal void OnARGBRemoteVideoFrameReady(ARGBVideoFrame frame)
+        internal void OnArgb32RemoteVideoFrameReady(Argb32VideoFrame frame)
         {
             MainEventSource.Log.Argb32RemoteVideoFrameReady(frame.width, frame.height);
-            ARGBRemoteVideoFrameReady?.Invoke(frame);
+            Argb32RemoteVideoFrameReady?.Invoke(frame);
         }
 
         internal void OnLocalAudioFrameReady(AudioFrame frame)

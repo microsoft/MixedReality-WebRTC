@@ -17,7 +17,7 @@ namespace Microsoft::MixedReality::WebRTC {
 using I420AFrameReadyCallback = Callback<const I420AVideoFrame&>;
 
 /// Callback fired on newly available video frame, encoded as ARGB.
-using ARGBFrameReadyCallback = Callback<const Argb32VideoFrame&>;
+using Argb32FrameReadyCallback = Callback<const Argb32VideoFrame&>;
 
 constexpr inline size_t ArgbDataSize(int height, int stride) {
   return static_cast<size_t>(height) * stride * 4;
@@ -80,7 +80,7 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   /// Register a callback to get notified on frame available,
   /// and received that frame as a raw decoded ARGB buffer.
   /// This is not exclusive and can be used along another I420 callback.
-  void SetCallback(ARGBFrameReadyCallback callback) noexcept;
+  void SetCallback(Argb32FrameReadyCallback callback) noexcept;
 
  protected:
   ArgbBuffer* GetArgbScratchBuffer(int width, int height);
@@ -93,7 +93,7 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   I420AFrameReadyCallback i420a_callback_ RTC_GUARDED_BY(mutex_);
 
   /// Registered callback for receiving raw decoded ARGB frame.
-  ARGBFrameReadyCallback argb_callback_ RTC_GUARDED_BY(mutex_);
+  Argb32FrameReadyCallback argb_callback_ RTC_GUARDED_BY(mutex_);
 
   /// Mutex protecting all callbacks.
   std::mutex mutex_;

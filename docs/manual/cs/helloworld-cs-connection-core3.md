@@ -16,10 +16,10 @@ Continue editing the `Program.cs` file and append the following:
    ```
    The [`Connected`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.Connected) event is invoked when the peer connection is established. The [`IceStateChanged`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChanged) is invoked each time the ICE status changes. Note that the [`Connected`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.Connected) event can be invoked before the ICE status reaches its [`IceConnectionState.Connected`](xref:Microsoft.MixedReality.WebRTC.IceConnectionState) state.
 
-2. In order to verify that the remote video is received, we also subscribe to the [`I420RemoteVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420RemoteVideoFrameReady) event. Since this event is invoked frequently, we only print a message every 60 frames.
+2. In order to verify that the remote video is received, we also subscribe to the [`I420ARemoteVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420ARemoteVideoFrameReady) event. Since this event is invoked frequently, we only print a message every 60 frames.
    ```cs
    int numFrames = 0;
-   pc.I420RemoteVideoFrameReady += (I420AVideoFrame frame) => {
+   pc.I420ARemoteVideoFrameReady += (I420AVideoFrame frame) => {
        ++numFrames;
        if (numFrames % 60 == 0)
        {

@@ -117,7 +117,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// The use of <c>ref struct</c> is an optimization to avoid heap allocation on each frame while
     /// having a nicer-to-use container to pass a frame accross methods.
     /// </remarks>
-    public ref struct ARGBVideoFrame
+    public ref struct Argb32VideoFrame
     {
         /// <summary>
         /// Frame width, in pixels.
@@ -145,5 +145,5 @@ namespace Microsoft.MixedReality.WebRTC
     /// and is ready for consumption.
     /// </summary>
     /// <param name="frame">The newly available ARGB-encoded video frame.</param>
-    public delegate void ARGBVideoFrameDelegate(ARGBVideoFrame frame);
+    public delegate void Argb32VideoFrameDelegate(Argb32VideoFrame frame);
 }

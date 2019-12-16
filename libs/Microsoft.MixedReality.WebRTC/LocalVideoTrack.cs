@@ -13,7 +13,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// Video track sending to the remote peer video frames originating from
     /// a local track source.
     /// </summary>
-    public class LocalVideoTrack : WrapperBase
+    public class LocalVideoTrack : IDisposable
     {
         /// <summary>
         /// Peer connection this video track is added to, if any.
@@ -25,6 +25,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// Track name as specified during creation. This property is immutable.
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// External source for this video track, or <c>null</c> if the source is
+        /// some internal video capture device.
+        /// </summary>
+        public ExternalVideoTrackSource Source { get; } = null;
 
         /// <summary>
         /// Enabled status of the track. If enabled, send local video frames to the remote peer as
@@ -55,12 +61,15 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Event that occurs when a video frame has been produced by the underlying source and is available.
         /// </summary>
-        public event ARGBVideoFrameDelegate ARGBVideoFrameReady;
+        public event Argb32VideoFrameDelegate Argb32VideoFrameReady;
 
         /// <summary>
-        /// Handle to native peer connection C++ object the native track is added to, if any.
+        /// Handle to the native LocalVideoTrack object.
         /// </summary>
-        protected PeerConnectionHandle _nativePeerHandle;
+        /// <remarks>
+        /// In native land this is a <code>Microsoft::MixedReality::WebRTC::LocalVideoTrackHandle</code>.
+        /// </remarks>
+        internal LocalVideoTrackHandle _nativeHandle { get; private set; } = new LocalVideoTrackHandle();
 
         /// <summary>
         /// Handle to self for interop callbacks. This adds a reference to the current object, preventing
@@ -73,13 +82,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private LocalVideoTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
-        internal LocalVideoTrack(PeerConnection peer, PeerConnectionHandle nativePeerHandle, IntPtr nativeHandle, string trackName)
-            : base(nativeHandle)
+        internal LocalVideoTrack(LocalVideoTrackHandle nativeHandle, PeerConnection peer, string trackName, ExternalVideoTrackSource source = null)
         {
+            _nativeHandle = nativeHandle;
             PeerConnection = peer;
-            PeerConnectionInterop.PeerConnection_AddRef(nativePeerHandle);
-            _nativePeerHandle = nativePeerHandle.MakeCopy();
             Name = trackName;
+            Source = source;
             RegisterInteropCallbacks();
         }
 
@@ -89,65 +97,45 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 Track = this,
                 I420AFrameCallback = LocalVideoTrackInterop.I420AFrameCallback,
-                ARGBFrameCallback = LocalVideoTrackInterop.ARGBFrameCallback,
+                Argb32FrameCallback = LocalVideoTrackInterop.Argb32FrameCallback,
             };
             _selfHandle = Utils.MakeWrapperRef(this);
             LocalVideoTrackInterop.LocalVideoTrack_RegisterI420AFrameCallback(
                 _nativeHandle, _interopCallbackArgs.I420AFrameCallback, _selfHandle);
-            LocalVideoTrackInterop.LocalVideoTrack_RegisterARGBFrameCallback(
-                _nativeHandle, _interopCallbackArgs.ARGBFrameCallback, _selfHandle);
-        }
-
-        #region IDisposable support
-
-        /// <inheritdoc/>
-        protected override void AddRef()
-        {
-            LocalVideoTrackInterop.LocalVideoTrack_AddRef(_nativeHandle);
+            LocalVideoTrackInterop.LocalVideoTrack_RegisterArgb32FrameCallback(
+                _nativeHandle, _interopCallbackArgs.Argb32FrameCallback, _selfHandle);
         }
 
         /// <inheritdoc/>
-        protected override void RemoveRef()
+        public void Dispose()
         {
-            LocalVideoTrackInterop.LocalVideoTrack_RemoveRef(_nativeHandle);
-        }
-
-        /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
-        {
-            if (_nativeHandle != IntPtr.Zero)
+            if (_nativeHandle.IsClosed)
             {
-                // Unregister the callbacks
-                if (_selfHandle != IntPtr.Zero)
-                {
-                    LocalVideoTrackInterop.LocalVideoTrack_RegisterI420AFrameCallback(_nativeHandle, null, IntPtr.Zero);
-                    LocalVideoTrackInterop.LocalVideoTrack_RegisterARGBFrameCallback(_nativeHandle, null, IntPtr.Zero);
-                    GCHandle.FromIntPtr(_selfHandle).Free();
-                    if (disposing)
-                    {
-                        _interopCallbackArgs = null;
-                    }
-                    _selfHandle = IntPtr.Zero;
-                }
-
-                // Remove the track from the peer connection, and release the reference
-                // to the peer connection.
-                if (!_nativePeerHandle.IsClosed)
-                {
-                    PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerHandle, _nativeHandle);
-                    _nativePeerHandle.Close();
-                }
+                return;
             }
 
-            if (disposing)
+            // Remove the track from the peer connection, if any
+            PeerConnection?.RemoveLocalVideoTrack(this);
+            Debug.Assert(PeerConnection == null); // see OnTrackRemoved
+
+            // Unregister interop callbacks
+            if (_selfHandle != IntPtr.Zero)
             {
-                PeerConnection = null;
+                LocalVideoTrackInterop.LocalVideoTrack_RegisterI420AFrameCallback(_nativeHandle, null, IntPtr.Zero);
+                LocalVideoTrackInterop.LocalVideoTrack_RegisterArgb32FrameCallback(_nativeHandle, null, IntPtr.Zero);
+                Utils.ReleaseWrapperRef(_selfHandle);
+                _selfHandle = IntPtr.Zero;
+                _interopCallbackArgs = null;
             }
 
-            base.Dispose(disposing);
-        }
+            // Currently there is a 1:1 mapping between track and source, so the track owns its
+            // source and must dipose of it.
+            Source?.Dispose();
 
-        #endregion
+            // Destroy the native object. This may be delayed if a P/Invoke callback is underway,
+            // but will be handled at some point anyway, even if the managed instance is gone.
+            _nativeHandle.Dispose();
+        }
 
         internal void OnI420AFrameReady(I420AVideoFrame frame)
         {
@@ -155,23 +143,16 @@ namespace Microsoft.MixedReality.WebRTC
             I420AVideoFrameReady?.Invoke(frame);
         }
 
-        internal void OnARGBFrameReady(ARGBVideoFrame frame)
+        internal void OnArgb32FrameReady(Argb32VideoFrame frame)
         {
             MainEventSource.Log.Argb32LocalVideoFrameReady(frame.width, frame.height);
-            ARGBVideoFrameReady?.Invoke(frame);
+            Argb32VideoFrameReady?.Invoke(frame);
         }
 
         internal void OnTrackRemoved(PeerConnection previousConnection)
         {
             Debug.Assert(PeerConnection == previousConnection);
-            Debug.Assert(_nativeHandle != IntPtr.Zero);
-
-            if (!_nativePeerHandle.IsInvalid)
-            {
-                PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerHandle, _nativeHandle);
-                _nativePeerHandle.Close();
-            }
-
+            Debug.Assert(!_nativeHandle.IsClosed);
             PeerConnection = null;
         }
     }

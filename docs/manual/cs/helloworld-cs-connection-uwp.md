@@ -15,9 +15,9 @@ Continue editing the `OnLoaded()` method and append after the [`InitializeAsync(
    ```
    The [`Connected`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.Connected) event is invoked when the peer connection is established, that is when an offer/answer pair is successfully exchanged. The [`IceStateChanged`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChanged) is invoked each time the ICE status changes. Note that the [`Connected`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.Connected) event can be invoked before the ICE status reaches its [`IceConnectionState.Connected`](xref:Microsoft.MixedReality.WebRTC.IceConnectionState) state.
 
-2. In order to render the remote video, we also subscribe to the [`I420RemoteVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420RemoteVideoFrameReady) event.
+2. In order to render the remote video, we also subscribe to the [`I420ARemoteVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420ARemoteVideoFrameReady) event.
    ```cs
-   _peerConnection.I420RemoteVideoFrameReady += Peer_RemoteI420FrameReady;
+   _peerConnection.I420ARemoteVideoFrameReady += Peer_RemoteI420AFrameReady;
    ```
 
 That event handler is similar to the one for the local video, using another video bridge.
@@ -43,7 +43,7 @@ That event handler is similar to the one for the local video, using another vide
 
 3. Implement the handler with the newly created members:
    ```cs
-   private void Peer_RemoteI420FrameReady(I420AVideoFrame frame)
+   private void Peer_RemoteI420AFrameReady(I420AVideoFrame frame)
    {
        lock (_remoteVideoLock)
        {

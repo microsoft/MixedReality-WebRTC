@@ -19,6 +19,7 @@ namespace Microsoft::MixedReality::WebRTC {
 
 class PeerConnection;
 class LocalVideoTrack;
+class ExternalVideoTrackSource;
 class DataChannel;
 
 struct BitrateSettings {
@@ -103,6 +104,13 @@ class PeerConnection : public TrackedObject {
   /// Register a custom IceStateChangedCallback.
   virtual void RegisterIceStateChangedCallback(
       IceStateChangedCallback&& callback) noexcept = 0;
+
+  /// Callback fired when the state of the ICE gathering changed.
+  using IceGatheringStateChangedCallback = Callback<IceGatheringState>;
+
+  /// Register a custom IceStateChangedCallback.
+  virtual void RegisterIceGatheringStateChangedCallback(
+      IceGatheringStateChangedCallback&& callback) noexcept = 0;
 
   /// Callback fired when some SDP negotiation needs to be initiated, often
   /// because some tracks have been added to or removed from the peer
@@ -189,17 +197,50 @@ class PeerConnection : public TrackedObject {
   /// Register a custom callback invoked when a remote video frame has been
   /// received and decompressed, and is ready to be displayed locally.
   virtual void RegisterRemoteVideoFrameCallback(
-      ARGBFrameReadyCallback callback) noexcept = 0;
+      Argb32FrameReadyCallback callback) noexcept = 0;
 
   /// Add a video track to the peer connection. If no RTP sender/transceiver
   /// exist, create a new one for that track.
-  virtual ErrorOr<RefPtr<LocalVideoTrack>> MRS_API AddLocalVideoTrack(
+  virtual MRS_API ErrorOr<RefPtr<LocalVideoTrack>> AddLocalVideoTrack(
       rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept = 0;
 
   /// Remove a local video track from the peer connection.
   /// The underlying RTP sender/transceiver are kept alive but inactive.
-  virtual webrtc::RTCError MRS_API
-  RemoveLocalVideoTrack(LocalVideoTrack& video_track) noexcept = 0;
+  virtual MRS_API webrtc::RTCError RemoveLocalVideoTrack(
+      LocalVideoTrack& video_track) noexcept = 0;
+
+  /// Remove all tracks sharing the given video track source.
+  /// Note that currently video source sharing is not supported, so this will
+  /// remove at most a single track backed by the given source.
+  virtual MRS_API void RemoveLocalVideoTracksFromSource(
+      ExternalVideoTrackSource& source) noexcept = 0;
+
+  /// Rounding mode of video frame height for |SetFrameHeightRoundMode()|.
+  /// This is only used on HoloLens 1 (UWP x86).
+  enum class FrameHeightRoundMode {
+    /// Leave frames unchanged.
+    kNone = 0,
+
+    /// Crop frame height to the nearest multiple of 16.
+    /// ((height - nearestLowerMultipleOf16) / 2) rows are cropped from the top
+    /// and (height - nearestLowerMultipleOf16 - croppedRowsTop) rows are
+    /// cropped from the bottom.
+    kCrop = 1,
+
+    /// Pad frame height to the nearest multiple of 16.
+    /// ((nearestHigherMultipleOf16 - height) / 2) rows are added symmetrically
+    /// at the top and (nearestHigherMultipleOf16 - height - addedRowsTop) rows
+    /// are added symmetrically at the bottom.
+    kPad = 2
+  };
+
+  /// [HoloLens 1 only]
+  /// Use this function to select whether resolutions where height is not
+  /// multiple of 16 should be cropped, padded or left unchanged. Defaults to
+  /// FrameHeightRoundMode::kCrop to avoid severe artifacts produced by the
+  /// H.264 hardware encoder. The default value is applied when creating the
+  /// first peer connection, so can be overridden after it.
+  static void SetFrameHeightRoundMode(FrameHeightRoundMode value);
 
   //
   // Audio

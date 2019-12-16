@@ -44,7 +44,8 @@ void VideoFrameObserver::SetCallback(
   i420a_callback_ = std::move(callback);
 }
 
-void VideoFrameObserver::SetCallback(ARGBFrameReadyCallback callback) noexcept {
+void VideoFrameObserver::SetCallback(
+    Argb32FrameReadyCallback callback) noexcept {
   auto lock = std::scoped_lock{mutex_};
   argb_callback_ = std::move(callback);
 }
@@ -93,7 +94,7 @@ void VideoFrameObserver::OnFrame(const webrtc::VideoFrame& frame) noexcept {
       i420a_frame.vstride_ = i420_buffer->StrideV();
       i420a_frame.astride_ = 0;
       i420a_frame.width_ = width;
-	  i420a_frame.height_ = height;
+      i420a_frame.height_ = height;
       i420a_callback_(i420a_frame);
     }
 

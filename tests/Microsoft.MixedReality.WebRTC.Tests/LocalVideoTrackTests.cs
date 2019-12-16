@@ -214,6 +214,88 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             connectedEvent2_.Reset();
         }
 
+        private unsafe void CustomI420AFrameCallback(in FrameRequest request)
+        {
+            var data = stackalloc byte[32 * 16 + 16 * 8 * 2];
+            int k = 0;
+            // Y plane (full resolution)
+            for (int j = 0; j < 16; ++j)
+            {
+                for (int i = 0; i < 32; ++i)
+                {
+                    data[k++] = 0x7F;
+                }
+            }
+            // U plane (halved chroma in both directions)
+            for (int j = 0; j < 8; ++j)
+            {
+                for (int i = 0; i < 16; ++i)
+                {
+                    data[k++] = 0x30;
+                }
+            }
+            // V plane (halved chroma in both directions)
+            for (int j = 0; j < 8; ++j)
+            {
+                for (int i = 0; i < 16; ++i)
+                {
+                    data[k++] = 0xB2;
+                }
+            }
+            var dataY = new IntPtr(data);
+            var frame = new I420AVideoFrame
+            {
+                dataY = dataY,
+                dataU = dataY + (32 * 16),
+                dataV = dataY + (32 * 16) + (16 * 8),
+                dataA = IntPtr.Zero,
+                strideY = 32,
+                strideU = 16,
+                strideV = 16,
+                strideA = 0,
+                width = 32,
+                height = 16
+            };
+            request.CompleteRequest(frame);
+        }
+
+        private unsafe void CustomArgb32FrameCallback(in FrameRequest request)
+        {
+            var data = stackalloc uint[32 * 16];
+            int k = 0;
+            // Create 2x2 checker pattern with 4 different colors
+            for (int j = 0; j < 8; ++j)
+            {
+                for (int i = 0; i < 16; ++i)
+                {
+                    data[k++] = 0xFF0000FF;
+                }
+                for (int i = 16; i < 32; ++i)
+                {
+                    data[k++] = 0xFF00FF00;
+                }
+            }
+            for (int j = 8; j < 16; ++j)
+            {
+                for (int i = 0; i < 16; ++i)
+                {
+                    data[k++] = 0xFFFF0000;
+                }
+                for (int i = 16; i < 32; ++i)
+                {
+                    data[k++] = 0xFF00FFFF;
+                }
+            }
+            var frame = new Argb32VideoFrame
+            {
+                data = new IntPtr(data),
+                stride = 128,
+                width = 32,
+                height = 16
+            };
+            request.CompleteRequest(frame);
+        }
+
 #if !MRSW_EXCLUDE_DEVICE_TESTS
 
         [Test]
@@ -284,6 +366,59 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             // Wait for local SDP re-negotiation on #1
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
 
+            // Confirm remote track was removed from #2 -- not fired in Unified Plan
+            //Assert.True(trackRemovedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+
+            // Wait until SDP renegotiation finished
+            WaitForSdpExchangeCompleted();
+        }
+
+#endif // !MRSW_EXCLUDE_DEVICE_TESTS
+
+
+        [Test]
+        public void SimpleExternalI420A()
+        {
+            // Connect
+            Assert.True(pc1_.CreateOffer());
+            WaitForSdpExchangeCompleted();
+            Assert.True(pc1_.IsConnected);
+            Assert.True(pc2_.IsConnected);
+
+            // Create external ARGB32 source
+            var source1 = ExternalVideoTrackSource.CreateFromI420ACallback(CustomI420AFrameCallback);
+            Assert.NotNull(source1);
+            Assert.AreEqual(null, source1.PeerConnection); // before any track was added, this is null
+
+            // Add external ARGB32 track
+            var track1 = pc1_.AddCustomLocalVideoTrack("custom_i420a", source1);
+            Assert.NotNull(track1);
+            Assert.AreEqual(pc1_, track1.PeerConnection);
+            Assert.AreEqual(pc1_, source1.PeerConnection); // after a track was added, this is the PC of the track
+
+            // Wait for local SDP re-negotiation on #1
+            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+
+            // Confirm remote track was added on #2
+            Assert.True(trackAddedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+
+            // Wait until SDP renegotiation finished
+            WaitForSdpExchangeCompleted();
+
+            // Remove the track from #1
+            renegotiationEvent1_.Reset();
+            pc1_.RemoveLocalVideoTrack(track1);
+            Assert.IsNull(track1.PeerConnection);
+
+            // Dispose of the track and its source
+            track1.Dispose();
+            track1 = null;
+            source1.Dispose();
+            source1 = null;
+
+            // Wait for local SDP re-negotiation on #1
+            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+
             // Confirm remote track was removed from #2
             Assert.True(trackRemovedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
 
@@ -291,6 +426,54 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             WaitForSdpExchangeCompleted();
         }
 
-#endif // !MRSW_EXCLUDE_DEVICE_TESTS
+        [Test]
+        public void SimpleExternalArgb32()
+        {
+            // Connect
+            Assert.True(pc1_.CreateOffer());
+            WaitForSdpExchangeCompleted();
+            Assert.True(pc1_.IsConnected);
+            Assert.True(pc2_.IsConnected);
+
+            // Create external ARGB32 source
+            var source1 = ExternalVideoTrackSource.CreateFromArgb32Callback(CustomArgb32FrameCallback);
+            Assert.NotNull(source1);
+            Assert.AreEqual(null, source1.PeerConnection); // before any track was added, this is null
+
+            // Add external ARGB32 track
+            var track1 = pc1_.AddCustomLocalVideoTrack("custom_argb32", source1);
+            Assert.NotNull(track1);
+            Assert.AreEqual(pc1_, track1.PeerConnection);
+            Assert.AreEqual(pc1_, source1.PeerConnection); // after a track was added, this is the PC of the track
+
+            // Wait for local SDP re-negotiation on #1
+            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+
+            // Confirm remote track was added on #2
+            Assert.True(trackAddedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+
+            // Wait until SDP renegotiation finished
+            WaitForSdpExchangeCompleted();
+
+            // Remove the track from #1
+            renegotiationEvent1_.Reset();
+            pc1_.RemoveLocalVideoTrack(track1);
+            Assert.IsNull(track1.PeerConnection);
+
+            // Dispose of the track and its source
+            track1.Dispose();
+            track1 = null;
+            source1.Dispose();
+            source1 = null;
+
+            // Wait for local SDP re-negotiation on #1
+            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+
+            // Confirm remote track was removed from #2
+            Assert.True(trackRemovedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+
+            // Wait until SDP renegotiation finished
+            WaitForSdpExchangeCompleted();
+        }
     }
 }

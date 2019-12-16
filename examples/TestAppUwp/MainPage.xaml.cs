@@ -286,6 +286,7 @@ namespace TestAppUwp
             _peerConnection.LocalSdpReadytoSend += OnLocalSdpReadyToSend;
             _peerConnection.IceCandidateReadytoSend += OnIceCandidateReadyToSend;
             _peerConnection.IceStateChanged += OnIceStateChanged;
+            _peerConnection.IceGatheringStateChanged += OnIceGatheringStateChanged;
             _peerConnection.RenegotiationNeeded += OnPeerRenegotiationNeeded;
             _peerConnection.TrackAdded += Peer_RemoteTrackAdded;
             _peerConnection.TrackRemoved += Peer_RemoteTrackRemoved;
@@ -390,6 +391,14 @@ namespace TestAppUwp
             RunOnMainThread(() => {
                 LogMessage($"ICE state changed to {newState}.");
                 iceStateText.Text = newState.ToString();
+            });
+        }
+
+        private void OnIceGatheringStateChanged(IceGatheringState newState)
+        {
+            RunOnMainThread(() => {
+                LogMessage($"ICE gathering changed to {newState}.");
+                iceGatheringStateText.Text = newState.ToString();
             });
         }
 

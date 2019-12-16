@@ -20,4 +20,14 @@ mrsPeerConnectionAddRef(PeerConnectionHandle handle) noexcept;
 MRS_API void MRS_CALL
 mrsPeerConnectionRemoveRef(PeerConnectionHandle handle) noexcept;
 
+/// Callback fired when the state of the ICE connection changed.
+using mrsPeerConnectionIceGatheringStateChangedCallback =
+    void(MRS_CALL*)(void* user_data, IceGatheringState new_state);
+
+/// Register a callback fired when the ICE connection state changes.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterIceGatheringStateChangedCallback(
+    PeerConnectionHandle peerHandle,
+    mrsPeerConnectionIceGatheringStateChangedCallback callback,
+    void* user_data) noexcept;
+
 }  // extern "C"

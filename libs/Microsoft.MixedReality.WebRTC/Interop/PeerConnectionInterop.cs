@@ -12,15 +12,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     public sealed class PeerConnectionHandle : SafeHandle
     {
         /// <summary>
-        /// Make a copy of the current handle.
-        /// </summary>
-        /// <returns>The newly created handle.</returns>
-        public PeerConnectionHandle MakeCopy()
-        {
-            return new PeerConnectionHandle(handle);
-        }
-
-        /// <summary>
         /// Check if the current handle is invalid, which means it is not referencing
         /// an actual native object. Note that a valid handle only means that the internal
         /// handle references a native object, but does not guarantee that the native
@@ -65,10 +56,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     internal class PeerConnectionInterop
     {
         // Types of trampolines for MonoPInvokeCallback
-        private delegate void VideoCaptureDeviceEnumDelegate(string id, string name, IntPtr handle);
-        private delegate void VideoCaptureDeviceEnumCompletedDelegate(IntPtr handle);
-        private delegate void VideoCaptureFormatEnumDelegate(uint width, uint height, double framerate, string encoding, IntPtr handle);
-        private delegate void VideoCaptureFormatEnumCompletedDelegate(IntPtr handle);
         private delegate void ConnectedDelegate(IntPtr peer);
         private delegate void DataChannelCreateObjectDelegate(IntPtr peer, DataChannelInterop.CreateConfig config,
             out DataChannelInterop.Callbacks callbacks);
@@ -77,6 +64,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         private delegate void LocalSdpReadytoSendDelegate(IntPtr peer, string type, string sdp);
         private delegate void IceCandidateReadytoSendDelegate(IntPtr peer, string candidate, int sdpMlineindex, string sdpMid);
         private delegate void IceStateChangedDelegate(IntPtr peer, IceConnectionState newState);
+        private delegate void IceGatheringStateChangedDelegate(IntPtr peer, IceGatheringState newState);
         private delegate void RenegotiationNeededDelegate(IntPtr peer);
         private delegate void TrackAddedDelegate(IntPtr peer, PeerConnection.TrackKind trackKind);
         private delegate void TrackRemovedDelegate(IntPtr peer, PeerConnection.TrackKind trackKind);
@@ -94,16 +82,19 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         {
             public VideoCaptureDeviceEnumCallbackImpl enumCallback;
             public VideoCaptureDeviceEnumCompletedCallbackImpl completedCallback;
+            // Keep delegates alive!
+            public VideoCaptureDeviceEnumCallback EnumTrampoline;
+            public VideoCaptureDeviceEnumCompletedCallback CompletedTrampoline;
         }
 
-        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumDelegate))]
+        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCallback))]
         public static void VideoCaptureDevice_EnumCallback(string id, string name, IntPtr userData)
         {
             var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
             wrapper.enumCallback(id, name); // this is mandatory, never null
         }
 
-        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCompletedDelegate))]
+        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCompletedCallback))]
         public static void VideoCaptureDevice_EnumCompletedCallback(IntPtr userData)
         {
             var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
@@ -114,16 +105,19 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         {
             public VideoCaptureFormatEnumCallbackImpl enumCallback;
             public VideoCaptureFormatEnumCompletedCallbackImpl completedCallback;
+            // Keep delegates alive!
+            public VideoCaptureFormatEnumCallback EnumTrampoline;
+            public VideoCaptureFormatEnumCompletedCallback CompletedTrampoline;
         }
 
-        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumDelegate))]
+        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCallback))]
         public static void VideoCaptureFormat_EnumCallback(uint width, uint height, double framerate, uint fourcc, IntPtr userData)
         {
             var wrapper = Utils.ToWrapper<EnumVideoCaptureFormatsWrapper>(userData);
             wrapper.enumCallback(width, height, framerate, fourcc); // this is mandatory, never null
         }
 
-        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCompletedDelegate))]
+        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCompletedCallback))]
         public static void VideoCaptureFormat_EnumCompletedCallback(uint resultCode, IntPtr userData)
         {
             var exception = (resultCode == /*MRS_SUCCESS*/0 ? null : new Exception());
@@ -162,13 +156,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public PeerConnectionLocalSdpReadytoSendCallback LocalSdpReadytoSendCallback;
             public PeerConnectionIceCandidateReadytoSendCallback IceCandidateReadytoSendCallback;
             public PeerConnectionIceStateChangedCallback IceStateChangedCallback;
+            public PeerConnectionIceGatheringStateChangedCallback IceGatheringStateChangedCallback;
             public PeerConnectionRenegotiationNeededCallback RenegotiationNeededCallback;
             public PeerConnectionTrackAddedCallback TrackAddedCallback;
             public PeerConnectionTrackRemovedCallback TrackRemovedCallback;
             public PeerConnectionI420AVideoFrameCallback I420ALocalVideoFrameCallback;
             public PeerConnectionI420AVideoFrameCallback I420ARemoteVideoFrameCallback;
-            public PeerConnectionARGBVideoFrameCallback ARGBLocalVideoFrameCallback;
-            public PeerConnectionARGBVideoFrameCallback ARGBRemoteVideoFrameCallback;
+            public PeerConnectionArgb32VideoFrameCallback Argb32LocalVideoFrameCallback;
+            public PeerConnectionArgb32VideoFrameCallback Argb32RemoteVideoFrameCallback;
             public PeerConnectionAudioFrameCallback LocalAudioFrameCallback;
             public PeerConnectionAudioFrameCallback RemoteAudioFrameCallback;
         }
@@ -221,6 +216,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             peer.OnIceStateChanged(newState);
         }
 
+        [MonoPInvokeCallback(typeof(IceGatheringStateChangedDelegate))]
+        public static void IceGatheringStateChangedCallback(IntPtr userData, IceGatheringState newState)
+        {
+            var peer = Utils.ToWrapper<PeerConnection>(userData);
+            peer.OnIceGatheringStateChanged(newState);
+        }
+
         [MonoPInvokeCallback(typeof(RenegotiationNeededDelegate))]
         public static void RenegotiationNeededCallback(IntPtr userData)
         {
@@ -249,11 +251,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             peer.OnI420ARemoteVideoFrameReady(frame);
         }
 
-        [MonoPInvokeCallback(typeof(ARGBVideoFrameDelegate))]
-        public static void ARGBRemoteVideoFrameCallback(IntPtr userData, ARGBVideoFrame frame)
+        [MonoPInvokeCallback(typeof(Argb32VideoFrameDelegate))]
+        public static void Argb32RemoteVideoFrameCallback(IntPtr userData, Argb32VideoFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
-            peer.OnARGBRemoteVideoFrameReady(frame);
+            peer.OnArgb32RemoteVideoFrameReady(frame);
         }
 
         [MonoPInvokeCallback(typeof(AudioFrameDelegate))]
@@ -389,6 +391,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             IceConnectionState newState);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void PeerConnectionIceGatheringStateChangedCallback(IntPtr userData,
+            IceGatheringState newState);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionRenegotiationNeededCallback(IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
@@ -401,7 +407,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public delegate void PeerConnectionI420AVideoFrameCallback(IntPtr userData, I420AVideoFrame frame);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionARGBVideoFrameCallback(IntPtr userData, ARGBVideoFrame frame);
+        public delegate void PeerConnectionArgb32VideoFrameCallback(IntPtr userData, Argb32VideoFrame frame);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionAudioFrameCallback(IntPtr userData, AudioFrame frame);
@@ -461,6 +467,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             PeerConnectionIceStateChangedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionRegisterIceGatheringStateChangedCallback")]
+        public static extern void PeerConnection_RegisterIceGatheringStateChangedCallback(PeerConnectionHandle peerHandle,
+            PeerConnectionIceGatheringStateChangedCallback callback, IntPtr userData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterRenegotiationNeededCallback")]
         public static extern void PeerConnection_RegisterRenegotiationNeededCallback(PeerConnectionHandle peerHandle,
             PeerConnectionRenegotiationNeededCallback callback, IntPtr userData);
@@ -491,9 +502,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             PeerConnectionI420AVideoFrameCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback")]
-        public static extern void PeerConnection_RegisterARGBRemoteVideoFrameCallback(PeerConnectionHandle peerHandle,
-            PeerConnectionARGBVideoFrameCallback callback, IntPtr userData);
+            EntryPoint = "mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback")]
+        public static extern void PeerConnection_RegisterArgb32RemoteVideoFrameCallback(PeerConnectionHandle peerHandle,
+            PeerConnectionArgb32VideoFrameCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterLocalAudioFrameCallback")]
@@ -508,7 +519,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
         public static extern uint PeerConnection_AddLocalVideoTrack(PeerConnectionHandle peerHandle,
-            string trackName, VideoDeviceConfiguration config, out IntPtr trackHandle);
+            string trackName, VideoDeviceConfiguration config, out LocalVideoTrackHandle trackHandle);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionAddLocalVideoTrackFromExternalSource")]
+        public static extern uint PeerConnection_AddLocalVideoTrackFromExternalSource(
+            PeerConnectionHandle peerHandle, string trackName, ExternalVideoTrackSourceHandle sourceHandle,
+            out LocalVideoTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalAudioTrack")]
@@ -526,7 +543,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRemoveLocalVideoTrack")]
-        public static extern uint PeerConnection_RemoveLocalVideoTrack(PeerConnectionHandle peerHandle, IntPtr trackHandle);
+        public static extern uint PeerConnection_RemoveLocalVideoTrack(PeerConnectionHandle peerHandle,
+            LocalVideoTrackHandle trackHandle);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionRemoveLocalVideoTracksFromSource")]
+        public static extern uint PeerConnection_RemoveLocalVideoTracksFromSource(PeerConnectionHandle peerHandle,
+            ExternalVideoTrackSourceHandle sourceHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRemoveDataChannel")]
@@ -564,6 +587,21 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionClose")]
         public static extern uint PeerConnection_Close(PeerConnectionHandle peerHandle);
+
+        #endregion
+
+
+        #region Helpers
+
+        public static LocalVideoTrack AddLocalVideoTrackFromExternalSource(PeerConnection peer, PeerConnectionHandle peerHandle,
+            string trackName, ExternalVideoTrackSource externalSource)
+        {
+            uint res = PeerConnection_AddLocalVideoTrackFromExternalSource(peerHandle, trackName, externalSource._nativeHandle,
+                out LocalVideoTrackHandle trackHandle);
+            Utils.ThrowOnErrorCode(res);
+            externalSource.OnTracksAddedToSource(peer);
+            return new LocalVideoTrack(trackHandle, peer, trackName, externalSource);
+        }
 
         #endregion
     }

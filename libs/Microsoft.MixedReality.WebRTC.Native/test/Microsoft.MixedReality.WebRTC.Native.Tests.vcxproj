@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="audio_track_tests.cpp" />
+    <ClCompile Include="external_video_track_source_tests.cpp" />
     <ClCompile Include="memory_tests.cpp" />
     <ClCompile Include="peer_connection_tests.cpp" />
     <ClCompile Include="sdp_utils_tests.cpp" />

@@ -6,10 +6,13 @@
 #include "pch.h"
 
 #include "data_channel.h"
+#include "external_video_track_source.h"
+#include "interop/external_video_track_source_interop.h"
 #include "interop/global_factory.h"
 #include "interop/interop_api.h"
 #include "interop/peer_connection_interop.h"
 #include "local_video_track.h"
+#include "media/external_video_track_source_impl.h"
 #include "peer_connection.h"
 #include "sdp_utils.h"
 
@@ -130,6 +133,8 @@ mrsResult OpenVideoCaptureDevice(
         wrapper::impl::org::webRtc::VideoDeviceInfo::toNative_winrt(vdi);
     const winrt::hstring& id = devInfo.Id();
     if (!video_device_id_str.empty() && (video_device_id_str != id)) {
+      RTC_LOG(LS_VERBOSE) << "Skipping device ID " << rtc::ToUtf8(id.c_str())
+                          << " not matching requested device.";
       continue;
     }
 
@@ -151,7 +156,6 @@ mrsResult OpenVideoCaptureDevice(
     createParams->framerate = config.framerate;
 
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
-
     if (vcd != nullptr) {
       auto nativeVcd = wrapper::impl::org::webRtc::VideoCapturer::toNative(vcd);
 
@@ -171,6 +175,11 @@ mrsResult OpenVideoCaptureDevice(
       return Result::kSuccess;
     }
   }
+  RTC_LOG(LS_ERROR) << "Failed to find a local video capture device matching "
+                       "the capture format constraints. None of the "
+                    << deviceList->size()
+                    << " devices tested had a compatible capture format.";
+  return Result::kNotFound;
 #else
   // List all available video capture devices, or match by ID if specified.
   std::vector<std::string> device_names;
@@ -214,7 +223,7 @@ mrsResult OpenVideoCaptureDevice(
       }
       if (device_names.empty()) {
         RTC_LOG(LS_ERROR) << "Could not find any video catpure device.";
-        return Result::kInvalidOperation;
+        return Result::kNotFound;
       }
     }
   }
@@ -229,10 +238,10 @@ mrsResult OpenVideoCaptureDevice(
       return Result::kSuccess;
     }
   }
-
-#endif
-
+  RTC_LOG(LS_ERROR) << "Failed to open any video capture device (tried "
+                    << device_names.size() << " devices).";
   return Result::kUnknownError;
+#endif
 }
 
 //< TODO - Unit test / check if RTC has already a utility like this
@@ -656,13 +665,13 @@ void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
   }
 }
 
-void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
+void MRS_CALL mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionARGBVideoFrameCallback callback,
+    PeerConnectionArgb32VideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RegisterRemoteVideoFrameCallback(
-        ARGBFrameReadyCallback{callback, user_data});
+        Argb32FrameReadyCallback{callback, user_data});
   }
 }
 
@@ -692,15 +701,18 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     VideoDeviceConfiguration config,
     LocalVideoTrackHandle* trackHandle) noexcept {
   if (IsStringNullOrEmpty(track_name)) {
+    RTC_LOG(LS_ERROR) << "Invalid empty local video track name.";
     return Result::kInvalidParameter;
   }
   if (!trackHandle) {
+    RTC_LOG(LS_ERROR) << "Invalid NULL local video track handle.";
     return Result::kInvalidParameter;
   }
   *trackHandle = nullptr;
 
   auto peer = static_cast<PeerConnection*>(peerHandle);
   if (!peer) {
+    RTC_LOG(LS_ERROR) << "Invalid NULL peer connection handle.";
     return Result::kInvalidNativeHandle;
   }
   auto pc_factory = GlobalFactory::Instance()->GetExisting();
@@ -712,6 +724,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
   std::unique_ptr<cricket::VideoCapturer> video_capturer;
   auto res = OpenVideoCaptureDevice(config, video_capturer);
   if (res != Result::kSuccess) {
+    RTC_LOG(LS_ERROR) << "Failed to open video capture device.";
     return res;
   }
   RTC_CHECK(video_capturer.get());
@@ -746,6 +759,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
   rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
       pc_factory->CreateVideoTrack(track_name, video_source);
   if (!video_track) {
+    RTC_LOG(LS_ERROR) << "Failed to create local video track.";
     return Result::kUnknownError;
   }
   auto result = peer->AddLocalVideoTrack(std::move(video_track));
@@ -755,7 +769,69 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     *trackHandle = video_track_wrapper.get();
     return Result::kSuccess;
   }
+  RTC_LOG(LS_ERROR) << "Failed to add local video track to peer connection.";
   return Result::kUnknownError;
+}
+
+mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
+    PeerConnectionHandle peer_handle,
+    const char* track_name,
+    ExternalVideoTrackSourceHandle source_handle,
+    LocalVideoTrackHandle* track_handle_out) noexcept {
+  if (!track_handle_out) {
+    return Result::kInvalidParameter;
+  }
+  *track_handle_out = nullptr;
+  auto peer = static_cast<PeerConnection*>(peer_handle);
+  if (!peer) {
+    return Result::kInvalidNativeHandle;
+  }
+  auto track_source =
+      static_cast<detail::ExternalVideoTrackSourceImpl*>(source_handle);
+  if (!track_source) {
+    return Result::kInvalidNativeHandle;
+  }
+  auto pc_factory = GlobalFactory::Instance()->GetExisting();
+  if (!pc_factory) {
+    return Result::kUnknownError;
+  }
+  std::string track_name_str;
+  if (track_name && (track_name[0] != '\0')) {
+    track_name_str = track_name;
+  } else {
+    track_name_str = "external_track";
+  }
+  // The video track keeps a reference to the video source; let's hope this
+  // does not change, because this is not explicitly mentioned in the docs,
+  // and the video track is the only one keeping the video source alive.
+  rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
+      pc_factory->CreateVideoTrack(track_name_str, track_source->impl());
+  if (!video_track) {
+    return Result::kUnknownError;
+  }
+  auto result = peer->AddLocalVideoTrack(std::move(video_track));
+  if (result.ok()) {
+    *track_handle_out = result.value().release();
+    return Result::kSuccess;
+  }
+  RTC_LOG(LS_ERROR) << "Failed to add local video track: "
+                    << result.error().message();
+  return Result::kUnknownError;  //< TODO Convert from result.error()?
+}
+
+mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTracksFromSource(
+    PeerConnectionHandle peer_handle,
+    ExternalVideoTrackSourceHandle source_handle) noexcept {
+  auto peer = static_cast<PeerConnection*>(peer_handle);
+  if (!peer) {
+    return Result::kInvalidNativeHandle;
+  }
+  auto source = static_cast<ExternalVideoTrackSource*>(source_handle);
+  if (!source) {
+    return Result::kInvalidNativeHandle;
+  }
+  peer->RemoveLocalVideoTracksFromSource(*source);
+  return Result::kSuccess;
 }
 
 mrsResult MRS_CALL
@@ -1027,6 +1103,11 @@ mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
   memcpy(buffer, out_message.c_str(), size);
   buffer[size] = '\0';
   return Result::kSuccess;
+}
+
+void MRS_CALL mrsSetFrameHeightRoundMode(FrameHeightRoundMode value) {
+  PeerConnection::SetFrameHeightRoundMode(
+      (PeerConnection::FrameHeightRoundMode)value);
 }
 
 void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size) noexcept {

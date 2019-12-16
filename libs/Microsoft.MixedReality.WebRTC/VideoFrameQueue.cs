@@ -86,7 +86,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Storage for a video frame encoded in ARGB format.
     /// </summary>
-    public class ARGBVideoFrameStorage : IVideoFrameStorage
+    public class Argb32VideoFrameStorage : IVideoFrameStorage
     {
         /// <summary>
         /// Total capacity of the storage, in bytes.
@@ -325,9 +325,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="frame">The video frame to enqueue</param>
         /// <returns>Return <c>true</c> if the frame was enqueued successfully, or <c>false</c> if it was dropped</returns>
         /// <remarks>This should only be used if the queue has storage for a compatible video frame encoding.</remarks>
-        public bool Enqueue(ARGBVideoFrame frame)
+        public bool Enqueue(Argb32VideoFrame frame)
         {
-            MainEventSource.Log.VideoFrameQueueEnqueueARGB32(_traceId, (int)frame.width, (int)frame.height);
+            MainEventSource.Log.VideoFrameQueueEnqueueArgb32(_traceId, (int)frame.width, (int)frame.height);
 
             Debug.Assert(frame.stride >= frame.width * 4);
 
@@ -344,7 +344,7 @@ namespace Microsoft.MixedReality.WebRTC
             if (storage == null)
             {
                 // Too many frames in queue, drop the current one
-                MainEventSource.Log.VideoFrameQueueDropARGB32(_traceId, (int)frame.width, (int)frame.height);
+                MainEventSource.Log.VideoFrameQueueDropArgb32(_traceId, (int)frame.width, (int)frame.height);
                 float droppedDt = (float)(curTime - _lastDroppedTimeMs);
                 _lastDroppedTimeMs = curTime;
                 _droppedFrameTimeAverage.Push(droppedDt);

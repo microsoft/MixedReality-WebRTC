@@ -26,7 +26,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     /// Attribute to decorate managed delegates used as native callbacks (reverse P/Invoke).
     /// Required by Mono in Ahead-Of-Time (AOT) compiling, and Unity with the IL2CPP backend.
     /// </summary>
-    /// 
+    ///
     /// This attribute is required by Mono AOT and Unity IL2CPP, but not by .NET Core or Framework.
     /// The implementation was copied from the Mono source code (https://github.com/mono/mono).
     /// The type argument does not seem to be used anywhere in the code, and a stub implementation
@@ -58,7 +58,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
         internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
 
-        public static IntPtr MakeWrapperRef<T>(T obj) where T : class
+        public static IntPtr MakeWrapperRef(object obj)
         {
             var handle = GCHandle.Alloc(obj, GCHandleType.Normal);
             var arg = GCHandle.ToIntPtr(handle);
@@ -70,6 +70,12 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             var handle = GCHandle.FromIntPtr(peer);
             var wrapper = (handle.Target as T);
             return wrapper;
+        }
+
+        public static void ReleaseWrapperRef(IntPtr wrapperRef)
+        {
+            var handle = GCHandle.FromIntPtr(wrapperRef);
+            handle.Free();
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -97,13 +103,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         /// <summary>
         /// Unsafe utility to copy a memory block with stride.
-        /// 
+        ///
         /// This utility loops over the rows of the input memory block, and copy them to the output
         /// memory block, then increment the read and write pointers by the source and destination
         /// strides, respectively. For each row, exactly <paramref name="elem_size"/> bytes are copied,
         /// even if the row stride is higher. The extra bytes in the destination buffer past the row
         /// size until the row stride are left untouched.
-        /// 
+        ///
         /// This is equivalent to the following pseudo-code:
         /// <code>
         /// for (int row = 0; row &lt; elem_count; ++row) {
@@ -172,5 +178,12 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                     throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
             }
         }
+
+        /// <summary>
+        /// See <see cref="PeerConnection.SetFrameHeightRoundMode(PeerConnection.FrameHeightRoundMode)"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsSetFrameHeightRoundMode")]
+        public static unsafe extern void SetFrameHeightRoundMode(PeerConnection.FrameHeightRoundMode value);
     }
 }

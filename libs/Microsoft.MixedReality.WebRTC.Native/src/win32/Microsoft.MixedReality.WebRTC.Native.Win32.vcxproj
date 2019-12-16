@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.props" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.props')" />
-  <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.props" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.props')" />
-  <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.props" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.props')" />
-  <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.props" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.props')" />
+  <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.props" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.props')" />
+  <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.props" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.props')" />
+  <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.props" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.props')" />
+  <Import Project="..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.props" Condition="Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -143,6 +143,9 @@
     <ClInclude Include="..\..\include\ref_counted_base.h" />
     <ClInclude Include="..\..\include\tracked_object.h" />
     <ClInclude Include="..\..\include\video_frame.h" />
+    <ClInclude Include="../media/external_video_track_source.h" />
+    <ClInclude Include="..\interop\external_video_track_source_interop.h" />
+    <ClInclude Include="..\media\external_video_track_source_impl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../interop/interop_api.cpp" />
@@ -161,6 +164,8 @@
     <ClCompile Include="../interop/local_video_track_interop.cpp" />
     <ClCompile Include="../media/local_video_track.cpp" />
     <ClCompile Include="..\mrs_errors.cpp" />
+    <ClCompile Include="../media/external_video_track_source.cpp" />
+    <ClCompile Include="..\interop\external_video_track_source_interop.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />
@@ -174,9 +179,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.props'))" />
-    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.props'))" />
-    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.props'))" />
-    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.1.0.1\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.props'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Debug.props'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x64.Release.props'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Debug.props'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.1.0.2\build\native\Microsoft.MixedReality.WebRTC.Native.Core.Desktop.x86.Release.props'))" />
   </Target>
 </Project>

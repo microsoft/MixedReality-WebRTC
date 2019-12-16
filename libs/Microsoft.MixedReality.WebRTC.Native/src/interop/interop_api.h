@@ -117,6 +117,9 @@ using LocalVideoTrackHandle = void*;
 /// Opaque handle to a native DataChannel C++ object.
 using DataChannelHandle = void*;
 
+/// Opaque handle to a native ExternalVideoTrackSource C++ object.
+using ExternalVideoTrackSourceHandle = void*;
+
 /// Opaque handle to a native AudioReadStream C++ object.
 using AudioReadStreamHandle = void*;
 
@@ -140,7 +143,7 @@ using PeerConnectionIceCandidateReadytoSendCallback =
 /// State of the ICE connection.
 /// See https://www.w3.org/TR/webrtc/#rtciceconnectionstate-enum.
 /// Note that there is a mismatch currently due to the m71 implementation.
-enum IceConnectionState : int32_t {
+enum class IceConnectionState : int32_t {
   kNew = 0,
   kChecking = 1,
   kConnected = 2,
@@ -148,6 +151,14 @@ enum IceConnectionState : int32_t {
   kFailed = 4,
   kDisconnected = 5,
   kClosed = 6,
+};
+
+/// State of the ICE gathering process.
+/// See https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum
+enum class IceGatheringState : int32_t {
+  kNew = 0,
+  kGathering = 1,
+  kComplete = 2,
 };
 
 /// Callback fired when the state of the ICE connection changed.
@@ -196,15 +207,15 @@ using mrsI420AVideoFrame = Microsoft::MixedReality::WebRTC::I420AVideoFrame;
 /// The video frame is encoded in I420 triplanar format (NV12).
 using PeerConnectionI420AVideoFrameCallback =
     void(MRS_CALL*)(void* user_data, const mrsI420AVideoFrame& frame);
-	
+
 using mrsArgb32VideoFrame = Microsoft::MixedReality::WebRTC::Argb32VideoFrame;
 
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 /// The video frame is encoded in ARGB 32-bit per pixel.
-using PeerConnectionARGBVideoFrameCallback =
+using PeerConnectionArgb32VideoFrameCallback =
     void(MRS_CALL*)(void* user_data, const mrsArgb32VideoFrame& frame);
-	
+
 using mrsAudioFrame = Microsoft::MixedReality::WebRTC::AudioFrame;
 
 /// Callback fired when a local or remote (depending on use) audio frame is
@@ -370,9 +381,9 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
 
 /// Register a callback fired when a video frame from a video track was received
 /// from the remote peer.
-MRS_API void MRS_CALL mrsPeerConnectionRegisterARGBRemoteVideoFrameCallback(
+MRS_API void MRS_CALL mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionARGBVideoFrameCallback callback,
+    PeerConnectionArgb32VideoFrameCallback callback,
     void* user_data) noexcept;
 
 /// Kind of video profile. Equivalent to org::webRtc::VideoProfileKind.
@@ -469,6 +480,45 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     const char* track_name,
     VideoDeviceConfiguration config,
     LocalVideoTrackHandle* trackHandle) noexcept;
+
+using mrsRequestExternalI420AVideoFrameCallback =
+    mrsResult(MRS_CALL*)(void* user_data,
+                         ExternalVideoTrackSourceHandle source_handle,
+                         uint32_t request_id,
+                         int64_t timestamp_ms);
+
+using mrsRequestExternalArgb32VideoFrameCallback =
+    mrsResult(MRS_CALL*)(void* user_data,
+                         ExternalVideoTrackSourceHandle source_handle,
+                         uint32_t request_id,
+                         int64_t timestamp_ms);
+
+/// Add a local video track from a custom video source external to the
+/// implementation. This allows feeding into WebRTC frames from any source,
+/// including generated or synthetic frames, for example for testing.
+/// The track source initially starts as capuring. Capture can be stopped with
+/// |mrsExternalVideoTrackSourceShutdown|.
+/// This returns a handle to a newly allocated object, which must be released once
+/// not used anymore with |mrsLocalVideoTrackRemoveRef()|.
+MRS_API mrsResult MRS_CALL
+mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
+    PeerConnectionHandle peerHandle,
+    const char* track_name,
+    ExternalVideoTrackSourceHandle source_handle,
+    LocalVideoTrackHandle* track_handle) noexcept;
+
+/// Remove a local video track from the given peer connection and destroy it.
+/// After this call returned, the video track handle is invalid.
+MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
+    PeerConnectionHandle peer_handle,
+    LocalVideoTrackHandle track_handle) noexcept;
+
+/// Remove all local video tracks backed by the given video track source from
+/// the given peer connection and destroy the video track source.
+/// After this call returned, the video track source handle is invalid.
+MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTracksFromSource(
+    PeerConnectionHandle peer_handle,
+    ExternalVideoTrackSourceHandle source_handle) noexcept;
 
 /// Add a local audio track from a local audio capture device (microphone) to
 /// the collection of tracks to send to the remote peer.
@@ -662,6 +712,12 @@ MRS_API mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
                                              SdpFilter video_filter,
                                              char* buffer,
                                              uint64_t* buffer_size) noexcept;
+
+/// Must be the same as PeerConnection::FrameHeightRoundMode.
+enum class FrameHeightRoundMode : int32_t { kNone = 0, kCrop = 1, kPad = 2 };
+
+/// See PeerConnection::SetFrameHeightRoundMode.
+MRS_API void MRS_CALL mrsSetFrameHeightRoundMode(FrameHeightRoundMode value);
 
 //
 // Generic utilities
