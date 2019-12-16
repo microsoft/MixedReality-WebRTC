@@ -270,7 +270,7 @@ namespace TestAppUwp
             PreferredAudioCodecChecked(null, null);
             PreferredVideoCodecChecked(null, null);
 
-            RestoreLocalAndRemotePeerIDs();
+            RestorePollingParams();
 
             dssSignaler.OnMessage += DssSignaler_OnMessage;
             dssSignaler.OnFailure += DssSignaler_OnFailure;
@@ -296,6 +296,9 @@ namespace TestAppUwp
 
             //Window.Current.Closed += Shutdown; // doesn't work
 
+            // Start polling automatically.
+            PollDssButtonClicked(this, null);
+
             this.Loaded += OnLoaded;
             Application.Current.Suspending += App_Suspending;
             Application.Current.Resuming += App_Resuming;
@@ -305,18 +308,48 @@ namespace TestAppUwp
         {
             // Save local and remote peer IDs for next launch for convenience
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values["DssServerAddress"] = dssServer.Text;
             localSettings.Values["LocalPeerID"] = localPeerUidTextBox.Text;
             localSettings.Values["RemotePeerID"] = remotePeerUidTextBox.Text;
         }
 
         private void App_Resuming(object sender, object e)
         {
-            RestoreLocalAndRemotePeerIDs();
+            RestorePollingParams();
         }
 
-        private void RestoreLocalAndRemotePeerIDs()
+        private static bool IsFirstInstance()
         {
+            var firstInstance = AppInstance.FindOrRegisterInstanceForKey("{44CD414E-B604-482E-8CFD-A9E09076CABD}");
+            return firstInstance.IsCurrentInstance;
+        }
+
+        private void RestorePollingParams()
+        {
+            // Uncomment these lines if you want to connect a HoloLens (or any non-x64 device) to a
+            // x64 PC.
+            //var arch = System.Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
+            //if (arch == "AMD64")
+            //{
+            //    localPeerUidTextBox.Text = "Pc";
+            //    remotePeerUidTextBox.Text = "Device";
+            //}
+            //else
+            //{
+            //    localPeerUidTextBox.Text = "Device";
+            //    remotePeerUidTextBox.Text = "Pc";
+            //}
+
+            // Get server address and peer ID from local settings if available.
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.TryGetValue("DssServerAddress", out object dssServerAddress))
+            {
+                if (dssServerAddress is string str)
+                {
+                    dssServer.Text = str;
+                }
+            }
+
             if (localSettings.Values.TryGetValue("LocalPeerID", out object localObj))
             {
                 if (localObj is string str)
@@ -334,6 +367,15 @@ namespace TestAppUwp
                 {
                     remotePeerUidTextBox.Text = str;
                 }
+            }
+
+            if (!IsFirstInstance())
+            {
+                // Swap the peer IDs. This way two instances launched on the same machine connect
+                // to each other by default.
+                var tmp = localPeerUidTextBox.Text;
+                localPeerUidTextBox.Text = remotePeerUidTextBox.Text;
+                remotePeerUidTextBox.Text = tmp;
             }
         }
 
@@ -617,6 +659,10 @@ namespace TestAppUwp
                 {
                     VideoProfiles.Add(profile);
                 }
+                if (profiles.Any())
+                {
+                    VideoProfileComboBox.SelectedIndex = 0;
+                }
             }
             else
             {
@@ -650,7 +696,15 @@ namespace TestAppUwp
             var values = Enum.GetValues(typeof(PeerConnection.VideoProfileKind));
             if (MediaCapture.IsVideoProfileSupported(device.Id))
             {
-                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, PeerConnection.VideoProfileKind.VideoConferencing);
+                var defaultProfile = PeerConnection.VideoProfileKind.VideoConferencing;
+                var profiles = MediaCapture.FindKnownVideoProfiles(device.Id, (KnownVideoProfile)(defaultProfile - 1));
+                if (!profiles.Any())
+                {
+                    // Fall back to VideoRecording if VideoConferencing has no profiles (e.g. HoloLens).
+                    defaultProfile = PeerConnection.VideoProfileKind.VideoRecording;
+                }
+                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, defaultProfile);
+
                 KnownVideoProfileKindComboBox.IsEnabled = true; //< TODO - Use binding
                 VideoProfileComboBox.IsEnabled = true;
                 RecordMediaDescList.IsEnabled = true;
@@ -1150,7 +1204,7 @@ namespace TestAppUwp
 
         /// <summary>
         /// Callback on audio frame received from the remote peer, for local output
-        /// (or any other use). 
+        /// (or any other use).
         /// </summary>
         /// <param name="frame">The newly received audio frame.</param>
         private void Peer_RemoteAudioFrameReady(AudioFrame frame)
