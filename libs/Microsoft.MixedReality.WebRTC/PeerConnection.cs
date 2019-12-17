@@ -1123,7 +1123,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        /// <exception xref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception cref="SctpNotNegotiatedException">SCTP not negotiated. Call <see cref="CreateOffer()"/> first.</exception>
         /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         public async Task<DataChannel> AddDataChannelAsync(ushort id, string label, bool ordered, bool reliable)
         {

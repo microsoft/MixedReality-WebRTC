@@ -292,7 +292,7 @@ class PeerConnectionImpl : public PeerConnection,
     data_channel_removed_callback_ = std::move(callback);
   }
 
-  webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> AddDataChannel(
+  ErrorOr<std::shared_ptr<DataChannel>> AddDataChannel(
       int id,
       std::string_view label,
       bool ordered,
@@ -705,22 +705,19 @@ void PeerConnectionImpl::RemoveLocalAudioTrack() noexcept {
   local_audio_track_ = nullptr;
 }
 
-webrtc::RTCErrorOr<std::shared_ptr<DataChannel>>
-PeerConnectionImpl::AddDataChannel(
+ErrorOr<std::shared_ptr<DataChannel>> PeerConnectionImpl::AddDataChannel(
     int id,
     std::string_view label,
     bool ordered,
     bool reliable,
     mrsDataChannelInteropHandle dataChannelInteropHandle) noexcept {
   if (IsClosed()) {
-    return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION,
-                            "The peer connection is closed.");
+    return Error(Result::kPeerConnectionClosed);
   }
   if (!sctp_negotiated_) {
     // Don't try to create a data channel without SCTP negotiation, it will get
     // stuck in the kConnecting state forever.
-    return webrtc::RTCError(webrtc::RTCErrorType::INVALID_STATE,
-                            "SCTP not negotiated");
+    return Error(Result::kSctpNotNegotiated);
   }
   webrtc::DataChannelInit config{};
   config.ordered = ordered;
@@ -733,7 +730,7 @@ PeerConnectionImpl::AddDataChannel(
     config.id = id;
   } else {
     // Valid IDs are 0-65535 (16 bits)
-    return webrtc::RTCError(webrtc::RTCErrorType::INVALID_RANGE);
+    return Error(Result::kOutOfRange);
   }
   std::string labelString{label};
   if (rtc::scoped_refptr<webrtc::DataChannelInterface> impl =
@@ -760,7 +757,7 @@ PeerConnectionImpl::AddDataChannel(
 
     return data_channel;
   }
-  return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
+  return Error(Result::kUnknownError);
 }
 
 void PeerConnectionImpl::RemoveDataChannel(

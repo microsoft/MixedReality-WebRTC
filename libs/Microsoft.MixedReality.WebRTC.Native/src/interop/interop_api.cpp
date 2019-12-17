@@ -879,9 +879,8 @@ mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
   const bool ordered = (config.flags & mrsDataChannelConfigFlags::kOrdered);
   const bool reliable = (config.flags & mrsDataChannelConfigFlags::kReliable);
   const std::string_view label = (config.label ? config.label : "");
-  webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> data_channel =
-      peer->AddDataChannel(config.id, label, ordered, reliable,
-                           dataChannelInteropHandle);
+  ErrorOr<std::shared_ptr<DataChannel>> data_channel = peer->AddDataChannel(
+      config.id, label, ordered, reliable, dataChannelInteropHandle);
   if (data_channel.ok()) {
     data_channel.value()->SetMessageCallback(DataChannel::MessageCallback{
         callbacks.message_callback, callbacks.message_user_data});
@@ -892,7 +891,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     *dataChannelHandleOut = data_channel.value().operator->();
     return Result::kSuccess;
   }
-  return RTCToAPIError(data_channel.error());
+  return data_channel.error().result();
 }
 
 mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
