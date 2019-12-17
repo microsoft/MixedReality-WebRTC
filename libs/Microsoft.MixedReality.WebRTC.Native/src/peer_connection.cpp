@@ -28,6 +28,10 @@
 static constexpr int kFrameHeightCrop = 1;
 extern int webrtc__WinUWPH264EncoderImpl__frame_height_round_mode;
 
+// Stop WinRT from polluting the global namespace
+// https://developercommunity.visualstudio.com/content/problem/859178/asyncinfoh-defines-the-error-symbol-at-global-name.html
+#define _HIDE_GLOBAL_ASYNC_STATUS 1
+
 #include <Windows.Foundation.h>
 #include <windows.graphics.holographic.h>
 #include <wrl\client.h>
