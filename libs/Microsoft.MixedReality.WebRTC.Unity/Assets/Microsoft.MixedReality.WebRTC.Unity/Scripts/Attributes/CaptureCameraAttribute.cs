@@ -23,7 +23,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <exception xref="System.NotSupportedException">
         /// The camera has settings not compatible with its use with <see cref="SceneVideoSource"/>.
         /// </exception>
-        /// <seealso cref="CaptureCameraDrawer.Validate(Camera)"/>
+        /// <seealso xref="CaptureCameraDrawer.Validate(Camera)"/>
         public static void Validate(Camera camera)
         {
             if (camera != null)
