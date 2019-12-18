@@ -8,7 +8,7 @@
     <title>C# PeerConnection class | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="C# PeerConnection class | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -204,12 +204,12 @@
 <td>Invoked when a video frame, encoded in I420 format, has been received from the remote peer and is ready to be rendered locally. This is optional, as the local peer does not have control on video tracks added by the remote peer, although most applications will genrally want to render those frames (or do any other kind of procesing on them).</td>
 </tr>
 <tr>
-<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_ARGBVideoFrameReady"><code>LocalVideoTrack.ARGBVideoFrameReady</code></a></td>
+<td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_Argb32VideoFrameReady"><code>LocalVideoTrack.Argb32VideoFrameReady</code></a></td>
 <td>Optional</td>
 <td><em>(Note that this event was moved to LocalVideoTrack)</em> Variant of <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_I420AVideoFrameReady"><code>I420AVideoFrameReady</code></a> where the frame is encoded in raw ARGB 32-bits-per-pixel format. This generally requires an extra conversion from I420, performed internally.</td>
 </tr>
 <tr>
-<td><span style="white-space: pre; word-break: break-word"><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_ARGBRemoteVideoFrameReady"><code>ARGBRemoteVideoFrameReady</code></a></span></td>
+<td><span style="white-space: pre; word-break: break-word"><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Argb32RemoteVideoFrameReady"><code>Argb32RemoteVideoFrameReady</code></a></span></td>
 <td>Optional</td>
 <td>Variant of <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420ARemoteVideoFrameReady"><code>I420ARemoteVideoFrameReady</code></a> where the frame is encoded in raw ARGB 32-bits-per-pixel format. This generally requires an extra conversion from I420, performed internally.</td>
 </tr>

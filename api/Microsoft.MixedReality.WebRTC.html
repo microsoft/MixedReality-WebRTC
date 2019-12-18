@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace Microsoft.MixedReality.WebRTC
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -87,7 +87,7 @@
   <div class="markdown level0 remarks"></div>
     <h3 id="classes">Classes
   </h3>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html">ARGBVideoFrameStorage</a></h4>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html">Argb32VideoFrameStorage</a></h4>
       <section><p>Storage for a video frame encoded in ARGB format.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a></h4>
@@ -100,11 +100,26 @@ and the WebRTC standard itself.</p>
 <p>An instance of <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a> is created by calling <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_String_System_Boolean_System_Boolean_">AddDataChannelAsync(String, Boolean, Boolean)</a>
 or one of its variants. <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a> cannot be instantiated directly.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html">ExternalVideoTrackSource</a></h4>
+      <section><p>Video source for WebRTC video tracks based on a custom source
+of video frames managed by the user and external to the WebRTC
+implementation.</p>
+<p>This class is used to inject into the WebRTC engine a video track
+whose frames are produced by a user-managed source the WebRTC engine
+knows nothing about, like programmatically generated frames, including
+frames not strictly of video origin like a 3D rendered scene, or frames
+coming from a specific capture device not supported natively by WebRTC.
+This class serves as an adapter for such video frame sources.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.I420AVideoFrameStorage.html">I420AVideoFrameStorage</a></h4>
       <section><p>Storage for a video frame encoded in I420+Alpha format.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IceServer.html">IceServer</a></h4>
       <section><p>ICE server configuration (STUN and/or TURN).</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.html">InvalidInteropNativeHandleException</a></h4>
+      <section><p>Exception thrown when an API function expects an interop handle to a valid native object,
+but receives an invalid handle instead.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html">LocalVideoTrack</a></h4>
       <section><p>Video track sending to the remote peer video frames originating from
@@ -122,6 +137,14 @@ a local track source.</p>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html">PeerConnectionConfiguration</a></h4>
       <section><p>Configuration to initialize a <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html">PeerConnection</a>.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html">SctpNotNegotiatedException</a></h4>
+      <section><p>Exception thrown when trying to add a data channel to a peer connection after
+a connection to a remote peer was established without an SCTP handshake.
+When using data channels, at least one data channel must be added to the peer
+connection before calling <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer">CreateOffer()</a> to signal
+to the implementation the intent to use data channels and the need to perform a
+SCTP handshake during the connection.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.TaskExtensions.html">TaskExtensions</a></h4>
       <section><p>Collection of extension methods for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a>.</p>
 </section>
@@ -133,11 +156,15 @@ is faster than the sink, by limiting the maximum queue length.</p>
 </section>
     <h3 id="structs">Structs
   </h3>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.ARGBVideoFrame.html">ARGBVideoFrame</a></h4>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Argb32VideoFrame.html">Argb32VideoFrame</a></h4>
       <section><p>Single video frame encoded in ARGB interleaved format (32 bits per pixel).</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.AudioFrame.html">AudioFrame</a></h4>
       <section><p>Single raw uncompressed audio frame.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.FrameRequest.html">FrameRequest</a></h4>
+      <section><p>Request sent to an external video source via its registered callback to generate
+a new video frame for the track(s) connected to it.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.I420AVideoFrame.html">I420AVideoFrame</a></h4>
       <section><p>Single video frame encoded in I420A format (triplanar YUV + alpha, 18 bits per pixel).
@@ -170,6 +197,9 @@ or removing it from a peer connection.</p>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IceConnectionState.html">IceConnectionState</a></h4>
       <section><p>State of an ICE connection.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IceGatheringState.html">IceGatheringState</a></h4>
+      <section><p>State of an ICE gathering process.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IceTransportType.html">IceTransportType</a></h4>
       <section><p>Type of ICE candidates offered to the remote peer.</p>
 </section>
@@ -188,9 +218,13 @@ enum of the <see xref="Windows.Media.Capture.MediaCapture"></see> API.</p>
 </section>
     <h3 id="delegates">Delegates
   </h3>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.ARGBVideoFrameDelegate.html">ARGBVideoFrameDelegate</a></h4>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Argb32VideoFrameDelegate.html">Argb32VideoFrameDelegate</a></h4>
       <section><p>Delegate used for events when an ARGB-encoded video frame has been produced
 and is ready for consumption.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate.html">Argb32VideoFrameRequestDelegate</a></h4>
+      <section><p>Callback invoked when the WebRTC pipeline needs an external video source to generate
+a new video frame for the track(s) it is connected to.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.AudioFrameDelegate.html">AudioFrameDelegate</a></h4>
       <section><p>Delegate used for events when an audio frame has been produced
@@ -203,6 +237,10 @@ and is ready for consumption.</p>
       <section><p>Delegate used for events when an I420-encoded video frame has been produced
 and is ready for consumption.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate.html">I420AVideoFrameRequestDelegate</a></h4>
+      <section><p>Callback invoked when the WebRTC pipeline needs an external video source to generate
+a new video frame for the track(s) it is connected to.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate.html">PeerConnection.DataChannelAddedDelegate</a></h4>
       <section><p>Delegate for <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAdded">DataChannelAdded</a> event.</p>
 </section>
@@ -211,6 +249,9 @@ and is ready for consumption.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate.html">PeerConnection.IceCandidateReadytoSendDelegate</a></h4>
       <section><p>Delegate for the <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend">IceCandidateReadytoSend</a> event.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChangedDelegate.html">PeerConnection.IceGatheringStateChangedDelegate</a></h4>
+      <section><p>Delegate for the <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceGatheringStateChanged">IceGatheringStateChanged</a> event.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChangedDelegate.html">PeerConnection.IceStateChangedDelegate</a></h4>
       <section><p>Delegate for the <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceStateChanged">IceStateChanged</a> event.</p>

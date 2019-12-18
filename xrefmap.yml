@@ -10,100 +10,106 @@ references:
   commentId: N:Microsoft.MixedReality.WebRTC
   fullName: Microsoft.MixedReality.WebRTC
   nameWithType: Microsoft.MixedReality.WebRTC
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrame
-  name: ARGBVideoFrame
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrame.html
-  commentId: T:Microsoft.MixedReality.WebRTC.ARGBVideoFrame
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrame
-  nameWithType: ARGBVideoFrame
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrame.data
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrame
+  name: Argb32VideoFrame
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrame.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Argb32VideoFrame
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrame
+  nameWithType: Argb32VideoFrame
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrame.data
   name: data
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrame.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrame_data
-  commentId: F:Microsoft.MixedReality.WebRTC.ARGBVideoFrame.data
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrame.data
-  nameWithType: ARGBVideoFrame.data
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrame.height
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrame.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrame_data
+  commentId: F:Microsoft.MixedReality.WebRTC.Argb32VideoFrame.data
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrame.data
+  nameWithType: Argb32VideoFrame.data
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrame.height
   name: height
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrame.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrame_height
-  commentId: F:Microsoft.MixedReality.WebRTC.ARGBVideoFrame.height
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrame.height
-  nameWithType: ARGBVideoFrame.height
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrame.stride
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrame.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrame_height
+  commentId: F:Microsoft.MixedReality.WebRTC.Argb32VideoFrame.height
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrame.height
+  nameWithType: Argb32VideoFrame.height
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrame.stride
   name: stride
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrame.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrame_stride
-  commentId: F:Microsoft.MixedReality.WebRTC.ARGBVideoFrame.stride
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrame.stride
-  nameWithType: ARGBVideoFrame.stride
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrame.width
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrame.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrame_stride
+  commentId: F:Microsoft.MixedReality.WebRTC.Argb32VideoFrame.stride
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrame.stride
+  nameWithType: Argb32VideoFrame.stride
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrame.width
   name: width
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrame.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrame_width
-  commentId: F:Microsoft.MixedReality.WebRTC.ARGBVideoFrame.width
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrame.width
-  nameWithType: ARGBVideoFrame.width
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrameDelegate
-  name: ARGBVideoFrameDelegate
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameDelegate.html
-  commentId: T:Microsoft.MixedReality.WebRTC.ARGBVideoFrameDelegate
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrameDelegate
-  nameWithType: ARGBVideoFrameDelegate
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage
-  name: ARGBVideoFrameStorage
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html
-  commentId: T:Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage
-  nameWithType: ARGBVideoFrameStorage
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Buffer
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrame.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrame_width
+  commentId: F:Microsoft.MixedReality.WebRTC.Argb32VideoFrame.width
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrame.width
+  nameWithType: Argb32VideoFrame.width
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrameDelegate
+  name: Argb32VideoFrameDelegate
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameDelegate.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Argb32VideoFrameDelegate
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameDelegate
+  nameWithType: Argb32VideoFrameDelegate
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate
+  name: Argb32VideoFrameRequestDelegate
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate
+  nameWithType: Argb32VideoFrameRequestDelegate
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage
+  name: Argb32VideoFrameStorage
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage
+  nameWithType: Argb32VideoFrameStorage
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Buffer
   name: Buffer
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrameStorage_Buffer
-  commentId: P:Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Buffer
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Buffer
-  nameWithType: ARGBVideoFrameStorage.Buffer
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Buffer*
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrameStorage_Buffer
+  commentId: P:Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Buffer
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Buffer
+  nameWithType: Argb32VideoFrameStorage.Buffer
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Buffer*
   name: Buffer
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrameStorage_Buffer_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Buffer
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrameStorage_Buffer_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Buffer
   isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Buffer
-  nameWithType: ARGBVideoFrameStorage.Buffer
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Capacity
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Buffer
+  nameWithType: Argb32VideoFrameStorage.Buffer
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Capacity
   name: Capacity
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrameStorage_Capacity
-  commentId: P:Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Capacity
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Capacity
-  nameWithType: ARGBVideoFrameStorage.Capacity
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Capacity*
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrameStorage_Capacity
+  commentId: P:Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Capacity
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Capacity
+  nameWithType: Argb32VideoFrameStorage.Capacity
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Capacity*
   name: Capacity
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrameStorage_Capacity_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Capacity
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrameStorage_Capacity_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Capacity
   isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Capacity
-  nameWithType: ARGBVideoFrameStorage.Capacity
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Height
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Capacity
+  nameWithType: Argb32VideoFrameStorage.Capacity
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Height
   name: Height
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrameStorage_Height
-  commentId: P:Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Height
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Height
-  nameWithType: ARGBVideoFrameStorage.Height
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Height*
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrameStorage_Height
+  commentId: P:Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Height
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Height
+  nameWithType: Argb32VideoFrameStorage.Height
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Height*
   name: Height
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrameStorage_Height_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Height
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrameStorage_Height_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Height
   isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Height
-  nameWithType: ARGBVideoFrameStorage.Height
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Width
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Height
+  nameWithType: Argb32VideoFrameStorage.Height
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Width
   name: Width
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrameStorage_Width
-  commentId: P:Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Width
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Width
-  nameWithType: ARGBVideoFrameStorage.Width
-- uid: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Width*
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrameStorage_Width
+  commentId: P:Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Width
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Width
+  nameWithType: Argb32VideoFrameStorage.Width
+- uid: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Width*
   name: Width
-  href: api/Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.html#Microsoft_MixedReality_WebRTC_ARGBVideoFrameStorage_Width_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Width
+  href: api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html#Microsoft_MixedReality_WebRTC_Argb32VideoFrameStorage_Width_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Width
   isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.ARGBVideoFrameStorage.Width
-  nameWithType: ARGBVideoFrameStorage.Width
+  fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Width
+  nameWithType: Argb32VideoFrameStorage.Width
 - uid: Microsoft.MixedReality.WebRTC.AudioFrame
   name: AudioFrame
   href: api/Microsoft.MixedReality.WebRTC.AudioFrame.html
@@ -350,6 +356,144 @@ references:
   commentId: E:Microsoft.MixedReality.WebRTC.DataChannel.StateChanged
   fullName: Microsoft.MixedReality.WebRTC.DataChannel.StateChanged
   nameWithType: DataChannel.StateChanged
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource
+  name: ExternalVideoTrackSource
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html
+  commentId: T:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource
+  nameWithType: ExternalVideoTrackSource
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource._frameRequestCallbackArgsHandle
+  name: _frameRequestCallbackArgsHandle
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource__frameRequestCallbackArgsHandle
+  commentId: F:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource._frameRequestCallbackArgsHandle
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource._frameRequestCallbackArgsHandle
+  nameWithType: ExternalVideoTrackSource._frameRequestCallbackArgsHandle
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32,System.Int64,Microsoft.MixedReality.WebRTC.Argb32VideoFrame@)
+  name: CompleteFrameRequest(UInt32, Int64, Argb32VideoFrame)
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CompleteFrameRequest_System_UInt32_System_Int64_Microsoft_MixedReality_WebRTC_Argb32VideoFrame__
+  commentId: M:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32,System.Int64,Microsoft.MixedReality.WebRTC.Argb32VideoFrame@)
+  name.vb: CompleteFrameRequest(UInt32, Int64, ByRef Argb32VideoFrame)
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32, System.Int64, Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
+  fullName.vb: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32, System.Int64, ByRef Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
+  nameWithType: ExternalVideoTrackSource.CompleteFrameRequest(UInt32, Int64, Argb32VideoFrame)
+  nameWithType.vb: ExternalVideoTrackSource.CompleteFrameRequest(UInt32, Int64, ByRef Argb32VideoFrame)
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32,System.Int64,Microsoft.MixedReality.WebRTC.I420AVideoFrame@)
+  name: CompleteFrameRequest(UInt32, Int64, I420AVideoFrame)
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CompleteFrameRequest_System_UInt32_System_Int64_Microsoft_MixedReality_WebRTC_I420AVideoFrame__
+  commentId: M:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32,System.Int64,Microsoft.MixedReality.WebRTC.I420AVideoFrame@)
+  name.vb: CompleteFrameRequest(UInt32, Int64, ByRef I420AVideoFrame)
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32, System.Int64, Microsoft.MixedReality.WebRTC.I420AVideoFrame)
+  fullName.vb: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32, System.Int64, ByRef Microsoft.MixedReality.WebRTC.I420AVideoFrame)
+  nameWithType: ExternalVideoTrackSource.CompleteFrameRequest(UInt32, Int64, I420AVideoFrame)
+  nameWithType.vb: ExternalVideoTrackSource.CompleteFrameRequest(UInt32, Int64, ByRef I420AVideoFrame)
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest*
+  name: CompleteFrameRequest
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CompleteFrameRequest_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest
+  nameWithType: ExternalVideoTrackSource.CompleteFrameRequest
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromArgb32Callback(Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate)
+  name: CreateFromArgb32Callback(Argb32VideoFrameRequestDelegate)
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromArgb32Callback_Microsoft_MixedReality_WebRTC_Argb32VideoFrameRequestDelegate_
+  commentId: M:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromArgb32Callback(Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate)
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromArgb32Callback(Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate)
+  nameWithType: ExternalVideoTrackSource.CreateFromArgb32Callback(Argb32VideoFrameRequestDelegate)
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromArgb32Callback*
+  name: CreateFromArgb32Callback
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromArgb32Callback_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromArgb32Callback
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromArgb32Callback
+  nameWithType: ExternalVideoTrackSource.CreateFromArgb32Callback
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromI420ACallback(Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate)
+  name: CreateFromI420ACallback(I420AVideoFrameRequestDelegate)
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromI420ACallback_Microsoft_MixedReality_WebRTC_I420AVideoFrameRequestDelegate_
+  commentId: M:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromI420ACallback(Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate)
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromI420ACallback(Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate)
+  nameWithType: ExternalVideoTrackSource.CreateFromI420ACallback(I420AVideoFrameRequestDelegate)
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromI420ACallback*
+  name: CreateFromI420ACallback
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromI420ACallback_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromI420ACallback
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromI420ACallback
+  nameWithType: ExternalVideoTrackSource.CreateFromI420ACallback
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.Dispose
+  name: Dispose()
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_Dispose
+  commentId: M:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.Dispose
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.Dispose()
+  nameWithType: ExternalVideoTrackSource.Dispose()
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.Dispose*
+  name: Dispose
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_Dispose_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.Dispose
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.Dispose
+  nameWithType: ExternalVideoTrackSource.Dispose
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.PeerConnection
+  name: PeerConnection
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_PeerConnection
+  commentId: P:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.PeerConnection
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.PeerConnection
+  nameWithType: ExternalVideoTrackSource.PeerConnection
+- uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.PeerConnection*
+  name: PeerConnection
+  href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_PeerConnection_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.PeerConnection
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.PeerConnection
+  nameWithType: ExternalVideoTrackSource.PeerConnection
+- uid: Microsoft.MixedReality.WebRTC.FrameRequest
+  name: FrameRequest
+  href: api/Microsoft.MixedReality.WebRTC.FrameRequest.html
+  commentId: T:Microsoft.MixedReality.WebRTC.FrameRequest
+  fullName: Microsoft.MixedReality.WebRTC.FrameRequest
+  nameWithType: FrameRequest
+- uid: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.Argb32VideoFrame@)
+  name: CompleteRequest(Argb32VideoFrame)
+  href: api/Microsoft.MixedReality.WebRTC.FrameRequest.html#Microsoft_MixedReality_WebRTC_FrameRequest_CompleteRequest_Microsoft_MixedReality_WebRTC_Argb32VideoFrame__
+  commentId: M:Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.Argb32VideoFrame@)
+  name.vb: CompleteRequest(ByRef Argb32VideoFrame)
+  fullName: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
+  fullName.vb: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(ByRef Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
+  nameWithType: FrameRequest.CompleteRequest(Argb32VideoFrame)
+  nameWithType.vb: FrameRequest.CompleteRequest(ByRef Argb32VideoFrame)
+- uid: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.I420AVideoFrame@)
+  name: CompleteRequest(I420AVideoFrame)
+  href: api/Microsoft.MixedReality.WebRTC.FrameRequest.html#Microsoft_MixedReality_WebRTC_FrameRequest_CompleteRequest_Microsoft_MixedReality_WebRTC_I420AVideoFrame__
+  commentId: M:Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.I420AVideoFrame@)
+  name.vb: CompleteRequest(ByRef I420AVideoFrame)
+  fullName: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.I420AVideoFrame)
+  fullName.vb: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(ByRef Microsoft.MixedReality.WebRTC.I420AVideoFrame)
+  nameWithType: FrameRequest.CompleteRequest(I420AVideoFrame)
+  nameWithType.vb: FrameRequest.CompleteRequest(ByRef I420AVideoFrame)
+- uid: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest*
+  name: CompleteRequest
+  href: api/Microsoft.MixedReality.WebRTC.FrameRequest.html#Microsoft_MixedReality_WebRTC_FrameRequest_CompleteRequest_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest
+  nameWithType: FrameRequest.CompleteRequest
+- uid: Microsoft.MixedReality.WebRTC.FrameRequest.RequestId
+  name: RequestId
+  href: api/Microsoft.MixedReality.WebRTC.FrameRequest.html#Microsoft_MixedReality_WebRTC_FrameRequest_RequestId
+  commentId: F:Microsoft.MixedReality.WebRTC.FrameRequest.RequestId
+  fullName: Microsoft.MixedReality.WebRTC.FrameRequest.RequestId
+  nameWithType: FrameRequest.RequestId
+- uid: Microsoft.MixedReality.WebRTC.FrameRequest.Source
+  name: Source
+  href: api/Microsoft.MixedReality.WebRTC.FrameRequest.html#Microsoft_MixedReality_WebRTC_FrameRequest_Source
+  commentId: F:Microsoft.MixedReality.WebRTC.FrameRequest.Source
+  fullName: Microsoft.MixedReality.WebRTC.FrameRequest.Source
+  nameWithType: FrameRequest.Source
+- uid: Microsoft.MixedReality.WebRTC.FrameRequest.TimestampMs
+  name: TimestampMs
+  href: api/Microsoft.MixedReality.WebRTC.FrameRequest.html#Microsoft_MixedReality_WebRTC_FrameRequest_TimestampMs
+  commentId: F:Microsoft.MixedReality.WebRTC.FrameRequest.TimestampMs
+  fullName: Microsoft.MixedReality.WebRTC.FrameRequest.TimestampMs
+  nameWithType: FrameRequest.TimestampMs
 - uid: Microsoft.MixedReality.WebRTC.I420AVideoFrame
   name: I420AVideoFrame
   href: api/Microsoft.MixedReality.WebRTC.I420AVideoFrame.html
@@ -438,6 +582,12 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.I420AVideoFrameDelegate
   fullName: Microsoft.MixedReality.WebRTC.I420AVideoFrameDelegate
   nameWithType: I420AVideoFrameDelegate
+- uid: Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate
+  name: I420AVideoFrameRequestDelegate
+  href: api/Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate.html
+  commentId: T:Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate
+  fullName: Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate
+  nameWithType: I420AVideoFrameRequestDelegate
 - uid: Microsoft.MixedReality.WebRTC.I420AVideoFrameStorage
   name: I420AVideoFrameStorage
   href: api/Microsoft.MixedReality.WebRTC.I420AVideoFrameStorage.html
@@ -544,6 +694,30 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.IceConnectionState.New
   fullName: Microsoft.MixedReality.WebRTC.IceConnectionState.New
   nameWithType: IceConnectionState.New
+- uid: Microsoft.MixedReality.WebRTC.IceGatheringState
+  name: IceGatheringState
+  href: api/Microsoft.MixedReality.WebRTC.IceGatheringState.html
+  commentId: T:Microsoft.MixedReality.WebRTC.IceGatheringState
+  fullName: Microsoft.MixedReality.WebRTC.IceGatheringState
+  nameWithType: IceGatheringState
+- uid: Microsoft.MixedReality.WebRTC.IceGatheringState.Complete
+  name: Complete
+  href: api/Microsoft.MixedReality.WebRTC.IceGatheringState.html#Microsoft_MixedReality_WebRTC_IceGatheringState_Complete
+  commentId: F:Microsoft.MixedReality.WebRTC.IceGatheringState.Complete
+  fullName: Microsoft.MixedReality.WebRTC.IceGatheringState.Complete
+  nameWithType: IceGatheringState.Complete
+- uid: Microsoft.MixedReality.WebRTC.IceGatheringState.Gathering
+  name: Gathering
+  href: api/Microsoft.MixedReality.WebRTC.IceGatheringState.html#Microsoft_MixedReality_WebRTC_IceGatheringState_Gathering
+  commentId: F:Microsoft.MixedReality.WebRTC.IceGatheringState.Gathering
+  fullName: Microsoft.MixedReality.WebRTC.IceGatheringState.Gathering
+  nameWithType: IceGatheringState.Gathering
+- uid: Microsoft.MixedReality.WebRTC.IceGatheringState.New
+  name: New
+  href: api/Microsoft.MixedReality.WebRTC.IceGatheringState.html#Microsoft_MixedReality_WebRTC_IceGatheringState_New
+  commentId: F:Microsoft.MixedReality.WebRTC.IceGatheringState.New
+  fullName: Microsoft.MixedReality.WebRTC.IceGatheringState.New
+  nameWithType: IceGatheringState.New
 - uid: Microsoft.MixedReality.WebRTC.IceServer
   name: IceServer
   href: api/Microsoft.MixedReality.WebRTC.IceServer.html
@@ -617,6 +791,108 @@ references:
   commentId: N:Microsoft.MixedReality.WebRTC.Interop
   fullName: Microsoft.MixedReality.WebRTC.Interop
   nameWithType: Microsoft.MixedReality.WebRTC.Interop
+- uid: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle
+  name: ExternalVideoTrackSourceHandle
+  href: api/Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle
+  fullName: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle
+  nameWithType: ExternalVideoTrackSourceHandle
+- uid: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.#ctor
+  name: ExternalVideoTrackSourceHandle()
+  href: api/Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.html#Microsoft_MixedReality_WebRTC_Interop_ExternalVideoTrackSourceHandle__ctor
+  commentId: M:Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.#ctor
+  fullName: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.ExternalVideoTrackSourceHandle()
+  nameWithType: ExternalVideoTrackSourceHandle.ExternalVideoTrackSourceHandle()
+- uid: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.#ctor(IntPtr)
+  name: ExternalVideoTrackSourceHandle(IntPtr)
+  href: api/Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.html#Microsoft_MixedReality_WebRTC_Interop_ExternalVideoTrackSourceHandle__ctor_IntPtr_
+  commentId: M:Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.#ctor(IntPtr)
+  fullName: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.ExternalVideoTrackSourceHandle(IntPtr)
+  nameWithType: ExternalVideoTrackSourceHandle.ExternalVideoTrackSourceHandle(IntPtr)
+- uid: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.#ctor*
+  name: ExternalVideoTrackSourceHandle
+  href: api/Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.html#Microsoft_MixedReality_WebRTC_Interop_ExternalVideoTrackSourceHandle__ctor_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.#ctor
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.ExternalVideoTrackSourceHandle
+  nameWithType: ExternalVideoTrackSourceHandle.ExternalVideoTrackSourceHandle
+- uid: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.IsInvalid
+  name: IsInvalid
+  href: api/Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.html#Microsoft_MixedReality_WebRTC_Interop_ExternalVideoTrackSourceHandle_IsInvalid
+  commentId: P:Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.IsInvalid
+  fullName: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.IsInvalid
+  nameWithType: ExternalVideoTrackSourceHandle.IsInvalid
+- uid: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.IsInvalid*
+  name: IsInvalid
+  href: api/Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.html#Microsoft_MixedReality_WebRTC_Interop_ExternalVideoTrackSourceHandle_IsInvalid_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.IsInvalid
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.IsInvalid
+  nameWithType: ExternalVideoTrackSourceHandle.IsInvalid
+- uid: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.ReleaseHandle
+  name: ReleaseHandle()
+  href: api/Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.html#Microsoft_MixedReality_WebRTC_Interop_ExternalVideoTrackSourceHandle_ReleaseHandle
+  commentId: M:Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.ReleaseHandle
+  fullName: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.ReleaseHandle()
+  nameWithType: ExternalVideoTrackSourceHandle.ReleaseHandle()
+- uid: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.ReleaseHandle*
+  name: ReleaseHandle
+  href: api/Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.html#Microsoft_MixedReality_WebRTC_Interop_ExternalVideoTrackSourceHandle_ReleaseHandle_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.ReleaseHandle
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Interop.ExternalVideoTrackSourceHandle.ReleaseHandle
+  nameWithType: ExternalVideoTrackSourceHandle.ReleaseHandle
+- uid: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle
+  name: LocalVideoTrackHandle
+  href: api/Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle
+  fullName: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle
+  nameWithType: LocalVideoTrackHandle
+- uid: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.#ctor
+  name: LocalVideoTrackHandle()
+  href: api/Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.html#Microsoft_MixedReality_WebRTC_Interop_LocalVideoTrackHandle__ctor
+  commentId: M:Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.#ctor
+  fullName: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.LocalVideoTrackHandle()
+  nameWithType: LocalVideoTrackHandle.LocalVideoTrackHandle()
+- uid: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.#ctor(IntPtr)
+  name: LocalVideoTrackHandle(IntPtr)
+  href: api/Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.html#Microsoft_MixedReality_WebRTC_Interop_LocalVideoTrackHandle__ctor_IntPtr_
+  commentId: M:Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.#ctor(IntPtr)
+  fullName: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.LocalVideoTrackHandle(IntPtr)
+  nameWithType: LocalVideoTrackHandle.LocalVideoTrackHandle(IntPtr)
+- uid: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.#ctor*
+  name: LocalVideoTrackHandle
+  href: api/Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.html#Microsoft_MixedReality_WebRTC_Interop_LocalVideoTrackHandle__ctor_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.#ctor
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.LocalVideoTrackHandle
+  nameWithType: LocalVideoTrackHandle.LocalVideoTrackHandle
+- uid: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.IsInvalid
+  name: IsInvalid
+  href: api/Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.html#Microsoft_MixedReality_WebRTC_Interop_LocalVideoTrackHandle_IsInvalid
+  commentId: P:Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.IsInvalid
+  fullName: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.IsInvalid
+  nameWithType: LocalVideoTrackHandle.IsInvalid
+- uid: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.IsInvalid*
+  name: IsInvalid
+  href: api/Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.html#Microsoft_MixedReality_WebRTC_Interop_LocalVideoTrackHandle_IsInvalid_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.IsInvalid
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.IsInvalid
+  nameWithType: LocalVideoTrackHandle.IsInvalid
+- uid: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.ReleaseHandle
+  name: ReleaseHandle()
+  href: api/Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.html#Microsoft_MixedReality_WebRTC_Interop_LocalVideoTrackHandle_ReleaseHandle
+  commentId: M:Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.ReleaseHandle
+  fullName: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.ReleaseHandle()
+  nameWithType: LocalVideoTrackHandle.ReleaseHandle()
+- uid: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.ReleaseHandle*
+  name: ReleaseHandle
+  href: api/Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.html#Microsoft_MixedReality_WebRTC_Interop_LocalVideoTrackHandle_ReleaseHandle_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.ReleaseHandle
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Interop.LocalVideoTrackHandle.ReleaseHandle
+  nameWithType: LocalVideoTrackHandle.ReleaseHandle
 - uid: Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle
   name: PeerConnectionHandle
   href: api/Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.html
@@ -655,19 +931,6 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.IsInvalid
   nameWithType: PeerConnectionHandle.IsInvalid
-- uid: Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.MakeCopy
-  name: MakeCopy()
-  href: api/Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.html#Microsoft_MixedReality_WebRTC_Interop_PeerConnectionHandle_MakeCopy
-  commentId: M:Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.MakeCopy
-  fullName: Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.MakeCopy()
-  nameWithType: PeerConnectionHandle.MakeCopy()
-- uid: Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.MakeCopy*
-  name: MakeCopy
-  href: api/Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.html#Microsoft_MixedReality_WebRTC_Interop_PeerConnectionHandle_MakeCopy_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.MakeCopy
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.MakeCopy
-  nameWithType: PeerConnectionHandle.MakeCopy
 - uid: Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.ReleaseHandle
   name: ReleaseHandle()
   href: api/Microsoft.MixedReality.WebRTC.Interop.PeerConnectionHandle.html#Microsoft_MixedReality_WebRTC_Interop_PeerConnectionHandle_ReleaseHandle
@@ -758,6 +1021,37 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Interop.WrapperBase.RemoveRef
   nameWithType: WrapperBase.RemoveRef
+- uid: Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException
+  name: InvalidInteropNativeHandleException
+  href: api/Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.html
+  commentId: T:Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException
+  fullName: Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException
+  nameWithType: InvalidInteropNativeHandleException
+- uid: Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.#ctor
+  name: InvalidInteropNativeHandleException()
+  href: api/Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.html#Microsoft_MixedReality_WebRTC_InvalidInteropNativeHandleException__ctor
+  commentId: M:Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.#ctor
+  fullName: Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.InvalidInteropNativeHandleException()
+  nameWithType: InvalidInteropNativeHandleException.InvalidInteropNativeHandleException()
+- uid: Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.#ctor(System.String)
+  name: InvalidInteropNativeHandleException(String)
+  href: api/Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.html#Microsoft_MixedReality_WebRTC_InvalidInteropNativeHandleException__ctor_System_String_
+  commentId: M:Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.#ctor(System.String)
+  fullName: Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.InvalidInteropNativeHandleException(System.String)
+  nameWithType: InvalidInteropNativeHandleException.InvalidInteropNativeHandleException(String)
+- uid: Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.#ctor(System.String,Exception)
+  name: InvalidInteropNativeHandleException(String, Exception)
+  href: api/Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.html#Microsoft_MixedReality_WebRTC_InvalidInteropNativeHandleException__ctor_System_String_Exception_
+  commentId: M:Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.#ctor(System.String,Exception)
+  fullName: Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.InvalidInteropNativeHandleException(System.String, Exception)
+  nameWithType: InvalidInteropNativeHandleException.InvalidInteropNativeHandleException(String, Exception)
+- uid: Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.#ctor*
+  name: InvalidInteropNativeHandleException
+  href: api/Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.html#Microsoft_MixedReality_WebRTC_InvalidInteropNativeHandleException__ctor_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.#ctor
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.InvalidInteropNativeHandleException
+  nameWithType: InvalidInteropNativeHandleException.InvalidInteropNativeHandleException
 - uid: Microsoft.MixedReality.WebRTC.IVideoFrameQueue
   name: IVideoFrameQueue
   href: api/Microsoft.MixedReality.WebRTC.IVideoFrameQueue.html
@@ -867,37 +1161,18 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.LocalVideoTrack
   fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack
   nameWithType: LocalVideoTrack
-- uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack._nativePeerHandle
-  name: _nativePeerHandle
-  href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack__nativePeerHandle
-  commentId: F:Microsoft.MixedReality.WebRTC.LocalVideoTrack._nativePeerHandle
-  fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack._nativePeerHandle
-  nameWithType: LocalVideoTrack._nativePeerHandle
-- uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack.AddRef
-  name: AddRef()
-  href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_AddRef
-  commentId: M:Microsoft.MixedReality.WebRTC.LocalVideoTrack.AddRef
-  fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack.AddRef()
-  nameWithType: LocalVideoTrack.AddRef()
-- uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack.AddRef*
-  name: AddRef
-  href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_AddRef_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.LocalVideoTrack.AddRef
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack.AddRef
-  nameWithType: LocalVideoTrack.AddRef
-- uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack.ARGBVideoFrameReady
-  name: ARGBVideoFrameReady
-  href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_ARGBVideoFrameReady
-  commentId: E:Microsoft.MixedReality.WebRTC.LocalVideoTrack.ARGBVideoFrameReady
-  fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack.ARGBVideoFrameReady
-  nameWithType: LocalVideoTrack.ARGBVideoFrameReady
-- uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose(System.Boolean)
-  name: Dispose(Boolean)
-  href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_Dispose_System_Boolean_
-  commentId: M:Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose(System.Boolean)
-  fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose(System.Boolean)
-  nameWithType: LocalVideoTrack.Dispose(Boolean)
+- uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack.Argb32VideoFrameReady
+  name: Argb32VideoFrameReady
+  href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_Argb32VideoFrameReady
+  commentId: E:Microsoft.MixedReality.WebRTC.LocalVideoTrack.Argb32VideoFrameReady
+  fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack.Argb32VideoFrameReady
+  nameWithType: LocalVideoTrack.Argb32VideoFrameReady
+- uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose
+  name: Dispose()
+  href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_Dispose
+  commentId: M:Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose
+  fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose()
+  nameWithType: LocalVideoTrack.Dispose()
 - uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose*
   name: Dispose
   href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_Dispose_
@@ -950,19 +1225,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack.PeerConnection
   nameWithType: LocalVideoTrack.PeerConnection
-- uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack.RemoveRef
-  name: RemoveRef()
-  href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_RemoveRef
-  commentId: M:Microsoft.MixedReality.WebRTC.LocalVideoTrack.RemoveRef
-  fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack.RemoveRef()
-  nameWithType: LocalVideoTrack.RemoveRef()
-- uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack.RemoveRef*
-  name: RemoveRef
-  href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_RemoveRef_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.LocalVideoTrack.RemoveRef
+- uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack.Source
+  name: Source
+  href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_Source
+  commentId: P:Microsoft.MixedReality.WebRTC.LocalVideoTrack.Source
+  fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack.Source
+  nameWithType: LocalVideoTrack.Source
+- uid: Microsoft.MixedReality.WebRTC.LocalVideoTrack.Source*
+  name: Source
+  href: api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_Source_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.LocalVideoTrack.Source
   isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack.RemoveRef
-  nameWithType: LocalVideoTrack.RemoveRef
+  fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrack.Source
+  nameWithType: LocalVideoTrack.Source
 - uid: Microsoft.MixedReality.WebRTC.MovingAverage
   name: MovingAverage
   href: api/Microsoft.MixedReality.WebRTC.MovingAverage.html
@@ -1053,6 +1328,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PeerConnection
   nameWithType: PeerConnection.PeerConnection
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AddCustomLocalVideoTrack(System.String,Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource)
+  name: AddCustomLocalVideoTrack(String, ExternalVideoTrackSource)
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddCustomLocalVideoTrack_System_String_Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_
+  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.AddCustomLocalVideoTrack(System.String,Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource)
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AddCustomLocalVideoTrack(System.String, Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource)
+  nameWithType: PeerConnection.AddCustomLocalVideoTrack(String, ExternalVideoTrackSource)
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AddCustomLocalVideoTrack*
+  name: AddCustomLocalVideoTrack
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddCustomLocalVideoTrack_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.AddCustomLocalVideoTrack
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AddCustomLocalVideoTrack
+  nameWithType: PeerConnection.AddCustomLocalVideoTrack
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.AddDataChannelAsync(System.String,System.Boolean,System.Boolean)
   name: AddDataChannelAsync(String, Boolean, Boolean)
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_String_System_Boolean_System_Boolean_
@@ -1111,12 +1399,12 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync
   nameWithType: PeerConnection.AddLocalVideoTrackAsync
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.ARGBRemoteVideoFrameReady
-  name: ARGBRemoteVideoFrameReady
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_ARGBRemoteVideoFrameReady
-  commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.ARGBRemoteVideoFrameReady
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.ARGBRemoteVideoFrameReady
-  nameWithType: PeerConnection.ARGBRemoteVideoFrameReady
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.Argb32RemoteVideoFrameReady
+  name: Argb32RemoteVideoFrameReady
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Argb32RemoteVideoFrameReady
+  commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.Argb32RemoteVideoFrameReady
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.Argb32RemoteVideoFrameReady
+  nameWithType: PeerConnection.Argb32RemoteVideoFrameReady
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.Close
   name: Close()
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Close
@@ -1267,6 +1555,18 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate
   nameWithType: PeerConnection.IceCandidateReadytoSendDelegate
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChanged
+  name: IceGatheringStateChanged
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceGatheringStateChanged
+  commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChanged
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChanged
+  nameWithType: PeerConnection.IceGatheringStateChanged
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChangedDelegate
+  name: PeerConnection.IceGatheringStateChangedDelegate
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChangedDelegate.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChangedDelegate
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChangedDelegate
+  nameWithType: PeerConnection.IceGatheringStateChangedDelegate
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChanged
   name: IceStateChanged
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceStateChanged
@@ -1465,6 +1765,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTrack
   nameWithType: PeerConnection.RemoveLocalVideoTrack
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTracksFromSource(Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource)
+  name: RemoveLocalVideoTracksFromSource(ExternalVideoTrackSource)
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalVideoTracksFromSource_Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_
+  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTracksFromSource(Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource)
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTracksFromSource(Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource)
+  nameWithType: PeerConnection.RemoveLocalVideoTracksFromSource(ExternalVideoTrackSource)
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTracksFromSource*
+  name: RemoveLocalVideoTracksFromSource
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalVideoTracksFromSource_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTracksFromSource
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTracksFromSource
+  nameWithType: PeerConnection.RemoveLocalVideoTracksFromSource
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.RenegotiationNeeded
   name: RenegotiationNeeded
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_RenegotiationNeeded
@@ -1670,6 +1983,37 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.SdpSemantic
   fullName: Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.SdpSemantic
   nameWithType: PeerConnectionConfiguration.SdpSemantic
+- uid: Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException
+  name: SctpNotNegotiatedException
+  href: api/Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html
+  commentId: T:Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException
+  fullName: Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException
+  nameWithType: SctpNotNegotiatedException
+- uid: Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.#ctor
+  name: SctpNotNegotiatedException()
+  href: api/Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html#Microsoft_MixedReality_WebRTC_SctpNotNegotiatedException__ctor
+  commentId: M:Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.#ctor
+  fullName: Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.SctpNotNegotiatedException()
+  nameWithType: SctpNotNegotiatedException.SctpNotNegotiatedException()
+- uid: Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.#ctor(System.String)
+  name: SctpNotNegotiatedException(String)
+  href: api/Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html#Microsoft_MixedReality_WebRTC_SctpNotNegotiatedException__ctor_System_String_
+  commentId: M:Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.#ctor(System.String)
+  fullName: Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.SctpNotNegotiatedException(System.String)
+  nameWithType: SctpNotNegotiatedException.SctpNotNegotiatedException(String)
+- uid: Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.#ctor(System.String,Exception)
+  name: SctpNotNegotiatedException(String, Exception)
+  href: api/Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html#Microsoft_MixedReality_WebRTC_SctpNotNegotiatedException__ctor_System_String_Exception_
+  commentId: M:Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.#ctor(System.String,Exception)
+  fullName: Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.SctpNotNegotiatedException(System.String, Exception)
+  nameWithType: SctpNotNegotiatedException.SctpNotNegotiatedException(String, Exception)
+- uid: Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.#ctor*
+  name: SctpNotNegotiatedException
+  href: api/Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html#Microsoft_MixedReality_WebRTC_SctpNotNegotiatedException__ctor_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.#ctor
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.SctpNotNegotiatedException
+  nameWithType: SctpNotNegotiatedException.SctpNotNegotiatedException
 - uid: Microsoft.MixedReality.WebRTC.SdpSemantic
   name: SdpSemantic
   href: api/Microsoft.MixedReality.WebRTC.SdpSemantic.html
@@ -1778,6 +2122,25 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent
   fullName: Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent
   nameWithType: AudioStreamStoppedEvent
+- uid: Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute
+  name: CaptureCameraAttribute
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute
+  nameWithType: CaptureCameraAttribute
+- uid: Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.Validate(Camera)
+  name: Validate(Camera)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.html#Microsoft_MixedReality_WebRTC_Unity_CaptureCameraAttribute_Validate_Camera_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.Validate(Camera)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.Validate(Camera)
+  nameWithType: CaptureCameraAttribute.Validate(Camera)
+- uid: Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.Validate*
+  name: Validate
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.html#Microsoft_MixedReality_WebRTC_Unity_CaptureCameraAttribute_Validate_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.Validate
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.Validate
+  nameWithType: CaptureCameraAttribute.Validate
 - uid: Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer
   name: ConfigurableIceServer
   href: api/Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.html
@@ -1809,12 +2172,252 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.Uri
   fullName: Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.Uri
   nameWithType: ConfigurableIceServer.Uri
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1
+  name: CustomVideoSource<T>
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1
+  name.vb: CustomVideoSource(Of T)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T)
+  nameWithType: CustomVideoSource<T>
+  nameWithType.vb: CustomVideoSource(Of T)
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1._frameQueue
+  name: _frameQueue
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1__frameQueue
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1._frameQueue
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>._frameQueue
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T)._frameQueue
+  nameWithType: CustomVideoSource<T>._frameQueue
+  nameWithType.vb: CustomVideoSource(Of T)._frameQueue
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.AutoAddTrackOnStart
+  name: AutoAddTrackOnStart
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_AutoAddTrackOnStart
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.AutoAddTrackOnStart
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.AutoAddTrackOnStart
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).AutoAddTrackOnStart
+  nameWithType: CustomVideoSource<T>.AutoAddTrackOnStart
+  nameWithType.vb: CustomVideoSource(Of T).AutoAddTrackOnStart
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Awake
+  name: Awake()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_Awake
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Awake
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.Awake()
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).Awake()
+  nameWithType: CustomVideoSource<T>.Awake()
+  nameWithType.vb: CustomVideoSource(Of T).Awake()
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Awake*
+  name: Awake
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_Awake_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Awake
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.Awake
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).Awake
+  nameWithType: CustomVideoSource<T>.Awake
+  nameWithType.vb: CustomVideoSource(Of T).Awake
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDestroy
+  name: OnDestroy()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnDestroy
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDestroy
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnDestroy()
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).OnDestroy()
+  nameWithType: CustomVideoSource<T>.OnDestroy()
+  nameWithType.vb: CustomVideoSource(Of T).OnDestroy()
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDestroy*
+  name: OnDestroy
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnDestroy_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDestroy
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnDestroy
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).OnDestroy
+  nameWithType: CustomVideoSource<T>.OnDestroy
+  nameWithType.vb: CustomVideoSource(Of T).OnDestroy
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDisable
+  name: OnDisable()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnDisable
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDisable
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnDisable()
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).OnDisable()
+  nameWithType: CustomVideoSource<T>.OnDisable()
+  nameWithType.vb: CustomVideoSource(Of T).OnDisable()
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDisable*
+  name: OnDisable
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnDisable_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDisable
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnDisable
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).OnDisable
+  nameWithType: CustomVideoSource<T>.OnDisable
+  nameWithType.vb: CustomVideoSource(Of T).OnDisable
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnEnable
+  name: OnEnable()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnEnable
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnEnable
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnEnable()
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).OnEnable()
+  nameWithType: CustomVideoSource<T>.OnEnable()
+  nameWithType.vb: CustomVideoSource(Of T).OnEnable()
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnEnable*
+  name: OnEnable
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnEnable_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnEnable
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnEnable
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).OnEnable
+  nameWithType: CustomVideoSource<T>.OnEnable
+  nameWithType.vb: CustomVideoSource(Of T).OnEnable
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnFrameRequested(FrameRequest@)
+  name: OnFrameRequested(FrameRequest)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnFrameRequested_FrameRequest__
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnFrameRequested(FrameRequest@)
+  name.vb: OnFrameRequested(ByRef FrameRequest)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnFrameRequested(FrameRequest)
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).OnFrameRequested(ByRef FrameRequest)
+  nameWithType: CustomVideoSource<T>.OnFrameRequested(FrameRequest)
+  nameWithType.vb: CustomVideoSource(Of T).OnFrameRequested(ByRef FrameRequest)
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnFrameRequested*
+  name: OnFrameRequested
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnFrameRequested_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnFrameRequested
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnFrameRequested
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).OnFrameRequested
+  nameWithType: CustomVideoSource<T>.OnFrameRequested
+  nameWithType.vb: CustomVideoSource(Of T).OnFrameRequested
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.PeerConnection
+  name: PeerConnection
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_PeerConnection
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.PeerConnection
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.PeerConnection
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).PeerConnection
+  nameWithType: CustomVideoSource<T>.PeerConnection
+  nameWithType.vb: CustomVideoSource(Of T).PeerConnection
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Source
+  name: Source
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_Source
+  commentId: P:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Source
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.Source
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).Source
+  nameWithType: CustomVideoSource<T>.Source
+  nameWithType.vb: CustomVideoSource(Of T).Source
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Source*
+  name: Source
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_Source_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Source
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.Source
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).Source
+  nameWithType: CustomVideoSource<T>.Source
+  nameWithType.vb: CustomVideoSource(Of T).Source
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.StartTrack
+  name: StartTrack()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_StartTrack
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.StartTrack
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.StartTrack()
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).StartTrack()
+  nameWithType: CustomVideoSource<T>.StartTrack()
+  nameWithType.vb: CustomVideoSource(Of T).StartTrack()
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.StartTrack*
+  name: StartTrack
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_StartTrack_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.StartTrack
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.StartTrack
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).StartTrack
+  nameWithType: CustomVideoSource<T>.StartTrack
+  nameWithType.vb: CustomVideoSource(Of T).StartTrack
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.StopTrack
+  name: StopTrack()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_StopTrack
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.StopTrack
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.StopTrack()
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).StopTrack()
+  nameWithType: CustomVideoSource<T>.StopTrack()
+  nameWithType.vb: CustomVideoSource(Of T).StopTrack()
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.StopTrack*
+  name: StopTrack
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_StopTrack_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.StopTrack
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.StopTrack
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).StopTrack
+  nameWithType: CustomVideoSource<T>.StopTrack
+  nameWithType.vb: CustomVideoSource(Of T).StopTrack
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Track
+  name: Track
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_Track
+  commentId: P:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Track
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.Track
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).Track
+  nameWithType: CustomVideoSource<T>.Track
+  nameWithType.vb: CustomVideoSource(Of T).Track
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Track*
+  name: Track
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_Track_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.Track
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.Track
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).Track
+  nameWithType: CustomVideoSource<T>.Track
+  nameWithType.vb: CustomVideoSource(Of T).Track
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.TrackName
+  name: TrackName
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_TrackName
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.TrackName
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.TrackName
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).TrackName
+  nameWithType: CustomVideoSource<T>.TrackName
+  nameWithType.vb: CustomVideoSource(Of T).TrackName
 - uid: Microsoft.MixedReality.WebRTC.Unity.Editor
   name: Microsoft.MixedReality.WebRTC.Unity.Editor
   href: api/Microsoft.MixedReality.WebRTC.Unity.Editor.html
   commentId: N:Microsoft.MixedReality.WebRTC.Unity.Editor
   fullName: Microsoft.MixedReality.WebRTC.Unity.Editor
   nameWithType: Microsoft.MixedReality.WebRTC.Unity.Editor
+- uid: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer
+  name: CaptureCameraDrawer
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer
+  nameWithType: CaptureCameraDrawer
+- uid: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.GetPropertyHeight(SerializedProperty,GUIContent)
+  name: GetPropertyHeight(SerializedProperty, GUIContent)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.html#Microsoft_MixedReality_WebRTC_Unity_Editor_CaptureCameraDrawer_GetPropertyHeight_SerializedProperty_GUIContent_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.GetPropertyHeight(SerializedProperty,GUIContent)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.GetPropertyHeight(SerializedProperty, GUIContent)
+  nameWithType: CaptureCameraDrawer.GetPropertyHeight(SerializedProperty, GUIContent)
+- uid: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.GetPropertyHeight*
+  name: GetPropertyHeight
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.html#Microsoft_MixedReality_WebRTC_Unity_Editor_CaptureCameraDrawer_GetPropertyHeight_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.GetPropertyHeight
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.GetPropertyHeight
+  nameWithType: CaptureCameraDrawer.GetPropertyHeight
+- uid: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.OnGUI(Rect,SerializedProperty,GUIContent)
+  name: OnGUI(Rect, SerializedProperty, GUIContent)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.html#Microsoft_MixedReality_WebRTC_Unity_Editor_CaptureCameraDrawer_OnGUI_Rect_SerializedProperty_GUIContent_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.OnGUI(Rect,SerializedProperty,GUIContent)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.OnGUI(Rect, SerializedProperty, GUIContent)
+  nameWithType: CaptureCameraDrawer.OnGUI(Rect, SerializedProperty, GUIContent)
+- uid: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.OnGUI*
+  name: OnGUI
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.html#Microsoft_MixedReality_WebRTC_Unity_Editor_CaptureCameraDrawer_OnGUI_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.OnGUI
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.OnGUI
+  nameWithType: CaptureCameraDrawer.OnGUI
+- uid: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.Validate(Camera)
+  name: Validate(Camera)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.html#Microsoft_MixedReality_WebRTC_Unity_Editor_CaptureCameraDrawer_Validate_Camera_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.Validate(Camera)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.Validate(Camera)
+  nameWithType: CaptureCameraDrawer.Validate(Camera)
+- uid: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.Validate*
+  name: Validate
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.html#Microsoft_MixedReality_WebRTC_Unity_Editor_CaptureCameraDrawer_Validate_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.Validate
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.Validate
+  nameWithType: CaptureCameraDrawer.Validate
 - uid: Microsoft.MixedReality.WebRTC.Unity.Editor.LocalVideoSourceEditor
   name: LocalVideoSourceEditor
   href: api/Microsoft.MixedReality.WebRTC.Unity.Editor.LocalVideoSourceEditor.html
@@ -2586,6 +3189,66 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.RemoteVideoSource.Update
   nameWithType: RemoteVideoSource.Update
+- uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource
+  name: SceneVideoSource
+  href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource
+  fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource
+  nameWithType: SceneVideoSource
+- uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.CameraEvent
+  name: CameraEvent
+  href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_SceneVideoSource_CameraEvent
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.CameraEvent
+  fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.CameraEvent
+  nameWithType: SceneVideoSource.CameraEvent
+- uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnDisable
+  name: OnDisable()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_SceneVideoSource_OnDisable
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnDisable
+  fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnDisable()
+  nameWithType: SceneVideoSource.OnDisable()
+- uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnDisable*
+  name: OnDisable
+  href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_SceneVideoSource_OnDisable_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnDisable
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnDisable
+  nameWithType: SceneVideoSource.OnDisable
+- uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnEnable
+  name: OnEnable()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_SceneVideoSource_OnEnable
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnEnable
+  fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnEnable()
+  nameWithType: SceneVideoSource.OnEnable()
+- uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnEnable*
+  name: OnEnable
+  href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_SceneVideoSource_OnEnable_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnEnable
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnEnable
+  nameWithType: SceneVideoSource.OnEnable
+- uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested(FrameRequest@)
+  name: OnFrameRequested(FrameRequest)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_SceneVideoSource_OnFrameRequested_FrameRequest__
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested(FrameRequest@)
+  name.vb: OnFrameRequested(ByRef FrameRequest)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested(FrameRequest)
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested(ByRef FrameRequest)
+  nameWithType: SceneVideoSource.OnFrameRequested(FrameRequest)
+  nameWithType.vb: SceneVideoSource.OnFrameRequested(ByRef FrameRequest)
+- uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested*
+  name: OnFrameRequested
+  href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_SceneVideoSource_OnFrameRequested_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested
+  nameWithType: SceneVideoSource.OnFrameRequested
+- uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.SourceCamera
+  name: SourceCamera
+  href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_SceneVideoSource_SourceCamera
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.SourceCamera
+  fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.SourceCamera
+  nameWithType: SceneVideoSource.SourceCamera
 - uid: Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute
   name: SdpTokenAttribute
   href: api/Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.html
@@ -2871,7 +3534,14 @@ references:
 - uid: Microsoft.MixedReality.WebRTC.Unity.VideoSource.FrameQueue
   name: FrameQueue
   href: api/Microsoft.MixedReality.WebRTC.Unity.VideoSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoSource_FrameQueue
-  commentId: F:Microsoft.MixedReality.WebRTC.Unity.VideoSource.FrameQueue
+  commentId: P:Microsoft.MixedReality.WebRTC.Unity.VideoSource.FrameQueue
+  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoSource.FrameQueue
+  nameWithType: VideoSource.FrameQueue
+- uid: Microsoft.MixedReality.WebRTC.Unity.VideoSource.FrameQueue*
+  name: FrameQueue
+  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoSource_FrameQueue_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.VideoSource.FrameQueue
+  isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.VideoSource.FrameQueue
   nameWithType: VideoSource.FrameQueue
 - uid: Microsoft.MixedReality.WebRTC.Unity.VideoSource.VideoStreamStarted
@@ -3029,14 +3699,14 @@ references:
   fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).DroppedFramesPerSecond
   nameWithType: VideoFrameQueue<T>.DroppedFramesPerSecond
   nameWithType.vb: VideoFrameQueue(Of T).DroppedFramesPerSecond
-- uid: Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.Enqueue(Microsoft.MixedReality.WebRTC.ARGBVideoFrame)
-  name: Enqueue(ARGBVideoFrame)
-  href: api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html#Microsoft_MixedReality_WebRTC_VideoFrameQueue_1_Enqueue_Microsoft_MixedReality_WebRTC_ARGBVideoFrame_
-  commentId: M:Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.Enqueue(Microsoft.MixedReality.WebRTC.ARGBVideoFrame)
-  fullName: Microsoft.MixedReality.WebRTC.VideoFrameQueue<T>.Enqueue(Microsoft.MixedReality.WebRTC.ARGBVideoFrame)
-  fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).Enqueue(Microsoft.MixedReality.WebRTC.ARGBVideoFrame)
-  nameWithType: VideoFrameQueue<T>.Enqueue(ARGBVideoFrame)
-  nameWithType.vb: VideoFrameQueue(Of T).Enqueue(ARGBVideoFrame)
+- uid: Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.Enqueue(Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
+  name: Enqueue(Argb32VideoFrame)
+  href: api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html#Microsoft_MixedReality_WebRTC_VideoFrameQueue_1_Enqueue_Microsoft_MixedReality_WebRTC_Argb32VideoFrame_
+  commentId: M:Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.Enqueue(Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
+  fullName: Microsoft.MixedReality.WebRTC.VideoFrameQueue<T>.Enqueue(Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
+  fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).Enqueue(Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
+  nameWithType: VideoFrameQueue<T>.Enqueue(Argb32VideoFrame)
+  nameWithType.vb: VideoFrameQueue(Of T).Enqueue(Argb32VideoFrame)
 - uid: Microsoft.MixedReality.WebRTC.VideoFrameQueue`1.Enqueue(Microsoft.MixedReality.WebRTC.I420AVideoFrame)
   name: Enqueue(I420AVideoFrame)
   href: api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html#Microsoft_MixedReality_WebRTC_VideoFrameQueue_1_Enqueue_Microsoft_MixedReality_WebRTC_I420AVideoFrame_

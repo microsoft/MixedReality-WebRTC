@@ -8,7 +8,7 @@
     <title>Installation | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Installation | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -185,6 +185,10 @@
 </table>
 <h3 id="copying-the-c-library">Copying the C# library</h3>
 <p>The Unity integration also references the C# library. Copy the <code>Microsoft.MixedReality.WebRTC.dll</code> assembly from either the Desktop package <code>Microsoft.MixedReality.WebRTC.nupkg</code> or the UWP package <code>Microsoft.MixedReality.WebRTC.UWP.nupkg</code>; both packages have the same copy of the C# assembly, and only differ by the associated native DLLs.</p>
+<ul>
+<li>Source: <code>&lt;package_root&gt;/lib/netstandard2.0/Microsoft.MixedReality.WebRTC.dll</code></li>
+<li>Destination: <code>&lt;unity_project&gt;/Assets/Plugins/Win32/x86_64/</code></li>
+</ul>
 <p>In theory the managed assembly could be copied anywhere in the <code>Assets/Plugins/</code> folder of the target Unity project. Practice however shows that Unity tends to stop its DLL search in the first folder that contains at least one DLL, instead of continuing to recurse into the parent folders. For this reason, we arbitrarily choose the <code>Assets/Plugins/Win32/x86_64/</code> as the destination for the C# assembly.</p>
 <h3 id="summary">Summary</h3>
 <p>The above steps should result in the following hierarchy on disk:</p>

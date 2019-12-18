@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace Microsoft.MixedReality.WebRTC.Unity
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -97,6 +97,15 @@ expose a single audio stream to a renderer (<a class="xref" href="Microsoft.Mixe
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent.html">AudioStreamStoppedEvent</a></h4>
       <section><p>Unity event corresponding to an on-going audio stream being stopped.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.html">CaptureCameraAttribute</a></h4>
+      <section><p>Attribute for a <see xref="UnityEngine.Camera"></see> property used by <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html">SceneVideoSource</a>
+to capture the content of a framebuffer, and for which some constraints on stereoscopic rendering
+options need to be enforced (and errors can be reported in the Editor if they are not followed).</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html">CustomVideoSource&lt;T&gt;</a></h4>
+      <section><p>Abstract base component for a custom video source delivering raw video frames
+directly to the WebRTC implementation.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.html">LocalAudioSource</a></h4>
       <section><p>This component represents a local audio source added as an audio track to an
 existing WebRTC peer connection and sent to the remote peer. The audio track
@@ -127,6 +136,10 @@ The audio track can optionally be displayed locally with a <a class="xref" href=
       <section><p>This component represents a remote video source added as a video track to an
 existing WebRTC peer connection by a remote peer and received locally.
 The video track can optionally be displayed locally with a <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html">MediaPlayer</a>.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html">SceneVideoSource</a></h4>
+      <section><p>Custom video source capturing the Unity scene content as rendered by a given camera,
+and sending it as a video track through the selected peer connection.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.html">SdpTokenAttribute</a></h4>
       <section><p>Attribute for string properties representing an SDP token, which has constraints
