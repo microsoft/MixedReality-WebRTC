@@ -8,6 +8,7 @@
 #include "interop/global_factory.h"
 #include "local_video_track.h"
 #include "peer_connection.h"
+#include "rtc_base/refcountedobject.h"
 
 namespace {
 
@@ -210,7 +211,7 @@ mrsResult GlobalFactory::Initialize() {
 
   // Cache the peer connection factory
   factory_ = impl_->peerConnectionFactory();
-#else   // defined(WINUWP)
+#else  // defined(WINUWP)
   network_thread_ = rtc::Thread::CreateWithSocketServer();
   RTC_CHECK(network_thread_.get());
   network_thread_->SetName("WebRTC network thread", network_thread_.get());
@@ -225,6 +226,62 @@ mrsResult GlobalFactory::Initialize() {
                              signaling_thread_.get());
   signaling_thread_->Start();
 
+#if 1
+  static const int16_t zerobuf[200];
+
+  struct PumpSourcesAndDiscardMixer : webrtc::AudioMixer {
+    rtc::CriticalSection crit_;
+    std::vector<Source*> audio_source_list_;
+
+    bool AddSource(Source* audio_source) override {
+      RTC_DCHECK(audio_source);
+      rtc::CritScope lock(&crit_);
+      RTC_DCHECK(find(audio_source_list_.begin(), audio_source_list_.end(),
+                      audio_source) == audio_source_list_.end())
+          << "Source already added to mixer";
+      audio_source_list_.emplace_back(audio_source);
+      return true;
+    }
+    void RemoveSource(Source* audio_source) override {
+      RTC_DCHECK(audio_source);
+      rtc::CritScope lock(&crit_);
+      const auto iter = find(audio_source_list_.begin(),
+                             audio_source_list_.end(), audio_source);
+      RTC_DCHECK(iter != audio_source_list_.end())
+          << "Source not present in mixer";
+      audio_source_list_.erase(iter);
+    }
+    void Mix(size_t number_of_channels,
+             webrtc::AudioFrame* audio_frame_for_mixing) override {
+      for (auto& source : audio_source_list_) {
+        // This pumps the source and fires the frame observer callbacks
+        // which in turn fill the AudioReadStream buffers
+        const auto audio_frame_info = source->GetAudioFrameWithInfo(
+            source->PreferredSampleRate(), audio_frame_for_mixing);
+
+        if (audio_frame_info == Source::AudioFrameInfo::kError) {
+          RTC_LOG_F(LS_WARNING)
+              << "failed to GetAudioFrameWithInfo() from source";
+          continue;
+        }
+      }
+      // We don't actually want these tracks to add to the mix.
+      // So we return an empty frame.
+      // TODO: it would be nice for tracks which are connected to a spatial
+      // audio source to be intercepted earlier. Currently toggling between
+      // local audio rendering and spatial audio is a global switch (not per
+      // track nor connection).
+      audio_frame_for_mixing->UpdateFrame(
+          0, zerobuf, 80, 8000, webrtc::AudioFrame::kNormalSpeech,
+          webrtc::AudioFrame::kVadUnknown, number_of_channels);
+    }
+  };
+
+  auto mixer = new rtc::RefCountedObject<PumpSourcesAndDiscardMixer>();
+#else
+  auto mixer = (webrtc::AudioMixer*)nullptr;
+#endif
+
   factory_ = webrtc::CreatePeerConnectionFactory(
       network_thread_.get(), worker_thread_.get(), signaling_thread_.get(),
       nullptr, webrtc::CreateBuiltinAudioEncoderFactory(),
@@ -235,7 +292,7 @@ mrsResult GlobalFactory::Initialize() {
       std::unique_ptr<webrtc::VideoDecoderFactory>(
           new webrtc::MultiplexDecoderFactory(
               absl::make_unique<webrtc::InternalDecoderFactory>())),
-      nullptr, nullptr);
+      mixer, nullptr);
 #endif  // defined(WINUWP)
   return (factory_.get() != nullptr ? Result::kSuccess : Result::kUnknownError);
 }
