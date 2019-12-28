@@ -7,12 +7,19 @@ using Microsoft.MixedReality.WebRTC.Interop;
 namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
-    /// Single video frame encoded in I420A format (triplanar YUV + alpha, 18 bits per pixel).
+    /// Single video frame encoded in I420A format (triplanar YUV with optional alpha plane).
     /// See e.g. https://wiki.videolan.org/YUV/#I420 for details.
+    /// 
+    /// The I420 format uses chroma downsampling in both directions, resulting in 12 bits per
+    /// pixel. With the optional alpha plane, the size increases to 20 bits per pixel.
     /// </summary>
     /// <remarks>
     /// The use of <c>ref struct</c> is an optimization to avoid heap allocation on each frame while
     /// having a nicer-to-use container to pass a frame accross methods.
+    /// 
+    /// The alpha plane is generically supported in this data structure, but actual support
+    /// in the video tracks depend on the underlying implementation and the video codec used,
+    /// and is generally not available.
     /// </remarks>
     public ref struct I420AVideoFrame
     {
@@ -68,8 +75,7 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Copy the frame content to a <xref href="System.Byte"/>[] buffer as a contiguous block of memory
-        /// containing the Y, U, and V planes one after another, and the alpha plane at the end if
-        /// present.
+        /// containing the Y, U, and V planes one after another, and the alpha plane at the end if present.
         /// </summary>
         /// <param name="buffer">The destination buffer to copy the frame to.</param>
         public void CopyTo(byte[] buffer)
@@ -112,6 +118,10 @@ namespace Microsoft.MixedReality.WebRTC
 
     /// <summary>
     /// Single video frame encoded in ARGB interleaved format (32 bits per pixel).
+    /// 
+    /// The ARGB components are in the order of a little endian 32-bit integer, so
+    /// 0xAARRGGBB, or (B, G, R, A) as a sequence of bytes in memory with B first
+    /// and A last.
     /// </summary>
     /// <remarks>
     /// The use of <c>ref struct</c> is an optimization to avoid heap allocation on each frame while
