@@ -16,9 +16,9 @@ $(function () {
     var selectorControl = selectorForm.find('select');
     selectorControl.change(function() {
       var branchName = selectorControl.find("option:selected")[0].value;
-      var targetUrl =  'versions/' + branchName;
+      var targetUrl =  '/MixedReality-WebRTC/versions/' + branchName;
       if (branchName == 'master') {
-        targetUrl = '/';
+        targetUrl = '/MixedReality-WebRTC/';
       }
       window.location.href = targetUrl;
     });
