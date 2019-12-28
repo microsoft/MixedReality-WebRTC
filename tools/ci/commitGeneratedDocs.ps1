@@ -1,9 +1,9 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See LICENSE in the project root for license information.
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
-# Commit a generated documentation to the gh-pages documentation branch
+# Commit a generated documentation to the 'gh-pages' documentation branch.
 # For the master branch, this commits the documentation at the root of
-# the branch. For other branches, this commits it under the verions/ folder.
+# the branch. For other branches, this commits it under the versions/ folder.
 
 param(
     [Parameter(Position=0)]
@@ -17,7 +17,8 @@ param(
 $SourceBranch = ($SourceBranch -Replace "^refs/heads/","")
 Write-Host "Source branch: '$SourceBranch'"
 
-# Create some authentication tokens to be able to connect to Azure DevOps to get changes and to GitHub to push changes
+# Create some authentication tokens to be able to connect to Azure DevOps
+# to get changes and to GitHub to push changes
 Write-Host "Create auth tokens to connect to GitHub and Azure DevOps"
 $Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${env:GITHUB_USER}:${env:GITHUB_PAT}"))
 
@@ -46,7 +47,8 @@ Write-Host "Clean output folder '_docs/' if it exists"
 Remove-Item ".\_docs" -Force -Recurse -ErrorAction Ignore
 
 # Compute the source and destination folders
-$DestFolder = ".\_docs\versions\$SourceBranch\"
+$SourceBranchPath = ($SourceBranch -Replace "/","\")
+$DestFolder = ".\_docs\versions\$SourceBranchPath\"
 if ($SourceBranch -eq "master")
 {
     # The master branch is the default version at the root of the website
