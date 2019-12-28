@@ -78,7 +78,16 @@ git -c http.extraheader="AUTHORIZATION: $Authorization" `
 Write-Host "Delete currently committed version"
 if (Test-Path "$DestFolder")
 {
-    Get-ChildItem "$DestFolder" -Recurse | Remove-Item -Force -Recurse
+    if ($SourceBranch -eq "master")
+    {
+        # For master, do not delete everything, otherwise docs for other branches
+        # will also be deleted. Only delete files outside '_docs/versions'.
+        Get-ChildItem "$DestFolder" -Recurse | Where-Object {$_.FullName -notlike "*\versions*"} | Remove-Item -Force -Recurse
+    }
+    else
+    {
+        Get-ChildItem "$DestFolder" -Recurse | Remove-Item -Force -Recurse
+    }
 }
 else
 {
