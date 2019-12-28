@@ -87,6 +87,9 @@
   <h1 id="Microsoft_MixedReality_WebRTC_Argb32VideoFrame" data-uid="Microsoft.MixedReality.WebRTC.Argb32VideoFrame" class="text-break">Struct Argb32VideoFrame
   </h1>
   <div class="markdown level0 summary"><p>Single video frame encoded in ARGB interleaved format (32 bits per pixel).</p>
+<p>The ARGB components are in the order of a little endian 32-bit integer, so
+0xAARRGGBB, or (B, G, R, A) as a sequence of bytes in memory with B first
+and A last.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
@@ -106,7 +109,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_Argb32VideoFrame_data.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.Argb32VideoFrame.data%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L135">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L145">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_Argb32VideoFrame_data" data-uid="Microsoft.MixedReality.WebRTC.Argb32VideoFrame.data">data</h4>
   <div class="markdown level1 summary"><p>Pointer to the data buffer containing the ARBG data for each pixel.</p>
@@ -136,7 +139,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_Argb32VideoFrame_height.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.Argb32VideoFrame.height%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L130">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L140">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_Argb32VideoFrame_height" data-uid="Microsoft.MixedReality.WebRTC.Argb32VideoFrame.height">height</h4>
   <div class="markdown level1 summary"><p>Frame height, in pixels.</p>
@@ -166,7 +169,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_Argb32VideoFrame_stride.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.Argb32VideoFrame.stride%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L140">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L150">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_Argb32VideoFrame_stride" data-uid="Microsoft.MixedReality.WebRTC.Argb32VideoFrame.stride">stride</h4>
   <div class="markdown level1 summary"><p>Stride in bytes between the ARGB rows.</p>
@@ -196,7 +199,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_Argb32VideoFrame_width.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.Argb32VideoFrame.width%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L125">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L135">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_Argb32VideoFrame_width" data-uid="Microsoft.MixedReality.WebRTC.Argb32VideoFrame.width">width</h4>
   <div class="markdown level1 summary"><p>Frame width, in pixels.</p>
@@ -232,7 +235,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
                     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_Argb32VideoFrame.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.Argb32VideoFrame%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L120" class="contribution-link">View Source</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L130" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

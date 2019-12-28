@@ -86,8 +86,10 @@
   
   <h1 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame" class="text-break">Struct I420AVideoFrame
   </h1>
-  <div class="markdown level0 summary"><p>Single video frame encoded in I420A format (triplanar YUV + alpha, 18 bits per pixel).
+  <div class="markdown level0 summary"><p>Single video frame encoded in I420A format (triplanar YUV with optional alpha plane).
 See e.g. <a href="https://wiki.videolan.org/YUV/#I420">https://wiki.videolan.org/YUV/#I420</a> for details.</p>
+<p>The I420 format uses chroma downsampling in both directions, resulting in 12 bits per
+pixel. With the optional alpha plane, the size increases to 20 bits per pixel.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
@@ -99,6 +101,9 @@ See e.g. <a href="https://wiki.videolan.org/YUV/#I420">https://wiki.videolan.org
   <h5 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The use of <code>ref struct</code> is an optimization to avoid heap allocation on each frame while
 having a nicer-to-use container to pass a frame accross methods.</p>
+<p>The alpha plane is generically supported in this data structure, but actual support
+in the video tracks depend on the underlying implementation and the video codec used,
+and is generally not available.</p>
 </div>
   <h3 id="fields">Fields
   </h3>
@@ -107,7 +112,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataA.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataA%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L47">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L54">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataA" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataA">dataA</h4>
   <div class="markdown level1 summary"><p>Optional pointer to the alpha plane buffer, if any, or <code>null</code> if the frame has no alpha plane.</p>
@@ -137,7 +142,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataU.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataU%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L37">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L44">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataU" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataU">dataU</h4>
   <div class="markdown level1 summary"><p>Pointer to the U plane buffer.</p>
@@ -167,7 +172,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataV.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataV%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L42">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L49">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataV" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataV">dataV</h4>
   <div class="markdown level1 summary"><p>Pointer to the V plane buffer.</p>
@@ -197,7 +202,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataY.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataY%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L32">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L39">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataY" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataY">dataY</h4>
   <div class="markdown level1 summary"><p>Pointer to the Y plane buffer.</p>
@@ -227,7 +232,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_height.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.height%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L27">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L34">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_height" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.height">height</h4>
   <div class="markdown level1 summary"><p>Frame height, in pixels.</p>
@@ -257,7 +262,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideA.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideA%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L67">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L74">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideA" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideA">strideA</h4>
   <div class="markdown level1 summary"><p>Stride in bytes between rows of the A plane, if present.</p>
@@ -287,7 +292,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideU.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideU%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L57">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L64">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideU" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideU">strideU</h4>
   <div class="markdown level1 summary"><p>Stride in bytes between rows of the U plane.</p>
@@ -317,7 +322,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideV.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideV%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L62">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L69">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideV" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideV">strideV</h4>
   <div class="markdown level1 summary"><p>Stride in bytes between rows of the V plane.</p>
@@ -347,7 +352,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideY.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideY%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L52">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L59">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideY" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideY">strideY</h4>
   <div class="markdown level1 summary"><p>Stride in bytes between rows of the Y plane.</p>
@@ -377,7 +382,7 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_width.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.width%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L22">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L29">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_width" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.width">width</h4>
   <div class="markdown level1 summary"><p>Frame width, in pixels.</p>
@@ -409,13 +414,12 @@ having a nicer-to-use container to pass a frame accross methods.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_CopyTo_System_Byte___.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.CopyTo(System.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L75">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L81">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_CopyTo_" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.CopyTo*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_CopyTo_System_Byte___" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.CopyTo(System.Byte[])">CopyTo(Byte[])</h4>
   <div class="markdown level1 summary"><p>Copy the frame content to a <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[] buffer as a contiguous block of memory
-containing the Y, U, and V planes one after another, and the alpha plane at the end if
-present.</p>
+containing the Y, U, and V planes one after another, and the alpha plane at the end if present.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -451,7 +455,7 @@ present.</p>
                     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L17" class="contribution-link">View Source</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L24" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
