@@ -1,20 +1,23 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See LICENSE in the project root for license information.
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
-# MixedReality-WebRTC build pipeline for documentation CI
-# Build the user manual and API reference from the sources
+# MixedReality-WebRTC build pipeline for documentation CI.
+# Build the user manual and API reference from the sources.
 
 # Trigger CI on push changes
 trigger:
   branches:
     include:
     - master
-    - dev
+    - release/*
     exclude:
     - docs/*
   paths:
     include:
     - docs/*
+    - libs/Microsoft.MixedReality.WebRTC/*
+    - libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Microsoft.MixedReality.WebRTC.Unity/*
+    - libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Microsoft.MixedReality.WebRTC.Unity.Editor/*
 
 # Do not trigger CI on PRs
 pr: none
