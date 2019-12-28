@@ -697,6 +697,11 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Initialize the current peer connection object asynchronously.
+        /// 
+        /// Most other methods will fail unless this call completes successfully, as it initializes the
+        /// underlying native implementation object required to create and manipulate the peer connection.
+        /// 
+        /// Once this call asynchronously completed, the <see cref="Initialized"/> property becomes <c>true</c>.
         /// </summary>
         /// <param name="config">Configuration for initializing the peer connection.</param>
         /// <param name="token">Optional cancellation token for the initialize task. This is only used if
@@ -867,6 +872,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Close the peer connection and destroy the underlying native resources.
         /// </summary>
         /// <remarks>This is equivalent to <see cref="Dispose"/>.</remarks>
+        /// <seealso cref="Dispose"/>
         public void Close()
         {
             // Begin shutdown sequence
@@ -951,6 +957,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Dispose of native resources by closing the peer connection.
         /// </summary>
         /// <remarks>This is equivalent to <see cref="Close"/>.</remarks>
+        /// <seealso cref="Close"/>
         public void Dispose() => Close();
 
         #endregion
@@ -960,15 +967,64 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Add to the current connection a video track from a local video capture device (webcam).
+        /// 
+        /// The video track receives its video data from an underlying hidden source associated with
+        /// the track and producing video frames by capturing them from a capture device accessible
+        /// from the local host machine, generally a USB webcam or built-in device camera.
+        /// 
+        /// The underlying video source initially starts in the capturing state, and will remain live
+        /// for as long as the track is added to the peer connection. It can be temporarily disabled
+        /// and re-enabled (see <see cref="LocalVideoTrack.Enabled"/>) while remaining added to the
+        /// peer connection. Note that disabling the track does not release the device; the source
+        /// retains exclusive access to it.
         /// </summary>
-        /// <param name="settings">Video capture settings for the local video track.</param>
-        /// <returns>Asynchronous task completed once the device is capturing and the track is added.</returns>
+        /// <param name="settings">Video capture settings for configuring the capture device associated with
+        /// the underlying video track source.</param>
+        /// <returns>This returns a task which, upon successful completion, provides an instance of
+        /// <see cref="LocalVideoTrack"/> representing the newly added video track.</returns>
         /// <remarks>
         /// On UWP this requires the "webcam" capability.
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
+        /// 
+        /// The video capture device may be accessed several times during the initializing process,
+        /// generally once for listing and validating the capture format, and once for actually starting
+        /// the video capture.
+        /// 
+        /// Note that the capture device must support a capture format with the given constraints of profile
+        /// ID or kind, capture resolution, and framerate, otherwise the call will fail. That is, there is no
+        /// fallback mechanism selecting a closest match. Developers should use
+        /// <see cref="GetVideoCaptureFormatsAsync(string)"/> to list the supported formats ahead of calling
+        /// <see cref="AddLocalVideoTrackAsync(LocalVideoTrackSettings)"/>, and can build their own fallback
+        /// mechanism on top of this call if needed.
         /// </remarks>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <example>
+        /// Create a video track called "MyTrack", with Mixed Reality Capture (MRC) enabled.
+        /// This assumes that the platform supports MRC. Note that if MRC is not available
+        /// the call will still succeed, but will return a track without MRC enabled.
+        /// <code>
+        /// var settings = new LocalVideoTrackSettings
+        /// {
+        ///     trackName = "MyTrack",
+        ///     enableMrc = true
+        /// };
+        /// var videoTrack = await peerConnection.AddLocalVideoTrackAsync(settings);
+        /// </code>
+        /// Create a video track from a local webcam, asking for a capture format suited for video conferencing,
+        /// and a target framerate of 30 frames per second (FPS). The implementation will select an appropriate
+        /// capture resolution. This assumes that the device supports video profiles, and has at least one capture
+        /// format supporting 30 FPS capture associated with the VideoConferencing profile. Otherwise the call
+        /// will fail.
+        /// <code>
+        /// var settings = new LocalVideoTrackSettings
+        /// {
+        ///     videoProfileKind = VideoProfileKind.VideoConferencing,
+        ///     framerate = 30.0
+        /// };
+        /// var videoTrack = await peerConnection.AddLocalVideoTrackAsync(settings);
+        /// </code>
+        /// </example>
         public Task<LocalVideoTrack> AddLocalVideoTrackAsync(LocalVideoTrackSettings settings = default)
         {
             ThrowIfConnectionNotOpen();
@@ -1125,6 +1181,15 @@ namespace Microsoft.MixedReality.WebRTC
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         /// <exception cref="SctpNotNegotiatedException">SCTP not negotiated. Call <see cref="CreateOffer()"/> first.</exception>
         /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        /// <remarks>
+        /// Data channels use DTLS over SCTP, which ensure in particular that messages are encrypted. To that end,
+        /// while establishing a connection with the remote peer, some specific SCTP handshake must occur. This
+        /// handshake is only performed if at least one data channel was added to the peer connection when the
+        /// connection starts its negotiation with <see cref="CreateOffer"/>. Therefore, if the user wants to use
+        /// a data channel at any point during the lifetime of this peer connection, it is critical to add at least
+        /// one data channel before <see cref="CreateOffer"/> is called. Otherwise all calls will fail with an
+        /// <see cref="SctpNotNegotiatedException"/> exception.
+        /// </remarks>
         public async Task<DataChannel> AddDataChannelAsync(ushort id, string label, bool ordered, bool reliable)
         {
             if (id < 0)
@@ -1143,7 +1208,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// appropriate data channel on its side with that negotiated ID, and the ID will be returned on
         /// both sides to the user for information.
         ///
-        /// Compares to out-of-band messages, this requires exchanging some SDP messages, but avoids having
+        /// Compared to out-of-band messages, this requires exchanging some SDP messages, but avoids having
         /// to determine a common unused ID and having to explicitly open the data channel on both sides.
         /// </summary>
         /// <param name="label">The data channel name.</param>
@@ -1153,8 +1218,11 @@ namespace Microsoft.MixedReality.WebRTC
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        /// <exception xref="InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception cref="SctpNotNegotiatedException">SCTP not negotiated. Call <see cref="CreateOffer()"/> first.</exception>
         /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        /// <remarks>
+        /// See the critical remark about SCTP handshake in <see cref="AddDataChannelAsync(ushort, string, bool, bool)"/>.
+        /// </remarks>
         public async Task<DataChannel> AddDataChannelAsync(string label, bool ordered, bool reliable)
         {
             return await AddDataChannelAsyncImpl(-1, label, ordered, reliable);
@@ -1242,9 +1310,16 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Create an SDP offer message as an attempt to establish a connection.
+        /// Once the message is ready to be sent, the <see cref="LocalSdpReadytoSend"/> event is fired
+        /// to allow the user to send that message to the remote peer via its selected signaling solution.
         /// </summary>
-        /// <returns><c>true</c> if the offer was created successfully.</returns>
+        /// <returns><c>true</c> if the offer creation task was successfully submitted.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <remarks>
+        /// The SDP offer message is not successfully created until the <see cref="LocalSdpReadytoSend"/>
+        /// event is triggered, and may still fail even if this method returns <c>true</c>, for example if
+        /// the peer connection is not in a valid state to create an offer.
+        /// </remarks>
         public bool CreateOffer()
         {
             MainEventSource.Log.CreateOffer();
@@ -1254,9 +1329,16 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Create an SDP answer message to a previously-received offer, to accept a connection.
+        /// Once the message is ready to be sent, the <see cref="LocalSdpReadytoSend"/> event is fired
+        /// to allow the user to send that message to the remote peer via its selected signaling solution.
         /// </summary>
-        /// <returns><c>true</c> if the offer was created successfully.</returns>
+        /// <returns><c>true</c> if the answer creation task was successfully submitted.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <remarks>
+        /// The SDP answer message is not successfully created until the <see cref="LocalSdpReadytoSend"/>
+        /// event is triggered, and may still fail even if this method returns <c>true</c>, for example if
+        /// the peer connection is not in a valid state to create an answer.
+        /// </remarks>
         public bool CreateAnswer()
         {
             MainEventSource.Log.CreateAnswer();
@@ -1266,8 +1348,7 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Set the bitrate allocated to all RTP streams sent by this connection.
-        /// Other limitations might affect these limits and are respected (for example
-        /// "b=AS" in SDP).
+        /// Other limitations might affect these limits and are respected (for example "b=AS" in SDP).
         /// </summary>
         /// <param name="minBitrateBps">Minimum bitrate in bits per second.</param>
         /// <param name="startBitrateBps">Start/current target bitrate in bits per second.</param>
@@ -1289,7 +1370,7 @@ namespace Microsoft.MixedReality.WebRTC
         ///
         /// This must be called by the signaler when receiving a message.
         /// </summary>
-        /// <param name="type">The type of SDP message ("offer", "answer", "ice")</param>
+        /// <param name="type">The type of SDP message ("offer" or "answer")</param>
         /// <param name="sdp">The content of the SDP message</param>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public void SetRemoteDescription(string type, string sdp)
@@ -1319,9 +1400,14 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Get the list of available video capture devices.
+        /// Get the list of video capture devices available on the local host machine.
         /// </summary>
         /// <returns>The list of available video capture devices.</returns>
+        /// <remarks>
+        /// Assign one of the returned <see cref="VideoCaptureDevice"/> to the
+        /// <see cref="LocalVideoTrackSettings.videoDevice"/> field to force a local video
+        /// track to use that device when creating it with <see cref="AddLocalVideoTrackAsync(LocalVideoTrackSettings)"/>.
+        /// </remarks>
         public static Task<List<VideoCaptureDevice>> GetVideoCaptureDevicesAsync()
         {
             // Ensure the logging system is ready before using PInvoke.
@@ -1366,7 +1452,7 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Enumerate the video capture formats for the specified video captur device.
+        /// Enumerate the video capture formats for the specified video capture device.
         /// </summary>
         /// <param name="deviceId">Unique identifier of the video capture device to enumerate the
         /// capture formats of, as retrieved from the <see cref="VideoCaptureDevice.id"/> field of
@@ -1451,10 +1537,15 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// [HoloLens 1 only]
-        /// Use this function to select whether resolutions where height is not multiple of 16
-        /// should be cropped, padded or left unchanged.
+        /// Use this function to select whether resolutions where height is not multiple of 16 pixels
+        /// should be cropped, padded, or left unchanged.
+        /// 
         /// Default is <see cref="FrameHeightRoundMode.Crop"/> to avoid severe artifacts produced by
-        /// the H.264 hardware encoder on HoloLens 1.
+        /// the H.264 hardware encoder on HoloLens 1 due to a bug with the encoder. This is the
+        /// recommended value, and should be used unless cropping discards valuable data in the top and
+        /// bottom rows for a given usage, in which case <see cref="FrameHeightRoundMode.Pad"/> can
+        /// be used as a replacement but may still produce some mild artifacts.
+        /// 
         /// This has no effect on other platforms.
         /// </summary>
         /// <param name="value">The rounding mode for video frames.</param>
