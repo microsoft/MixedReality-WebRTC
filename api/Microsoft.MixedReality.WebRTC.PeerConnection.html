@@ -331,7 +331,7 @@ For ICE connection status, see the <a class="xref" href="Microsoft.MixedReality.
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_AddCustomLocalVideoTrack_System_String_Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.AddCustomLocalVideoTrack(System.String%2CMicrosoft.MixedReality.WebRTC.ExternalVideoTrackSource)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1022">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1078">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_AddCustomLocalVideoTrack_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddCustomLocalVideoTrack*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_AddCustomLocalVideoTrack_System_String_Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddCustomLocalVideoTrack(System.String,Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource)">AddCustomLocalVideoTrack(String, ExternalVideoTrackSource)</h4>
@@ -389,7 +389,7 @@ provides video frames directly to WebRTC when asked to do so via the provided ca
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_String_System_Boolean_System_Boolean_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.AddDataChannelAsync(System.String%2CSystem.Boolean%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1158">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1226">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddDataChannelAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_String_System_Boolean_System_Boolean_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddDataChannelAsync(System.String,System.Boolean,System.Boolean)">AddDataChannelAsync(String, Boolean, Boolean)</h4>
@@ -399,7 +399,7 @@ and the implementation negotiates with the remote peer an appropriate ID by send
 SDP offer message. In that case once accepted the other peer will automatically create the
 appropriate data channel on its side with that negotiated ID, and the ID will be returned on
 both sides to the user for information.</p>
-<p>Compares to out-of-band messages, this requires exchanging some SDP messages, but avoids having
+<p>Compared to out-of-band messages, this requires exchanging some SDP messages, but avoids having
 to determine a common unused ID and having to explicitly open the data channel on both sides.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -455,12 +455,31 @@ to determine a common unused ID and having to explicitly open the data channel o
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_String_System_Boolean_System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>See the critical remark about SCTP handshake in <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_UInt16_System_String_System_Boolean_System_Boolean_">AddDataChannelAsync(UInt16, String, Boolean, Boolean)</a>.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html">SctpNotNegotiatedException</a></td>
+        <td><p>SCTP not negotiated. Call <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer">CreateOffer()</a> first.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_UInt16_System_String_System_Boolean_System_Boolean_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.AddDataChannelAsync(System.UInt16%2CSystem.String%2CSystem.Boolean%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1128">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1193">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddDataChannelAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_UInt16_System_String_System_Boolean_System_Boolean_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddDataChannelAsync(System.UInt16,System.String,System.Boolean,System.Boolean)">AddDataChannelAsync(UInt16, String, Boolean, Boolean)</h4>
@@ -530,6 +549,15 @@ by another channel, and also requires to ensure that both peers explicitly open 
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_UInt16_System_String_System_Boolean_System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Data channels use DTLS over SCTP, which ensure in particular that messages are encrypted. To that end,
+while establishing a connection with the remote peer, some specific SCTP handshake must occur. This
+handshake is only performed if at least one data channel was added to the peer connection when the
+connection starts its negotiation with <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer">CreateOffer()</a>. Therefore, if the user wants to use
+a data channel at any point during the lifetime of this peer connection, it is critical to add at least
+one data channel before <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer">CreateOffer()</a> is called. Otherwise all calls will fail with an
+<a class="xref" href="Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html">SctpNotNegotiatedException</a> exception.</p>
+</div>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
@@ -551,7 +579,7 @@ by another channel, and also requires to ensure that both peers explicitly open 
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_AddIceCandidate_System_String_System_Int32_System_String_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.AddIceCandidate(System.String%2CSystem.Int32%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1236">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1304">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_AddIceCandidate_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddIceCandidate*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_AddIceCandidate_System_String_System_Int32_System_String_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddIceCandidate(System.String,System.Int32,System.String)">AddIceCandidate(String, Int32, String)</h4>
@@ -594,7 +622,7 @@ by another channel, and also requires to ensure that both peers explicitly open 
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalAudioTrackAsync.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalAudioTrackAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1039">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1095">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalAudioTrackAsync_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalAudioTrackAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalAudioTrackAsync" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalAudioTrackAsync">AddLocalAudioTrackAsync()</h4>
@@ -631,11 +659,19 @@ for more details.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalVideoTrackAsync_Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L972">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1028">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalVideoTrackAsync_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalVideoTrackAsync_Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings)">AddLocalVideoTrackAsync(PeerConnection.LocalVideoTrackSettings)</h4>
   <div class="markdown level1 summary"><p>Add to the current connection a video track from a local video capture device (webcam).</p>
+<p>The video track receives its video data from an underlying hidden source associated with
+the track and producing video frames by capturing them from a capture device accessible
+from the local host machine, generally a USB webcam or built-in device camera.</p>
+<p>The underlying video source initially starts in the capturing state, and will remain live
+for as long as the track is added to the peer connection. It can be temporarily disabled
+and re-enabled (see <a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_Enabled">Enabled</a>) while remaining added to the
+peer connection. Note that disabling the track does not release the device; the source
+retains exclusive access to it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -655,7 +691,8 @@ for more details.</p>
       <tr>
         <td><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.html">PeerConnection.LocalVideoTrackSettings</a></td>
         <td><span class="parametername">settings</span></td>
-        <td><p>Video capture settings for the local video track.</p>
+        <td><p>Video capture settings for configuring the capture device associated with
+the underlying video track source.</p>
 </td>
       </tr>
     </tbody>
@@ -671,7 +708,8 @@ for more details.</p>
     <tbody>
       <tr>
         <td><span class="xref">Task</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html">LocalVideoTrack</a>&gt;</td>
-        <td><p>Asynchronous task completed once the device is capturing and the track is added.</p>
+        <td><p>This returns a task which, upon successful completion, provides an instance of
+<a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html">LocalVideoTrack</a> representing the newly added video track.</p>
 </td>
       </tr>
     </tbody>
@@ -680,13 +718,44 @@ for more details.</p>
   <div class="markdown level1 remarks"><p>On UWP this requires the &quot;webcam&quot; capability.
 See <a href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations">https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations</a>
 for more details.</p>
+<p>The video capture device may be accessed several times during the initializing process,
+generally once for listing and validating the capture format, and once for actually starting
+the video capture.</p>
+<p>Note that the capture device must support a capture format with the given constraints of profile
+ID or kind, capture resolution, and framerate, otherwise the call will fail. That is, there is no
+fallback mechanism selecting a closest match. Developers should use
+<a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureFormatsAsync_System_String_">GetVideoCaptureFormatsAsync(String)</a> to list the supported formats ahead of calling
+<a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalVideoTrackAsync_Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_">AddLocalVideoTrackAsync(PeerConnection.LocalVideoTrackSettings)</a>, and can build their own fallback
+mechanism on top of this call if needed.</p>
 </div>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalVideoTrackAsync_Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings__examples">Examples</h5>
+  <p>Create a video track called &quot;MyTrack&quot;, with Mixed Reality Capture (MRC) enabled.
+This assumes that the platform supports MRC. Note that if MRC is not available
+the call will still succeed, but will return a track without MRC enabled.</p>
+<pre><code>var settings = new LocalVideoTrackSettings
+{
+    trackName = &quot;MyTrack&quot;,
+    enableMrc = true
+};
+var videoTrack = await peerConnection.AddLocalVideoTrackAsync(settings);</code></pre>
+<p>Create a video track from a local webcam, asking for a capture format suited for video conferencing,
+and a target framerate of 30 frames per second (FPS). The implementation will select an appropriate
+capture resolution. This assumes that the device supports video profiles, and has at least one capture
+format supporting 30 FPS capture associated with the VideoConferencing profile. Otherwise the call
+will fail.</p>
+<pre><code>var settings = new LocalVideoTrackSettings
+{
+    videoProfileKind = VideoProfileKind.VideoConferencing,
+    framerate = 30.0
+};
+var videoTrack = await peerConnection.AddLocalVideoTrackAsync(settings);</code></pre>
+
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_Close.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.Close%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L870">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L876">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_Close_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.Close*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_Close" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.Close">Close()</h4>
@@ -700,16 +769,22 @@ for more details.</p>
   <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_Close_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This is equivalent to <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Dispose">Dispose()</a>.</p>
 </div>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_Close_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Dispose">Dispose()</a></div>
+  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_CreateAnswer.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.CreateAnswer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1260">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1342">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_CreateAnswer_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.CreateAnswer*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_CreateAnswer" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.CreateAnswer">CreateAnswer()</h4>
-  <div class="markdown level1 summary"><p>Create an SDP answer message to a previously-received offer, to accept a connection.</p>
+  <div class="markdown level1 summary"><p>Create an SDP answer message to a previously-received offer, to accept a connection.
+Once the message is ready to be sent, the <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend">LocalSdpReadytoSend</a> event is fired
+to allow the user to send that message to the remote peer via its selected signaling solution.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -727,21 +802,28 @@ for more details.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><code>true</code> if the offer was created successfully.</p>
+        <td><p><code>true</code> if the answer creation task was successfully submitted.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_CreateAnswer_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The SDP answer message is not successfully created until the <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend">LocalSdpReadytoSend</a>
+event is triggered, and may still fail even if this method returns <code>true</code>, for example if
+the peer connection is not in a valid state to create an answer.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.CreateOffer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1248">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1323">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.CreateOffer*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.CreateOffer">CreateOffer()</h4>
-  <div class="markdown level1 summary"><p>Create an SDP offer message as an attempt to establish a connection.</p>
+  <div class="markdown level1 summary"><p>Create an SDP offer message as an attempt to establish a connection.
+Once the message is ready to be sent, the <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend">LocalSdpReadytoSend</a> event is fired
+to allow the user to send that message to the remote peer via its selected signaling solution.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -759,17 +841,22 @@ for more details.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><code>true</code> if the offer was created successfully.</p>
+        <td><p><code>true</code> if the offer creation task was successfully submitted.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The SDP offer message is not successfully created until the <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend">LocalSdpReadytoSend</a>
+event is triggered, and may still fail even if this method returns <code>true</code>, for example if
+the peer connection is not in a valid state to create an offer.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_Dispose.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L954">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L961">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_Dispose_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.Dispose*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_Dispose" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.Dispose">Dispose()</h4>
@@ -783,16 +870,20 @@ for more details.</p>
   <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_Dispose_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This is equivalent to <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Close">Close()</a>.</p>
 </div>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_Dispose_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Close">Close()</a></div>
+  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1325">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1411">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync">GetVideoCaptureDevicesAsync()</h4>
-  <div class="markdown level1 summary"><p>Get the list of available video capture devices.</p>
+  <div class="markdown level1 summary"><p>Get the list of video capture devices available on the local host machine.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -815,16 +906,21 @@ for more details.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Assign one of the returned <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html">VideoCaptureDevice</a> to the
+<a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_videoDevice">videoDevice</a> field to force a local video
+track to use that device when creating it with <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalVideoTrackAsync_Microsoft_MixedReality_WebRTC_PeerConnection_LocalVideoTrackSettings_">AddLocalVideoTrackAsync(PeerConnection.LocalVideoTrackSettings)</a>.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureFormatsAsync_System_String_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1375">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1461">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureFormatsAsync_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureFormatsAsync_System_String_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync(System.String)">GetVideoCaptureFormatsAsync(String)</h4>
-  <div class="markdown level1 summary"><p>Enumerate the video capture formats for the specified video captur device.</p>
+  <div class="markdown level1 summary"><p>Enumerate the video capture formats for the specified video capture device.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -872,11 +968,14 @@ a capture device enumerated with <a class="xref" href="Microsoft.MixedReality.We
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_Microsoft_MixedReality_WebRTC_PeerConnectionConfiguration_CancellationToken_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.InitializeAsync(Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L709">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L714">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.InitializeAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_Microsoft_MixedReality_WebRTC_PeerConnectionConfiguration_CancellationToken_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.InitializeAsync(Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration,CancellationToken)">InitializeAsync(PeerConnectionConfiguration, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Initialize the current peer connection object asynchronously.</p>
+<p>Most other methods will fail unless this call completes successfully, as it initializes the
+underlying native implementation object required to create and manipulate the peer connection.</p>
+<p>Once this call asynchronously completed, the <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Initialized">Initialized</a> property becomes <code>true</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -935,7 +1034,7 @@ to force a single caller and to synchronize with it.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_IsLocalAudioTrackEnabled.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.IsLocalAudioTrackEnabled%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1087">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1143">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_IsLocalAudioTrackEnabled_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.IsLocalAudioTrackEnabled*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_IsLocalAudioTrackEnabled" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.IsLocalAudioTrackEnabled">IsLocalAudioTrackEnabled()</h4>
@@ -968,7 +1067,7 @@ Disable audio tracks are still active, but are silent.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalAudioTrack.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalAudioTrack%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1097">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1153">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalAudioTrack_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalAudioTrack*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalAudioTrack" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalAudioTrack">RemoveLocalAudioTrack()</h4>
@@ -984,7 +1083,7 @@ Disable audio tracks are still active, but are silent.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalVideoTrack_Microsoft_MixedReality_WebRTC_LocalVideoTrack_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTrack(Microsoft.MixedReality.WebRTC.LocalVideoTrack)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1007">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1063">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalVideoTrack_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTrack*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalVideoTrack_Microsoft_MixedReality_WebRTC_LocalVideoTrack_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTrack(Microsoft.MixedReality.WebRTC.LocalVideoTrack)">RemoveLocalVideoTrack(LocalVideoTrack)</h4>
@@ -1017,7 +1116,7 @@ Disable audio tracks are still active, but are silent.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalVideoTracksFromSource_Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTracksFromSource(Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1061">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1117">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalVideoTracksFromSource_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTracksFromSource*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_RemoveLocalVideoTracksFromSource_Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.RemoveLocalVideoTracksFromSource(Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource)">RemoveLocalVideoTracksFromSource(ExternalVideoTrackSource)</h4>
@@ -1055,13 +1154,12 @@ therefore this is equivalent to <a class="xref" href="Microsoft.MixedReality.Web
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_SetBitrate_System_Nullable_System_UInt32__System_Nullable_System_UInt32__System_Nullable_System_UInt32__.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.SetBitrate(System.Nullable%7BSystem.UInt32%7D%2CSystem.Nullable%7BSystem.UInt32%7D%2CSystem.Nullable%7BSystem.UInt32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1275">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1356">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_SetBitrate_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.SetBitrate*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_SetBitrate_System_Nullable_System_UInt32__System_Nullable_System_UInt32__System_Nullable_System_UInt32__" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.SetBitrate(System.Nullable{System.UInt32},System.Nullable{System.UInt32},System.Nullable{System.UInt32})">SetBitrate(Nullable&lt;UInt32&gt;, Nullable&lt;UInt32&gt;, Nullable&lt;UInt32&gt;)</h4>
   <div class="markdown level1 summary"><p>Set the bitrate allocated to all RTP streams sent by this connection.
-Other limitations might affect these limits and are respected (for example
-&quot;b=AS&quot; in SDP).</p>
+Other limitations might affect these limits and are respected (for example &quot;b=AS&quot; in SDP).</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -1103,16 +1201,19 @@ Other limitations might affect these limits and are respected (for example
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_SetFrameHeightRoundMode_Microsoft_MixedReality_WebRTC_PeerConnection_FrameHeightRoundMode_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.SetFrameHeightRoundMode(Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1461">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1552">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_SetFrameHeightRoundMode_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.SetFrameHeightRoundMode*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_SetFrameHeightRoundMode_Microsoft_MixedReality_WebRTC_PeerConnection_FrameHeightRoundMode_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.SetFrameHeightRoundMode(Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode)">SetFrameHeightRoundMode(PeerConnection.FrameHeightRoundMode)</h4>
   <div class="markdown level1 summary"><p>[HoloLens 1 only]
-Use this function to select whether resolutions where height is not multiple of 16
-should be cropped, padded or left unchanged.
-Default is <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html#Microsoft_MixedReality_WebRTC_PeerConnection_FrameHeightRoundMode_Crop">Crop</a> to avoid severe artifacts produced by
-the H.264 hardware encoder on HoloLens 1.
-This has no effect on other platforms.</p>
+Use this function to select whether resolutions where height is not multiple of 16 pixels
+should be cropped, padded, or left unchanged.</p>
+<p>Default is <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html#Microsoft_MixedReality_WebRTC_PeerConnection_FrameHeightRoundMode_Crop">Crop</a> to avoid severe artifacts produced by
+the H.264 hardware encoder on HoloLens 1 due to a bug with the encoder. This is the
+recommended value, and should be used unless cropping discards valuable data in the top and
+bottom rows for a given usage, in which case <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html#Microsoft_MixedReality_WebRTC_PeerConnection_FrameHeightRoundMode_Pad">Pad</a> can
+be used as a replacement but may still produce some mild artifacts.</p>
+<p>This has no effect on other platforms.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -1142,7 +1243,7 @@ This has no effect on other platforms.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_SetLocalAudioTrackEnabled_System_Boolean_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalAudioTrackEnabled(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1074">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1130">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_SetLocalAudioTrackEnabled_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalAudioTrackEnabled*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_SetLocalAudioTrackEnabled_System_Boolean_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalAudioTrackEnabled(System.Boolean)">SetLocalAudioTrackEnabled(Boolean)</h4>
@@ -1177,7 +1278,7 @@ Disable audio tracks are still active, but are silent.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescription_System_String_System_String_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription(System.String%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1295">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1376">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescription_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescription_System_String_System_String_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription(System.String,System.String)">SetRemoteDescription(String, String)</h4>
@@ -1203,7 +1304,7 @@ underlying WebRTC implementation, which will parse and use it.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">type</span></td>
-        <td><p>The type of SDP message (&quot;offer&quot;, &quot;answer&quot;, &quot;ice&quot;)</p>
+        <td><p>The type of SDP message (&quot;offer&quot; or &quot;answer&quot;)</p>
 </td>
       </tr>
       <tr>
