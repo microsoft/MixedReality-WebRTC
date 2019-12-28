@@ -9,7 +9,7 @@ trigger:
   branches:
     include:
     - master
-    - dev
+    - release/*
     exclude:
     - docs/*
   paths:
