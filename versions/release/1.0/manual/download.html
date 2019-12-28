@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Downloading MixedReality-WebRTC | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Downloading MixedReality-WebRTC | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="downloading-mixedreality-webrtc">Downloading MixedReality-WebRTC</h1>
+
+<p>MixedReality-WebRTC is primarily distributed as NuGet packages hosted on <a href="https://nuget.org">nuget.org</a>. Those packages are signed by Microsoft. Generally you do not want to download those packages directly, but instead add a reference inside a Visual Studio project and let Visual Studio do the installation. See <a href="installation.html">Installation</a> for details.</p>
+<p>Alternatively, the libraries can be compiled from source if wanted. See <a href="building.html">Building from sources</a> for details on this process.</p>
+<h2 id="c-library">C# library</h2>
+<p>The C# library is distributed as two separate packages for Windows Desktop and Windows UWP:</p>
+<ul>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC">Windows Desktop package <code>Microsoft.MixedReality.WebRTC</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.UWP">Windows UWP package <code>Microsoft.MixedReality.WebRTC.UWP</code></a></li>
+</ul>
+<div class="NOTE">
+<h5>Note</h5>
+<p>As per existing C# NuGet packages convention, and unlike the C++ library below, the Desktop package has no suffix, and the UWP package adds a <code>.UWP</code> suffix.</p>
+</div>
+<p>The C# library packages contain the C# assembly <code>Microsoft.MixedReality.WebRTC</code> as well as the per-architecture native DLLs. Therefore those packages are standalone, and there is no need to also reference the C++ library packages in your project.</p>
+<h2 id="c-library-1">C++ library</h2>
+<p>The C++ library is distributed as two separate packages for Windows Desktop and Windows UWP:</p>
+<ul>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Desktop">Windows Desktop package <code>Microsoft.MixedReality.WebRTC.Native.Desktop</code></a></li>
+<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.UWP.Desktop">Windows UWP package <code>Microsoft.MixedReality.WebRTC.UWP.Desktop</code></a></li>
+</ul>
+<p>The C++ packages contain the shared library <code>Microsoft.MixedReality.WebRTC.Native.dll</code> as well as its import library (<code>.lib</code>) and debug symbols database (<code>*.pdb</code>).</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>Unlike for the C# library above, the C++ library packages are named explicitly according to the target platform, adding either a <code>.Desktop</code> or <code>.UWP</code> suffix to the package name.</p>
+</div>
+<h2 id="unity-integration">Unity integration</h2>
+<p>The Unity integration is not currently distributed in any particular packaged way. Instead, users can check out the GitHub repository and copy the relevant parts of the Unity sample project from <a href="https://github.com/microsoft/MixedReality-WebRTC/tree/master/libs/Microsoft.MixedReality.WebRTC.Unity/"><code>libs/Microsoft.MixedReality.WebRTC.Unity/</code></a>. See <a href="installation.html">Installation</a> for details.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/docs/manual/download.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

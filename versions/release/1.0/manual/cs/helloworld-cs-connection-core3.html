@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Establishing a WebRTC connection | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Establishing a WebRTC connection | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="establishing-a-webrtc-connection">Establishing a WebRTC connection</h1>
+
+<p>Now that the signaling solution is in place, the final step is to establish a peer connection.</p>
+<p>Continue editing the <code>Program.cs</code> file and append the following:</p>
+<ol>
+<li><p>For debugging purpose, and to understand what is going on with the connection, connect the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> and <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceStateChanged"><code>IceStateChanged</code></a> events to handlers printing messages to console.</p>
+<pre><code class="lang-cs">pc.Connected += () =&gt; {
+    Console.WriteLine(&quot;PeerConnection: connected.&quot;);
+};
+
+pc.IceStateChanged += (IceConnectionState newState) =&gt; {
+    Console.WriteLine($&quot;ICE state: {newState}&quot;);
+};
+</code></pre>
+<p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event is invoked when the peer connection is established. The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceStateChanged"><code>IceStateChanged</code></a> is invoked each time the ICE status changes. Note that the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event can be invoked before the ICE status reaches its <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.IceConnectionState.html"><code>IceConnectionState.Connected</code></a> state.</p>
+</li>
+<li><p>In order to verify that the remote video is received, we also subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420RemoteVideoFrameReady"><code>I420RemoteVideoFrameReady</code></a> event. Since this event is invoked frequently, we only print a message every 60 frames.</p>
+<pre><code class="lang-cs">int numFrames = 0;
+pc.I420RemoteVideoFrameReady += (I420AVideoFrame frame) =&gt; {
+    ++numFrames;
+    if (numFrames % 60 == 0)
+    {
+        Console.WriteLine($&quot;Received video frames: {numFrames}&quot;);
+    }
+};
+</code></pre>
+</li>
+<li><p>To establish a WebRTC connection, one peer has to call <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer"><code>CreateOffer()</code></a>, but not both. Since the signaler implementation <code>NamedPipeSignaler</code> already provides a way to distinguish between the two peers, we use that information to select which peer will automatically initiate the connection.</p>
+<pre><code class="lang-cs">if (signaler.IsClient)
+{
+    Console.WriteLine(&quot;Connecting to remote peer...&quot;);
+    pc.CreateOffer();
+}
+else
+{
+    Console.WriteLine(&quot;Waiting for offer from remote peer...&quot;);
+}
+</code></pre>
+</li>
+<li><p>In this state, the application is working but will terminate immediately once the peer connection is established. To prevent that, simply wait until the user press a key, and then close the signaler.</p>
+<pre><code class="lang-cs">Console.WriteLine(&quot;Press a key to terminate the application...&quot;);
+Console.ReadKey(true);
+signaler.Stop();
+Console.WriteLine(&quot;Program termined.&quot;);
+</code></pre>
+</li>
+</ol>
+<p>Run the two instances of the application again. This time both terminals print a large quantity of messages related to SDP and ICE message exchanges, and eventually establish a WebRTC peer connection.</p>
+<p><img src="cs6.png" alt="Peer connections connecting to each other"></p>
+<p>If launched with the audio or video capture flags, the capturer instance records those media and send them via the network to the other instance, which invokes the remote frame callback and print a message every 60 frames. After that, you can press any key to stop each instance. The signaler and peer connection will close and the program will terminate.</p>
+<p><img src="cs7.png" alt="Peer connections connecting to each other"></p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/docs/manual/cs/helloworld-cs-connection-core3.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

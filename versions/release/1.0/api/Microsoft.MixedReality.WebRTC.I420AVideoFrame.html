@@ -1,0 +1,481 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct I420AVideoFrame
+   | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct I420AVideoFrame
+   | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame">
+  
+  
+  <h1 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame" class="text-break">Struct I420AVideoFrame
+  </h1>
+  <div class="markdown level0 summary"><p>Single video frame encoded in I420A format (triplanar YUV + alpha, 18 bits per pixel).
+See e.g. <a href="https://wiki.videolan.org/YUV/#I420">https://wiki.videolan.org/YUV/#I420</a> for details.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
+  <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public struct I420AVideoFrame</code></pre>
+  </div>
+  <h5 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>The use of <code>ref struct</code> is an optimization to avoid heap allocation on each frame while
+having a nicer-to-use container to pass a frame accross methods.</p>
+</div>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataA.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataA%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L47">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataA" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataA">dataA</h4>
+  <div class="markdown level1 summary"><p>Optional pointer to the alpha plane buffer, if any, or <code>null</code> if the frame has no alpha plane.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IntPtr dataA</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataU.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataU%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L37">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataU" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataU">dataU</h4>
+  <div class="markdown level1 summary"><p>Pointer to the U plane buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IntPtr dataU</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataV.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataV%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L42">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataV" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataV">dataV</h4>
+  <div class="markdown level1 summary"><p>Pointer to the V plane buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IntPtr dataV</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataY.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataY%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L32">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_dataY" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.dataY">dataY</h4>
+  <div class="markdown level1 summary"><p>Pointer to the Y plane buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IntPtr dataY</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_height.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.height%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L27">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_height" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.height">height</h4>
+  <div class="markdown level1 summary"><p>Frame height, in pixels.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public uint height</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideA.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideA%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L67">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideA" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideA">strideA</h4>
+  <div class="markdown level1 summary"><p>Stride in bytes between rows of the A plane, if present.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int strideA</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideU.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideU%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L57">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideU" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideU">strideU</h4>
+  <div class="markdown level1 summary"><p>Stride in bytes between rows of the U plane.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int strideU</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideV.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideV%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L62">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideV" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideV">strideV</h4>
+  <div class="markdown level1 summary"><p>Stride in bytes between rows of the V plane.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int strideV</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideY.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideY%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L52">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_strideY" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.strideY">strideY</h4>
+  <div class="markdown level1 summary"><p>Stride in bytes between rows of the Y plane.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int strideY</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_width.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.width%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L22">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_width" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.width">width</h4>
+  <div class="markdown level1 summary"><p>Frame width, in pixels.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public uint width</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame_CopyTo_System_Byte___.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame.CopyTo(System.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L75">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_CopyTo_" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.CopyTo*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_I420AVideoFrame_CopyTo_System_Byte___" data-uid="Microsoft.MixedReality.WebRTC.I420AVideoFrame.CopyTo(System.Byte[])">CopyTo(Byte[])</h4>
+  <div class="markdown level1 summary"><p>Copy the frame content to a <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[] buffer as a contiguous block of memory
+containing the Y, U, and V planes one after another, and the alpha plane at the end if
+present.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void CopyTo(byte[] buffer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The destination buffer to copy the frame to.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/1.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_I420AVideoFrame.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.I420AVideoFrame%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/1.0/libs/Microsoft.MixedReality.WebRTC/VideoFrame.cs/#L17" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
