@@ -77,8 +77,8 @@ Write-Host "Clean output folder '_docs/' if it exists"
 Remove-Item ".\_docs" -Force -Recurse -ErrorAction Ignore
 
 # Compute the source and destination folders
-$SourceBranchPath = ($SourceBranch -Replace "/","\")
-$DestFolder = ".\_docs\versions\$SourceBranchPath\"
+$DestFolder = ".\_docs\versions\$SourceBranch\"
+$DestFolder = $DestFolder.Replace("/", "\")
 if ($SourceBranch -eq "master")
 {
     # The master branch is the default version at the root of the website
@@ -132,6 +132,8 @@ Write-Host "Copy new generated version"
 Copy-Item ".\build\docs\generated\*" -Destination "$DestFolder" -Force -Recurse
 
 # Write the documented branches file
+$branchesFile = Join-Path "$DestFolder" "styles\branches.gen.js"
+Write-Host "Generate $branchesFile"
 $js = @"
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -158,7 +160,7 @@ window.mrwebrtc = mrwebrtc
 })();
 
 "@
-Set-Content -Path ".\_docs\styles\branches.gen.js" -Value $js -Encoding UTF8
+Set-Content -Path "$branchesFile" -Value $js -Encoding UTF8
 
 # Move inside the generated docs repository, so that subsequent git commands
 # apply to this repo/branch and not the global one with the source code.
