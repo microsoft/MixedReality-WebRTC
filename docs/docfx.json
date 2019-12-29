@@ -20,7 +20,8 @@
           "src": "../libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Microsoft.MixedReality.WebRTC.Unity.Examples"
         }
       ],
-      "dest": "api"
+      "dest": "api",
+      "filter": "filterConfig.yml"
     }
   ],
   "build": {
@@ -33,7 +34,8 @@
       },
       {
         // generate html for conceptual docs
-        "files": ["**/*.md", "**/*.yml"]
+        "files": ["**/*.md", "**/*.yml"],
+        "exclude": "filterConfig.yml"
       }
     ],
     "resource": [
