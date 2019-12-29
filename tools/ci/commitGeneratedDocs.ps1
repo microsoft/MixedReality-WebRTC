@@ -131,7 +131,8 @@ Write-Host "Copy new generated version"
 Copy-Item ".\build\docs\generated\*" -Destination "$DestFolder" -Force -Recurse
 
 # Write the documented branches file
-Write-Host "Generate $DestFolder\branches.gen.js"
+$branchesFile = Join-Path "$DestFolder" "styles\branches.gen.js"
+Write-Host "Generate $branchesFile"
 $js = @"
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -158,7 +159,7 @@ window.mrwebrtc = mrwebrtc
 })();
 
 "@
-Set-Content -Path "$DestFolder\branches.gen.js" -Value $js -Encoding UTF8
+Set-Content -Path "$branchesFile" -Value $js -Encoding UTF8
 
 # Move inside the generated docs repository, so that subsequent git commands
 # apply to this repo/branch and not the global one with the source code.
