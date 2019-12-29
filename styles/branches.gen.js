@@ -14,7 +14,7 @@ var branches = [
 // Export to global scope
 var mrwebrtc = {
   branches: branches,
-  currentBranch: "release/1.0"
+  currentBranch: "master"
 }
 window.mrwebrtc = mrwebrtc
 
