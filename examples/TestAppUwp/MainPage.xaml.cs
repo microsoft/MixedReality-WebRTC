@@ -1455,10 +1455,15 @@ namespace TestAppUwp
                 return;
             }
 
-            // If not polling, try to start if the poll time is valid
+            // If not polling, try to start if the poll parameters are valid
             if (!float.TryParse(dssPollTimeMs.Text, out float pollTimeMs))
             {
                 // Invalid time format, cannot start polling
+                return;
+            }
+            if (string.IsNullOrEmpty(localPeerUidTextBox.Text) || string.IsNullOrEmpty(remotePeerUidTextBox.Text))
+            {
+                // Invalid peer ID, cannot start polling
                 return;
             }
 
