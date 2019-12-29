@@ -9,7 +9,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     /// <summary>
     /// Handle to a native external video track source object.
     /// </summary>
-    public sealed class ExternalVideoTrackSourceHandle : SafeHandle
+    internal sealed class ExternalVideoTrackSourceHandle : SafeHandle
     {
         /// <summary>
         /// Check if the current handle is invalid, which means it is not referencing
