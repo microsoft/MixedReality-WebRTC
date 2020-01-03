@@ -160,12 +160,12 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public PeerConnectionRenegotiationNeededCallback RenegotiationNeededCallback;
             public PeerConnectionTrackAddedCallback TrackAddedCallback;
             public PeerConnectionTrackRemovedCallback TrackRemovedCallback;
-            public PeerConnectionI420AVideoFrameCallback I420ALocalVideoFrameCallback;
-            public PeerConnectionI420AVideoFrameCallback I420ARemoteVideoFrameCallback;
-            public PeerConnectionArgb32VideoFrameCallback Argb32LocalVideoFrameCallback;
-            public PeerConnectionArgb32VideoFrameCallback Argb32RemoteVideoFrameCallback;
-            public PeerConnectionAudioFrameCallback LocalAudioFrameCallback;
-            public PeerConnectionAudioFrameCallback RemoteAudioFrameCallback;
+            public LocalVideoTrackInterop.I420AVideoFrameUnmanagedCallback I420ALocalVideoFrameCallback;
+            public LocalVideoTrackInterop.I420AVideoFrameUnmanagedCallback I420ARemoteVideoFrameCallback;
+            public LocalVideoTrackInterop.Argb32VideoFrameUnmanagedCallback Argb32LocalVideoFrameCallback;
+            public LocalVideoTrackInterop.Argb32VideoFrameUnmanagedCallback Argb32RemoteVideoFrameCallback;
+            public AudioFrameUnmanagedCallback LocalAudioFrameCallback;
+            public AudioFrameUnmanagedCallback RemoteAudioFrameCallback;
         }
 
         [MonoPInvokeCallback(typeof(ConnectedDelegate))]
@@ -244,29 +244,29 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             peer.OnTrackRemoved(trackKind);
         }
 
-        [MonoPInvokeCallback(typeof(I420AVideoFrameDelegate))]
-        public static void I420ARemoteVideoFrameCallback(IntPtr userData, I420AVideoFrame frame)
+        [MonoPInvokeCallback(typeof(LocalVideoTrackInterop.I420AVideoFrameUnmanagedCallback))]
+        public static void I420ARemoteVideoFrameCallback(IntPtr userData, ref I420AVideoFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnI420ARemoteVideoFrameReady(frame);
         }
 
-        [MonoPInvokeCallback(typeof(Argb32VideoFrameDelegate))]
-        public static void Argb32RemoteVideoFrameCallback(IntPtr userData, Argb32VideoFrame frame)
+        [MonoPInvokeCallback(typeof(LocalVideoTrackInterop.Argb32VideoFrameUnmanagedCallback))]
+        public static void Argb32RemoteVideoFrameCallback(IntPtr userData, ref Argb32VideoFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnArgb32RemoteVideoFrameReady(frame);
         }
 
-        [MonoPInvokeCallback(typeof(AudioFrameDelegate))]
-        public static void LocalAudioFrameCallback(IntPtr userData, AudioFrame frame)
+        [MonoPInvokeCallback(typeof(AudioFrameUnmanagedCallback))]
+        public static void LocalAudioFrameCallback(IntPtr userData, ref AudioFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnLocalAudioFrameReady(frame);
         }
 
-        [MonoPInvokeCallback(typeof(AudioFrameDelegate))]
-        public static void RemoteAudioFrameCallback(IntPtr userData, AudioFrame frame)
+        [MonoPInvokeCallback(typeof(AudioFrameUnmanagedCallback))]
+        public static void RemoteAudioFrameCallback(IntPtr userData, ref AudioFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnRemoteAudioFrameReady(frame);
@@ -404,13 +404,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public delegate void PeerConnectionTrackRemovedCallback(IntPtr userData, PeerConnection.TrackKind trackKind);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionI420AVideoFrameCallback(IntPtr userData, I420AVideoFrame frame);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionArgb32VideoFrameCallback(IntPtr userData, Argb32VideoFrame frame);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionAudioFrameCallback(IntPtr userData, AudioFrame frame);
+        public delegate void AudioFrameUnmanagedCallback(IntPtr userData, ref AudioFrame frame);
 
         #endregion
 
@@ -499,22 +493,22 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback")]
         public static extern void PeerConnection_RegisterI420ARemoteVideoFrameCallback(PeerConnectionHandle peerHandle,
-            PeerConnectionI420AVideoFrameCallback callback, IntPtr userData);
+            LocalVideoTrackInterop.I420AVideoFrameUnmanagedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback")]
         public static extern void PeerConnection_RegisterArgb32RemoteVideoFrameCallback(PeerConnectionHandle peerHandle,
-            PeerConnectionArgb32VideoFrameCallback callback, IntPtr userData);
+            LocalVideoTrackInterop.Argb32VideoFrameUnmanagedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterLocalAudioFrameCallback")]
         public static extern void PeerConnection_RegisterLocalAudioFrameCallback(PeerConnectionHandle peerHandle,
-            PeerConnectionAudioFrameCallback callback, IntPtr userData);
+            AudioFrameUnmanagedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterRemoteAudioFrameCallback")]
         public static extern void PeerConnection_RegisterRemoteAudioFrameCallback(PeerConnectionHandle peerHandle,
-            PeerConnectionAudioFrameCallback callback, IntPtr userData);
+            AudioFrameUnmanagedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
