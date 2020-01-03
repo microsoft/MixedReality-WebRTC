@@ -76,7 +76,7 @@ using mrsVideoCaptureDeviceEnumCompletedCallback =
 /// For each device found, invoke the mandatory |callback|.
 /// At the end of the enumeration, invoke the optional |completedCallback| if it
 /// was provided (non-null).
-MRS_API void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
+MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     mrsVideoCaptureDeviceEnumCallback enumCallback,
     void* enumCallbackUserData,
     mrsVideoCaptureDeviceEnumCompletedCallback completedCallback,

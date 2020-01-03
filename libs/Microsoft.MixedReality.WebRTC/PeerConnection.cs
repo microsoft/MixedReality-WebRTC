@@ -1438,8 +1438,16 @@ namespace Microsoft.MixedReality.WebRTC
             return Task.Run(() =>
             {
                 // Execute the native async callback
-                PeerConnectionInterop.EnumVideoCaptureDevicesAsync(
+                uint res = PeerConnectionInterop.EnumVideoCaptureDevicesAsync(
                     wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
+                if (res != Utils.MRS_SUCCESS)
+                {
+                    // Clean-up and release the wrapper delegates
+                    handle.Free();
+
+                    Utils.ThrowOnErrorCode(res);
+                    return null; // for the compiler
+                }
 
                 // Wait for end of enumerating
                 eventWaitHandle.WaitOne();

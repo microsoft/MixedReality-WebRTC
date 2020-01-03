@@ -317,19 +317,19 @@ void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {
   }
 }
 
-void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
+mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     mrsVideoCaptureDeviceEnumCallback enumCallback,
     void* enumCallbackUserData,
     mrsVideoCaptureDeviceEnumCompletedCallback completedCallback,
     void* completedCallbackUserData) noexcept {
   if (!enumCallback) {
-    return;
+    return Result::kInvalidParameter;
   }
 #if defined(WINUWP)
   // The UWP factory needs to be initialized for getDevices() to work.
   if (!GlobalFactory::Instance()->GetOrCreate()) {
     RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
-    return;
+    return Result::kUnknownError;
   }
 
   auto vci = wrapper::impl::org::webRtc::VideoCapturer::getDevices();
@@ -340,22 +340,23 @@ void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
       auto devInfo =
           wrapper::impl::org::webRtc::VideoDeviceInfo::toNative_winrt(vdi);
       auto id = winrt::to_string(devInfo.Id());
-      id.push_back('\0');  // API must ensure null-terminated
       auto name = winrt::to_string(devInfo.Name());
-      name.push_back('\0');  // API must ensure null-terminated
       (*enumCallback)(id.c_str(), name.c_str(), enumCallbackUserData);
     }
     if (completedCallback) {
       (*completedCallback)(completedCallbackUserData);
     }
   });
+  return Result::kSuccess;
 #else
   std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
       webrtc::VideoCaptureFactory::CreateDeviceInfo());
   if (!info) {
+    RTC_LOG(LS_ERROR) << "Failed to start video capture devices enumeration.";
     if (completedCallback) {
       (*completedCallback)(completedCallbackUserData);
     }
+    return Result::kUnknownError;
   }
   int num_devices = info->NumberOfDevices();
   for (int i = 0; i < num_devices; ++i) {
@@ -369,6 +370,7 @@ void MRS_CALL mrsEnumVideoCaptureDevicesAsync(
   if (completedCallback) {
     (*completedCallback)(completedCallbackUserData);
   }
+  return Result::kSuccess;
 #endif
 }
 
