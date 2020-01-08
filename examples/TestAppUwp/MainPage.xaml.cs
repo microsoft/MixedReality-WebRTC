@@ -270,7 +270,7 @@ namespace TestAppUwp
             PreferredAudioCodecChecked(null, null);
             PreferredVideoCodecChecked(null, null);
 
-            RestorePollingParams();
+            RestoreParams();
 
             dssSignaler.OnMessage += DssSignaler_OnMessage;
             dssSignaler.OnFailure += DssSignaler_OnFailure;
@@ -311,11 +311,17 @@ namespace TestAppUwp
             localSettings.Values["DssServerAddress"] = dssServer.Text;
             localSettings.Values["LocalPeerID"] = localPeerUidTextBox.Text;
             localSettings.Values["RemotePeerID"] = remotePeerUidTextBox.Text;
+            localSettings.Values["PreferredAudioCodec"] = PreferredAudioCodec;
+            localSettings.Values["PreferredAudioCodecExtraParams"] = PreferredAudioCodecExtraParamsTextBox.Text;
+            localSettings.Values["PreferredAudioCodec_Custom"] = PreferredAudioCodec_Custom.IsChecked.GetValueOrDefault() ? CustomPreferredAudioCodec.Text : "";
+            localSettings.Values["PreferredVideoCodec"] = PreferredVideoCodec;
+            localSettings.Values["PreferredVideoCodecExtraParams"] = PreferredVideoCodecExtraParamsTextBox.Text;
+            localSettings.Values["PreferredVideoCodec_Custom"] = PreferredVideoCodec_Custom.IsChecked.GetValueOrDefault() ? CustomPreferredVideoCodec.Text : "";
         }
 
         private void App_Resuming(object sender, object e)
         {
-            RestorePollingParams();
+            RestoreParams();
         }
 
         private static bool IsFirstInstance()
@@ -324,7 +330,7 @@ namespace TestAppUwp
             return firstInstance.IsCurrentInstance;
         }
 
-        private void RestorePollingParams()
+        private void RestoreParams()
         {
             // Uncomment these lines if you want to connect a HoloLens (or any non-x64 device) to a
             // x64 PC.
@@ -376,6 +382,78 @@ namespace TestAppUwp
                 var tmp = localPeerUidTextBox.Text;
                 localPeerUidTextBox.Text = remotePeerUidTextBox.Text;
                 remotePeerUidTextBox.Text = tmp;
+            }
+
+            if (localSettings.Values.TryGetValue("PreferredAudioCodec", out object preferredAudioObj))
+            {
+                if (preferredAudioObj is string str)
+                {
+                    switch(str)
+                    {
+                        case "":
+                        {
+                            PreferredAudioCodec_Default.IsChecked = true;
+                            break;
+                        }
+                        case "opus":
+                        {
+                            PreferredAudioCodec_OPUS.IsChecked = true;
+                            break;
+                        }
+                        default:
+                        {
+                            PreferredAudioCodec_Custom.IsChecked = true;
+                            CustomPreferredAudioCodec.Text = str;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (localSettings.Values.TryGetValue("PreferredAudioCodecExtraParams", out object preferredAudioExtraObj))
+            {
+                if (preferredAudioExtraObj is string str)
+                {
+                    PreferredAudioCodecExtraParamsTextBox.Text = str;
+                }
+            }
+            if (localSettings.Values.TryGetValue("PreferredVideoCodec", out object preferredVideoObj))
+            {
+                if (preferredVideoObj is string str)
+                {
+                    switch (str)
+                    {
+                        case "":
+                        {
+                            PreferredVideoCodec_Default.IsChecked = true;
+                            break;
+                        }
+                        case "H264":
+                        {
+                            PreferredVideoCodec_H264.IsChecked = true;
+                            break;
+                        }
+                        case "VP8":
+                        {
+                            PreferredVideoCodec_VP8.IsChecked = true;
+                            break;
+                        }
+                        default:
+                        {
+                            PreferredVideoCodec_Custom.IsChecked = true;
+                            CustomPreferredVideoCodec.Text = str;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (localSettings.Values.TryGetValue("PreferredVideoCodecExtraParams", out object preferredVideoExtraObj))
+            {
+                if (preferredVideoExtraObj is string str)
+                {
+                    PreferredVideoCodecExtraParamsTextBox.Text = str;
+                }
             }
         }
 
@@ -1428,7 +1506,9 @@ namespace TestAppUwp
             createOfferButton.Content = "Joining...";
 
             _peerConnection.PreferredAudioCodec = PreferredAudioCodec;
+            _peerConnection.PreferredAudioCodecExtraParams = PreferredAudioCodecExtraParamsTextBox.Text;
             _peerConnection.PreferredVideoCodec = PreferredVideoCodec;
+            _peerConnection.PreferredVideoCodecExtraParams = PreferredVideoCodecExtraParamsTextBox.Text;
             _peerConnection.CreateOffer();
         }
 
