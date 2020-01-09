@@ -882,6 +882,10 @@ namespace Microsoft.MixedReality.WebRTC
         /// On UWP this requires the "webcam" capability.
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
+        /// 
+        /// <see cref="PeerConnection"/> supports a single local audio track and a single local video track.
+        /// In order to send/receive multiple tracks to/from a given remote device, developers need to use multiple
+        /// <see cref="PeerConnection"/> instances.
         /// </remarks>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task AddLocalVideoTrackAsync(LocalVideoTrackSettings settings = default)
@@ -949,6 +953,10 @@ namespace Microsoft.MixedReality.WebRTC
         /// On UWP this requires the "microphone" capability.
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
+        /// 
+        /// <see cref="PeerConnection"/> supports a single local audio track and a single local video track.
+        /// In order to send/receive multiple tracks to/from a given remote device, developers need to use multiple
+        /// <see cref="PeerConnection"/> instances.
         /// </remarks>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task AddLocalAudioTrackAsync()

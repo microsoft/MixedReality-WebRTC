@@ -7,7 +7,7 @@
 
 MixedReality-WebRTC is a collection of libraries to help mixed reality app developers to integrate peer-to-peer real-time audio and video communication into their application and improve their collaborative experience.
 
-- Enables **multi-track real-time audio / video / data communication** with a remote peer
+- Enables **real-time audio / video / data communication** with a remote peer
 - Provides an abstracted **signaling interface** to easily switch implementation
 - Exposes an **API for C++ and C#** to integrate into existing apps
 - Provides a set of **Unity3D components** for rapid prototyping and integration
