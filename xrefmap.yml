@@ -1479,24 +1479,36 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodec
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodec
   nameWithType: PeerConnection.PreferredAudioCodec
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParams
-  name: PreferredAudioCodecExtraParams
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_PreferredAudioCodecExtraParams
-  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParams
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParams
-  nameWithType: PeerConnection.PreferredAudioCodecExtraParams
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParamsLocal
+  name: PreferredAudioCodecExtraParamsLocal
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_PreferredAudioCodecExtraParamsLocal
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParamsLocal
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParamsLocal
+  nameWithType: PeerConnection.PreferredAudioCodecExtraParamsLocal
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParamsRemote
+  name: PreferredAudioCodecExtraParamsRemote
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_PreferredAudioCodecExtraParamsRemote
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParamsRemote
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredAudioCodecExtraParamsRemote
+  nameWithType: PeerConnection.PreferredAudioCodecExtraParamsRemote
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodec
   name: PreferredVideoCodec
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_PreferredVideoCodec
   commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodec
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodec
   nameWithType: PeerConnection.PreferredVideoCodec
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParams
-  name: PreferredVideoCodecExtraParams
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_PreferredVideoCodecExtraParams
-  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParams
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParams
-  nameWithType: PeerConnection.PreferredVideoCodecExtraParams
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParamsLocal
+  name: PreferredVideoCodecExtraParamsLocal
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_PreferredVideoCodecExtraParamsLocal
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParamsLocal
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParamsLocal
+  nameWithType: PeerConnection.PreferredVideoCodecExtraParamsLocal
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParamsRemote
+  name: PreferredVideoCodecExtraParamsRemote
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_PreferredVideoCodecExtraParamsRemote
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParamsRemote
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.PreferredVideoCodecExtraParamsRemote
+  nameWithType: PeerConnection.PreferredVideoCodecExtraParamsRemote
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.RemoteAudioFrameReady
   name: RemoteAudioFrameReady
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_RemoteAudioFrameReady
