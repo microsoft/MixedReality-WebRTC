@@ -507,13 +507,30 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
-        /// passed as extra parameters to the preferred audio codec during SDP filtering.
+        /// passed as extra parameters to the remote preferred audio codec during SDP filtering.
+        /// </summary>
+        /// <remarks>
         /// This enables configuring codec-specific parameters. Arguments are passed as is,
         /// and there is no check on the validity of the parameter names nor their value.
         /// This is ignored if <see cref="PreferredAudioCodec"/> is an empty string, or is not
         /// a valid codec name found in the SDP message offer.
-        /// </summary>
+        /// </remarks>
         public string PreferredAudioCodecExtraParams = string.Empty;
+
+        /// <summary>
+        /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
+        /// passed as extra parameters to the local preferred audio codec during SDP filtering.
+        /// </summary>
+        /// <remarks>
+        /// This enables configuring codec-specific parameters. Arguments are passed as is,
+        /// and there is no check on the validity of the parameter names nor their value.
+        /// This is ignored if <see cref="PreferredAudioCodec"/> is an empty string, or is not
+        /// a valid codec name found in the SDP message offer.
+        ///
+        /// Note that the parameters are passed to the local codec by adding them to remote
+        /// SDP descriptions when they are received.
+        /// </remarks>
+        public string PreferredAudioCodecExtraParamsLocal = string.Empty;
 
         /// <summary>
         /// Name of the preferred video codec, or empty to let WebRTC decide.
@@ -523,13 +540,30 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
-        /// passed as extra parameters to the preferred video codec during SDP filtering.
+        /// passed as extra parameters to the remote preferred video codec during SDP filtering.
+        /// </summary>
+        /// <remarks>
         /// This enables configuring codec-specific parameters. Arguments are passed as is,
         /// and there is no check on the validity of the parameter names nor their value.
         /// This is ignored if <see cref="PreferredVideoCodec"/> is an empty string, or is not
         /// a valid codec name found in the SDP message offer.
-        /// </summary>
+        /// </remarks>
         public string PreferredVideoCodecExtraParams = string.Empty;
+
+        /// <summary>
+        /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
+        /// passed as extra parameters to the local preferred video codec during SDP filtering.
+        /// </summary>
+        /// <remarks>
+        /// This enables configuring codec-specific parameters. Arguments are passed as is,
+        /// and there is no check on the validity of the parameter names nor their value.
+        /// This is ignored if <see cref="PreferredVideoCodec"/> is an empty string, or is not
+        /// a valid codec name found in the SDP message offer.
+        ///
+        /// Note that the parameters are passed to the local codec by adding them to remote
+        /// SDP descriptions when they are received.
+        /// </remarks>
+        public string PreferredVideoCodecExtraParamsLocal = string.Empty;
 
         #endregion
 
@@ -697,10 +731,10 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Initialize the current peer connection object asynchronously.
-        /// 
+        ///
         /// Most other methods will fail unless this call completes successfully, as it initializes the
         /// underlying native implementation object required to create and manipulate the peer connection.
-        /// 
+        ///
         /// Once this call asynchronously completed, the <see cref="Initialized"/> property becomes <c>true</c>.
         /// </summary>
         /// <param name="config">Configuration for initializing the peer connection.</param>
@@ -967,11 +1001,11 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Add to the current connection a video track from a local video capture device (webcam).
-        /// 
+        ///
         /// The video track receives its video data from an underlying hidden source associated with
         /// the track and producing video frames by capturing them from a capture device accessible
         /// from the local host machine, generally a USB webcam or built-in device camera.
-        /// 
+        ///
         /// The underlying video source initially starts in the capturing state, and will remain live
         /// for as long as the track is added to the peer connection. It can be temporarily disabled
         /// and re-enabled (see <see cref="LocalVideoTrack.Enabled"/>) while remaining added to the
@@ -986,11 +1020,11 @@ namespace Microsoft.MixedReality.WebRTC
         /// On UWP this requires the "webcam" capability.
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
-        /// 
+        ///
         /// The video capture device may be accessed several times during the initializing process,
         /// generally once for listing and validating the capture format, and once for actually starting
         /// the video capture.
-        /// 
+        ///
         /// Note that the capture device must support a capture format with the given constraints of profile
         /// ID or kind, capture resolution, and framerate, otherwise the call will fail. That is, there is no
         /// fallback mechanism selecting a closest match. Developers should use
@@ -1376,7 +1410,18 @@ namespace Microsoft.MixedReality.WebRTC
         public void SetRemoteDescription(string type, string sdp)
         {
             ThrowIfConnectionNotOpen();
-            PeerConnectionInterop.PeerConnection_SetRemoteDescription(_nativePeerhandle, type, sdp);
+
+            // If the user specified a preferred audio or video codec, manipulate the SDP message
+            // to exclude other codecs if the preferred one is supported.
+            // We set the local codec params by forcing them here. There seems to be no direct way to set
+            // local codec params so we "pretend" that the remote endpoint is asking for them.
+            string newSdp = ForceSdpCodecs(sdp: sdp,
+                audio: PreferredAudioCodec,
+                audioParams: PreferredAudioCodecExtraParamsLocal,
+                video: PreferredVideoCodec,
+                videoParams: PreferredVideoCodecExtraParamsLocal);
+
+            PeerConnectionInterop.PeerConnection_SetRemoteDescription(_nativePeerhandle, type, newSdp);
         }
 
         #endregion
@@ -1547,13 +1592,13 @@ namespace Microsoft.MixedReality.WebRTC
         /// [HoloLens 1 only]
         /// Use this function to select whether resolutions where height is not multiple of 16 pixels
         /// should be cropped, padded, or left unchanged.
-        /// 
+        ///
         /// Default is <see cref="FrameHeightRoundMode.Crop"/> to avoid severe artifacts produced by
         /// the H.264 hardware encoder on HoloLens 1 due to a bug with the encoder. This is the
         /// recommended value, and should be used unless cropping discards valuable data in the top and
         /// bottom rows for a given usage, in which case <see cref="FrameHeightRoundMode.Pad"/> can
         /// be used as a replacement but may still produce some mild artifacts.
-        /// 
+        ///
         /// This has no effect on other platforms.
         /// </summary>
         /// <param name="value">The rounding mode for video frames.</param>
@@ -1581,6 +1626,42 @@ namespace Microsoft.MixedReality.WebRTC
             DataChannelRemoved?.Invoke(dataChannel);
         }
 
+        private static string ForceSdpCodecs(string sdp, string audio, string audioParams, string video, string videoParams)
+        {
+            if ((audio.Length > 0) || (video.Length > 0))
+            {
+                // +1 for space/semicolon before params.
+                var initialLength = sdp.Length +
+                    audioParams.Length + 1 +
+                    videoParams.Length + 1;
+                var builder = new StringBuilder(initialLength);
+                ulong lengthInOut = (ulong)builder.Capacity + 1; // includes null terminator
+                var audioFilter = new Utils.SdpFilter
+                {
+                    CodecName = audio,
+                    ExtraParams = audioParams
+                };
+                var videoFilter = new Utils.SdpFilter
+                {
+                    CodecName = video,
+                    ExtraParams = videoParams
+                };
+
+                uint res = Utils.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut);
+                if (res == Utils.MRS_E_INVALID_PARAMETER && lengthInOut > (ulong)builder.Capacity + 1)
+                {
+                    // New string is longer than the estimate (there might be multiple tracks).
+                    // Increase the capacity and retry.
+                    builder.Capacity = (int)lengthInOut - 1;
+                    res = Utils.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut);
+                }
+                Utils.ThrowOnErrorCode(res);
+                builder.Length = (int)lengthInOut - 1; // discard the null terminator
+                return builder.ToString();
+            }
+            return sdp;
+        }
+
         /// <summary>
         /// Callback invoked by the internal WebRTC implementation when it needs a SDP message
         /// to be dispatched to the remote peer.
@@ -1593,35 +1674,17 @@ namespace Microsoft.MixedReality.WebRTC
 
             // If the user specified a preferred audio or video codec, manipulate the SDP message
             // to exclude other codecs if the preferred one is supported.
-            if ((PreferredAudioCodec.Length > 0) || (PreferredVideoCodec.Length > 0))
-            {
-                // Only filter offers, so that both peers think it's each other's fault
-                // for only supporting a single codec.
-                // Filtering an answer will not work because the internal implementation
-                // already decided what codec to use before this callback is called, so
-                // that will only confuse the other peer.
-                if (type == "offer")
-                {
-                    var builder = new StringBuilder(sdp.Length);
-                    ulong lengthInOut = (ulong)builder.Capacity + 1; // includes null terminator
-                    var audioFilter = new Utils.SdpFilter
-                    {
-                        CodecName = PreferredAudioCodec,
-                        ExtraParams = PreferredAudioCodecExtraParams
-                    };
-                    var videoFilter = new Utils.SdpFilter
-                    {
-                        CodecName = PreferredVideoCodec,
-                        ExtraParams = PreferredVideoCodecExtraParams
-                    };
-                    uint res = Utils.SdpForceCodecs(sdp, audioFilter, videoFilter, builder, ref lengthInOut);
-                    Utils.ThrowOnErrorCode(res);
-                    builder.Length = (int)lengthInOut - 1; // discard the null terminator
-                    sdp = builder.ToString();
-                }
-            }
+            // Outgoing answers are filtered for the only purpose of adding the extra params to them.
+            // The codec itself will have already been selected when filtering the incoming offer that prompted
+            // the answer. Note that filtering the codec in the answer without doing it in
+            // the offer first will leave the connection in an inconsistent state.
+            string newSdp = ForceSdpCodecs(sdp: sdp,
+                audio: PreferredAudioCodec,
+                audioParams: PreferredAudioCodecExtraParams,
+                video: PreferredVideoCodec,
+                videoParams: PreferredVideoCodecExtraParams);
 
-            LocalSdpReadytoSend?.Invoke(type, sdp);
+            LocalSdpReadytoSend?.Invoke(type, newSdp);
         }
 
         internal void OnIceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)

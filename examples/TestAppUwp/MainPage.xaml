@@ -128,26 +128,34 @@
                         <RadioButton x:Name="PreferredAudioCodec_Default" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="(default)" IsChecked="True" />
                         <RadioButton x:Name="PreferredAudioCodec_OPUS" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="OPUS" />
                         <RadioButton x:Name="PreferredAudioCodec_Custom" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="Custom value" />
-                        <TextBlock VerticalAlignment="Center" Margin="64,0,0,0">Additional params:</TextBlock>
-                        <TextBox x:Name="PreferredAudioCodecExtraParamsTextBox" Margin="16,0,0,0" Width="200"></TextBox>
                     </StackPanel>
                     <TextBlock x:Name="CustomPreferredAudioCodecHelpText" FontStyle="Italic" Margin="48,6,0,0">
                             Leave blank to use the default video codec. A partial list is <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.<LineBreak />Common values include "opus" or "ISAC". Names are case sensitive.
                     </TextBlock>
                     <TextBox x:Name="CustomPreferredAudioCodec" Text="" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
                     <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Local params:</TextBlock>
+                        <TextBox x:Name="PreferredAudioCodecExtraParamsLocalTextBox" Margin="16,0,0,0" Width="250"></TextBox>
+                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Remote params:</TextBlock>
+                        <TextBox x:Name="PreferredAudioCodecExtraParamsRemoteTextBox" Margin="16,0,0,0" Width="250"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
                         <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Video :</TextBlock>
                         <RadioButton x:Name="PreferredVideoCodec_Default" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="(default)" />
                         <RadioButton x:Name="PreferredVideoCodec_H264" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="H.264" IsChecked="True" />
                         <RadioButton x:Name="PreferredVideoCodec_VP8" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="VP8" />
                         <RadioButton x:Name="PreferredVideoCodec_Custom" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="Custom value" />
-                        <TextBlock VerticalAlignment="Center" Margin="64,0,0,0">Additional params: </TextBlock>
-                        <TextBox x:Name="PreferredVideoCodecExtraParamsTextBox" Margin="16,0,0,0" Width="200"></TextBox>
                     </StackPanel>
                     <TextBlock x:Name="CustomPreferredVideoCodecHelpText" FontStyle="Italic" Margin="48,6,0,0">
                             Leave blank to use the default video codec. A partial list is <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.<LineBreak />Common values include "H264" or "VP8". Names are case sensitive.
                     </TextBlock>
                     <TextBox x:Name="CustomPreferredVideoCodec" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Local params:</TextBlock>
+                        <TextBox x:Name="PreferredVideoCodecExtraParamsLocalTextBox" Margin="16,0,0,0" Width="250"></TextBox>
+                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Remote params:</TextBlock>
+                        <TextBox x:Name="PreferredVideoCodecExtraParamsRemoteTextBox" Margin="16,0,0,0" Width="250"></TextBox>
+                    </StackPanel>
                     <TextBlock Text="SDP connection offer" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
                     <Button Name="createOfferButton" IsEnabled="False" Content="Create offer" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="CreateOfferButtonClicked" Width="125" Margin="0,12,0,0"/>
                     <Button Name="addExtraDataChannelButton" Content="Add extra data channel" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="AddExtraDataChannelButtonClicked" Width="250" Margin="0,12,0,0"/>
