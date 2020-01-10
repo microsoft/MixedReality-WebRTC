@@ -506,29 +506,30 @@ namespace Microsoft.MixedReality.WebRTC
         public string PreferredAudioCodec = string.Empty;
 
         /// <summary>
-        /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
-        /// passed as extra parameters to the remote preferred audio codec during SDP filtering.
+        /// Advanced use only. List of additional codec-specific arguments requested to the
+        /// remote endpoint.
         /// </summary>
         /// <remarks>
-        /// This enables configuring codec-specific parameters. Arguments are passed as is,
+        /// This must be a semicolon-separated list of "key=value" pairs. Arguments are passed as is,
         /// and there is no check on the validity of the parameter names nor their value.
+        /// Arguments are added to the audio codec section of SDP messages sent to the remote endpoint.
+        ///
         /// This is ignored if <see cref="PreferredAudioCodec"/> is an empty string, or is not
         /// a valid codec name found in the SDP message offer.
         /// </remarks>
-        public string PreferredAudioCodecExtraParams = string.Empty;
+        public string PreferredAudioCodecExtraParamsRemote = string.Empty;
 
         /// <summary>
-        /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
-        /// passed as extra parameters to the local preferred audio codec during SDP filtering.
+        /// Advanced use only. List of additional codec-specific arguments set on the local endpoint.
         /// </summary>
         /// <remarks>
-        /// This enables configuring codec-specific parameters. Arguments are passed as is,
+        /// This must be a semicolon-separated list of "key=value" pairs. Arguments are passed as is,
         /// and there is no check on the validity of the parameter names nor their value.
+        /// Arguments are set locally by adding them to the audio codec section of SDP messages
+        /// received from the remote endpoint.
+        ///
         /// This is ignored if <see cref="PreferredAudioCodec"/> is an empty string, or is not
         /// a valid codec name found in the SDP message offer.
-        ///
-        /// Note that the parameters are passed to the local codec by adding them to remote
-        /// SDP descriptions when they are received.
         /// </remarks>
         public string PreferredAudioCodecExtraParamsLocal = string.Empty;
 
@@ -539,29 +540,30 @@ namespace Microsoft.MixedReality.WebRTC
         public string PreferredVideoCodec = string.Empty;
 
         /// <summary>
-        /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
-        /// passed as extra parameters to the remote preferred video codec during SDP filtering.
+        /// Advanced use only. List of additional codec-specific arguments requested to the
+        /// remote endpoint.
         /// </summary>
         /// <remarks>
-        /// This enables configuring codec-specific parameters. Arguments are passed as is,
+        /// This must be a semicolon-separated list of "key=value" pairs. Arguments are passed as is,
         /// and there is no check on the validity of the parameter names nor their value.
+        /// Arguments are added to the video codec section of SDP messages sent to the remote endpoint.
+        ///
         /// This is ignored if <see cref="PreferredVideoCodec"/> is an empty string, or is not
         /// a valid codec name found in the SDP message offer.
         /// </remarks>
-        public string PreferredVideoCodecExtraParams = string.Empty;
+        public string PreferredVideoCodecExtraParamsRemote = string.Empty;
 
         /// <summary>
-        /// Advanced use only. A semicolon-separated list of "key=value" pairs of arguments
-        /// passed as extra parameters to the local preferred video codec during SDP filtering.
+        /// Advanced use only. List of additional codec-specific arguments set on the local endpoint.
         /// </summary>
         /// <remarks>
-        /// This enables configuring codec-specific parameters. Arguments are passed as is,
+        /// This must be a semicolon-separated list of "key=value" pairs. Arguments are passed as is,
         /// and there is no check on the validity of the parameter names nor their value.
+        /// Arguments are set locally by adding them to the video codec section of SDP messages
+        /// received from the remote endpoint.
+        ///
         /// This is ignored if <see cref="PreferredVideoCodec"/> is an empty string, or is not
         /// a valid codec name found in the SDP message offer.
-        ///
-        /// Note that the parameters are passed to the local codec by adding them to remote
-        /// SDP descriptions when they are received.
         /// </remarks>
         public string PreferredVideoCodecExtraParamsLocal = string.Empty;
 
@@ -1680,9 +1682,9 @@ namespace Microsoft.MixedReality.WebRTC
             // the offer first will leave the connection in an inconsistent state.
             string newSdp = ForceSdpCodecs(sdp: sdp,
                 audio: PreferredAudioCodec,
-                audioParams: PreferredAudioCodecExtraParams,
+                audioParams: PreferredAudioCodecExtraParamsRemote,
                 video: PreferredVideoCodec,
-                videoParams: PreferredVideoCodecExtraParams);
+                videoParams: PreferredVideoCodecExtraParamsRemote);
 
             LocalSdpReadytoSend?.Invoke(type, newSdp);
         }
