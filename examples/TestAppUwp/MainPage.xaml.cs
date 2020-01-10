@@ -1523,10 +1523,10 @@ namespace TestAppUwp
         void UpdateCodecFilters()
         {
             _peerConnection.PreferredAudioCodec = PreferredAudioCodec;
-            _peerConnection.PreferredAudioCodecExtraParams = PreferredAudioCodecExtraParamsRemoteTextBox.Text;
+            _peerConnection.PreferredAudioCodecExtraParamsRemote = PreferredAudioCodecExtraParamsRemoteTextBox.Text;
             _peerConnection.PreferredAudioCodecExtraParamsLocal = PreferredAudioCodecExtraParamsLocalTextBox.Text;
             _peerConnection.PreferredVideoCodec = PreferredVideoCodec;
-            _peerConnection.PreferredVideoCodecExtraParams = PreferredVideoCodecExtraParamsRemoteTextBox.Text;
+            _peerConnection.PreferredVideoCodecExtraParamsRemote = PreferredVideoCodecExtraParamsRemoteTextBox.Text;
             _peerConnection.PreferredVideoCodecExtraParamsLocal = PreferredVideoCodecExtraParamsLocalTextBox.Text;
         }
 
