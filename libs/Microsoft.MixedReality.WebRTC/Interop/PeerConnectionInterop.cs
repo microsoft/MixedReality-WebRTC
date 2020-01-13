@@ -297,7 +297,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [MonoPInvokeCallback(typeof(PeerConnectionSimpleStatsObjectCallback))]
-        public unsafe static void SimpleStatsObjectCallback(IntPtr userData, IntPtr statsObject)
+        public unsafe static void GetStatsObjectCallback(IntPtr userData, IntPtr statsObject)
         {
             var list = Utils.ToWrapper<object>(userData);
             if (list is List<PeerConnection.DataChannelStats> dataStatsList)
@@ -308,7 +308,31 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             {
                 audioSenderStatsList.Add(Marshal.PtrToStructure<PeerConnection.AudioSenderStats>(statsObject));
             }
-            // TODO and so on
+            else if (list is List<PeerConnection.AudioReceiverStats> audioReceiverStatsList)
+            {
+                audioReceiverStatsList.Add(Marshal.PtrToStructure<PeerConnection.AudioReceiverStats>(statsObject));
+            }
+            else if (list is List<PeerConnection.VideoSenderStats> videoSenderStatsList)
+            {
+                videoSenderStatsList.Add(Marshal.PtrToStructure<PeerConnection.VideoSenderStats>(statsObject));
+            }
+            else if (list is List<PeerConnection.VideoReceiverStats> videoReceiverStatsList)
+            {
+                videoReceiverStatsList.Add(Marshal.PtrToStructure<PeerConnection.VideoReceiverStats>(statsObject));
+            }
+            else if (list is List<PeerConnection.TransportStats> transportStatsList)
+            {
+                transportStatsList.Add(*(PeerConnection.TransportStats*)statsObject);
+            }
+        }
+
+        public static IEnumerable<T> GetStatsObject<T>(PeerConnection.StatsReport report)
+        {
+            var res = new List<T>();
+            var resHandle = GCHandle.Alloc(res, GCHandleType.Normal);
+            StatsReport_GetObjects(report, typeof(T).Name, GetStatsObjectCallback, GCHandle.ToIntPtr(resHandle));
+            resHandle.Free();
+            return res;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]

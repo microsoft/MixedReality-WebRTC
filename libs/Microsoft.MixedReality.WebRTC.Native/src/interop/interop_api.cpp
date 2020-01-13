@@ -1138,6 +1138,8 @@ mrsPeerConnectionGetSimpleStats(PeerConnectionHandle peerHandle,
       void OnStatsDelivered(
           const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
           override {
+        // Return a wrapper for the RTCStatsReport.
+        // mrsStatsReportRemoveRef removes the reference.
         report->AddRef();
         (*callback_)(user_data_, report.get());
       }
@@ -1149,6 +1151,22 @@ mrsPeerConnectionGetSimpleStats(PeerConnectionHandle peerHandle,
     return Result::kSuccess;
   }
   return Result::kInvalidNativeHandle;
+}
+
+namespace {
+template <class T>
+void GetCommonValues(T& lhs, const webrtc::RTCOutboundRTPStreamStats& rhs) {
+  lhs.RtpStatsTimestampUs = rhs.timestamp_us();
+  lhs.PacketsSent = *rhs.packets_sent;
+  lhs.BytesSent = *rhs.bytes_sent;
+}
+template <class T>
+void GetCommonValues(T& lhs, const webrtc::RTCInboundRTPStreamStats& rhs) {
+  lhs.RtpStatsTimestampUs = rhs.timestamp_us();
+  lhs.PacketsReceived = *rhs.packets_received;
+  lhs.BytesReceived = *rhs.bytes_received;
+}
+
 }
 
 mrsResult MRS_CALL
@@ -1173,45 +1191,145 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
       }
     }
   } else if (!strcmp(stats_type, "AudioSenderStats")) {
-    std::vector<std::pair<std::string, mrsAudioSenderStats>>
-        pending_audio_sender_stats;
+    std::vector<std::pair<std::string, mrsAudioSenderStats>> pending_stats;
+    // Get values from both RTCOutboundRTPStreamStats and
+    // RTCMediaStreamTrackStats objects. Match them together by track ID.
     for (auto&& stats : *report) {
       if (!strcmp(stats.type(), "outbound-rtp")) {
         const auto& ortp_stats =
             stats.cast_to<webrtc::RTCOutboundRTPStreamStats>();
-        if (*ortp_stats.kind == "audio") {
-          auto& audio_sender_stats =
-              FindOrInsert(pending_audio_sender_stats, *ortp_stats.track_id);
-          audio_sender_stats.RtpStatsTimestampUs = ortp_stats.timestamp_us();
-          audio_sender_stats.PacketsSent = *ortp_stats.packets_sent;
-          audio_sender_stats.BytesSent = *ortp_stats.bytes_sent;
+        if (*ortp_stats.kind == "audio" &&
+            // Removing a track will leave a "trackless" RTP stream. Ignore it.
+            ortp_stats.track_id.is_defined()) {
+          auto& dest_stats = FindOrInsert(pending_stats, *ortp_stats.track_id);
+          GetCommonValues(dest_stats, ortp_stats);
+        }
+      } else if (!strcmp(stats.type(), "track")) {
+        const auto& track_stats =
+            stats.cast_to<webrtc::RTCMediaStreamTrackStats>();
+        if (*track_stats.kind == "audio") {
+          if (!(*track_stats.remote_source)) {
+            auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
+            dest_stats.TimestampUs = track_stats.timestamp_us();
+            dest_stats.TrackIdentifier = track_stats.track_identifier->c_str();
+            dest_stats.AudioLevel = *track_stats.audio_level;
+            dest_stats.TotalAudioEnergy = *track_stats.total_audio_energy;
+            dest_stats.TotalSamplesDuration =
+                *track_stats.total_samples_duration;
+          }
+        }
+      }
+    }
+    for (auto&& stats : pending_stats) {
+      (*callback)(user_data, &stats.second);
+    }
+  } else if (!strcmp(stats_type, "AudioReceiverStats")) {
+    std::vector<std::pair<std::string, mrsAudioReceiverStats>> pending_stats;
+    // Get values from both RTCInboundRTPStreamStats and
+    // RTCMediaStreamTrackStats objects. Match them together by track ID.
+    for (auto&& stats : *report) {
+      if (!strcmp(stats.type(), "inbound-rtp")) {
+        const auto& irtp_stats =
+            stats.cast_to<webrtc::RTCInboundRTPStreamStats>();
+        if (*irtp_stats.kind == "audio") {
+          auto& dest_stats = FindOrInsert(pending_stats, *irtp_stats.track_id);
+          GetCommonValues(dest_stats, irtp_stats);
         }
       } else if (!strcmp(stats.type(), "track")) {
         const auto& track_stats =
             stats.cast_to<webrtc::RTCMediaStreamTrackStats>();
         if (*track_stats.kind == "audio") {
           if (*track_stats.remote_source) {
-            // TODO
-          } else {
-            auto& audio_sender_stats =
-                FindOrInsert(pending_audio_sender_stats, track_stats.id());
-            audio_sender_stats.TimestampUs = track_stats.timestamp_us();
-            audio_sender_stats.TrackIdentifier =
-                track_stats.track_identifier->c_str();
-            audio_sender_stats.AudioLevel = *track_stats.audio_level;
-            audio_sender_stats.TotalAudioEnergy =
-                *track_stats.total_audio_energy;
-            audio_sender_stats.TotalSamplesDuration =
+            auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
+            dest_stats.TimestampUs = track_stats.timestamp_us();
+            dest_stats.TrackIdentifier = track_stats.track_identifier->c_str();
+            dest_stats.AudioLevel =
+                track_stats.audio_level.is_defined() ? *track_stats.audio_level : 0;
+            dest_stats.TotalAudioEnergy = *track_stats.total_audio_energy;
+            dest_stats.TotalSamplesReceived =
+                *track_stats.total_samples_received;
+            dest_stats.TotalSamplesDuration =
                 *track_stats.total_samples_duration;
           }
         }
       }
     }
-    for (auto&& stats : pending_audio_sender_stats) {
+    for (auto&& stats : pending_stats) {
       (*callback)(user_data, &stats.second);
     }
+  } else if (!strcmp(stats_type, "VideoSenderStats")) {
+    std::vector<std::pair<std::string, mrsVideoSenderStats>> pending_stats;
+    // Get values from both RTCOutboundRTPStreamStats and
+    // RTCMediaStreamTrackStats objects. Match them together by track ID.
+    for (auto&& stats : *report) {
+      if (!strcmp(stats.type(), "outbound-rtp")) {
+        const auto& ortp_stats =
+            stats.cast_to<webrtc::RTCOutboundRTPStreamStats>();
+        if (*ortp_stats.kind == "video" &&
+            // Removing a track will leave a "trackless" RTP stream. Ignore it.
+            ortp_stats.track_id.is_defined()) {
+          auto& dest_stats = FindOrInsert(pending_stats, *ortp_stats.track_id);
+          GetCommonValues(dest_stats, ortp_stats);
+          dest_stats.FramesEncoded = *ortp_stats.frames_encoded;
+        }
+      } else if (!strcmp(stats.type(), "track")) {
+        const auto& track_stats =
+            stats.cast_to<webrtc::RTCMediaStreamTrackStats>();
+        if (*track_stats.kind == "video") {
+          if (!(*track_stats.remote_source)) {
+            auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
+            dest_stats.TimestampUs = track_stats.timestamp_us();
+            dest_stats.TrackIdentifier = track_stats.track_identifier->c_str();
+            dest_stats.FramesSent = *track_stats.frames_sent;
+            dest_stats.HugeFramesSent = *track_stats.huge_frames_sent;
+          }
+        }
+      }
+    }
+    for (auto&& stats : pending_stats) {
+      (*callback)(user_data, &stats.second);
+    }
+  } else if (!strcmp(stats_type, "VideoReceiverStats")) {
+    std::vector<std::pair<std::string, mrsVideoReceiverStats>> pending_stats;
+    // Get values from both RTCInboundRTPStreamStats and
+    // RTCMediaStreamTrackStats objects. Match them together by track ID.
+    for (auto&& stats : *report) {
+      if (!strcmp(stats.type(), "inbound-rtp")) {
+        const auto& irtp_stats =
+            stats.cast_to<webrtc::RTCInboundRTPStreamStats>();
+        if (*irtp_stats.kind == "video") {
+          auto& dest_stats = FindOrInsert(pending_stats, *irtp_stats.track_id);
+          GetCommonValues(dest_stats, irtp_stats);
+          dest_stats.FramesDecoded = *irtp_stats.frames_decoded;
+        }
+      } else if (!strcmp(stats.type(), "track")) {
+        const auto& track_stats =
+            stats.cast_to<webrtc::RTCMediaStreamTrackStats>();
+        if (*track_stats.kind == "video") {
+          if (*track_stats.remote_source) {
+            auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
+            dest_stats.TimestampUs = track_stats.timestamp_us();
+            dest_stats.TrackIdentifier = track_stats.track_identifier->c_str();
+            dest_stats.FramesReceived = *track_stats.frames_received;
+            dest_stats.FramesDropped = *track_stats.frames_dropped;
+          }
+        }
+      }
+    }
+    for (auto&& stats : pending_stats) {
+      (*callback)(user_data, &stats.second);
+    }
+  } else if (!strcmp(stats_type, "TransportStats")) {
+    for (auto&& stats : *report) {
+      if (!strcmp(stats.type(), "transport")) {
+        const auto& dc_stats = stats.cast_to<webrtc::RTCTransportStats>();
+        mrsTransportStats simple_stats{dc_stats.timestamp_us(),
+                                       *dc_stats.bytes_sent,
+                                       *dc_stats.bytes_received};
+        (*callback)(user_data, &simple_stats);
+      }
+    }
   }
-
   return Result::kSuccess;
 }
 

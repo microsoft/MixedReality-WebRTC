@@ -1505,12 +1505,12 @@ namespace Microsoft.MixedReality.WebRTC
             public long TimestampUs;
             public string TrackIdentifier;
             public uint FramesReceived;
-            public uint FramesDecoded;
             public uint FramesDropped;
 
             public long RtpStatsTimestampUs;
             public uint PacketsReceived;
             public ulong BytesReceived;
+            public uint FramesDecoded;
         }
 
         /// <summary>
@@ -1532,16 +1532,11 @@ namespace Microsoft.MixedReality.WebRTC
 
             public IEnumerable<T> GetStats<T>()
             {
-                var res = new List<T>();
-                var resHandle = GCHandle.Alloc(res, GCHandleType.Normal);
-                PeerConnectionInterop.StatsReport_GetObjects(this, typeof(T).Name, PeerConnectionInterop.SimpleStatsObjectCallback, GCHandle.ToIntPtr(resHandle));
-                resHandle.Free();
-                return res;
+                return PeerConnectionInterop.GetStatsObject<T>(this);
             }
 
             protected override bool ReleaseHandle()
             {
-                // TODO
                 PeerConnectionInterop.StatsReport_RemoveRef(handle);
                 return true;
             }

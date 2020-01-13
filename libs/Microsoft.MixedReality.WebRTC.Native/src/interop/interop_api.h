@@ -742,6 +742,50 @@ struct mrsAudioSenderStats {
   uint64_t BytesSent;
 };
 
+struct mrsAudioReceiverStats {
+  int64_t TimestampUs;
+  const char* TrackIdentifier;
+  double AudioLevel;
+  double TotalAudioEnergy;
+  double TotalSamplesReceived;
+  double TotalSamplesDuration;
+
+  int64_t RtpStatsTimestampUs;
+  uint32_t PacketsReceived;
+  uint64_t BytesReceived;
+};
+
+struct mrsVideoSenderStats {
+  int64_t TimestampUs;
+  const char* TrackIdentifier;
+  uint32_t FramesSent;
+  uint32_t HugeFramesSent;
+
+  int64_t RtpStatsTimestampUs;
+  uint32_t PacketsSent;
+  uint64_t BytesSent;
+  uint32_t FramesEncoded;
+};
+
+struct mrsVideoReceiverStats {
+  int64_t TimestampUs;
+  const char* TrackIdentifier;
+  uint32_t FramesReceived;
+  uint32_t FramesDropped;
+
+  int64_t RtpStatsTimestampUs;
+  uint32_t PacketsReceived;
+  uint64_t BytesReceived;
+  uint32_t FramesDecoded;
+};
+
+struct mrsTransportStats {
+  int64_t TimestampUs;
+  uint64_t BytesSent;
+  uint64_t BytesReceived;
+};
+
+
 // TODO other stats
 
 using mrsStatsReportHandle = const void*;
