@@ -1,2 +1,3 @@
 configurations.maybeCreate("default")
+// See BUILD.md for instructions to build libwebrtc.aar
 artifacts.add("default", file('libwebrtc.aar'))

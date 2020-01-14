@@ -22,6 +22,7 @@ add_library(
         STATIC IMPORTED
 )
 
+# See BUILD.md for instructions to build libwebrtc_full.a
 set_target_properties(
         libwebrtc-full-a
         PROPERTIES IMPORTED_LOCATION

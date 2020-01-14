@@ -74,6 +74,7 @@ dependencies {
 }
 
 copyWebRTCDependencies.doLast {
+    // See BUILD.md for instructions to build libwebrtc.aar
     def aar = file('../libwebrtc/libwebrtc.aar')
     extractEntry(aar, 'jni/arm64-v8a/libjingle_peerconnection_so.so', "${projectDir}/src/main/jniLibs/arm64-v8a/libjingle_peerconnection_so.so")
     extractEntry(aar, 'classes.jar', "${projectDir}/src/main/libs/libwebrtc.jar")
