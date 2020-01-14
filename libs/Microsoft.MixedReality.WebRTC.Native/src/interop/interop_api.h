@@ -719,8 +719,12 @@ MRS_API void MRS_CALL mrsMemCpyStride(void* dst,
                                       int32_t src_stride,
                                       int32_t elem_size,
                                       int32_t elem_count) noexcept;
+///
+/// Stats extraction.
+///
 
-
+/// Subset of RTCDataChannelStats. See
+/// https://www.w3.org/TR/webrtc-stats/#dcstats-dict*
 struct mrsDataChannelStats {
   int64_t TimestampUs;
   int64_t DataChannelIdentifier;
@@ -730,6 +734,9 @@ struct mrsDataChannelStats {
   uint64_t BytesReceived;
 };
 
+/// Subset of RTCMediaStreamTrack (audio sender) and RTCOutboundRTPStreamStats.
+/// See https://www.w3.org/TR/webrtc-stats/#raststats-dict* and
+/// https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*
 struct mrsAudioSenderStats {
   int64_t TimestampUs;
   const char* TrackIdentifier;
@@ -742,6 +749,9 @@ struct mrsAudioSenderStats {
   uint64_t BytesSent;
 };
 
+/// Subset of RTCMediaStreamTrack (audio receiver) and RTCInboundRTPStreamStats.
+/// See https://www.w3.org/TR/webrtc-stats/#aststats-dict* and
+/// https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*
 struct mrsAudioReceiverStats {
   int64_t TimestampUs;
   const char* TrackIdentifier;
@@ -755,6 +765,9 @@ struct mrsAudioReceiverStats {
   uint64_t BytesReceived;
 };
 
+/// Subset of RTCMediaStreamTrack (video sender) and RTCOutboundRTPStreamStats.
+/// See https://www.w3.org/TR/webrtc-stats/#vsstats-dict* and
+/// https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*
 struct mrsVideoSenderStats {
   int64_t TimestampUs;
   const char* TrackIdentifier;
@@ -767,6 +780,9 @@ struct mrsVideoSenderStats {
   uint32_t FramesEncoded;
 };
 
+/// Subset of RTCMediaStreamTrack (video receiver) + RTCInboundRTPStreamStats.
+/// See https://www.w3.org/TR/webrtc-stats/#rvststats-dict* and
+/// https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*
 struct mrsVideoReceiverStats {
   int64_t TimestampUs;
   const char* TrackIdentifier;
@@ -779,30 +795,45 @@ struct mrsVideoReceiverStats {
   uint32_t FramesDecoded;
 };
 
+/// Subset of RTCTransportStats. See
+/// https://www.w3.org/TR/webrtc-stats/#transportstats-dict*
 struct mrsTransportStats {
   int64_t TimestampUs;
   uint64_t BytesSent;
   uint64_t BytesReceived;
 };
 
-
-// TODO other stats
-
+/// Handle to a WebRTC stats report.
 using mrsStatsReportHandle = const void*;
 
-using PeerConnectionSimpleStatsCallback = void (MRS_CALL*)(void* user_data, mrsStatsReportHandle stats_report);
+/// Called by mrsPeerConnectionGetSimpleStats when a stats report is ready.
+using PeerConnectionGetSimpleStatsCallback =
+    void(MRS_CALL*)(void* user_data, mrsStatsReportHandle stats_report);
+
+/// Called by mrsStatsReportGetObjects for every instance of the requested stats
+/// type.
 using mrsStatsReportGetObjectCallback =
-    void(MRS_CALL*)(void* user_data, void* stats_object);
+    void(MRS_CALL*)(void* user_data, const void* stats_object);
 
-MRS_API mrsResult MRS_CALL mrsPeerConnectionGetSimpleStats(
-    PeerConnectionHandle peer_handle, PeerConnectionSimpleStatsCallback callback,
-                                void* user_data);
-
+/// Get a stats report for the connection.
+/// The report passed to the callback must be released when finished through
+/// mrsStatsReportRemoveRef.
 MRS_API mrsResult MRS_CALL
-mrsStatsReportGetObjects(mrsStatsReportHandle report_handle, const char* stats_type,
-                                mrsStatsReportGetObjectCallback callback,
+mrsPeerConnectionGetSimpleStats(PeerConnectionHandle peer_handle,
+                                PeerConnectionGetSimpleStatsCallback callback,
                                 void* user_data);
 
+/// Get all the instances of the requested stats type.
+/// The type must be one of "DataChannelStats", "AudioSenderStats",
+/// "AudioReceiverStats", "VideoSenderStats", "VideoReceiverStats",
+/// "TransportStats".
+MRS_API mrsResult MRS_CALL
+mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
+                         const char* stats_type,
+                         mrsStatsReportGetObjectCallback callback,
+                         void* user_data);
+
+/// Release a stats report.
 MRS_API mrsResult MRS_CALL
 mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report);
 }  // extern "C"

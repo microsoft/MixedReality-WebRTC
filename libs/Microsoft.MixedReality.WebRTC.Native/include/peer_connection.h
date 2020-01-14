@@ -336,7 +336,7 @@ class PeerConnection : public TrackedObject {
   virtual void MRS_API
   OnDataChannelAdded(const DataChannel& data_channel) noexcept = 0;
 
-  // TODO
+  /// Internal use.
   void GetStats(webrtc::RTCStatsCollectorCallback* callback);
 
   //

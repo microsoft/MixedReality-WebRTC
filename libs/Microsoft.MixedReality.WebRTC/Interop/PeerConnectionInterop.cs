@@ -326,11 +326,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             }
         }
 
-        public static IEnumerable<T> GetStatsObject<T>(PeerConnection.StatsReport report)
+        public static IEnumerable<T> GetStatsObject<T>(PeerConnection.StatsReport.Handle reportHandle)
         {
             var res = new List<T>();
             var resHandle = GCHandle.Alloc(res, GCHandleType.Normal);
-            StatsReport_GetObjects(report, typeof(T).Name, GetStatsObjectCallback, GCHandle.ToIntPtr(resHandle));
+            StatsReport_GetObjects(reportHandle, typeof(T).Name, GetStatsObjectCallback, GCHandle.ToIntPtr(resHandle));
             resHandle.Free();
             return res;
         }
@@ -656,7 +656,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsStatsReportGetObjects")]
-        public static extern void StatsReport_GetObjects(PeerConnection.StatsReport reportHandle, string stats_type, PeerConnectionSimpleStatsObjectCallback callback, IntPtr userData);
+        public static extern void StatsReport_GetObjects(PeerConnection.StatsReport.Handle reportHandle, string stats_type, PeerConnectionSimpleStatsObjectCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsStatsReportRemoveRef")]

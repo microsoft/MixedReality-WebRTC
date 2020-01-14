@@ -1126,14 +1126,14 @@ T& FindOrInsert(std::vector<std::pair<std::string, T>>& vec,
 
 mrsResult MRS_CALL
 mrsPeerConnectionGetSimpleStats(PeerConnectionHandle peerHandle,
-                                PeerConnectionSimpleStatsCallback callback,
+                                PeerConnectionGetSimpleStatsCallback callback,
                                 void* user_data) {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     struct Collector : webrtc::RTCStatsCollectorCallback {
-      Collector(PeerConnectionSimpleStatsCallback callback, void* user_data)
+      Collector(PeerConnectionGetSimpleStatsCallback callback, void* user_data)
           : callback_(callback), user_data_(user_data) {}
 
-      PeerConnectionSimpleStatsCallback callback_;
+      PeerConnectionGetSimpleStatsCallback callback_;
       void* user_data_;
       void OnStatsDelivered(
           const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
@@ -1243,8 +1243,10 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
             dest_stats.TimestampUs = track_stats.timestamp_us();
             dest_stats.TrackIdentifier = track_stats.track_identifier->c_str();
-            dest_stats.AudioLevel =
-                track_stats.audio_level.is_defined() ? *track_stats.audio_level : 0;
+            // This seems to be undefined in some not well specified cases.
+            dest_stats.AudioLevel = track_stats.audio_level.is_defined()
+                                        ? *track_stats.audio_level
+                                        : 0;
             dest_stats.TotalAudioEnergy = *track_stats.total_audio_energy;
             dest_stats.TotalSamplesReceived =
                 *track_stats.total_samples_received;

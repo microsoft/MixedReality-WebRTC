@@ -1430,7 +1430,7 @@ namespace Microsoft.MixedReality.WebRTC
         #endregion
 
         /// <summary>
-        /// RTCDataChannelStats.
+        /// Subset of RTCDataChannelStats. See https://www.w3.org/TR/webrtc-stats/#dcstats-dict*
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct DataChannelStats
@@ -1444,12 +1444,13 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// RTCMediaStreamTrack (audio sender subset) + RTCOutboundRTPStreamStats.
+        /// Subset of RTCMediaStreamTrack (audio sender) and RTCOutboundRTPStreamStats.
+        /// See https://www.w3.org/TR/webrtc-stats/#raststats-dict* and https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public unsafe struct AudioSenderStats
         {
-            public long TimestampUs;
+            public long TrackStatsTimestampUs;
             [MarshalAs(UnmanagedType.LPStr)]
             public string TrackIdentifier;
             public double AudioLevel;
@@ -1462,12 +1463,13 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// RTCMediaStreamTrack (audio receiver subset) + RTCInboundRTPStreamStats.
+        /// Subset of RTCMediaStreamTrack (audio receiver) and RTCInboundRTPStreamStats.
+        /// See https://www.w3.org/TR/webrtc-stats/#aststats-dict* and https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct AudioReceiverStats
         {
-            public long TimestampUs;
+            public long TrackStatsTimestampUs;
             public string TrackIdentifier;
             public double AudioLevel;
             public double TotalAudioEnergy;
@@ -1480,12 +1482,13 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// RTCMediaStreamTrack (video sender subset) + RTCOutboundRTPStreamStats.
+        /// Subset of RTCMediaStreamTrack (video sender) and RTCOutboundRTPStreamStats.
+        /// See https://www.w3.org/TR/webrtc-stats/#vsstats-dict* and https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct VideoSenderStats
         {
-            public long TimestampUs;
+            public long TrackStatsTimestampUs;
             public string TrackIdentifier;
             public uint FramesSent;
             public uint HugeFramesSent;
@@ -1497,12 +1500,13 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// RTCMediaStreamTrack (video receiver subset) + RTCInboundRTPStreamStats.
+        /// Subset of RTCMediaStreamTrack (video receiver) + RTCInboundRTPStreamStats.
+        /// See https://www.w3.org/TR/webrtc-stats/#rvststats-dict* and https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct VideoReceiverStats
         {
-            public long TimestampUs;
+            public long TrackStatsTimestampUs;
             public string TrackIdentifier;
             public uint FramesReceived;
             public uint FramesDropped;
@@ -1514,36 +1518,69 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// RTCTransportStats
+        /// Subset of RTCTransportStats. See https://www.w3.org/TR/webrtc-stats/#transportstats-dict*
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct TransportStats
         {
+            /// <summary>
+            /// Time when the RTCDataChannelStats were collected.
+            /// </summary>
             public long TimestampUs;
             public ulong BytesSent;
             public ulong BytesReceived;
         }
 
-        public class StatsReport : SafeHandle
+        /// <summary>
+        /// Snapshot of the statistics relative to a peer connection/track.
+        /// The various stats objects can be read through <see cref="GetStats{T}"/>.
+        /// </summary>
+        public class StatsReport : IDisposable
         {
-            public StatsReport(IntPtr h) : base(IntPtr.Zero, true) { handle = h; }
-
-            public override bool IsInvalid => handle == IntPtr.Zero;
-
-            public IEnumerable<T> GetStats<T>()
+            internal class Handle : SafeHandle
             {
-                return PeerConnectionInterop.GetStatsObject<T>(this);
+                internal Handle(IntPtr h) : base(IntPtr.Zero, true) { handle = h; }
+                public override bool IsInvalid => handle == IntPtr.Zero;
+                protected override bool ReleaseHandle()
+                {
+                    PeerConnectionInterop.StatsReport_RemoveRef(handle);
+                    return true;
+                }
             }
 
-            protected override bool ReleaseHandle()
+            private Handle _handle;
+
+            internal StatsReport(IntPtr h) { _handle = new Handle(h); }
+
+            /// <summary>
+            /// Get all the instances of a specific stats type in the report.
+            /// </summary>
+            /// <typeparam name="T">
+            /// Must be one of <see cref="DataChannelStats"/>, <see cref="AudioSenderStats"/>,
+            /// <see cref="AudioReceiverStats"/>, <see cref="VideoSenderStats"/>, <see cref="VideoReceiverStats"/>,
+            /// <see cref="TransportStats"/>.
+            /// </typeparam>
+            public IEnumerable<T> GetStats<T>()
             {
-                PeerConnectionInterop.StatsReport_RemoveRef(handle);
-                return true;
+                return PeerConnectionInterop.GetStatsObject<T>(_handle);
+            }
+
+            /// <summary>
+            /// Dispose of the report.
+            /// </summary>
+            public void Dispose()
+            {
+                ((IDisposable)_handle).Dispose();
             }
         }
 
+        /// <summary>
+        /// Get a snapshot of the statistics relative to the peer connection.
+        /// </summary>
+        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
         public Task<StatsReport> GetSimpleStatsAsync()
         {
+            ThrowIfConnectionNotOpen();
             return PeerConnectionInterop.GetSimpleStatsAsync(_nativePeerhandle);
         }
 
