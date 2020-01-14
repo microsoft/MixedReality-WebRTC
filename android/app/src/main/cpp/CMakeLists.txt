@@ -34,6 +34,7 @@ target_include_directories(
         ${mr-webrtc-native-dir}/include
         ${mr-webrtc-native-dir}/src
         ${deps-dir}/webrtc/include
+        ${deps-dir}/webrtc/include/third_party/abseil-cpp
         ${deps-dir}/webrtc/include/third_party/libyuv/include
 )
 

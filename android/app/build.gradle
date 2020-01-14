@@ -1,8 +1,27 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.zip.ZipFile
+
 apply plugin: 'com.android.library'
+
+// Task to copy specific files out of libwebrtc.aar and into this project.
+task copyWebRTCDependencies
+tasks.whenTaskAdded { task ->
+    if (task.name == 'externalNativeBuildRelease') {
+        task.dependsOn copyWebRTCDependencies
+    } else if (task.name == 'externalNativeBuildDebug') {
+        task.dependsOn copyWebRTCDependencies
+    }
+}
 
 android {
     compileSdkVersion 29
     buildToolsVersion "28.0.2"
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
     defaultConfig {
         project.archivesBaseName = "Microsoft.MixedReality.WebRTC.Native"
         minSdkVersion 25
@@ -49,7 +68,34 @@ android {
 }
 
 dependencies {
+    compileOnly project(':libwebrtc')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation fileTree(dir: '../deps/webrtc', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
+}
+
+copyWebRTCDependencies.doLast {
+    def aar = file('../libwebrtc/libwebrtc.aar')
+    extractEntry(aar, 'jni/arm64-v8a/libjingle_peerconnection_so.so', "${projectDir}/src/main/jniLibs/arm64-v8a/libjingle_peerconnection_so.so")
+    extractEntry(aar, 'classes.jar', "${projectDir}/src/main/libs/libwebrtc.jar")
+}
+
+// Utility method to extract only one entry in a zip file
+private def extractEntry(archive, entryPath, outputPath) {
+    if (!archive.exists()) {
+        throw new GradleException("archive $archive not found")
+    }
+    def zip = new ZipFile(archive)
+    zip.entries().each {
+        if (it.name == entryPath) {
+            def path = Paths.get(outputPath)
+            if (!Files.exists(path)) {
+                Files.createDirectories(path.getParent())
+            } else {
+                Files.delete(path)
+            }
+            println('copying to ' + path)
+            Files.copy(zip.getInputStream(it), path)
+        }
+    }
+    zip.close()
 }

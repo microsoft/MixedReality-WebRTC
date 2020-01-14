@@ -8,8 +8,11 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
-/build
+build/
 /captures
 .externalNativeBuild
 .cxx
-app/libs
+app/src/main/jniLibs/
+app/src/main/libs/
+libwebrtc/libwebrtc.aar
+

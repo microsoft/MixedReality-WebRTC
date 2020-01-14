@@ -73,6 +73,11 @@ Really nice GitHub user `vsimon` wrote a wrapper script that makes building the 
 
     This will cause the header copy operation take a long time. This could be improved by adding additional `-path './third_party/path/to/exclude*' -prune -o` terms.
 
+3. Edit `util.sh` to disable zipping the output folder.
+
+    The output folder with includes is massive in size, and we don't need it zipped anyway, so disable this step:
+    - Line 375: Comment out the contents of the function `package::zip()`
+
 ### Sync the source and build the library
 
 1. Run the build, 1st attempt.
@@ -112,6 +117,8 @@ Really nice GitHub user `vsimon` wrote a wrapper script that makes building the 
     - Set `rtc_use_x11 = false`
     - Set `rtc_enable_protobuf = false`
 
+> * TODO: Move these settings to `args.gni`
+
 4. Re-run the build. It should succeed this time.
 
 5. Find the build output at `out/webrtcbuilds-<build-identifier>`.
@@ -119,5 +126,18 @@ Really nice GitHub user `vsimon` wrote a wrapper script that makes building the 
         - Copy the `include` folder to `MixedReality-WebRTC/android/deps/webrtc`, overwriting if necessary.
         - Copy `lib/Release/libwebrtc_full.a` to `MixedReality-WebRTC/android/deps/webrtc`, overwriting if necessary.
 
-# Microsoft.MixedReality.WebRTC - Android build
+6. Build `libwebrtc.aar`.
+    - cd to `out/src`
+    - Run `python tools_webrtc/android/build_aar.py --arch arm64-v8a --verbose --build-dir ./out/aar`
+    - Wait for that to finish.
+    - cd to `out/aar`
+    - Copy `libwebrtc.aar` to the MixedReality-WebRTC project:
+        - Copy `libwebrtc.aar` to `MixedReality-WebRTC/android/libwebrtc`, overwriting if necessary.
+
+## Microsoft.MixedReality.WebRTC - Android build
+
+1. Open the project in Android Studio.
+    - Open the `MixedReality-WebRTC/android` folder in Android Studio.
+    - ...
+
 
