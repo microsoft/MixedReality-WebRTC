@@ -6,6 +6,7 @@
 #include "pch.h"
 
 #include "api/stats/rtcstats_objects.h"
+
 #include "data_channel.h"
 #include "external_video_track_source.h"
 #include "interop/external_video_track_source_interop.h"
@@ -1167,6 +1168,11 @@ void GetCommonValues(T& lhs, const webrtc::RTCInboundRTPStreamStats& rhs) {
   lhs.bytes_received = *rhs.bytes_received;
 }
 
+template <class T>
+T GetValueIfDefined(const webrtc::RTCStatsMember<T>& member) {
+  return member.is_defined() ? *member : 0;
+}
+
 }
 
 mrsResult MRS_CALL
@@ -1174,7 +1180,7 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
                          const char* stats_type,
                          mrsStatsReportGetObjectCallback callback,
                          void* user_data) {
-  if (!report_handle || !user_data) {
+  if (!report_handle) {
     return Result::kInvalidNativeHandle;
   }
   auto report = static_cast<const webrtc::RTCStatsReport*>(report_handle);
@@ -1212,7 +1218,7 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
             dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
             dest_stats.track_identifier = track_stats.track_identifier->c_str();
-            dest_stats.audio_level = *track_stats.audio_level;
+            dest_stats.audio_level = GetValueIfDefined(track_stats.audio_level);
             dest_stats.total_audio_energy = *track_stats.total_audio_energy;
             dest_stats.total_samples_duration =
                 *track_stats.total_samples_duration;
@@ -1244,12 +1250,10 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
             dest_stats.track_identifier = track_stats.track_identifier->c_str();
             // This seems to be undefined in some not well specified cases.
-            dest_stats.audio_level = track_stats.audio_level.is_defined()
-                                        ? *track_stats.audio_level
-                                        : 0;
+            dest_stats.audio_level = GetValueIfDefined(track_stats.audio_level);
             dest_stats.total_audio_energy = *track_stats.total_audio_energy;
             dest_stats.total_samples_received =
-                *track_stats.total_samples_received;
+                GetValueIfDefined(track_stats.total_samples_received);
             dest_stats.total_samples_duration =
                 *track_stats.total_samples_duration;
           }
@@ -1282,8 +1286,8 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
             dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
             dest_stats.track_identifier = track_stats.track_identifier->c_str();
-            dest_stats.frames_sent = *track_stats.frames_sent;
-            dest_stats.huge_frames_sent = *track_stats.huge_frames_sent;
+            dest_stats.frames_sent = GetValueIfDefined(track_stats.frames_sent);
+            dest_stats.huge_frames_sent = GetValueIfDefined(track_stats.huge_frames_sent);
           }
         }
       }
@@ -1312,8 +1316,8 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
             dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
             dest_stats.track_identifier = track_stats.track_identifier->c_str();
-            dest_stats.frames_received = *track_stats.frames_received;
-            dest_stats.frames_dropped = *track_stats.frames_dropped;
+            dest_stats.frames_received = GetValueIfDefined(track_stats.frames_received);
+            dest_stats.frames_dropped = GetValueIfDefined(track_stats.frames_dropped);
           }
         }
       }
