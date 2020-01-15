@@ -1156,15 +1156,15 @@ mrsPeerConnectionGetSimpleStats(PeerConnectionHandle peerHandle,
 namespace {
 template <class T>
 void GetCommonValues(T& lhs, const webrtc::RTCOutboundRTPStreamStats& rhs) {
-  lhs.RtpStatsTimestampUs = rhs.timestamp_us();
-  lhs.PacketsSent = *rhs.packets_sent;
-  lhs.BytesSent = *rhs.bytes_sent;
+  lhs.rtp_stats_timestamp_us = rhs.timestamp_us();
+  lhs.packets_sent = *rhs.packets_sent;
+  lhs.bytes_sent = *rhs.bytes_sent;
 }
 template <class T>
 void GetCommonValues(T& lhs, const webrtc::RTCInboundRTPStreamStats& rhs) {
-  lhs.RtpStatsTimestampUs = rhs.timestamp_us();
-  lhs.PacketsReceived = *rhs.packets_received;
-  lhs.BytesReceived = *rhs.bytes_received;
+  lhs.rtp_stats_timestamp_us = rhs.timestamp_us();
+  lhs.packets_received = *rhs.packets_received;
+  lhs.bytes_received = *rhs.bytes_received;
 }
 
 }
@@ -1210,11 +1210,11 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
         if (*track_stats.kind == "audio") {
           if (!(*track_stats.remote_source)) {
             auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
-            dest_stats.TimestampUs = track_stats.timestamp_us();
-            dest_stats.TrackIdentifier = track_stats.track_identifier->c_str();
-            dest_stats.AudioLevel = *track_stats.audio_level;
-            dest_stats.TotalAudioEnergy = *track_stats.total_audio_energy;
-            dest_stats.TotalSamplesDuration =
+            dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
+            dest_stats.track_identifier = track_stats.track_identifier->c_str();
+            dest_stats.audio_level = *track_stats.audio_level;
+            dest_stats.total_audio_energy = *track_stats.total_audio_energy;
+            dest_stats.total_samples_duration =
                 *track_stats.total_samples_duration;
           }
         }
@@ -1241,16 +1241,16 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
         if (*track_stats.kind == "audio") {
           if (*track_stats.remote_source) {
             auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
-            dest_stats.TimestampUs = track_stats.timestamp_us();
-            dest_stats.TrackIdentifier = track_stats.track_identifier->c_str();
+            dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
+            dest_stats.track_identifier = track_stats.track_identifier->c_str();
             // This seems to be undefined in some not well specified cases.
-            dest_stats.AudioLevel = track_stats.audio_level.is_defined()
+            dest_stats.audio_level = track_stats.audio_level.is_defined()
                                         ? *track_stats.audio_level
                                         : 0;
-            dest_stats.TotalAudioEnergy = *track_stats.total_audio_energy;
-            dest_stats.TotalSamplesReceived =
+            dest_stats.total_audio_energy = *track_stats.total_audio_energy;
+            dest_stats.total_samples_received =
                 *track_stats.total_samples_received;
-            dest_stats.TotalSamplesDuration =
+            dest_stats.total_samples_duration =
                 *track_stats.total_samples_duration;
           }
         }
@@ -1272,7 +1272,7 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             ortp_stats.track_id.is_defined()) {
           auto& dest_stats = FindOrInsert(pending_stats, *ortp_stats.track_id);
           GetCommonValues(dest_stats, ortp_stats);
-          dest_stats.FramesEncoded = *ortp_stats.frames_encoded;
+          dest_stats.frames_encoded = *ortp_stats.frames_encoded;
         }
       } else if (!strcmp(stats.type(), "track")) {
         const auto& track_stats =
@@ -1280,10 +1280,10 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
         if (*track_stats.kind == "video") {
           if (!(*track_stats.remote_source)) {
             auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
-            dest_stats.TimestampUs = track_stats.timestamp_us();
-            dest_stats.TrackIdentifier = track_stats.track_identifier->c_str();
-            dest_stats.FramesSent = *track_stats.frames_sent;
-            dest_stats.HugeFramesSent = *track_stats.huge_frames_sent;
+            dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
+            dest_stats.track_identifier = track_stats.track_identifier->c_str();
+            dest_stats.frames_sent = *track_stats.frames_sent;
+            dest_stats.huge_frames_sent = *track_stats.huge_frames_sent;
           }
         }
       }
@@ -1302,7 +1302,7 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
         if (*irtp_stats.kind == "video") {
           auto& dest_stats = FindOrInsert(pending_stats, *irtp_stats.track_id);
           GetCommonValues(dest_stats, irtp_stats);
-          dest_stats.FramesDecoded = *irtp_stats.frames_decoded;
+          dest_stats.frames_decoded = *irtp_stats.frames_decoded;
         }
       } else if (!strcmp(stats.type(), "track")) {
         const auto& track_stats =
@@ -1310,10 +1310,10 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
         if (*track_stats.kind == "video") {
           if (*track_stats.remote_source) {
             auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
-            dest_stats.TimestampUs = track_stats.timestamp_us();
-            dest_stats.TrackIdentifier = track_stats.track_identifier->c_str();
-            dest_stats.FramesReceived = *track_stats.frames_received;
-            dest_stats.FramesDropped = *track_stats.frames_dropped;
+            dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
+            dest_stats.track_identifier = track_stats.track_identifier->c_str();
+            dest_stats.frames_received = *track_stats.frames_received;
+            dest_stats.frames_dropped = *track_stats.frames_dropped;
           }
         }
       }

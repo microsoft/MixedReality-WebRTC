@@ -726,81 +726,81 @@ MRS_API void MRS_CALL mrsMemCpyStride(void* dst,
 /// Subset of RTCDataChannelStats. See
 /// https://www.w3.org/TR/webrtc-stats/#dcstats-dict*
 struct mrsDataChannelStats {
-  int64_t TimestampUs;
-  int64_t DataChannelIdentifier;
-  uint32_t MessagesSent;
-  uint64_t BytesSent;
-  uint32_t MessagesReceived;
-  uint64_t BytesReceived;
+  int64_t timestamp_us;
+  int64_t data_channel_identifier;
+  uint32_t messages_sent;
+  uint64_t bytes_sent;
+  uint32_t messages_received;
+  uint64_t bytes_received;
 };
 
 /// Subset of RTCMediaStreamTrack (audio sender) and RTCOutboundRTPStreamStats.
 /// See https://www.w3.org/TR/webrtc-stats/#raststats-dict* and
 /// https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*
 struct mrsAudioSenderStats {
-  int64_t TimestampUs;
-  const char* TrackIdentifier;
-  double AudioLevel;
-  double TotalAudioEnergy;
-  double TotalSamplesDuration;
+  int64_t track_stats_timestamp_us;
+  const char* track_identifier;
+  double audio_level;
+  double total_audio_energy;
+  double total_samples_duration;
 
-  int64_t RtpStatsTimestampUs;
-  uint32_t PacketsSent;
-  uint64_t BytesSent;
+  int64_t rtp_stats_timestamp_us;
+  uint32_t packets_sent;
+  uint64_t bytes_sent;
 };
 
 /// Subset of RTCMediaStreamTrack (audio receiver) and RTCInboundRTPStreamStats.
 /// See https://www.w3.org/TR/webrtc-stats/#aststats-dict* and
 /// https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*
 struct mrsAudioReceiverStats {
-  int64_t TimestampUs;
-  const char* TrackIdentifier;
-  double AudioLevel;
-  double TotalAudioEnergy;
-  double TotalSamplesReceived;
-  double TotalSamplesDuration;
+  int64_t track_stats_timestamp_us;
+  const char* track_identifier;
+  double audio_level;
+  double total_audio_energy;
+  double total_samples_received;
+  double total_samples_duration;
 
-  int64_t RtpStatsTimestampUs;
-  uint32_t PacketsReceived;
-  uint64_t BytesReceived;
+  int64_t rtp_stats_timestamp_us;
+  uint32_t packets_received;
+  uint64_t bytes_received;
 };
 
 /// Subset of RTCMediaStreamTrack (video sender) and RTCOutboundRTPStreamStats.
 /// See https://www.w3.org/TR/webrtc-stats/#vsstats-dict* and
 /// https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*
 struct mrsVideoSenderStats {
-  int64_t TimestampUs;
-  const char* TrackIdentifier;
-  uint32_t FramesSent;
-  uint32_t HugeFramesSent;
+  int64_t track_stats_timestamp_us;
+  const char* track_identifier;
+  uint32_t frames_sent;
+  uint32_t huge_frames_sent;
 
-  int64_t RtpStatsTimestampUs;
-  uint32_t PacketsSent;
-  uint64_t BytesSent;
-  uint32_t FramesEncoded;
+  int64_t rtp_stats_timestamp_us;
+  uint32_t packets_sent;
+  uint64_t bytes_sent;
+  uint32_t frames_encoded;
 };
 
 /// Subset of RTCMediaStreamTrack (video receiver) + RTCInboundRTPStreamStats.
 /// See https://www.w3.org/TR/webrtc-stats/#rvststats-dict* and
 /// https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*
 struct mrsVideoReceiverStats {
-  int64_t TimestampUs;
-  const char* TrackIdentifier;
-  uint32_t FramesReceived;
-  uint32_t FramesDropped;
+  int64_t track_stats_timestamp_us;
+  const char* track_identifier;
+  uint32_t frames_received;
+  uint32_t frames_dropped;
 
-  int64_t RtpStatsTimestampUs;
-  uint32_t PacketsReceived;
-  uint64_t BytesReceived;
-  uint32_t FramesDecoded;
+  int64_t rtp_stats_timestamp_us;
+  uint32_t packets_received;
+  uint64_t bytes_received;
+  uint32_t frames_decoded;
 };
 
 /// Subset of RTCTransportStats. See
 /// https://www.w3.org/TR/webrtc-stats/#transportstats-dict*
 struct mrsTransportStats {
-  int64_t TimestampUs;
-  uint64_t BytesSent;
-  uint64_t BytesReceived;
+  int64_t timestamp_us;
+  uint64_t bytes_sent;
+  uint64_t bytes_received;
 };
 
 /// Handle to a WebRTC stats report.
