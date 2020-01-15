@@ -1235,19 +1235,6 @@ namespace TestAppUwp
         /// <param name="frame">The newly captured video frame.</param>
         private void LocalVideoTrack_I420AFrameReady(I420AVideoFrame frame)
         {
-
-            _peerConnection.GetSimpleStatsAsync().ContinueWith((Task<PeerConnection.StatsReport> task) =>
-            {
-                foreach (var ds in task.Result.GetStats<PeerConnection.DataChannelStats>())
-                {
-                    //Debug.WriteLine(ds.BytesSent);
-                }
-                foreach (var ast in task.Result.GetStats<PeerConnection.AudioSenderStats>())
-                {
-                    //Debug.WriteLine(ast.AudioLevel);
-                }
-                task.Result.Dispose();
-            });
             localVideoBridge.HandleIncomingVideoFrame(frame);
         }
 
