@@ -2,7 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Microsoft.MixedReality.WebRTC.Interop
 {
@@ -272,6 +275,66 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             peer.OnRemoteAudioFrameReady(frame);
         }
 
+        public static readonly PeerConnectionSimpleStatsCallback SimpleStatsReportDelegate = SimpleStatsReportCallback;
+
+        [MonoPInvokeCallback(typeof(PeerConnectionSimpleStatsCallback))]
+        public unsafe static void SimpleStatsReportCallback(IntPtr userData, IntPtr report)
+        {
+            var tcsHandle = GCHandle.FromIntPtr(userData);
+            var tcs = tcsHandle.Target as TaskCompletionSource<PeerConnection.StatsReport>;
+            tcs.SetResult(new PeerConnection.StatsReport(report));
+            tcsHandle.Free();
+        }
+
+        public static Task<PeerConnection.StatsReport> GetSimpleStatsAsync(PeerConnectionHandle peerHandle)
+        {
+            var tcs = new TaskCompletionSource<PeerConnection.StatsReport>();
+            var resPtr = Utils.MakeWrapperRef(tcs);
+            PeerConnection_GetSimpleStats(peerHandle, SimpleStatsReportDelegate, resPtr);
+
+            // The Task result will be set by the callback when the report is ready.
+            return tcs.Task;
+        }
+
+        [MonoPInvokeCallback(typeof(PeerConnectionSimpleStatsObjectCallback))]
+        public unsafe static void GetStatsObjectCallback(IntPtr userData, IntPtr statsObject)
+        {
+            var list = Utils.ToWrapper<object>(userData);
+            if (list is List<PeerConnection.DataChannelStats> dataStatsList)
+            {
+                dataStatsList.Add(*(PeerConnection.DataChannelStats*)statsObject);
+            }
+            else if (list is List<PeerConnection.AudioSenderStats> audioSenderStatsList)
+            {
+                audioSenderStatsList.Add(Marshal.PtrToStructure<PeerConnection.AudioSenderStats>(statsObject));
+            }
+            else if (list is List<PeerConnection.AudioReceiverStats> audioReceiverStatsList)
+            {
+                audioReceiverStatsList.Add(Marshal.PtrToStructure<PeerConnection.AudioReceiverStats>(statsObject));
+            }
+            else if (list is List<PeerConnection.VideoSenderStats> videoSenderStatsList)
+            {
+                videoSenderStatsList.Add(Marshal.PtrToStructure<PeerConnection.VideoSenderStats>(statsObject));
+            }
+            else if (list is List<PeerConnection.VideoReceiverStats> videoReceiverStatsList)
+            {
+                videoReceiverStatsList.Add(Marshal.PtrToStructure<PeerConnection.VideoReceiverStats>(statsObject));
+            }
+            else if (list is List<PeerConnection.TransportStats> transportStatsList)
+            {
+                transportStatsList.Add(*(PeerConnection.TransportStats*)statsObject);
+            }
+        }
+
+        public static IEnumerable<T> GetStatsObject<T>(PeerConnection.StatsReport.Handle reportHandle)
+        {
+            var res = new List<T>();
+            var resHandle = GCHandle.Alloc(res, GCHandleType.Normal);
+            StatsReport_GetObjects(reportHandle, typeof(T).Name, GetStatsObjectCallback, GCHandle.ToIntPtr(resHandle));
+            resHandle.Free();
+            return res;
+        }
+
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         internal struct MarshaledInteropCallbacks
         {
@@ -406,6 +469,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void AudioFrameUnmanagedCallback(IntPtr userData, ref AudioFrame frame);
 
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void PeerConnectionSimpleStatsCallback(IntPtr userData, IntPtr statsReport);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void PeerConnectionSimpleStatsObjectCallback(IntPtr userData, IntPtr statsObject);
         #endregion
 
 
@@ -582,6 +650,17 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             EntryPoint = "mrsPeerConnectionClose")]
         public static extern uint PeerConnection_Close(PeerConnectionHandle peerHandle);
 
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionGetSimpleStats")]
+        public static extern void PeerConnection_GetSimpleStats(PeerConnectionHandle peerHandle, PeerConnectionSimpleStatsCallback callback, IntPtr userData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsStatsReportGetObjects")]
+        public static extern void StatsReport_GetObjects(PeerConnection.StatsReport.Handle reportHandle, string stats_type, PeerConnectionSimpleStatsObjectCallback callback, IntPtr userData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsStatsReportRemoveRef")]
+        public static extern void StatsReport_RemoveRef(IntPtr reportHandle);
         #endregion
 
 

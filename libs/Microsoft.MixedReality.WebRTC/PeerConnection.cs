@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -1034,7 +1035,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <see cref="AddLocalVideoTrackAsync(LocalVideoTrackSettings)"/>, and can build their own fallback
         /// mechanism on top of this call if needed.
         /// </remarks>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         /// <example>
         /// Create a video track called "MyTrack", with Mixed Reality Capture (MRC) enabled.
         /// This assumes that the platform supports MRC. Note that if MRC is not available
@@ -1095,7 +1096,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Remove from the current connection the local video track added with <see cref="AddLocalAudioTrackAsync"/>.
         /// </summary>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         public void RemoveLocalVideoTrack(LocalVideoTrack track)
         {
             ThrowIfConnectionNotOpen();
@@ -1127,7 +1128,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
         /// for more details.
         /// </remarks>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         public Task AddLocalAudioTrackAsync()
         {
             ThrowIfConnectionNotOpen();
@@ -1162,7 +1163,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Disable audio tracks are still active, but are silent.
         /// </summary>
         /// <param name="enabled"><c>true</c> to enable the track, or <c>false</c> to disable it</param>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         public void SetLocalAudioTrackEnabled(bool enabled = true)
         {
             ThrowIfConnectionNotOpen();
@@ -1175,7 +1176,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Disable audio tracks are still active, but are silent.
         /// </summary>
         /// <returns><c>true</c> if the track is enabled, or <c>false</c> otherwise</returns>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         public bool IsLocalAudioTrackEnabled()
         {
             ThrowIfConnectionNotOpen();
@@ -1185,7 +1186,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Remove from the current connection the local audio track added with <see cref="AddLocalAudioTrackAsync"/>.
         /// </summary>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         public void RemoveLocalAudioTrack()
         {
             ThrowIfConnectionNotOpen();
@@ -1214,7 +1215,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         /// <exception cref="SctpNotNegotiatedException">SCTP not negotiated. Call <see cref="CreateOffer()"/> first.</exception>
         /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         /// <remarks>
@@ -1253,7 +1254,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         /// <exception cref="SctpNotNegotiatedException">SCTP not negotiated. Call <see cref="CreateOffer()"/> first.</exception>
         /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         /// <remarks>
@@ -1274,7 +1275,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         /// <exception xref="InvalidOperationException">SCTP not negotiated.</exception>
         /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         private async Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable)
@@ -1336,7 +1337,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="sdpMid"></param>
         /// <param name="sdpMlineindex"></param>
         /// <param name="candidate"></param>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         public void AddIceCandidate(string sdpMid, int sdpMlineindex, string candidate)
         {
             MainEventSource.Log.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
@@ -1350,7 +1351,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// to allow the user to send that message to the remote peer via its selected signaling solution.
         /// </summary>
         /// <returns><c>true</c> if the offer creation task was successfully submitted.</returns>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         /// <remarks>
         /// The SDP offer message is not successfully created until the <see cref="LocalSdpReadytoSend"/>
         /// event is triggered, and may still fail even if this method returns <c>true</c>, for example if
@@ -1369,7 +1370,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// to allow the user to send that message to the remote peer via its selected signaling solution.
         /// </summary>
         /// <returns><c>true</c> if the answer creation task was successfully submitted.</returns>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         /// <remarks>
         /// The SDP answer message is not successfully created until the <see cref="LocalSdpReadytoSend"/>
         /// event is triggered, and may still fail even if this method returns <c>true</c>, for example if
@@ -1408,7 +1409,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="type">The type of SDP message ("offer" or "answer")</param>
         /// <param name="sdp">The content of the SDP message</param>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         public void SetRemoteDescription(string type, string sdp)
         {
             ThrowIfConnectionNotOpen();
@@ -1428,12 +1429,166 @@ namespace Microsoft.MixedReality.WebRTC
 
         #endregion
 
+        /// <summary>
+        /// Subset of RTCDataChannelStats. See https://www.w3.org/TR/webrtc-stats/#dcstats-dict*
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct DataChannelStats
+        {
+            public long TimestampUs;
+            public long DataChannelIdentifier;
+            public uint MessagesSent;
+            public ulong BytesSent;
+            public uint MessagesReceived;
+            public ulong BytesReceived;
+        }
+
+        /// <summary>
+        /// Subset of RTCMediaStreamTrack (audio sender) and RTCOutboundRTPStreamStats.
+        /// See https://www.w3.org/TR/webrtc-stats/#raststats-dict* and https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public unsafe struct AudioSenderStats
+        {
+            public long TrackStatsTimestampUs;
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string TrackIdentifier;
+            public double AudioLevel;
+            public double TotalAudioEnergy;
+            public double TotalSamplesDuration;
+
+            public long RtpStatsTimestampUs;
+            public uint PacketsSent;
+            public ulong BytesSent;
+        }
+
+        /// <summary>
+        /// Subset of RTCMediaStreamTrack (audio receiver) and RTCInboundRTPStreamStats.
+        /// See https://www.w3.org/TR/webrtc-stats/#aststats-dict* and https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct AudioReceiverStats
+        {
+            public long TrackStatsTimestampUs;
+            public string TrackIdentifier;
+            public double AudioLevel;
+            public double TotalAudioEnergy;
+            public double TotalSamplesReceived;
+            public double TotalSamplesDuration;
+
+            public long RtpStatsTimestampUs;
+            public uint PacketsReceived;
+            public ulong BytesReceived;
+        }
+
+        /// <summary>
+        /// Subset of RTCMediaStreamTrack (video sender) and RTCOutboundRTPStreamStats.
+        /// See https://www.w3.org/TR/webrtc-stats/#vsstats-dict* and https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct VideoSenderStats
+        {
+            public long TrackStatsTimestampUs;
+            public string TrackIdentifier;
+            public uint FramesSent;
+            public uint HugeFramesSent;
+
+            public long RtpStatsTimestampUs;
+            public uint PacketsSent;
+            public ulong BytesSent;
+            public uint FramesEncoded;
+        }
+
+        /// <summary>
+        /// Subset of RTCMediaStreamTrack (video receiver) + RTCInboundRTPStreamStats.
+        /// See https://www.w3.org/TR/webrtc-stats/#rvststats-dict* and https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct VideoReceiverStats
+        {
+            public long TrackStatsTimestampUs;
+            public string TrackIdentifier;
+            public uint FramesReceived;
+            public uint FramesDropped;
+
+            public long RtpStatsTimestampUs;
+            public uint PacketsReceived;
+            public ulong BytesReceived;
+            public uint FramesDecoded;
+        }
+
+        /// <summary>
+        /// Subset of RTCTransportStats. See https://www.w3.org/TR/webrtc-stats/#transportstats-dict*
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct TransportStats
+        {
+            /// <summary>
+            /// Time when the RTCDataChannelStats were collected.
+            /// </summary>
+            public long TimestampUs;
+            public ulong BytesSent;
+            public ulong BytesReceived;
+        }
+
+        /// <summary>
+        /// Snapshot of the statistics relative to a peer connection/track.
+        /// The various stats objects can be read through <see cref="GetStats{T}"/>.
+        /// </summary>
+        public class StatsReport : IDisposable
+        {
+            internal class Handle : SafeHandle
+            {
+                internal Handle(IntPtr h) : base(IntPtr.Zero, true) { handle = h; }
+                public override bool IsInvalid => handle == IntPtr.Zero;
+                protected override bool ReleaseHandle()
+                {
+                    PeerConnectionInterop.StatsReport_RemoveRef(handle);
+                    return true;
+                }
+            }
+
+            private Handle _handle;
+
+            internal StatsReport(IntPtr h) { _handle = new Handle(h); }
+
+            /// <summary>
+            /// Get all the instances of a specific stats type in the report.
+            /// </summary>
+            /// <typeparam name="T">
+            /// Must be one of <see cref="DataChannelStats"/>, <see cref="AudioSenderStats"/>,
+            /// <see cref="AudioReceiverStats"/>, <see cref="VideoSenderStats"/>, <see cref="VideoReceiverStats"/>,
+            /// <see cref="TransportStats"/>.
+            /// </typeparam>
+            public IEnumerable<T> GetStats<T>()
+            {
+                return PeerConnectionInterop.GetStatsObject<T>(_handle);
+            }
+
+            /// <summary>
+            /// Dispose of the report.
+            /// </summary>
+            public void Dispose()
+            {
+                ((IDisposable)_handle).Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Get a snapshot of the statistics relative to the peer connection.
+        /// </summary>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
+        public Task<StatsReport> GetSimpleStatsAsync()
+        {
+            ThrowIfConnectionNotOpen();
+            return PeerConnectionInterop.GetSimpleStatsAsync(_nativePeerhandle);
+        }
 
         /// <summary>
         /// Utility to throw an exception if a method is called before the underlying
         /// native peer connection has been initialized.
         /// </summary>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         private void ThrowIfConnectionNotOpen()
         {
             lock (_openCloseLock)
