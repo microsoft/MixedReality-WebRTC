@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class VideoSource
+    <title>Struct PeerConnection.TransportStats
    | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class VideoSource
+    <meta name="title" content="Struct PeerConnection.TransportStats
    | MixedReality-WebRTC Documentation ">
     <meta name="generator" content="docfx 2.48.1.0">
     
@@ -81,41 +81,35 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoSource">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats">
   
   
-  <h1 id="Microsoft_MixedReality_WebRTC_Unity_VideoSource" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoSource" class="text-break">Class VideoSource
+  <h1 id="Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats" class="text-break">Struct PeerConnection.TransportStats
   </h1>
-  <div class="markdown level0 summary"><p>Base class for video sources plugging into the internal peer connection API to
-expose a single video stream to a renderer (<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html">MediaPlayer</a> or custom).</p>
+  <div class="markdown level0 summary"><p>Subset of RTCTransportStats. See <a href="https://www.w3.org/TR/webrtc-stats/#transportstats-dict">https://www.w3.org/TR/webrtc-stats/#transportstats-dict</a>*</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">VideoSource</span></div>
-      <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html">CustomVideoSource&lt;T&gt;</a></div>
-      <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html">LocalVideoSource</a></div>
-      <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.RemoteVideoSource.html">RemoteVideoSource</a></div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
-  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="Microsoft_MixedReality_WebRTC_Unity_VideoSource_syntax">Syntax</h5>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
+  <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class VideoSource : MonoBehaviour</code></pre>
+    <pre><code class="lang-csharp hljs">public struct TransportStats</code></pre>
   </div>
   <h3 id="fields">Fields
   </h3>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoSource_VideoStreamStarted" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoSource.VideoStreamStarted">VideoStreamStarted</h4>
-  <div class="markdown level1 summary"><p>Event invoked from the main Unity thread when the video stream starts.
-This means that video frames are available and the renderer should start polling.</p>
-</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats_BytesReceived.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.BytesReceived%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1531">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats_BytesReceived" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.BytesReceived">BytesReceived</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public VideoStreamStartedEvent VideoStreamStarted</code></pre>
+    <pre><code class="lang-csharp hljs">public ulong BytesReceived</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -127,22 +121,24 @@ This means that video frames are available and the renderer should start polling
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent.html">VideoStreamStartedEvent</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoSource_VideoStreamStopped" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoSource.VideoStreamStopped">VideoStreamStopped</h4>
-  <div class="markdown level1 summary"><p>Event invoked from the main Unity thread when the video stream stops.
-This means that the video frame queue is not populated anymore, though some frames
-may still be present in it that may be rendered.</p>
-</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats_BytesSent.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.BytesSent%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1530">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats_BytesSent" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.BytesSent">BytesSent</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public VideoStreamStoppedEvent VideoStreamStopped</code></pre>
+    <pre><code class="lang-csharp hljs">public ulong BytesSent</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -154,26 +150,27 @@ may still be present in it that may be rendered.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoStreamStoppedEvent.html">VideoStreamStoppedEvent</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h3 id="properties">Properties
-  </h3>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoSource_FrameQueue_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoSource.FrameQueue*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoSource_FrameQueue" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoSource.FrameQueue">FrameQueue</h4>
-  <div class="markdown level1 summary"><p>Frame queue holding the pending frames enqueued by the video source itself,
-which a video renderer needs to read and display.</p>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats_TimestampUs.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.TimestampUs%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1529">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats_TimestampUs" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.TimestampUs">TimestampUs</h4>
+  <div class="markdown level1 summary"><p>Time when the RTCDataChannelStats were collected.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IVideoFrameQueue FrameQueue { get; protected set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public long TimestampUs</code></pre>
   </div>
-  <h5 class="propertyValue">Property Value</h5>
+  <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -183,7 +180,7 @@ which a video renderer needs to read and display.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IVideoFrameQueue</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -195,6 +192,12 @@ which a video renderer needs to read and display.</p>
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1523" class="contribution-link">View Source</a>
+                  </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">

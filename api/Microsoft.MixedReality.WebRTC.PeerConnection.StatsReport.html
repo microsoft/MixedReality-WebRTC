@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct VideoCaptureDevice
+    <title>Class PeerConnection.StatsReport
    | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct VideoCaptureDevice
+    <meta name="title" content="Class PeerConnection.StatsReport
    | MixedReality-WebRTC Documentation ">
     <meta name="generator" content="docfx 2.48.1.0">
     
@@ -81,38 +81,61 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.VideoCaptureDevice">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport">
   
   
-  <h1 id="Microsoft_MixedReality_WebRTC_VideoCaptureDevice" data-uid="Microsoft.MixedReality.WebRTC.VideoCaptureDevice" class="text-break">Struct VideoCaptureDevice
+  <h1 id="Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport" class="text-break">Class PeerConnection.StatsReport
   </h1>
-  <div class="markdown level0 summary"><p>Identifier for a video capture device.</p>
+  <div class="markdown level0 summary"><p>Snapshot of the statistics relative to a peer connection/track.
+The various stats objects can be read through <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html#Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_GetStats__1">GetStats&lt;T&gt;()</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">PeerConnection.StatsReport</span></div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
   <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
-  <h5 id="Microsoft_MixedReality_WebRTC_VideoCaptureDevice_syntax">Syntax</h5>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct VideoCaptureDevice</code></pre>
+    <pre><code class="lang-csharp hljs">public class StatsReport : IDisposable</code></pre>
   </div>
-  <h3 id="fields">Fields
+  <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_VideoCaptureDevice_id.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.VideoCaptureDevice.id%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_Dispose.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L249">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1571">View Source</a>
   </span>
-  <h4 id="Microsoft_MixedReality_WebRTC_VideoCaptureDevice_id" data-uid="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.id">id</h4>
-  <div class="markdown level1 summary"><p>Unique device identifier.</p>
+  <a id="Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_Dispose_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.Dispose*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_Dispose" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Dispose of the report.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string id</code></pre>
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_GetStats__1.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.GetStats%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1563">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_GetStats_" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.GetStats*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_GetStats__1" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.GetStats``1">GetStats&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Get all the instances of a specific stats type in the report.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;T&gt; GetStats&lt;T&gt;()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -122,38 +145,26 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="xref">IEnumerable</span>&lt;T&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_VideoCaptureDevice_name.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.VideoCaptureDevice.name%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L254">View Source</a>
-  </span>
-  <h4 id="Microsoft_MixedReality_WebRTC_VideoCaptureDevice_name" data-uid="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.name">name</h4>
-  <div class="markdown level1 summary"><p>Friendly device name.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string name</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
-        <th>Type</th>
+        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td></td>
+        <td><span class="parametername">T</span></td>
+        <td><p>Must be one of <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html">PeerConnection.DataChannelStats</a>, <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html">PeerConnection.AudioSenderStats</a>,
+<a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html">PeerConnection.AudioReceiverStats</a>, <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html">PeerConnection.VideoSenderStats</a>, <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html">PeerConnection.VideoReceiverStats</a>,
+<a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.html">PeerConnection.TransportStats</a>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -165,10 +176,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_VideoCaptureDevice.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.VideoCaptureDevice%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L243" class="contribution-link">View Source</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L1538" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

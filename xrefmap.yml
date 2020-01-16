@@ -1169,6 +1169,120 @@ references:
   commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.Argb32RemoteVideoFrameReady
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.Argb32RemoteVideoFrameReady
   nameWithType: PeerConnection.Argb32RemoteVideoFrameReady
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats
+  name: PeerConnection.AudioReceiverStats
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats
+  nameWithType: PeerConnection.AudioReceiverStats
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.AudioLevel
+  name: AudioLevel
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioReceiverStats_AudioLevel
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.AudioLevel
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.AudioLevel
+  nameWithType: PeerConnection.AudioReceiverStats.AudioLevel
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.BytesReceived
+  name: BytesReceived
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioReceiverStats_BytesReceived
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.BytesReceived
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.BytesReceived
+  nameWithType: PeerConnection.AudioReceiverStats.BytesReceived
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.PacketsReceived
+  name: PacketsReceived
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioReceiverStats_PacketsReceived
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.PacketsReceived
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.PacketsReceived
+  nameWithType: PeerConnection.AudioReceiverStats.PacketsReceived
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.RtpStatsTimestampUs
+  name: RtpStatsTimestampUs
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioReceiverStats_RtpStatsTimestampUs
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.RtpStatsTimestampUs
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.RtpStatsTimestampUs
+  nameWithType: PeerConnection.AudioReceiverStats.RtpStatsTimestampUs
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TotalAudioEnergy
+  name: TotalAudioEnergy
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioReceiverStats_TotalAudioEnergy
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TotalAudioEnergy
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TotalAudioEnergy
+  nameWithType: PeerConnection.AudioReceiverStats.TotalAudioEnergy
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TotalSamplesDuration
+  name: TotalSamplesDuration
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioReceiverStats_TotalSamplesDuration
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TotalSamplesDuration
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TotalSamplesDuration
+  nameWithType: PeerConnection.AudioReceiverStats.TotalSamplesDuration
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TotalSamplesReceived
+  name: TotalSamplesReceived
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioReceiverStats_TotalSamplesReceived
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TotalSamplesReceived
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TotalSamplesReceived
+  nameWithType: PeerConnection.AudioReceiverStats.TotalSamplesReceived
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TrackIdentifier
+  name: TrackIdentifier
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioReceiverStats_TrackIdentifier
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TrackIdentifier
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TrackIdentifier
+  nameWithType: PeerConnection.AudioReceiverStats.TrackIdentifier
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TrackStatsTimestampUs
+  name: TrackStatsTimestampUs
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioReceiverStats_TrackStatsTimestampUs
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TrackStatsTimestampUs
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.TrackStatsTimestampUs
+  nameWithType: PeerConnection.AudioReceiverStats.TrackStatsTimestampUs
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats
+  name: PeerConnection.AudioSenderStats
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats
+  nameWithType: PeerConnection.AudioSenderStats
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.AudioLevel
+  name: AudioLevel
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioSenderStats_AudioLevel
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.AudioLevel
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.AudioLevel
+  nameWithType: PeerConnection.AudioSenderStats.AudioLevel
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.BytesSent
+  name: BytesSent
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioSenderStats_BytesSent
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.BytesSent
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.BytesSent
+  nameWithType: PeerConnection.AudioSenderStats.BytesSent
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.PacketsSent
+  name: PacketsSent
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioSenderStats_PacketsSent
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.PacketsSent
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.PacketsSent
+  nameWithType: PeerConnection.AudioSenderStats.PacketsSent
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.RtpStatsTimestampUs
+  name: RtpStatsTimestampUs
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioSenderStats_RtpStatsTimestampUs
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.RtpStatsTimestampUs
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.RtpStatsTimestampUs
+  nameWithType: PeerConnection.AudioSenderStats.RtpStatsTimestampUs
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TotalAudioEnergy
+  name: TotalAudioEnergy
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioSenderStats_TotalAudioEnergy
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TotalAudioEnergy
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TotalAudioEnergy
+  nameWithType: PeerConnection.AudioSenderStats.TotalAudioEnergy
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TotalSamplesDuration
+  name: TotalSamplesDuration
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioSenderStats_TotalSamplesDuration
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TotalSamplesDuration
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TotalSamplesDuration
+  nameWithType: PeerConnection.AudioSenderStats.TotalSamplesDuration
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TrackIdentifier
+  name: TrackIdentifier
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioSenderStats_TrackIdentifier
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TrackIdentifier
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TrackIdentifier
+  nameWithType: PeerConnection.AudioSenderStats.TrackIdentifier
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TrackStatsTimestampUs
+  name: TrackStatsTimestampUs
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioSenderStats_TrackStatsTimestampUs
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TrackStatsTimestampUs
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.TrackStatsTimestampUs
+  nameWithType: PeerConnection.AudioSenderStats.TrackStatsTimestampUs
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.Close
   name: Close()
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Close
@@ -1238,6 +1352,48 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemovedDelegate
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemovedDelegate
   nameWithType: PeerConnection.DataChannelRemovedDelegate
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats
+  name: PeerConnection.DataChannelStats
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats
+  nameWithType: PeerConnection.DataChannelStats
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.BytesReceived
+  name: BytesReceived
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelStats_BytesReceived
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.BytesReceived
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.BytesReceived
+  nameWithType: PeerConnection.DataChannelStats.BytesReceived
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.BytesSent
+  name: BytesSent
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelStats_BytesSent
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.BytesSent
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.BytesSent
+  nameWithType: PeerConnection.DataChannelStats.BytesSent
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.DataChannelIdentifier
+  name: DataChannelIdentifier
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelStats_DataChannelIdentifier
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.DataChannelIdentifier
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.DataChannelIdentifier
+  nameWithType: PeerConnection.DataChannelStats.DataChannelIdentifier
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.MessagesReceived
+  name: MessagesReceived
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelStats_MessagesReceived
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.MessagesReceived
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.MessagesReceived
+  nameWithType: PeerConnection.DataChannelStats.MessagesReceived
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.MessagesSent
+  name: MessagesSent
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelStats_MessagesSent
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.MessagesSent
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.MessagesSent
+  nameWithType: PeerConnection.DataChannelStats.MessagesSent
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.TimestampUs
+  name: TimestampUs
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelStats_TimestampUs
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.TimestampUs
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.TimestampUs
+  nameWithType: PeerConnection.DataChannelStats.TimestampUs
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.Dispose
   name: Dispose()
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Dispose
@@ -1275,6 +1431,19 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.Pad
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.Pad
   nameWithType: PeerConnection.FrameHeightRoundMode.Pad
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.GetSimpleStatsAsync
+  name: GetSimpleStatsAsync()
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetSimpleStatsAsync
+  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.GetSimpleStatsAsync
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.GetSimpleStatsAsync()
+  nameWithType: PeerConnection.GetSimpleStatsAsync()
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.GetSimpleStatsAsync*
+  name: GetSimpleStatsAsync
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetSimpleStatsAsync_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.GetSimpleStatsAsync
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.GetSimpleStatsAsync
+  nameWithType: PeerConnection.GetSimpleStatsAsync
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync
   name: GetVideoCaptureDevicesAsync()
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync
@@ -1615,6 +1784,41 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription
   nameWithType: PeerConnection.SetRemoteDescription
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport
+  name: PeerConnection.StatsReport
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport
+  nameWithType: PeerConnection.StatsReport
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.Dispose
+  name: Dispose()
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html#Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_Dispose
+  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.Dispose
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.Dispose()
+  nameWithType: PeerConnection.StatsReport.Dispose()
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.Dispose*
+  name: Dispose
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html#Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_Dispose_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.Dispose
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.Dispose
+  nameWithType: PeerConnection.StatsReport.Dispose
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.GetStats*
+  name: GetStats
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html#Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_GetStats_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.GetStats
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.GetStats
+  nameWithType: PeerConnection.StatsReport.GetStats
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.GetStats``1
+  name: GetStats<T>()
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html#Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_GetStats__1
+  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.GetStats``1
+  name.vb: GetStats(Of T)()
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.GetStats<T>()
+  fullName.vb: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.GetStats(Of T)()
+  nameWithType: PeerConnection.StatsReport.GetStats<T>()
+  nameWithType.vb: PeerConnection.StatsReport.GetStats(Of T)()
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.TrackAdded
   name: TrackAdded
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TrackAdded
@@ -1657,6 +1861,30 @@ references:
   commentId: E:Microsoft.MixedReality.WebRTC.PeerConnection.TrackRemoved
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.TrackRemoved
   nameWithType: PeerConnection.TrackRemoved
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats
+  name: PeerConnection.TransportStats
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats
+  nameWithType: PeerConnection.TransportStats
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.BytesReceived
+  name: BytesReceived
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats_BytesReceived
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.BytesReceived
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.BytesReceived
+  nameWithType: PeerConnection.TransportStats.BytesReceived
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.BytesSent
+  name: BytesSent
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats_BytesSent
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.BytesSent
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.BytesSent
+  nameWithType: PeerConnection.TransportStats.BytesSent
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.TimestampUs
+  name: TimestampUs
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_TransportStats_TimestampUs
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.TimestampUs
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.TimestampUs
+  nameWithType: PeerConnection.TransportStats.TimestampUs
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoProfileKind
   name: PeerConnection.VideoProfileKind
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoProfileKind.html
@@ -1729,6 +1957,114 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoProfileKind.VideoRecording
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoProfileKind.VideoRecording
   nameWithType: PeerConnection.VideoProfileKind.VideoRecording
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats
+  name: PeerConnection.VideoReceiverStats
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats
+  nameWithType: PeerConnection.VideoReceiverStats
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.BytesReceived
+  name: BytesReceived
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoReceiverStats_BytesReceived
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.BytesReceived
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.BytesReceived
+  nameWithType: PeerConnection.VideoReceiverStats.BytesReceived
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.FramesDecoded
+  name: FramesDecoded
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoReceiverStats_FramesDecoded
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.FramesDecoded
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.FramesDecoded
+  nameWithType: PeerConnection.VideoReceiverStats.FramesDecoded
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.FramesDropped
+  name: FramesDropped
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoReceiverStats_FramesDropped
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.FramesDropped
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.FramesDropped
+  nameWithType: PeerConnection.VideoReceiverStats.FramesDropped
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.FramesReceived
+  name: FramesReceived
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoReceiverStats_FramesReceived
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.FramesReceived
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.FramesReceived
+  nameWithType: PeerConnection.VideoReceiverStats.FramesReceived
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.PacketsReceived
+  name: PacketsReceived
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoReceiverStats_PacketsReceived
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.PacketsReceived
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.PacketsReceived
+  nameWithType: PeerConnection.VideoReceiverStats.PacketsReceived
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.RtpStatsTimestampUs
+  name: RtpStatsTimestampUs
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoReceiverStats_RtpStatsTimestampUs
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.RtpStatsTimestampUs
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.RtpStatsTimestampUs
+  nameWithType: PeerConnection.VideoReceiverStats.RtpStatsTimestampUs
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.TrackIdentifier
+  name: TrackIdentifier
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoReceiverStats_TrackIdentifier
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.TrackIdentifier
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.TrackIdentifier
+  nameWithType: PeerConnection.VideoReceiverStats.TrackIdentifier
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.TrackStatsTimestampUs
+  name: TrackStatsTimestampUs
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoReceiverStats_TrackStatsTimestampUs
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.TrackStatsTimestampUs
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.TrackStatsTimestampUs
+  nameWithType: PeerConnection.VideoReceiverStats.TrackStatsTimestampUs
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats
+  name: PeerConnection.VideoSenderStats
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats
+  nameWithType: PeerConnection.VideoSenderStats
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.BytesSent
+  name: BytesSent
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoSenderStats_BytesSent
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.BytesSent
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.BytesSent
+  nameWithType: PeerConnection.VideoSenderStats.BytesSent
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.FramesEncoded
+  name: FramesEncoded
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoSenderStats_FramesEncoded
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.FramesEncoded
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.FramesEncoded
+  nameWithType: PeerConnection.VideoSenderStats.FramesEncoded
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.FramesSent
+  name: FramesSent
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoSenderStats_FramesSent
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.FramesSent
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.FramesSent
+  nameWithType: PeerConnection.VideoSenderStats.FramesSent
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.HugeFramesSent
+  name: HugeFramesSent
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoSenderStats_HugeFramesSent
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.HugeFramesSent
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.HugeFramesSent
+  nameWithType: PeerConnection.VideoSenderStats.HugeFramesSent
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.PacketsSent
+  name: PacketsSent
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoSenderStats_PacketsSent
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.PacketsSent
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.PacketsSent
+  nameWithType: PeerConnection.VideoSenderStats.PacketsSent
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.RtpStatsTimestampUs
+  name: RtpStatsTimestampUs
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoSenderStats_RtpStatsTimestampUs
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.RtpStatsTimestampUs
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.RtpStatsTimestampUs
+  nameWithType: PeerConnection.VideoSenderStats.RtpStatsTimestampUs
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.TrackIdentifier
+  name: TrackIdentifier
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoSenderStats_TrackIdentifier
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.TrackIdentifier
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.TrackIdentifier
+  nameWithType: PeerConnection.VideoSenderStats.TrackIdentifier
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.TrackStatsTimestampUs
+  name: TrackStatsTimestampUs
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoSenderStats_TrackStatsTimestampUs
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.TrackStatsTimestampUs
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.TrackStatsTimestampUs
+  nameWithType: PeerConnection.VideoSenderStats.TrackStatsTimestampUs
 - uid: Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration
   name: PeerConnectionConfiguration
   href: api/Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html

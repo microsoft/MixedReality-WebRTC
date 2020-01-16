@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace Microsoft.MixedReality.WebRTC
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -137,6 +137,10 @@ a local track source.</p>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings.html">PeerConnection.LocalVideoTrackSettings</a></h4>
       <section><p>Settings for adding a local video track.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html">PeerConnection.StatsReport</a></h4>
+      <section><p>Snapshot of the statistics relative to a peer connection/track.
+The various stats objects can be read through <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html#Microsoft_MixedReality_WebRTC_PeerConnection_StatsReport_GetStats__1">GetStats&lt;T&gt;()</a>.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html">PeerConnectionConfiguration</a></h4>
       <section><p>Configuration to initialize a <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html">PeerConnection</a>.</p>
 </section>
@@ -177,6 +181,28 @@ a new video frame for the track(s) connected to it.</p>
 See e.g. <a href="https://wiki.videolan.org/YUV/#I420">https://wiki.videolan.org/YUV/#I420</a> for details.</p>
 <p>The I420 format uses chroma downsampling in both directions, resulting in 12 bits per
 pixel. With the optional alpha plane, the size increases to 20 bits per pixel.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html">PeerConnection.AudioReceiverStats</a></h4>
+      <section><p>Subset of RTCMediaStreamTrack (audio receiver) and RTCInboundRTPStreamStats.
+See <a href="https://www.w3.org/TR/webrtc-stats/#aststats-dict">https://www.w3.org/TR/webrtc-stats/#aststats-dict</a>* and <a href="https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict">https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict</a>*</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html">PeerConnection.AudioSenderStats</a></h4>
+      <section><p>Subset of RTCMediaStreamTrack (audio sender) and RTCOutboundRTPStreamStats.
+See <a href="https://www.w3.org/TR/webrtc-stats/#raststats-dict">https://www.w3.org/TR/webrtc-stats/#raststats-dict</a>* and <a href="https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict">https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict</a>*</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html">PeerConnection.DataChannelStats</a></h4>
+      <section><p>Subset of RTCDataChannelStats. See <a href="https://www.w3.org/TR/webrtc-stats/#dcstats-dict">https://www.w3.org/TR/webrtc-stats/#dcstats-dict</a>*</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.html">PeerConnection.TransportStats</a></h4>
+      <section><p>Subset of RTCTransportStats. See <a href="https://www.w3.org/TR/webrtc-stats/#transportstats-dict">https://www.w3.org/TR/webrtc-stats/#transportstats-dict</a>*</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html">PeerConnection.VideoReceiverStats</a></h4>
+      <section><p>Subset of RTCMediaStreamTrack (video receiver) + RTCInboundRTPStreamStats.
+See <a href="https://www.w3.org/TR/webrtc-stats/#rvststats-dict">https://www.w3.org/TR/webrtc-stats/#rvststats-dict</a>* and <a href="https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict">https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict</a>*</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html">PeerConnection.VideoSenderStats</a></h4>
+      <section><p>Subset of RTCMediaStreamTrack (video sender) and RTCOutboundRTPStreamStats.
+See <a href="https://www.w3.org/TR/webrtc-stats/#vsstats-dict">https://www.w3.org/TR/webrtc-stats/#vsstats-dict</a>* and <a href="https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict">https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict</a>*</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html">VideoCaptureDevice</a></h4>
       <section><p>Identifier for a video capture device.</p>
