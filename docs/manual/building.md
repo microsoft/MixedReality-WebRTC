@@ -62,7 +62,7 @@ Test the newly built libraries by _e.g._ using the `VideoChatDemo` Unity integra
 
 1. Open the Unity project at `libs\Microsoft.MixedReality.WebRTC.Unity`.
 
-2. Load the `Assets\Microsoft.MixedReality.WebRTC\Unity.Examples\VideoChatDemo` scene.
+2. Load the `Assets\Microsoft.MixedReality.WebRTC.Unity.Examples\VideoChatDemo` scene.
 
 3. At the top center of the Unity editor window, press the **Play** button.
 
@@ -80,5 +80,6 @@ The C# library requires the C++ library, which contains the core WebRTC implemen
 | `bin\<platform>\<arch>\Release\Microsoft.MixedReality.WebRTC.Native.dll` | Add as "Content" to the project, so that the Deploy step copies the DLL to the AppX folder alongside the application executable. See the [TestAppUWP project](https://github.com/microsoft/MixedReality-WebRTC/blob/d78ffa488fbf822377558ce44bbfa8316f0f85f7/examples/TestAppUwp/Microsoft.MixedReality.WebRTC.TestAppUWP.csproj#L74-L83) for an example, noting how it uses the `$(Platform)` and `$(Configuration)` Visual Studio variables to automatically copy the right DLL corresponding to the currently selected project configuration. |
 
 where:
+
 - `<platform>` is either `Win32` for a Desktop app, or `UWP` for a UWP app.
 - `<arch>` is one of [`x86`, `x64`, `ARM`]. Note that `ARM` is only available on UWP.
