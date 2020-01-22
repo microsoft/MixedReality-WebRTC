@@ -98,10 +98,10 @@ mrsResult OpenVideoCaptureDevice(
     std::unique_ptr<cricket::VideoCapturer>& capturer_out) noexcept {
   capturer_out.reset();
 #if defined(WINUWP)
+  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
   WebRtcFactoryPtr uwp_factory;
   {
-    mrsResult res =
-        GlobalFactory::Instance()->GetOrCreateWebRtcFactory(uwp_factory);
+    mrsResult res = global_factory->GetOrCreateWebRtcFactory(uwp_factory);
     if (res != Result::kSuccess) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
       return res;
@@ -305,7 +305,7 @@ uint32_t FourCCFromVideoType(webrtc::VideoType videoType) {
 }  // namespace
 
 inline rtc::Thread* GetWorkerThread() {
-  return GlobalFactory::Instance()->GetWorkerThread();
+  return GlobalFactory::InstancePtr()->GetWorkerThread();
 }
 
 void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {
@@ -327,8 +327,9 @@ mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     return Result::kInvalidParameter;
   }
 #if defined(WINUWP)
+  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
   // The UWP factory needs to be initialized for getDevices() to work.
-  if (!GlobalFactory::Instance()->GetOrCreate()) {
+  if (!global_factory->GetPeerConnectionFactory()) {
     RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
     return Result::kUnknownError;
   }
@@ -391,11 +392,11 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
   }
 
 #if defined(WINUWP)
+  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
   // The UWP factory needs to be initialized for getDevices() to work.
   WebRtcFactoryPtr uwp_factory;
   {
-    mrsResult res =
-        GlobalFactory::Instance()->GetOrCreateWebRtcFactory(uwp_factory);
+    mrsResult res = global_factory->GetOrCreateWebRtcFactory(uwp_factory);
     if (res != Result::kSuccess) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
       return res;
@@ -702,23 +703,24 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     PeerConnectionHandle peerHandle,
     const char* track_name,
     VideoDeviceConfiguration config,
-    LocalVideoTrackHandle* trackHandle) noexcept {
+    LocalVideoTrackHandle* track_handle_out) noexcept {
   if (IsStringNullOrEmpty(track_name)) {
     RTC_LOG(LS_ERROR) << "Invalid empty local video track name.";
     return Result::kInvalidParameter;
   }
-  if (!trackHandle) {
+  if (!track_handle_out) {
     RTC_LOG(LS_ERROR) << "Invalid NULL local video track handle.";
     return Result::kInvalidParameter;
   }
-  *trackHandle = nullptr;
+  *track_handle_out = nullptr;
 
   auto peer = static_cast<PeerConnection*>(peerHandle);
   if (!peer) {
     RTC_LOG(LS_ERROR) << "Invalid NULL peer connection handle.";
     return Result::kInvalidNativeHandle;
   }
-  auto pc_factory = GlobalFactory::Instance()->GetExisting();
+  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
+  auto pc_factory = global_factory->GetPeerConnectionFactory();
   if (!pc_factory) {
     return Result::kInvalidOperation;
   }
@@ -769,7 +771,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
   if (result.ok()) {
     RefPtr<LocalVideoTrack>& video_track_wrapper = result.value();
     video_track_wrapper->AddRef();  // for the handle
-    *trackHandle = video_track_wrapper.get();
+    *track_handle_out = video_track_wrapper.get();
     return Result::kSuccess;
   }
   RTC_LOG(LS_ERROR) << "Failed to add local video track to peer connection.";
@@ -794,7 +796,8 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
   if (!track_source) {
     return Result::kInvalidNativeHandle;
   }
-  auto pc_factory = GlobalFactory::Instance()->GetExisting();
+  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
+  auto pc_factory = global_factory->GetPeerConnectionFactory();
   if (!pc_factory) {
     return Result::kUnknownError;
   }
@@ -840,7 +843,8 @@ mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTracksFromSource(
 mrsResult MRS_CALL
 mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    auto pc_factory = GlobalFactory::Instance()->GetExisting();
+    RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
+    auto pc_factory = global_factory->GetPeerConnectionFactory();
     if (!pc_factory) {
       return Result::kInvalidOperation;
     }

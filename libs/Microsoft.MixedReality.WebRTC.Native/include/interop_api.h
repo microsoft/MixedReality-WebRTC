@@ -17,6 +17,24 @@ enum class mrsBool : int32_t { kTrue = -1, kFalse = 0 };
 // Generic utilities
 //
 
+/// Global MixedReality-WebRTC library shutdown options.
+enum class mrsShutdownOptions : uint32_t {
+  kNone = 0,
+
+  /// Fail to shutdown if some objects are still alive. This is set by default
+  /// and provides safety against deadlocking, since WebRTC calls are proxied on
+  /// background threads which would be destroyed by the shutdown, causing
+  /// objects still alive to deadlock when making such calls. Note however that
+  /// keeping the library alive, and in particular the WebRTC background
+  /// threads, means that the module (DLL) cannot be unloaded, which might be
+  /// problematic in some use cases (e.g. Unity Editor hot-reload).
+  kFailOnLiveObjects = 0x1,
+
+  /// Log some report about live objects when trying to shutdown, to help
+  /// debugging.
+  kLogLiveObjects = 0x2
+};
+
 /// Opaque enumerator type.
 struct mrsEnumerator;
 
