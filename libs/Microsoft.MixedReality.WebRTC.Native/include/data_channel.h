@@ -72,10 +72,10 @@ class DataChannel : public webrtc::DataChannelObserver {
   ~DataChannel() override;
 
   /// Get the unique channel identifier.
-  [[nodiscard]] int id() const { return data_channel_->id(); }
+  MRS_NODISCARD int id() const { return data_channel_->id(); }
 
   /// Get the friendly channel name.
-  [[nodiscard]] MRS_API str label() const;
+  MRS_NODISCARD MRS_API str label() const;
 
   void SetMessageCallback(MessageCallback callback) noexcept;
   void SetBufferingCallback(BufferingCallback callback) noexcept;
@@ -83,7 +83,7 @@ class DataChannel : public webrtc::DataChannelObserver {
 
   /// Get the maximum buffering size, in bytes, before |Send()| stops accepting
   /// data.
-  [[nodiscard]] MRS_API size_t GetMaxBufferingSize() const noexcept;
+  MRS_NODISCARD MRS_API size_t GetMaxBufferingSize() const noexcept;
 
   /// Send a blob of data through the data channel.
   MRS_API bool Send(const void* data, size_t size) noexcept;
@@ -92,7 +92,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   // Advanced use
   //
 
-  [[nodiscard]] webrtc::DataChannelInterface* impl() const {
+  MRS_NODISCARD webrtc::DataChannelInterface* impl() const {
     return data_channel_.get();
   }
 

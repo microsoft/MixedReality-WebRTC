@@ -53,16 +53,16 @@ class LocalVideoTrack : public VideoFrameObserver, public TrackedObject {
 
   /// Check if the track is enabled.
   /// See |SetEnabled(bool)|.
-  MRS_API [[nodiscard]] bool IsEnabled() const noexcept;
+  MRS_API MRS_NODISCARD bool IsEnabled() const noexcept;
 
   //
   // Advanced use
   //
 
-  [[nodiscard]] webrtc::VideoTrackInterface* impl() const;
-  [[nodiscard]] webrtc::RtpSenderInterface* sender() const;
+  MRS_NODISCARD webrtc::VideoTrackInterface* impl() const;
+  MRS_NODISCARD webrtc::RtpSenderInterface* sender() const;
 
-  [[nodiscard]] mrsLocalVideoTrackInteropHandle GetInteropHandle() const
+  MRS_NODISCARD mrsLocalVideoTrackInteropHandle GetInteropHandle() const
       noexcept {
     return interop_handle_;
   }
