@@ -10,6 +10,7 @@
 #include "data_channel.h"
 #include "peer_connection.h"
 #include "video_frame_observer.h"
+#include "sdp_utils.h"
 
 // Internal
 #include "interop/interop_api.h"
@@ -462,7 +463,7 @@ bool PeerConnection::SetRemoteDescription(const char* type,
     }
   }
   std::string sdp_type_str(type);
-  auto sdp_type = webrtc::SdpTypeFromString(sdp_type_str);
+  auto sdp_type = SdpTypeFromString(sdp_type_str);
   if (!sdp_type.has_value())
     return false;
   std::string remote_desc(sdp);

@@ -1,9 +1,12 @@
 # How to build WebRTC for Android
+
 "Getting started with WebRTC source code is no easy walk in the park." -- Abraham Lincoln
 
-## Setup build environment
+## Setup Linux environment
 
 The webrtc native library must be built from a Linux environment.
+
+> RESEARCH is this still true?
 
 0. Ensure your working drive has at least 30GB free.
 
@@ -45,6 +48,73 @@ The webrtc native library must be built from a Linux environment.
     `$> sudo apt-get install clang`
 
 3. Make a folder where you'll clone the repo and cd to it.
+
+## Install Chromium dev tools
+
+> TODO Write a script to do handle everything from here down
+
+_Overview of Chromium development for Android here: https://chromium.googlesource.com/chromium/src/+/master/docs/android_build_instructions.md_
+
+### Clone the `depot_tools` repo
+In your working directory:
+```
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+```
+
+### Add `depot_tools` to your path
+You may want to add this to your .bashrc. Be sure to replace `/path/to/depot_tools` with the actual path in your environment.
+```
+export PATH="$PATH:/path/to/depot_tools"
+```
+
+## Get the `webrtc` code, with Android dependencies
+
+This will take a long time.
+```
+mkdir webrtc && cd webrtc
+fetch --nohooks webrtc_android
+```
+
+If this process is interrupted, restart it with the `--force` flag.
+
+### Checkout the correct code revision (25118 is branch-heads/71)
+
+> TODO Write a script to get the revision # from a branch name.
+
+```
+gclient sync --nohooks --force --revision 25118
+f```
+
+### Install additional build dependencies
+```
+build/install-build-deps-android.sh
+```
+
+## Configure build flags
+
+args.gn
+
+
+## Build the project
+
+> RESEARCH Do we need to pass extra args to build_aar.py? `use_rtti=true`?
+
+```
+cd src
+python tools_webrtc/android/build_aar.py --arch arm64-v8a --verbose --build-dir ./out/aar
+```
+
+## Copy build outputs
+> TODO document where to find these, and where to copy them to.
+
+* libwebrtc.aar
+* libwebrtc_full.a
+* headers
+
+
+---
+PREVIOUS INSTRUCTIONS
+
 
 ## Clone the `webrtcbuilds` repo
 

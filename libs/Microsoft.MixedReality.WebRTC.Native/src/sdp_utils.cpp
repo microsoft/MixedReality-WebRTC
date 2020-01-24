@@ -193,4 +193,16 @@ std::string EncodeIceServers(const std::string& url,
   return url + "\nusername:" + username + "\npassword:" + password;
 }
 
+std::optional<webrtc::SdpType> SdpTypeFromString(const std::string& type_str) {
+  if (type_str == webrtc::SessionDescriptionInterface::kOffer) {
+    return webrtc::SdpType::kOffer;
+  } else if (type_str == webrtc::SessionDescriptionInterface::kPrAnswer) {
+    return webrtc::SdpType::kPrAnswer;
+  } else if (type_str == webrtc::SessionDescriptionInterface::kAnswer) {
+    return webrtc::SdpType::kAnswer;
+  } else {
+    return std::nullopt;
+  }
+}
+
 }  // namespace Microsoft::MixedReality::WebRTC
