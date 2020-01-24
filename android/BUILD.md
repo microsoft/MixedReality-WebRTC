@@ -69,31 +69,19 @@ export PATH="$PATH:/path/to/depot_tools"
 
 ## Get the `webrtc` code, with Android dependencies
 
-This will take a long time.
+This will take a very long time.
 ```
 mkdir webrtc && cd webrtc
-fetch --nohooks webrtc_android
+fetch --nohooks --force webrtc_android
 ```
-
-If this process is interrupted, restart it with the `--force` flag.
 
 ### Checkout the correct code revision (25118 is branch-heads/71)
 
-> TODO Write a script to get the revision # from a branch name.
+> TODO Write a script to get the revision # from branch-head name.
 
 ```
 gclient sync --nohooks --force --revision 25118
-f```
-
-### Install additional build dependencies
 ```
-build/install-build-deps-android.sh
-```
-
-## Configure build flags
-
-args.gn
-
 
 ## Build the project
 
