@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using Microsoft.MixedReality.WebRTC.Tracing;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -22,7 +26,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     /// Attribute to decorate managed delegates used as native callbacks (reverse P/Invoke).
     /// Required by Mono in Ahead-Of-Time (AOT) compiling, and Unity with the IL2CPP backend.
     /// </summary>
-    /// 
+    ///
     /// This attribute is required by Mono AOT and Unity IL2CPP, but not by .NET Core or Framework.
     /// The implementation was copied from the Mono source code (https://github.com/mono/mono).
     /// The type argument does not seem to be used anywhere in the code, and a stub implementation
@@ -37,23 +41,39 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     {
         internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native";
 
-        // Error codes returned by the C API -- see api.h
+        // Error codes returned by the interop API -- see mrs_errors.h
         internal const uint MRS_SUCCESS = 0u;
         internal const uint MRS_E_UNKNOWN = 0x80000000u;
         internal const uint MRS_E_INVALID_PARAMETER = 0x80000001u;
         internal const uint MRS_E_INVALID_OPERATION = 0x80000002u;
         internal const uint MRS_E_WRONG_THREAD = 0x80000003u;
         internal const uint MRS_E_NOTFOUND = 0x80000004u;
-        internal const uint MRS_E_INVALID_PEER_HANDLE = 0x80000101u;
-        internal const uint MRS_E_PEER_NOT_INITIALIZED = 0x80000102u;
+        internal const uint MRS_E_INVALID_NATIVE_HANDLE = 0x80000005u;
+        internal const uint MRS_E_NOT_INITIALIZED = 0x80000006u;
+        internal const uint MRS_E_UNSUPPORTED = 0x80000007u;
+        internal const uint MRS_E_OUT_OF_RANGE = 0x80000008u;
+        internal const uint MRS_E_PEER_CONNECTION_CLOSED = 0x80000101u;
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
         internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
+
+        public static IntPtr MakeWrapperRef(object obj)
+        {
+            var handle = GCHandle.Alloc(obj, GCHandleType.Normal);
+            var arg = GCHandle.ToIntPtr(handle);
+            return arg;
+        }
 
         public static T ToWrapper<T>(IntPtr peer) where T : class
         {
             var handle = GCHandle.FromIntPtr(peer);
             var wrapper = (handle.Target as T);
             return wrapper;
+        }
+
+        public static void ReleaseWrapperRef(IntPtr wrapperRef)
+        {
+            var handle = GCHandle.FromIntPtr(wrapperRef);
+            handle.Free();
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -81,13 +101,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         /// <summary>
         /// Unsafe utility to copy a memory block with stride.
-        /// 
+        ///
         /// This utility loops over the rows of the input memory block, and copy them to the output
         /// memory block, then increment the read and write pointers by the source and destination
         /// strides, respectively. For each row, exactly <paramref name="elem_size"/> bytes are copied,
         /// even if the row stride is higher. The extra bytes in the destination buffer past the row
         /// size until the row stride are left untouched.
-        /// 
+        ///
         /// This is equivalent to the following pseudo-code:
         /// <code>
         /// for (int row = 0; row &lt; elem_count; ++row) {
@@ -115,39 +135,59 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         /// <param name="res">The error code to turn into an exception, if not zero (MRS_SUCCESS).</param>
         public static void ThrowOnErrorCode(uint res)
         {
+            if (res == MRS_SUCCESS)
+            {
+                return;
+            }
+
+            MainEventSource.Log.NativeError(res);
+
             switch (res)
             {
-            case MRS_SUCCESS:
-                return;
+                case MRS_E_UNKNOWN:
+                default:
+                    throw new Exception();
 
-            case MRS_E_UNKNOWN:
-            default:
-                throw new Exception();
+                case MRS_E_INVALID_PARAMETER:
+                    throw new ArgumentException();
 
-            case MRS_E_INVALID_PARAMETER:
-                throw new ArgumentException();
+                case MRS_E_INVALID_OPERATION:
+                    throw new InvalidOperationException();
 
-            case MRS_E_INVALID_OPERATION:
-                throw new InvalidOperationException();
+                case MRS_E_WRONG_THREAD:
+                    throw new InvalidOperationException("This method cannot be called on that thread.");
 
-            case MRS_E_WRONG_THREAD:
-                throw new InvalidOperationException("This method cannot be called on that thread.");
+                case MRS_E_NOTFOUND:
+                    throw new Exception("Object not found.");
 
-            case MRS_E_NOTFOUND:
-                throw new Exception("Object not found.");
+                case MRS_E_INVALID_NATIVE_HANDLE:
+                    throw new InvalidInteropNativeHandleException();
 
-            case MRS_E_INVALID_PEER_HANDLE:
-                throw new InvalidOperationException("Invalid peer connection handle.");
+                case MRS_E_NOT_INITIALIZED:
+                    throw new InvalidOperationException("Object not initialized.");
 
-            case MRS_E_PEER_NOT_INITIALIZED:
-                throw new InvalidOperationException("Peer connection not initialized.");
+                case MRS_E_UNSUPPORTED:
+                    throw new NotSupportedException();
 
-            case MRS_E_SCTP_NOT_NEGOTIATED:
-                throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
+                case MRS_E_OUT_OF_RANGE:
+                    throw new ArgumentOutOfRangeException();
 
-            case MRS_E_INVALID_DATA_CHANNEL_ID:
-                throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
+                case MRS_E_SCTP_NOT_NEGOTIATED:
+                    throw new SctpNotNegotiatedException();
+
+                case MRS_E_PEER_CONNECTION_CLOSED:
+                    throw new InvalidOperationException("The operation cannot complete because the peer connection was closed.");
+
+                case MRS_E_INVALID_DATA_CHANNEL_ID:
+                    throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
             }
         }
+
+        /// <summary>
+        /// See <see cref="PeerConnection.SetFrameHeightRoundMode(PeerConnection.FrameHeightRoundMode)"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsSetFrameHeightRoundMode")]
+        public static unsafe extern void SetFrameHeightRoundMode(PeerConnection.FrameHeightRoundMode value);
     }
 }

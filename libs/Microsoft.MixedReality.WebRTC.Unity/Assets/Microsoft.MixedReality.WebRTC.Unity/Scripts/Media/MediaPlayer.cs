@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using UnityEngine;
 using Unity.Profiling;
@@ -61,12 +61,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// The frame queue from which frames will be rendered.
         /// </summary>
-        public VideoFrameQueue<I420VideoFrameStorage> FrameQueue = null;
+        public IVideoFrameQueue FrameQueue = null;
 
         /// <summary>
         /// Internal reference to the attached texture
         /// </summary>
-        private Texture2D _textureY = null;
+        private Texture2D _textureY = null; // also used for ARGB32
         private Texture2D _textureU = null;
         private Texture2D _textureV = null;
 
@@ -146,9 +146,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             // Assign that texture to the video player's Renderer component
             videoMaterial = GetComponent<Renderer>().material;
-            videoMaterial.SetTexture("_YPlane", _textureY);
-            videoMaterial.SetTexture("_UPlane", _textureU);
-            videoMaterial.SetTexture("_VPlane", _textureV);
+            //< TODO - Better abstraction
+            if (FrameQueue is VideoFrameQueue<I420AVideoFrameStorage>)
+            {
+                videoMaterial.SetTexture("_YPlane", _textureY);
+                videoMaterial.SetTexture("_UPlane", _textureU);
+                videoMaterial.SetTexture("_VPlane", _textureV);
+            }
+            else if (FrameQueue is VideoFrameQueue<Argb32VideoFrameStorage>)
+            {
+                videoMaterial.SetTexture("_MainTex", _textureY);
+            }
         }
 
         /// <summary>
@@ -203,59 +211,99 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private void TryProcessFrame()
         {
-            if (FrameQueue.TryDequeue(out I420VideoFrameStorage frame))
+            //< TODO - Better abstraction
+            if (FrameQueue is VideoFrameQueue<I420AVideoFrameStorage> i420queue)
             {
-                int lumaWidth = (int)frame.Width;
-                int lumaHeight = (int)frame.Height;
-                if (_textureY == null || (_textureY.width != lumaWidth || _textureY.height != lumaHeight))
+                if (i420queue.TryDequeue(out I420AVideoFrameStorage frame))
                 {
-                    _textureY = new Texture2D(lumaWidth, lumaHeight, TextureFormat.R8, false);
-                    videoMaterial.SetTexture("_YPlane", _textureY);
-                }
-                int chromaWidth = lumaWidth / 2;
-                int chromaHeight = lumaHeight / 2;
-                if (_textureU == null || (_textureU.width != chromaWidth || _textureU.height != chromaHeight))
-                {
-                    _textureU = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, false);
-                    videoMaterial.SetTexture("_UPlane", _textureU);
-                }
-                if (_textureV == null || (_textureV.width != chromaWidth || _textureV.height != chromaHeight))
-                {
-                    _textureV = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, false);
-                    videoMaterial.SetTexture("_VPlane", _textureV);
-                }
-
-                // Copy data from C# buffer into system memory managed by Unity.
-                // Note: This only "looks right" in Unity because we apply the 
-                // "YUVFeedShader" to the texture (converting YUV planar to RGB).
-                using (var profileScope = loadTextureDataMarker.Auto())
-                {
-                    unsafe
+                    int lumaWidth = (int)frame.Width;
+                    int lumaHeight = (int)frame.Height;
+                    if (_textureY == null || (_textureY.width != lumaWidth || _textureY.height != lumaHeight))
                     {
-                        fixed (void* buffer = frame.Buffer)
+                        _textureY = new Texture2D(lumaWidth, lumaHeight, TextureFormat.R8, mipChain: false);
+                        videoMaterial.SetTexture("_YPlane", _textureY);
+                    }
+                    int chromaWidth = lumaWidth / 2;
+                    int chromaHeight = lumaHeight / 2;
+                    if (_textureU == null || (_textureU.width != chromaWidth || _textureU.height != chromaHeight))
+                    {
+                        _textureU = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, mipChain: false);
+                        videoMaterial.SetTexture("_UPlane", _textureU);
+                    }
+                    if (_textureV == null || (_textureV.width != chromaWidth || _textureV.height != chromaHeight))
+                    {
+                        _textureV = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, mipChain: false);
+                        videoMaterial.SetTexture("_VPlane", _textureV);
+                    }
+
+                    // Copy data from C# buffer into system memory managed by Unity.
+                    // Note: This only "looks right" in Unity because we apply the 
+                    // "YUVFeedShader" to the texture (converting YUV planar to RGB).
+                    using (var profileScope = loadTextureDataMarker.Auto())
+                    {
+                        unsafe
                         {
-                            var src = new System.IntPtr(buffer);
-                            int lumaSize = lumaWidth * lumaHeight;
-                            _textureY.LoadRawTextureData(src, lumaSize);
-                            src += lumaSize;
-                            int chromaSize = chromaWidth * chromaHeight;
-                            _textureU.LoadRawTextureData(src, chromaSize);
-                            src += chromaSize;
-                            _textureV.LoadRawTextureData(src, chromaSize);
+                            fixed (void* buffer = frame.Buffer)
+                            {
+                                var src = new System.IntPtr(buffer);
+                                int lumaSize = lumaWidth * lumaHeight;
+                                _textureY.LoadRawTextureData(src, lumaSize);
+                                src += lumaSize;
+                                int chromaSize = chromaWidth * chromaHeight;
+                                _textureU.LoadRawTextureData(src, chromaSize);
+                                src += chromaSize;
+                                _textureV.LoadRawTextureData(src, chromaSize);
+                            }
                         }
                     }
-                }
 
-                // Upload from system memory to GPU
-                using (var profileScope = uploadTextureToGpuMarker.Auto())
+                    // Upload from system memory to GPU
+                    using (var profileScope = uploadTextureToGpuMarker.Auto())
+                    {
+                        _textureY.Apply();
+                        _textureU.Apply();
+                        _textureV.Apply();
+                    }
+
+                    // Recycle the video frame packet for a later frame
+                    i420queue.RecycleStorage(frame);
+                }
+            }
+            else if (FrameQueue is VideoFrameQueue<Argb32VideoFrameStorage> argbQueue)
+            {
+                if (argbQueue.TryDequeue(out Argb32VideoFrameStorage frame))
                 {
-                    _textureY.Apply();
-                    _textureU.Apply();
-                    _textureV.Apply();
-                }
+                    int width = (int)frame.Width;
+                    int height = (int)frame.Height;
+                    if (_textureY == null || (_textureY.width != width || _textureY.height != height))
+                    {
+                        _textureY = new Texture2D(width, height, TextureFormat.BGRA32, mipChain: false);
+                        videoMaterial.SetTexture("_MainTex", _textureY);
+                    }
 
-                // Recycle the video frame packet for a later frame
-                FrameQueue.RecycleStorage(frame);
+                    // Copy data from C# buffer into system memory managed by Unity.
+                    using (var profileScope = loadTextureDataMarker.Auto())
+                    {
+                        unsafe
+                        {
+                            fixed (void* buffer = frame.Buffer)
+                            {
+                                var src = new System.IntPtr(buffer);
+                                int size = width * height * 4;
+                                _textureY.LoadRawTextureData(src, size);
+                            }
+                        }
+                    }
+
+                    // Upload from system memory to GPU
+                    using (var profileScope = uploadTextureToGpuMarker.Auto())
+                    {
+                        _textureY.Apply();
+                    }
+
+                    // Recycle the video frame packet for a later frame
+                    argbQueue.RecycleStorage(frame);
+                }
             }
         }
     }

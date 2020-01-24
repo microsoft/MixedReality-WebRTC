@@ -1,9 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Runtime.InteropServices;
 using Microsoft.MixedReality.WebRTC.Interop;
+using Microsoft.MixedReality.WebRTC.Tracing;
 
 namespace Microsoft.MixedReality.WebRTC
 {
@@ -175,12 +176,15 @@ namespace Microsoft.MixedReality.WebRTC
         /// <seealso cref="BufferingChanged"/>
         public void SendMessage(byte[] message)
         {
+            MainEventSource.Log.DataChannelSendMessage(ID, message.Length);
             uint res = DataChannelInterop.DataChannel_SendMessage(_interopHandle, message, (ulong)message.LongLength);
             Utils.ThrowOnErrorCode(res);
         }
 
         internal void OnMessageReceived(IntPtr data, ulong size)
         {
+            MainEventSource.Log.DataChannelMessageReceived(ID, (int)size);
+
             //< TODO - .NET Standard 2.1
             //https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1.-ctor?view=netstandard-2.1#System_ReadOnlySpan_1__ctor_System_Void__System_Int32_
             //var span = new ReadOnlySpan<byte>(data, size);
@@ -203,12 +207,14 @@ namespace Microsoft.MixedReality.WebRTC
 
         internal void OnBufferingChanged(ulong previous, ulong current, ulong limit)
         {
+            MainEventSource.Log.DataChannelBufferingChanged(ID, previous, current, limit);
             BufferingChanged?.Invoke(previous, current, limit);
         }
 
         internal void OnStateChanged(int state, int id)
         {
             State = (ChannelState)state;
+            MainEventSource.Log.DataChannelStateChanged(ID, State);
             StateChanged?.Invoke();
         }
     }

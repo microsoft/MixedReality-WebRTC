@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using UnityEngine;
@@ -31,7 +31,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Frame queue holding the pending frames enqueued by the video source itself,
         /// which a video renderer needs to read and display.
         /// </summary>
-        public VideoFrameQueue<I420VideoFrameStorage> FrameQueue;
+        public IVideoFrameQueue FrameQueue { get; protected set; }
 
         /// <summary>
         /// Event invoked from the main Unity thread when the video stream starts.

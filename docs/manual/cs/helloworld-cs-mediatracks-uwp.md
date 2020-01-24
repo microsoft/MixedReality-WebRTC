@@ -12,13 +12,18 @@ In this tutorial, we add the local media tracks right away for simplicity.
 
 Continue editing the `MainPage.xaml.cs` file and append in the `OnLoaded` method the following:
 
-1. Use the [`AddLocalVideoTrackAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings)) method to add to the peer connection a local video track sending to the remote peer some video frames obtained from a local video capture device (webcam).
+1. Create a new [`LocalVideoTrack`](xref:Microsoft.MixedReality.WebRTC.LocalVideoTrack) private variable.
    ```cs
-   await _peerConnection.AddLocalVideoTrackAsync();
+   LocalVideoTrack _localVideoTrack;
+   ```
+
+2. Use the [`AddLocalVideoTrackAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings)) method to add to the peer connection a local video track sending to the remote peer some video frames obtained from a local video capture device (webcam).
+   ```cs
+   _localVideoTrack = await _peerConnection.AddLocalVideoTrackAsync();
    ```
    This method optionally takes a [`LocalVideoTrackSettings`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings) object to configure the video capture. In this tutorial, we leave that object out and use the default settings, which will open the first available webcam with its default resolution and framerate. This is generally acceptable, although on mobile devices like HoloLens you probably want to limit the resolution and framerate to reduce the power consumption and save on battery.
 
-2. Use the [`AddLocalAudioTrackAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalAudioTrackAsync) method to add to the peer connection a local audio track sending to the remote peer some audio frames obtained from a local audio capture device (microphone).
+3. Use the [`AddLocalAudioTrackAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalAudioTrackAsync) method to add to the peer connection a local audio track sending to the remote peer some audio frames obtained from a local audio capture device (microphone).
    ```cs
    await _peerConnection.AddLocalAudioTrackAsync();
    ```
@@ -122,16 +127,15 @@ The `CreateI420VideoStreamSource()` method references the [`SampleRequested`](xr
    }
    ```
 
-3. In the `OnLoaded()` method where the peer connection was initialized, subscribe to the [`I420LocalVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420LocalVideoFrameReady) event just after the call to [`InitializeAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.InitializeAsync(Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration,CancellationToken)) returned.
+3. In the `OnLoaded()` method where the local video track was created, subscribe to the [`I420AVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.LocalVideoTrack.I420AVideoFrameReady) event.
    ```cs
-   await _peerConnection.InitializeAsync(config);
-   _peerConnection.I420LocalVideoFrameReady += Peer_LocalI420FrameReady;
-   Debugger.Log(0, "", "Peer connection initialized successfully.\n");
+    _localVideoTrack = await _peerConnection.AddLocalVideoTrackAsync();
+    _localVideoTrack.I420AVideoFrameReady += Peer_LocalI420AFrameReady;
    ```
 
 4. Implement the event handler by enqueueing the newly captured video frames into the bridge, which will later deliver them when the Media Foundation playback pipeline requests them.
    ```cs
-   private void Peer_LocalI420FrameReady(I420AVideoFrame frame)
+   private void Peer_LocalI420AFrameReady(I420AVideoFrame frame)
    {
        _localVideoBridge.HandleIncomingVideoFrame(frame);
    }
@@ -145,13 +149,13 @@ The last part is to actually start the playback pipeline when video frames start
 
 Unfortunately at this time the capture framerate is not available, so we assume a framerate of 30 frames per second (FPS).
 
-1. At the top of the `MainPage` class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the [`I420LocalVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420LocalVideoFrameReady) and the [`SampleRequested`](xref:Windows.Media.Core.MediaStreamSource.SampleRequested) events can be fired in parallel from multiple threads.
+1. At the top of the `MainPage` class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the [`I420AVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.LocalVideoTrack.I420AVideoFrameReady) and the [`SampleRequested`](xref:Windows.Media.Core.MediaStreamSource.SampleRequested) events can be fired in parallel from multiple threads.
    ```cs
    private bool _localVideoPlaying = false;
    private object _localVideoLock = new object();
    ```
 
-2. Modify the `Peer_LocalI420FrameReady()` event handler to start the media player when the first WebRTC frame arrives.
+2. Modify the `Peer_LocalI420AFrameReady()` event handler to start the media player when the first WebRTC frame arrives.
    ```cs
    private void Peer_LocalI420FrameReady(I420AVideoFrame frame)
    {

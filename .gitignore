@@ -3,6 +3,7 @@
 /bin
 /build
 /obj
+/tools/build/userdef.py
 # TODO - Fix location with directory.build
 examples/TestAppUwp/bin
 examples/TestAppUwp/build
@@ -52,7 +53,6 @@ xdoc.meta
 /tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Native.pdb
 
 # Profiling data
-*.wprp
 *.etl
 
 # TODO - TestNetCoreConsole is misconfigured, builds into its own folder

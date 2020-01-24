@@ -1,14 +1,38 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See LICENSE in the project root for license information.
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
-# Commit a generated documentation to the gh-pages documentation branch
+# Commit a generated documentation to the 'gh-pages' documentation branch.
 # For the master branch, this commits the documentation at the root of
-# the branch. For other branches, this commits it under the verions/ folder.
+# the branch. For other branches, this commits it under the versions/ folder.
 
 param(
     [Parameter(Position=0)]
     [string]$SourceBranch
 )
+
+# List all documented branches. These are:
+# - The 'master' branch
+# - All the branches under 'release/*'
+$docsBranches = @("master")
+Invoke-Expression "git ls-remote origin `"refs/heads/release/*`"" | Tee-Object -Variable output | Out-Null
+if ($output)
+{
+    # Split git command output by line, each line containing a different ref
+    $output.Split("`n") | ForEach-Object {
+        # Split at space, remove first part (ref hash) and keep second one (ref name),
+        # and also pattern-match the ref name to keep only 'release/*' branches.
+        $ref = ([String]$_).split(" `t")[1] | Where-Object {$_ -match "refs/heads/release/*"};
+        # Strip the 'refs/heads/' prefix, if any. If the pattern match failed above, the
+        # string is empty, and the replace does nothing.
+        $ref = $ref -replace "refs/heads/","";
+        if ($ref)
+        {
+            $docsBranches += $ref;
+        }
+    }
+}
+Write-Host "List of documented branches:"
+$docsBranches.ForEach({ Write-Host "- Branch `"$_`"" })
 
 # Strip the source branch from refs/heads/ if any.
 # In general this is coming from Build.SourceBranch which has it.
@@ -16,8 +40,15 @@ param(
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#build-variables
 $SourceBranch = ($SourceBranch -Replace "^refs/heads/","")
 Write-Host "Source branch: '$SourceBranch'"
+if (!$docsBranches.Contains($SourceBranch))
+{
+    Write-Host "Source branch is not a documented branch, aborting."
+    Write-Host "##vso[task.complete result=Failed;]Non-documented branch $SourceBranch."
+    exit 1
+}
 
-# Create some authentication tokens to be able to connect to Azure DevOps to get changes and to GitHub to push changes
+# Create some authentication tokens to be able to connect to Azure DevOps
+# to get changes and to GitHub to push changes
 Write-Host "Create auth tokens to connect to GitHub and Azure DevOps"
 $Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${env:GITHUB_USER}:${env:GITHUB_PAT}"))
 
@@ -47,6 +78,7 @@ Remove-Item ".\_docs" -Force -Recurse -ErrorAction Ignore
 
 # Compute the source and destination folders
 $DestFolder = ".\_docs\versions\$SourceBranch\"
+$DestFolder = $DestFolder.Replace("/", "\")
 if ($SourceBranch -eq "master")
 {
     # The master branch is the default version at the root of the website
@@ -67,7 +99,8 @@ Write-Host "Destination folder: $DestFolder"
 # This will be used to only commit changes to that gh-pages branch which
 # contains only generated documentation-related files, and not the code.
 # Note that we always clone into ".\_docs", which is the repository root,
-# even if the destination folder is a sub-folder.
+# even if the destination folder is a sub-folder, since the documentation
+# branch 'gh-pages' contains the docs for all documented branches at once.
 Write-Host "Clone the generated docs branch"
 git -c http.extraheader="AUTHORIZATION: $Authorization" `
     clone https://github.com/Microsoft/MixedReality-WebRTC.git `
@@ -78,7 +111,16 @@ git -c http.extraheader="AUTHORIZATION: $Authorization" `
 Write-Host "Delete currently committed version"
 if (Test-Path "$DestFolder")
 {
-    Get-ChildItem "$DestFolder" -Recurse | Remove-Item -Force -Recurse
+    if ($SourceBranch -eq "master")
+    {
+        # For master, do not delete everything, otherwise docs for other branches
+        # will also be deleted. Only delete files outside '_docs/versions'.
+        Get-ChildItem "$DestFolder" -Recurse | Where-Object {$_.FullName -notlike "*\versions*"} | Remove-Item -Force -Recurse
+    }
+    else
+    {
+        Get-ChildItem "$DestFolder" -Recurse | Remove-Item -Force -Recurse
+    }
 }
 else
 {
@@ -88,6 +130,37 @@ else
 # Copy the newly-generated version of the docs
 Write-Host "Copy new generated version"
 Copy-Item ".\build\docs\generated\*" -Destination "$DestFolder" -Force -Recurse
+
+# Write the documented branches file
+$branchesFile = Join-Path "$DestFolder" "styles\branches.gen.js"
+Write-Host "Generate $branchesFile"
+$js = @"
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+// THIS FILE IS AUTO-GENERATED
+
+(function() {
+
+// List of documented branches
+var branches = [
+
+"@
+$docsBranches.ForEach({ $js += "  '$_',`n" })
+$js += @"
+]
+
+// Export to global scope
+var mrwebrtc = {
+  branches: branches,
+  currentBranch: "$SourceBranch"
+}
+window.mrwebrtc = mrwebrtc
+
+})();
+
+"@
+Set-Content -Path "$branchesFile" -Value $js -Encoding UTF8
 
 # Move inside the generated docs repository, so that subsequent git commands
 # apply to this repo/branch and not the global one with the source code.

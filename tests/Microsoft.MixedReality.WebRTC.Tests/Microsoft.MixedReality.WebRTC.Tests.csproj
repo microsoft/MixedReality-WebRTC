@@ -16,11 +16,15 @@
     <LangVersion>7.3</LangVersion>
     <Company>Microsoft</Company>
     <Authors>Mixed Reality Sharing Team</Authors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <!-- Default to x64 if not specified -->
   <PropertyGroup Condition="'$(Platform)'=='AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(DisableDeviceTests)'!=''">
+    <DefineConstants>MRSW_EXCLUDE_DEVICE_TESTS</DefineConstants>
   </PropertyGroup>
 
   <!-- Deploy native DLL to output folder to run tests -->

@@ -1,8 +1,11 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
+#include "../include/mrs_errors.h"
 #include "../src/interop/interop_api.h"
+#include "../src/interop/peer_connection_interop.h"
+
+using namespace Microsoft::MixedReality::WebRTC;
 
 /// Simple wait event, similar to rtc::Event.
 struct Event {
@@ -42,17 +45,18 @@ struct Event {
 /// trampoline its call to a generic std::function for convenience (including
 /// lambda functions).
 /// Use the CB() macro to register the callback with the interop layer.
-/// Note that the Callback<> variable must stay in scope for the duration of the
-/// use, so that its static callback function is kept alive while registered.
+/// Note that the InteropCallback<> variable must stay in scope for the duration
+/// of the use, so that its static callback function is kept alive while
+/// registered.
 /// Usage:
 ///   {
-///     Callback<int> cb([](int i) { ... });
+///     InteropCallback<int> cb([](int i) { ... });
 ///     mrsRegisterXxxCallback(h, CB(cb));
 ///     [...]
 ///     mrsRegisterXxxCallback(h, nullptr, nullptr);
 ///   }
 template <typename... Args>
-struct Callback {
+struct InteropCallback {
   /// Callback function signature type.
   using function_type = void(Args...);
 
@@ -60,23 +64,23 @@ struct Callback {
   /// opaque argument.
   using static_type = void(MRS_CALL*)(void*, Args...);
 
-  Callback() = default;
-  virtual ~Callback() { assert(!is_registered_); }
+  InteropCallback() = default;
+  virtual ~InteropCallback() { assert(!is_registered_); }
 
   /// Constructor from any std::function-compatible object, including lambdas.
   template <typename U>
-  Callback(U func)
+  InteropCallback(U func)
       : func_(std::function<function_type>(std::forward<U>(func))) {}
 
   template <typename U>
-  Callback& operator=(U func) {
+  InteropCallback& operator=(U func) {
     func_ = std::function<function_type>(std::forward<U>(func));
     return (*this);
   }
 
   /// Adapter for generic std::function<> to interop callback.
   static void MRS_CALL StaticExec(void* user_data, Args... args) {
-    auto self = (Callback*)user_data;
+    auto self = (InteropCallback*)user_data;
     self->func_(std::forward<Args>(args)...);
   }
 
@@ -90,27 +94,39 @@ struct Callback {
 /// Helper to create and close a peer connection.
 class PCRaii {
  public:
+  /// Create a peer connection without any default ICE server.
+  /// Generally tests use direct hard-coded SDP message passing,
+  /// so do not need NAT traversal nor even local networking.
+  /// Note that due to a limitation/bug in the implementation, complete lack of
+  /// networking (e.g. airplane mode, or no network interface) will prevent the
+  /// connection from being established.
   PCRaii() {
     PeerConnectionConfiguration config{};
-    config.encoded_ice_servers = "stun:stun.l.google.com:19302";
     mrsPeerConnectionInteropHandle interop_handle = (void*)0x1;
-    mrsPeerConnectionCreate(config, interop_handle, &handle_);
+    create(config, interop_handle);
   }
+  /// Create a peer connection with a specific configuration.
   PCRaii(const PeerConnectionConfiguration& config,
          mrsPeerConnectionInteropHandle interop_handle = (void*)0x1) {
-    mrsPeerConnectionCreate(config, interop_handle, &handle_);
+    create(config, interop_handle);
   }
-  ~PCRaii() { mrsPeerConnectionClose(&handle_); }
+  ~PCRaii() { mrsPeerConnectionRemoveRef(handle_); }
   PeerConnectionHandle handle() const { return handle_; }
 
  protected:
   PeerConnectionHandle handle_{};
+  void create(const PeerConnectionConfiguration& config,
+              mrsPeerConnectionInteropHandle interop_handle) {
+    ASSERT_EQ(mrsResult::kSuccess,
+              mrsPeerConnectionCreate(config, interop_handle, &handle_));
+    ASSERT_NE(nullptr, handle_);
+  }
 };
 
 // OnLocalSdpReadyToSend
-class SdpCallback : public Callback<const char*, const char*> {
+class SdpCallback : public InteropCallback<const char*, const char*> {
  public:
-  using Base = Callback<const char*, const char*>;
+  using Base = InteropCallback<const char*, const char*>;
   using callback_type = void(const char*, const char*);
   SdpCallback(PeerConnectionHandle pc) : pc_(pc) {}
   SdpCallback(PeerConnectionHandle pc, std::function<callback_type> func)
@@ -136,9 +152,9 @@ class SdpCallback : public Callback<const char*, const char*> {
 };
 
 // OnIceCandidateReadyToSend
-class IceCallback : public Callback<const char*, int, const char*> {
+class IceCallback : public InteropCallback<const char*, int, const char*> {
  public:
-  using Base = Callback<const char*, int, const char*>;
+  using Base = InteropCallback<const char*, int, const char*>;
   using callback_type = void(const char*, int, const char*);
   IceCallback(PeerConnectionHandle pc) : pc_(pc) {}
   IceCallback(PeerConnectionHandle pc, std::function<callback_type> func)
@@ -196,7 +212,7 @@ class LocalPeerPairRaii {
     connected1_cb_.is_registered_ = true;
     mrsPeerConnectionRegisterConnectedCallback(pc2(), CB(connected2_cb_));
     connected2_cb_.is_registered_ = true;
-    ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateOffer(pc1()));
+    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateOffer(pc1()));
     ASSERT_EQ(true, ev1.WaitFor(60s));
     ASSERT_EQ(true, ev2.WaitFor(60s));
   }
@@ -208,32 +224,34 @@ class LocalPeerPairRaii {
   SdpCallback sdp2_cb_;
   IceCallback ice1_cb_;
   IceCallback ice2_cb_;
-  Callback<> connected1_cb_;
-  Callback<> connected2_cb_;
+  InteropCallback<> connected1_cb_;
+  InteropCallback<> connected2_cb_;
   void setup() {
     sdp1_cb_ = [this](const char* type, const char* sdp_data) {
-      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                                 pc2_.handle(), type, sdp_data));
+      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
+                                      pc2_.handle(), type, sdp_data));
       if (kOfferString == type) {
-        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc2_.handle()));
+        ASSERT_EQ(Result::kSuccess,
+                  mrsPeerConnectionCreateAnswer(pc2_.handle()));
       }
     };
     sdp2_cb_ = [this](const char* type, const char* sdp_data) {
-      ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionSetRemoteDescription(
-                                 pc1_.handle(), type, sdp_data));
+      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
+                                      pc1_.handle(), type, sdp_data));
       if (kOfferString == type) {
-        ASSERT_EQ(MRS_SUCCESS, mrsPeerConnectionCreateAnswer(pc1_.handle()));
+        ASSERT_EQ(Result::kSuccess,
+                  mrsPeerConnectionCreateAnswer(pc1_.handle()));
       }
     };
     ice1_cb_ = [this](const char* candidate, int sdpMlineindex,
                       const char* sdpMid) {
-      ASSERT_EQ(MRS_SUCCESS,
+      ASSERT_EQ(Result::kSuccess,
                 mrsPeerConnectionAddIceCandidate(pc2_.handle(), sdpMid,
                                                  sdpMlineindex, candidate));
     };
     ice2_cb_ = [this](const char* candidate, int sdpMlineindex,
                       const char* sdpMid) {
-      ASSERT_EQ(MRS_SUCCESS,
+      ASSERT_EQ(Result::kSuccess,
                 mrsPeerConnectionAddIceCandidate(pc1_.handle(), sdpMid,
                                                  sdpMlineindex, candidate));
     };

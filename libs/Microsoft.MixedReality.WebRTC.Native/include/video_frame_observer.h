@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license
-// information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #pragma once
 
@@ -10,27 +9,15 @@
 #include "api/video/video_sink_interface.h"
 
 #include "callback.h"
+#include "video_frame.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 
 /// Callback fired on newly available video frame, encoded as I420.
-/// The first 4 pointers are buffers for the YUVA planes (in that order),
-/// followed by the 4 byte strides, and the width and height of the frame.
-using I420FrameReadyCallback = Callback<const void*,
-                                        const void*,
-                                        const void*,
-                                        const void*,
-                                        int,
-                                        int,
-                                        int,
-                                        int,
-                                        int,
-                                        int>;
+using I420AFrameReadyCallback = Callback<const I420AVideoFrame&>;
 
 /// Callback fired on newly available video frame, encoded as ARGB.
-/// The first parameters are the buffer pointer and byte stride of the
-/// packed ARGB data, followed by the width and height of the frame.
-using ARGBFrameReadyCallback = Callback<const void*, int, int, int>;
+using Argb32FrameReadyCallback = Callback<const Argb32VideoFrame&>;
 
 constexpr inline size_t ArgbDataSize(int height, int stride) {
   return static_cast<size_t>(height) * stride * 4;
@@ -88,12 +75,12 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   /// Register a callback to get notified on frame available,
   /// and received that frame as a I420-encoded buffer.
   /// This is not exclusive and can be used along another ARGB callback.
-  void SetCallback(I420FrameReadyCallback callback) noexcept;
+  void SetCallback(I420AFrameReadyCallback callback) noexcept;
 
   /// Register a callback to get notified on frame available,
   /// and received that frame as a raw decoded ARGB buffer.
   /// This is not exclusive and can be used along another I420 callback.
-  void SetCallback(ARGBFrameReadyCallback callback) noexcept;
+  void SetCallback(Argb32FrameReadyCallback callback) noexcept;
 
  protected:
   ArgbBuffer* GetArgbScratchBuffer(int width, int height);
@@ -103,10 +90,10 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
 
  private:
   /// Registered callback for receiving I420-encoded frame.
-  I420FrameReadyCallback i420_callback_;
+  I420AFrameReadyCallback i420a_callback_ RTC_GUARDED_BY(mutex_);
 
   /// Registered callback for receiving raw decoded ARGB frame.
-  ARGBFrameReadyCallback argb_callback_;
+  Argb32FrameReadyCallback argb_callback_ RTC_GUARDED_BY(mutex_);
 
   /// Mutex protecting all callbacks.
   std::mutex mutex_;
