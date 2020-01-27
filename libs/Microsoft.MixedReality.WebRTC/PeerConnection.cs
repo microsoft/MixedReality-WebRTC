@@ -1430,104 +1430,321 @@ namespace Microsoft.MixedReality.WebRTC
         #endregion
 
         /// <summary>
-        /// Subset of RTCDataChannelStats. See https://www.w3.org/TR/webrtc-stats/#dcstats-dict*
+        /// Subset of RTCDataChannelStats. See <see href="https://www.w3.org/TR/webrtc-stats/#dcstats-dict*"/>
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct DataChannelStats
         {
+            /// <summary>
+            /// Unix timestamp (time since Epoch) of the statistics. For remote statistics, this is
+            /// the time at which the information reached the local endpoint.
+            /// </summary>
             public long TimestampUs;
+
+            /// <summary>
+            /// <see cref="DataChannel.ID"/> of the data channel associated with these statistics.
+            /// </summary>
             public long DataChannelIdentifier;
+
+            /// <summary>
+            /// Total number of API message event sent.
+            /// </summary>
             public uint MessagesSent;
+
+            /// <summary>
+            /// Total number of payload bytes sent, excluding headers and paddings.
+            /// </summary>
             public ulong BytesSent;
+
+            /// <summary>
+            /// Total number of API message events received.
+            /// </summary>
             public uint MessagesReceived;
+
+            /// <summary>
+            /// Total number of payload bytes received, excluding headers and paddings.
+            /// </summary>
             public ulong BytesReceived;
         }
 
         /// <summary>
         /// Subset of RTCMediaStreamTrack (audio sender) and RTCOutboundRTPStreamStats.
-        /// See https://www.w3.org/TR/webrtc-stats/#raststats-dict* and https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*
+        /// See <see href="https://www.w3.org/TR/webrtc-stats/#raststats-dict*"/>
+        /// and <see href="https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*"/>.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public unsafe struct AudioSenderStats
         {
+            #region Track statistics
+
+            /// <summary>
+            /// Unix timestamp (time since Epoch) of the audio statistics. For remote statistics,
+            /// this is the time at which the information reached the local endpoint.
+            /// </summary>
             public long TrackStatsTimestampUs;
+
+            /// <summary>
+            /// Track identifier.
+            /// </summary>
             [MarshalAs(UnmanagedType.LPStr)]
             public string TrackIdentifier;
+
+            /// <summary>
+            /// Linear audio level of the media source, in [0:1] range, averaged over a small interval.
+            /// </summary>
             public double AudioLevel;
+
+            /// <summary>
+            /// Total audio energy of the media source. For multi-channel sources (stereo, etc.) this is
+            /// the highest energy of any of the channels for each sample.
+            /// </summary>
             public double TotalAudioEnergy;
+
+            /// <summary>
+            /// Total duration in seconds of all the samples produced by the media source for the lifetime
+            /// of the underlying internal statistics object. Like <see cref="TotalAudioEnergy"/> this is not
+            /// affected by the number of channels per sample.
+            /// </summary>
             public double TotalSamplesDuration;
 
+            #endregion
+
+
+            #region RTP statistics
+
+            /// <summary>
+            /// Unix timestamp (time since Epoch) of the RTP statistics. For remote statistics,
+            /// this is the time at which the information reached the local endpoint.
+            /// </summary>
             public long RtpStatsTimestampUs;
+
+            /// <summary>
+            /// Total number of RTP packets sent for this SSRC.
+            /// </summary>
             public uint PacketsSent;
+
+            /// <summary>
+            /// Total number of bytes sent for this SSRC.
+            /// </summary>
             public ulong BytesSent;
+
+            #endregion
         }
 
         /// <summary>
         /// Subset of RTCMediaStreamTrack (audio receiver) and RTCInboundRTPStreamStats.
-        /// See https://www.w3.org/TR/webrtc-stats/#aststats-dict* and https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*
+        /// See <see href="https://www.w3.org/TR/webrtc-stats/#aststats-dict*"/>
+        /// and <see href="https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*"/>.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct AudioReceiverStats
         {
+            #region Track statistics
+
+            /// <summary>
+            /// Unix timestamp (time since Epoch) of the statistics. For remote statistics, this is
+            /// the time at which the information reached the local endpoint.
+            /// </summary>
             public long TrackStatsTimestampUs;
+
+            /// <summary>
+            /// Track identifier.
+            /// </summary>
             public string TrackIdentifier;
+
+            /// <summary>
+            /// Linear audio level of the receiving track, in [0:1] range, averaged over a small interval.
+            /// </summary>
             public double AudioLevel;
+
+            /// <summary>
+            /// Total audio energy of the received track. For multi-channel sources (stereo, etc.) this is
+            /// the highest energy of any of the channels for each sample.
+            /// </summary>
             public double TotalAudioEnergy;
+
+            /// <summary>
+            /// Total number of RTP samples received for this audio stream.
+            /// Like <see cref="TotalAudioEnergy"/> this is not affected by the number of channels per sample.
+            /// </summary>
             public double TotalSamplesReceived;
+
+            /// <summary>
+            /// Total duration in seconds of all the samples received (and thus counted by <see cref="TotalSamplesReceived"/>).
+            /// Like <see cref="TotalAudioEnergy"/> this is not affected by the number of channels per sample.
+            /// </summary>
             public double TotalSamplesDuration;
 
+            #endregion
+
+
+            #region RTP statistics
+
+            /// <summary>
+            /// Unix timestamp (time since Epoch) of the RTP statistics. For remote statistics,
+            /// this is the time at which the information reached the local endpoint.
+            /// </summary>
             public long RtpStatsTimestampUs;
+
+            /// <summary>
+            /// Total number of RTP packets received for this SSRC.
+            /// </summary>
             public uint PacketsReceived;
+
+            /// <summary>
+            /// Total number of bytes received for this SSRC.
+            /// </summary>
             public ulong BytesReceived;
+
+            #endregion
         }
 
         /// <summary>
         /// Subset of RTCMediaStreamTrack (video sender) and RTCOutboundRTPStreamStats.
-        /// See https://www.w3.org/TR/webrtc-stats/#vsstats-dict* and https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*
+        /// See <see href="https://www.w3.org/TR/webrtc-stats/#vsstats-dict*"/>
+        /// and <see href="https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*"/>.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct VideoSenderStats
         {
+            #region Track statistics
+
+            /// <summary>
+            /// Unix timestamp (time since Epoch) of the track statistics. For remote statistics,
+            /// this is the time at which the information reached the local endpoint.
+            /// </summary>
             public long TrackStatsTimestampUs;
+
+            /// <summary>
+            /// Track identifier.
+            /// </summary>
             public string TrackIdentifier;
+
+            /// <summary>
+            /// Total number of frames sent on this RTP stream.
+            /// </summary>
             public uint FramesSent;
+
+            /// <summary>
+            /// Total number of huge frames sent by this RTP stream. Huge frames are frames that have
+            /// an encoded size at least 2.5 times the average size of the frames.
+            /// </summary>
             public uint HugeFramesSent;
 
+            #endregion
+
+
+            #region RTP statistics
+
+            /// <summary>
+            /// Unix timestamp (time since Epoch) of the RTP statistics. For remote statistics,
+            /// this is the time at which the information reached the local endpoint.
+            /// </summary>
             public long RtpStatsTimestampUs;
+
+            /// <summary>
+            /// Total number of RTP packets sent for this SSRC.
+            /// </summary>
             public uint PacketsSent;
+
+            /// <summary>
+            /// Total number of bytes sent for this SSRC.
+            /// </summary>
             public ulong BytesSent;
+
+            /// <summary>
+            /// Total number of frames successfully encoded for this RTP media stream.
+            /// </summary>
             public uint FramesEncoded;
+
+            #endregion
         }
 
         /// <summary>
         /// Subset of RTCMediaStreamTrack (video receiver) + RTCInboundRTPStreamStats.
-        /// See https://www.w3.org/TR/webrtc-stats/#rvststats-dict* and https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*
+        /// See <see href="https://www.w3.org/TR/webrtc-stats/#rvststats-dict*"/>
+        /// and <see href="https://www.w3.org/TR/webrtc-stats/#inboundrtpstats-dict*"/>
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct VideoReceiverStats
         {
+            #region Track statistics
+
+            /// <summary>
+            /// Unix timestamp (time since Epoch) of the track statistics. For remote statistics,
+            /// this is the time at which the information reached the local endpoint.
+            /// </summary>
             public long TrackStatsTimestampUs;
+
+            /// <summary>
+            /// Track identifier.
+            /// </summary>
             public string TrackIdentifier;
+
+            /// <summary>
+            /// Total number of complete frames received on this RTP stream.
+            /// </summary>
             public uint FramesReceived;
+
+            /// <summary>
+            /// Total number since the receiver was created of frames dropped prior to decode or
+            /// dropped because the frame missed its display deadline for this receiver's track.
+            /// </summary>
             public uint FramesDropped;
 
+            #endregion
+
+
+            #region RTP statistics
+
+            /// <summary>
+            /// Unix timestamp (time since Epoch) of the RTP statistics. For remote statistics,
+            /// this is the time at which the information reached the local endpoint.
+            /// </summary>
             public long RtpStatsTimestampUs;
+
+            /// <summary>
+            /// Total number of RTP packets received for this SSRC.
+            /// </summary>
             public uint PacketsReceived;
+
+            /// <summary>
+            /// Total number of bytes received for this SSRC.
+            /// </summary>
             public ulong BytesReceived;
+
+            /// <summary>
+            /// Total number of frames correctly decoded for this RTP stream, that would be displayed
+            /// if no frames are dropped.
+            /// </summary>
             public uint FramesDecoded;
+
+            #endregion
         }
 
         /// <summary>
-        /// Subset of RTCTransportStats. See https://www.w3.org/TR/webrtc-stats/#transportstats-dict*
+        /// Subset of RTCTransportStats.
+        /// See <see href="https://www.w3.org/TR/webrtc-stats/#transportstats-dict*"/>.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct TransportStats
         {
             /// <summary>
-            /// Time when the RTCDataChannelStats were collected.
+            /// Unix timestamp (time since Epoch) of the statistics. For remote statistics, this is
+            /// the time at which the information reached the local endpoint.
             /// </summary>
             public long TimestampUs;
+
+            /// <summary>
+            /// Total number of payload bytes sent on this <see cref="PeerConnection"/>, excluding
+            /// headers and paddings.
+            /// </summary>
             public ulong BytesSent;
+
+            /// <summary>
+            /// Total number of payload bytes received on this <see cref="PeerConnection"/>, excluding
+            /// headers and paddings.
+            /// </summary>
             public ulong BytesReceived;
         }
 
