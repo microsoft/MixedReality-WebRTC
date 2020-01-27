@@ -757,7 +757,7 @@ struct mrsAudioReceiverStats {
   const char* track_identifier;
   double audio_level;
   double total_audio_energy;
-  double total_samples_received;
+  uint64_t total_samples_received;
   double total_samples_duration;
 
   int64_t rtp_stats_timestamp_us;
