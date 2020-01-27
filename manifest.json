@@ -318,7 +318,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html",
-          "hash": "iGSVpNxUdzZr2izLb5cHIg=="
+          "hash": "XY1bEHCqqaCPCmN7Tx4orA=="
         }
       },
       "is_incremental": false,
@@ -330,7 +330,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html",
-          "hash": "2kk2KYLr8AT4dXAN8hHiTQ=="
+          "hash": "xWSk1ZmVWW7FORl3n0IQgg=="
         }
       },
       "is_incremental": false,
@@ -366,7 +366,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html",
-          "hash": "ZyZ/qacV8/Y9/NYi1jV9xg=="
+          "hash": "2J/bbBtZj4Ql7KfE/3naYA=="
         }
       },
       "is_incremental": false,
@@ -378,7 +378,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html",
-          "hash": "Iaj71K29nOXg2tvMg8gSzQ=="
+          "hash": "3aQEH15LX7u0XkZqA85f+w=="
         }
       },
       "is_incremental": false,
@@ -450,7 +450,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html",
-          "hash": "yrP6wCD+YmQ6aq++GkKjVw=="
+          "hash": "9O+SxNXXw65cOiboq08WBw=="
         }
       },
       "is_incremental": false,
@@ -474,7 +474,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.html",
-          "hash": "rXk5AJuNfDBd0itZ/k7LtQ=="
+          "hash": "k7CGJbX1gn4Yj+hQNeC+tw=="
         }
       },
       "is_incremental": false,
@@ -498,7 +498,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html",
-          "hash": "vEvBi7hg85DBksWo12ffYw=="
+          "hash": "UWVaRZW3xF6c0+mIoCOE6A=="
         }
       },
       "is_incremental": false,
@@ -510,7 +510,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html",
-          "hash": "+ATLoaQbxmew3e8zgpD7Xw=="
+          "hash": "Lwya2HL8Ud3hBRoIJcgytg=="
         }
       },
       "is_incremental": false,
@@ -522,7 +522,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.html",
-          "hash": "h81avyN+I/TrX6ljozPo2w=="
+          "hash": "Bb1YDV6gmleLVx3U/StLKA=="
         }
       },
       "is_incremental": false,
@@ -978,7 +978,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "q/fHKl00D4pcxWW1yO4WeA=="
+          "hash": "6aC6OqsUleFWQ4nN7AFO5A=="
         }
       },
       "is_incremental": false,
