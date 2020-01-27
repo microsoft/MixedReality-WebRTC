@@ -69,6 +69,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="data_channel_tests.cpp" />
+    <ClCompile Include="video_frame_observer_tests.cpp" />
     <ClCompile Include="video_track_tests.cpp" />
   </ItemGroup>
   <ItemGroup>

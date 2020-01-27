@@ -20,7 +20,7 @@ ArgbBuffer::ArgbBuffer(int width, int height, int stride) noexcept
       height_(height),
       stride_(stride),
       data_(static_cast<uint8_t*>(
-          webrtc::AlignedMalloc(ArgbDataSize(height, stride),
+          webrtc::AlignedMalloc(static_cast<size_t>(height) * stride,
                                 kBufferAlignment))) {
   RTC_DCHECK_GT(width, 0);
   RTC_DCHECK_GT(height, 0);
@@ -51,7 +51,7 @@ void VideoFrameObserver::SetCallback(
 }
 
 ArgbBuffer* VideoFrameObserver::GetArgbScratchBuffer(int width, int height) {
-  const size_t needed_size = ArgbDataSize(width, height);
+  const size_t needed_size = Argb32FrameSize(width, height);
   if (auto* buffer = argb_scratch_buffer_.get()) {
     if (buffer->Size() >= needed_size) {
       return buffer;
