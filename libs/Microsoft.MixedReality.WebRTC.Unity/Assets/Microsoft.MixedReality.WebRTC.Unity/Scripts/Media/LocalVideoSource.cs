@@ -138,6 +138,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public LocalVideoTrack Track { get; private set; }
 
         /// <summary>
+        /// Frame queue holding the pending frames enqueued by the video source itself,
+        /// which a video renderer needs to read and display.
+        /// </summary>
+        private VideoFrameQueue<I420AVideoFrameStorage> _frameQueue;
+
+        /// <summary>
         /// For manual <see cref="Mode"/>, optional constraints on the resolution and framerate of
         /// the capture format. These constraints are additive, meaning a matching format must satisfy
         /// all of them at once, in addition of being restricted to the formats supported by the selected
@@ -152,7 +158,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected void Awake()
         {
-            FrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(3);
+            _frameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(3);
+            FrameQueue = _frameQueue;
             PeerConnection.OnInitialized.AddListener(OnPeerInitialized);
             PeerConnection.OnShutdown.AddListener(OnPeerShutdown);
         }
@@ -190,7 +197,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 nativePeer.RemoveLocalVideoTrack(Track);
                 Track.Dispose();
                 Track = null;
-                FrameQueue.Clear();
+                _frameQueue.Clear();
             }
         }
 
@@ -276,7 +283,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
             SdpTokenAttribute.Validate(trackName, allowEmpty: false);
 
-            FrameQueue.Clear();
+            _frameQueue.Clear();
 
             var trackSettings = new WebRTC.PeerConnection.LocalVideoTrackSettings
             {
@@ -308,12 +315,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Track.Dispose();
                 Track = null;
             }
-            FrameQueue.Clear();
+            _frameQueue.Clear();
         }
 
         private void I420ALocalVideoFrameReady(I420AVideoFrame frame)
         {
-            FrameQueue.Enqueue(frame);
+            _frameQueue.Enqueue(frame);
         }
     }
 }

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using System;
 using System.Text;
 using System.Threading;
@@ -19,12 +22,14 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             var pc2 = new PeerConnection();
             await pc1.InitializeAsync(config);
             await pc2.InitializeAsync(config);
-            pc1.LocalSdpReadytoSend += (string type, string sdp) => {
+            pc1.LocalSdpReadytoSend += (string type, string sdp) =>
+            {
                 pc2.SetRemoteDescription(type, sdp);
                 if (type == "offer")
                     pc2.CreateAnswer();
             };
-            pc2.LocalSdpReadytoSend += (string type, string sdp) => {
+            pc2.LocalSdpReadytoSend += (string type, string sdp) =>
+            {
                 pc1.SetRemoteDescription(type, sdp);
                 if (type == "offer")
                     pc1.CreateAnswer();
@@ -57,7 +62,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             DataChannel data2 = null;
             {
                 var c2 = new ManualResetEventSlim(false);
-                pc2.DataChannelAdded += (DataChannel channel) => {
+                pc2.DataChannelAdded += (DataChannel channel) =>
+                {
                     data2 = channel;
                     c2.Set();
                 };
@@ -75,7 +81,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 var c2 = new ManualResetEventSlim(false);
                 string sentText = "Some sample text";
                 byte[] msg = Encoding.UTF8.GetBytes(sentText);
-                data2.MessageReceived +=  (byte[] _msg) => {
+                data2.MessageReceived += (byte[] _msg) =>
+                {
                     var receivedText = Encoding.UTF8.GetString(_msg);
                     Assert.AreEqual(sentText, receivedText);
                     c2.Set();
@@ -86,7 +93,59 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Clean-up
             pc1.Close();
+            pc1.Dispose();
             pc2.Close();
+            pc2.Dispose();
+        }
+
+        [Test]
+        public async Task SctpError()
+        {
+            // Setup
+            var config = new PeerConnectionConfiguration();
+            var pc1 = new PeerConnection();
+            var pc2 = new PeerConnection();
+            await pc1.InitializeAsync(config);
+            await pc2.InitializeAsync(config);
+            pc1.LocalSdpReadytoSend += (string type, string sdp) =>
+            {
+                pc2.SetRemoteDescription(type, sdp);
+                if (type == "offer")
+                    pc2.CreateAnswer();
+            };
+            pc2.LocalSdpReadytoSend += (string type, string sdp) =>
+            {
+                pc1.SetRemoteDescription(type, sdp);
+                if (type == "offer")
+                    pc1.CreateAnswer();
+            };
+            pc1.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, string sdpMid)
+                => pc2.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+            pc2.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, string sdpMid)
+                => pc1.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+
+            // Connect
+            {
+                var c1 = new ManualResetEventSlim(false);
+                var c2 = new ManualResetEventSlim(false);
+                pc1.Connected += () => c1.Set();
+                pc2.Connected += () => c2.Set();
+                Assert.True(pc1.CreateOffer());
+                Assert.True(c1.Wait(TimeSpan.FromSeconds(60.0)));
+                Assert.True(c2.Wait(TimeSpan.FromSeconds(60.0)));
+                Assert.True(pc1.IsConnected);
+                Assert.True(pc1.IsConnected);
+            }
+
+            // Try to add a data channel. This should fail because SCTP was not negotiated.
+            Assert.ThrowsAsync<SctpNotNegotiatedException>(async () => await pc1.AddDataChannelAsync("dummy", false, false));
+            Assert.ThrowsAsync<SctpNotNegotiatedException>(async () => await pc1.AddDataChannelAsync(42, "dummy", false, false));
+
+            // Clean-up
+            pc1.Close();
+            pc1.Dispose();
+            pc2.Close();
+            pc2.Dispose();
         }
     }
 }

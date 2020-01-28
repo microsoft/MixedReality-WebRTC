@@ -270,7 +270,7 @@ namespace TestAppUwp
             PreferredAudioCodecChecked(null, null);
             PreferredVideoCodecChecked(null, null);
 
-            RestoreLocalAndRemotePeerIDs();
+            RestoreParams();
 
             dssSignaler.OnMessage += DssSignaler_OnMessage;
             dssSignaler.OnFailure += DssSignaler_OnFailure;
@@ -296,6 +296,9 @@ namespace TestAppUwp
 
             //Window.Current.Closed += Shutdown; // doesn't work
 
+            // Start polling automatically.
+            PollDssButtonClicked(this, null);
+
             this.Loaded += OnLoaded;
             Application.Current.Suspending += App_Suspending;
             Application.Current.Resuming += App_Resuming;
@@ -305,18 +308,56 @@ namespace TestAppUwp
         {
             // Save local and remote peer IDs for next launch for convenience
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values["DssServerAddress"] = dssServer.Text;
             localSettings.Values["LocalPeerID"] = localPeerUidTextBox.Text;
             localSettings.Values["RemotePeerID"] = remotePeerUidTextBox.Text;
+            localSettings.Values["PreferredAudioCodec"] = PreferredAudioCodec;
+            localSettings.Values["PreferredAudioCodecExtraParamsLocal"] = PreferredAudioCodecExtraParamsLocalTextBox.Text;
+            localSettings.Values["PreferredAudioCodecExtraParamsRemote"] = PreferredAudioCodecExtraParamsRemoteTextBox.Text;
+            localSettings.Values["PreferredAudioCodec_Custom"] = PreferredAudioCodec_Custom.IsChecked.GetValueOrDefault() ? CustomPreferredAudioCodec.Text : "";
+            localSettings.Values["PreferredVideoCodec"] = PreferredVideoCodec;
+            localSettings.Values["PreferredVideoCodecExtraParamsLocal"] = PreferredVideoCodecExtraParamsLocalTextBox.Text;
+            localSettings.Values["PreferredVideoCodecExtraParamsRemote"] = PreferredVideoCodecExtraParamsRemoteTextBox.Text;
+            localSettings.Values["PreferredVideoCodec_Custom"] = PreferredVideoCodec_Custom.IsChecked.GetValueOrDefault() ? CustomPreferredVideoCodec.Text : "";
         }
 
         private void App_Resuming(object sender, object e)
         {
-            RestoreLocalAndRemotePeerIDs();
+            RestoreParams();
         }
 
-        private void RestoreLocalAndRemotePeerIDs()
+        private static bool IsFirstInstance()
         {
+            var firstInstance = AppInstance.FindOrRegisterInstanceForKey("{44CD414E-B604-482E-8CFD-A9E09076CABD}");
+            return firstInstance.IsCurrentInstance;
+        }
+
+        private void RestoreParams()
+        {
+            // Uncomment these lines if you want to connect a HoloLens (or any non-x64 device) to a
+            // x64 PC.
+            //var arch = System.Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
+            //if (arch == "AMD64")
+            //{
+            //    localPeerUidTextBox.Text = "Pc";
+            //    remotePeerUidTextBox.Text = "Device";
+            //}
+            //else
+            //{
+            //    localPeerUidTextBox.Text = "Device";
+            //    remotePeerUidTextBox.Text = "Pc";
+            //}
+
+            // Get server address and peer ID from local settings if available.
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.TryGetValue("DssServerAddress", out object dssServerAddress))
+            {
+                if (dssServerAddress is string str)
+                {
+                    dssServer.Text = str;
+                }
+            }
+
             if (localSettings.Values.TryGetValue("LocalPeerID", out object localObj))
             {
                 if (localObj is string str)
@@ -333,6 +374,100 @@ namespace TestAppUwp
                 if (remoteObj is string str)
                 {
                     remotePeerUidTextBox.Text = str;
+                }
+            }
+
+            if (!IsFirstInstance())
+            {
+                // Swap the peer IDs. This way two instances launched on the same machine connect
+                // to each other by default.
+                var tmp = localPeerUidTextBox.Text;
+                localPeerUidTextBox.Text = remotePeerUidTextBox.Text;
+                remotePeerUidTextBox.Text = tmp;
+            }
+
+            if (localSettings.Values.TryGetValue("PreferredAudioCodec", out object preferredAudioObj))
+            {
+                if (preferredAudioObj is string str)
+                {
+                    switch(str)
+                    {
+                        case "":
+                        {
+                            PreferredAudioCodec_Default.IsChecked = true;
+                            break;
+                        }
+                        case "opus":
+                        {
+                            PreferredAudioCodec_OPUS.IsChecked = true;
+                            break;
+                        }
+                        default:
+                        {
+                            PreferredAudioCodec_Custom.IsChecked = true;
+                            CustomPreferredAudioCodec.Text = str;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (localSettings.Values.TryGetValue("PreferredAudioCodecExtraParamsLocal", out object preferredAudioParamsLocalObj))
+            {
+                if (preferredAudioParamsLocalObj is string str)
+                {
+                    PreferredAudioCodecExtraParamsLocalTextBox.Text = str;
+                }
+            }
+            if (localSettings.Values.TryGetValue("PreferredAudioCodecExtraParamsRemote", out object preferredAudioParamsRemoteObj))
+            {
+                if (preferredAudioParamsRemoteObj is string str)
+                {
+                    PreferredAudioCodecExtraParamsRemoteTextBox.Text = str;
+                }
+            }
+
+            if (localSettings.Values.TryGetValue("PreferredVideoCodec", out object preferredVideoObj))
+            {
+                if (preferredVideoObj is string str)
+                {
+                    switch (str)
+                    {
+                        case "":
+                        {
+                            PreferredVideoCodec_Default.IsChecked = true;
+                            break;
+                        }
+                        case "H264":
+                        {
+                            PreferredVideoCodec_H264.IsChecked = true;
+                            break;
+                        }
+                        case "VP8":
+                        {
+                            PreferredVideoCodec_VP8.IsChecked = true;
+                            break;
+                        }
+                        default:
+                        {
+                            PreferredVideoCodec_Custom.IsChecked = true;
+                            CustomPreferredVideoCodec.Text = str;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (localSettings.Values.TryGetValue("PreferredVideoCodecExtraParamsLocal", out object preferredVideoParamsLocalObj))
+            {
+                if (preferredVideoParamsLocalObj is string str)
+                {
+                    PreferredVideoCodecExtraParamsLocalTextBox.Text = str;
+                }
+            }
+            if (localSettings.Values.TryGetValue("PreferredVideoCodecExtraParamsRemote", out object preferredVideoParamsRemoteObj))
+            {
+                if (preferredVideoParamsRemoteObj is string str)
+                {
+                    PreferredVideoCodecExtraParamsRemoteTextBox.Text = str;
                 }
             }
         }
@@ -617,6 +752,10 @@ namespace TestAppUwp
                 {
                     VideoProfiles.Add(profile);
                 }
+                if (profiles.Any())
+                {
+                    VideoProfileComboBox.SelectedIndex = 0;
+                }
             }
             else
             {
@@ -650,7 +789,15 @@ namespace TestAppUwp
             var values = Enum.GetValues(typeof(PeerConnection.VideoProfileKind));
             if (MediaCapture.IsVideoProfileSupported(device.Id))
             {
-                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, PeerConnection.VideoProfileKind.VideoConferencing);
+                var defaultProfile = PeerConnection.VideoProfileKind.VideoConferencing;
+                var profiles = MediaCapture.FindKnownVideoProfiles(device.Id, (KnownVideoProfile)(defaultProfile - 1));
+                if (!profiles.Any())
+                {
+                    // Fall back to VideoRecording if VideoConferencing has no profiles (e.g. HoloLens).
+                    defaultProfile = PeerConnection.VideoProfileKind.VideoRecording;
+                }
+                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, defaultProfile);
+
                 KnownVideoProfileKindComboBox.IsEnabled = true; //< TODO - Use binding
                 VideoProfileComboBox.IsEnabled = true;
                 RecordMediaDescList.IsEnabled = true;
@@ -711,29 +858,36 @@ namespace TestAppUwp
 
         private void DssSignaler_OnMessage(NodeDssSignaler.Message message)
         {
-            switch (message.MessageType)
+            Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-            case NodeDssSignaler.Message.WireMessageType.Offer:
-                _peerConnection.SetRemoteDescription("offer", message.Data);
-                // If we get an offer, we immediately send an answer back
-                _peerConnection.CreateAnswer();
-                break;
+                // Ensure that the filtering values are up to date before passing the message on.
+                UpdateCodecFilters();
+            }).AsTask().ContinueWith(_ =>
+            {
+                switch (message.MessageType)
+                {
+                    case NodeDssSignaler.Message.WireMessageType.Offer:
+                        _peerConnection.SetRemoteDescription("offer", message.Data);
+                        // If we get an offer, we immediately send an answer back
+                        _peerConnection.CreateAnswer();
+                        break;
 
-            case NodeDssSignaler.Message.WireMessageType.Answer:
-                _peerConnection.SetRemoteDescription("answer", message.Data);
-                break;
+                    case NodeDssSignaler.Message.WireMessageType.Answer:
+                        _peerConnection.SetRemoteDescription("answer", message.Data);
+                        break;
 
-            case NodeDssSignaler.Message.WireMessageType.Ice:
-                // TODO - This is NodeDSS-specific
-                // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
-                var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
-                _peerConnection.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
-                break;
+                    case NodeDssSignaler.Message.WireMessageType.Ice:
+                        // TODO - This is NodeDSS-specific
+                        // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                        var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                        // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                        _peerConnection.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                        break;
 
-            default:
-                throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
-            }
+                    default:
+                        throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
+                }
+            }, TaskScheduler.Default);
         }
 
         private void DssSignaler_OnFailure(Exception e)
@@ -1150,7 +1304,7 @@ namespace TestAppUwp
 
         /// <summary>
         /// Callback on audio frame received from the remote peer, for local output
-        /// (or any other use). 
+        /// (or any other use).
         /// </summary>
         /// <param name="frame">The newly received audio frame.</param>
         private void Peer_RemoteAudioFrameReady(AudioFrame frame)
@@ -1289,12 +1443,15 @@ namespace TestAppUwp
                 // and is in kStable state, and it will get discarded so remote video will not start).
                 _renegotiationOfferEnabled = false;
 
+                // Ensure that the filtering values are up to date before creating new tracks.
+                UpdateCodecFilters();
+
+                // The default start bitrate is quite low (300 kbps); use a higher value to get
+                // better quality on local network.
+                _peerConnection.SetBitrate(maxBitrateBps: 100000);
+
                 try
                 {
-                    // The default start bitrate is quite low (300 kbps); use a higher value to get
-                    // better quality on local network.
-                    _peerConnection.SetBitrate(startBitrateBps: (uint)(width * height * framerate / 20));
-
                     // Add the local audio track captured from the local microphone
                     await _peerConnection.AddLocalAudioTrackAsync();
 
@@ -1363,6 +1520,16 @@ namespace TestAppUwp
             //remoteLateText.Text = $"Late: {remoteVideoBridge.LateFrame:F2}";
         }
 
+        void UpdateCodecFilters()
+        {
+            _peerConnection.PreferredAudioCodec = PreferredAudioCodec;
+            _peerConnection.PreferredAudioCodecExtraParamsRemote = PreferredAudioCodecExtraParamsRemoteTextBox.Text;
+            _peerConnection.PreferredAudioCodecExtraParamsLocal = PreferredAudioCodecExtraParamsLocalTextBox.Text;
+            _peerConnection.PreferredVideoCodec = PreferredVideoCodec;
+            _peerConnection.PreferredVideoCodecExtraParamsRemote = PreferredVideoCodecExtraParamsRemoteTextBox.Text;
+            _peerConnection.PreferredVideoCodecExtraParamsLocal = PreferredVideoCodecExtraParamsLocalTextBox.Text;
+        }
+
         private void CreateOfferButtonClicked(object sender, RoutedEventArgs e)
         {
             if (!PluginInitialized)
@@ -1373,8 +1540,8 @@ namespace TestAppUwp
             createOfferButton.IsEnabled = false;
             createOfferButton.Content = "Joining...";
 
-            _peerConnection.PreferredAudioCodec = PreferredAudioCodec;
-            _peerConnection.PreferredVideoCodec = PreferredVideoCodec;
+            // Ensure that the filtering values are up to date before starting to create messages.
+            UpdateCodecFilters();
             _peerConnection.CreateOffer();
         }
 
@@ -1401,10 +1568,15 @@ namespace TestAppUwp
                 return;
             }
 
-            // If not polling, try to start if the poll time is valid
+            // If not polling, try to start if the poll parameters are valid
             if (!float.TryParse(dssPollTimeMs.Text, out float pollTimeMs))
             {
                 // Invalid time format, cannot start polling
+                return;
+            }
+            if (string.IsNullOrEmpty(localPeerUidTextBox.Text) || string.IsNullOrEmpty(remotePeerUidTextBox.Text))
+            {
+                // Invalid peer ID, cannot start polling
                 return;
             }
 

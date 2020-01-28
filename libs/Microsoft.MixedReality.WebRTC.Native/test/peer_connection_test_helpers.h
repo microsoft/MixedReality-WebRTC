@@ -94,25 +94,33 @@ struct InteropCallback {
 /// Helper to create and close a peer connection.
 class PCRaii {
  public:
-  /// Create a peer connection with a default public STUN server.
+  /// Create a peer connection without any default ICE server.
+  /// Generally tests use direct hard-coded SDP message passing,
+  /// so do not need NAT traversal nor even local networking.
+  /// Note that due to a limitation/bug in the implementation, complete lack of
+  /// networking (e.g. airplane mode, or no network interface) will prevent the
+  /// connection from being established.
   PCRaii() {
     PeerConnectionConfiguration config{};
-    config.encoded_ice_servers = "stun:stun.l.google.com:19302";
     mrsPeerConnectionInteropHandle interop_handle = (void*)0x1;
-    mrsPeerConnectionCreate(config, interop_handle, &handle_);
+    create(config, interop_handle);
   }
   /// Create a peer connection with a specific configuration.
-  /// Use this constructor with a default-constructed configuration object to
-  /// create a local-only peer connection without STUN/TURN capability.
   PCRaii(const PeerConnectionConfiguration& config,
          mrsPeerConnectionInteropHandle interop_handle = (void*)0x1) {
-    mrsPeerConnectionCreate(config, interop_handle, &handle_);
+    create(config, interop_handle);
   }
   ~PCRaii() { mrsPeerConnectionRemoveRef(handle_); }
   PeerConnectionHandle handle() const { return handle_; }
 
  protected:
   PeerConnectionHandle handle_{};
+  void create(const PeerConnectionConfiguration& config,
+              mrsPeerConnectionInteropHandle interop_handle) {
+    ASSERT_EQ(mrsResult::kSuccess,
+              mrsPeerConnectionCreate(config, interop_handle, &handle_));
+    ASSERT_NE(nullptr, handle_);
+  }
 };
 
 // OnLocalSdpReadyToSend
@@ -221,16 +229,18 @@ class LocalPeerPairRaii {
   void setup() {
     sdp1_cb_ = [this](const char* type, const char* sdp_data) {
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                 pc2_.handle(), type, sdp_data));
+                                      pc2_.handle(), type, sdp_data));
       if (kOfferString == type) {
-        ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc2_.handle()));
+        ASSERT_EQ(Result::kSuccess,
+                  mrsPeerConnectionCreateAnswer(pc2_.handle()));
       }
     };
     sdp2_cb_ = [this](const char* type, const char* sdp_data) {
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                 pc1_.handle(), type, sdp_data));
+                                      pc1_.handle(), type, sdp_data));
       if (kOfferString == type) {
-        ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc1_.handle()));
+        ASSERT_EQ(Result::kSuccess,
+                  mrsPeerConnectionCreateAnswer(pc1_.handle()));
       }
     };
     ice1_cb_ = [this](const char* candidate, int sdpMlineindex,

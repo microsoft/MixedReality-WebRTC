@@ -29,6 +29,10 @@
 static constexpr int kFrameHeightCrop = 1;
 extern int webrtc__WinUWPH264EncoderImpl__frame_height_round_mode;
 
+// Stop WinRT from polluting the global namespace
+// https://developercommunity.visualstudio.com/content/problem/859178/asyncinfoh-defines-the-error-symbol-at-global-name.html
+#define _HIDE_GLOBAL_ASYNC_STATUS 1
+
 #include <Windows.Foundation.h>
 #include <windows.graphics.holographic.h>
 #include <wrl\client.h>
@@ -293,7 +297,7 @@ class PeerConnectionImpl : public PeerConnection,
     data_channel_removed_callback_ = std::move(callback);
   }
 
-  webrtc::RTCErrorOr<std::shared_ptr<DataChannel>> AddDataChannel(
+  ErrorOr<std::shared_ptr<DataChannel>> AddDataChannel(
       int id,
       std::string_view label,
       bool ordered,
@@ -364,11 +368,11 @@ class PeerConnectionImpl : public PeerConnection,
 
   void OnLocalDescCreated(webrtc::SessionDescriptionInterface* desc) noexcept;
 
- protected:
   /// The underlying PC object from the core implementation. This is NULL
   /// after |Close()| is called.
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_;
 
+ protected:
   /// Peer connection name assigned by the user. This has no meaning for the
   /// implementation.
   std::string name_;
@@ -706,22 +710,19 @@ void PeerConnectionImpl::RemoveLocalAudioTrack() noexcept {
   local_audio_track_ = nullptr;
 }
 
-webrtc::RTCErrorOr<std::shared_ptr<DataChannel>>
-PeerConnectionImpl::AddDataChannel(
+ErrorOr<std::shared_ptr<DataChannel>> PeerConnectionImpl::AddDataChannel(
     int id,
     std::string_view label,
     bool ordered,
     bool reliable,
     mrsDataChannelInteropHandle dataChannelInteropHandle) noexcept {
   if (IsClosed()) {
-    return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION,
-                            "The peer connection is closed.");
+    return Error(Result::kPeerConnectionClosed);
   }
   if (!sctp_negotiated_) {
     // Don't try to create a data channel without SCTP negotiation, it will get
     // stuck in the kConnecting state forever.
-    return webrtc::RTCError(webrtc::RTCErrorType::INVALID_STATE,
-                            "SCTP not negotiated");
+    return Error(Result::kSctpNotNegotiated);
   }
   webrtc::DataChannelInit config{};
   config.ordered = ordered;
@@ -734,7 +735,7 @@ PeerConnectionImpl::AddDataChannel(
     config.id = id;
   } else {
     // Valid IDs are 0-65535 (16 bits)
-    return webrtc::RTCError(webrtc::RTCErrorType::INVALID_RANGE);
+    return Error(Result::kOutOfRange);
   }
   std::string labelString{label};
   if (rtc::scoped_refptr<webrtc::DataChannelInterface> impl =
@@ -761,7 +762,7 @@ PeerConnectionImpl::AddDataChannel(
 
     return data_channel;
   }
-  return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
+  return Error(Result::kUnknownError);
 }
 
 void PeerConnectionImpl::RemoveDataChannel(
@@ -1348,6 +1349,10 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
   return RefPtr<PeerConnection>(peer);
 }
 
+void PeerConnection::GetStats(webrtc::RTCStatsCollectorCallback* callback) {
+  ((PeerConnectionImpl*)this)->peer_->GetStats(callback);
+}
+  
 void AudioReadStream::audioFrameCallback(const void* audio_data,
                                          const uint32_t bits_per_sample,
                                          const uint32_t sample_rate,

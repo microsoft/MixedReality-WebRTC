@@ -20,7 +20,8 @@
           "src": "../libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Microsoft.MixedReality.WebRTC.Unity.Examples"
         }
       ],
-      "dest": "api"
+      "dest": "api",
+      "filter": "filterConfig.yml"
     }
   ],
   "build": {
@@ -33,7 +34,8 @@
       },
       {
         // generate html for conceptual docs
-        "files": ["**/*.md", "**/*.yml"]
+        "files": ["**/*.md", "**/*.yml"],
+        "exclude": "filterConfig.yml"
       }
     ],
     "resource": [
@@ -54,14 +56,14 @@
       "_disableNavbar": false,
       "_appLogoPath": "mr-webrtc_icon.png",
       "_appFaviconPath": "mr-webrtc_icon.svg"
-      // re-add this section if you want to publish a version of the docs that keeps the "improve this doc" link pointing to mrtk_development branch
+      // re-add this section if you want to publish a version of the docs that keeps the "improve this doc" link pointing to the master branch
       //"_gitContribute": {
       //  "repo": "https://github.com/Microsoft/MixedReality-WebRTC",
-      //  "branch": "mrtk_development"
+      //  "branch": "master"
       //}
     },
     "markdownEngineName": "markdig",
     "dest": "generated",
-    "xrefService": [ "https://xref.docs.microsoft.com/query?uid={uid}" ] //msdn xref service for resolving crefs
+    "xrefService": [ "https://xref.docs.microsoft.com/query?uid={uid}" ] // msdn xref service
   }
 }

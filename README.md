@@ -18,7 +18,9 @@ MixedReality-WebRTC is part of the collection of repositories developed and main
 
 ## Download
 
-See the [Release page on GitHub](https://github.com/microsoft/MixedReality-WebRTC/releases).
+NuGet packages are available for stable releases (`release/*` branches). See the [Release page on GitHub](https://github.com/microsoft/MixedReality-WebRTC/releases).
+
+_Note_: The `master` branch contains the code for the next release, and therefore sometimes contains breaking API changes from the latest stable release. It is therefore not guaranteed to work with NuGet packages, which are only available for stable releases. In particular, the Unity integration scripts are only guaranteed to be compatible with NuGet packages if copied from a `release/*` branch.
 
 ## Build Status
 
@@ -115,6 +117,7 @@ The current version is a public preview under active development, which contains
 - H.264 hardware video encoding (UWP only) exhibits some quality degrading (blockiness). See #74 and #101 for details.
 - H.264 is not currently available on Desktop. Only VP8 and VP9 are available instead (software).
 - There is currently no clean C++ API; instead the C API used for C# P/Invoke can be used from C++ code, and opaque handles cast to C++ objects. An actual C++ API will eventually be exposed. The C++ library public API is found in [`libs\Microsoft.MixedReality.WebRTC.Native\include`](https://github.com/microsoft/MixedReality-WebRTC/tree/master/libs/Microsoft.MixedReality.WebRTC.Native/include) and already contains some classes, but is not 100% functional at this time (cannot create a peer connection for example).
+- Currently the NuGet packages for the C++ library include some WebRTC headers (from the Google repository), which are not shipped with any of the NuGet packages themselves, but instead require cloning this repository and its dependencies (see #123).
 
 In addition, the Debug config of WebRTC core implementation is known to exhibit some performance issues on most devices, including some higher-end PCs. Using the Release config of the core WebRTC implementation usually prevents this.
 

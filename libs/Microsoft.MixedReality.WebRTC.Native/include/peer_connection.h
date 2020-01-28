@@ -318,13 +318,12 @@ class PeerConnection : public TrackedObject {
 
   /// Create a new data channel and add it to the peer connection.
   /// This invokes the DataChannelAdded callback.
-  webrtc::RTCErrorOr<std::shared_ptr<DataChannel>>
-      MRS_API virtual AddDataChannel(
-          int id,
-          std::string_view label,
-          bool ordered,
-          bool reliable,
-          mrsDataChannelInteropHandle dataChannelInteropHandle) noexcept = 0;
+  ErrorOr<std::shared_ptr<DataChannel>> MRS_API virtual AddDataChannel(
+      int id,
+      std::string_view label,
+      bool ordered,
+      bool reliable,
+      mrsDataChannelInteropHandle dataChannelInteropHandle) noexcept = 0;
 
   /// Close and remove a given data channel.
   /// This invokes the DataChannelRemoved callback.
@@ -340,6 +339,9 @@ class PeerConnection : public TrackedObject {
   /// automatically by non-negotiated data channels; do not call manually.
   virtual void MRS_API
   OnDataChannelAdded(const DataChannel& data_channel) noexcept = 0;
+
+  /// Internal use.
+  void GetStats(webrtc::RTCStatsCollectorCallback* callback);
 
   //
   // Advanced use

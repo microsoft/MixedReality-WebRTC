@@ -86,6 +86,16 @@ pre {
   margin: 10px 10px 10px 0;
 }
 
+/** Branch selector **/
+
+#branch-selector select {
+  height: 34px;
+  padding: 6px 12px;
+  padding-top: 3px;
+  border-radius: 4px;
+  border: 1px solid gray;
+}
+
 /** TOC nav bar (left) **/
 
 #toc span.expand-stub {

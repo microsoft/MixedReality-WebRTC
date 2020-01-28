@@ -55,6 +55,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         internal const uint MRS_E_INVALID_NATIVE_HANDLE = 0x80000005u;
         internal const uint MRS_E_NOT_INITIALIZED = 0x80000006u;
         internal const uint MRS_E_UNSUPPORTED = 0x80000007u;
+        internal const uint MRS_E_OUT_OF_RANGE = 0x80000008u;
+        internal const uint MRS_E_PEER_CONNECTION_CLOSED = 0x80000101u;
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
         internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
 
@@ -163,7 +165,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                     throw new Exception("Object not found.");
 
                 case MRS_E_INVALID_NATIVE_HANDLE:
-                    throw new InvalidOperationException("Invalid native interop handle.");
+                    throw new InvalidInteropNativeHandleException();
 
                 case MRS_E_NOT_INITIALIZED:
                     throw new InvalidOperationException("Object not initialized.");
@@ -171,8 +173,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 case MRS_E_UNSUPPORTED:
                     throw new NotSupportedException();
 
+                case MRS_E_OUT_OF_RANGE:
+                    throw new ArgumentOutOfRangeException();
+
                 case MRS_E_SCTP_NOT_NEGOTIATED:
-                    throw new InvalidOperationException("Cannot add a first data channel after the connection handshake started. Call AddDataChannelAsync() before calling CreateOffer().");
+                    throw new SctpNotNegotiatedException();
+
+                case MRS_E_PEER_CONNECTION_CLOSED:
+                    throw new InvalidOperationException("The operation cannot complete because the peer connection was closed.");
 
                 case MRS_E_INVALID_DATA_CHANNEL_ID:
                     throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");

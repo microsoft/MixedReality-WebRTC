@@ -2,14 +2,17 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Microsoft.MixedReality.WebRTC.Interop
 {
     /// <summary>
     /// Handle to a native peer connection object.
     /// </summary>
-    public sealed class PeerConnectionHandle : SafeHandle
+    internal sealed class PeerConnectionHandle : SafeHandle
     {
         /// <summary>
         /// Check if the current handle is invalid, which means it is not referencing
@@ -160,12 +163,12 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public PeerConnectionRenegotiationNeededCallback RenegotiationNeededCallback;
             public PeerConnectionTrackAddedCallback TrackAddedCallback;
             public PeerConnectionTrackRemovedCallback TrackRemovedCallback;
-            public PeerConnectionI420AVideoFrameCallback I420ALocalVideoFrameCallback;
-            public PeerConnectionI420AVideoFrameCallback I420ARemoteVideoFrameCallback;
-            public PeerConnectionArgb32VideoFrameCallback Argb32LocalVideoFrameCallback;
-            public PeerConnectionArgb32VideoFrameCallback Argb32RemoteVideoFrameCallback;
-            public PeerConnectionAudioFrameCallback LocalAudioFrameCallback;
-            public PeerConnectionAudioFrameCallback RemoteAudioFrameCallback;
+            public LocalVideoTrackInterop.I420AVideoFrameUnmanagedCallback I420ALocalVideoFrameCallback;
+            public LocalVideoTrackInterop.I420AVideoFrameUnmanagedCallback I420ARemoteVideoFrameCallback;
+            public LocalVideoTrackInterop.Argb32VideoFrameUnmanagedCallback Argb32LocalVideoFrameCallback;
+            public LocalVideoTrackInterop.Argb32VideoFrameUnmanagedCallback Argb32RemoteVideoFrameCallback;
+            public AudioFrameUnmanagedCallback LocalAudioFrameCallback;
+            public AudioFrameUnmanagedCallback RemoteAudioFrameCallback;
         }
 
         [MonoPInvokeCallback(typeof(ConnectedDelegate))]
@@ -244,32 +247,92 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             peer.OnTrackRemoved(trackKind);
         }
 
-        [MonoPInvokeCallback(typeof(I420AVideoFrameDelegate))]
-        public static void I420ARemoteVideoFrameCallback(IntPtr userData, I420AVideoFrame frame)
+        [MonoPInvokeCallback(typeof(LocalVideoTrackInterop.I420AVideoFrameUnmanagedCallback))]
+        public static void I420ARemoteVideoFrameCallback(IntPtr userData, ref I420AVideoFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnI420ARemoteVideoFrameReady(frame);
         }
 
-        [MonoPInvokeCallback(typeof(Argb32VideoFrameDelegate))]
-        public static void Argb32RemoteVideoFrameCallback(IntPtr userData, Argb32VideoFrame frame)
+        [MonoPInvokeCallback(typeof(LocalVideoTrackInterop.Argb32VideoFrameUnmanagedCallback))]
+        public static void Argb32RemoteVideoFrameCallback(IntPtr userData, ref Argb32VideoFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnArgb32RemoteVideoFrameReady(frame);
         }
 
-        [MonoPInvokeCallback(typeof(AudioFrameDelegate))]
-        public static void LocalAudioFrameCallback(IntPtr userData, AudioFrame frame)
+        [MonoPInvokeCallback(typeof(AudioFrameUnmanagedCallback))]
+        public static void LocalAudioFrameCallback(IntPtr userData, ref AudioFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnLocalAudioFrameReady(frame);
         }
 
-        [MonoPInvokeCallback(typeof(AudioFrameDelegate))]
-        public static void RemoteAudioFrameCallback(IntPtr userData, AudioFrame frame)
+        [MonoPInvokeCallback(typeof(AudioFrameUnmanagedCallback))]
+        public static void RemoteAudioFrameCallback(IntPtr userData, ref AudioFrame frame)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnRemoteAudioFrameReady(frame);
+        }
+
+        public static readonly PeerConnectionSimpleStatsCallback SimpleStatsReportDelegate = SimpleStatsReportCallback;
+
+        [MonoPInvokeCallback(typeof(PeerConnectionSimpleStatsCallback))]
+        public unsafe static void SimpleStatsReportCallback(IntPtr userData, IntPtr report)
+        {
+            var tcsHandle = GCHandle.FromIntPtr(userData);
+            var tcs = tcsHandle.Target as TaskCompletionSource<PeerConnection.StatsReport>;
+            tcs.SetResult(new PeerConnection.StatsReport(report));
+            tcsHandle.Free();
+        }
+
+        public static Task<PeerConnection.StatsReport> GetSimpleStatsAsync(PeerConnectionHandle peerHandle)
+        {
+            var tcs = new TaskCompletionSource<PeerConnection.StatsReport>();
+            var resPtr = Utils.MakeWrapperRef(tcs);
+            PeerConnection_GetSimpleStats(peerHandle, SimpleStatsReportDelegate, resPtr);
+
+            // The Task result will be set by the callback when the report is ready.
+            return tcs.Task;
+        }
+
+        [MonoPInvokeCallback(typeof(PeerConnectionSimpleStatsObjectCallback))]
+        public unsafe static void GetStatsObjectCallback(IntPtr userData, IntPtr statsObject)
+        {
+            var list = Utils.ToWrapper<object>(userData);
+            if (list is List<PeerConnection.DataChannelStats> dataStatsList)
+            {
+                dataStatsList.Add(*(PeerConnection.DataChannelStats*)statsObject);
+            }
+            else if (list is List<PeerConnection.AudioSenderStats> audioSenderStatsList)
+            {
+                audioSenderStatsList.Add(Marshal.PtrToStructure<PeerConnection.AudioSenderStats>(statsObject));
+            }
+            else if (list is List<PeerConnection.AudioReceiverStats> audioReceiverStatsList)
+            {
+                audioReceiverStatsList.Add(Marshal.PtrToStructure<PeerConnection.AudioReceiverStats>(statsObject));
+            }
+            else if (list is List<PeerConnection.VideoSenderStats> videoSenderStatsList)
+            {
+                videoSenderStatsList.Add(Marshal.PtrToStructure<PeerConnection.VideoSenderStats>(statsObject));
+            }
+            else if (list is List<PeerConnection.VideoReceiverStats> videoReceiverStatsList)
+            {
+                videoReceiverStatsList.Add(Marshal.PtrToStructure<PeerConnection.VideoReceiverStats>(statsObject));
+            }
+            else if (list is List<PeerConnection.TransportStats> transportStatsList)
+            {
+                transportStatsList.Add(*(PeerConnection.TransportStats*)statsObject);
+            }
+        }
+
+        public static IEnumerable<T> GetStatsObject<T>(PeerConnection.StatsReport.Handle reportHandle)
+        {
+            var res = new List<T>();
+            var resHandle = GCHandle.Alloc(res, GCHandleType.Normal);
+            StatsReport_GetObjects(reportHandle, typeof(T).Name, GetStatsObjectCallback, GCHandle.ToIntPtr(resHandle));
+            resHandle.Free();
+            return res;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -404,14 +467,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public delegate void PeerConnectionTrackRemovedCallback(IntPtr userData, PeerConnection.TrackKind trackKind);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionI420AVideoFrameCallback(IntPtr userData, I420AVideoFrame frame);
+        public delegate void AudioFrameUnmanagedCallback(IntPtr userData, ref AudioFrame frame);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionArgb32VideoFrameCallback(IntPtr userData, Argb32VideoFrame frame);
+        public delegate void PeerConnectionSimpleStatsCallback(IntPtr userData, IntPtr statsReport);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionAudioFrameCallback(IntPtr userData, AudioFrame frame);
-
+        public delegate void PeerConnectionSimpleStatsObjectCallback(IntPtr userData, IntPtr statsObject);
         #endregion
 
 
@@ -419,7 +481,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsEnumVideoCaptureDevicesAsync")]
-        public static extern void EnumVideoCaptureDevicesAsync(VideoCaptureDeviceEnumCallback enumCallback, IntPtr userData,
+        public static extern uint EnumVideoCaptureDevicesAsync(VideoCaptureDeviceEnumCallback enumCallback, IntPtr userData,
             VideoCaptureDeviceEnumCompletedCallback completedCallback, IntPtr completedUserData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
@@ -499,22 +561,22 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback")]
         public static extern void PeerConnection_RegisterI420ARemoteVideoFrameCallback(PeerConnectionHandle peerHandle,
-            PeerConnectionI420AVideoFrameCallback callback, IntPtr userData);
+            LocalVideoTrackInterop.I420AVideoFrameUnmanagedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback")]
         public static extern void PeerConnection_RegisterArgb32RemoteVideoFrameCallback(PeerConnectionHandle peerHandle,
-            PeerConnectionArgb32VideoFrameCallback callback, IntPtr userData);
+            LocalVideoTrackInterop.Argb32VideoFrameUnmanagedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterLocalAudioFrameCallback")]
         public static extern void PeerConnection_RegisterLocalAudioFrameCallback(PeerConnectionHandle peerHandle,
-            PeerConnectionAudioFrameCallback callback, IntPtr userData);
+            AudioFrameUnmanagedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterRemoteAudioFrameCallback")]
         public static extern void PeerConnection_RegisterRemoteAudioFrameCallback(PeerConnectionHandle peerHandle,
-            PeerConnectionAudioFrameCallback callback, IntPtr userData);
+            AudioFrameUnmanagedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
@@ -588,6 +650,17 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             EntryPoint = "mrsPeerConnectionClose")]
         public static extern uint PeerConnection_Close(PeerConnectionHandle peerHandle);
 
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionGetSimpleStats")]
+        public static extern void PeerConnection_GetSimpleStats(PeerConnectionHandle peerHandle, PeerConnectionSimpleStatsCallback callback, IntPtr userData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsStatsReportGetObjects")]
+        public static extern void StatsReport_GetObjects(PeerConnection.StatsReport.Handle reportHandle, string stats_type, PeerConnectionSimpleStatsObjectCallback callback, IntPtr userData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsStatsReportRemoveRef")]
+        public static extern void StatsReport_RemoveRef(IntPtr reportHandle);
         #endregion
 
 
