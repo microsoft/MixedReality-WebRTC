@@ -1413,13 +1413,14 @@ void AudioReadStream::Buffer::addFrame(const Frame& frame,
   const short* srcData;
   size_t srcCount;
 
-  // promote to 16 bit
+  // ensure source is 16 bit
   if (frame.bits_per_sample == 16) {
     srcData = (short*)frame.audio_data.data();
     srcCount = frame.number_of_frames * frame.number_of_channels;
   } else if (frame.bits_per_sample == 8) {
     buffer_front.resize(frame.audio_data.size());
     short* data = buffer_front.data();
+    // 8 bit data is unsigned8, 16 bit is signed16
     for (int i = 0; i < (int)frame.audio_data.size(); ++i) {
       data[i] = ((int)frame.audio_data[i] * 256) - 32768;
     }
@@ -1431,7 +1432,7 @@ void AudioReadStream::Buffer::addFrame(const Frame& frame,
     return;
   }
 
-  // match number of channels
+  // match destination number of channels
   switch (frame.number_of_channels * 16 + dstChannels) {
     case 0x11:
     case 0x22:
@@ -1494,11 +1495,6 @@ void AudioReadStream::Read(int sampleRate,
   float* dst = dataOrig;
   int dstLen = dataLenOrig;  // number of points remaining
 
-  // TODO: to make the logic simpler, we currently match the expected number of
-  // output
-  // channels in buffer_.addFrame(). We could save a bit of work and memory by
-  // moving any 1->2 channel conversions into buffer_.readSome().
-
   while (dstLen > 0) {
     if (sampleRate == buffer_.rate_ && channels == buffer_.channels_ &&
         buffer_.available()) {
@@ -1520,7 +1516,7 @@ void AudioReadStream::Read(int sampleRate,
             dst[i] = 0.15f * sinf((freq * (sinwave_iter_ + i)) /
                                   (sampleRate * channels));
           }
-          sinwave_iter_ = (sinwave_iter_ + dstLen) % 628318530;
+          sinwave_iter_ = (sinwave_iter_ + dstLen) % 628318530 /*twopi*/;
           sinwave_iter_ += dstLen;
           return;  // and return
         }

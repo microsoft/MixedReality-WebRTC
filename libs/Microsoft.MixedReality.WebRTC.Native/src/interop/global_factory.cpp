@@ -201,7 +201,7 @@ mrsResult GlobalFactory::Initialize() {
         wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
     factoryConfig->thisWeak_ = factoryConfig;  // mimic wrapper_create()
     factoryConfig->audioCapturingEnabled = true;
-    factoryConfig->audioRenderingEnabled = true;
+    factoryConfig->audioRenderingEnabled = true; //TODO change to runtime switch
     factoryConfig->enableAudioBufferEvents = false;
     impl_ = std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
     impl_->thisWeak_ = impl_;  // mimic wrapper_create()
@@ -229,6 +229,11 @@ mrsResult GlobalFactory::Initialize() {
 #if 1
   static const int16_t zerobuf[200];
 
+  // UWP has factoryConfig->audioRenderingEnabled but non-UWP doesn't have that flag.
+  // The mixer has a dual role 1) to pull audio from the network 2) send it to the platforms
+  // audio device. Without a mixer to pull the audio, there will be no audio frame received callbacks.
+  // TODO: we have the opportunity here to select certain sources for mixing and others
+  // for callbacks (e.g. spatial audio). Provide an API to manage this.
   struct PumpSourcesAndDiscardMixer : webrtc::AudioMixer {
     rtc::CriticalSection crit_;
     std::vector<Source*> audio_source_list_;

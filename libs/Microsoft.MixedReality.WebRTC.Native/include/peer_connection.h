@@ -358,7 +358,7 @@ class AudioReadStream {
  public:
   /// Create a new stream which buffers 'bufferMs' milliseconds of audio.
   /// WebRTC delivers audio at 10ms intervals so pass a multiple of 10.
-  /// Or pass -1 for automaticlly chosen buffer size.
+  /// Or pass -1 for default buffer size (currently 0.5 seconds).
   AudioReadStream(PeerConnection* peer, int bufferMs);
   ~AudioReadStream();
 
@@ -372,10 +372,8 @@ class AudioReadStream {
             int numChannels) noexcept;
 
  private:
-  // Buffer the next frame. Return false on failure.
-  bool bufferNextFrame(int sampleRate, int channels);
   static void MRS_CALL staticAudioFrameCallback(void* user_data,
-                                               const AudioFrame& frame);
+                                                const AudioFrame& frame);
   void audioFrameCallback(const void* audio_data,
                           const uint32_t bits_per_sample,
                           const uint32_t sample_rate,
@@ -390,13 +388,16 @@ class AudioReadStream {
     uint32_t number_of_channels;
     uint32_t number_of_frames;
   };
-  // Frames received from webrtc
+  // Incoming frames received from webrtc - see also buffer_
   std::deque<Frame> frames_;
-  std::mutex
-      frames_mutex_;  // frames accessed by Read() and audioFrameCallback()
+  // protects frames_ in Read() and audioFrameCallback()
+  std::mutex frames_mutex_;
+  // max ms of audio data stored in frames_
   int buffer_ms_ = 0;
+  // for debugging, we emit a sin on underrun.
   int sinwave_iter_ = 0;
 
+  // Outgoing data resamples to f32 format
   struct Buffer {
     std::unique_ptr<webrtc::Resampler> resampler_ = nullptr;
     std::vector<float> data_;
@@ -413,6 +414,7 @@ class AudioReadStream {
       used_ += take;
       return take;
     }
+    // Extract/resample data from frame and add it to our buffer.
     void addFrame(const Frame& frame, int dstSampleRate, int dstChannels);
   };
   // Only accessed from callers of Read - no locking needed.

@@ -1198,7 +1198,7 @@ namespace Microsoft.MixedReality.WebRTC
             IntPtr _nativeStreamHandle = IntPtr.Zero;
             internal AudioReadStream(PeerConnectionHandle peerHandle, int bufferMs)
             {
-                uint res = AudioReadStreamInterop.Create(peerHandle, bufferMs, ref _nativeStreamHandle);
+                uint res = AudioReadStreamInterop.Create(peerHandle, bufferMs, out _nativeStreamHandle);
                 Utils.ThrowOnErrorCode(res);
             }
             ~AudioReadStream()
