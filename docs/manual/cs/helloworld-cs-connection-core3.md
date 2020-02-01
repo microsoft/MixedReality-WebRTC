@@ -19,7 +19,7 @@ Continue editing the `Program.cs` file and append the following:
 2. In order to verify that the remote video is received, we also subscribe to the [`I420ARemoteVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.I420ARemoteVideoFrameReady) event. Since this event is invoked frequently, we only print a message every 60 frames.
    ```cs
    int numFrames = 0;
-   pc.I420ARemoteVideoFrameReady += (I420AVideoFrame frame) => {
+   pc.I420RemoteVideoFrameReady += (I420AVideoFrame frame) => {
        ++numFrames;
        if (numFrames % 60 == 0)
        {
