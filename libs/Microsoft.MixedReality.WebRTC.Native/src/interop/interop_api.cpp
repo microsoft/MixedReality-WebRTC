@@ -882,7 +882,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
 
   const bool ordered = (config.flags & mrsDataChannelConfigFlags::kOrdered);
   const bool reliable = (config.flags & mrsDataChannelConfigFlags::kReliable);
-  const std::string_view label = (config.label ? config.label : "");
+  const absl::string_view label = (config.label ? config.label : "");
   ErrorOr<std::shared_ptr<DataChannel>> data_channel = peer->AddDataChannel(
       config.id, label, ordered, reliable, dataChannelInteropHandle);
   if (data_channel.ok()) {
@@ -1114,9 +1114,9 @@ void MRS_CALL mrsMemCpyStride(void* dst,
 namespace {
 template <class T>
 T& FindOrInsert(std::vector<std::pair<std::string, T>>& vec,
-                std::string_view id) {
+                absl::string_view id) {
   auto it = std::find_if(vec.begin(), vec.end(),
-                         [&](auto&& pair) { return pair.first == id; });
+                         [&](auto&& pair) { return id == pair.first; });
   if (it != vec.end()) {
     return it->second;
   }
@@ -1173,7 +1173,7 @@ T GetValueIfDefined(const webrtc::RTCStatsMember<T>& member) {
   return member.is_defined() ? *member : 0;
 }
 
-}
+}  // namespace
 
 mrsResult MRS_CALL
 mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
@@ -1287,7 +1287,8 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
             dest_stats.track_identifier = track_stats.track_identifier->c_str();
             dest_stats.frames_sent = GetValueIfDefined(track_stats.frames_sent);
-            dest_stats.huge_frames_sent = GetValueIfDefined(track_stats.huge_frames_sent);
+            dest_stats.huge_frames_sent =
+                GetValueIfDefined(track_stats.huge_frames_sent);
           }
         }
       }
@@ -1316,8 +1317,10 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
             dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
             dest_stats.track_identifier = track_stats.track_identifier->c_str();
-            dest_stats.frames_received = GetValueIfDefined(track_stats.frames_received);
-            dest_stats.frames_dropped = GetValueIfDefined(track_stats.frames_dropped);
+            dest_stats.frames_received =
+                GetValueIfDefined(track_stats.frames_received);
+            dest_stats.frames_dropped =
+                GetValueIfDefined(track_stats.frames_dropped);
           }
         }
       }

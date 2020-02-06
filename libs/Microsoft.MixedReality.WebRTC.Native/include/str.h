@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <functional>
 #include <string>
-#include <string_view>
 
 #include "export.h"
 
@@ -24,7 +23,7 @@ class str {
   MRS_API str();
   MRS_API explicit str(const std::string& s);
   MRS_API explicit str(std::string&& s) noexcept;
-  MRS_API explicit str(std::string_view view);
+  MRS_API explicit str(absl::string_view view);
   MRS_API explicit str(const char* s);
   MRS_API ~str();
   MRS_API str& operator=(const std::string& s);

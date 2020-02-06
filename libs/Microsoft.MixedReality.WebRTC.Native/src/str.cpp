@@ -15,7 +15,7 @@ namespace WebRTC {
 str::str() = default;
 str::str(const std::string& s) : str_(s) {}
 str::str(std::string&& s) noexcept : str_(std::move(s)) {}
-str::str(std::string_view view) : str_(view) {}
+str::str(absl::string_view view) : str_(view) {}
 str::str(const char* s) : str_(s) {}
 str::~str() = default;
 

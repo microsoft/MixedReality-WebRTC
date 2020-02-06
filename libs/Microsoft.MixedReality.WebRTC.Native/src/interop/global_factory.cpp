@@ -22,11 +22,11 @@ std::unique_ptr<GlobalFactory> g_factory = std::make_unique<GlobalFactory>();
 /// Utility to convert an ObjectType to a string, for debugging purpose. This
 /// returns a view over a global constant buffer (static storage), which is
 /// always valid, never deallocated.
-std::string_view ObjectTypeToString(ObjectType type) {
+absl::string_view ObjectTypeToString(ObjectType type) {
   static_assert((int)ObjectType::kPeerConnection == 0, "");
   static_assert((int)ObjectType::kLocalVideoTrack == 1, "");
   static_assert((int)ObjectType::kExternalVideoTrackSource == 2, "");
-  constexpr const std::string_view s_types[] = {
+  constexpr const absl::string_view s_types[] = {
       "PeerConnection", "LocalVideoTrack", "ExternalVideoTrackSource"};
   return s_types[(int)type];
 }
@@ -40,7 +40,7 @@ std::string ObjectToString(ObjectType type, TrackedObject* obj) {
   char buffer[512];
   rtc::SimpleStringBuilder builder(buffer);
   builder << "(";
-  std::string_view sv = ObjectTypeToString(type);
+  absl::string_view sv = ObjectTypeToString(type);
   builder.Append(sv.data(), sv.length());
   if (obj) {
     builder << ") " << obj->GetName();

@@ -176,7 +176,9 @@ class PeerConnectionImpl : public PeerConnection,
     remote_audio_observer_.reset(new AudioFrameObserver());
   }
 
-  void SetName(std::string_view name) { name_ = name; }
+  void SetName(absl::string_view name) {
+    name_.assign(name.data(), name.size());
+  }
 
   std::string GetName() const override { return name_; }
 
@@ -303,7 +305,7 @@ class PeerConnectionImpl : public PeerConnection,
 
   ErrorOr<std::shared_ptr<DataChannel>> AddDataChannel(
       int id,
-      std::string_view label,
+      absl::string_view label,
       bool ordered,
       bool reliable,
       mrsDataChannelInteropHandle dataChannelInteropHandle) noexcept override;
@@ -716,7 +718,7 @@ void PeerConnectionImpl::RemoveLocalAudioTrack() noexcept {
 
 ErrorOr<std::shared_ptr<DataChannel>> PeerConnectionImpl::AddDataChannel(
     int id,
-    std::string_view label,
+    absl::string_view label,
     bool ordered,
     bool reliable,
     mrsDataChannelInteropHandle dataChannelInteropHandle) noexcept {

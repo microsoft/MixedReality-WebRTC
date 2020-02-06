@@ -21,9 +21,9 @@ class ExternalVideoTrackSource;
 class DataChannel;
 
 struct BitrateSettings {
-  std::optional<int> start_bitrate_bps;
-  std::optional<int> min_bitrate_bps;
-  std::optional<int> max_bitrate_bps;
+  absl::optional<int> start_bitrate_bps;
+  absl::optional<int> min_bitrate_bps;
+  absl::optional<int> max_bitrate_bps;
 };
 
 /// The PeerConnection class is the entry point to most of WebRTC.
@@ -65,7 +65,7 @@ class PeerConnection : public TrackedObject {
       mrsPeerConnectionInteropHandle interop_handle);
 
   /// Set the name of the peer connection.
-  MRS_API virtual void SetName(std::string_view name) = 0;
+  MRS_API virtual void SetName(absl::string_view name) = 0;
 
   //
   // Signaling
@@ -318,7 +318,7 @@ class PeerConnection : public TrackedObject {
   /// This invokes the DataChannelAdded callback.
   ErrorOr<std::shared_ptr<DataChannel>> MRS_API virtual AddDataChannel(
       int id,
-      std::string_view label,
+      absl::string_view label,
       bool ordered,
       bool reliable,
       mrsDataChannelInteropHandle dataChannelInteropHandle) noexcept = 0;

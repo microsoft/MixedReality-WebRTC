@@ -7,9 +7,8 @@
 #include <cstdint>
 #include <functional>
 #include <string>
-#include <string_view>
-#include <unordered_set>
 #include <mutex>
+#include <unordered_set>
 
 #if defined(MR_SHARING_WIN)
 
