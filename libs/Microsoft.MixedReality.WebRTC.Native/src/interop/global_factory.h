@@ -6,7 +6,9 @@
 #include "export.h"
 #include "peer_connection.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 enum class ObjectType : int {
   kPeerConnection,
@@ -75,4 +77,6 @@ class GlobalFactory {
       RTC_GUARDED_BY(mutex_);
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

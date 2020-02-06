@@ -7,7 +7,9 @@
 
 #include "ref_counted_base.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// Object tracked for interop, exposing helper methods for debugging purpose.
 class TrackedObject : public RefCountedBase {
@@ -19,4 +21,6 @@ class TrackedObject : public RefCountedBase {
   virtual std::string GetName() const = 0;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

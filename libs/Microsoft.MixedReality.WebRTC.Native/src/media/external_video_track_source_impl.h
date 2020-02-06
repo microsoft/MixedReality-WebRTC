@@ -9,7 +9,10 @@
 #include "external_video_track_source.h"
 #include "interop/interop_api.h"
 
-namespace Microsoft::MixedReality::WebRTC::detail {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
+namespace detail {
 
 /// Adapater for the frame buffer of an external video track source,
 /// to support various frame encodings in a unified way.
@@ -111,4 +114,7 @@ class ExternalVideoTrackSourceImpl : public ExternalVideoTrackSource,
   std::string name_;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC::detail
+}  // namespace detail
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

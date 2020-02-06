@@ -6,7 +6,9 @@
 #include "local_video_track.h"
 #include "peer_connection.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 LocalVideoTrack::LocalVideoTrack(
     PeerConnection& owner,
@@ -60,4 +62,6 @@ void LocalVideoTrack::RemoveFromPeerConnection(
   }
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

@@ -3,7 +3,9 @@
 
 #pragma once
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 enum class DontAddRef {};
 
@@ -126,4 +128,6 @@ inline bool operator>=(const RefPtr<T>& a, const RefPtr<U>& b) noexcept {
   return a.get() >= b.get();
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

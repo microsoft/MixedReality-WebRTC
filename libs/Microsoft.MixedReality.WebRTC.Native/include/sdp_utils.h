@@ -8,7 +8,9 @@
 
 #include "callback.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// Parse a list of semicolon-separated pairs of "key=value" arguments into a
 /// map of (key, value) pairs.
@@ -55,4 +57,6 @@ std::string EncodeIceServers(const std::string& url,
                              const std::string& username,
                              const std::string& password);
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

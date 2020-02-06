@@ -10,7 +10,9 @@
 #include "callback.h"
 #include "audio_frame.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// Callback fired on newly available audio frame.
 using AudioFrameReadyCallback = Callback<const AudioFrame&>;
@@ -33,4 +35,6 @@ class AudioFrameObserver : public webrtc::AudioTrackSinkInterface {
   std::mutex mutex_;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

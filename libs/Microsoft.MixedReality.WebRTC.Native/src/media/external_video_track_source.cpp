@@ -110,7 +110,9 @@ class Argb32BufferAdapter : public detail::BufferAdapter {
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 namespace detail {
 
 constexpr const size_t kMaxPendingRequestCount = 64;
@@ -306,4 +308,6 @@ Result Argb32VideoFrameRequest::CompleteRequest(
   return impl->CompleteRequest(request_id_, timestamp_ms_, frame_view);
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

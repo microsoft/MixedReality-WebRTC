@@ -25,7 +25,9 @@ inline ApiDataState apiStateFromRtcState(RtcDataState rtcState) {
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 DataChannel::DataChannel(
     PeerConnection* owner,
@@ -121,4 +123,6 @@ void DataChannel::OnBufferedAmountChange(uint64_t previous_amount) noexcept {
   }
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

@@ -52,7 +52,9 @@ std::string ObjectToString(ObjectType type, TrackedObject* obj) {
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 const std::unique_ptr<GlobalFactory>& GlobalFactory::Instance() {
   return g_factory;
@@ -251,4 +253,6 @@ void GlobalFactory::ShutdownNoLock() {
 #endif  // defined(WINUWP)
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

@@ -8,7 +8,9 @@
 
 #if defined(MRS_USE_STR_WRAPPER)
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 str::str() = default;
 str::str(const std::string& s) : str_(s) {}
@@ -67,6 +69,8 @@ bool operator!=(const std::string& lhs, const str& rhs) noexcept {
   return (lhs != rhs.str_);
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
 
 #endif  // defined(MRS_USE_STR_WRAPPER)

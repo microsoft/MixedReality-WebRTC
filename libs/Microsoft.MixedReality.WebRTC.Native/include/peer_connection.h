@@ -11,7 +11,9 @@
 #include "tracked_object.h"
 #include "video_frame_observer.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 class PeerConnection;
 class LocalVideoTrack;
@@ -347,4 +349,6 @@ class PeerConnection : public TrackedObject {
       const mrsPeerConnectionInteropCallbacks& callbacks) noexcept = 0;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

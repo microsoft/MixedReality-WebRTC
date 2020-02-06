@@ -66,7 +66,10 @@ MRS_API void MRS_CALL mrsExternalVideoTrackSourceShutdown(
 
 }  // extern "C"
 
-namespace Microsoft::MixedReality::WebRTC::detail {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
+namespace detail {
 
 //
 // Helpers
@@ -84,4 +87,7 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
     mrsRequestExternalArgb32VideoFrameCallback callback,
     void* user_data);
 
-}  // namespace Microsoft::MixedReality::WebRTC::detail
+}  // namespace detail
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

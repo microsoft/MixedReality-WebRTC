@@ -103,10 +103,15 @@ void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode value) {
 
 #else
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
+
 void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode /*value*/) {}
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
 
 #endif
 
@@ -1302,7 +1307,9 @@ webrtc::PeerConnectionInterface::BundlePolicy BundlePolicyToNative(
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
     const PeerConnectionConfiguration& config,
@@ -1352,5 +1359,6 @@ void PeerConnection::GetStats(webrtc::RTCStatsCollectorCallback* callback) {
   ((PeerConnectionImpl*)this)->peer_->GetStats(callback);
 }
 
-
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

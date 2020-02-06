@@ -62,7 +62,9 @@ bool TryExtractSuffix(const std::string& str,
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 void SdpParseCodecParameters(const std::string& param_string,
                              std::map<std::string, std::string>& params) {
@@ -193,4 +195,6 @@ std::string EncodeIceServers(const std::string& url,
   return url + "\nusername:" + username + "\npassword:" + password;
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
