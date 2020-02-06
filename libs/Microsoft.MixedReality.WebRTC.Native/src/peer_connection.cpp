@@ -184,31 +184,35 @@ class PeerConnectionImpl : public PeerConnection,
 
   void RegisterLocalSdpReadytoSendCallback(
       LocalSdpReadytoSendCallback&& callback) noexcept override {
-    auto lock = std::scoped_lock{local_sdp_ready_to_send_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{
+        local_sdp_ready_to_send_callback_mutex_};
     local_sdp_ready_to_send_callback_ = std::move(callback);
   }
 
   void RegisterIceCandidateReadytoSendCallback(
       IceCandidateReadytoSendCallback&& callback) noexcept override {
-    auto lock = std::scoped_lock{ice_candidate_ready_to_send_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{
+        ice_candidate_ready_to_send_callback_mutex_};
     ice_candidate_ready_to_send_callback_ = std::move(callback);
   }
 
   void RegisterIceStateChangedCallback(
       IceStateChangedCallback&& callback) noexcept override {
-    auto lock = std::scoped_lock{ice_state_changed_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{ice_state_changed_callback_mutex_};
     ice_state_changed_callback_ = std::move(callback);
   }
 
   void RegisterIceGatheringStateChangedCallback(
       IceGatheringStateChangedCallback&& callback) noexcept override {
-    auto lock = std::scoped_lock{ice_gathering_state_changed_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{
+        ice_gathering_state_changed_callback_mutex_};
     ice_gathering_state_changed_callback_ = std::move(callback);
   }
 
   void RegisterRenegotiationNeededCallback(
       RenegotiationNeededCallback&& callback) noexcept override {
-    auto lock = std::scoped_lock{renegotiation_needed_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{
+        renegotiation_needed_callback_mutex_};
     renegotiation_needed_callback_ = std::move(callback);
   }
 
@@ -220,7 +224,7 @@ class PeerConnectionImpl : public PeerConnection,
 
   void RegisterConnectedCallback(
       ConnectedCallback&& callback) noexcept override {
-    auto lock = std::scoped_lock{connected_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{connected_callback_mutex_};
     connected_callback_ = std::move(callback);
   }
 
@@ -239,13 +243,13 @@ class PeerConnectionImpl : public PeerConnection,
 
   void RegisterTrackAddedCallback(
       TrackAddedCallback&& callback) noexcept override {
-    auto lock = std::scoped_lock{track_added_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{track_added_callback_mutex_};
     track_added_callback_ = std::move(callback);
   }
 
   void RegisterTrackRemovedCallback(
       TrackRemovedCallback&& callback) noexcept override {
-    auto lock = std::scoped_lock{track_removed_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{track_removed_callback_mutex_};
     track_removed_callback_ = std::move(callback);
   }
 
@@ -293,13 +297,14 @@ class PeerConnectionImpl : public PeerConnection,
 
   void RegisterDataChannelAddedCallback(
       DataChannelAddedCallback callback) noexcept override {
-    auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_added_callback_mutex_};
     data_channel_added_callback_ = std::move(callback);
   }
 
   void RegisterDataChannelRemovedCallback(
       DataChannelRemovedCallback callback) noexcept override {
-    auto lock = std::scoped_lock{data_channel_removed_callback_mutex_};
+    const std::lock_guard<std::mutex> lock(
+        data_channel_removed_callback_mutex_);
     data_channel_removed_callback_ = std::move(callback);
   }
 
@@ -750,7 +755,7 @@ ErrorOr<std::shared_ptr<DataChannel>> PeerConnectionImpl::AddDataChannel(
     auto data_channel = std::make_shared<DataChannel>(this, std::move(impl),
                                                       dataChannelInteropHandle);
     {
-      auto lock = std::scoped_lock{data_channel_mutex_};
+      const std::lock_guard<std::mutex> lock{data_channel_mutex_};
       data_channels_.push_back(data_channel);
       if (!labelString.empty()) {
         data_channel_from_label_.emplace(std::move(labelString), data_channel);
@@ -781,7 +786,7 @@ void PeerConnectionImpl::RemoveDataChannel(
   // Move the channel to destroy out of the internal data structures
   std::shared_ptr<DataChannel> data_channel_ptr;
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_mutex_};
 
     // The channel must be owned by this PeerConnection, so must be known
     // already
@@ -816,7 +821,8 @@ void PeerConnectionImpl::RemoveDataChannel(
 
   // Invoke the DataChannelRemoved callback on the wrapper if any
   if (auto interop_handle = data_channel.GetInteropHandle()) {
-    auto lock = std::scoped_lock{data_channel_removed_callback_mutex_};
+    const std::lock_guard<std::mutex> lock(
+        data_channel_removed_callback_mutex_);
     auto removed_cb = data_channel_removed_callback_;
     if (removed_cb) {
       DataChannelHandle data_native_handle = (void*)&data_channel;
@@ -830,9 +836,10 @@ void PeerConnectionImpl::RemoveDataChannel(
 }
 
 void PeerConnectionImpl::RemoveAllDataChannels() noexcept {
-  auto lock_cb = std::scoped_lock{data_channel_removed_callback_mutex_};
+  const std::lock_guard<std::mutex> lock_cb(
+      data_channel_removed_callback_mutex_);
   auto removed_cb = data_channel_removed_callback_;
-  auto lock = std::scoped_lock{data_channel_mutex_};
+  const std::lock_guard<std::mutex> lock{data_channel_mutex_};
   for (auto&& data_channel : data_channels_) {
     // Close the WebRTC data channel
     webrtc::DataChannelInterface* const impl = data_channel->impl();
@@ -861,7 +868,7 @@ void PeerConnectionImpl::OnDataChannelAdded(
   // It was added in AddDataChannel() when the DataChannel object was created.
 #if RTC_DCHECK_IS_ON
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_mutex_};
     RTC_DCHECK(std::find_if(
                    data_channels_.begin(), data_channels_.end(),
                    [&data_channel](const std::shared_ptr<DataChannel>& other) {
@@ -872,7 +879,7 @@ void PeerConnectionImpl::OnDataChannelAdded(
 
   // Invoke the DataChannelAdded callback on the wrapper if any
   if (auto interop_handle = data_channel.GetInteropHandle()) {
-    auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_added_callback_mutex_};
     auto added_cb = data_channel_added_callback_;
     if (added_cb) {
       DataChannelHandle data_native_handle = (void*)&data_channel;
@@ -910,7 +917,7 @@ bool PeerConnectionImpl::CreateOffer() noexcept {
     options.offer_to_receive_video = true;
   }
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_mutex_};
     if (data_channels_.empty()) {
       sctp_negotiated_ = false;
     }
@@ -996,7 +1003,7 @@ bool PeerConnectionImpl::SetRemoteDescription(const char* type,
     return false;
   }
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_mutex_};
     if (data_channels_.empty()) {
       sctp_negotiated_ = false;
     }
@@ -1028,7 +1035,7 @@ void PeerConnectionImpl::OnSignalingChange(
       // but this callback would not be invoked then because there's no
       // transition.
       {
-        auto lock = std::scoped_lock{connected_callback_mutex_};
+        const std::lock_guard<std::mutex> lock{connected_callback_mutex_};
         connected_callback_();
       }
       break;
@@ -1096,7 +1103,7 @@ void PeerConnectionImpl::OnDataChannel(
   auto data_channel =
       std::make_shared<DataChannel>(this, impl, data_channel_interop_handle);
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_mutex_};
     data_channels_.push_back(data_channel);
     if (!label.empty()) {
       // Move |label| into the map to avoid copy
@@ -1123,7 +1130,8 @@ void PeerConnectionImpl::OnDataChannel(
 
     // Invoke the DataChannelAdded callback on the wrapper
     {
-      auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
+      const std::lock_guard<std::mutex> lock(
+          data_channel_added_callback_mutex_);
       auto added_cb = data_channel_added_callback_;
       if (added_cb) {
         const DataChannelHandle data_native_handle = data_channel.get();
@@ -1134,7 +1142,7 @@ void PeerConnectionImpl::OnDataChannel(
 }
 
 void PeerConnectionImpl::OnRenegotiationNeeded() noexcept {
-  auto lock = std::scoped_lock{renegotiation_needed_callback_mutex_};
+  const std::lock_guard<std::mutex> lock{renegotiation_needed_callback_mutex_};
   auto cb = renegotiation_needed_callback_;
   if (cb) {
     cb();
@@ -1143,7 +1151,7 @@ void PeerConnectionImpl::OnRenegotiationNeeded() noexcept {
 
 void PeerConnectionImpl::OnIceConnectionChange(
     webrtc::PeerConnectionInterface::IceConnectionState new_state) noexcept {
-  auto lock = std::scoped_lock{ice_state_changed_callback_mutex_};
+  const std::lock_guard<std::mutex> lock{ice_state_changed_callback_mutex_};
   auto cb = ice_state_changed_callback_;
   if (cb) {
     cb(IceStateFromImpl(new_state));
@@ -1152,7 +1160,8 @@ void PeerConnectionImpl::OnIceConnectionChange(
 
 void PeerConnectionImpl::OnIceGatheringChange(
     webrtc::PeerConnectionInterface::IceGatheringState new_state) noexcept {
-  auto lock = std::scoped_lock{ice_gathering_state_changed_callback_mutex_};
+  const std::lock_guard<std::mutex> lock(
+      ice_gathering_state_changed_callback_mutex_);
   auto cb = ice_gathering_state_changed_callback_;
   if (cb) {
     cb(IceGatheringStateFromImpl(new_state));
@@ -1161,7 +1170,8 @@ void PeerConnectionImpl::OnIceGatheringChange(
 
 void PeerConnectionImpl::OnIceCandidate(
     const webrtc::IceCandidateInterface* candidate) noexcept {
-  auto lock = std::scoped_lock{ice_candidate_ready_to_send_callback_mutex_};
+  const std::lock_guard<std::mutex> lock(
+      ice_candidate_ready_to_send_callback_mutex_);
   auto cb = ice_candidate_ready_to_send_callback_;
   if (cb) {
     std::string sdp;
@@ -1211,7 +1221,7 @@ void PeerConnectionImpl::OnAddTrack(
 
   // Invoke the TrackAdded callback
   {
-    auto lock = std::scoped_lock{track_added_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{track_added_callback_mutex_};
     auto cb = track_added_callback_;
     if (cb) {
       cb(trackKind);
@@ -1251,7 +1261,7 @@ void PeerConnectionImpl::OnRemoveTrack(
 
   // Invoke the TrackRemoved callback
   {
-    auto lock = std::scoped_lock{track_removed_callback_mutex_};
+    const std::lock_guard<std::mutex> lock{track_removed_callback_mutex_};
     auto cb = track_removed_callback_;
     if (cb) {
       cb(trackKind);
@@ -1264,7 +1274,8 @@ void PeerConnectionImpl::OnLocalDescCreated(
   if (!peer_) {
     return;
   }
-  auto lock = std::scoped_lock{local_sdp_ready_to_send_callback_mutex_};
+  const std::lock_guard<std::mutex> lock(
+      local_sdp_ready_to_send_callback_mutex_);
   auto cb = local_sdp_ready_to_send_callback_;
   rtc::scoped_refptr<webrtc::SetSessionDescriptionObserver> observer;
   if (cb) {

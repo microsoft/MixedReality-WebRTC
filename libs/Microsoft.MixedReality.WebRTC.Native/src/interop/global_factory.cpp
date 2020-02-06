@@ -61,7 +61,7 @@ const std::unique_ptr<GlobalFactory>& GlobalFactory::Instance() {
 }
 
 GlobalFactory::~GlobalFactory() {
-  std::scoped_lock lock(mutex_);
+  const std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (!alive_objects_.empty()) {
     // WebRTC object destructors are also dispatched to the signaling thread,
     // like all method calls, but the threads are stopped by the GlobalFactory
@@ -80,7 +80,7 @@ GlobalFactory::~GlobalFactory() {
 
 rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
 GlobalFactory::GetOrCreate() {
-  std::scoped_lock lock(mutex_);
+  const std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (!factory_) {
     if (Initialize() != Result::kSuccess) {
       return nullptr;
@@ -92,7 +92,7 @@ GlobalFactory::GetOrCreate() {
 mrsResult GlobalFactory::GetOrCreate(
     rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>& factory) {
   factory = nullptr;
-  std::scoped_lock lock(mutex_);
+  const std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (!factory_) {
     mrsResult res = Initialize();
     if (res != Result::kSuccess) {
@@ -105,12 +105,12 @@ mrsResult GlobalFactory::GetOrCreate(
 
 rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
 GlobalFactory::GetExisting() noexcept {
-  std::scoped_lock lock(mutex_);
+  const std::lock_guard<std::recursive_mutex> lock(mutex_);
   return factory_;
 }
 
 rtc::Thread* GlobalFactory::GetWorkerThread() noexcept {
-  std::scoped_lock lock(mutex_);
+  const std::lock_guard<std::recursive_mutex> lock(mutex_);
 #if defined(WINUWP)
   return impl_->workerThread.get();
 #else   // defined(WINUWP)
@@ -120,7 +120,7 @@ rtc::Thread* GlobalFactory::GetWorkerThread() noexcept {
 
 void GlobalFactory::AddObject(ObjectType type, TrackedObject* obj) noexcept {
   try {
-    std::scoped_lock lock(mutex_);
+    const std::lock_guard<std::recursive_mutex> lock(mutex_);
     alive_objects_.emplace(obj, type);
   } catch (...) {
   }
@@ -128,7 +128,7 @@ void GlobalFactory::AddObject(ObjectType type, TrackedObject* obj) noexcept {
 
 void GlobalFactory::RemoveObject(ObjectType type, TrackedObject* obj) noexcept {
   try {
-    std::scoped_lock lock(mutex_);
+    const std::lock_guard<std::recursive_mutex> lock(mutex_);
     auto it = alive_objects_.find(obj);
     if (it != alive_objects_.end()) {
       RTC_CHECK(it->second == type);
@@ -147,7 +147,7 @@ using WebRtcFactoryPtr =
     std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>;
 
 WebRtcFactoryPtr GlobalFactory::get() {
-  std::scoped_lock lock(mutex_);
+  const std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (!impl_) {
     if (Initialize() != Result::kSuccess) {
       return nullptr;
@@ -158,7 +158,7 @@ WebRtcFactoryPtr GlobalFactory::get() {
 
 mrsResult GlobalFactory::GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory) {
   factory.reset();
-  std::scoped_lock lock(mutex_);
+  const std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (!impl_) {
     mrsResult res = Initialize();
     if (res != Result::kSuccess) {
