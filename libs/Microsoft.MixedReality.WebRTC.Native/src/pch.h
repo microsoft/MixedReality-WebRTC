@@ -66,18 +66,4 @@
 // libyuv from WebRTC repository for color conversion
 #include "libyuv.h"
 
-// UWP wrappers
-#if defined(WINUWP)
-#include <winrt/windows.applicationmodel.core.h>
-#include "impl_org_webRtc_EventQueue.h"
-#include "impl_org_webRtc_VideoCapturer.h"
-#include "impl_org_webRtc_VideoCapturerCreationParameters.h"
-#include "impl_org_webRtc_VideoDeviceInfo.h"
-#include "impl_org_webRtc_VideoFormat.h"
-#include "impl_org_webRtc_WebRtcFactory.h"
-#include "impl_org_webRtc_WebRtcFactoryConfiguration.h"
-#include "impl_org_webRtc_WebRtcLib.h"
-#include "impl_org_webRtc_WebRtcLibConfiguration.h"
-#endif
-
 #pragma warning(pop)
