@@ -55,49 +55,51 @@ using WebRtcFactoryPtr =
 /// Predefined name of the local audio track.
 const std::string kLocalAudioLabel("local_audio");
 
-class SimpleMediaConstraints : public webrtc::MediaConstraintsInterface {
- public:
-  using webrtc::MediaConstraintsInterface::Constraint;
-  using webrtc::MediaConstraintsInterface::Constraints;
-  static Constraint MinWidth(uint32_t min_width) {
-    return Constraint(webrtc::MediaConstraintsInterface::kMinWidth,
-                      std::to_string(min_width));
-  }
-  static Constraint MaxWidth(uint32_t max_width) {
-    return Constraint(webrtc::MediaConstraintsInterface::kMaxWidth,
-                      std::to_string(max_width));
-  }
-  static Constraint MinHeight(uint32_t min_height) {
-    return Constraint(webrtc::MediaConstraintsInterface::kMinHeight,
-                      std::to_string(min_height));
-  }
-  static Constraint MaxHeight(uint32_t max_height) {
-    return Constraint(webrtc::MediaConstraintsInterface::kMaxHeight,
-                      std::to_string(max_height));
-  }
-  static Constraint MinFrameRate(double min_framerate) {
-    // Note: kMinFrameRate is read back as an int
-    const int min_int = (int)std::floor(min_framerate);
-    return Constraint(webrtc::MediaConstraintsInterface::kMinFrameRate,
-                      std::to_string(min_int));
-  }
-  static Constraint MaxFrameRate(double max_framerate) {
-    // Note: kMinFrameRate is read back as an int
-    const int max_int = (int)std::ceil(max_framerate);
-    return Constraint(webrtc::MediaConstraintsInterface::kMaxFrameRate,
-                      std::to_string(max_int));
-  }
-  const Constraints& GetMandatory() const override { return mandatory_; }
-  const Constraints& GetOptional() const override { return optional_; }
-  Constraints mandatory_;
-  Constraints optional_;
-};
+//< FIXME.undock
+// class SimpleMediaConstraints : public webrtc::MediaConstraintsInterface {
+// public:
+//  using webrtc::MediaConstraintsInterface::Constraint;
+//  using webrtc::MediaConstraintsInterface::Constraints;
+//  static Constraint MinWidth(uint32_t min_width) {
+//    return Constraint(webrtc::MediaConstraintsInterface::kMinWidth,
+//                      std::to_string(min_width));
+//  }
+//  static Constraint MaxWidth(uint32_t max_width) {
+//    return Constraint(webrtc::MediaConstraintsInterface::kMaxWidth,
+//                      std::to_string(max_width));
+//  }
+//  static Constraint MinHeight(uint32_t min_height) {
+//    return Constraint(webrtc::MediaConstraintsInterface::kMinHeight,
+//                      std::to_string(min_height));
+//  }
+//  static Constraint MaxHeight(uint32_t max_height) {
+//    return Constraint(webrtc::MediaConstraintsInterface::kMaxHeight,
+//                      std::to_string(max_height));
+//  }
+//  static Constraint MinFrameRate(double min_framerate) {
+//    // Note: kMinFrameRate is read back as an int
+//    const int min_int = (int)std::floor(min_framerate);
+//    return Constraint(webrtc::MediaConstraintsInterface::kMinFrameRate,
+//                      std::to_string(min_int));
+//  }
+//  static Constraint MaxFrameRate(double max_framerate) {
+//    // Note: kMinFrameRate is read back as an int
+//    const int max_int = (int)std::ceil(max_framerate);
+//    return Constraint(webrtc::MediaConstraintsInterface::kMaxFrameRate,
+//                      std::to_string(max_int));
+//  }
+//  const Constraints& GetMandatory() const override { return mandatory_; }
+//  const Constraints& GetOptional() const override { return optional_; }
+//  Constraints mandatory_;
+//  Constraints optional_;
+//};
 
 /// Helper to open a video capture device.
 mrsResult OpenVideoCaptureDevice(
-    const VideoDeviceConfiguration& config,
-    std::unique_ptr<cricket::VideoCapturer>& capturer_out) noexcept {
-  capturer_out.reset();
+    const VideoDeviceConfiguration& config/*,
+    std::unique_ptr<cricket::VideoCapturer>& capturer_out*/) noexcept {
+  //< FIXME.undock
+  //capturer_out.reset();
 #if defined(WINUWP)
   WebRtcFactoryPtr uwp_factory;
   {
@@ -230,18 +232,20 @@ mrsResult OpenVideoCaptureDevice(
     }
   }
 
-  // Open the specified capture device, or the first one available if none
-  // specified.
-  cricket::WebRtcVideoDeviceCapturerFactory factory;
-  for (const auto& name : device_names) {
-    // cricket::Device identifies devices by (friendly) name, not unique ID
-    capturer_out = factory.Create(cricket::Device(name, 0));
-    if (capturer_out) {
-      return Result::kSuccess;
-    }
-  }
-  RTC_LOG(LS_ERROR) << "Failed to open any video capture device (tried "
-                    << device_names.size() << " devices).";
+  //< FIXME.undock
+  assert(false);
+  //// Open the specified capture device, or the first one available if none
+  //// specified.
+  // cricket::WebRtcVideoDeviceCapturerFactory factory;
+  // for (const auto& name : device_names) {
+  //  // cricket::Device identifies devices by (friendly) name, not unique ID
+  //  capturer_out = factory.Create(cricket::Device(name, 0));
+  //  if (capturer_out) {
+  //    return Result::kSuccess;
+  //  }
+  //}
+  // RTC_LOG(LS_ERROR) << "Failed to open any video capture device (tried "
+  //                  << device_names.size() << " devices).";
   return Result::kUnknownError;
 #endif
 }
@@ -725,38 +729,44 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
   }
 
   // Open the video capture device
-  std::unique_ptr<cricket::VideoCapturer> video_capturer;
-  auto res = OpenVideoCaptureDevice(config, video_capturer);
+  //< FIXME.undock
+  //std::unique_ptr<cricket::VideoCapturer> video_capturer;
+  auto res = OpenVideoCaptureDevice(config/*, video_capturer*/);
   if (res != Result::kSuccess) {
     RTC_LOG(LS_ERROR) << "Failed to open video capture device.";
     return res;
   }
-  RTC_CHECK(video_capturer.get());
+  //< FIXME.undock
+  //RTC_CHECK(video_capturer.get());
 
-  // Apply the same constraints used for opening the video capturer
-  auto videoConstraints = std::make_unique<SimpleMediaConstraints>();
-  if (config.width > 0) {
-    videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MinWidth(config.width));
-    videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MaxWidth(config.width));
-  }
-  if (config.height > 0) {
-    videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MinHeight(config.height));
-    videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MaxHeight(config.height));
-  }
-  if (config.framerate > 0) {
-    videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MinFrameRate(config.framerate));
-    videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MaxFrameRate(config.framerate));
-  }
+  //< FIXME.undock
+  //// Apply the same constraints used for opening the video capturer
+  // auto videoConstraints = std::make_unique<SimpleMediaConstraints>();
+  // if (config.width > 0) {
+  //  videoConstraints->mandatory_.push_back(
+  //      SimpleMediaConstraints::MinWidth(config.width));
+  //  videoConstraints->mandatory_.push_back(
+  //      SimpleMediaConstraints::MaxWidth(config.width));
+  //}
+  // if (config.height > 0) {
+  //  videoConstraints->mandatory_.push_back(
+  //      SimpleMediaConstraints::MinHeight(config.height));
+  //  videoConstraints->mandatory_.push_back(
+  //      SimpleMediaConstraints::MaxHeight(config.height));
+  //}
+  // if (config.framerate > 0) {
+  //  videoConstraints->mandatory_.push_back(
+  //      SimpleMediaConstraints::MinFrameRate(config.framerate));
+  //  videoConstraints->mandatory_.push_back(
+  //      SimpleMediaConstraints::MaxFrameRate(config.framerate));
+  //}
 
-  rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
-      pc_factory->CreateVideoSource(std::move(video_capturer),
-                                    videoConstraints.get());
+  
+  //< FIXME.undock
+  rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source;
+  assert(false);
+  /*= pc_factory->CreateVideoSource(std::move(video_capturer),
+                                  videoConstraints.get());*/
   if (!video_source) {
     return Result::kUnknownError;
   }
