@@ -15,11 +15,11 @@ using ApiDataState = Microsoft::MixedReality::WebRTC::DataChannel::State;
 inline ApiDataState apiStateFromRtcState(RtcDataState rtcState) {
   // API values have been chosen to match the current WebRTC values. If the
   // later change, this helper must be updated, as API values cannot change.
-  static_assert((int)RtcDataState::kOpen == (int)ApiDataState::kOpen);
-  static_assert((int)RtcDataState::kConnecting ==
-                (int)ApiDataState::kConnecting);
-  static_assert((int)RtcDataState::kClosing == (int)ApiDataState::kClosing);
-  static_assert((int)RtcDataState::kClosed == (int)ApiDataState::kClosed);
+  static_assert((int)RtcDataState::kOpen == (int)ApiDataState::kOpen, "");
+  static_assert(
+      (int)RtcDataState::kConnecting == (int)ApiDataState::kConnecting, "");
+  static_assert((int)RtcDataState::kClosing == (int)ApiDataState::kClosing, "");
+  static_assert((int)RtcDataState::kClosed == (int)ApiDataState::kClosed, "");
   return (ApiDataState)rtcState;
 }
 
