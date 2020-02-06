@@ -1080,15 +1080,15 @@ namespace Microsoft.MixedReality.WebRTC
                     EnableMixedRealityCapture = (mrsBool)settings.enableMrc,
                     EnableMRCRecordingIndicator = (mrsBool)settings.enableMrcRecordingIndicator
                 } : new PeerConnectionInterop.VideoDeviceConfiguration());
-                string trackName = settings.trackName;
-                if (trackName.Length == 0)
+                string trackName = settings?.trackName;
+                if (string.IsNullOrEmpty(trackName))
                 {
                     trackName = Guid.NewGuid().ToString();
                 }
                 uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, trackName, config,
                     out LocalVideoTrackHandle trackHandle);
                 Utils.ThrowOnErrorCode(res);
-                var track = new LocalVideoTrack(trackHandle, this, settings.trackName);
+                var track = new LocalVideoTrack(trackHandle, this, trackName);
                 return track;
             });
         }
