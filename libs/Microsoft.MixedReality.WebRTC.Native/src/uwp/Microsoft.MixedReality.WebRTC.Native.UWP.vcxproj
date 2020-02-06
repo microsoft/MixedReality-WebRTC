@@ -90,7 +90,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>..\..\include;..\;$(WebRTCCoreRepoPath);$(WebRTCCoreRepoPath)third_party\abseil-cpp;$(WebRTCCoreRepoPath)third_party\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>false</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp14</LanguageStandard>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
     </ClCompile>
     <Link>
