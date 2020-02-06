@@ -116,7 +116,7 @@ void VideoFrameObserver::OnFrame(const webrtc::VideoFrame& frame) noexcept {
 
   } else {
     // The buffer is encoded in I420 with alpha channel, use it directly.
-    webrtc::I420ABufferInterface* i420a_buffer = buffer->GetI420A();
+    const webrtc::I420ABufferInterface* i420a_buffer = buffer->GetI420A();
     const uint8_t* const yptr = i420a_buffer->DataY();
     const uint8_t* const uptr = i420a_buffer->DataU();
     const uint8_t* const vptr = i420a_buffer->DataV();
