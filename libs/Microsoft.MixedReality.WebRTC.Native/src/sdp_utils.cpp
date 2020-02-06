@@ -6,9 +6,9 @@
 
 #include "sdp_utils.h"
 
-#include "api/jsepsessiondescription.h"
-#include "pc/sessiondescription.h"
-#include "pc/webrtcsdp.h"
+#include "api/jsep_session_description.h"
+#include "pc/session_description.h"
+#include "pc/webrtc_sdp.h"
 
 namespace {
 

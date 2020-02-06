@@ -6,7 +6,7 @@
 
 #include <mutex>
 
-#include "api/datachannelinterface.h"
+#include "api/data_channel_interface.h"
 
 #include "callback.h"
 #include "data_channel.h"
