@@ -5,9 +5,9 @@
 /obj
 /tools/build/userdef.py
 # TODO - Fix location with directory.build
-examples/TestAppUwp/bin
-examples/TestAppUwp/build
-examples/TestAppUwp/obj
+examples/*/bin
+examples/*/build
+examples/*/obj
 tests/Microsoft.MixedReality.WebRTC.Tests/bin
 tests/Microsoft.MixedReality.WebRTC.Tests/build
 tests/Microsoft.MixedReality.WebRTC.Tests/obj
