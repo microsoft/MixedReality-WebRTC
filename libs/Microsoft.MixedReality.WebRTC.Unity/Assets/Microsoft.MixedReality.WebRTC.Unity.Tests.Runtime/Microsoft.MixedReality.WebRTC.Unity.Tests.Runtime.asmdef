@@ -1,16 +1,21 @@
 {
     "name": "Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime",
     "references": [
-        "Microsoft.MixedReality.WebRTC.Unity"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "Microsoft.MixedReality.WebRTC.Unity",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": []
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Microsoft.MixedReality.WebRTC.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": []
 }
