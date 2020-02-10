@@ -1,8 +1,13 @@
 {
   "dependencies": {
-    "com.unity.package-manager-ui": "2.0.8",
-    "com.unity.textmeshpro": "1.4.1",
+    "com.unity.ext.nunit": "1.0.0",
+    "com.unity.package-manager-ui": "2.2.0",
+    "com.unity.test-framework": "1.0.18",
+    "com.unity.textmeshpro": "2.0.1",
+    "com.unity.ugui": "1.0.0",
+    "com.unity.xr.legacyinputhelpers": "2.0.6",
     "com.unity.modules.ai": "1.0.0",
+    "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
     "com.unity.modules.audio": "1.0.0",
