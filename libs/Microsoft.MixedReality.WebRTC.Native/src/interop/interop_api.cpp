@@ -31,22 +31,6 @@ inline bool IsStringNullOrEmpty(const char* str) noexcept {
   return ((str == nullptr) || (str[0] == '\0'));
 }
 
-mrsResult RTCToAPIError(const webrtc::RTCError& error) {
-  if (error.ok()) {
-    return Result::kSuccess;
-  }
-  switch (error.type()) {
-    case webrtc::RTCErrorType::INVALID_PARAMETER:
-    case webrtc::RTCErrorType::INVALID_RANGE:
-      return Result::kInvalidParameter;
-    case webrtc::RTCErrorType::INVALID_STATE:
-      return Result::kInvalidOperation;
-    case webrtc::RTCErrorType::INTERNAL_ERROR:
-    default:
-      return Result::kUnknownError;
-  }
-}
-
 #if defined(WINUWP)
 using WebRtcFactoryPtr =
     std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>;
@@ -99,7 +83,7 @@ mrsResult OpenVideoCaptureDevice(
     const VideoDeviceConfiguration& config/*,
     std::unique_ptr<cricket::VideoCapturer>& capturer_out*/) noexcept {
   //< FIXME.undock
-  //capturer_out.reset();
+  // capturer_out.reset();
 #if defined(WINUWP)
   WebRtcFactoryPtr uwp_factory;
   {
@@ -248,23 +232,6 @@ mrsResult OpenVideoCaptureDevice(
   //                  << device_names.size() << " devices).";
   return Result::kUnknownError;
 #endif
-}
-
-//< TODO - Unit test / check if RTC has already a utility like this
-std::vector<std::string> SplitString(const std::string& str, char sep) {
-  std::vector<std::string> ret;
-  size_t offset = 0;
-  for (size_t idx = str.find_first_of(sep); idx < std::string::npos;
-       idx = str.find_first_of(sep, offset)) {
-    if (idx > offset) {
-      ret.push_back(str.substr(offset, idx - offset));
-    }
-    offset = idx + 1;
-  }
-  if (offset < str.size()) {
-    ret.push_back(str.substr(offset));
-  }
-  return ret;
 }
 
 /// Convert a WebRTC VideoType format into its FOURCC counterpart.
@@ -524,7 +491,7 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
         uint32_t height = capability.height;
         double framerate = capability.maxFPS;
         uint32_t fourcc = FourCCFromVideoType(capability.videoType);
-        if (fourcc != libyuv::FOURCC_ANY) {
+        if (fourcc != (uint32_t)libyuv::FOURCC_ANY) {
           (*enumCallback)(width, height, framerate, fourcc,
                           enumCallbackUserData);
         }
@@ -544,6 +511,7 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
   // Note that the enumeration is asynchronous, so not done yet.
   return Result::kSuccess;
 }
+
 mrsResult MRS_CALL
 mrsPeerConnectionCreate(PeerConnectionConfiguration config,
                         mrsPeerConnectionInteropHandle interop_handle,
@@ -730,14 +698,14 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
 
   // Open the video capture device
   //< FIXME.undock
-  //std::unique_ptr<cricket::VideoCapturer> video_capturer;
-  auto res = OpenVideoCaptureDevice(config/*, video_capturer*/);
+  // std::unique_ptr<cricket::VideoCapturer> video_capturer;
+  auto res = OpenVideoCaptureDevice(config /*, video_capturer*/);
   if (res != Result::kSuccess) {
     RTC_LOG(LS_ERROR) << "Failed to open video capture device.";
     return res;
   }
   //< FIXME.undock
-  //RTC_CHECK(video_capturer.get());
+  // RTC_CHECK(video_capturer.get());
 
   //< FIXME.undock
   //// Apply the same constraints used for opening the video capturer
@@ -761,7 +729,6 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
   //      SimpleMediaConstraints::MaxFrameRate(config.framerate));
   //}
 
-  
   //< FIXME.undock
   rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source;
   assert(false);

@@ -55,7 +55,7 @@ class LocalVideoTrack : public VideoFrameObserver, public TrackedObject {
 
   /// Check if the track is enabled.
   /// See |SetEnabled(bool)|.
-  MRS_API [[nodiscard]] bool IsEnabled() const noexcept;
+  [[nodiscard]] MRS_API bool IsEnabled() const noexcept;
 
   //
   // Advanced use

@@ -138,12 +138,6 @@ Result ResultFromRTCErrorType(webrtc::RTCErrorType type) {
 }
 
 Microsoft::MixedReality::WebRTC::Error ErrorFromRTCError(
-    const webrtc::RTCError& error) {
-  return Microsoft::MixedReality::WebRTC::Error(
-      ResultFromRTCErrorType(error.type()), error.message());
-}
-
-Microsoft::MixedReality::WebRTC::Error ErrorFromRTCError(
     webrtc::RTCError&& error) {
   // Ideally would move the std::string out of |error|, but doesn't look
   // possible at the moment.
@@ -176,7 +170,7 @@ class PeerConnectionImpl : public PeerConnection,
     remote_audio_observer_.reset(new AudioFrameObserver());
   }
 
-  void SetName(absl::string_view name) {
+  void SetName(absl::string_view name) override {
     name_.assign(name.data(), name.size());
   }
 
@@ -613,7 +607,7 @@ ErrorOr<RefPtr<LocalVideoTrack>> PeerConnectionImpl::AddLocalVideoTrack(
   auto result = peer_->AddTrack(video_track, {kAudioVideoStreamId});
   if (result.ok()) {
     RefPtr<LocalVideoTrack> track = new LocalVideoTrack(
-        *this, std::move(video_track), std::move(result.MoveValue()), nullptr);
+        *this, std::move(video_track), result.MoveValue(), nullptr);
     {
       rtc::CritScope lock(&tracks_mutex_);
       local_video_tracks_.push_back(track);
@@ -765,7 +759,7 @@ ErrorOr<std::shared_ptr<DataChannel>> PeerConnectionImpl::AddDataChannel(
         data_channel_from_label_.emplace(std::move(labelString), data_channel);
       }
       if (config.id >= 0) {
-        data_channel_from_id_.try_emplace(config.id, data_channel);
+        data_channel_from_id_.emplace(config.id, data_channel);
       }
     }
 
@@ -1044,12 +1038,10 @@ void PeerConnectionImpl::OnSignalingChange(
       }
       break;
     case webrtc::PeerConnectionInterface::kHaveLocalOffer:
-      break;
     case webrtc::PeerConnectionInterface::kHaveLocalPrAnswer:
-      break;
     case webrtc::PeerConnectionInterface::kHaveRemoteOffer:
-      break;
     case webrtc::PeerConnectionInterface::kHaveRemotePrAnswer:
+    case webrtc::PeerConnectionInterface::kClosed:
       break;
   }
 }
@@ -1117,7 +1109,7 @@ void PeerConnectionImpl::OnDataChannel(
       config.label = it->first.c_str();
     }
     if (data_channel->id() >= 0) {
-      data_channel_from_id_.try_emplace(data_channel->id(), data_channel);
+      data_channel_from_id_.emplace(data_channel->id(), data_channel);
     }
   }
 
