@@ -1,3 +1,17 @@
+# Experimental branch disclaimer
+
+🚧
+
+**⚠ The current branch is highly experimental, and no support is provided whatsoever ⚠**
+
+Use of this branch is strongly discouraged. Use `master` for latest features, or `release/1.0` for a stable API.
+
+Please do not log GitHub issues about anything on this branch, they will be closed/ignored.
+
+🚧
+
+----
+
 # MixedReality-WebRTC
 
 [![Licensed under the MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/microsoft/MixedReality-WebRTC/blob/master/LICENSE)
