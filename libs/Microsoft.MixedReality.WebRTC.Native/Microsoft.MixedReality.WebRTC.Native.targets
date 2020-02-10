@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <WebRTCCoreRepoPath>$(MSBuildThisFileDirectory)\..\..\..\..\webrtc\src\</WebRTCCoreRepoPath>
+        <WebRTCCoreRepoPath>$(MSBuildThisFileDirectory)..\..\..\..\webrtc\src\</WebRTCCoreRepoPath>
+        <WebRTCCoreLibCppObjs>algorithm.obj;any.obj;bind.obj;charconv.obj;chrono.obj;condition_variable.obj;condition_variable_destructor.obj;debug.obj;exception.obj;functional.obj;future.obj;hash.obj;ios.obj;iostream.obj;locale.obj;locale_win32.obj;memory.obj;mutex.obj;mutex_destructor.obj;new.obj;optional.obj;random.obj;regex.obj;shared_mutex.obj;stdexcept.obj;string.obj;strstream.obj;support.obj;system_error.obj;thread.obj;thread_win32.obj;typeinfo.obj;utility.obj;valarray.obj;variant.obj;vector.obj</WebRTCCoreLibCppObjs>
     </PropertyGroup>
 </Project>
