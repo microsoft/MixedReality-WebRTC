@@ -49,13 +49,6 @@ class GlobalFactory {
   /// object's destructor for safety.
   void RemoveObject(ObjectType type, TrackedObject* obj) noexcept;
 
-#if defined(WINUWP)
-  using WebRtcFactoryPtr =
-      std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>;
-  WebRtcFactoryPtr get();
-  mrsResult GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory);
-#endif  // defined(WINUWP)
-
  private:
   mrsResult Initialize();
   void ShutdownNoLock();
@@ -63,13 +56,9 @@ class GlobalFactory {
  private:
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory_
       RTC_GUARDED_BY(mutex_);
-#if defined(WINUWP)
-  WebRtcFactoryPtr impl_ RTC_GUARDED_BY(mutex_);
-#else   // defined(WINUWP)
   std::unique_ptr<rtc::Thread> network_thread_ RTC_GUARDED_BY(mutex_);
   std::unique_ptr<rtc::Thread> worker_thread_ RTC_GUARDED_BY(mutex_);
   std::unique_ptr<rtc::Thread> signaling_thread_ RTC_GUARDED_BY(mutex_);
-#endif  // defined(WINUWP)
   std::recursive_mutex mutex_;
 
   /// Collection of all objects alive.

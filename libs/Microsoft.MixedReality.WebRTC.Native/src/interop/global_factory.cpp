@@ -111,11 +111,7 @@ GlobalFactory::GetExisting() noexcept {
 
 rtc::Thread* GlobalFactory::GetWorkerThread() noexcept {
   const std::lock_guard<std::recursive_mutex> lock(mutex_);
-#if defined(WINUWP)
-  return impl_->workerThread.get();
-#else   // defined(WINUWP)
   return worker_thread_.get();
-#endif  // defined(WINUWP)
 }
 
 void GlobalFactory::AddObject(ObjectType type, TrackedObject* obj) noexcept {
@@ -141,78 +137,49 @@ void GlobalFactory::RemoveObject(ObjectType type, TrackedObject* obj) noexcept {
   }
 }
 
-#if defined(WINUWP)
-
-using WebRtcFactoryPtr =
-    std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>;
-
-WebRtcFactoryPtr GlobalFactory::get() {
-  const std::lock_guard<std::recursive_mutex> lock(mutex_);
-  if (!impl_) {
-    if (Initialize() != Result::kSuccess) {
-      return nullptr;
-    }
-  }
-  return impl_;
-}
-
-mrsResult GlobalFactory::GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory) {
-  factory.reset();
-  const std::lock_guard<std::recursive_mutex> lock(mutex_);
-  if (!impl_) {
-    mrsResult res = Initialize();
-    if (res != Result::kSuccess) {
-      return res;
-    }
-  }
-  factory = impl_;
-  return (factory ? Result::kSuccess : Result::kUnknownError);
-}
-
-#endif  // defined(WINUWP)
-
 mrsResult GlobalFactory::Initialize() {
   RTC_CHECK(!factory_);
 
-#if defined(WINUWP)
-  RTC_CHECK(!impl_);
-  auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
-  auto cw = mw.CoreWindow();
-  auto dispatcher = cw.Dispatcher();
-  if (dispatcher.HasThreadAccess()) {
-    // WebRtcFactory::setup() will deadlock if called from main UI thread
-    // See https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/143
-    return Result::kWrongThread;
-  }
-  auto dispatcherQueue =
-      wrapper::impl::org::webRtc::EventQueue::toWrapper(dispatcher);
-
-  // Setup the WebRTC library
-  {
-    auto libConfig =
-        std::make_shared<wrapper::impl::org::webRtc::WebRtcLibConfiguration>();
-    libConfig->thisWeak_ = libConfig;  // mimic wrapper_create()
-    libConfig->queue = dispatcherQueue;
-    wrapper::impl::org::webRtc::WebRtcLib::setup(libConfig);
-  }
-
-  // Create the UWP factory
-  {
-    auto factoryConfig = std::make_shared<
-        wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
-    factoryConfig->thisWeak_ = factoryConfig;  // mimic wrapper_create()
-    factoryConfig->audioCapturingEnabled = true;
-    factoryConfig->audioRenderingEnabled = true;
-    factoryConfig->enableAudioBufferEvents = false;
-    impl_ = std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
-    impl_->thisWeak_ = impl_;  // mimic wrapper_create()
-    impl_->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
-  }
-  impl_->internalSetup();
-
-  // Cache the peer connection factory
-  factory_ = impl_->peerConnectionFactory();
-#else   // defined(WINUWP)
+//< FIXME.undock - disabled UWP-specific peer factory
+//#if defined(WINUWP)
+//  RTC_CHECK(!impl_);
+//  auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
+//  auto cw = mw.CoreWindow();
+//  auto dispatcher = cw.Dispatcher();
+//  if (dispatcher.HasThreadAccess()) {
+//    // WebRtcFactory::setup() will deadlock if called from main UI thread
+//    // See https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/143
+//    return Result::kWrongThread;
+//  }
+//  auto dispatcherQueue =
+//      wrapper::impl::org::webRtc::EventQueue::toWrapper(dispatcher);
+//
+//  // Setup the WebRTC library
+//  {
+//    auto libConfig =
+//        std::make_shared<wrapper::impl::org::webRtc::WebRtcLibConfiguration>();
+//    libConfig->thisWeak_ = libConfig;  // mimic wrapper_create()
+//    libConfig->queue = dispatcherQueue;
+//    wrapper::impl::org::webRtc::WebRtcLib::setup(libConfig);
+//  }
+//
+//  // Create the UWP factory
+//  {
+//    auto factoryConfig = std::make_shared<
+//        wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
+//    factoryConfig->thisWeak_ = factoryConfig;  // mimic wrapper_create()
+//    factoryConfig->audioCapturingEnabled = true;
+//    factoryConfig->audioRenderingEnabled = true;
+//    factoryConfig->enableAudioBufferEvents = false;
+//    impl_ = std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
+//    impl_->thisWeak_ = impl_;  // mimic wrapper_create()
+//    impl_->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
+//  }
+//  impl_->internalSetup();
+//
+//  // Cache the peer connection factory
+//  factory_ = impl_->peerConnectionFactory();
+//#else   // defined(WINUWP)
   network_thread_ = rtc::Thread::CreateWithSocketServer();
   RTC_CHECK(network_thread_.get());
   network_thread_->SetName("WebRTC network thread", network_thread_.get());
@@ -238,19 +205,15 @@ mrsResult GlobalFactory::Initialize() {
           new webrtc::MultiplexDecoderFactory(
               absl::make_unique<webrtc::InternalDecoderFactory>())),
       nullptr, nullptr);
-#endif  // defined(WINUWP)
+//#endif  // defined(WINUWP)
   return (factory_.get() != nullptr ? Result::kSuccess : Result::kUnknownError);
 }
 
 void GlobalFactory::ShutdownNoLock() {
   factory_ = nullptr;
-#if defined(WINUWP)
-  impl_ = nullptr;
-#else   // defined(WINUWP)
   network_thread_.reset();
   worker_thread_.reset();
   signaling_thread_.reset();
-#endif  // defined(WINUWP)
 }
 
 }  // namespace WebRTC
