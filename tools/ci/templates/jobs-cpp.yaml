@@ -44,11 +44,11 @@ jobs:
       nugetConfigPath: '$(NuGetConfigPath)'
     timeoutInMinutes: 30
 
-  # Ensure that Python 2.7.16 is the default; the Google scripts don't work with Python 3.x
+  # Ensure that Python 2.7.16+ is the default; the Google scripts don't work with Python 3.x
   - task: UsePythonVersion@0
-    displayName: 'Use Python 2.7.16 x64 for Google GN'
+    displayName: 'Use Python 2.7.16+ x64 for Google GN'
     inputs:
-      versionSpec: 2.7.16
+      versionSpec: '>=2.7.16 <2.8.0'
     timeoutInMinutes: 5
 
   # Map build* variables to script* ones
