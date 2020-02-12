@@ -40,6 +40,9 @@ class GlobalFactory {
   /// Get the worker thread. This is only valid if initialized.
   rtc::Thread* GetWorkerThread() noexcept;
 
+  /// Get the signaling thread. This is only valid if initialized.
+  rtc::Thread* GetSignalingThread() noexcept;
+
   /// Add to the global factory collection an object whose lifetime must be
   /// tracked to know when it is safe to terminate the WebRTC threads. This is
   /// generally called form the object's constructor for safety.

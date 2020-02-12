@@ -114,6 +114,11 @@ rtc::Thread* GlobalFactory::GetWorkerThread() noexcept {
   return worker_thread_.get();
 }
 
+rtc::Thread* GlobalFactory::GetSignalingThread() noexcept {
+  const std::lock_guard<std::recursive_mutex> lock(mutex_);
+  return signaling_thread_.get();
+}
+
 void GlobalFactory::AddObject(ObjectType type, TrackedObject* obj) noexcept {
   try {
     const std::lock_guard<std::recursive_mutex> lock(mutex_);
