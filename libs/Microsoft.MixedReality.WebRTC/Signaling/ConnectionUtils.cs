@@ -1,92 +1,14 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 
-namespace Microsoft.MixedReality.WebRTC
+namespace Microsoft.MixedReality.WebRTC.Signaling
 {
-    public enum SignalingType
-    {
-        SdpOffer,
-        SdpAnswer,
-        IceCandidate
-    }
 
-    public class SignalingMessage
-    {
-        public string SessionId;
-        public SignalingType Type;
-        public string Payload;
-    }
-
-    interface ISignalingService : IDisposable
-    {
-        /// <summary>
-        /// Start the service and make the local process visible as `localEndPointId`.
-        /// </summary>
-        void Start(string localEndPointId);
-
-        /// <summary>
-        /// Stop the service.
-        /// </summary>
-        void Stop();
-
-        /// <summary>
-        /// Get the endpoints that are currently active.
-        /// </summary>
-        IEnumerable<string> RemoteEndPoints { get; }
-
-        /// <summary>
-        /// Raised every time there is a change in the list of remote endpoints.
-        /// Every delegate added to this is called once even if there are no updates.
-        /// </summary>
-        event Action RemoteEndPointsChanged;
-
-        /// <summary>
-        /// Send a message to the remote endpoint.
-        /// </summary>
-        void SendToRemoteEndpoint(string targetEndPointId, SignalingMessage message);
-
-        /// <summary>
-        /// Raised when a message is received.
-        /// </summary>
-        event Action<string, SignalingMessage> MessageReceived;
-    }
-
-    public class PeerSignalingService : ISignalingService
-    {
-        public IEnumerable<string> RemoteEndPoints => throw new NotImplementedException();
-
-        public event Action RemoteEndPointsChanged;
-        public event Action<string, SignalingMessage> MessageReceived;
-
-        public PeerSignalingService(IPAddress broadcast, ushort port, string category)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SendToRemoteEndpoint(string targetEndPointId, SignalingMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Start(string localEndPointId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Stop()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    static class SignalingExamples
+    static class ConnectionUtils
     {
         // Use the service to connect a local PeerConnection to another chosen by the user among the available ones.
         public static void ChooseAndConnect(PeerConnection pc)
@@ -123,7 +45,7 @@ namespace Microsoft.MixedReality.WebRTC
                             new SignalingMessage
                             {
                                 SessionId = sessionId,
-                                Type = SignalingType.IceCandidate,
+                                Type = SdpType.IceCandidate,
                                 Payload = payload
                             });
                     };
@@ -132,11 +54,11 @@ namespace Microsoft.MixedReality.WebRTC
                     {
                         if (senderId == target && message.SessionId == sessionId)
                         {
-                            if (message.Type == SignalingType.SdpAnswer)
+                            if (message.Type == SdpType.SdpAnswer)
                             {
                                 pc.SetRemoteDescription("answer", message.Payload);
                             }
-                            else if (message.Type == SignalingType.IceCandidate)
+                            else if (message.Type == SdpType.IceCandidate)
                             {
                                 var parts = message.Payload.Split('|');
                                 pc.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
@@ -160,7 +82,7 @@ namespace Microsoft.MixedReality.WebRTC
                     {
                         if (sessionId == null)
                         {
-                            if (message.Type == SignalingType.SdpOffer)
+                            if (message.Type == SdpType.SdpOffer)
                             {
                                 endPointId = senderId;
                                 sessionId = message.SessionId;
@@ -169,7 +91,7 @@ namespace Microsoft.MixedReality.WebRTC
                         }
                         else
                         {
-                            if (senderId == endPointId && message.SessionId == sessionId && message.Type == SignalingType.IceCandidate)
+                            if (senderId == endPointId && message.SessionId == sessionId && message.Type == SdpType.IceCandidate)
                             {
                                 var parts = message.Payload.Split('|');
                                 pc.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
@@ -197,7 +119,7 @@ namespace Microsoft.MixedReality.WebRTC
                             new SignalingMessage
                             {
                                 SessionId = sessionId,
-                                Type = SignalingType.IceCandidate,
+                                Type = SdpType.IceCandidate,
                                 Payload = payload
                             });
                     };
@@ -208,12 +130,12 @@ namespace Microsoft.MixedReality.WebRTC
         }
         private static string MakeTheUserChoose(IEnumerable<string> endpoints) { return null; }
 
-        static SignalingType FromSMTString(string s)
+        static SdpType FromSMTString(string s)
         {
             switch (s)
             {
-                case "offer": return SignalingType.SdpOffer;
-                case "answer": return SignalingType.SdpAnswer;
+                case "offer": return SdpType.SdpOffer;
+                case "answer": return SdpType.SdpAnswer;
                 default: throw new Exception();
             }
         }
