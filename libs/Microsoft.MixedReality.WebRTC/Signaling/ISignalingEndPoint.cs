@@ -47,9 +47,9 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
         event Action RemoteEndPointsChanged;
 
         /// <summary>
-        /// Send a message to the remote endpoint.
+        /// Make a connection to a remote endPoint.
         /// </summary>
-        void SendToRemoteEndpoint(string targetEndPointId, SignalingMessage message);
+        ISignalingConnection Connect(string remoteEndPointId);
 
         /// <summary>
         /// Raised when a message is received.
@@ -57,4 +57,34 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
         event Action<string, SignalingMessage> MessageReceived;
     }
 
+    /// <summary>
+    /// Connection from a local endpoint to a remote one. Dispose when unneeded to free resources.
+    /// </summary>
+    public interface ISignalingConnection : IDisposable
+    {
+        ISignalingEndPoint LocalEndPoint { get; }
+        string RemoteEndPoint { get; }
+
+        /// <summary>
+        /// Send a message to the remote endpoint.
+        /// </summary>
+        void SendToRemoteEndpoint(SignalingMessage message);
+
+        // TODO  event Action<SignalingMessage> MessageReceived?
+    }
+
+    public static class SignalingEndPointExt
+    {
+
+        /// <summary>
+        /// Send a message to the remote endpoint.
+        /// </summary>
+        public static void SendToRemoteEndpoint(this ISignalingEndPoint localEndPoint, string targetEndPointId, SignalingMessage message)
+        {
+            using (var connection = localEndPoint.Connect(targetEndPointId))
+            {
+                connection.SendToRemoteEndpoint(message);
+            }
+        }
+    }
 }

@@ -14,9 +14,10 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
     /// </summary>
     public class PeerConnectionMapping : IDisposable
     {
-        public ISignalingEndPoint Service { get; }
         public PeerConnection LocalPeerConnection { get; }
-        public string RemoteEndPoint { get; private set; }
+        public string RemoteEndPoint => _connection.RemoteEndPoint;
+
+        private ISignalingConnection _connection;
 
         /// <summary>
         /// ID assigned on creation. Messages going back and forth are marked with this ID.
@@ -65,15 +66,16 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
         private PeerConnectionMapping(string sessionId, string endPointId, ISignalingEndPoint service, PeerConnection localConnection)
         {
             SessionId = sessionId;
-            Service = service;
             LocalPeerConnection = localConnection;
+
+            _connection = service.Connect(endPointId);
 
             // TODO store handlers to remove them later.
 
             localConnection.LocalSdpReadytoSend +=
                 (string type, string sdp) =>
                 {
-                    service.SendToRemoteEndpoint(endPointId,
+                    _connection.SendToRemoteEndpoint(
                         new SignalingMessage
                         {
                             SessionId = sessionId,
@@ -85,7 +87,7 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
                 (string candidate, int sdpMlineindex, string sdpMid) =>
                 {
                     string payload = candidate + '|' + sdpMlineindex + '|' + sdpMid;
-                    service.SendToRemoteEndpoint(endPointId,
+                    _connection.SendToRemoteEndpoint(
                         new SignalingMessage
                         {
                             SessionId = sessionId,
