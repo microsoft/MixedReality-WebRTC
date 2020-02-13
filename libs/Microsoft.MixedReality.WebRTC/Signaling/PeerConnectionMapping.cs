@@ -7,29 +7,39 @@ using System.Threading.Tasks;
 
 namespace Microsoft.MixedReality.WebRTC.Signaling
 {
-    public class SignalingSession : IDisposable
+    /// <summary>
+    /// Maps a local <see cref="PeerConnection"/> to a remote signaling endpoint.
+    /// SDP sent from the PeerConnection will be forwarded to the remote endpoint and viceversa
+    /// until this is disposed.
+    /// </summary>
+    public class PeerConnectionMapping : IDisposable
     {
-        public ISignalingService Service { get; }
-        public PeerConnection LocalConnection { get; }
+        public ISignalingEndPoint Service { get; }
+        public PeerConnection LocalPeerConnection { get; }
         public string RemoteEndPoint { get; private set; }
 
-        private readonly string _sessionId;
+        /// <summary>
+        /// ID assigned on creation. Messages going back and forth are marked with this ID.
+        /// Messages that do not have this ID are ignored by this connection.
+        /// </summary>
+        public string SessionId { get; }
 
 
         /// <summary>
         /// Use the service to connect a local PeerConnection to a remote endpoint
-        /// SDP sent from the PeerConnection will be forwarded to the remote endpoint and viceversa.
         /// </summary>
-        public static SignalingSession Connect(ISignalingService service, PeerConnection pc, string remoteEndPoint)
+        public static PeerConnectionMapping Connect(ISignalingEndPoint service, PeerConnection pc, string remoteEndPoint)
         {
             string sessionId = Guid.NewGuid().ToString();
-            return new SignalingSession(sessionId, remoteEndPoint, service, pc);
+            return new PeerConnectionMapping(sessionId, remoteEndPoint, service, pc);
         }
 
-        // Publish the peer connection on the service and negotiate with the first endpoint that sends an offer.
-        public static Task<SignalingSession> ListenForOfferAsync(ISignalingService service, PeerConnection pc)
+        /// <summary>
+        /// Publish the peer connection on the service and negotiate with the first endpoint that sends an offer.
+        /// </summary>
+        public static Task<PeerConnectionMapping> ListenForOfferAsync(ISignalingEndPoint service, PeerConnection pc)
         {
-            var res = new TaskCompletionSource<SignalingSession>();
+            var res = new TaskCompletionSource<PeerConnectionMapping>();
 
             Action<string, SignalingMessage> handler = null;
             handler =
@@ -39,7 +49,7 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
                     {
                         service.MessageReceived -= handler;
                         pc.SetRemoteDescription("offer", message.Payload);
-                        res.SetResult(new SignalingSession(message.SessionId, senderId, service, pc));
+                        res.SetResult(new PeerConnectionMapping(message.SessionId, senderId, service, pc));
                     }
                 };
             service.MessageReceived += handler;
@@ -52,11 +62,11 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
             throw new NotImplementedException();
         }
 
-        private SignalingSession(string sessionId, string endPointId, ISignalingService service, PeerConnection localConnection)
+        private PeerConnectionMapping(string sessionId, string endPointId, ISignalingEndPoint service, PeerConnection localConnection)
         {
-            _sessionId = sessionId;
+            SessionId = sessionId;
             Service = service;
-            LocalConnection = localConnection;
+            LocalPeerConnection = localConnection;
 
             // TODO store handlers to remove them later.
 
@@ -124,9 +134,9 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
             // Wait for any peer to send an offer to this process.
             using(PeerConnection pc1 = MakeConnection())
             {
-                ISignalingService svc1 = MakeService("EndPoint 1");
+                ISignalingEndPoint svc1 = MakeService("EndPoint 1");
 
-                var sessionTask = SignalingSession.ListenForOfferAsync(svc1, pc1);
+                var sessionTask = PeerConnectionMapping.ListenForOfferAsync(svc1, pc1);
                 using (var session = sessionTask.Result)
                 {
                     Console.WriteLine($"Session established with {session.RemoteEndPoint}");
@@ -137,8 +147,8 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
             // Connect to EndPoint 1
             using (PeerConnection pc2 = MakeConnection())
             {
-                ISignalingService svc2 = MakeService("EndPoint 2");
-                using (var session = SignalingSession.Connect(svc2, pc2, "EndPoint 1"))
+                ISignalingEndPoint svc2 = MakeService("EndPoint 2");
+                using (var session = PeerConnectionMapping.Connect(svc2, pc2, "EndPoint 1"))
                 {
                     DoWork(pc2);
                 }
@@ -147,14 +157,14 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
             // Choose an endpoint to connect to among the ones available
             using (PeerConnection pc3 = MakeConnection())
             {
-                ISignalingService svc3 = MakeService("EndPoint 3");
+                ISignalingEndPoint svc3 = MakeService("EndPoint 3");
                 string selectedEndPoint = null;
                 while (selectedEndPoint == null)
                 {
                     selectedEndPoint = MakeTheUserChoose(svc3.RemoteEndPoints);
                 }
 
-                using (var session = SignalingSession.Connect(svc3, pc3, selectedEndPoint))
+                using (var session = PeerConnectionMapping.Connect(svc3, pc3, selectedEndPoint))
                 {
                     DoWork(pc3);
                 }
@@ -163,7 +173,7 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
 
         // Placeholders
         internal static PeerConnection MakeConnection() { return null; }
-        internal static ISignalingService MakeService(string localEndPoint) { return null; }
+        internal static ISignalingEndPoint MakeService(string localEndPoint) { return null; }
         internal static void DoWork(PeerConnection pc) { }
         internal static string MakeTheUserChoose(IEnumerable<string> endpoints) { return null; }
     }

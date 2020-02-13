@@ -21,9 +21,9 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
         public string Payload;
     }
 
-    // Wrapper for a simple discovery+message-passing service.
+    // Local endpoint of a discovery+message-passing service.
     // Initially meant to be a frontend for the UDP discovery service, we might add different backends later.
-    public interface ISignalingService
+    public interface ISignalingEndPoint
     {
         /// <summary>
         /// Start the service and make the local process visible as `localEndPointId`.
