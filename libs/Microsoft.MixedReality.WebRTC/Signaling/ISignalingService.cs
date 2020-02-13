@@ -23,7 +23,7 @@ namespace Microsoft.MixedReality.WebRTC.Signaling
 
     // Wrapper for a simple discovery+message-passing service.
     // Initially meant to be a frontend for the UDP discovery service, we might add different backends later.
-    interface ISignalingService : IDisposable
+    public interface ISignalingService
     {
         /// <summary>
         /// Start the service and make the local process visible as `localEndPointId`.
