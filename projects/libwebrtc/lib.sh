@@ -249,7 +249,6 @@ function package-static-lib-unix() {
     echo -e "\e[39mPackaging WebRTC static library for Unix-like platforms\e[39m"
     local config_path="$TARGET_OS/$TARGET_CPU/$BUILD_CONFIG"
     local outdir="out/$config_path"
-    local blacklist="unittest|examples|/yasm|protobuf_lite|main.o|video_capture_external.o|device_info_external.o"
 
     pushd "$SRC_DIR/src/$outdir" >/dev/null
 
