@@ -3,24 +3,15 @@
 
 #pragma once
 
-#if defined(WINUWP)
-// Non-API helper. Returned object can be deleted at any time in theory.
-// In practice because it's provided by a global object it's safe.
-//< TODO - Remove that, clean-up API, this is bad (c).
-rtc::Thread* UnsafeGetWorkerThread();
-#endif
-
 #include "audio_frame.h"
-#include "export.h"
-#include "mrs_errors.h"
 #include "video_frame.h"
+#include "export.h"
+#include "result.h"
 
 extern "C" {
 
 /// 32-bit boolean for interop API.
 enum class mrsBool : int32_t { kTrue = -1, kFalse = 0 };
-
-using mrsResult = Microsoft::MixedReality::WebRTC::Result;
 
 //
 // Generic utilities

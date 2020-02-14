@@ -19,42 +19,42 @@ namespace Microsoft::MixedReality::WebRTC {
 /// std::string. Used to pass strings across the API boundaries.
 class str {
  public:
-  MRS_API str();
-  MRS_API explicit str(const std::string& s);
-  MRS_API explicit str(std::string&& s) noexcept;
-  MRS_API explicit str(std::string_view view);
-  MRS_API explicit str(const char* s);
-  MRS_API ~str();
-  MRS_API str& operator=(const std::string& s);
-  MRS_API str& operator=(std::string&& s) noexcept;
-  [[nodiscard]] MRS_API bool empty() const noexcept;
-  [[nodiscard]] MRS_API uint32_t size() const noexcept;
-  [[nodiscard]] MRS_API const char* data() const noexcept;
-  [[nodiscard]] MRS_API const char* c_str() const noexcept;
+  str();
+  explicit str(const std::string& s);
+  explicit str(std::string&& s) noexcept;
+  explicit str(std::string_view view);
+  explicit str(const char* s);
+  ~str();
+  str& operator=(const std::string& s);
+  str& operator=(std::string&& s) noexcept;
+  [[nodiscard]] bool empty() const noexcept;
+  [[nodiscard]] uint32_t size() const noexcept;
+  [[nodiscard]] const char* data() const noexcept;
+  [[nodiscard]] const char* c_str() const noexcept;
 
   // Do not use in API
   std::size_t hash() const noexcept { return std::hash<std::string>()(str_); }
 
  private:
   std::string str_;
-  friend MRS_API bool operator==(const str& lhs, const str& rhs) noexcept;
-  friend MRS_API bool operator!=(const str& lhs, const str& rhs) noexcept;
-  friend MRS_API bool operator==(const str& lhs,
+  friend bool operator==(const str& lhs, const str& rhs) noexcept;
+  friend bool operator!=(const str& lhs, const str& rhs) noexcept;
+  friend bool operator==(const str& lhs,
                                  const std::string& rhs) noexcept;
-  friend MRS_API bool operator==(const std::string& lhs,
+  friend bool operator==(const std::string& lhs,
                                  const str& rhs) noexcept;
-  friend MRS_API bool operator!=(const str& lhs,
+  friend bool operator!=(const str& lhs,
                                  const std::string& rhs) noexcept;
-  friend MRS_API bool operator!=(const std::string& lhs,
+  friend bool operator!=(const std::string& lhs,
                                  const str& rhs) noexcept;
 };
 
-MRS_API bool operator==(const str& lhs, const str& rhs) noexcept;
-MRS_API bool operator!=(const str& lhs, const str& rhs) noexcept;
-MRS_API bool operator==(const str& lhs, const std::string& rhs) noexcept;
-MRS_API bool operator==(const std::string& lhs, const str& rhs) noexcept;
-MRS_API bool operator!=(const str& lhs, const std::string& rhs) noexcept;
-MRS_API bool operator!=(const std::string& lhs, const str& rhs) noexcept;
+bool operator==(const str& lhs, const str& rhs) noexcept;
+bool operator!=(const str& lhs, const str& rhs) noexcept;
+bool operator==(const str& lhs, const std::string& rhs) noexcept;
+bool operator==(const std::string& lhs, const str& rhs) noexcept;
+bool operator!=(const str& lhs, const std::string& rhs) noexcept;
+bool operator!=(const std::string& lhs, const str& rhs) noexcept;
 
 #else  // defined(MRS_USE_STR_WRAPPER)
 
