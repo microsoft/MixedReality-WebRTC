@@ -32,7 +32,7 @@ Chromium's libwebrtc library underpins MixedReality-WebRTC. Here are the instruc
         $ ./config.sh -d /mnt/d/build_webrtc -b branch-heads/71 -t android -c arm64
         ```
 
-    2. Run the checkout script: `./checkout.sh`. This command clones the Chromium Depot Tools and clones the WebRTC repo. Warning: this can take a long time and consume significant disk space (plan for 2+ hours and 30GB disk space).
+    2. Run the checkout script: `./checkout.sh`. This command clones the Chromium Depot Tools and the WebRTC repo. Warning: this can take a long time and consume significant disk space (plan for 2+ hours and 40GB disk space).
 
         ```
         Usage:

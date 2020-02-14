@@ -220,7 +220,6 @@ rtc_build_tools=false \
 rtc_use_x11=false \
 rtc_enable_protobuf=false \
 use_allocator=\"none\" \
-use_allocator_shim=false \
 is_clang=true \
 use_sysroot=false \
 target_os=\"$TARGET_OS\" \
@@ -255,16 +254,8 @@ function package-static-lib-unix() {
     pushd "$SRC_DIR/src/$outdir" >/dev/null
 
     rm -f libwebrtc.a
-    # Parse .ninja_deps for the names of all the object files.
-    local objlist=$(strings .ninja_deps | grep -o '.*\.o')
-    # Write all the filenames to a temp file, filtering unwanted entries
-    echo "$objlist" | tr ' ' '\n' | grep -v -E $blacklist | grep -v -E '.*clang.*' >libwebrtc.list
-    # Additional files needed but not listed in .ninja_deps.
-    local extras=$(find \
-        ./obj/third_party/boringssl/boringssl_asm -name \
-        '*.o')
-    # Output extras to the temp file.
-    echo "$extras" | tr ' ' '\n' >>libwebrtc.list
+    # Get the names of all the object files.
+    find ./obj -name *.o > libwebrtc.list
     # Generate the static library.
     cat libwebrtc.list | xargs ar -crs libwebrtc.a
     # Add an index to the static library.

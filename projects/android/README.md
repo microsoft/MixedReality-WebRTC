@@ -4,20 +4,35 @@
 
 1. Build the Chromium WebRTC base library. Instructions [here](../libwebrtc/README.md).
 
-2. Install Android Studio (https://developer.android.com/studio/index.html). 
+2. Install prerequisites:
+    * Android Studio (https://developer.android.com/studio/index.html). Once installed, use the System Settings/Android SDK dialog to install the following packages:
+        * SDKs 9.0 (Pie), 8.1 (Oreo)
+        * CMake
+        * NDK 16.1.4479499
+    * JRE 1.8 (https://www.java.com/download/)
 
-> TODO: Provide command line build instructions. Android Studio should not be a requirement.
+3. Add environment variable JAVA_HOME pointing to your JRE install directory. e.g.: `JAVA_HOME="C:\Program Files\Android\Android Studio\jre"`
 
 ## Build MixedReality-WebRTC
 
+### Option 1: Android Studio
+
 1. Open this folder in Android Studio.
 
-2. Build the project.
+2. Wait for Gradle initialization to complete.
 
-3. Artifacts produced by the build:
+3. Build the project: Build > Make Project.
 
-    * `./webrtc-native/build/outputs/Microsoft.MixedReality.WebRTC.Native.aar`
+### Option 2: Command line
 
-4. Open a bash shell to the folder containing this README.
+1. Open a shell prompt to the folder containing this README.
 
-5. Run `./copy.sh` to copy the build artifacts to the Unity sample project.
+2. Run `$./gradlew[.bat] assembleRelease`
+
+### Artifacts produced by the build
+
+* `./webrtc-native/build/outputs/aar/Microsoft.MixedReality.WebRTC.Native.aar`
+
+### Next Steps
+
+Run `./copy.sh` to copy the build artifacts to the Unity sample project.

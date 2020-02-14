@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.10.2)
 include(../../../../../libwebrtc/.libwebrtc.cmake)
 set(mr-webrtc-native-dir ../../../../../../libs/Microsoft.MixedReality.WebRTC.Native)
 
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
+
 add_library(
         Microsoft.MixedReality.WebRTC.Native
         SHARED
