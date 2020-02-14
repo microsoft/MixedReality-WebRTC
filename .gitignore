@@ -63,6 +63,3 @@ CMakefiles/
 
 # Android Studio
 .idea/
-
-# Android webrtc generated files
-android/deps/

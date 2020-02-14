@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.10.2)
 
-set(deps-dir ${CMAKE_SOURCE_DIR}/../../../../deps)
-set(mr-webrtc-native-dir ../../../../../libs/Microsoft.MixedReality.WebRTC.Native)
+# See ../libwebrtc/README.md for instructions on how to generate `libwebrtc.cmake`
+include(../../../../../libwebrtc/.libwebrtc.cmake)
+set(mr-webrtc-native-dir ../../../../../../libs/Microsoft.MixedReality.WebRTC.Native)
 
 add_library(
         Microsoft.MixedReality.WebRTC.Native
@@ -25,15 +26,15 @@ add_library(
 )
 
 add_library(
-        libwebrtc-full-a
+        libwebrtc
         STATIC IMPORTED
 )
 
-# See BUILD.md for instructions to build libwebrtc_full.a
+# See ../libwebrtc/README.md for instructions on building `libwebrtc.a`
 set_target_properties(
-        libwebrtc-full-a
+        libwebrtc
         PROPERTIES IMPORTED_LOCATION
-        ${deps-dir}/webrtc/libwebrtc_full.a
+        ${libwebrtc-out-dir}/libwebrtc.a
 )
 
 target_include_directories(
@@ -41,9 +42,9 @@ target_include_directories(
         PRIVATE
         ${mr-webrtc-native-dir}/include
         ${mr-webrtc-native-dir}/src
-        ${deps-dir}/webrtc/include
-        ${deps-dir}/webrtc/include/third_party/abseil-cpp
-        ${deps-dir}/webrtc/include/third_party/libyuv/include
+        ${libwebrtc-src-dir}/webrtc/src/
+        ${libwebrtc-src-dir}/webrtc/src/third_party/abseil-cpp
+        ${libwebrtc-src-dir}/webrtc/src/third_party/libyuv/include
 )
 
 target_link_libraries(
@@ -52,5 +53,5 @@ target_link_libraries(
         android
         dl
         OpenSLES
-        libwebrtc-full-a
+        libwebrtc
 )

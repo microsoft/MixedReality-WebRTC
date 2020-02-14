@@ -17,7 +17,7 @@ android {
         }
         externalNativeBuild {
             cmake {
-                cppFlags "-std=c++17 -DMRS_USE_STR_WRAPPER -DMR_SHARING_ANDROID -DWEBRTC_POSIX -DWEBRTC_ANDROID -DANDROID_STL=c++_shared"
+                cppFlags "-std=c++17 -DMRS_USE_STR_WRAPPER -DMR_SHARING_ANDROID -DWEBRTC_POSIX -DWEBRTC_ANDROID -DANDROID_STL=c++_shared -fuse-ld=lld"
             }
         }
     }
@@ -35,8 +35,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    // WebRTC requires Java 8 features
-    // https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/discuss-webrtc/V1h2uQMDCkA/RA-uzncVAAAJ
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
