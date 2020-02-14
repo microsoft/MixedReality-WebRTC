@@ -67,7 +67,7 @@ class ExternalVideoTrackSourceImpl : public ExternalVideoTrackSource,
 
   /// Start the video capture. This will begin to produce video frames and start
   /// calling the video frame callback.
-  void StartCapture();
+  void StartCapture() override;
 
   /// Complete a video frame request with a given I420A video frame.
   Result CompleteRequest(uint32_t request_id,
@@ -80,10 +80,10 @@ class ExternalVideoTrackSourceImpl : public ExternalVideoTrackSource,
                          const Argb32VideoFrame& frame) override;
 
   /// Stop the video capture. This will stop producing video frames.
-  void StopCapture();
+  void StopCapture() override;
 
   /// Shutdown the source and release the buffer adapter and its callback.
-  void Shutdown() noexcept;
+  void Shutdown() noexcept override;
 
   webrtc::VideoTrackSourceInterface* impl() const { return track_source_; }
 
