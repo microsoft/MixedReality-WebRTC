@@ -1,9 +1,9 @@
-# General instructions and setup for per-platform builds
+# Instructions for per-platform builds
 
-## libwebrtc
+## [./libwebrtc](./libwebrtc/README.md)
 
-Builds the Chromium base WebRTC library for a specified platform. See [libwebrtc](./libwebrtc/README.md)
+Contains a collection of scripts to build the Chromium base WebRTC library for a specified platform.
 
-## android
+## [./android](./android/README.md)
 
-
+Contains a Gradle project to build the MixedReality.WebRTC.Native library for Android.
