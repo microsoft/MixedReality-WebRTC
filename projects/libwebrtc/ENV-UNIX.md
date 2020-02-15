@@ -2,7 +2,7 @@
 
 Some platorms require the libwebrtc library to be built from a Unix-like environment, namely Android. For others it is a convenience: Mac, iOS, Linux.
 
-## Setup your *nix environment
+## Setup your build environment
 
 1. In a Unix-like environment, open a bash shell.
 
