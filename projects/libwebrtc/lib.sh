@@ -27,6 +27,7 @@ function read-config() {
 function write-config() {
     local filename="$BUILD_DIR/$1"
     cat >$filename <<EOF
+# Generated file. Do not edit.
 TARGET_OS=$TARGET_OS
 TARGET_CPU=$TARGET_CPU
 BRANCH=$BRANCH
@@ -59,6 +60,7 @@ function verify-checkout-config() {
 function write-build-config() {
     local filename="$BUILD_DIR/.build.sh"
     cat >$filename <<EOF
+# Generated file. Do not edit.
 BUILD_CONFIG=$BUILD_CONFIG
 EOF
 }

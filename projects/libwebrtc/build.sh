@@ -76,6 +76,7 @@ function write-cmakelists-config() {
     libwebrtc_src_dir_win=$(echo $libwebrtc_src_dir_win | sed -E 's!/!\\\\!g')
     libwebrtc_out_dir_win=$(echo $libwebrtc_out_dir_win | sed -E 's!/!\\\\!g')
     cat >$filename <<EOF
+# Generated file. Do not edit.
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     set(libwebrtc-src-dir $libwebrtc_src_dir_win)
     set(libwebrtc-out-dir $libwebrtc_out_dir_win)
