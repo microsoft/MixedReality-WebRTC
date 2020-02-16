@@ -150,11 +150,8 @@ function checkout-webrtc() {
             ;;
         esac
     fi
-    # Checkout the specific revision after fetch or for older branches, run
-    # setup_links.py to replace all directories which now must be symlinks then
-    # try again.
-    gclient sync --force --revision $REVISION ||
-        (test -f src/setup_links.py && src/setup_links.py --force --no-prompt && gclient sync --force --revision $REVISION)
+    # Checkout the specific revision after fetch.
+    gclient sync --force --revision $REVISION
 
     popd >/dev/null
 }
@@ -221,13 +218,10 @@ rtc_build_examples=false \
 rtc_build_tools=false \
 rtc_use_x11=false \
 rtc_enable_protobuf=false \
-use_allocator=\"none\" \
-is_clang=true \
-use_sysroot=false \
 target_os=\"$TARGET_OS\" \
 target_cpu=\"$TARGET_CPU\""
-    [[ "$BUILD_CONFIG" == "Debug" && "$TARGET_OS" == "android" ]] && args+=" android_full_debug=true symbol_level=2"
-    [[ "$BUILD_CONFIG" == "Release" ]] && args+=" is_debug=false"
+    [[ "$BUILD_CONFIG" == "Debug" && "$TARGET_OS" == "android" ]] && args+=" android_full_debug=true symbol_level=2" || true
+    [[ "$BUILD_CONFIG" == "Release" ]] && args+=" is_debug=false" || true
     echo -e "\e[90m$args\e[39m"
 
     pushd "$SRC_DIR/src" >/dev/null
@@ -293,8 +287,8 @@ function package-android-archive() {
 
     pushd "$SRC_DIR/src/$outdir" >/dev/null
 
-    [ -f libwebrtc.aar ] && rm -f libwebrtc.aar
-    [ -d .aar ] && rm -rf .aar
+    rm -f libwebrtc.aar
+    [ -d .aar ] && rm -rf .aar || true
     mkdir .aar
     mkdir .aar/jni
     mkdir .aar/jni/$arch

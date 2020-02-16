@@ -7,6 +7,20 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+#-----------------------------------------------------------------------------
+function check-err() {
+    rv=$?
+    [[ $rv != 0 ]] && echo "$0 exited with code $rv. Run with -v to get more info."
+    exit $rv
+}
+
+trap "check-err" INT TERM EXIT
+
+#=============================================================================
+# Functions
+
+#-----------------------------------------------------------------------------
+
 BUILD_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$BUILD_DIR/lib.sh"
@@ -33,7 +47,7 @@ function verify-arguments() {
     DEPOT_TOOLS_DIR=$WORK_DIR/depot_tools
     PATH=$DEPOT_TOOLS_DIR:$DEPOT_TOOLS_DIR/python276_bin:$PATH
     # Print all executed commands?
-    [ "$VERBOSE" = 1 ] && set -x
+    [ "$VERBOSE" = 1 ] && set -x || true
     echo -e "\e[39mBuild configuration: \e[96m$BUILD_CONFIG\e[39m"
     # Verify build config
     if [[ "$BUILD_CONFIG" != "Debug" && "$BUILD_CONFIG" != "Release" ]]; then
@@ -91,11 +105,11 @@ EOF
 # Main
 
 # Read command line
-while getopts c:v OPTION; do
+while getopts c:vh OPTION; do
     case ${OPTION} in
     c) BUILD_CONFIG=$OPTARG ;;
     v) VERBOSE=1 ;;
-    ?) usage && exit 1 ;;
+    h | ?) usage && exit 0 ;;
     esac
 done
 
@@ -122,5 +136,7 @@ write-cmakelists-config
 # Write file ./.build.sh
 write-build-config
 
-echo -e "\e[39m\e[1mComplete.\e[0m\e[39m"
-echo -e "\e[39m\e[1mNext step:\e[0m run ./copy.sh\e[39m"
+echo -e "\e[39m\e[1mBuild complete.\e[0m\e[39m"
+
+# Copy build artifacts
+/bin/bash ./copy.sh

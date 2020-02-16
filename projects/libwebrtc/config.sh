@@ -3,13 +3,27 @@
 #=============================================================================
 # Global config
 
-#set -o errexit
+set -o errexit
 set -o nounset
 set -o pipefail
+
+#-----------------------------------------------------------------------------
+function check-err() {
+    rv=$?
+    [[ $rv != 0 ]] && echo "$0 exited with code $rv. Run with -v to get more info."
+    exit $rv
+}
+
+trap "check-err" INT TERM EXIT
+
+#-----------------------------------------------------------------------------
 
 BUILD_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$BUILD_DIR/lib.sh"
+
+#=============================================================================
+# Functions
 
 #-----------------------------------------------------------------------------
 function usage() {
@@ -31,27 +45,27 @@ EOF
 
 #-----------------------------------------------------------------------------
 function verify-arguments() {
-    BRANCH=${BRANCH:-}
-    WORK_DIR=${WORK_DIR:-in}
+    BRANCH=${BRANCH:-branch-heads/71}
+    WORK_DIR=${WORK_DIR:-work}
     VERBOSE=${VERBOSE:-0}
     TARGET_OS=${TARGET_OS:-android}
     TARGET_CPU=${TARGET_CPU:-arm64}
     # Print all executed commands?
-    [ "$VERBOSE" = 1 ] && set -x
+    [ "$VERBOSE" = 1 ] && set -x || true
 }
 
 #=============================================================================
 # Main
 
 # Read command line
-while getopts d:b:t:c:v OPTION; do
+while getopts d:b:t:c:vh OPTION; do
     case ${OPTION} in
     d) WORK_DIR=$OPTARG ;;
     b) BRANCH=$OPTARG ;;
     t) TARGET_OS=$OPTARG ;;
     c) TARGET_CPU=$OPTARG ;;
     v) VERBOSE=1 ;;
-    ?) usage && exit 1 ;;
+    h | ?) usage && exit 0 ;;
     esac
 done
 
@@ -64,5 +78,5 @@ print-config
 # Write file ./.config.sh
 write-config ".config.sh"
 
-echo -e "\e[39m\e[1mComplete.\e[0m\e[39m"
+echo -e "\e[39m\e[1mConfig complete.\e[0m\e[39m"
 echo -e "\e[39m\e[1mNext step:\e[0m run ./checkout.sh\e[39m"

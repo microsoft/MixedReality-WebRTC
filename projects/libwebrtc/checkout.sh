@@ -3,9 +3,23 @@
 #=============================================================================
 # Global config
 
-#set -o errexit
+set -o errexit
 set -o nounset
 set -o pipefail
+
+#-----------------------------------------------------------------------------
+function check-err() {
+    rv=$?
+    [[ $rv != 0 ]] && echo "$0 exited with code $rv. Run with -v to get more info."
+    exit $rv
+}
+
+trap "check-err" INT TERM EXIT
+
+#=============================================================================
+# Functions
+
+#-----------------------------------------------------------------------------
 
 BUILD_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -33,17 +47,17 @@ function verify-arguments() {
     DEPOT_TOOLS_DIR=$WORK_DIR/depot_tools
     PATH=$DEPOT_TOOLS_DIR:$DEPOT_TOOLS_DIR/python276_bin:$PATH
     # Print all executed commands?
-    [ "$VERBOSE" = 1 ] && set -x
+    [ "$VERBOSE" = 1 ] && set -x || true
 }
 
 #=============================================================================
 # Main
 
 # Read command line
-while getopts v OPTION; do
+while getopts vh OPTION; do
     case ${OPTION} in
     v) VERBOSE=1 ;;
-    ?) usage && exit 1 ;;
+    h | ?) usage && exit 0 ;;
     esac
 done
 
@@ -83,5 +97,5 @@ patch-webrtc-source
 # Write file ./.checkout.sh
 write-config ".checkout.sh"
 
-echo -e "\e[39m\e[1mComplete.\e[0m\e[39m"
+echo -e "\e[39m\e[1mCheckout complete.\e[0m\e[39m"
 echo -e "\e[39m\e[1mNext step:\e[0m run ./build.sh\e[39m"
