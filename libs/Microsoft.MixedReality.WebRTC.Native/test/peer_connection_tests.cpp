@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include "interop/interop_api.h"
+#include "interop_api.h"
 
 TEST(PeerConnection, LocalNoIce) {
   for (int i = 0; i < 3; ++i) {

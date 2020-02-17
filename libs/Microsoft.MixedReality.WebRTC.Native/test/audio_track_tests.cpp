@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include "interop/interop_api.h"
+#include "interop_api.h"
 #include "audio_frame.h"
 
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
