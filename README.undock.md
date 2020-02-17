@@ -16,10 +16,10 @@ cd ..
 #### Clone the WebRTC repository
 
 ```cmd
-git clone https://webrtc.googlesource.com/src/webrtc
-cd webrtc
 set DEPOT_TOOLS_WIN_TOOLCHAIN=0
 set GYP_MSVS_VERSION=2019
+fetch --nohooks webrtc
+cd webrtc
 gclient sync
 ```
 
