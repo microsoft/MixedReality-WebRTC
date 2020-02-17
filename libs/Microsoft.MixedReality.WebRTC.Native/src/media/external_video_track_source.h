@@ -7,6 +7,7 @@
 #include "refptr.h"
 #include "tracked_object.h"
 #include "video_frame.h"
+#include "external_video_track_source_interop.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 
@@ -26,7 +27,7 @@ struct I420AVideoFrameRequest {
 
   /// Complete the request by making the track source consume the given video
   /// frame and have it deliver the frame to all its video tracks.
-  MRS_API Result CompleteRequest(const I420AVideoFrame& frame_view);
+  Result CompleteRequest(const I420AVideoFrame& frame_view);
 };
 
 /// Custom video source producing video frames encoded in I420 format, with
@@ -56,7 +57,7 @@ struct Argb32VideoFrameRequest {
 
   /// Complete the request by making the track source consume the given video
   /// frame and have it deliver the frame to all its video tracks.
-  MRS_API Result CompleteRequest(const Argb32VideoFrame& frame_view);
+  Result CompleteRequest(const Argb32VideoFrame& frame_view);
 };
 
 /// Custom video source producing vidoe frames encoded in ARGB 32-bit-per-pixel
@@ -79,37 +80,56 @@ class ExternalVideoTrackSource : public TrackedObject {
  public:
   /// Helper to create an external video track source from a custom I420A video
   /// frame request callback.
-  static MRS_API RefPtr<ExternalVideoTrackSource> createFromI420A(
+  static RefPtr<ExternalVideoTrackSource> createFromI420A(
       RefPtr<I420AExternalVideoSource> video_source);
 
   /// Helper to create an external video track source from a custom ARGB32 video
   /// frame request callback.
-  static MRS_API RefPtr<ExternalVideoTrackSource> createFromArgb32(
+  static RefPtr<ExternalVideoTrackSource> createFromArgb32(
       RefPtr<Argb32ExternalVideoSource> video_source);
 
   /// Start the video capture. This will begin to produce video frames and start
   /// calling the video frame callback.
-  MRS_API virtual void StartCapture() = 0;
+  virtual void StartCapture() = 0;
 
   /// Complete a given video frame request with the provided I420A frame.
   /// The caller must know the source expects an I420A frame; there is no check
   /// to confirm the source is I420A-based or ARGB32-based.
-  MRS_API virtual Result CompleteRequest(uint32_t request_id,
+  virtual Result CompleteRequest(uint32_t request_id,
                                          int64_t timestamp_ms,
                                          const I420AVideoFrame& frame) = 0;
 
   /// Complete a given video frame request with the provided ARGB32 frame.
   /// The caller must know the source expects an ARGB32 frame; there is no check
   /// to confirm the source is I420A-based or ARGB32-based.
-  MRS_API virtual Result CompleteRequest(uint32_t request_id,
+  virtual Result CompleteRequest(uint32_t request_id,
                                          int64_t timestamp_ms,
                                          const Argb32VideoFrame& frame) = 0;
 
   /// Stop the video capture. This will stop producing video frames.
-  MRS_API virtual void StopCapture() = 0;
+  virtual void StopCapture() = 0;
 
   /// Shutdown the source and release the buffer adapter and its callback.
-  MRS_API virtual void Shutdown() noexcept = 0;
+  virtual void Shutdown() noexcept = 0;
 };
+
+namespace detail {
+
+//
+// Helpers
+//
+
+/// Create an I420A external video track source wrapping the given interop
+/// callback.
+RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromI420A(
+    mrsRequestExternalI420AVideoFrameCallback callback,
+    void* user_data);
+
+/// Create an ARGB32 external video track source wrapping the given interop
+/// callback.
+RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
+    mrsRequestExternalArgb32VideoFrameCallback callback,
+    void* user_data);
+} // namespace detail
 
 }  // namespace Microsoft::MixedReality::WebRTC

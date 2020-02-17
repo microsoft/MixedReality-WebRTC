@@ -8,12 +8,11 @@
 #include "api/stats/rtcstats_objects.h"
 
 #include "data_channel.h"
-#include "external_video_track_source.h"
-#include "interop/external_video_track_source_interop.h"
+#include "external_video_track_source_interop.h"
 #include "interop/global_factory.h"
-#include "interop/interop_api.h"
-#include "interop/peer_connection_interop.h"
-#include "local_video_track.h"
+#include "interop_api.h"
+#include "peer_connection_interop.h"
+#include "media/local_video_track.h"
 #include "media/external_video_track_source_impl.h"
 #include "peer_connection.h"
 #include "sdp_utils.h"
@@ -679,7 +678,7 @@ void MRS_CALL mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback(
   }
 }
 
-MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
+void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionAudioFrameCallback callback,
     void* user_data) noexcept {
@@ -689,7 +688,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
   }
 }
 
-MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
+void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionAudioFrameCallback callback,
     void* user_data) noexcept {
@@ -1339,7 +1338,7 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
   return Result::kSuccess;
 }
 
-MRS_API mrsResult MRS_CALL
+mrsResult MRS_CALL
 mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report) {
   if (auto rep = static_cast<const webrtc::RTCStatsReport*>(stats_report)) {
     rep->Release();

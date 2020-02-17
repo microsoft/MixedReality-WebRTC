@@ -7,7 +7,7 @@
 
 #include "callback.h"
 #include "external_video_track_source.h"
-#include "interop/interop_api.h"
+#include "interop_api.h"
 
 namespace Microsoft::MixedReality::WebRTC::detail {
 
