@@ -250,7 +250,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     }
 
                     timeSincePollMs = PollTimeMs + 1f; //fast forward next request
-				}
+                }
                 else if (AutoLogErrors)
                 {
                     Debug.LogError($"Failed to deserialize JSON message : {json}");
