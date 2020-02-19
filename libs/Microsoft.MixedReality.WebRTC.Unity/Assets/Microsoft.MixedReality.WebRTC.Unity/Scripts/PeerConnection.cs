@@ -201,11 +201,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Underlying native peer connection wrapper.
         /// </summary>
-        /// <remarks>
-        /// Unlike the public <see cref="Peer"/> property, this is never <c>NULL</c>,
-        /// but can be an uninitialized peer.
-        /// </remarks>
-        private WebRTC.PeerConnection _nativePeer;
+        /// <seealso cref="CreateNativePeerConnection"/>
+        private WebRTC.PeerConnection _nativePeer = null;
 
         #endregion
 
@@ -232,9 +229,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Normally would be initialized by Awake(), but in case the component is disabled
             if (_nativePeer == null)
             {
-                _nativePeer = new WebRTC.PeerConnection();
-                _nativePeer.LocalSdpReadytoSend += Signaler_LocalSdpReadyToSend;
-                _nativePeer.IceCandidateReadytoSend += Signaler_IceCandidateReadytoSend;
+                CreateNativePeerConnection();
             }
 
             // if the peer is already set, we refuse to initialize again.
@@ -314,6 +309,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
                 // Close the connection and release native resources.
                 _nativePeer.Dispose();
+                _nativePeer = null;
             }
         }
 
@@ -324,9 +320,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void Awake()
         {
-            _nativePeer = new WebRTC.PeerConnection();
-            _nativePeer.LocalSdpReadytoSend += Signaler_LocalSdpReadyToSend;
-            _nativePeer.IceCandidateReadytoSend += Signaler_IceCandidateReadytoSend;
+            if (_nativePeer == null)
+            {
+                CreateNativePeerConnection();
+            }
         }
 
         /// <summary>
@@ -382,9 +379,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private void OnDestroy()
         {
-            _nativePeer.IceCandidateReadytoSend -= Signaler_IceCandidateReadytoSend;
-            _nativePeer.LocalSdpReadytoSend -= Signaler_LocalSdpReadyToSend;
-            Uninitialize();
+            if (_nativePeer != null)
+            {
+                _nativePeer.IceCandidateReadytoSend -= Signaler_IceCandidateReadytoSend;
+                _nativePeer.LocalSdpReadytoSend -= Signaler_LocalSdpReadyToSend;
+                Uninitialize();
+            }
             OnError.RemoveListener(OnError_Listener);
         }
 
@@ -392,6 +392,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
 
         #region Private implementation
+
+        /// <summary>
+        /// Create the underlying native peer connection and its C# wrapper, and register
+        /// event handlers for signaling.
+        /// </summary>
+        private void CreateNativePeerConnection()
+        {
+            Debug.Assert((_nativePeer == null) || !_nativePeer.Initialized);
+            _nativePeer = new WebRTC.PeerConnection();
+            _nativePeer.LocalSdpReadytoSend += Signaler_LocalSdpReadyToSend;
+            _nativePeer.IceCandidateReadytoSend += Signaler_IceCandidateReadytoSend;
+        }
 
         /// <summary>
         /// Internal helper to ensure device access and continue initialization.
@@ -476,7 +488,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Callback fired on the main UI thread once the WebRTC plugin was initialized successfully.
+        /// Callback fired on the main Unity app thread once the WebRTC plugin was initialized successfully.
         /// </summary>
         private void OnPostInitialize()
         {

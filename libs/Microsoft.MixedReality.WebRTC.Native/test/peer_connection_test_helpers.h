@@ -1,9 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-#include "../include/mrs_errors.h"
-#include "../src/interop/interop_api.h"
-#include "../src/interop/peer_connection_interop.h"
+#include "../include/interop_api.h"
+#include "../include/peer_connection_interop.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 

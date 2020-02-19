@@ -11,6 +11,8 @@
 #include "callback.h"
 #include "video_frame.h"
 
+#include "rtc_base/memory/aligned_malloc.h"
+
 namespace Microsoft::MixedReality::WebRTC {
 
 /// Callback fired on newly available video frame, encoded as I420.
@@ -19,16 +21,29 @@ using I420AFrameReadyCallback = Callback<const I420AVideoFrame&>;
 /// Callback fired on newly available video frame, encoded as ARGB.
 using Argb32FrameReadyCallback = Callback<const Argb32VideoFrame&>;
 
-constexpr inline size_t ArgbDataSize(int height, int stride) {
-  return static_cast<size_t>(height) * stride * 4;
+/// Helper function to calculate the minimum size of an ARGB32 frame given its
+/// dimensions in pixels.
+constexpr inline size_t Argb32FrameSize(int width, int height) {
+  return (static_cast<size_t>(height) * width) * 4;
 }
 
 // Plain 32-bit ARGB buffer in standard memory.
 class ArgbBuffer : public webrtc::VideoFrameBuffer {
  public:
-  // Create a new buffer.
-  static inline rtc::scoped_refptr<ArgbBuffer> Create(int width, int height) {
+  // Create a new buffer with enough storage for a frame with the given
+  // width and height in pixels.
+  static inline rtc::scoped_refptr<ArgbBuffer> Create(int width,
+                                                             int height) {
     return new rtc::RefCountedObject<ArgbBuffer>(width, height, width * 4);
+  }
+
+  // Create a new buffer with enough storage for a frame with the given
+  // width and height in pixels, with explicit stride.
+  static inline rtc::scoped_refptr<ArgbBuffer> Create(int width,
+                                                      int height,
+                                                      int stride) {
+    RTC_CHECK_GE(stride, width * 4);
+    return new rtc::RefCountedObject<ArgbBuffer>(width, height, stride);
   }
 
   //// Create a new buffer and copy the pixel data.
@@ -53,9 +68,13 @@ class ArgbBuffer : public webrtc::VideoFrameBuffer {
 
   inline uint8_t* Data() { return data_.get(); }
   inline const uint8_t* Data() const { return data_.get(); }
-  inline int Stride() const { return stride_; }
+
+  /// Row stride, in bytes.
+  inline constexpr int Stride() const { return stride_; }
+
+  /// Total buffer size, in bytes.
   inline constexpr size_t Size() const {
-    return ArgbDataSize(height_, stride_);
+    return static_cast<size_t>(height_) * stride_;
   }
 
  protected:
@@ -63,9 +82,16 @@ class ArgbBuffer : public webrtc::VideoFrameBuffer {
   ~ArgbBuffer() override = default;
 
  private:
+  /// Frame width, in pixels.
   const int width_;
+
+  /// Frame height, in pixels.
   const int height_;
+
+  /// Row stride, in pixels. This is always >= (4 * width_).
   const int stride_;
+
+  /// Raw buffer of ARGB32 data for the frame.
   const std::unique_ptr<uint8_t, webrtc::AlignedFreeDeleter> data_;
 };
 
@@ -83,6 +109,11 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   void SetCallback(Argb32FrameReadyCallback callback) noexcept;
 
  protected:
+  /// Get a temporary scratch buffer for an ARGB32 frame of the given
+  /// dimensions. The returned buffer does not need to be deallocated, but can
+  /// be reused by a later call so concurrent access is not supported.
+  /// Before calling this method the caller needs to acquire |mutex_|, and keep
+  /// it for the duration of its access.
   ArgbBuffer* GetArgbScratchBuffer(int width, int height);
 
   // VideoSinkInterface interface
@@ -95,11 +126,11 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   /// Registered callback for receiving raw decoded ARGB frame.
   Argb32FrameReadyCallback argb_callback_ RTC_GUARDED_BY(mutex_);
 
-  /// Mutex protecting all callbacks.
+  /// Mutex protecting all callbacks as well as the ARGB32 scratch buffer.
   std::mutex mutex_;
 
   /// Reusable ARGB scratch buffer to avoid per-frame allocation.
-  rtc::scoped_refptr<ArgbBuffer> argb_scratch_buffer_;
+  rtc::scoped_refptr<ArgbBuffer> argb_scratch_buffer_ RTC_GUARDED_BY(mutex_);
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

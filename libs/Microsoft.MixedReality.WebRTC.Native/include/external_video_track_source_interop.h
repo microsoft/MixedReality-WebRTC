@@ -3,10 +3,7 @@
 
 #pragma once
 
-#include "export.h"
-#include "external_video_track_source.h"
-#include "interop/interop_api.h"
-#include "refptr.h"
+#include "interop_api.h"
 
 extern "C" {
 
@@ -65,23 +62,3 @@ MRS_API void MRS_CALL mrsExternalVideoTrackSourceShutdown(
     ExternalVideoTrackSourceHandle handle) noexcept;
 
 }  // extern "C"
-
-namespace Microsoft::MixedReality::WebRTC::detail {
-
-//
-// Helpers
-//
-
-/// Create an I420A external video track source wrapping the given interop
-/// callback.
-RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromI420A(
-    mrsRequestExternalI420AVideoFrameCallback callback,
-    void* user_data);
-
-/// Create an ARGB32 external video track source wrapping the given interop
-/// callback.
-RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
-    mrsRequestExternalArgb32VideoFrameCallback callback,
-    void* user_data);
-
-}  // namespace Microsoft::MixedReality::WebRTC::detail

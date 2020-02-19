@@ -58,12 +58,12 @@ class PeerConnection : public TrackedObject {
  public:
   /// Create a new PeerConnection based on the given |config|.
   /// This serves as the constructor for PeerConnection.
-  static MRS_API ErrorOr<RefPtr<PeerConnection>> create(
+  static ErrorOr<RefPtr<PeerConnection>> create(
       const PeerConnectionConfiguration& config,
       mrsPeerConnectionInteropHandle interop_handle);
 
   /// Set the name of the peer connection.
-  MRS_API virtual void SetName(std::string_view name) = 0;
+  virtual void SetName(std::string_view name) = 0;
 
   //
   // Signaling
@@ -121,12 +121,12 @@ class PeerConnection : public TrackedObject {
       RenegotiationNeededCallback&& callback) noexcept = 0;
 
   /// Notify the WebRTC engine that an ICE candidate has been received.
-  virtual bool MRS_API AddIceCandidate(const char* sdp_mid,
+  virtual bool AddIceCandidate(const char* sdp_mid,
                                        const int sdp_mline_index,
                                        const char* candidate) noexcept = 0;
 
   /// Notify the WebRTC engine that an SDP offer message has been received.
-  virtual bool MRS_API SetRemoteDescription(const char* type,
+  virtual bool SetRemoteDescription(const char* type,
                                             const char* sdp) noexcept = 0;
 
   //
@@ -147,21 +147,21 @@ class PeerConnection : public TrackedObject {
   /// Create an SDP offer to attempt to establish a connection with the remote
   /// peer. Once the offer message is ready, the LocalSdpReadytoSendCallback
   /// callback is invoked to deliver the message.
-  virtual bool MRS_API CreateOffer() noexcept = 0;
+  virtual bool CreateOffer() noexcept = 0;
 
   /// Create an SDP answer to accept a previously-received offer to establish a
   /// connection wit the remote peer. Once the answer message is ready, the
   /// LocalSdpReadytoSendCallback callback is invoked to deliver the message.
-  virtual bool MRS_API CreateAnswer() noexcept = 0;
+  virtual bool CreateAnswer() noexcept = 0;
 
   /// Close the peer connection. After the connection is closed, it cannot be
   /// opened again with the same C++ object. Instantiate a new |PeerConnection|
   /// object instead to create a new connection. No-op if already closed.
-  virtual void MRS_API Close() noexcept = 0;
+  virtual void Close() noexcept = 0;
 
   /// Check if the connection is closed. This returns |true| once |Close()| has
   /// been called.
-  virtual bool MRS_API IsClosed() const noexcept = 0;
+  virtual bool IsClosed() const noexcept = 0;
 
   //
   // Remote tracks
@@ -197,18 +197,18 @@ class PeerConnection : public TrackedObject {
 
   /// Add a video track to the peer connection. If no RTP sender/transceiver
   /// exist, create a new one for that track.
-  virtual MRS_API ErrorOr<RefPtr<LocalVideoTrack>> AddLocalVideoTrack(
+  virtual ErrorOr<RefPtr<LocalVideoTrack>> AddLocalVideoTrack(
       rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept = 0;
 
   /// Remove a local video track from the peer connection.
   /// The underlying RTP sender/transceiver are kept alive but inactive.
-  virtual MRS_API webrtc::RTCError RemoveLocalVideoTrack(
+  virtual webrtc::RTCError RemoveLocalVideoTrack(
       LocalVideoTrack& video_track) noexcept = 0;
 
   /// Remove all tracks sharing the given video track source.
   /// Note that currently video source sharing is not supported, so this will
   /// remove at most a single track backed by the given source.
-  virtual MRS_API void RemoveLocalVideoTracksFromSource(
+  virtual void RemoveLocalVideoTracksFromSource(
       ExternalVideoTrackSource& source) noexcept = 0;
 
   /// Rounding mode of video frame height for |SetFrameHeightRoundMode()|.
@@ -261,7 +261,7 @@ class PeerConnection : public TrackedObject {
   ///
   /// Note: currently a single local video track is supported per peer
   /// connection.
-  virtual bool MRS_API AddLocalAudioTrack(
+  virtual bool AddLocalAudioTrack(
       rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track) noexcept = 0;
 
   /// Remove the existing local audio track from the peer connection.
@@ -269,7 +269,7 @@ class PeerConnection : public TrackedObject {
   ///
   /// Note: currently a single local audio track is supported per peer
   /// connection.
-  virtual void MRS_API RemoveLocalAudioTrack() noexcept = 0;
+  virtual void RemoveLocalAudioTrack() noexcept = 0;
 
   /// Enable or disable the local audio track. Disabled audio tracks are still
   /// active but are silent, and do not consume network bandwidth. Additionally,
@@ -286,7 +286,7 @@ class PeerConnection : public TrackedObject {
   ///
   /// Note: currently a single local audio track is supported per peer
   /// connection.
-  virtual bool MRS_API IsLocalAudioTrackEnabled() const noexcept = 0;
+  virtual bool IsLocalAudioTrackEnabled() const noexcept = 0;
 
   //
   // Data channel
@@ -314,7 +314,7 @@ class PeerConnection : public TrackedObject {
 
   /// Create a new data channel and add it to the peer connection.
   /// This invokes the DataChannelAdded callback.
-  ErrorOr<std::shared_ptr<DataChannel>> MRS_API virtual AddDataChannel(
+  ErrorOr<std::shared_ptr<DataChannel>> virtual AddDataChannel(
       int id,
       std::string_view label,
       bool ordered,
@@ -328,7 +328,7 @@ class PeerConnection : public TrackedObject {
 
   /// Close and remove all data channels at once.
   /// This invokes the DataChannelRemoved callback for each data channel.
-  virtual void MRS_API RemoveAllDataChannels() noexcept = 0;
+  virtual void RemoveAllDataChannels() noexcept = 0;
 
   /// Notification from a non-negotiated DataChannel that it is open, so that
   /// the PeerConnection can fire a DataChannelAdded event. This is called

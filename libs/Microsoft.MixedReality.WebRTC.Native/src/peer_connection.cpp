@@ -7,7 +7,7 @@
 
 #include "audio_frame_observer.h"
 #include "data_channel.h"
-#include "local_video_track.h"
+#include "media/local_video_track.h"
 #include "peer_connection.h"
 #include "sdp_utils.h"
 #include "video_frame_observer.h"
@@ -15,7 +15,7 @@
 
 // Internal
 #include "interop/global_factory.h"
-#include "interop/interop_api.h"
+#include "interop_api.h"
 
 #include <functional>
 

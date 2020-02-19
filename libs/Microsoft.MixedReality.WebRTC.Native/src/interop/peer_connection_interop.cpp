@@ -6,7 +6,7 @@
 #include "pch.h"
 
 #include "interop/global_factory.h"
-#include "interop/peer_connection_interop.h"
+#include "peer_connection_interop.h"
 #include "peer_connection.h"
 
 using namespace Microsoft::MixedReality::WebRTC;

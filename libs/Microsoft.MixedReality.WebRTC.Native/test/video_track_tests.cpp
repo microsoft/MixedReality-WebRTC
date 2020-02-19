@@ -3,9 +3,9 @@
 
 #include "pch.h"
 
-#include "interop/external_video_track_source_interop.h"
-#include "interop/interop_api.h"
-#include "interop/local_video_track_interop.h"
+#include "external_video_track_source_interop.h"
+#include "interop_api.h"
+#include "local_video_track_interop.h"
 
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 

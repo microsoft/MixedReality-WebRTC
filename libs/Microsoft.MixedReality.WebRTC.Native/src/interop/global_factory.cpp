@@ -6,7 +6,7 @@
 #include "pch.h"
 
 #include "interop/global_factory.h"
-#include "local_video_track.h"
+#include "media/local_video_track.h"
 #include "peer_connection.h"
 
 namespace {
