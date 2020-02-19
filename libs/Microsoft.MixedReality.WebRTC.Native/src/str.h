@@ -27,10 +27,10 @@ class str {
   ~str();
   str& operator=(const std::string& s);
   str& operator=(std::string&& s) noexcept;
-  MRS_NODISCARD bool empty() const noexcept;
-  MRS_NODISCARD uint32_t size() const noexcept;
-  MRS_NODISCARD const char* data() const noexcept;
-  MRS_NODISCARD const char* c_str() const noexcept;
+  [[nodiscard]] bool empty() const noexcept;
+  [[nodiscard]] uint32_t size() const noexcept;
+  [[nodiscard]] const char* data() const noexcept;
+  [[nodiscard]] const char* c_str() const noexcept;
 
   // Do not use in API
   std::size_t hash() const noexcept { return std::hash<std::string>()(str_); }

@@ -25,16 +25,12 @@
 #define NOMINMAX
 #endif
 
-#define MRS_NODISCARD [[nodiscard]]
-
 #include <windows.h>
 
 #elif defined(MR_SHARING_ANDROID)
 
 #define WEBRTC_POSIX 1
 #define WEBRTC_ANDROID 1
-
-#define MRS_NODISCARD
 
 #endif
 
