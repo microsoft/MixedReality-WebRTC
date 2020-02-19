@@ -249,7 +249,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                             break;
                     }
 
-					timeSincePollMs = PollTimeMs - 1f; //fast forward next request
+                    timeSincePollMs = PollTimeMs + 1f; //fast forward next request
 				}
                 else if (AutoLogErrors)
                 {
