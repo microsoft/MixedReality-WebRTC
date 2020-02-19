@@ -4,7 +4,7 @@ Chromium's libwebrtc library underpins MixedReality-WebRTC. Here are the instruc
 
 1. A bash shell is required to build libwebrtc.
     * **Linux, Android, Mac, and iOS**: See ENV-UNIX.md for instructions to configure your Unix build environment.
-    * **Windows, UWP**: See ENV-WIN.md for instructions to build on Windows (TBD).
+    * **Windows, UWP**: TBD - in development.
 
 2. Decide where you want Chromium's Depot Tools and the WebRTC repos to be cloned. This location can be outside this folder structure, even on another drive. Ensure the drive has at least 40GB free.
 
@@ -27,12 +27,12 @@ Chromium's libwebrtc library underpins MixedReality-WebRTC. Here are the instruc
             -c TARGET_CPU   Target CPU for cross compilation. Default is determined by TARGET_OS. For 'android', it is 'arm64'. Possible values are: 'x86', 'x64', 'arm64', 'arm'.
         ```
 
-        Example - Android and WebRTC release M71:
+        Example - Set confuration to Android and WebRTC release M71:
         ```
         $ ./config.sh -d /mnt/d/build_webrtc -b branch-heads/71 -t android -c arm64
         ```
 
-    2. Run the checkout script: `./checkout.sh`. This command clones the Chromium Depot Tools and the WebRTC repo. NOTE: this can take a long time and consume significant disk space (plan for 2+ hours and 40GB disk space).
+    2. Run the checkout script: `./checkout.sh`. This command clones the Chromium Depot Tools and the WebRTC repo. NOTE: this can take a long time and consume significant disk space (plan for 2+ hours and 40GB disk space). You may be prompted to accept third-party license agreements.
 
         ```
         Usage:
@@ -64,7 +64,7 @@ Chromium's libwebrtc library underpins MixedReality-WebRTC. Here are the instruc
             -c BUILD_CONFIG Build configuration. Default is 'Release'. Possible values are: 'Debug', 'Release'.
         ```
 
-        Example:
+        Example - Make a Release build:
         ```
         $ ./build.sh -c Release
         ```

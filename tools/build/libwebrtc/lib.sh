@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 #=============================================================================
 # Library functions
 
@@ -177,12 +180,11 @@ function calc-git-revision() {
 
 #-----------------------------------------------------------------------------
 function verify-webrtc-deps() {
-    echo -e "\e[39mVerifying WebRTC dependencies\e[39m"
+    echo -e "\e[39mVerifying WebRTC dependencies. You may be prompted to accept software licenses.\e[39m"
     case $HOST_OS in
     "linux")
-        # Automatically accepts ttf-mscorefonts EULA
         echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
-        sudo $SRC_DIR/src/build/install-build-deps.sh --no-syms --no-arm --no-chromeos-fonts --no-nacl --no-prompt
+        sudo $SRC_DIR/src/build/install-build-deps.sh --no-syms --no-arm --no-chromeos-fonts --no-nacl
         ;;
     esac
 

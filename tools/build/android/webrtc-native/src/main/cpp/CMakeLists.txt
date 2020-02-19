@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 cmake_minimum_required(VERSION 3.10.2)
 
 #---------------------------------------------------------------------
@@ -25,7 +28,7 @@ set_target_properties(
 #
 
 # Base path to Microsoft.MixedReality.WebRTC.Native project.
-set(mr-webrtc-native-dir ../../../../../../libs/Microsoft.MixedReality.WebRTC.Native)
+set(mr-webrtc-native-dir ../../../../../../../libs/Microsoft.MixedReality.WebRTC.Native)
 
 # List of source files to compile.
 add_library(

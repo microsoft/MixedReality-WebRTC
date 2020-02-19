@@ -18,24 +18,25 @@ Some platorms require the libwebrtc library to be built from a Unix-like environ
   
     This enables support for Linux-style file permissions (chown, chmod, etc).
 
-    The filesystem must be case sensitive. There are three ways to enable this. I recommend trying all of them.
+    The filesystem must be case sensitive. There are three possible ways to enable this. They are not mutually exclusive.
     
-    The first: specify it in your `/etc/wsl.conf` file:
+    1. In WSL, modify `/etc/wsl.conf`:
 
-    ```
-    sudo nano /etc/wsl.conf
-    ## file contents should include this:
-    [automount]
-    options = "metadata,case=force"
-    ```
+        https://devblogs.microsoft.com/commandline/per-directory-case-sensitivity-and-wsl/
 
-    This approach may fail, but is the recommended solution on the web. Remaining two options:
+        ```
+        sudo nano /etc/wsl.conf
+        ## file contents should include this:
+        [automount]
+        options = "metadata,case=force"
+        ```
 
-    2. From the windows filesystem, use `fsutil.exe file setCaseSensitiveInfo`
+    2. From the Windows filesystem, use `fsutil.exe file setCaseSensitiveInfo`
 
-    3. From the Linux side, try `setfattr -n system.wsl_case_sensitive -v 1 <path>` (but this also fails for me with the error "Operation not supported". See https://github.com/microsoft/WSL/issues/4261)
+    3. In WSL, try `setfattr -n system.wsl_case_sensitive -v 1 <path>`
+    
+    This may fail for some users with the error "Operation not supported". See https://github.com/microsoft/WSL/issues/4261
 
-    I recommend trying ALL of these. One might stick.
 
 2. Install prerequisite software packages.
 

@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
 #=============================================================================
 # Global config
@@ -116,8 +118,8 @@ function copy-artifacts-to-unity-sample() {
         "x64") arch="x86_64" ;;
         esac
         local src="$SRC_DIR/src/$outdir/libwebrtc.aar"
-        local dst="../../libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Plugins/$arch/"
-        echo "Copying libwebrtc.aar to Unity sample scene."
+        local dst="../../../libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Plugins/$arch/"
+        echo "Copying libwebrtc.aar to Unity sample project."
         mkdir -p "$dst" && cp "$src" "$_"
         ;;
     *)

@@ -55,7 +55,7 @@ task copyToUnitySample {
     copy {
         from './build/outputs/aar'
         include "*.aar"
-        into '../../../libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Plugins/arm64-v8a'
+        into '../../../../libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Plugins/arm64-v8a'
     }    
 }
 
