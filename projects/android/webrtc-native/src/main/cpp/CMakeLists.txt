@@ -1,11 +1,33 @@
 cmake_minimum_required(VERSION 3.10.2)
 
-# See ../libwebrtc/README.md for instructions on how to generate `libwebrtc.cmake`
+#---------------------------------------------------------------------
+# Import libwebrtc.a static library
+# See ../libwebrtc/README.md for instructions on building libwebrtc.a.
+#
+
+# Import CMake settings for libwebrtc.a. This file is generated during
+# the libwebrtc build.
 include(../../../../../libwebrtc/.libwebrtc.cmake)
+
+# Declare and configure the library.
+add_library(
+        libwebrtc
+        STATIC IMPORTED
+)
+set_target_properties(
+        libwebrtc
+        PROPERTIES
+        IMPORTED_LOCATION ${libwebrtc-out-dir}/obj/libwebrtc.a
+)
+
+#---------------------------------------------------------------------
+# Configure Microsoft.MixedReality.WebRTC.Native.so build.
+#
+
+# Base path to Microsoft.MixedReality.WebRTC.Native project.
 set(mr-webrtc-native-dir ../../../../../../libs/Microsoft.MixedReality.WebRTC.Native)
 
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
-
+# List of source files to compile.
 add_library(
         Microsoft.MixedReality.WebRTC.Native
         SHARED
@@ -27,18 +49,7 @@ add_library(
         ./jni_onload.cpp
 )
 
-add_library(
-        libwebrtc
-        STATIC IMPORTED
-)
-
-# See ../libwebrtc/README.md for instructions on building `libwebrtc.a`
-set_target_properties(
-        libwebrtc
-        PROPERTIES IMPORTED_LOCATION
-        ${libwebrtc-out-dir}/libwebrtc.a
-)
-
+# List of include directories.
 target_include_directories(
         Microsoft.MixedReality.WebRTC.Native
         PRIVATE
@@ -49,6 +60,7 @@ target_include_directories(
         ${libwebrtc-src-dir}/webrtc/src/third_party/libyuv/include
 )
 
+# Build and link Microsoft.MixedReality.WebRTC.Native.so.
 target_link_libraries(
         Microsoft.MixedReality.WebRTC.Native
         log

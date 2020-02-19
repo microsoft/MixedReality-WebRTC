@@ -91,9 +91,6 @@ checkout-webrtc
 # Verify WebRTC dependencies are installed
 verify-webrtc-deps
 
-# Patch webrtc sources
-patch-webrtc-source
-
 # Write file ./.checkout.sh
 write-config ".checkout.sh"
 

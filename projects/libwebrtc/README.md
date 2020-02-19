@@ -50,7 +50,7 @@ Chromium's libwebrtc library underpins MixedReality-WebRTC. Here are the instruc
         $ ./checkout.sh
         ```
 
-    3. Run the build script: `./build.sh [options]`. This command builds the Chromium WebRTC base library (libwebrtc). It also writes the file `.libwebrtc.cmake` which contains configuration needed for CMake-based builds (just Android currently).
+    3. Run the build script: `./build.sh [options]`. This command builds the Chromium WebRTC base library (libwebrtc). It also writes the file `.libwebrtc.cmake` which contains configuration needed for CMake-based builds (just Android currently). This command also copies libwebrtc build artifacts to the Unity sample scene.
 
         ```
         Usage:
@@ -67,24 +67,6 @@ Chromium's libwebrtc library underpins MixedReality-WebRTC. Here are the instruc
         Example:
         ```
         $ ./build.sh -c Release
-        ```
-
-    4. Run the copy script: `./copy.sh`. This command copies libwebrtc build artifacts to Unity sample scene.
-
-        ```
-        Usage:
-            ./copy.sh [OPTIONS]
-
-        Copies Chromium's WebRTC build artifacts to the Unity sample.
-
-        OPTIONS:
-            -h              Show this message.
-            -v              Verbose mode. Print all executed commands.
-        ```
-
-        Example:
-        ```
-        $ ./copy.sh
         ```
 
 4. Next Step: Build MixedReality.WebRTC.Native.

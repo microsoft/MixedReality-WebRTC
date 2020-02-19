@@ -63,12 +63,12 @@ function print-summary() {
 
     case $TARGET_OS in
     "android")
-        echo -e "\e[39mStatic library : \e[96m$outdir_full/libwebrtc.a\e[39m"
+        echo -e "\e[39mStatic library : \e[96m$outdir_full/obj/libwebrtc.a\e[39m"
         echo -e "\e[39mAndroid Archive: \e[96m$outdir_full/libwebrtc.aar\e[39m"
         echo -e "\e[39mHeader path    : \e[96m$SRC_DIR\e[39m"
         ;;
     *)
-        echo "TODO: build summary for this platform"
+        echo "TODO: print build summary for $TARGET_OS"
         ;;
     esac
 }
@@ -101,6 +101,32 @@ endif()
 EOF
 }
 
+#-----------------------------------------------------------------------------
+function copy-artifacts-to-unity-sample() {
+    echo -e "\e[39mCopying build artifacts for $TARGET_OS/$TARGET_CPU/$BUILD_CONFIG\e[39m"
+    case $TARGET_OS in
+    "android")
+        local config_path="$TARGET_OS/$TARGET_CPU/$BUILD_CONFIG"
+        local outdir="out/$config_path"
+        local arch=""
+        case "$TARGET_CPU" in
+        "arm") arch="armeabi-v7a" ;;
+        "arm64") arch="arm64-v8a" ;;
+        "x86") arch="x86" ;;
+        "x64") arch="x86_64" ;;
+        esac
+        local src="$SRC_DIR/src/$outdir/libwebrtc.aar"
+        local dst="../../libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Plugins/$arch/"
+        echo "Copying libwebrtc.aar to Unity sample scene."
+        mkdir -p "$dst" && cp "$src" "$_"
+        ;;
+    *)
+        echo "Unsupported platform: $TARGET_OS"
+        exit 1
+        ;;
+    esac
+}
+
 #=============================================================================
 # Main
 
@@ -125,9 +151,16 @@ verify-arguments
 # Compile and package webrtc library
 echo -e "\e[39mBuilding: \e[96m$TARGET_OS/$TARGET_CPU/$BUILD_CONFIG\e[39m"
 
+# Generate the WebRTC Ninja build config files
 configure-build
+
+# Run the WebRTC Ninja build
 compile-webrtc
+
+# Package the build artifacts for the current platform
 package-webrtc
+
+# Print paths to build artifacts
 print-summary
 
 # Write file ./.libwebrtc.cmake
@@ -136,7 +169,7 @@ write-cmakelists-config
 # Write file ./.build.sh
 write-build-config
 
-echo -e "\e[39m\e[1mBuild complete.\e[0m\e[39m"
+# Copy build artifacts to Unity sample
+copy-artifacts-to-unity-sample
 
-# Copy build artifacts
-/bin/bash ./copy.sh
+echo -e "\e[39m\e[1mBuild complete.\e[0m\e[39m"

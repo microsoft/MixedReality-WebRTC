@@ -192,17 +192,6 @@ function verify-webrtc-deps() {
 }
 
 #-----------------------------------------------------------------------------
-function patch-webrtc-source() {
-    echo -e "\e[39mPatching WebRTC source\e[39m"
-    pushd $SRC_DIR/src >/dev/null
-    # This removes the examples from being built.
-    sed -i.bak 's|"//webrtc/examples",|#"//webrtc/examples",|' BUILD.gn
-    # This configures to build with RTTI enabled.
-    sed -i.bak 's|"//build/config/compiler:no_rtti",|"//build/config/compiler:rtti",|' build/config/BUILDCONFIG.gn
-    popd >/dev/null
-}
-
-#-----------------------------------------------------------------------------
 function configure-build() {
     local config_path="$TARGET_OS/$TARGET_CPU/$BUILD_CONFIG"
     local outdir="out/$config_path"
@@ -212,7 +201,6 @@ is_component_build=false \
 treat_warnings_as_errors=false \
 enable_iterator_debugging=false \
 use_rtti=true \
-use_custom_libcxx=false \
 rtc_include_tests=false \
 rtc_build_examples=false \
 rtc_build_tools=false \
@@ -220,8 +208,9 @@ rtc_use_x11=false \
 rtc_enable_protobuf=false \
 target_os=\"$TARGET_OS\" \
 target_cpu=\"$TARGET_CPU\""
-    [[ "$BUILD_CONFIG" == "Debug" && "$TARGET_OS" == "android" ]] && args+=" android_full_debug=true symbol_level=2" || true
-    [[ "$BUILD_CONFIG" == "Release" ]] && args+=" is_debug=false" || true
+    [[ "$BUILD_CONFIG" == "Debug" && "$TARGET_OS" == "android" ]] && args+=" android_full_debug=true" || true
+    [[ "$BUILD_CONFIG" == "Debug" ]] && args+=" is_debug=true symbol_level=2" || true
+    [[ "$BUILD_CONFIG" == "Release" ]] && args+=" is_debug=false symbol_level=0" || true
     echo -e "\e[90m$args\e[39m"
 
     pushd "$SRC_DIR/src" >/dev/null
@@ -237,38 +226,6 @@ function compile-webrtc() {
 
     pushd "$SRC_DIR/src/$outdir" >/dev/null
     ninja -C .
-    popd >/dev/null
-}
-
-#-----------------------------------------------------------------------------
-function package-static-lib-unix() {
-    echo -e "\e[39mPackaging WebRTC static library for Unix-like platforms\e[39m"
-    local config_path="$TARGET_OS/$TARGET_CPU/$BUILD_CONFIG"
-    local outdir="out/$config_path"
-
-    pushd "$SRC_DIR/src/$outdir" >/dev/null
-
-    rm -f libwebrtc.a
-    # Get the names of all the object files.
-    find ./obj -name *.o > libwebrtc.list
-    # Generate the static library.
-    cat libwebrtc.list | xargs ar -crs libwebrtc.a
-    # Add an index to the static library.
-    ranlib libwebrtc.a
-
-    popd >/dev/null
-}
-
-#-----------------------------------------------------------------------------
-function package-static-lib-win() {
-    echo -e "\e[39mPackaging WebRTC static library for Windows platform\e[39m"
-    local config_path="$TARGET_OS/$TARGET_CPU/$BUILD_CONFIG"
-    local outdir="out/$config_path"
-
-    pushd "$SRC_DIR/src/$outdir" >/dev/null
-
-    # TODO
-
     popd >/dev/null
 }
 
@@ -305,15 +262,6 @@ function package-android-archive() {
 
 #-----------------------------------------------------------------------------
 function package-webrtc() {
-    case "$TARGET_OS" in
-    "linux" | "android" | "ios" | "mac")
-        package-static-lib-unix
-        ;;
-    "win")
-        package-static-lib-win
-        ;;
-    esac
-
     case "$TARGET_OS" in
     "android")
         package-android-archive
