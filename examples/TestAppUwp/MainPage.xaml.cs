@@ -1448,7 +1448,7 @@ namespace TestAppUwp
 
                 // The default start bitrate is quite low (300 kbps); use a higher value to get
                 // better quality on local network.
-                _peerConnection.SetBitrate(maxBitrateBps: 100000);
+                _peerConnection.SetBitrate(startBitrateBps: (uint)(width * height * framerate / 20));
 
                 try
                 {
