@@ -5,24 +5,25 @@
 /obj
 /tools/build/userdef.py
 # TODO - Fix location with directory.build
-examples/TestAppUwp/bin
-examples/TestAppUwp/build
-examples/TestAppUwp/obj
 tests/Microsoft.MixedReality.WebRTC.Tests/bin
 tests/Microsoft.MixedReality.WebRTC.Tests/build
 tests/Microsoft.MixedReality.WebRTC.Tests/obj
+examples/TestNetCoreConsole/bin
 
 # Visual Studio + Code
 .vs
 .vscode
 *.user
 *.suo
+launchSettings.json
 
 # UWP packages
 /examples/TestAppUwp/AppPackages
 
-# Nuget packages
+# Nuget packages and artifacts
 /packages
+project.json
+project.lock.json
 
 # Unity artifacts
 /libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Plugins
@@ -54,6 +55,3 @@ xdoc.meta
 
 # Profiling data
 *.etl
-
-# TODO - TestNetCoreConsole is misconfigured, builds into its own folder
-examples/TestNetCoreConsole/bin
