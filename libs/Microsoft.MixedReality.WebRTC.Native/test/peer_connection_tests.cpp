@@ -7,7 +7,7 @@
 
 namespace {
 
-void SetEventOnCompleted(void* user_data) {
+void MRS_CALL SetEventOnCompleted(void* user_data) {
   Event* ev = (Event*)user_data;
   ev->Set();
 }

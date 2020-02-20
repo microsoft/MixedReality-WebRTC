@@ -273,7 +273,7 @@ class LocalPeerPairRaii {
     }
   }
 
-  static void SetEventOnCompleted(void* user_data) {
+  static void MRS_CALL SetEventOnCompleted(void* user_data) {
     Event* ev = (Event*)user_data;
     ev->Set();
   }
