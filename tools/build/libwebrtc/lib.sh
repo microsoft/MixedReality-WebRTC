@@ -268,5 +268,8 @@ function package-webrtc() {
     "android")
         package-android-archive
         ;;
+    *)
+        echo "Unsupported target for packaging: $TARGET_OS"
+        ;;
     esac
 }
