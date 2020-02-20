@@ -198,7 +198,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                 EditorGUILayout.IntSlider(_height, 0, 10000);
                 //EditorGUILayout.Slider(_framerate, 0.0, 60.0); //< TODO
 
-                if ((_videoProfileKind.intValue != (int)WebRTC.PeerConnection.VideoProfileKind.Unspecified) && (_videoProfileId.stringValue.Length > 0))
+                if ((_videoProfileKind.intValue != (int)VideoProfileKind.Unspecified) && (_videoProfileId.stringValue.Length > 0))
                 {
                     EditorGUILayout.HelpBox("Video profile ID is already unique. Specifying also a video kind over-constrains the selection algorithm and can decrease the chances of finding a matching video profile. It is recommended to select either a video profile kind, or a video profile ID (and leave the kind to Unspecified).", MessageType.Warning);
                 }

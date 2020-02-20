@@ -386,7 +386,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             /// is discouraged, as it over-constraints the selection algorithm.
             /// </remarks>
             /// <seealso xref="MediaCapture.IsVideoProfileSupported(string)"/>
-            public PeerConnection.VideoProfileKind VideoProfileKind;
+            public VideoProfileKind VideoProfileKind;
 
             /// <summary>
             /// Optional capture resolution width, in pixels, or zero for no constraint.

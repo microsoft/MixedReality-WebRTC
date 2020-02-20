@@ -10,6 +10,72 @@ using Microsoft.MixedReality.WebRTC.Tracing;
 namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
+    /// Kind of video profile. This corresponds to the <see xref="Windows.Media.Capture.KnownVideoProfile"/>
+    /// enum of the <see xref="Windows.Media.Capture.MediaCapture"/> API.
+    /// </summary>
+    /// <seealso href="https://docs.microsoft.com/en-us/uwp/api/windows.media.capture.knownvideoprofile"/>
+    public enum VideoProfileKind : int
+    {
+        /// <summary>
+        /// Unspecified video profile kind. Used to remove any constraint on the video profile kind.
+        /// </summary>
+        Unspecified,
+
+        /// <summary>
+        /// Video profile for video recording, often of higher quality and framerate at the expense
+        /// of power consumption and latency.
+        /// </summary>
+        VideoRecording,
+
+        /// <summary>
+        /// Video profile for high quality photo capture.
+        /// </summary>
+        HighQualityPhoto,
+
+        /// <summary>
+        /// Balanced video profile to capture both videos and photos.
+        /// </summary>
+        BalancedVideoAndPhoto,
+
+        /// <summary>
+        /// Video profile for video conferencing, often of lower power consumption
+        /// and lower latency by deprioritizing higher resolutions.
+        /// This is the recommended profile for most WebRTC applications, if supported.
+        /// </summary>
+        VideoConferencing,
+
+        /// <summary>
+        /// Video profile for capturing a sequence of photos.
+        /// </summary>
+        PhotoSequence,
+
+        /// <summary>
+        /// Video profile containing high framerate capture formats.
+        /// </summary>
+        HighFrameRate,
+
+        /// <summary>
+        /// Video profile for capturing a variable sequence of photos.
+        /// </summary>
+        VariablePhotoSequence,
+
+        /// <summary>
+        /// Video profile for capturing videos with High Dynamic Range (HDR) and Wide Color Gamut (WCG).
+        /// </summary>
+        HdrWithWcgVideo,
+
+        /// <summary>
+        /// Video profile for capturing photos with High Dynamic Range (HDR) and Wide Color Gamut (WCG).
+        /// </summary>
+        HdrWithWcgPhoto,
+
+        /// <summary>
+        /// Video profile for capturing videos with High Dynamic Range (HDR).
+        /// </summary>
+        VideoHdr8,
+    };
+
+    /// <summary>
     /// Video track sending to the remote peer video frames originating from
     /// a local track source.
     /// </summary>

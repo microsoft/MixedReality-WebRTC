@@ -130,7 +130,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// For manual <see cref="Mode"/>, kind of video profile to use among a list of predefined
         /// ones, or an empty string to leave unconstrained.
         /// </summary>
-        public WebRTC.PeerConnection.VideoProfileKind VideoProfileKind = WebRTC.PeerConnection.VideoProfileKind.Unspecified;
+        public VideoProfileKind VideoProfileKind = VideoProfileKind.Unspecified;
 
         /// <summary>
         /// Video track added to the peer connection that this component encapsulates.
