@@ -122,12 +122,17 @@ class PeerConnection : public TrackedObject {
 
   /// Notify the WebRTC engine that an ICE candidate has been received.
   virtual bool AddIceCandidate(const char* sdp_mid,
-                                       const int sdp_mline_index,
-                                       const char* candidate) noexcept = 0;
+                               const int sdp_mline_index,
+                               const char* candidate) noexcept = 0;
 
-  /// Notify the WebRTC engine that an SDP offer message has been received.
-  virtual bool SetRemoteDescription(const char* type,
-                                            const char* sdp) noexcept = 0;
+  /// Notify the WebRTC engine that an SDP message has been received from the
+  /// remote peer. The parameters correspond to the SDP message data provided by
+  /// the |LocalSdpReadytoSendCallback|, after being transmitted to the
+  /// other peer.
+  virtual bool MRS_API
+  SetRemoteDescriptionAsync(const char* type,
+                            const char* sdp,
+                            Callback<> callback) noexcept = 0;
 
   //
   // Connection

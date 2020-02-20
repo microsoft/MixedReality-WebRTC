@@ -340,9 +340,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
             // List video capture devices to Unity console
-            GetVideoCaptureDevicesAsync().ContinueWith((prevTask) => {
+            GetVideoCaptureDevicesAsync().ContinueWith((prevTask) =>
+            {
                 var devices = prevTask.Result;
-                _mainThreadWorkQueue.Enqueue(() => {
+                _mainThreadWorkQueue.Enqueue(() =>
+                {
                     foreach (var device in devices)
                     {
                         Debug.Log($"Found video capture device '{device.name}' (id:{device.id}).");
@@ -463,12 +465,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     TurnPassword = IceCredential
                 });
             }
-            return _nativePeer.InitializeAsync(config, token).ContinueWith((initTask) => {
+            return _nativePeer.InitializeAsync(config, token).ContinueWith((initTask) =>
+            {
                 token.ThrowIfCancellationRequested();
 
                 if (initTask.Exception != null)
                 {
-                    _mainThreadWorkQueue.Enqueue(() => {
+                    _mainThreadWorkQueue.Enqueue(() =>
+                    {
                         var errorMessage = new StringBuilder();
                         errorMessage.Append("WebRTC plugin initializing failed. See full log for exception details.\n");
                         Exception ex = initTask.Exception;
@@ -533,30 +537,30 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Signaler.SendMessageAsync(message);
         }
 
-        private void Signaler_OnMessage(Signaler.Message message)
+        private async void Signaler_OnMessage(Signaler.Message message)
         {
             switch (message.MessageType)
             {
-            case Signaler.Message.WireMessageType.Offer:
-                _nativePeer.SetRemoteDescription("offer", message.Data);
-                // If we get an offer, we immediately send an answer back
-                _nativePeer.CreateAnswer();
-                break;
+                case Signaler.Message.WireMessageType.Offer:
+                    await _nativePeer.SetRemoteDescriptionAsync("offer", message.Data);
+                    // If we get an offer, we immediately send an answer back
+                    _nativePeer.CreateAnswer();
+                    break;
 
-            case Signaler.Message.WireMessageType.Answer:
-                _nativePeer.SetRemoteDescription("answer", message.Data);
-                break;
+                case Signaler.Message.WireMessageType.Answer:
+                    _ = _nativePeer.SetRemoteDescriptionAsync("answer", message.Data);
+                    break;
 
-            case Signaler.Message.WireMessageType.Ice:
-                // TODO - This is NodeDSS-specific
-                // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
-                var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
-                _nativePeer.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
-                break;
+                case Signaler.Message.WireMessageType.Ice:
+                    // TODO - This is NodeDSS-specific
+                    // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                    var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                    // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                    _nativePeer.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                    break;
 
-            default:
-                throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
+                default:
+                    throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
             }
         }
 

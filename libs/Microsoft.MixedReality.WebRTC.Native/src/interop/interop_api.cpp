@@ -11,10 +11,10 @@
 #include "external_video_track_source_interop.h"
 #include "interop/global_factory.h"
 #include "interop_api.h"
-#include "peer_connection_interop.h"
-#include "media/local_video_track.h"
 #include "media/external_video_track_source_impl.h"
+#include "media/local_video_track.h"
 #include "peer_connection.h"
+#include "peer_connection_interop.h"
 #include "sdp_utils.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
@@ -1018,12 +1018,16 @@ mrsResult MRS_CALL mrsPeerConnectionSetBitrate(PeerConnectionHandle peer_handle,
 }
 
 mrsResult MRS_CALL
-mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
-                                      const char* type,
-                                      const char* sdp) noexcept {
+mrsPeerConnectionSetRemoteDescriptionAsync(PeerConnectionHandle peerHandle,
+                                           const char* type,
+                                           const char* sdp,
+                                           ActionCallback callback,
+                                           void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return (peer->SetRemoteDescription(type, sdp) ? Result::kSuccess
-                                                  : Result::kUnknownError);
+    return (peer->SetRemoteDescriptionAsync(type, sdp,
+                                            Callback<>{callback, user_data})
+                ? Result::kSuccess
+                : Result::kUnknownError);
   }
   return Result::kInvalidNativeHandle;
 }
@@ -1172,7 +1176,7 @@ T GetValueIfDefined(const webrtc::RTCStatsMember<T>& member) {
   return member.is_defined() ? *member : 0;
 }
 
-}
+}  // namespace
 
 mrsResult MRS_CALL
 mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
@@ -1286,7 +1290,8 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
             dest_stats.track_identifier = track_stats.track_identifier->c_str();
             dest_stats.frames_sent = GetValueIfDefined(track_stats.frames_sent);
-            dest_stats.huge_frames_sent = GetValueIfDefined(track_stats.huge_frames_sent);
+            dest_stats.huge_frames_sent =
+                GetValueIfDefined(track_stats.huge_frames_sent);
           }
         }
       }
@@ -1315,8 +1320,10 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
             dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
             dest_stats.track_identifier = track_stats.track_identifier->c_str();
-            dest_stats.frames_received = GetValueIfDefined(track_stats.frames_received);
-            dest_stats.frames_dropped = GetValueIfDefined(track_stats.frames_dropped);
+            dest_stats.frames_received =
+                GetValueIfDefined(track_stats.frames_received);
+            dest_stats.frames_dropped =
+                GetValueIfDefined(track_stats.frames_dropped);
           }
         }
       }
@@ -1338,8 +1345,7 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
   return Result::kSuccess;
 }
 
-mrsResult MRS_CALL
-mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report) {
+mrsResult MRS_CALL mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report) {
   if (auto rep = static_cast<const webrtc::RTCStatsReport*>(stats_report)) {
     rep->Release();
     return Result::kSuccess;

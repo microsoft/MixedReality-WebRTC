@@ -4,9 +4,9 @@
 #pragma once
 
 #include "audio_frame.h"
-#include "video_frame.h"
 #include "export.h"
 #include "result.h"
+#include "video_frame.h"
 
 extern "C" {
 
@@ -486,8 +486,8 @@ using mrsRequestExternalArgb32VideoFrameCallback =
 /// including generated or synthetic frames, for example for testing.
 /// The track source initially starts as capuring. Capture can be stopped with
 /// |mrsExternalVideoTrackSourceShutdown|.
-/// This returns a handle to a newly allocated object, which must be released once
-/// not used anymore with |mrsLocalVideoTrackRemoveRef()|.
+/// This returns a handle to a newly allocated object, which must be released
+/// once not used anymore with |mrsLocalVideoTrackRemoveRef()|.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
     PeerConnectionHandle peerHandle,
@@ -619,12 +619,19 @@ mrsPeerConnectionSetBitrate(PeerConnectionHandle peer_handle,
                             int start_bitrate_bps,
                             int max_bitrate_bps) noexcept;
 
+/// Parameter-less callback.
+using ActionCallback = void(MRS_CALL*)(void* user_data);
+
 /// Set a remote description received from a remote peer via the signaling
-/// service.
+/// service. Once the remote description is applied, the action callback is
+/// invoked to signal the caller it is safe to continue the negotiation, and in
+/// particular it is safe to call |CreateAnswer()|.
 MRS_API mrsResult MRS_CALL
-mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
-                                      const char* type,
-                                      const char* sdp) noexcept;
+mrsPeerConnectionSetRemoteDescriptionAsync(PeerConnectionHandle peerHandle,
+                                           const char* type,
+                                           const char* sdp,
+                                           ActionCallback callback,
+                                           void* user_data) noexcept;
 
 /// Close a peer connection, removing all tracks and disconnecting from the
 /// remote peer currently connected. This does not invalidate the handle nor
