@@ -76,6 +76,86 @@ namespace Microsoft.MixedReality.WebRTC
     };
 
     /// <summary>
+    /// Settings for adding a local video track backed by a local video capture device (e.g. webcam).
+    /// </summary>
+    public class LocalVideoTrackSettings
+    {
+        /// <summary>
+        /// Name of the track to create, as used for the SDP negotiation.
+        /// This name needs to comply with the requirements of an SDP token, as described in the SDP RFC
+        /// https://tools.ietf.org/html/rfc4566#page-43. In particular the name cannot contain spaces nor
+        /// double quotes <code>"</code>.
+        /// The track name can optionally be empty, in which case the implementation will create a valid
+        /// random track name.
+        /// </summary>
+        public string trackName = string.Empty;
+
+        /// <summary>
+        /// Optional video capture device to use for capture.
+        /// Use the default device if not specified.
+        /// </summary>
+        public VideoCaptureDevice videoDevice = default;
+
+        /// <summary>
+        /// Optional unique identifier of the video profile to use for capture,
+        /// if the device supports video profiles, as retrieved by one of:
+        /// - <see xref="MediaCapture.FindAllVideoProfiles"/>
+        /// - <see xref="MediaCapture.FindKnownVideoProfiles"/>
+        /// This requires <see cref="videoDevice"/> to be specified.
+        /// </summary>
+        public string videoProfileId = string.Empty;
+
+        /// <summary>
+        /// Optional video profile kind to restrict the list of video profiles to consider.
+        /// Note that this is not exclusive with <see cref="videoProfileId"/>, although in
+        /// practice it is recommended to specify only one or the other.
+        /// This requires <see cref="videoDevice"/> to be specified.
+        /// </summary>
+        public VideoProfileKind videoProfileKind = VideoProfileKind.Unspecified;
+
+        /// <summary>
+        /// Enable Mixed Reality Capture (MRC) on devices supporting the feature.
+        /// This setting is silently ignored on device not supporting MRC.
+        /// </summary>
+        /// <remarks>
+        /// This is only supported on UWP.
+        /// </remarks>
+        public bool enableMrc = true;
+
+        /// <summary>
+        /// Display the on-screen recording indicator while MRC is enabled.
+        /// This setting is silently ignored on device not supporting MRC, or if
+        /// <see cref="enableMrc"/> is set to <c>false</c>.
+        /// </summary>
+        /// <remarks>
+        /// This is only supported on UWP.
+        /// </remarks>
+        public bool enableMrcRecordingIndicator = true;
+
+        /// <summary>
+        /// Optional capture resolution width, in pixels.
+        /// This must be a resolution width the device supports.
+        /// </summary>
+        public uint? width;
+
+        /// <summary>
+        /// Optional capture resolution height, in pixels.
+        /// This must be a resolution width the device supports.
+        /// </summary>
+        public uint? height;
+
+        /// <summary>
+        /// Optional capture frame rate, in frames per second (FPS).
+        /// This must be a capture framerate the device supports.
+        /// </summary>
+        /// <remarks>
+        /// This is compared by strict equality, so is best left unspecified or to an exact value
+        /// retrieved by <see cref="PeerConnection.GetVideoCaptureFormatsAsync"/>.
+        /// </remarks>
+        public double? framerate;
+    }
+
+    /// <summary>
     /// Video track sending to the remote peer video frames originating from
     /// a local track source.
     /// </summary>

@@ -311,7 +311,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         [Test]
         public async Task AddLocalVideoTrackAsync_Default()
         {
-            var settings = new PeerConnection.LocalVideoTrackSettings();
+            var settings = new LocalVideoTrackSettings();
             LocalVideoTrack track1 = await pc1_.AddLocalVideoTrackAsync(settings);
             Assert.NotNull(track1);
             Assert.AreEqual(pc1_, track1.PeerConnection);
@@ -323,7 +323,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         public async Task BeforeConnect()
         {
             // Add local video track channel to #1
-            var settings = new PeerConnection.LocalVideoTrackSettings();
+            var settings = new LocalVideoTrackSettings();
             LocalVideoTrack track1 = await pc1_.AddLocalVideoTrackAsync(settings);
             Assert.NotNull(track1);
             Assert.AreEqual(pc1_, track1.PeerConnection);
@@ -364,7 +364,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.True(pc2_.IsConnected);
 
             // Add local video track channel to #1
-            var settings = new PeerConnection.LocalVideoTrackSettings();
+            var settings = new LocalVideoTrackSettings();
             LocalVideoTrack track1 = await pc1_.AddLocalVideoTrackAsync(settings);
             Assert.NotNull(track1);
             Assert.AreEqual(pc1_, track1.PeerConnection);

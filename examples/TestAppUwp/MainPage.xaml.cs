@@ -1456,7 +1456,7 @@ namespace TestAppUwp
                     await _peerConnection.AddLocalAudioTrackAsync();
 
                     // Add the local video track captured from the local webcam
-                    var trackConfig = new PeerConnection.LocalVideoTrackSettings
+                    var trackConfig = new LocalVideoTrackSettings
                     {
                         trackName = "local_video",
                         videoDevice = captureDeviceInfo,

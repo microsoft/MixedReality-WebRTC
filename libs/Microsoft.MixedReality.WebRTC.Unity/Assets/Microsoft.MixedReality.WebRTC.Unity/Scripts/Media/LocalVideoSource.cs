@@ -285,7 +285,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             _frameQueue.Clear();
 
-            var trackSettings = new WebRTC.PeerConnection.LocalVideoTrackSettings
+            var trackSettings = new LocalVideoTrackSettings
             {
                 trackName = trackName,
                 videoDevice = default,
