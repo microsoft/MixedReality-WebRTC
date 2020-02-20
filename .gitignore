@@ -66,3 +66,17 @@ CMakefiles/
 
 # MacOS
 .DS_Store
+
+# libwebrtc intermediate build files
+tools/build/libwebrtc/.checkout.sh
+tools/build/libwebrtc/.config.sh
+tools/build/libwebrtc/.build.sh
+tools/build/libwebrtc/.libwebrtc.cmake
+
+# Android intermediate build files
+tools/build/android/**/*.iml
+tools/build/android/.gradle
+tools/build/android/local.properties
+tools/build/android/**/build
+tools/build/android/captures
+tools/build/android/**/.externalNativeBuild
