@@ -689,6 +689,10 @@ MRS_API mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
 /// Must be the same as PeerConnection::FrameHeightRoundMode.
 enum class FrameHeightRoundMode : int32_t { kNone = 0, kCrop = 1, kPad = 2 };
 
+/// Check if the given SDP token is valid according to the RFC 4566 standard.
+/// See https://tools.ietf.org/html/rfc4566#page-43 for details.
+MRS_API mrsBool MRS_CALL mrsSdpIsValidToken(const char* token) noexcept;
+
 /// See PeerConnection::SetFrameHeightRoundMode.
 MRS_API void MRS_CALL mrsSetFrameHeightRoundMode(FrameHeightRoundMode value);
 
