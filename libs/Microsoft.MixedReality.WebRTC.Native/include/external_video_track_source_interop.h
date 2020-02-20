@@ -41,6 +41,14 @@ MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromArgb32Callback(
     void* user_data,
     ExternalVideoTrackSourceHandle* source_handle_out) noexcept;
 
+/// Callback from the wrapper layer indicating that the wrapper has finished
+/// creation, and it is safe to start sending frame requests to it. This needs
+/// to be called after |mrsExternalVideoTrackSourceCreateFromI420ACallback()| or
+/// |mrsExternalVideoTrackSourceCreateFromArgb32Callback()| to finish the
+/// creation of the video track source and allow it to start capturing.
+MRS_API void MRS_CALL mrsExternalVideoTrackSourceFinishCreation(
+    ExternalVideoTrackSourceHandle source_handle) noexcept;
+
 /// Complete a video frame request with a provided I420A video frame.
 MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteI420AFrameRequest(
     ExternalVideoTrackSourceHandle handle,

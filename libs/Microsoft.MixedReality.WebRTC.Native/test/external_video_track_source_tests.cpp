@@ -117,6 +117,7 @@ TEST(ExternalVideoTrackSource, Simple) {
             mrsExternalVideoTrackSourceCreateFromArgb32Callback(
                 &GenerateQuadTestFrame, nullptr, &source_handle));
   ASSERT_NE(nullptr, source_handle);
+  mrsExternalVideoTrackSourceFinishCreation(source_handle);
 
   LocalVideoTrackHandle track_handle = nullptr;
   ASSERT_EQ(mrsResult::kSuccess,

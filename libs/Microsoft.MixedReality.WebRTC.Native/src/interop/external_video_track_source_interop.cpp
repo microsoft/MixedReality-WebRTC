@@ -6,8 +6,8 @@
 #include "pch.h"
 
 #include "callback.h"
-#include "media/external_video_track_source.h"
 #include "external_video_track_source_interop.h"
+#include "media/external_video_track_source.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
@@ -63,6 +63,13 @@ mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromArgb32Callback(
   }
   *source_handle_out = track_source.release();
   return Result::kSuccess;
+}
+
+void MRS_CALL mrsExternalVideoTrackSourceFinishCreation(
+    ExternalVideoTrackSourceHandle source_handle) noexcept {
+  if (auto source = static_cast<ExternalVideoTrackSource*>(source_handle)) {
+    source->FinishCreation();
+  }
 }
 
 mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteI420AFrameRequest(
