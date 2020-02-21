@@ -65,6 +65,8 @@ class ExternalVideoTrackSourceImpl : public ExternalVideoTrackSource,
   void SetName(std::string name) { name_ = std::move(name); }
   std::string GetName() const override { return name_; }
 
+  void FinishCreation() override;
+
   /// Start the video capture. This will begin to produce video frames and start
   /// calling the video frame callback.
   void StartCapture();

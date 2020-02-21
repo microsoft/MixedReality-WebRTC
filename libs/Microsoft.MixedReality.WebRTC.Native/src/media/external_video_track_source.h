@@ -88,6 +88,10 @@ class ExternalVideoTrackSource : public TrackedObject {
   static RefPtr<ExternalVideoTrackSource> createFromArgb32(
       RefPtr<Argb32ExternalVideoSource> video_source);
 
+  /// Finish the creation of the video track source, and start capturing.
+  /// See |mrsExternalVideoTrackSourceFinishCreation()| for details.
+  virtual void FinishCreation() = 0;
+
   /// Start the video capture. This will begin to produce video frames and start
   /// calling the video frame callback.
   virtual void StartCapture() = 0;
