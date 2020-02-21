@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.XR;
 
 #if ENABLE_WINMD_SUPPORT
 using Windows.Graphics.Holographic;
@@ -192,11 +193,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             var nativePeer = PeerConnection.Peer;
             if ((nativePeer != null) && nativePeer.Initialized)
             {
-                VideoStreamStopped.Invoke();
-                Track.I420AVideoFrameReady -= I420ALocalVideoFrameReady;
-                nativePeer.RemoveLocalVideoTrack(Track);
-                Track.Dispose();
-                Track = null;
+                if (Track != null)
+                {
+                    VideoStreamStopped.Invoke();
+                    Track.I420AVideoFrameReady -= I420ALocalVideoFrameReady;
+                    nativePeer.RemoveLocalVideoTrack(Track);
+                    Track.Dispose();
+                    Track = null;
+                }
                 _frameQueue.Clear();
             }
         }
@@ -216,6 +220,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private async void DoAutoStartActions(WebRTC.PeerConnection nativePeer)
         {
+            // If a headset is active then do not capture local streams.
+            if (XRDevice.isPresent)
+            {
+                return;
+            }
+
             if (AutoAddTrack)
             {
                 // This needs to be awaited because it will initialize Track, used below
