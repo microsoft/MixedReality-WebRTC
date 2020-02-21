@@ -8,6 +8,11 @@
 
 namespace Microsoft::MixedReality::WebRTC {
 
+/// Enumeration of all object types that the global factory keeps track of for
+/// the purpose of keeping itself alive. Each value correspond to a type of
+/// wrapper object. Wrapper objects must call |GlobalFactory::AddObject()| and
+/// |GlobalFactory::RemoveObject()| to register themselves with the global
+/// factory while alive.
 enum class ObjectType : int {
   kPeerConnection,
   kLocalVideoTrack,
@@ -16,52 +21,56 @@ enum class ObjectType : int {
 
 /// Global factory wrapper adding thread safety to all global objects, including
 /// the peer connection factory, and on UWP the so-called "WebRTC factory".
-/// Usage pattern:
+///
+/// The global factory is kept alive by the various wrapper objects registered
+/// with |AddObject()|, and is automatically destroyed when the last of them is
+/// removed with |RemoveObject()|. Note that those calls are automatically made,
+/// generally by the constructor and destructor of the wrappers.
+///
+/// Because multiple threads can access that global factory in parallel, the
+/// actual destruction of the singleton instance may need to be delayed past the
+/// last |RemoveObject()| call until all threads finished using the instance.
+/// For that, the following usage pattern must be followed:
 ///   - Get a RefPtr<> to the singleton instance using |InstancePtr()|. This may
-///   initialize a new instance. This also adds a temporary reference to the
-///   factory to keep it alive until the RefPtr<> goes out of scope.
+///   initialize a new instance. This also locks the factory to keep it alive
+///   until the RefPtr<> goes out of scope..
 ///   - Use the factory, for example to get the peer connection factory or to
 ///   add/remove some wrapper objects. Whether or not any operation fails, the
-///   factory cannot be destroyed due to the temporary reference, even if no
-///   alive object is present anymore.
-///   - When the RefPtr<> goes out of scope, it releases its temporary reference
-///   to the factory. If that reference is the last one, then the factory
-///   attempts to shutdown, that is goes to check the alive objects, which
-///   constitutes long-term references and will also prevent its destruction.
+///   factory cannot be destroyed due to the temporary lock held by the RefPtr<>
+///   acquired above, even if no alive object is present.
+///   - When the RefPtr<> goes out of scope, it releases its lock to the
+///   factory. At that point, |ShutdownImpl()| is called to check if there is
+///   any object still alive, and to try shutting down the factory if not.
 ///
-/// The delayed call to |TryShutdown()| from releasing the temporary reference
-/// when RefPtr<GlobalFactory> goes out of scope instead of when no object is
-/// alive anymore allows the caller to create a wrapper object and fail
-/// initializing it, and remove it from the global factory but without the
-/// factory destroying itself yet. This works around a problem where the object
-/// removing itself triggers the destruction of the global factory singleton
-/// instance while another thread already acquired a reference to the global
-/// factory but did not yet add any wrapper object so cannot prevent its
-/// destruction, and is left with a dangling reference to a destroyed singleton.
-/// The temporary reference count allows delaying that destruction for as long
-/// as any thread has a reference to the singleton instance. This is not a real
-/// reference count because the global factory is a singleton, and to avoid
-/// circular references. Users must never store a RefPtr<> to the global
+/// The delayed call to |ShutdownImpl()| from releasing the lock when
+/// RefPtr<GlobalFactory> goes out of scope, instead of calling it from
+/// |RemoveObject()| when the last object is removed, is here to ensure that
+/// multiple threads accessing the global factory singleton instance do not
+/// destroy it before the last of them finished using that instance, as there is
+/// no way for the thread to get the singleton with |InstancePtr()| and perform
+/// all operations needed in an atomic fashion.
+///
+/// Note that, after any wrapper is added with |AddObject()|, the factory will
+/// be kept alive by the wrapper being registered, so it is not ever necessary
+/// to store a RefPtr<> to the factory (in fact, this might cause circular
+/// references). As a rule, users should never store a RefPtr<> to the global
 /// factory, but must use a local variable instead to temporarily block
 /// destruction during a single API call.
 ///
-/// Usage:
+/// Example:
 ///   RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
 ///   RefPtr<Wrapper> dummy = new Wrapper(); // calls GlobalFactory::AddObject()
 ///
 class GlobalFactory {
  public:
-  /// Force-shutdown the library.
-  static void ForceShutdown() noexcept;
-
   /// Global factory of all global objects, including the peer connection
   /// factory itself, with added thread safety.
+  /// This automatically create a new instance if none exists.
   static RefPtr<GlobalFactory> InstancePtr();
 
-  /// Attempt to shutdown the global factory if no live object is present
-  /// anymore. This is always conservative and safe, and will do nothing if any
-  /// object is still live.
-  static bool TryShutdown() noexcept;
+  /// Force-shutdown the library. This destroys the current singleton instance.
+  /// See also |mrsShutdownOptions::kIgnoreLiveObjectsAndForceShutdown|.
+  static void ForceShutdown() noexcept;
 
   GlobalFactory() = default;
   ~GlobalFactory();
@@ -95,13 +104,17 @@ class GlobalFactory {
   mrsResult GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory);
 #endif  // defined(WINUWP)
 
+  /// Temporarily prevent destruction of this instance. Do not call directly,
+  /// use RefPtr<> and |InstancePtr()| instead.
   void AddRef() const noexcept {
     temp_ref_count_.fetch_add(1, std::memory_order_relaxed);
   }
 
+  /// Release the temporary reference acquired with |AddRef()|. Do not call
+  /// directly, use RefPtr<> and |InstancePtr()| instead.
   void RemoveRef() const noexcept {
     if (temp_ref_count_.fetch_sub(1, std::memory_order_acq_rel) == 1) {
-      GlobalFactory::TryShutdown();
+      const_cast<GlobalFactory*>(this)->ShutdownImpl(/* force = */ false);
     }
   }
 
@@ -111,35 +124,49 @@ class GlobalFactory {
   static std::unique_ptr<GlobalFactory>& MutableInstance(
       bool createIfNotExist = true);
   mrsResult InitializeImplNoLock();
-  void ForceShutdownImpl();
-  bool TryShutdownImpl();
+  bool ShutdownImpl(bool force = false);
   void ReportLiveObjectsNoLock();
 
  private:
-  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory_
+  /// WebRTC peer connection factory used to create most WebRTC objects.
+  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_factory_
       RTC_GUARDED_BY(mutex_);
+
 #if defined(WINUWP)
+
+  /// UWP-specific factory.
   WebRtcFactoryPtr impl_ RTC_GUARDED_BY(mutex_);
-#else   // defined(WINUWP)
+
+#else  // defined(WINUWP)
+
+  /// WebRTC networking thread.
   std::unique_ptr<rtc::Thread> network_thread_ RTC_GUARDED_BY(mutex_);
+
+  /// WebRTC background worker thread for intensive operations, generally audio
+  /// or video processing.
   std::unique_ptr<rtc::Thread> worker_thread_ RTC_GUARDED_BY(mutex_);
+
+  /// WebRTC signaling thread used to serialize all calls to the internal WebRTC
+  /// library, and from which most callbacks are invoked.
   std::unique_ptr<rtc::Thread> signaling_thread_ RTC_GUARDED_BY(mutex_);
+
 #endif  // defined(WINUWP)
+
   std::recursive_mutex mutex_;
 
-  /// Collection of all objects alive.
+  /// Collection of all objects alive. Any object present in this collection
+  /// prevents the current singleton instance from being destroyed.
   std::unordered_map<TrackedObject*, ObjectType> alive_objects_
       RTC_GUARDED_BY(mutex_);
 
-  /// Shutdown options.
   mrsShutdownOptions shutdown_options_;
 
   /// Reference count for RAII-style shutdown. This is not used as a true
-  /// reference count, but instead as a marker of temporary acquiring a
-  /// reference to the GlobalFactory while trying to create some objects, and as
-  /// a notification mechanism when said reference is released to check for
+  /// reference count, but instead as a lock to temporarily prevent the
+  /// destruction of this instance while trying to create some objects, and as a
+  /// notification mechanism when said reference is released to check for
   /// shutdown. Therefore most of the time the reference count is zero, yet the
-  /// instance stays alive.
+  /// instance stays alive if |alive_objects_| if not empty.
   mutable std::atomic_uint32_t temp_ref_count_{0};
 };
 

@@ -102,13 +102,13 @@ std::unique_ptr<GlobalFactory>& GlobalFactory::MutableInstance(
 }
 
 GlobalFactory::~GlobalFactory() {
-  ForceShutdownImpl();
+  ShutdownImpl(/* force = */ true);
 }
 
 rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
 GlobalFactory::GetPeerConnectionFactory() noexcept {
   std::scoped_lock lock(mutex_);
-  return factory_;
+  return peer_factory_;
 }
 
 rtc::Thread* GlobalFactory::GetWorkerThread() noexcept {
@@ -138,22 +138,6 @@ void GlobalFactory::RemoveObject(ObjectType type, TrackedObject* obj) noexcept {
     }
   } catch (...) {
   }
-}
-
-bool GlobalFactory::TryShutdown() noexcept {
-  std::unique_ptr<GlobalFactory>& factory = GlobalFactory::MutableInstance();
-  if (!factory) {
-    return false;  // not shutdown by this call
-  }
-  try {
-    if (factory->TryShutdownImpl()) {
-      factory = nullptr;  // fixme : outside lock...
-      return true;
-    }
-  } catch (...) {
-    // fall through...
-  }
-  return false;
 }
 
 uint32_t GlobalFactory::ReportLiveObjects() {
@@ -193,7 +177,7 @@ mrsResult GlobalFactory::GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory) {
 #endif  // defined(WINUWP)
 
 mrsResult GlobalFactory::InitializeImplNoLock() {
-  RTC_CHECK(!factory_);
+  RTC_CHECK(!peer_factory_);
 
 #if defined(WINUWP)
   RTC_CHECK(!impl_);
@@ -232,7 +216,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
   impl_->internalSetup();
 
   // Cache the peer connection factory
-  factory_ = impl_->peerConnectionFactory();
+  peer_factory_ = impl_->peerConnectionFactory();
 #else   // defined(WINUWP)
   network_thread_ = rtc::Thread::CreateWithSocketServer();
   RTC_CHECK(network_thread_.get());
@@ -248,7 +232,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
                              signaling_thread_.get());
   signaling_thread_->Start();
 
-  factory_ = webrtc::CreatePeerConnectionFactory(
+  peer_factory_ = webrtc::CreatePeerConnectionFactory(
       network_thread_.get(), worker_thread_.get(), signaling_thread_.get(),
       nullptr, webrtc::CreateBuiltinAudioEncoderFactory(),
       webrtc::CreateBuiltinAudioDecoderFactory(),
@@ -260,56 +244,52 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
               absl::make_unique<webrtc::InternalDecoderFactory>())),
       nullptr, nullptr);
 #endif  // defined(WINUWP)
-  return (factory_.get() != nullptr ? Result::kSuccess : Result::kUnknownError);
+  return (peer_factory_.get() != nullptr ? Result::kSuccess
+                                         : Result::kUnknownError);
 }
 
-void GlobalFactory::ForceShutdownImpl() {
+bool GlobalFactory::ShutdownImpl(bool force) {
   std::scoped_lock lock(mutex_);
-  if (!factory_) {
-    return;
+  if (!peer_factory_) {
+    return false;
   }
 
-  // WebRTC object destructors are also dispatched to the signaling thread,
-  // like all method calls, but the threads are stopped by the GlobalFactory
-  // shutdown, so dispatching will never complete.
-  if (!alive_objects_.empty()) {
-    RTC_LOG(LS_ERROR)
-        << "Shutting down the global MixedReality-WebRTC factory while "
-        << alive_objects_.size()
-        << " objects are still alive. This will likely deadlock.";
-    if ((shutdown_options_ & mrsShutdownOptions::kLogLiveObjects) !=
-        (uint32_t)0) {
-      ReportLiveObjectsNoLock();
-    }
-    if ((shutdown_options_ & mrsShutdownOptions::kFailOnLiveObjects) !=
-        (uint32_t)0) {
-      return;
-    }
+  // Normal case: check if any object is alive
+  if (!force && !alive_objects_.empty()) {
+    return false;
+  }
+
+  // Forced shutdown case: either force a shutdown or leave dangling threads
+  if (force) {
+    // WebRTC object destructors are also dispatched to the signaling thread,
+    // like all method calls, but the threads are stopped by the GlobalFactory
+    // shutdown, so dispatching will never complete.
+    if (!alive_objects_.empty()) {
+      RTC_LOG(LS_ERROR)
+          << "Shutting down the global MixedReality-WebRTC factory while "
+          << alive_objects_.size()
+          << " objects are still alive. This will likely deadlock.";
+      if ((shutdown_options_ & mrsShutdownOptions::kLogLiveObjects) !=
+          (uint32_t)0) {
+        ReportLiveObjectsNoLock();
+      }
+      if ((shutdown_options_ &
+           mrsShutdownOptions::kIgnoreLiveObjectsAndForceShutdown) ==
+          (uint32_t)0) {
+        // Leave everything alive and dangling, even if the singleton instance
+        // is being destroyed.
+        return false;
+      }
 #if defined(MR_SHARING_WIN)
-    DebugBreak();
+      DebugBreak();
 #endif
+      // Fall through and force shutdown, forcefully destroying all objects
+      // event though they are still in use.
+    }
   }
 
   // Shutdown
-  factory_ = nullptr;
-#if defined(WINUWP)
-  impl_ = nullptr;
-#else   // defined(WINUWP)
-  network_thread_.reset();
-  worker_thread_.reset();
-  signaling_thread_.reset();
-#endif  // defined(WINUWP)
-}
-
-bool GlobalFactory::TryShutdownImpl() {
-  std::scoped_lock lock(mutex_);
-  if (!factory_) {
-    return false;
-  }
-  if (!alive_objects_.empty()) {
-    return false;
-  }
-  factory_ = nullptr;
+  peer_factory_ = nullptr;
 #if defined(WINUWP)
   impl_ = nullptr;
 #else   // defined(WINUWP)
