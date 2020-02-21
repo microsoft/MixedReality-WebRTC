@@ -120,18 +120,18 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             connectedEvent2_.Set();
         }
 
-        private void OnLocalSdpReady1(string type, string sdp)
+        private async void OnLocalSdpReady1(string type, string sdp)
         {
-            pc2_.SetRemoteDescription(type, sdp);
+            await pc2_.SetRemoteDescriptionAsync(type, sdp);
             if (type == "offer")
             {
                 pc2_.CreateAnswer();
             }
         }
 
-        private void OnLocalSdpReady2(string type, string sdp)
+        private async void OnLocalSdpReady2(string type, string sdp)
         {
-            pc1_.SetRemoteDescription(type, sdp);
+            await pc1_.SetRemoteDescriptionAsync(type, sdp);
             if (type == "offer")
             {
                 pc1_.CreateAnswer();

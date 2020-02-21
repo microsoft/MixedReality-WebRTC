@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.MixedReality.WebRTC.Interop
@@ -335,6 +336,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             return res;
         }
 
+        [MonoPInvokeCallback(typeof(ActionDelegate))]
+        public static void RemoteDescriptionApplied(IntPtr args)
+        {
+            var remoteDesc = Utils.ToWrapper<RemoteDescArgs>(args);
+            remoteDesc.completedEvent.Set();
+        }
+
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         internal struct MarshaledInteropCallbacks
         {
@@ -474,6 +482,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionSimpleStatsObjectCallback(IntPtr userData, IntPtr statsObject);
+        
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void ActionDelegate(IntPtr peer);
+
         #endregion
 
 
@@ -643,8 +655,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static extern uint PeerConnection_SetBitrate(PeerConnectionHandle peerHandle, int minBitrate, int startBitrate, int maxBitrate);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsPeerConnectionSetRemoteDescription")]
-        public static extern uint PeerConnection_SetRemoteDescription(PeerConnectionHandle peerHandle, string type, string sdp);
+            EntryPoint = "mrsPeerConnectionSetRemoteDescriptionAsync")]
+        public static extern uint PeerConnection_SetRemoteDescriptionAsync(PeerConnectionHandle peerHandle,
+            string type, string sdp, ActionDelegate callback, IntPtr callbackArgs);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionClose")]
@@ -661,6 +674,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsStatsReportRemoveRef")]
         public static extern void StatsReport_RemoveRef(IntPtr reportHandle);
+
         #endregion
 
 
@@ -674,6 +688,33 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             Utils.ThrowOnErrorCode(res);
             externalSource.OnTracksAddedToSource(peer);
             return new LocalVideoTrack(trackHandle, peer, trackName, externalSource);
+        }
+
+        class RemoteDescArgs
+        {
+            public ActionDelegate callback;
+            public ManualResetEventSlim completedEvent;
+        }
+
+        public static Task SetRemoteDescriptionAsync(PeerConnectionHandle peerHandle, string type, string sdp)
+        {
+            return Task.Run(() =>
+            {
+                var args = new RemoteDescArgs
+                {
+                    callback = RemoteDescriptionApplied,
+                    completedEvent = new ManualResetEventSlim(initialState: false)
+                };
+                IntPtr argsRef = Utils.MakeWrapperRef(args);
+                uint res = PeerConnection_SetRemoteDescriptionAsync(peerHandle, type, sdp, args.callback, argsRef);
+                if (res != Utils.MRS_SUCCESS)
+                {
+                    Utils.ReleaseWrapperRef(argsRef);
+                    Utils.ThrowOnErrorCode(res);
+                }
+                args.completedEvent.Wait();
+                Utils.ReleaseWrapperRef(argsRef);
+            });
         }
 
         #endregion

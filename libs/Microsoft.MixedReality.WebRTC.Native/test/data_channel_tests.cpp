@@ -22,6 +22,11 @@ FakeIterop_DataChannelCreate(mrsPeerConnectionInteropHandle /*parent*/,
 using DataAddedCallback =
     InteropCallback<mrsDataChannelInteropHandle, DataChannelHandle>;
 
+void MRS_CALL SetEventOnCompleted(void* user_data) {
+  Event* ev = (Event*)user_data;
+  ev->Set();
+}
+
 }  // namespace
 
 TEST(DataChannel, AddChannelBeforeInit) {
@@ -57,20 +62,24 @@ TEST(DataChannel, InBand) {
   // Setup signaling
   SdpCallback sdp1_cb(pc1.handle(), [&pc2](const char* type,
                                            const char* sdp_data) {
-    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                           pc2.handle(), type, sdp_data));
+    Event ev;
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionSetRemoteDescriptionAsync(
+                  pc2.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+    ev.Wait();
     if (kOfferString == type) {
-      ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionCreateAnswer(pc2.handle()));
+      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc2.handle()));
     }
   });
   SdpCallback sdp2_cb(pc2.handle(), [&pc1](const char* type,
                                            const char* sdp_data) {
-    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                           pc1.handle(), type, sdp_data));
+    Event ev;
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionSetRemoteDescriptionAsync(
+                  pc1.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+    ev.Wait();
     if (kOfferString == type) {
-      ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionCreateAnswer(pc1.handle()));
+      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc1.handle()));
     }
   });
   IceCallback ice1_cb(
@@ -115,8 +124,7 @@ TEST(DataChannel, InBand) {
   connectec1_cb.is_registered_ = true;
   mrsPeerConnectionRegisterConnectedCallback(pc2.handle(), CB(connectec2_cb));
   connectec2_cb.is_registered_ = true;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionCreateOffer(pc1.handle()));
+  ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateOffer(pc1.handle()));
   ASSERT_EQ(true, ev1.WaitFor(55s));  // should complete within 5s (usually ~1s)
   ASSERT_EQ(true, ev2.WaitFor(55s));
 
@@ -131,7 +139,7 @@ TEST(DataChannel, InBand) {
         ASSERT_NE(nullptr, data_channel);
 
         // TODO expose label
-        //ASSERT_EQ(channel_label, data2->label());
+        // ASSERT_EQ(channel_label, data2->label());
 
         data2_ev.Set();
       };
@@ -148,14 +156,13 @@ TEST(DataChannel, InBand) {
     mrsDataChannelCallbacks callbacks{};
     DataChannelHandle data1_handle;
     mrsDataChannelInteropHandle interopHandle = kFakeInteropDataChannelHandle;
-    ASSERT_EQ(
-        Result::kSuccess,
-        mrsPeerConnectionAddDataChannel(pc1.handle(), interopHandle,
-                                        data_config, callbacks, &data1_handle));
+    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddDataChannel(
+                                    pc1.handle(), interopHandle, data_config,
+                                    callbacks, &data1_handle));
     ASSERT_NE(nullptr, data1_handle);
 
     // TODO expose label
-    //ASSERT_EQ(channel_label, data1->label());
+    // ASSERT_EQ(channel_label, data1->label());
 
     ASSERT_EQ(true, data2_ev.WaitFor(30s));
 

@@ -227,16 +227,22 @@ class LocalPeerPairRaii {
   InteropCallback<> connected2_cb_;
   void setup() {
     sdp1_cb_ = [this](const char* type, const char* sdp_data) {
-      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                      pc2_.handle(), type, sdp_data));
+      Event ev;
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionSetRemoteDescriptionAsync(
+                    pc2_.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ev.Wait();
       if (kOfferString == type) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc2_.handle()));
       }
     };
     sdp2_cb_ = [this](const char* type, const char* sdp_data) {
-      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                      pc1_.handle(), type, sdp_data));
+      Event ev;
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionSetRemoteDescriptionAsync(
+                    pc1_.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ev.Wait();
       if (kOfferString == type) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc1_.handle()));
@@ -265,5 +271,10 @@ class LocalPeerPairRaii {
       mrsPeerConnectionRegisterConnectedCallback(pc2(), nullptr, nullptr);
       connected2_cb_.is_registered_ = false;
     }
+  }
+
+  static void MRS_CALL SetEventOnCompleted(void* user_data) {
+    Event* ev = (Event*)user_data;
+    ev->Set();
   }
 };

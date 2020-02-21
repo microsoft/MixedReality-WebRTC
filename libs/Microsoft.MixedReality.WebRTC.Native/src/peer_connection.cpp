@@ -208,8 +208,9 @@ class PeerConnectionImpl : public PeerConnection,
   bool AddIceCandidate(const char* sdp_mid,
                        const int sdp_mline_index,
                        const char* candidate) noexcept override;
-  bool SetRemoteDescription(const char* type,
-                            const char* sdp) noexcept override;
+  bool SetRemoteDescriptionAsync(const char* type,
+                                 const char* sdp,
+                                 Callback<> callback) noexcept override;
 
   void RegisterConnectedCallback(
       ConnectedCallback&& callback) noexcept override {
@@ -543,7 +544,19 @@ class SessionDescObserver : public webrtc::SetSessionDescriptionObserver {
 struct SetRemoteSessionDescObserver
     : public webrtc::SetRemoteDescriptionObserverInterface {
  public:
-  void OnSetRemoteDescriptionComplete(webrtc::RTCError error) override {}
+  SetRemoteSessionDescObserver() = default;
+  template <typename Closure>
+  SetRemoteSessionDescObserver(Closure&& callback)
+      : callback_(std::forward<Closure>(callback)) {}
+  void OnSetRemoteDescriptionComplete(webrtc::RTCError error) override {
+    RTC_LOG(LS_INFO) << "Remote description set. err=" << error.message();
+    if (error.ok() && callback_) {
+      callback_();
+    }
+  }
+
+ protected:
+  std::function<void()> callback_;
 };
 
 const std::string kAudioVideoStreamId("local_av_stream");
@@ -983,8 +996,10 @@ bool PeerConnectionImpl::IsClosed() const noexcept {
   return (peer_ == nullptr);
 }
 
-bool PeerConnectionImpl::SetRemoteDescription(const char* type,
-                                              const char* sdp) noexcept {
+bool PeerConnectionImpl::SetRemoteDescriptionAsync(
+    const char* type,
+    const char* sdp,
+    Callback<> callback) noexcept {
   if (!peer_) {
     return false;
   }
@@ -1005,7 +1020,10 @@ bool PeerConnectionImpl::SetRemoteDescription(const char* type,
   if (!session_description)
     return false;
   rtc::scoped_refptr<webrtc::SetRemoteDescriptionObserverInterface> observer =
-      new rtc::RefCountedObject<SetRemoteSessionDescObserver>();
+      new rtc::RefCountedObject<SetRemoteSessionDescObserver>([this, callback] {
+        // Fire completed callback to signal remote description was applied.
+        callback();
+      });
   peer_->SetRemoteDescription(std::move(session_description),
                               std::move(observer));
   return true;
@@ -1351,6 +1369,5 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
 void PeerConnection::GetStats(webrtc::RTCStatsCollectorCallback* callback) {
   ((PeerConnectionImpl*)this)->peer_->GetStats(callback);
 }
-
 
 }  // namespace Microsoft::MixedReality::WebRTC

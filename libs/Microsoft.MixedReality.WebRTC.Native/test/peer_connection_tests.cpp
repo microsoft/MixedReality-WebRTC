@@ -5,6 +5,15 @@
 
 #include "interop_api.h"
 
+namespace {
+
+void MRS_CALL SetEventOnCompleted(void* user_data) {
+  Event* ev = (Event*)user_data;
+  ev->Set();
+}
+
+}  // namespace
+
 TEST(PeerConnection, LocalNoIce) {
   for (int i = 0; i < 3; ++i) {
     // Create PC
@@ -15,24 +24,30 @@ TEST(PeerConnection, LocalNoIce) {
     ASSERT_NE(nullptr, pc2.handle());
 
     // Setup signaling
-    SdpCallback sdp1_cb(
-        pc1.handle(), [&pc2](const char* type, const char* sdp_data) {
-          ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                          pc2.handle(), type, sdp_data));
-          if (kOfferString == type) {
-            ASSERT_EQ(Result::kSuccess,
-                      mrsPeerConnectionCreateAnswer(pc2.handle()));
-          }
-        });
-    SdpCallback sdp2_cb(
-        pc2.handle(), [&pc1](const char* type, const char* sdp_data) {
-          ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                          pc1.handle(), type, sdp_data));
-          if (kOfferString == type) {
-            ASSERT_EQ(Result::kSuccess,
-                      mrsPeerConnectionCreateAnswer(pc1.handle()));
-          }
-        });
+    SdpCallback sdp1_cb(pc1.handle(), [&pc2](const char* type,
+                                             const char* sdp_data) {
+      Event ev;
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionSetRemoteDescriptionAsync(
+                    pc2.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ev.Wait();
+      if (kOfferString == type) {
+        ASSERT_EQ(Result::kSuccess,
+                  mrsPeerConnectionCreateAnswer(pc2.handle()));
+      }
+    });
+    SdpCallback sdp2_cb(pc2.handle(), [&pc1](const char* type,
+                                             const char* sdp_data) {
+      Event ev;
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionSetRemoteDescriptionAsync(
+                    pc1.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ev.Wait();
+      if (kOfferString == type) {
+        ASSERT_EQ(Result::kSuccess,
+                  mrsPeerConnectionCreateAnswer(pc1.handle()));
+      }
+    });
 
     // Connect
     Event ev;
@@ -53,24 +68,30 @@ TEST(PeerConnection, LocalIce) {
     ASSERT_NE(nullptr, pc2.handle());
 
     // Setup signaling
-    SdpCallback sdp1_cb(
-        pc1.handle(), [&pc2](const char* type, const char* sdp_data) {
-          ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                          pc2.handle(), type, sdp_data));
-          if (kOfferString == type) {
-            ASSERT_EQ(Result::kSuccess,
-                      mrsPeerConnectionCreateAnswer(pc2.handle()));
-          }
-        });
-    SdpCallback sdp2_cb(
-        pc2.handle(), [&pc1](const char* type, const char* sdp_data) {
-          ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                          pc1.handle(), type, sdp_data));
-          if (kOfferString == type) {
-            ASSERT_EQ(Result::kSuccess,
-                      mrsPeerConnectionCreateAnswer(pc1.handle()));
-          }
-        });
+    SdpCallback sdp1_cb(pc1.handle(), [&pc2](const char* type,
+                                             const char* sdp_data) {
+      Event ev;
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionSetRemoteDescriptionAsync(
+                    pc2.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ev.Wait();
+      if (kOfferString == type) {
+        ASSERT_EQ(Result::kSuccess,
+                  mrsPeerConnectionCreateAnswer(pc2.handle()));
+      }
+    });
+    SdpCallback sdp2_cb(pc2.handle(), [&pc1](const char* type,
+                                             const char* sdp_data) {
+      Event ev;
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionSetRemoteDescriptionAsync(
+                    pc1.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ev.Wait();
+      if (kOfferString == type) {
+        ASSERT_EQ(Result::kSuccess,
+                  mrsPeerConnectionCreateAnswer(pc1.handle()));
+      }
+    });
     IceCallback ice1_cb(
         pc1.handle(),
         [&pc2](const char* candidate, int sdpMlineindex, const char* sdpMid) {

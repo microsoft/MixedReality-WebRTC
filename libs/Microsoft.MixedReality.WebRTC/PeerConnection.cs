@@ -1259,26 +1259,18 @@ namespace Microsoft.MixedReality.WebRTC
         /// Pass the given SDP description received from the remote peer via signaling to the
         /// underlying WebRTC implementation, which will parse and use it.
         ///
-        /// This must be called by the signaler when receiving a message.
+        /// This must be called by the signaler when receiving a message. Once this operation
+        /// has completed, it is safe to call <see cref="CreateAnswer"/>.
         /// </summary>
         /// <param name="type">The type of SDP message ("offer" or "answer")</param>
         /// <param name="sdp">The content of the SDP message</param>
+        /// <returns>Returns a task which completes once the remote description has been applied and transceivers
+        /// have been updated.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
-        public void SetRemoteDescription(string type, string sdp)
+        public Task SetRemoteDescriptionAsync(string type, string sdp)
         {
             ThrowIfConnectionNotOpen();
-
-            // If the user specified a preferred audio or video codec, manipulate the SDP message
-            // to exclude other codecs if the preferred one is supported.
-            // We set the local codec params by forcing them here. There seems to be no direct way to set
-            // local codec params so we "pretend" that the remote endpoint is asking for them.
-            string newSdp = ForceSdpCodecs(sdp: sdp,
-                audio: PreferredAudioCodec,
-                audioParams: PreferredAudioCodecExtraParamsLocal,
-                video: PreferredVideoCodec,
-                videoParams: PreferredVideoCodecExtraParamsLocal);
-
-            PeerConnectionInterop.PeerConnection_SetRemoteDescription(_nativePeerhandle, type, newSdp);
+            return PeerConnectionInterop.SetRemoteDescriptionAsync(_nativePeerhandle, type, sdp);
         }
 
         #endregion
