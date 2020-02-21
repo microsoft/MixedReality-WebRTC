@@ -63,7 +63,7 @@ bool IsSilent_int16(const int16_t* data,
 // errors in subsequent processing, or other... in any case it is not exactly
 // zero like for video. (NB: voice activation doesn't seem to have much effect).
 //
-// Note however that using headphones and microphone, we can clearly ear the
+// Note however that using headphones and microphone, one can clearly hear the
 // first test (Simple) having the microphone enabled, and audio played back in
 // the earphones speakers, while in the second test (Muted) the audio is clearly
 // silent from a perceptual point of view.
@@ -114,9 +114,10 @@ TEST(AudioTrack, Simple) {
   ASSERT_NE(mrsBool::kFalse,
             mrsPeerConnectionIsLocalAudioTrackEnabled(pair.pc1()));
 
+  // Give the track some time to stream audio data
   Event ev;
   ev.WaitFor(5s);
-  ASSERT_LT(50u, call_count);  // at least 10 CPS
+  ASSERT_LT(50u, call_count) << "Expected at least 10 CPS";
 
   // Same as above
   ASSERT_NE(mrsBool::kFalse,
