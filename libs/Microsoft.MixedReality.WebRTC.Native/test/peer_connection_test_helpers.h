@@ -22,6 +22,10 @@ struct Event {
     signaled_ = true;
     cv_.notify_all();
   }
+  bool IsSignaled() const {
+    std::unique_lock<std::mutex> lk(m_);
+    return signaled_;
+  }
   void Wait() {
     std::unique_lock<std::mutex> lk(m_);
     if (!signaled_) {
@@ -35,9 +39,42 @@ struct Event {
     }
     return true;
   }
-  std::mutex m_;
+  mutable std::mutex m_;
   std::condition_variable cv_;
   bool signaled_{false};
+};
+
+
+/// Simple semaphore.
+struct Semaphore {
+  void Acquire(int64_t count = 1) {
+    std::unique_lock<std::mutex> lk(m_);
+    while (value_ < count) {
+      cv_.wait(lk);
+    }
+    value_ -= count;
+  }
+  bool TryAcquireFor(std::chrono::seconds seconds, int64_t count = 1) {
+    std::unique_lock<std::mutex> lk(m_);
+    while (value_ < count) {
+      if (cv_.wait_for(lk, seconds) == std::cv_status::timeout) {
+        return false;
+      }
+    }
+    value_ -= count;
+    return true;
+  }
+  void Release(int64_t count = 1) {
+    std::unique_lock<std::mutex> lk(m_);
+    const int64_t old_value = value_;
+    value_ += count;
+    if (old_value <= 0) {
+      cv_.notify_all();
+    }
+  }
+  std::mutex m_;
+  std::condition_variable cv_;
+  int64_t value_{0};
 };
 
 /// Wrapper around an interop callback taking an extra raw pointer argument, to
