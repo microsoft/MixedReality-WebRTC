@@ -159,7 +159,7 @@ class GlobalFactory {
   std::unordered_map<TrackedObject*, ObjectType> alive_objects_
       RTC_GUARDED_BY(mutex_);
 
-  mrsShutdownOptions shutdown_options_;
+  mrsShutdownOptions shutdown_options_ = mrsShutdownOptions::kDefault;
 
   /// Reference count for RAII-style shutdown. This is not used as a true
   /// reference count, but instead as a lock to temporarily prevent the
