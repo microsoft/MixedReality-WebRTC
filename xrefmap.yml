@@ -1771,19 +1771,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetLocalAudioTrackEnabled
   nameWithType: PeerConnection.SetLocalAudioTrackEnabled
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription(System.String,System.String)
-  name: SetRemoteDescription(String, String)
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescription_System_String_System_String_
-  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription(System.String,System.String)
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription(System.String, System.String)
-  nameWithType: PeerConnection.SetRemoteDescription(String, String)
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription*
-  name: SetRemoteDescription
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescription_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescriptionAsync(System.String,System.String)
+  name: SetRemoteDescriptionAsync(String, String)
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_System_String_System_String_
+  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescriptionAsync(System.String,System.String)
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescriptionAsync(System.String, System.String)
+  nameWithType: PeerConnection.SetRemoteDescriptionAsync(String, String)
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescriptionAsync*
+  name: SetRemoteDescriptionAsync
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescriptionAsync
   isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription
-  nameWithType: PeerConnection.SetRemoteDescription
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescriptionAsync
+  nameWithType: PeerConnection.SetRemoteDescriptionAsync
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport
   name: PeerConnection.StatsReport
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html
