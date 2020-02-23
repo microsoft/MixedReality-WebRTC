@@ -97,8 +97,8 @@ GlobalFactory* GlobalFactory::GetInstance() {
   // Use C++11 thread-safety guarantee to ensure a single instance is created.
   // It will be destroyed automatically on module unload. The "library
   // initialized" concept refers to this instance being initialized or not.
-  static std::unique_ptr<GlobalFactory> g_factory(new GlobalFactory());
-  return g_factory.get();
+  static std::unique_ptr<GlobalFactory> s_factory(new GlobalFactory());
+  return s_factory.get();
 }
 
 RefPtr<GlobalFactory> GlobalFactory::GetInstancePtrImpl(

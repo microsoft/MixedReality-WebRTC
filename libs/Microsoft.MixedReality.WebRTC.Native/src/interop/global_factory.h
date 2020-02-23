@@ -7,8 +7,6 @@
 #include "peer_connection.h"
 #include "utils.h"
 
-#include <shared_mutex>
-
 namespace Microsoft::MixedReality::WebRTC {
 
 /// Enumeration of all object types that the global factory keeps track of for
