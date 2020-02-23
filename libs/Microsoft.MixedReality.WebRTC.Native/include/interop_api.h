@@ -25,31 +25,6 @@ enum class mrsShutdownOptions : uint32_t {
   /// debugging. This flag is set by default.
   kLogLiveObjects = 0x1,
 
-  /// Advanced use only. Not set by default.
-  ///
-  /// Determine the behavior of the library on abnormal shutdown, when some
-  /// objects are still alive yet the internal factory is being destroyed, which
-  /// generally indicates some reference counting leaks. This flag has no effect
-  /// under normal use when the library is properly shut down after all objects
-  /// have been destroyed.
-  ///
-  /// - When cleared (default), this flag leaves the library in a dangling state
-  /// where the background WebRTC threads continue running forever. This means
-  /// WebRTC objects can continue to be proxied to those threads, and will not
-  /// deadlock waiting for them. However this means that the module (DLL) cannot
-  /// be unloaded as threads are still running, which might be problematic in
-  /// some use cases (e.g. Unity Editor hot-reload).
-  ///
-  /// - When set, this flag allows shutting down the library even if some
-  /// objects are still alive. This should be used with care as this makes the
-  /// library prone to deadlocking, since WebRTC calls are proxied on background
-  /// threads which would be destroyed by the shutdown, causing objects still
-  /// alive to deadlock when making such calls. However it might prove useful in
-  /// a controlled context where such objects are ensured not to be used any
-  /// further, like a unit test failing, to allow shutting down all threads and
-  /// forcefully unloading the module (DLL).
-  kIgnoreLiveObjectsAndForceShutdown = 0x2,
-
   /// Default flags value.
   kDefault = kLogLiveObjects
 };
