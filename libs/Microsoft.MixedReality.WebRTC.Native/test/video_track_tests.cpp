@@ -211,6 +211,7 @@ TEST(VideoTrack, ExternalI420) {
             mrsExternalVideoTrackSourceCreateFromI420ACallback(
                 &MakeTestFrame, nullptr, &source_handle));
   ASSERT_NE(nullptr, source_handle);
+  mrsExternalVideoTrackSourceFinishCreation(source_handle);
 
   LocalVideoTrackHandle track_handle = nullptr;
   ASSERT_EQ(

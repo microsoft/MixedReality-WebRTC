@@ -58,6 +58,7 @@
       <Filter>media</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\result.h" />
+    <ClInclude Include="..\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

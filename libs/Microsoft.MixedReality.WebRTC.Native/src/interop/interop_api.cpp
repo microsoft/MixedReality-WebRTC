@@ -26,10 +26,6 @@ struct mrsEnumerator {
 
 namespace {
 
-inline bool IsStringNullOrEmpty(const char* str) noexcept {
-  return ((str == nullptr) || (str[0] == '\0'));
-}
-
 mrsResult RTCToAPIError(const webrtc::RTCError& error) {
   if (error.ok()) {
     return Result::kSuccess;
