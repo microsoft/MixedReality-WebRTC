@@ -235,6 +235,17 @@ class LocalPeerPairRaii {
         ice2_cb_(pc2()) {
     setup();
   }
+  LocalPeerPairRaii(const PeerConnectionConfiguration& config,
+                    mrsPeerConnectionInteropHandle h1,
+                    mrsPeerConnectionInteropHandle h2)
+      : pc1_(config, h1),
+        pc2_(config, h2),
+        sdp1_cb_(pc1()),
+        sdp2_cb_(pc2()),
+        ice1_cb_(pc1()),
+        ice2_cb_(pc2()) {
+    setup();
+  }
   ~LocalPeerPairRaii() { shutdown(); }
 
   PeerConnectionHandle pc1() const { return pc1_.handle(); }
