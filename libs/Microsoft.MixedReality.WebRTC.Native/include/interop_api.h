@@ -79,6 +79,8 @@ using mrsVideoCaptureDeviceEnumCompletedCallback =
 /// For each device found, invoke the mandatory |callback|.
 /// At the end of the enumeration, invoke the optional |completedCallback| if it
 /// was provided (non-null).
+/// On UWP this must *not* be called from the main UI thread, otherwise a
+/// |mrsResult::kWrongThread| error might be returned.
 MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     mrsVideoCaptureDeviceEnumCallback enumCallback,
     void* enumCallbackUserData,
@@ -100,6 +102,8 @@ using mrsVideoCaptureFormatEnumCompletedCallback =
 /// For each device found, invoke the mandatory |callback|.
 /// At the end of the enumeration, invoke the optional |completedCallback| if it
 /// was provided (non-null).
+/// On UWP this must *not* be called from the main UI thread, otherwise a
+/// |mrsResult::kWrongThread| error might be returned.
 MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
     const char* device_id,
     mrsVideoCaptureFormatEnumCallback enumCallback,
