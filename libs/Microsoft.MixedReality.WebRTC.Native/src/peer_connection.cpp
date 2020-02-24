@@ -154,16 +154,12 @@ class PeerConnectionImpl : public PeerConnection,
  public:
   mrsPeerConnectionInteropHandle hhh;
 
-  PeerConnectionImpl(mrsPeerConnectionInteropHandle interop_handle)
-      : interop_handle_(interop_handle) {
-    GlobalFactory::InstancePtr()->AddObject(ObjectType::kPeerConnection, this);
-  }
+  PeerConnectionImpl(RefPtr<GlobalFactory> global_factory,
+                     mrsPeerConnectionInteropHandle interop_handle)
+      : PeerConnection(std::move(global_factory)),
+        interop_handle_(interop_handle) {}
 
-  ~PeerConnectionImpl() noexcept {
-    Close();
-    GlobalFactory::InstancePtr()->RemoveObject(ObjectType::kPeerConnection,
-                                               this);
-  }
+  ~PeerConnectionImpl() noexcept { Close(); }
 
   void SetPeerImpl(rtc::scoped_refptr<webrtc::PeerConnectionInterface> impl) {
     peer_ = std::move(impl);
@@ -610,8 +606,9 @@ ErrorOr<RefPtr<LocalVideoTrack>> PeerConnectionImpl::AddLocalVideoTrack(
   }
   auto result = peer_->AddTrack(video_track, {kAudioVideoStreamId});
   if (result.ok()) {
-    RefPtr<LocalVideoTrack> track = new LocalVideoTrack(
-        *this, std::move(video_track), std::move(result.MoveValue()), nullptr);
+    RefPtr<LocalVideoTrack> track =
+        new LocalVideoTrack(global_factory_, *this, std::move(video_track),
+                            std::move(result.MoveValue()), nullptr);
     {
       rtc::CritScope lock(&tracks_mutex_);
       local_video_tracks_.push_back(track);
@@ -1331,7 +1328,7 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
   SetFrameHeightRoundMode(FrameHeightRoundMode::kCrop);
 
   // Ensure the factory exists
-  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   auto pc_factory = global_factory->GetPeerConnectionFactory();
   if (!pc_factory) {
     return Error(Result::kUnknownError);
@@ -1350,7 +1347,7 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
   rtc_config.sdp_semantics = (config.sdp_semantic == SdpSemantic::kUnifiedPlan
                                   ? webrtc::SdpSemantics::kUnifiedPlan
                                   : webrtc::SdpSemantics::kPlanB);
-  auto peer = new PeerConnectionImpl(interop_handle);
+  auto peer = new PeerConnectionImpl(std::move(global_factory), interop_handle);
   webrtc::PeerConnectionDependencies dependencies(peer);
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> impl =
       pc_factory->CreatePeerConnection(rtc_config, std::move(dependencies));
@@ -1364,5 +1361,8 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
 void PeerConnection::GetStats(webrtc::RTCStatsCollectorCallback* callback) {
   ((PeerConnectionImpl*)this)->peer_->GetStats(callback);
 }
+
+PeerConnection::PeerConnection(RefPtr<GlobalFactory> global_factory)
+    : TrackedObject(std::move(global_factory), ObjectType::kPeerConnection) {}
 
 }  // namespace Microsoft::MixedReality::WebRTC
