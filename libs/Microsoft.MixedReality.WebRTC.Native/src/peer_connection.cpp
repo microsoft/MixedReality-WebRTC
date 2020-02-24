@@ -156,12 +156,13 @@ class PeerConnectionImpl : public PeerConnection,
 
   PeerConnectionImpl(mrsPeerConnectionInteropHandle interop_handle)
       : interop_handle_(interop_handle) {
-    GlobalFactory::Instance()->AddObject(ObjectType::kPeerConnection, this);
+    GlobalFactory::InstancePtr()->AddObject(ObjectType::kPeerConnection, this);
   }
 
   ~PeerConnectionImpl() noexcept {
     Close();
-    GlobalFactory::Instance()->RemoveObject(ObjectType::kPeerConnection, this);
+    GlobalFactory::InstancePtr()->RemoveObject(ObjectType::kPeerConnection,
+                                               this);
   }
 
   void SetPeerImpl(rtc::scoped_refptr<webrtc::PeerConnectionInterface> impl) {
@@ -1330,15 +1331,9 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
   SetFrameHeightRoundMode(FrameHeightRoundMode::kCrop);
 
   // Ensure the factory exists
-  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory;
-  {
-    mrsResult res = GlobalFactory::Instance()->GetOrCreate(factory);
-    if (res != Result::kSuccess) {
-      RTC_LOG(LS_ERROR) << "Failed to initialize the peer connection factory.";
-      return Error(res);
-    }
-  }
-  if (!factory.get()) {
+  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
+  auto pc_factory = global_factory->GetPeerConnectionFactory();
+  if (!pc_factory) {
     return Error(Result::kUnknownError);
   }
 
@@ -1358,7 +1353,7 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
   auto peer = new PeerConnectionImpl(interop_handle);
   webrtc::PeerConnectionDependencies dependencies(peer);
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> impl =
-      factory->CreatePeerConnection(rtc_config, std::move(dependencies));
+      pc_factory->CreatePeerConnection(rtc_config, std::move(dependencies));
   if (impl.get() == nullptr) {
     return Error(Result::kUnknownError);
   }

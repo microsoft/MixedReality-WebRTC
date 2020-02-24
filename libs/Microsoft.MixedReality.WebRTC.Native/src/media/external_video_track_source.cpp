@@ -131,14 +131,14 @@ ExternalVideoTrackSourceImpl::ExternalVideoTrackSourceImpl(
       adapter_(std::forward<std::unique_ptr<BufferAdapter>>(adapter)),
       capture_thread_(rtc::Thread::Create()) {
   capture_thread_->SetName("ExternalVideoTrackSource capture thread", this);
-  GlobalFactory::Instance()->AddObject(ObjectType::kExternalVideoTrackSource,
-                                       this);
+  GlobalFactory::InstancePtr()->AddObject(ObjectType::kExternalVideoTrackSource,
+                                          this);
 }
 
 ExternalVideoTrackSourceImpl::~ExternalVideoTrackSourceImpl() {
   StopCapture();
-  GlobalFactory::Instance()->RemoveObject(ObjectType::kExternalVideoTrackSource,
-                                          this);
+  GlobalFactory::InstancePtr()->RemoveObject(
+      ObjectType::kExternalVideoTrackSource, this);
 }
 
 void ExternalVideoTrackSourceImpl::FinishCreation() {

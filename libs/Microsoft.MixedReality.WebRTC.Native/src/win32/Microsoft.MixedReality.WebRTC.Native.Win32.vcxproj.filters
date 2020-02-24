@@ -65,6 +65,7 @@
     <ClInclude Include="..\media\local_video_track.h">
       <Filter>media</Filter>
     </ClInclude>
+    <ClInclude Include="..\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

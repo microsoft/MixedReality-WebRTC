@@ -146,6 +146,7 @@
     <ClInclude Include="..\str.h" />
     <ClInclude Include="..\targetver.h" />
     <ClInclude Include="..\tracked_object.h" />
+    <ClInclude Include="..\utils.h" />
     <ClInclude Include="..\video_frame_observer.h" />
   </ItemGroup>
   <ItemGroup>

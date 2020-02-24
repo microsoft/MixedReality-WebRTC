@@ -17,6 +17,18 @@ enum class mrsBool : int32_t { kTrue = -1, kFalse = 0 };
 // Generic utilities
 //
 
+/// Global MixedReality-WebRTC library shutdown options.
+enum class mrsShutdownOptions : uint32_t {
+  kNone = 0,
+
+  /// Log some report about live objects when trying to shutdown, to help
+  /// debugging. This flag is set by default.
+  kLogLiveObjects = 0x1,
+
+  /// Default flags value.
+  kDefault = kLogLiveObjects
+};
+
 /// Opaque enumerator type.
 struct mrsEnumerator;
 
