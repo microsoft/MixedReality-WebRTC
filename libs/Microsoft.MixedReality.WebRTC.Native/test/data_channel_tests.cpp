@@ -27,6 +27,19 @@ void MRS_CALL SetEventOnCompleted(void* user_data) {
   ev->Set();
 }
 
+void MRS_CALL StaticMessageCallback(void* user_data,
+                                    const void* data,
+                                    const uint64_t size) {
+  auto func = *static_cast<std::function<void(const void*, const uint64_t)>*>(
+      user_data);
+  func(data, size);
+}
+
+void MRS_CALL StaticStateCallback(void* user_data, int32_t state, int32_t id) {
+  auto func = *static_cast<std::function<void(int32_t, int32_t)>*>(user_data);
+  func(state, id);
+}
+
 }  // namespace
 
 TEST(DataChannel, AddChannelBeforeInit) {
@@ -209,6 +222,105 @@ TEST(DataChannel, MultiThreadCreate) {
   for (std::thread& t : threads) {
     t.join();
   }
+}
+
+TEST(DataChannel, Send) {
+  LocalPeerPairRaii pair;
+
+  const int kId = 42;
+
+  mrsDataChannelConfig config{};
+  config.id = kId;
+  config.label = "data";
+  config.flags = mrsDataChannelConfigFlags::kOrdered |
+                 mrsDataChannelConfigFlags::kReliable;
+
+  const char msg1_data[] = "test message";
+  const uint64_t msg1_size = sizeof(msg1_data);
+  const char msg2_data[] =
+      "This is a reply from peer #2 to peer #1 which is a bit longer than the "
+      "previous message, just to make sure longer messages are also supported.";
+  const uint64_t msg2_size = sizeof(msg2_data);
+
+  Event ev_msg1, ev_state1;
+  std::function<void(const void*, const uint64_t)> message1_cb(
+      [&](const void* data, const uint64_t size) {
+        ASSERT_EQ(msg2_size, size);
+        ASSERT_NE(nullptr, data);
+        ASSERT_EQ(0, memcmp(data, msg2_data, msg2_size));
+        ev_msg1.Set();
+      });
+  std::function<void(int32_t, int32_t)> state1_cb(
+      [&](int32_t state, int32_t id) {
+        ASSERT_EQ(kId, id);
+        if (state == 1) {  // kOpen
+          ev_state1.Set();
+        }
+      });
+  mrsDataChannelCallbacks callbacks1{};
+  callbacks1.message_callback = &StaticMessageCallback;
+  callbacks1.message_user_data = &message1_cb;
+  callbacks1.state_callback = &StaticStateCallback;
+  callbacks1.state_user_data = &state1_cb;
+  DataChannelHandle handle1;
+  mrsDataChannelInteropHandle interopHandle1 = kFakeInteropDataChannelHandle;
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionAddDataChannel(pair.pc1(), interopHandle1, config,
+                                            callbacks1, &handle1));
+
+  Event ev_msg2, ev_state2;
+  std::function<void(const void*, const uint64_t)> message2_cb(
+      [&](const void* data, const uint64_t size) {
+        ASSERT_EQ(msg1_size, size);
+        ASSERT_NE(nullptr, data);
+        ASSERT_EQ(0, memcmp(data, msg1_data, msg1_size));
+        ev_msg2.Set();
+      });
+  std::function<void(int32_t, int32_t)> state2_cb(
+      [&](int32_t state, int32_t id) {
+        ASSERT_EQ(kId, id);
+        if (state == 1) {  // kOpen
+          ev_state2.Set();
+        }
+      });
+  mrsDataChannelCallbacks callbacks2{};
+  callbacks2.message_callback = &StaticMessageCallback;
+  callbacks2.message_user_data = &message2_cb;
+  callbacks2.state_callback = &StaticStateCallback;
+  callbacks2.state_user_data = &state2_cb;
+  DataChannelHandle handle2;
+  mrsDataChannelInteropHandle interopHandle2 = kFakeInteropDataChannelHandle;
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionAddDataChannel(pair.pc2(), interopHandle2, config,
+                                            callbacks2, &handle2));
+
+  // Connect and waitfor channels to be ready
+  pair.ConnectAndWait();
+  ASSERT_TRUE(ev_state1.WaitFor(60s));
+  ASSERT_TRUE(ev_state2.WaitFor(60s));
+
+  // Send message 1 -> 2
+  ASSERT_EQ(Result::kSuccess,
+            mrsDataChannelSendMessage(handle1, msg1_data, msg1_size));
+  ASSERT_TRUE(ev_msg2.WaitFor(60s));
+
+  // Send message 2 -> 1
+  ASSERT_EQ(Result::kSuccess,
+            mrsDataChannelSendMessage(handle2, msg2_data, msg2_size));
+  ASSERT_TRUE(ev_msg1.WaitFor(60s));
+
+  // Clean-up
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionRemoveDataChannel(pair.pc1(), handle1));
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionRemoveDataChannel(pair.pc2(), handle2));
+}
+
+TEST(DataChannel, Send_InvalidHandle) {
+  const char msg[] = "test";
+  const uint64_t size = sizeof(msg);
+  ASSERT_EQ(Result::kInvalidNativeHandle,
+            mrsDataChannelSendMessage(nullptr, msg, size));
 }
 
 // NOTE - This test is flaky, relies on the send loop being faster than what the
