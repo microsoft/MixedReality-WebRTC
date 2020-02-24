@@ -1,15 +1,16 @@
 #Usage
 
+ - Generate an X509 certificate and key for the web socket server using the instructions below,
  - Build and run the solution file,
  - Open the `webrtc.html` page in a WebRTC enabled browser.
  - Click the `Start` button in the Web Browser.
  - If successful a new Window should pop-up displaying the Video stream received from the browser and the audio should be played on the default system speaker.
 
- #Notes
+ #Certificate Instructions
 
  A web socket connection is used to exchange the SDP offer and answer as well as ICE candidates. The web socket connection will only work if listening port on the test application can be accessed by the browser. It should work correctly if both are on the same development machine or local network.
 
- A PKCS12 archive file is included which contains an X509 certificate with a common name of local host as well as an arbitrarily generated private key. This archive is suitable for use when the web socket connection is between a browser and the test application running on the same machine and since the private key is freely accessible it should not be used outside of a development environment. The instructions use to generate the certificate using openssl are below:
+ A PKCS12 archive file which contains an X509 certificate with a common name of "localhost" and a private key is required. The archive file is needed for the web socket server and is suitable for use when the web socket connection is between a browser and the test application running on the same machine. The instructions use to generate the certificate using openssl are below:
 
  ````
 openssl req -config req.conf -x509 -newkey rsa:4096 -keyout private/localhost.pem -out localhost.pem -nodes -days 3650
