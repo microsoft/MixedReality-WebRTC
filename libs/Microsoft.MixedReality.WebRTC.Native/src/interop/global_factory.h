@@ -96,7 +96,9 @@ class GlobalFactory {
     // call |AddRef()| under the lock too so will block.
     std::scoped_lock lock(init_mutex_);
     RTC_DCHECK(peer_factory_);
-    if (ref_count_.fetch_sub(1, std::memory_order_acq_rel) == 1) {
+    // Usually this is memory_order_acq_rel, but here the |init_mutex_| forces
+    // the necessary memory barrier, so only the atomicity is relevant.
+    if (ref_count_.fetch_sub(1, std::memory_order_relaxed) == 1) {
       const_cast<GlobalFactory*>(this)->ShutdownImplNoLock(
           ShutdownAction::kTryShutdownIfSafe);
     }

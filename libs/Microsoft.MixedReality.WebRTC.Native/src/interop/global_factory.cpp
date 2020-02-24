@@ -10,6 +10,8 @@
 #include "peer_connection.h"
 #include "utils.h"
 
+#include <exception>
+
 namespace {
 
 using namespace Microsoft::MixedReality::WebRTC;
@@ -76,7 +78,11 @@ void GlobalFactory::ForceShutdown() noexcept {
   }
   try {
     factory->ShutdownImplNoLock(ShutdownAction::kForceShutdown);
+  } catch (std::exception& e) {
+    RTC_LOG(LS_ERROR) << "Failed to shutdown library with exception: "
+                      << e.what();
   } catch (...) {
+    RTC_LOG(LS_ERROR) << "Failed to shutdown library due to unknown exception.";
   }
 }
 
@@ -88,9 +94,14 @@ bool GlobalFactory::TryShutdown() noexcept {
   }
   try {
     return factory->ShutdownImplNoLock(ShutdownAction::kTryShutdownIfSafe);
+  } catch (std::exception& e) {
+    RTC_LOG(LS_ERROR)
+        << "Failed to attempt to shutdown library with exception: " << e.what();
   } catch (...) {
-    return false;  // failed to shutdown
+    RTC_LOG(LS_ERROR)
+        << "Failed to attempt to shutdown library due to unknown exception.";
   }
+  return false;  // failed to shutdown
 }
 
 GlobalFactory* GlobalFactory::GetInstance() {
