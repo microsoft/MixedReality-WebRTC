@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -12,11 +11,11 @@ using System.Collections.Concurrent;
 using System.Text;
 
 #if UNITY_WSA && !UNITY_EDITOR
-using Windows.UI.Core;
-using Windows.Foundation;
-using Windows.Media.Core;
-using Windows.Media.Capture;
-using Windows.ApplicationModel.Core;
+using global::Windows.UI.Core;
+using global::Windows.Foundation;
+using global::Windows.Media.Core;
+using global::Windows.Media.Capture;
+using global::Windows.ApplicationModel.Core;
 #endif
 
 namespace Microsoft.MixedReality.WebRTC.Unity

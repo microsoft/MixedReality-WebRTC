@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 #if ENABLE_WINMD_SUPPORT
-using Windows.Graphics.Holographic;
+using global::Windows.Graphics.Holographic;
 #endif
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -249,11 +249,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 framerate = 0; // auto
 
                 // For HoloLens, use video profile to reduce resolution and save power/CPU/bandwidth
-                if (Windows.Graphics.Holographic.HolographicSpace.IsAvailable)
+                if (global::Windows.Graphics.Holographic.HolographicSpace.IsAvailable)
                 {
-                    if (!Windows.Graphics.Holographic.HolographicDisplay.GetDefault().IsOpaque)
+                    if (!global::Windows.Graphics.Holographic.HolographicDisplay.GetDefault().IsOpaque)
                     {
-                        if (Windows.ApplicationModel.Package.Current.Id.Architecture == Windows.System.ProcessorArchitecture.X86)
+                        if (global::Windows.ApplicationModel.Package.Current.Id.Architecture == global::Windows.System.ProcessorArchitecture.X86)
                         {
                             // Holographic AR (transparent) x86 platform - Assume HoloLens 1
                             videoProfileKind = WebRTC.VideoProfileKind.VideoRecording; // No profile in VideoConferencing
