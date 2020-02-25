@@ -25,7 +25,7 @@ using mrsPeerConnectionIceGatheringStateChangedCallback =
 
 /// Register a callback fired when the ICE connection state changes.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterIceGatheringStateChangedCallback(
-    PeerConnectionHandle peerHandle,
+    PeerConnectionHandle peer_handle,
     mrsPeerConnectionIceGatheringStateChangedCallback callback,
     void* user_data) noexcept;
 

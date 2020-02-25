@@ -39,14 +39,10 @@ class str {
   std::string str_;
   friend bool operator==(const str& lhs, const str& rhs) noexcept;
   friend bool operator!=(const str& lhs, const str& rhs) noexcept;
-  friend bool operator==(const str& lhs,
-                                 const std::string& rhs) noexcept;
-  friend bool operator==(const std::string& lhs,
-                                 const str& rhs) noexcept;
-  friend bool operator!=(const str& lhs,
-                                 const std::string& rhs) noexcept;
-  friend bool operator!=(const std::string& lhs,
-                                 const str& rhs) noexcept;
+  friend bool operator==(const str& lhs, const std::string& rhs) noexcept;
+  friend bool operator==(const std::string& lhs, const str& rhs) noexcept;
+  friend bool operator!=(const str& lhs, const std::string& rhs) noexcept;
+  friend bool operator!=(const std::string& lhs, const str& rhs) noexcept;
 };
 
 bool operator==(const str& lhs, const str& rhs) noexcept;
