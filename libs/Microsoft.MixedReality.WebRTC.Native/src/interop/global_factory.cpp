@@ -29,20 +29,20 @@ std::string_view ObjectTypeToString(ObjectType type) {
 }
 
 /// Utility to format a tracked object into a string, for debugging purpose.
-std::string ObjectToString(ObjectType type, TrackedObject* obj) {
+std::string ObjectToString(TrackedObject* obj) {
   // rtc::StringBuilder doesn't support std::string_view, nor Append(). And
   // asbl::string_view is not constexpr-friendly on MSVC due to strlen().
   // rtc::SimpleStringBuilder supports Append(), but cannot dynamically resize.
   // Assume that the object name will not be too long, and use that one.
   char buffer[512];
   rtc::SimpleStringBuilder builder(buffer);
-  builder << "(";
-  std::string_view sv = ObjectTypeToString(type);
-  builder.Append(sv.data(), sv.length());
   if (obj) {
+    builder << "(";
+    std::string_view sv = ObjectTypeToString(obj->GetObjectType());
+    builder.Append(sv.data(), sv.length());
     builder << ") " << obj->GetName();
   } else {
-    builder << ") NULL";
+    builder << "NULL";
   }
   return builder.str();
 }
@@ -156,21 +156,21 @@ rtc::Thread* GlobalFactory::GetWorkerThread() const noexcept {
 #endif  // defined(WINUWP)
 }
 
-void GlobalFactory::AddObject(ObjectType type, TrackedObject* obj) noexcept {
+void GlobalFactory::AddObject(TrackedObject* obj) noexcept {
   try {
     std::scoped_lock lock(mutex_);
-    RTC_DCHECK(alive_objects_.find(obj) == alive_objects_.end());
-    alive_objects_.emplace(obj, type);
+    RTC_DCHECK(std::find(alive_objects_.begin(), alive_objects_.end(), obj) ==
+               alive_objects_.end());
+    alive_objects_.push_back(obj);
   } catch (...) {
   }
 }
 
-void GlobalFactory::RemoveObject(ObjectType type, TrackedObject* obj) noexcept {
+void GlobalFactory::RemoveObject(TrackedObject* obj) noexcept {
   try {
     std::scoped_lock lock(mutex_);
-    auto it = alive_objects_.find(obj);
+    auto it = std::find(alive_objects_.begin(), alive_objects_.end(), obj);
     if (it != alive_objects_.end()) {
-      RTC_DCHECK(it->second == type);
       alive_objects_.erase(it);
     }
   } catch (...) {
@@ -292,27 +292,21 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
     return true;  // already shut down
   }
 
+  // This is read under the init mutex lock so can be relaxed, as it cannot
+  // decrease during that time.
   const int num_refs = ref_count_.load(std::memory_order_relaxed);
-  const bool has_alive_objects = !alive_objects_.empty();
-  if ((num_refs > 0) || has_alive_objects) {
+  if (num_refs > 0) {
     if (shutdown_action == ShutdownAction::kTryShutdownIfSafe) {
       return false;  // cannot shut down safely, staying initialized
     }
-    if (has_alive_objects) {
-      bool fromDtor =
-          (shutdown_action == ShutdownAction::kFromObjectDestructor);
-      RTC_LOG(LS_ERROR)
-          << "Shutting down the global MixedReality-WebRTC factory while "
-          << alive_objects_.size() << " objects are still alive."
-          << (fromDtor
-                  ? " This will likely deadlock when dispatching the peer "
-                    "connection factory destructor to the signaling thread."
-                  : "");
-    } else {
-      RTC_LOG(LS_ERROR) << "Force-shutting down the global MixedReality-WebRTC "
-                           "factory while it still has "
-                        << num_refs << " references.";
-    }
+    bool fromDtor = (shutdown_action == ShutdownAction::kFromObjectDestructor);
+    RTC_LOG(LS_ERROR)
+        << "Force-shutting down the global MixedReality-WebRTC "
+           "factory while it still has "
+        << num_refs << " references."
+        << (fromDtor ? " This will likely deadlock when dispatching the peer "
+                       "connection factory destructor to the signaling thread."
+                     : "");
     if ((shutdown_options_ & mrsShutdownOptions::kLogLiveObjects) != 0) {
       ReportLiveObjectsNoLock();
     }
@@ -337,10 +331,9 @@ void GlobalFactory::ReportLiveObjectsNoLock() {
   RTC_LOG(LS_INFO) << "mr-webrtc alive objects report for "
                    << alive_objects_.size() << " objects:";
   int i = 0;
-  for (auto&& pair : alive_objects_) {
-    RTC_LOG(LS_INFO) << "[" << i << "] "
-                     << ObjectToString(pair.second, pair.first) << " [~"
-                     << pair.first->GetApproxRefCount() << " ref(s)]";
+  for (auto&& obj : alive_objects_) {
+    RTC_LOG(LS_INFO) << "[" << i << "] " << ObjectToString(obj) << " [~"
+                     << obj->GetApproxRefCount() << " ref(s)]";
     ++i;
   }
 }

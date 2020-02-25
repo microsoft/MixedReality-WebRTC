@@ -58,6 +58,7 @@ class ExternalVideoTrackSourceImpl : public ExternalVideoTrackSource,
   using SourceState = webrtc::MediaSourceInterface::SourceState;
 
   static RefPtr<ExternalVideoTrackSource> create(
+      RefPtr<GlobalFactory> global_factory,
       std::unique_ptr<BufferAdapter> adapter);
 
   ~ExternalVideoTrackSourceImpl() override;
@@ -90,7 +91,8 @@ class ExternalVideoTrackSourceImpl : public ExternalVideoTrackSource,
   webrtc::VideoTrackSourceInterface* impl() const { return track_source_; }
 
  protected:
-  ExternalVideoTrackSourceImpl(std::unique_ptr<BufferAdapter> adapter);
+  ExternalVideoTrackSourceImpl(RefPtr<GlobalFactory> global_factory,
+                               std::unique_ptr<BufferAdapter> adapter);
   // void Run(rtc::Thread* thread) override;
   void OnMessage(rtc::Message* message) override;
 

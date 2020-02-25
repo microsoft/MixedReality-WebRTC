@@ -7,6 +7,7 @@
 
 #include "callback.h"
 #include "external_video_track_source_interop.h"
+#include "interop/global_factory.h"
 #include "media/external_video_track_source.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
@@ -40,7 +41,8 @@ mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromI420ACallback(
   }
   *source_handle_out = nullptr;
   RefPtr<ExternalVideoTrackSource> track_source =
-      detail::ExternalVideoTrackSourceCreateFromI420A(callback, user_data);
+      detail::ExternalVideoTrackSourceCreateFromI420A(
+          GlobalFactory::InstancePtr(), callback, user_data);
   if (!track_source) {
     return Result::kUnknownError;
   }
@@ -57,7 +59,8 @@ mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromArgb32Callback(
   }
   *source_handle_out = nullptr;
   RefPtr<ExternalVideoTrackSource> track_source =
-      detail::ExternalVideoTrackSourceCreateFromArgb32(callback, user_data);
+      detail::ExternalVideoTrackSourceCreateFromArgb32(
+          GlobalFactory::InstancePtr(), callback, user_data);
   if (!track_source) {
     return Result::kUnknownError;
   }
@@ -158,6 +161,7 @@ struct Argb32InteropVideoSource : Argb32ExternalVideoSource {
 namespace Microsoft::MixedReality::WebRTC::detail {
 
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromI420A(
+    RefPtr<GlobalFactory> global_factory,
     mrsRequestExternalI420AVideoFrameCallback callback,
     void* user_data) {
   RefPtr<I420AInteropVideoSource> custom_source =
@@ -166,7 +170,8 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromI420A(
     return {};
   }
   RefPtr<ExternalVideoTrackSource> track_source =
-      ExternalVideoTrackSource::createFromI420A(custom_source);
+      ExternalVideoTrackSource::createFromI420A(std::move(global_factory),
+                                                custom_source);
   if (!track_source) {
     return {};
   }
@@ -175,6 +180,7 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromI420A(
 }
 
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
+    RefPtr<GlobalFactory> global_factory,
     mrsRequestExternalArgb32VideoFrameCallback callback,
     void* user_data) {
   RefPtr<Argb32InteropVideoSource> custom_source =
@@ -183,7 +189,8 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
     return {};
   }
   RefPtr<ExternalVideoTrackSource> track_source =
-      ExternalVideoTrackSource::createFromArgb32(custom_source);
+      ExternalVideoTrackSource::createFromArgb32(std::move(global_factory),
+                                                 custom_source);
   if (!track_source) {
     return {};
   }

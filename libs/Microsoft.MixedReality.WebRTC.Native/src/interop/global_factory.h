@@ -9,17 +9,6 @@
 
 namespace Microsoft::MixedReality::WebRTC {
 
-/// Enumeration of all object types that the global factory keeps track of for
-/// the purpose of keeping itself alive. Each value correspond to a type of
-/// wrapper object. Wrapper objects must call |GlobalFactory::AddObject()| and
-/// |GlobalFactory::RemoveObject()| to register themselves with the global
-/// factory while alive.
-enum class ObjectType : int {
-  kPeerConnection,
-  kLocalVideoTrack,
-  kExternalVideoTrackSource,
-};
-
 /// The global factory is a helper class used to initialize and shutdown the
 /// internal WebRTC library, which adds extra functionalities over a classical
 /// init/shutdown pair of functions:
@@ -117,11 +106,11 @@ class GlobalFactory {
   /// monitored (via the library reference count) to know when it is safe to
   /// shutdown the library and terminate the WebRTC threads. This is generally
   /// called form a wrapper object's constructor for safety.
-  void AddObject(ObjectType type, TrackedObject* obj) noexcept;
+  void AddObject(TrackedObject* obj) noexcept;
 
   /// Remove an object added with |AddObject|. This is generally called from a
   /// wrapper object's destructor for safety.
-  void RemoveObject(ObjectType type, TrackedObject* obj) noexcept;
+  void RemoveObject(TrackedObject* obj) noexcept;
 
   /// Report live objects to WebRTC logging system for debugging.
   /// This is automatically called if the |mrsShutdownOptions::kLogLiveObjects|
@@ -218,13 +207,13 @@ class GlobalFactory {
   /// caller holds a reference to the library (|ref_count_| > 0).
   mutable std::recursive_mutex mutex_;
 
-  /// Collection of all tracked objects alive.
-  std::unordered_map<TrackedObject*, ObjectType> alive_objects_
-      RTC_GUARDED_BY(mutex_);
-
   /// Shutdown options.
   mrsShutdownOptions shutdown_options_ RTC_GUARDED_BY(mutex_) =
       mrsShutdownOptions::kDefault;
+
+  /// Collection of all tracked objects alive. This is solely used to display a
+  /// debugging report with |ReportLiveObjects()|.
+  std::vector<TrackedObject*> alive_objects_ RTC_GUARDED_BY(mutex_);
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

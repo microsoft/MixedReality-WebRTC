@@ -392,6 +392,9 @@ class PeerConnection : public TrackedObject {
   /// manually.
   virtual mrsResult RegisterInteropCallbacks(
       const mrsPeerConnectionInteropCallbacks& callbacks) noexcept = 0;
+
+ protected:
+  PeerConnection(RefPtr<GlobalFactory> global_factory);
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC
