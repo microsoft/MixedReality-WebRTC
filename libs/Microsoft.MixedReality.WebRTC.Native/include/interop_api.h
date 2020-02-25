@@ -17,6 +17,9 @@ enum class mrsBool : int32_t { kTrue = -1, kFalse = 0 };
 // Generic utilities
 //
 
+/// Report live objects to debug output, and return the number of live objects.
+MRS_API uint32_t MRS_CALL mrsReportLiveObjects() noexcept;
+
 /// Global MixedReality-WebRTC library shutdown options.
 enum class mrsShutdownOptions : uint32_t {
   kNone = 0,
@@ -25,9 +28,33 @@ enum class mrsShutdownOptions : uint32_t {
   /// debugging. This flag is set by default.
   kLogLiveObjects = 0x1,
 
+  /// When forcing shutdown, either because |mrsForceShutdown()| is called or
+  /// because the program terminates, and some objects are still alive, attempt
+  /// to break into the debugger. This is not available for all platforms.
+  kDebugBreakOnForceShutdown = 0x2,
+
   /// Default flags value.
   kDefault = kLogLiveObjects
 };
+
+/// Get options for the automatic shutdown of the MixedReality-WebRTC library.
+/// This enables controlling the behavior of the library when it is shut down as
+/// a result of all tracked objects being released, or when the program
+/// terminates.
+MRS_API mrsShutdownOptions MRS_CALL mrsGetShutdownOptions() noexcept;
+
+/// Set options for the automatic shutdown of the MixedReality-WebRTC library.
+/// This enables controlling the behavior of the library when it is shut down as
+/// a result of all tracked objects being released, or when the program
+/// terminates.
+MRS_API void MRS_CALL
+mrsSetShutdownOptions(mrsShutdownOptions options) noexcept;
+
+/// Forcefully shutdown the library and release all resources (as possible), and
+/// terminate the WebRTC threads to allow the shared module to be unloaded. This
+/// is a last-resort measure for exceptional situations like unit testing where
+/// loss of data is acceptable.
+MRS_API void MRS_CALL mrsForceShutdown() noexcept;
 
 /// Opaque enumerator type.
 struct mrsEnumerator;
