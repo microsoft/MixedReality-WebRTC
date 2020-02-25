@@ -239,7 +239,8 @@ class PeerConnection : public TrackedObject {
   /// Add a video track to the peer connection. If no RTP sender/transceiver
   /// exist, create a new one for that track.
   virtual ErrorOr<RefPtr<LocalVideoTrack>> AddLocalVideoTrack(
-      rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept = 0;
+      rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track,
+      mrsLocalVideoTrackInteropHandle interop_handle) noexcept = 0;
 
   /// Remove a local video track from the peer connection.
   /// The underlying RTP sender/transceiver are kept alive but inactive.

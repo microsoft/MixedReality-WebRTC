@@ -922,27 +922,25 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
-                var config = (settings != null ? new PeerConnectionInterop.VideoDeviceConfiguration
-                {
-                    VideoDeviceId = settings.videoDevice.id,
-                    VideoProfileId = settings.videoProfileId,
-                    VideoProfileKind = settings.videoProfileKind,
-                    Width = settings.width.GetValueOrDefault(0),
-                    Height = settings.height.GetValueOrDefault(0),
-                    Framerate = settings.framerate.GetValueOrDefault(0.0),
-                    EnableMixedRealityCapture = (mrsBool)settings.enableMrc,
-                    EnableMRCRecordingIndicator = (mrsBool)settings.enableMrcRecordingIndicator
-                } : new PeerConnectionInterop.VideoDeviceConfiguration());
+
                 string trackName = settings?.trackName;
                 if (string.IsNullOrEmpty(trackName))
                 {
                     trackName = Guid.NewGuid().ToString();
                 }
-                uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, trackName, config,
+
+                // Create interop wrappers
+                var trackWrapper = new LocalVideoTrack(this, trackName);
+
+                // Parse settings
+                var config = new PeerConnectionInterop.LocalVideoTrackInteropInitConfig(trackWrapper, settings);
+
+                // Create native implementation objects
+                uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, trackName, in config,
                     out LocalVideoTrackHandle trackHandle);
                 Utils.ThrowOnErrorCode(res);
-                var track = new LocalVideoTrack(trackHandle, this, trackName);
-                return track;
+                trackWrapper.SetHandle(trackHandle);
+                return trackWrapper;
             });
         }
 
@@ -964,12 +962,29 @@ namespace Microsoft.MixedReality.WebRTC
         /// provides video frames directly to WebRTC when asked to do so via the provided callback.
         /// </summary>
         /// <param name="trackName">Name of the new track.</param>
-        /// <param name="externalSource">External source providing the frames for the track.</param>
-        public LocalVideoTrack AddCustomLocalVideoTrack(string trackName, ExternalVideoTrackSource externalSource)
+        /// <param name="source">External source providing the frames for the track.</param>
+        public LocalVideoTrack AddCustomLocalVideoTrack(string trackName, ExternalVideoTrackSource source)
         {
             ThrowIfConnectionNotOpen();
-            return PeerConnectionInterop.AddLocalVideoTrackFromExternalSource(this, _nativePeerhandle,
-                trackName, externalSource);
+
+            if (string.IsNullOrEmpty(trackName))
+            {
+                trackName = Guid.NewGuid().ToString();
+            }
+
+            // Create interop wrappers
+            var trackWrapper = new LocalVideoTrack(this, trackName, source);
+
+            // Parse settings
+            var config = new PeerConnectionInterop.LocalVideoTrackFromExternalSourceInteropInitConfig(trackWrapper, source);
+
+            // Create native implementation objects
+            uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrackFromExternalSource(_nativePeerhandle, trackName,
+                source._nativeHandle, in config, out LocalVideoTrackHandle trackHandle);
+            Utils.ThrowOnErrorCode(res);
+            trackWrapper.SetHandle(trackHandle);
+            source.OnTracksAddedToSource(this);
+            return trackWrapper;
         }
 
         /// <summary>

@@ -423,8 +423,13 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
     PeerConnectionAudioFrameCallback callback,
     void* user_data) noexcept;
 
-/// Configuration for opening a local video capture device.
-struct VideoDeviceConfiguration {
+/// Configuration for opening a local video capture device and creating a local
+/// video track.
+struct LocalVideoTrackInitConfig {
+  /// Handle of the local video track interop wrapper, if any, which will be
+  /// associated with the native local video track object.
+  mrsLocalVideoTrackInteropHandle track_interop_handle{};
+
   /// Unique identifier of the video capture device to select, as returned by
   /// |mrsEnumVideoCaptureDevicesAsync|, or a null or empty string to select the
   /// default device.
@@ -481,7 +486,7 @@ struct VideoDeviceConfiguration {
 MRS_API mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     PeerConnectionHandle peerHandle,
     const char* track_name,
-    VideoDeviceConfiguration config,
+    const LocalVideoTrackInitConfig* config,
     LocalVideoTrackHandle* trackHandle) noexcept;
 
 using mrsRequestExternalI420AVideoFrameCallback =
@@ -496,6 +501,13 @@ using mrsRequestExternalArgb32VideoFrameCallback =
                          uint32_t request_id,
                          int64_t timestamp_ms);
 
+/// Configuration for creating a local video track from an external source.
+struct LocalVideoTrackFromExternalSourceInitConfig {
+  /// Handle of the local video track interop wrapper, if any, which will be
+  /// associated with the native local video track object.
+  mrsLocalVideoTrackInteropHandle track_interop_handle{};
+};
+
 /// Add a local video track from a custom video source external to the
 /// implementation. This allows feeding into WebRTC frames from any source,
 /// including generated or synthetic frames, for example for testing.
@@ -508,6 +520,7 @@ mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
     PeerConnectionHandle peerHandle,
     const char* track_name,
     ExternalVideoTrackSourceHandle source_handle,
+    const LocalVideoTrackFromExternalSourceInitConfig* config,
     LocalVideoTrackHandle* track_handle) noexcept;
 
 /// Remove a local video track from the given peer connection and destroy it.

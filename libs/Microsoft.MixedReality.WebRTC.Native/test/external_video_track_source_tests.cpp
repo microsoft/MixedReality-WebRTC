@@ -120,9 +120,11 @@ TEST(ExternalVideoTrackSource, Simple) {
   mrsExternalVideoTrackSourceFinishCreation(source_handle);
 
   LocalVideoTrackHandle track_handle = nullptr;
+  LocalVideoTrackFromExternalSourceInitConfig source_config{};
   ASSERT_EQ(mrsResult::kSuccess,
             mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
-                pair.pc1(), "gen_track", source_handle, &track_handle));
+                pair.pc1(), "gen_track", source_handle, &source_config,
+                &track_handle));
   ASSERT_NE(nullptr, track_handle);
   ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 

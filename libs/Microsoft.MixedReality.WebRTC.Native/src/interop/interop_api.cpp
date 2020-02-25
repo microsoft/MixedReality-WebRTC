@@ -90,7 +90,7 @@ class SimpleMediaConstraints : public webrtc::MediaConstraintsInterface {
 
 /// Helper to open a video capture device.
 mrsResult OpenVideoCaptureDevice(
-    const VideoDeviceConfiguration& config,
+    const LocalVideoTrackInitConfig& config,
     std::unique_ptr<cricket::VideoCapturer>& capturer_out) noexcept {
   capturer_out.reset();
 #if defined(WINUWP)
@@ -698,7 +698,7 @@ void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
 mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     PeerConnectionHandle peerHandle,
     const char* track_name,
-    VideoDeviceConfiguration config,
+    const LocalVideoTrackInitConfig* config,
     LocalVideoTrackHandle* track_handle_out) noexcept {
   if (IsStringNullOrEmpty(track_name)) {
     RTC_LOG(LS_ERROR) << "Invalid empty local video track name.";
@@ -723,7 +723,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
 
   // Open the video capture device
   std::unique_ptr<cricket::VideoCapturer> video_capturer;
-  auto res = OpenVideoCaptureDevice(config, video_capturer);
+  auto res = OpenVideoCaptureDevice(*config, video_capturer);
   if (res != Result::kSuccess) {
     RTC_LOG(LS_ERROR) << "Failed to open video capture device.";
     return res;
@@ -732,23 +732,23 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
 
   // Apply the same constraints used for opening the video capturer
   auto videoConstraints = std::make_unique<SimpleMediaConstraints>();
-  if (config.width > 0) {
+  if (config->width > 0) {
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MinWidth(config.width));
+        SimpleMediaConstraints::MinWidth(config->width));
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MaxWidth(config.width));
+        SimpleMediaConstraints::MaxWidth(config->width));
   }
-  if (config.height > 0) {
+  if (config->height > 0) {
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MinHeight(config.height));
+        SimpleMediaConstraints::MinHeight(config->height));
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MaxHeight(config.height));
+        SimpleMediaConstraints::MaxHeight(config->height));
   }
-  if (config.framerate > 0) {
+  if (config->framerate > 0) {
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MinFrameRate(config.framerate));
+        SimpleMediaConstraints::MinFrameRate(config->framerate));
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MaxFrameRate(config.framerate));
+        SimpleMediaConstraints::MaxFrameRate(config->framerate));
   }
 
   rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
@@ -763,7 +763,8 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     RTC_LOG(LS_ERROR) << "Failed to create local video track.";
     return Result::kUnknownError;
   }
-  auto result = peer->AddLocalVideoTrack(std::move(video_track));
+  auto result = peer->AddLocalVideoTrack(std::move(video_track),
+                                         config->track_interop_handle);
   if (result.ok()) {
     RefPtr<LocalVideoTrack>& video_track_wrapper = result.value();
     video_track_wrapper->AddRef();  // for the handle
@@ -778,6 +779,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
     PeerConnectionHandle peer_handle,
     const char* track_name,
     ExternalVideoTrackSourceHandle source_handle,
+    const LocalVideoTrackFromExternalSourceInitConfig* config,
     LocalVideoTrackHandle* track_handle_out) noexcept {
   if (!track_handle_out) {
     return Result::kInvalidParameter;
@@ -811,7 +813,8 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
   if (!video_track) {
     return Result::kUnknownError;
   }
-  auto result = peer->AddLocalVideoTrack(std::move(video_track));
+  auto result = peer->AddLocalVideoTrack(std::move(video_track),
+                                         config->track_interop_handle);
   if (result.ok()) {
     *track_handle_out = result.value().release();
     return Result::kSuccess;

@@ -21,11 +21,11 @@ using I420VideoFrameCallback = InteropCallback<const I420AVideoFrame&>;
 TEST(VideoTrack, Simple) {
   LocalPeerPairRaii pair;
 
-  VideoDeviceConfiguration config{};
+  LocalVideoTrackInitConfig config{};
   LocalVideoTrackHandle track_handle{};
   ASSERT_EQ(Result::kSuccess,
             mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), "local_video_track",
-                                                config, &track_handle));
+                                                &config, &track_handle));
   ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 
   uint32_t frame_count = 0;
@@ -54,11 +54,11 @@ TEST(VideoTrack, Simple) {
 TEST(VideoTrack, Muted) {
   LocalPeerPairRaii pair;
 
-  VideoDeviceConfiguration config{};
+  LocalVideoTrackInitConfig config{};
   LocalVideoTrackHandle track_handle{};
   ASSERT_EQ(Result::kSuccess,
             mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), "local_video_track",
-                                                config, &track_handle));
+                                                &config, &track_handle));
 
   // New tracks are enabled by default
   ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
@@ -121,7 +121,7 @@ void MRS_CALL enumDeviceCallbackCompleted(void* user_data) {
 //  ev.Wait();
 //
 //  for (auto&& id : device_ids) {
-//    VideoDeviceConfiguration config{};
+//    LocalVideoTrackInitConfig config{};
 //    config.video_device_id = id.c_str();
 //    ASSERT_EQ(Result::kSuccess,
 //              mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), config));
@@ -131,12 +131,12 @@ void MRS_CALL enumDeviceCallbackCompleted(void* user_data) {
 TEST(VideoTrack, DeviceIdInvalid) {
   LocalPeerPairRaii pair;
 
-  VideoDeviceConfiguration config{};
+  LocalVideoTrackInitConfig config{};
   LocalVideoTrackHandle track_handle{};
   config.video_device_id = "[[INVALID DEVICE ID]]";
   ASSERT_EQ(Result::kNotFound,
             mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), "invalid_track",
-                                                config, &track_handle));
+                                                &config, &track_handle));
   ASSERT_EQ(nullptr, track_handle);
 }
 
@@ -151,10 +151,11 @@ TEST(VideoTrack, ExternalI420) {
   mrsExternalVideoTrackSourceFinishCreation(source_handle);
 
   LocalVideoTrackHandle track_handle = nullptr;
-  ASSERT_EQ(
-      mrsResult::kSuccess,
-      mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
-          pair.pc1(), "simulated_video_track", source_handle, &track_handle));
+  LocalVideoTrackFromExternalSourceInitConfig source_config{};
+  ASSERT_EQ(mrsResult::kSuccess,
+            mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
+                pair.pc1(), "simulated_video_track", source_handle,
+                &source_config, &track_handle));
   ASSERT_NE(nullptr, track_handle);
   ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 

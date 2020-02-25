@@ -187,7 +187,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 uint res = ExternalVideoTrackSource_CreateFromI420ACallback(args.TrampolineCallback, argsRef,
                     out ExternalVideoTrackSourceHandle sourceHandle);
                 Utils.ThrowOnErrorCode(res);
-                source.OnCreated(sourceHandle);
+                source.SetHandle(sourceHandle);
+                // Once the handle of the native object is set on the wrapper, notify the implementation to finish
+                // the creation, which will make the source start capturing and emit frame requests, which can be
+                // handled now that the native handle is known.
                 ExternalVideoTrackSource_FinishCreation(sourceHandle);
                 return source;
             }
@@ -224,7 +227,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 uint res = ExternalVideoTrackSource_CreateFromArgb32Callback(args.TrampolineCallback, argsRef,
                     out ExternalVideoTrackSourceHandle sourceHandle);
                 Utils.ThrowOnErrorCode(res);
-                source.OnCreated(sourceHandle);
+                source.SetHandle(sourceHandle);
+                // Once the handle of the native object is set on the wrapper, notify the implementation to finish
+                // the creation, which will make the source start capturing and emit frame requests, which can be
+                // handled now that the native handle is known.
                 ExternalVideoTrackSource_FinishCreation(sourceHandle);
                 return source;
             }

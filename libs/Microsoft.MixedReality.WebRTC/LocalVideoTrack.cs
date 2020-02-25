@@ -227,13 +227,25 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private LocalVideoTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
-        internal LocalVideoTrack(LocalVideoTrackHandle nativeHandle, PeerConnection peer, string trackName, ExternalVideoTrackSource source = null)
+        // Constructor for interop-based creation; SetHandle() will be called later
+        // Constructor for a track associated with a peer connection.
+        internal LocalVideoTrack(PeerConnection peer, string trackName, ExternalVideoTrackSource source = null)
         {
-            _nativeHandle = nativeHandle;
             PeerConnection = peer;
             Name = trackName;
             Source = source;
-            RegisterInteropCallbacks();
+        }
+
+        internal void SetHandle(LocalVideoTrackHandle handle)
+        {
+            Debug.Assert(!handle.IsClosed);
+            // Either first-time assign or no-op (assign same value again)
+            Debug.Assert(_nativeHandle.IsInvalid || (_nativeHandle == handle));
+            if (_nativeHandle != handle)
+            {
+                _nativeHandle = handle;
+                RegisterInteropCallbacks();
+            }
         }
 
         private void RegisterInteropCallbacks()

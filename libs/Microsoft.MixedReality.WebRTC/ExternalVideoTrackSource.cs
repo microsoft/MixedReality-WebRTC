@@ -125,6 +125,11 @@ namespace Microsoft.MixedReality.WebRTC
             _frameRequestCallbackArgsHandle = frameRequestCallbackArgsHandle;
         }
 
+        internal void SetHandle(ExternalVideoTrackSourceHandle nativeHandle)
+        {
+            _nativeHandle = nativeHandle;
+        }
+
         /// <summary>
         /// Complete the current request by providing a video frame for it.
         /// This must be used if the video track source was created with
@@ -170,11 +175,6 @@ namespace Microsoft.MixedReality.WebRTC
             // Destroy the native object. This may be delayed if a P/Invoke callback is underway,
             // but will be handled at some point anyway, even if the managed instance is gone.
             _nativeHandle.Dispose();
-        }
-
-        internal void OnCreated(ExternalVideoTrackSourceHandle nativeHandle)
-        {
-            _nativeHandle = nativeHandle;
         }
 
         internal void OnTracksAddedToSource(PeerConnection newConnection)

@@ -357,11 +357,17 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         /// <summary>
-        /// Helper structure to pass video capture device configuration to the underlying C++ library.
+        /// Helper structure to pass parameters to the native implementation when creating a local video track
+        /// by opening a local video capture device.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        internal struct VideoDeviceConfiguration
+        internal ref struct LocalVideoTrackInteropInitConfig
         {
+            /// <summary>
+            /// Handle to the local video track wrapper.
+            /// </summary>
+            public IntPtr trackHandle;
+
             /// <summary>
             /// Video capture device unique identifier, as returned by <see cref="PeerConnection.GetVideoCaptureDevicesAsync"/>.
             /// </summary>
@@ -418,10 +424,71 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             /// When MRC is enabled, enable the on-screen recording indicator.
             /// </summary>
             public mrsBool EnableMRCRecordingIndicator;
+
+            /// <summary>
+            /// Constructor for creating a local video track from a wrapper and some user settings.
+            /// </summary>
+            /// <param name="track">The newly created track wrapper.</param>
+            /// <param name="settings">The settings to initialize the newly created native track.</param>
+            /// <seealso cref="PeerConnection.AddLocalVideoTrackAsync(LocalVideoTrackSettings)"/>
+            public LocalVideoTrackInteropInitConfig(LocalVideoTrack track, LocalVideoTrackSettings settings)
+            {
+                trackHandle = Utils.MakeWrapperRef(track);
+
+                if (settings != null)
+                {
+                    VideoDeviceId = settings.videoDevice.id;
+                    VideoProfileId = settings.videoProfileId;
+                    VideoProfileKind = settings.videoProfileKind;
+                    Width = settings.width.GetValueOrDefault(0);
+                    Height = settings.height.GetValueOrDefault(0);
+                    Framerate = settings.framerate.GetValueOrDefault(0.0);
+                    EnableMixedRealityCapture = (mrsBool)settings.enableMrc;
+                    EnableMRCRecordingIndicator = (mrsBool)settings.enableMrcRecordingIndicator;
+                }
+                else
+                {
+                    VideoDeviceId = string.Empty;
+                    VideoProfileId = string.Empty;
+                    VideoProfileKind = VideoProfileKind.Unspecified;
+                    Width = 0;
+                    Height = 0;
+                    Framerate = 0.0;
+                    EnableMixedRealityCapture = mrsBool.True;
+                    EnableMRCRecordingIndicator = mrsBool.True;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Helper structure to pass parameters to the native implementation when creating a local video track
+        /// from an existing external video track source.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        internal ref struct LocalVideoTrackFromExternalSourceInteropInitConfig
+        {
+            /// <summary>
+            /// Handle to the <see cref="LocalVideoTrack"/> wrapper for the native local video track that will
+            /// be created.
+            /// </summary>
+            public IntPtr LocalVideoTrackWrapperHandle;
+
+            /// <summary>
+            /// Constructor for creating a local video track from a wrapper and an existing external source.
+            /// </summary>
+            /// <param name="track">The newly created track wrapper.</param>
+            /// <param name="source">The external source to use with the newly created native track.</param>
+            /// <seealso cref="PeerConnection.AddCustomLocalVideoTrack(string, ExternalVideoTrackSource)"/>
+            public LocalVideoTrackFromExternalSourceInteropInitConfig(LocalVideoTrack track, ExternalVideoTrackSource source)
+            {
+                LocalVideoTrackWrapperHandle = Utils.MakeWrapperRef(track);
+            }
         }
 
 
-        #region Unmanaged delegates
+        #region Reverse P/Invoke delegates
+
+        // Note - none of those method arguments can be SafeHandle; use IntPtr instead.
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void VideoCaptureDeviceEnumCallback(string id, string name, IntPtr userData);
@@ -591,13 +658,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]
         public static extern uint PeerConnection_AddLocalVideoTrack(PeerConnectionHandle peerHandle,
-            string trackName, VideoDeviceConfiguration config, out LocalVideoTrackHandle trackHandle);
+            string trackName, in LocalVideoTrackInteropInitConfig config, out LocalVideoTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalVideoTrackFromExternalSource")]
         public static extern uint PeerConnection_AddLocalVideoTrackFromExternalSource(
             PeerConnectionHandle peerHandle, string trackName, ExternalVideoTrackSourceHandle sourceHandle,
-            out LocalVideoTrackHandle trackHandle);
+            in LocalVideoTrackFromExternalSourceInteropInitConfig config, out LocalVideoTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalAudioTrack")]
@@ -677,16 +744,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
 
         #region Helpers
-
-        public static LocalVideoTrack AddLocalVideoTrackFromExternalSource(PeerConnection peer, PeerConnectionHandle peerHandle,
-            string trackName, ExternalVideoTrackSource externalSource)
-        {
-            uint res = PeerConnection_AddLocalVideoTrackFromExternalSource(peerHandle, trackName, externalSource._nativeHandle,
-                out LocalVideoTrackHandle trackHandle);
-            Utils.ThrowOnErrorCode(res);
-            externalSource.OnTracksAddedToSource(peer);
-            return new LocalVideoTrack(trackHandle, peer, trackName, externalSource);
-        }
 
         class RemoteDescArgs
         {

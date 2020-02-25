@@ -255,8 +255,8 @@ class PeerConnectionImpl : public PeerConnection,
   }
 
   ErrorOr<RefPtr<LocalVideoTrack>> AddLocalVideoTrack(
-      rtc::scoped_refptr<webrtc::VideoTrackInterface>
-          video_track) noexcept override;
+      rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track,
+      mrsLocalVideoTrackInteropHandle interop_handle) noexcept override;
   webrtc::RTCError RemoveLocalVideoTrack(
       LocalVideoTrack& video_track) noexcept override;
   void RemoveLocalVideoTracksFromSource(
@@ -599,7 +599,8 @@ IceGatheringState IceGatheringStateFromImpl(
 }
 
 ErrorOr<RefPtr<LocalVideoTrack>> PeerConnectionImpl::AddLocalVideoTrack(
-    rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept {
+    rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track,
+    mrsLocalVideoTrackInteropHandle interop_handle) noexcept {
   if (IsClosed()) {
     return Microsoft::MixedReality::WebRTC::Error(
         Result::kInvalidOperation, "The peer connection is closed.");
@@ -608,7 +609,7 @@ ErrorOr<RefPtr<LocalVideoTrack>> PeerConnectionImpl::AddLocalVideoTrack(
   if (result.ok()) {
     RefPtr<LocalVideoTrack> track =
         new LocalVideoTrack(global_factory_, *this, std::move(video_track),
-                            std::move(result.MoveValue()), nullptr);
+                            std::move(result.MoveValue()), interop_handle);
     {
       rtc::CritScope lock(&tracks_mutex_);
       local_video_tracks_.push_back(track);
