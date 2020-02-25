@@ -105,8 +105,44 @@ This is the API entry point for establishing a connection with a remote peer.</p
   </h3>
   
   
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AutoCreateOfferOnRenegotiationNeeded" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoCreateOfferOnRenegotiationNeeded">AutoCreateOfferOnRenegotiationNeeded</h4>
+  <div class="markdown level1 summary"><p>Automatically create a new offer whenever a renegotiation needed event is received.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AutoCreateOfferOnRenegotiationNeeded</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AutoCreateOfferOnRenegotiationNeeded_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Note that the renegotiation needed event may be dispatched asynchronously, so it is
+discourages to toggle this field ON and OFF. Instead, the user should choose an
+approach (manual or automatic) and stick to it.</p>
+<p>In particular, temporarily setting this to <code>false</code> during a batch of changes and
+setting it back to <code>true</code> right after the last change may or may not produce an
+automatic offer, depending on whether the negotiated event was dispatched while the
+property was still <code>false</code> or not.</p>
+</div>
+  
+  
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AutoInitializeOnStart" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoInitializeOnStart">AutoInitializeOnStart</h4>
-  <div class="markdown level1 summary"><p>Flag to initialize the peer connection on <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.</p>
+  <div class="markdown level1 summary"><p>Initialize the peer connection on <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
+If this field is <code>false</code> then the user needs to call <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_System_Threading_CancellationToken_">InitializeAsync(CancellationToken)</a>
+to manually initialize the peer connection before it can be used for any purpose.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>

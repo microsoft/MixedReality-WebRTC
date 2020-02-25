@@ -2931,6 +2931,12 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.Unity.PeerConnection
   fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection
   nameWithType: PeerConnection
+- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoCreateOfferOnRenegotiationNeeded
+  name: AutoCreateOfferOnRenegotiationNeeded
+  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AutoCreateOfferOnRenegotiationNeeded
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoCreateOfferOnRenegotiationNeeded
+  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoCreateOfferOnRenegotiationNeeded
+  nameWithType: PeerConnection.AutoCreateOfferOnRenegotiationNeeded
 - uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoInitializeOnStart
   name: AutoInitializeOnStart
   href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AutoInitializeOnStart
