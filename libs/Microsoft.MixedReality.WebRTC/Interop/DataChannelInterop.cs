@@ -45,7 +45,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         #region Native callbacks
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate IntPtr CreateObjectCallback(IntPtr peer, CreateConfig config,
+        public delegate IntPtr CreateObjectDelegate(IntPtr peer, CreateConfig config,
             out Callbacks callbacks);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
@@ -71,14 +71,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public StateCallback StateCallback;
         }
 
-        [MonoPInvokeCallback(typeof(CreateObjectCallback))]
+        [MonoPInvokeCallback(typeof(CreateObjectDelegate))]
         public static IntPtr DataChannelCreateObjectCallback(IntPtr peer, CreateConfig config,
             out Callbacks callbacks)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
-            var dataChannelWrapper = CreateWrapper(peerWrapper, config, out callbacks);
-            var handle = GCHandle.Alloc(dataChannelWrapper, GCHandleType.Normal);
-            return GCHandle.ToIntPtr(handle);
+            var dataChannelWrapper = CreateWrapper(peerWrapper, in config, out callbacks);
+            return Utils.MakeWrapperRef(dataChannelWrapper);
         }
 
         [MonoPInvokeCallback(typeof(MessageCallback))]
@@ -107,7 +106,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         #region Utilities
 
-        public static DataChannel CreateWrapper(PeerConnection parent, CreateConfig config, out Callbacks callbacks)
+        public static DataChannel CreateWrapper(PeerConnection parent, in CreateConfig config, out Callbacks callbacks)
         {
             // Create the callback args for the data channel
             var args = new CallbackArgs()

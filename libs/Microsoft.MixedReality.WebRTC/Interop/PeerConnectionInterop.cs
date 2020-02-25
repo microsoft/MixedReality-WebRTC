@@ -140,7 +140,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public class InteropCallbacks
         {
             public PeerConnection Peer;
-            public DataChannelInterop.CreateObjectCallback DataChannelCreateObjectCallback;
+            public DataChannelInterop.CreateObjectDelegate DataChannelCreateObjectCallback;
         }
 
         /// <summary>
@@ -346,7 +346,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         internal struct MarshaledInteropCallbacks
         {
-            public DataChannelInterop.CreateObjectCallback DataChannelCreateObjectCallback;
+            public DataChannelInterop.CreateObjectDelegate DataChannelCreateObjectCallback;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
