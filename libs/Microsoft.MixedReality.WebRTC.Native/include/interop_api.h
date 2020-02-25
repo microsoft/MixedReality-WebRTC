@@ -749,9 +749,9 @@ MRS_API void MRS_CALL mrsMemCpyStride(void* dst,
                                       int32_t src_stride,
                                       int32_t elem_size,
                                       int32_t elem_count) noexcept;
-///
-/// Stats extraction.
-///
+//
+// Stats extraction.
+//
 
 /// Subset of RTCDataChannelStats. See
 /// https://www.w3.org/TR/webrtc-stats/#dcstats-dict*
