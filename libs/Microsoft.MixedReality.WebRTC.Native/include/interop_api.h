@@ -56,11 +56,10 @@ using mrsLocalVideoTrackInteropHandle = void*;
 using mrsDataChannelInteropHandle = void*;
 
 /// Callback to create an interop wrapper for a data channel.
-using mrsPeerConnectionDataChannelCreateObjectCallback =
-    mrsDataChannelInteropHandle(MRS_CALL*)(
-        mrsPeerConnectionInteropHandle parent,
-        mrsDataChannelConfig config,
-        mrsDataChannelCallbacks* callbacks);
+using mrsDataChannelCreateObjectCallback = mrsDataChannelInteropHandle(
+    MRS_CALL*)(mrsPeerConnectionInteropHandle parent,
+               const mrsDataChannelConfig& config,
+               mrsDataChannelCallbacks* callbacks);
 
 //
 // Video capture enumeration
@@ -307,7 +306,7 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
 
 struct mrsPeerConnectionInteropCallbacks {
   /// Construct an interop object for a DataChannel instance.
-  mrsPeerConnectionDataChannelCreateObjectCallback data_channel_create_object;
+  mrsDataChannelCreateObjectCallback data_channel_create_object{};
 };
 
 MRS_API mrsResult MRS_CALL mrsPeerConnectionRegisterInteropCallbacks(

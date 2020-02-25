@@ -61,8 +61,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     {
         // Types of trampolines for MonoPInvokeCallback
         private delegate void ConnectedDelegate(IntPtr peer);
-        private delegate void DataChannelCreateObjectDelegate(IntPtr peer, DataChannelInterop.CreateConfig config,
-            out DataChannelInterop.Callbacks callbacks);
         private delegate void DataChannelAddedDelegate(IntPtr peer, IntPtr dataChannel, IntPtr dataChannelHandle);
         private delegate void DataChannelRemovedDelegate(IntPtr peer, IntPtr dataChannel, IntPtr dataChannelHandle);
         private delegate void LocalSdpReadytoSendDelegate(IntPtr peer, string type, string sdp);
