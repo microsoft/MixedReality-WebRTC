@@ -2664,12 +2664,12 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.EnableMRCRecordingIndicator
   fullName: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.EnableMRCRecordingIndicator
   nameWithType: LocalVideoSource.EnableMRCRecordingIndicator
-- uid: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.Mode
-  name: Mode
-  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Mode
-  commentId: F:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.Mode
-  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.Mode
-  nameWithType: LocalVideoSource.Mode
+- uid: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.FormatMode
+  name: FormatMode
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_FormatMode
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.FormatMode
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.FormatMode
+  nameWithType: LocalVideoSource.FormatMode
 - uid: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.OnDestroy
   name: OnDestroy()
   href: api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_OnDestroy

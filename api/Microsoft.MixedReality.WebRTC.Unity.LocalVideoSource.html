@@ -175,7 +175,7 @@ to add a video track to the peer connection and start sending video data to the 
   
   
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Constraints" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.Constraints">Constraints</h4>
-  <div class="markdown level1 summary"><p>For manual <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Mode">Mode</a>, optional constraints on the resolution and framerate of
+  <div class="markdown level1 summary"><p>For manual <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_FormatMode">FormatMode</a>, optional constraints on the resolution and framerate of
 the capture format. These constraints are additive, meaning a matching format must satisfy
 all of them at once, in addition of being restricted to the formats supported by the selected
 video profile or kind of profile.</p>
@@ -255,13 +255,13 @@ This option has no effect on devices not supporting MRC, or if MRC is not enable
   </table>
   
   
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Mode" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.Mode">Mode</h4>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_FormatMode" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.FormatMode">FormatMode</h4>
   <div class="markdown level1 summary"><p>Selection mode for the video capture format.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public LocalVideoSourceFormatMode Mode</code></pre>
+    <pre><code class="lang-csharp hljs">public LocalVideoSourceFormatMode FormatMode</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -357,7 +357,7 @@ See <a href="https://en.wikipedia.org/wiki/RTP_audio_video_profile">https://en.w
   
   
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_VideoProfileId" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.VideoProfileId">VideoProfileId</h4>
-  <div class="markdown level1 summary"><p>For manual <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Mode">Mode</a>, unique identifier of the video profile to use,
+  <div class="markdown level1 summary"><p>For manual <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_FormatMode">FormatMode</a>, unique identifier of the video profile to use,
 or an empty string to leave unconstrained.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -383,7 +383,7 @@ or an empty string to leave unconstrained.</p>
   
   
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_VideoProfileKind" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.VideoProfileKind">VideoProfileKind</h4>
-  <div class="markdown level1 summary"><p>For manual <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_Mode">Mode</a>, kind of video profile to use among a list of predefined
+  <div class="markdown level1 summary"><p>For manual <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_LocalVideoSource_FormatMode">FormatMode</a>, kind of video profile to use among a list of predefined
 ones, or an empty string to leave unconstrained.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
