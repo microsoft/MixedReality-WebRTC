@@ -121,7 +121,9 @@ struct I420AInteropVideoSource : I420AExternalVideoSource {
   callback_type callback_;
 
   /// External video track source to deliver the frames to.
-  RefPtr<ExternalVideoTrackSource> track_source_;
+  /// Note that this is a "weak" pointer to avoid a circular reference to the
+  /// video track source owning it.
+  ExternalVideoTrackSource* track_source_{};
 
   I420AInteropVideoSource(mrsRequestExternalI420AVideoFrameCallback callback,
                           void* user_data)
@@ -129,7 +131,7 @@ struct I420AInteropVideoSource : I420AExternalVideoSource {
 
   Result FrameRequested(I420AVideoFrameRequest& frame_request) override {
     assert(track_source_);
-    return callback_(track_source_.get(), frame_request.request_id_,
+    return callback_(track_source_, frame_request.request_id_,
                      frame_request.timestamp_ms_);
   }
 };
@@ -143,7 +145,9 @@ struct Argb32InteropVideoSource : Argb32ExternalVideoSource {
   callback_type callback_;
 
   /// External video track source to deliver the frames to.
-  RefPtr<ExternalVideoTrackSource> track_source_;
+  /// Note that this is a "weak" pointer to avoid a circular reference to the
+  /// video track source owning it.
+  ExternalVideoTrackSource* track_source_{};
 
   Argb32InteropVideoSource(mrsRequestExternalArgb32VideoFrameCallback callback,
                            void* user_data)
@@ -151,7 +155,7 @@ struct Argb32InteropVideoSource : Argb32ExternalVideoSource {
 
   Result FrameRequested(Argb32VideoFrameRequest& frame_request) override {
     assert(track_source_);
-    return callback_(track_source_.get(), frame_request.request_id_,
+    return callback_(track_source_, frame_request.request_id_,
                      frame_request.timestamp_ms_);
   }
 };
@@ -175,7 +179,7 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromI420A(
   if (!track_source) {
     return {};
   }
-  custom_source->track_source_ = track_source;
+  custom_source->track_source_ = track_source.get();
   return track_source;
 }
 
@@ -194,7 +198,7 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
   if (!track_source) {
     return {};
   }
-  custom_source->track_source_ = track_source;
+  custom_source->track_source_ = track_source.get();
   return track_source;
 }
 
