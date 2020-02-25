@@ -31,7 +31,7 @@ mrsLocalVideoTrackRemoveRef(LocalVideoTrackHandle handle) noexcept {
 
 void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
     LocalVideoTrackHandle trackHandle,
-    PeerConnectionI420AVideoFrameCallback callback,
+    mrsI420AVideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(trackHandle)) {
     track->SetCallback(I420AFrameReadyCallback{callback, user_data});
@@ -40,7 +40,7 @@ void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
 
 void MRS_CALL mrsLocalVideoTrackRegisterArgb32FrameCallback(
     LocalVideoTrackHandle trackHandle,
-    PeerConnectionArgb32VideoFrameCallback callback,
+    mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(trackHandle)) {
     track->SetCallback(Argb32FrameReadyCallback{callback, user_data});

@@ -657,7 +657,7 @@ void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
 
 void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionI420AVideoFrameCallback callback,
+    mrsI420AVideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RegisterRemoteVideoFrameCallback(
@@ -667,7 +667,7 @@ void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
 
 void MRS_CALL mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionArgb32VideoFrameCallback callback,
+    mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RegisterRemoteVideoFrameCallback(

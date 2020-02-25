@@ -208,7 +208,7 @@ using mrsI420AVideoFrame = Microsoft::MixedReality::WebRTC::I420AVideoFrame;
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 /// The video frame is encoded in I420 triplanar format (NV12).
-using PeerConnectionI420AVideoFrameCallback =
+using mrsI420AVideoFrameCallback =
     void(MRS_CALL*)(void* user_data, const mrsI420AVideoFrame& frame);
 
 using mrsArgb32VideoFrame = Microsoft::MixedReality::WebRTC::Argb32VideoFrame;
@@ -216,7 +216,7 @@ using mrsArgb32VideoFrame = Microsoft::MixedReality::WebRTC::Argb32VideoFrame;
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 /// The video frame is encoded in ARGB 32-bit per pixel.
-using PeerConnectionArgb32VideoFrameCallback =
+using mrsArgb32VideoFrameCallback =
     void(MRS_CALL*)(void* user_data, const mrsArgb32VideoFrame& frame);
 
 using mrsAudioFrame = Microsoft::MixedReality::WebRTC::AudioFrame;
@@ -379,14 +379,14 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
 /// from the remote peer.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionI420AVideoFrameCallback callback,
+    mrsI420AVideoFrameCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a video frame from a video track was received
 /// from the remote peer.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionArgb32VideoFrameCallback callback,
+    mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept;
 
 /// Kind of video profile. Equivalent to org::webRtc::VideoProfileKind.

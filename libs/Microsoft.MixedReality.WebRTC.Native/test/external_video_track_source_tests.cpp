@@ -104,7 +104,7 @@ void ValidateQuadTestFrame(const void* data,
   ASSERT_LE(std::fabs(err), 768.0);  // +/-1 per component over 256 pixels
 }
 
-// PeerConnectionArgb32VideoFrameCallback
+// mrsArgb32VideoFrameCallback
 using Argb32VideoFrameCallback = InteropCallback<const mrsArgb32VideoFrame&>;
 
 }  // namespace
