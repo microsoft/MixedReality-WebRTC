@@ -482,7 +482,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionSimpleStatsObjectCallback(IntPtr userData, IntPtr statsObject);
-        
+
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void ActionDelegate(IntPtr peer);
 

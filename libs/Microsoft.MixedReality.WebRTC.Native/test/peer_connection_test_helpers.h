@@ -44,7 +44,6 @@ struct Event {
   bool signaled_{false};
 };
 
-
 /// Simple semaphore.
 struct Semaphore {
   void Acquire(int64_t count = 1) {

@@ -186,7 +186,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 // Create the external video track source
                 uint res = ExternalVideoTrackSource_CreateFromI420ACallback(args.TrampolineCallback, argsRef,
                     out ExternalVideoTrackSourceHandle sourceHandle);
-                    Utils.ThrowOnErrorCode(res);
+                Utils.ThrowOnErrorCode(res);
                 source.OnCreated(sourceHandle);
                 ExternalVideoTrackSource_FinishCreation(sourceHandle);
                 return source;

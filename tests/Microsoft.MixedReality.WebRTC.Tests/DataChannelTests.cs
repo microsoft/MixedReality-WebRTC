@@ -115,7 +115,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             };
             pc2.LocalSdpReadytoSend += async (string type, string sdp) =>
             {
-               await pc1.SetRemoteDescriptionAsync(type, sdp);
+                await pc1.SetRemoteDescriptionAsync(type, sdp);
                 if (type == "offer")
                     pc1.CreateAnswer();
             };

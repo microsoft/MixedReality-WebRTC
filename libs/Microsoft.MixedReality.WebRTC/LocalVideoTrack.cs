@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Microsoft.MixedReality.WebRTC.Interop;
 using Microsoft.MixedReality.WebRTC.Tracing;
 

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System;
 using System.Threading;
 using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace Microsoft.MixedReality.WebRTC.Tests
 {

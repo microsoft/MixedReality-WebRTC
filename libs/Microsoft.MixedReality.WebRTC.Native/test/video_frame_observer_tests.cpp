@@ -67,4 +67,4 @@ TEST(VideoFrameObserver, ReuseArgbScratchBuffer) {
   ASSERT_NE(buffer4, buffer6);
 }
 
-#endif // #if 0
+#endif  // #if 0

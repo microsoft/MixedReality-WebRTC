@@ -53,7 +53,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Internal timing helper
         /// </summary>
         private float timeSincePollMs = 0f;
-        
+
         /// <summary>
         /// Internal last poll response status flag
         /// </summary>
