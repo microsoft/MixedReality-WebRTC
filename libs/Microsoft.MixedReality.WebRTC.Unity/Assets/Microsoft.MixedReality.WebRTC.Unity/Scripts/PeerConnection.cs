@@ -108,11 +108,29 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #region Behavior settings
 
         /// <summary>
-        /// Flag to initialize the peer connection on <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
+        /// Initialize the peer connection on <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
+        /// If this field is <c>false</c> then the user needs to call <see cref="InitializeAsync(CancellationToken)"/>
+        /// to manually initialize the peer connection before it can be used for any purpose.
         /// </summary>
-        [Header("Behavior settings")]
+        [Header("Behavior")]
         [Tooltip("Automatically initialize the peer connection on Start()")]
         public bool AutoInitializeOnStart = true;
+
+        /// <summary>
+        /// Automatically create a new offer whenever a renegotiation needed event is received.
+        /// </summary>
+        /// <remarks>
+        /// Note that the renegotiation needed event may be dispatched asynchronously, so it is
+        /// discourages to toggle this field ON and OFF. Instead, the user should choose an
+        /// approach (manual or automatic) and stick to it.
+        /// 
+        /// In particular, temporarily setting this to <c>false</c> during a batch of changes and
+        /// setting it back to <c>true</c> right after the last change may or may not produce an
+        /// automatic offer, depending on whether the negotiated event was dispatched while the
+        /// property was still <c>false</c> or not.
+        /// </remarks>
+        [Tooltip("Automatically create a new offer when receiving a renegotiation needed event")]
+        public bool AutoCreateOfferOnRenegotiationNeeded = true;
 
         /// <summary>
         /// Flag to log all errors to the Unity console automatically.
@@ -497,7 +515,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             Debug.Log("WebRTC plugin initialized successfully.");
 
-            _nativePeer.RenegotiationNeeded += Peer_RenegotiationNeeded;
+            if (AutoCreateOfferOnRenegotiationNeeded)
+            {
+                _nativePeer.RenegotiationNeeded += Peer_RenegotiationNeeded;
+            }
 
             // Once the peer is initialized, it becomes publicly accessible.
             // This prevent scripts from accessing it before it is initialized,
@@ -567,7 +588,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             // If already connected, update the connection on the fly.
             // If not, wait for user action and don't automatically connect.
-            if (_nativePeer.IsConnected)
+            if (AutoCreateOfferOnRenegotiationNeeded && _nativePeer.IsConnected)
             {
                 _nativePeer.CreateOffer();
             }
