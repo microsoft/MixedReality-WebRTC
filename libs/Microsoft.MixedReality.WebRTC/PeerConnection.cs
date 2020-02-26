@@ -1148,26 +1148,24 @@ namespace Microsoft.MixedReality.WebRTC
         /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         private async Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable)
         {
-            // Preconditions
             ThrowIfConnectionNotOpen();
-
-            // Create the wrapper
-            var config = new DataChannelInterop.CreateConfig
-            {
-                id = id,
-                label = label,
-                flags = (ordered ? 0x1u : 0x0u) | (reliable ? 0x2u : 0x0u)
-            };
-            DataChannelInterop.Callbacks callbacks;
-            var dataChannel = DataChannelInterop.CreateWrapper(this, config, out callbacks);
-            if (dataChannel == null)
-            {
-                return null;
-            }
 
             // Create the native channel
             return await Task.Run(() =>
             {
+                // Create the wrapper
+                var config = new DataChannelInterop.CreateConfig
+                {
+                    id = id,
+                    label = label,
+                    flags = (ordered ? 0x1u : 0x0u) | (reliable ? 0x2u : 0x0u)
+                };
+                DataChannelInterop.Callbacks callbacks;
+                var dataChannel = DataChannelInterop.CreateWrapper(this, config, out callbacks);
+                if (dataChannel == null)
+                {
+                    return null;
+                }
                 IntPtr nativeHandle = IntPtr.Zero;
                 var wrapperGCHandle = GCHandle.Alloc(dataChannel, GCHandleType.Normal);
                 var wrapperHandle = GCHandle.ToIntPtr(wrapperGCHandle);
