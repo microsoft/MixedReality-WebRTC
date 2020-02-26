@@ -21,10 +21,20 @@ using namespace Microsoft::MixedReality::WebRTC;
 /// always valid, never deallocated.
 std::string_view ObjectTypeToString(ObjectType type) {
   static_assert((int)ObjectType::kPeerConnection == 0, "");
-  static_assert((int)ObjectType::kLocalVideoTrack == 1, "");
-  static_assert((int)ObjectType::kExternalVideoTrackSource == 2, "");
+  static_assert((int)ObjectType::kLocalAudioTrack == 1, "");
+  static_assert((int)ObjectType::kLocalVideoTrack == 2, "");
+  static_assert((int)ObjectType::kExternalVideoTrackSource == 3, "");
+  static_assert((int)ObjectType::kRemoteAudioTrack == 4, "");
+  static_assert((int)ObjectType::kRemoteVideoTrack == 5, "");
+  static_assert((int)ObjectType::kDataChannel == 6, "");
+  static_assert((int)ObjectType::kAudioTransceiver == 7, "");
+  static_assert((int)ObjectType::kVideoTransceiver == 8, "");
   constexpr const std::string_view s_types[] = {
-      "PeerConnection", "LocalVideoTrack", "ExternalVideoTrackSource"};
+      "PeerConnection",   "LocalAudioTrack",
+      "LocalVideoTrack",  "ExternalVideoTrackSource",
+      "RemoteAudioTrack", "RemoteVideoTrack",
+      "DataChannel",      "AudioTransceiver",
+      "VideoTransceiver"};
   return s_types[(int)type];
 }
 

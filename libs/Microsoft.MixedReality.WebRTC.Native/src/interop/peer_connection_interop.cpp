@@ -38,3 +38,43 @@ void MRS_CALL mrsPeerConnectionRegisterIceGatheringStateChangedCallback(
         Callback<IceGatheringState>{callback, user_data});
   }
 }
+
+mrsResult MRS_CALL
+mrsPeerConnectionAddAudioTransceiver(PeerConnectionHandle peer_handle,
+                                     const AudioTransceiverInitConfig* config,
+                                     AudioTransceiverHandle* handle) noexcept {
+  if (!handle || !config) {
+    return Result::kInvalidParameter;
+  }
+  *handle = nullptr;
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
+    ErrorOr<RefPtr<AudioTransceiver>> audio_transceiver =
+        peer->AddAudioTransceiver(*config);
+    if (audio_transceiver.ok()) {
+      *handle = (AudioTransceiverHandle)audio_transceiver.value().release();
+      return Result::kSuccess;
+    }
+    return audio_transceiver.error().result();
+  }
+  return Result::kInvalidNativeHandle;
+}
+
+mrsResult MRS_CALL
+mrsPeerConnectionAddVideoTransceiver(PeerConnectionHandle peer_handle,
+                                     const VideoTransceiverInitConfig* config,
+                                     VideoTransceiverHandle* handle) noexcept {
+  if (!handle || !config) {
+    return Result::kInvalidParameter;
+  }
+  *handle = nullptr;
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
+    ErrorOr<RefPtr<VideoTransceiver>> video_transceiver =
+        peer->AddVideoTransceiver(*config);
+    if (video_transceiver.ok()) {
+      *handle = (AudioTransceiverHandle)video_transceiver.value().release();
+      return Result::kSuccess;
+    }
+    return video_transceiver.error().result();
+  }
+  return Result::kInvalidNativeHandle;
+}

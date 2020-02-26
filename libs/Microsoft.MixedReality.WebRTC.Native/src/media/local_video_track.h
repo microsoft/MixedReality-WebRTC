@@ -5,6 +5,8 @@
 
 #include "callback.h"
 #include "interop_api.h"
+#include "media/media_track.h"
+#include "refptr.h"
 #include "tracked_object.h"
 #include "video_frame_observer.h"
 
@@ -21,6 +23,7 @@ class VideoTrackInterface;
 namespace Microsoft::MixedReality::WebRTC {
 
 class PeerConnection;
+class VideoTransceiver;
 
 /// A local video track is a media track for a peer connection backed by a local
 /// source, and transmitted to a remote peer.
@@ -34,17 +37,25 @@ class PeerConnection;
 /// typically a video capture device (e.g. webcam), but can	also be a source
 /// producing programmatically generated frames. The local video track itself
 /// has no knowledge about how the source produces the frames.
-class LocalVideoTrack : public VideoFrameObserver, public TrackedObject {
+class LocalVideoTrack : public VideoFrameObserver, public MediaTrack {
  public:
+  /// Constructor for a track not added to any peer connection.
+  LocalVideoTrack(RefPtr<GlobalFactory> global_factory,
+                  rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
+                  mrsLocalVideoTrackInteropHandle interop_handle) noexcept;
+
+  /// Constructor for a track added to a peer connection.
   LocalVideoTrack(RefPtr<GlobalFactory> global_factory,
                   PeerConnection& owner,
+                  RefPtr<VideoTransceiver> transceiver,
                   rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
                   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
                   mrsLocalVideoTrackInteropHandle interop_handle) noexcept;
+
   ~LocalVideoTrack() override;
 
   /// Get the name of the local video track.
-  std::string GetName() const noexcept override;
+  std::string GetName() const noexcept override { return track_name_; }
 
   /// Enable or disable the video track. An enabled track streams its content
   /// from its source to the remote peer. A disabled video track only sends
@@ -54,6 +65,8 @@ class LocalVideoTrack : public VideoFrameObserver, public TrackedObject {
   /// Check if the track is enabled.
   /// See |SetEnabled(bool)|.
   [[nodiscard]] bool IsEnabled() const noexcept;
+
+  [[nodiscard]] RefPtr<VideoTransceiver> GetTransceiver() const noexcept;
 
   //
   // Advanced use
@@ -67,20 +80,37 @@ class LocalVideoTrack : public VideoFrameObserver, public TrackedObject {
     return interop_handle_;
   }
 
+  /// Internal callback on added to a peer connection to update the internal
+  /// state of the object.
+  void OnAddedToPeerConnection(
+      PeerConnection& owner,
+      RefPtr<VideoTransceiver> transceiver,
+      rtc::scoped_refptr<webrtc::RtpSenderInterface> sender);
+
+  /// Internal callback on removed from a peer connection to update the internal
+  /// state of the object.
+  void OnRemovedFromPeerConnection(
+      PeerConnection& old_owner,
+      RefPtr<VideoTransceiver> old_transceiver,
+      rtc::scoped_refptr<webrtc::RtpSenderInterface> old_sender);
+
   void RemoveFromPeerConnection(webrtc::PeerConnectionInterface& peer);
 
  private:
-  /// Weak reference to the PeerConnection object owning this track.
-  PeerConnection* owner_{};
-
   /// Underlying core implementation.
   rtc::scoped_refptr<webrtc::VideoTrackInterface> track_;
 
   /// RTP sender this track is associated with.
   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender_;
 
+  /// Transceiver this track is associated with, if any.
+  RefPtr<VideoTransceiver> transceiver_;
+
   /// Optional interop handle, if associated with an interop wrapper.
   mrsLocalVideoTrackInteropHandle interop_handle_{};
+
+  /// Cached track name, to avoid dispatching on signaling thread.
+  const std::string track_name_;
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC
