@@ -58,6 +58,7 @@
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="peer_connection_test_helpers.h" />
+    <ClInclude Include="test_utils.h" />
     <ClInclude Include="video_test_utils.h" />
   </ItemGroup>
   <ItemGroup>

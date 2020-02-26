@@ -5,7 +5,11 @@
 
 #include "interop_api.h"
 
+#include "test_utils.h"
+
 namespace {
+
+class DataChannelTests : public TestUtils::TestBase {};
 
 const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
     (void*)0x1;
@@ -42,7 +46,7 @@ void MRS_CALL StaticStateCallback(void* user_data, int32_t state, int32_t id) {
 
 }  // namespace
 
-TEST(DataChannel, AddChannelBeforeInit) {
+TEST_F(DataChannelTests, AddChannelBeforeInit) {
   PCRaii pc;
   ASSERT_NE(nullptr, pc.handle());
   mrsDataChannelConfig config{};
@@ -57,7 +61,7 @@ TEST(DataChannel, AddChannelBeforeInit) {
                                             callbacks, &handle));
 }
 
-TEST(DataChannel, InBand) {
+TEST_F(DataChannelTests, InBand) {
   // Create PC
   PeerConnectionConfiguration config{};  // local connection only
   PCRaii pc1(config);
@@ -202,7 +206,7 @@ TEST(DataChannel, InBand) {
   }
 }
 
-TEST(DataChannel, MultiThreadCreate) {
+TEST_F(DataChannelTests, MultiThreadCreate) {
   PCRaii pc;
   constexpr int kNumThreads = 16;
   std::thread threads[kNumThreads];
@@ -224,7 +228,7 @@ TEST(DataChannel, MultiThreadCreate) {
   }
 }
 
-TEST(DataChannel, Send) {
+TEST_F(DataChannelTests, Send) {
   LocalPeerPairRaii pair;
 
   const int kId = 42;
@@ -316,7 +320,7 @@ TEST(DataChannel, Send) {
             mrsPeerConnectionRemoveDataChannel(pair.pc2(), handle2));
 }
 
-TEST(DataChannel, Send_InvalidHandle) {
+TEST_F(DataChannelTests, Send_InvalidHandle) {
   const char msg[] = "test";
   const uint64_t size = sizeof(msg);
   ASSERT_EQ(Result::kInvalidNativeHandle,
@@ -328,7 +332,7 @@ TEST(DataChannel, Send_InvalidHandle) {
 //        network can send, without setting any explicit congestion control etc.
 //        so is prone to false errors. This is still useful for local testing.
 //
-// TEST(DataChannel, Buffering) {
+// TEST_F(DataChannelTests, Buffering) {
 //  // Create PC
 //  LocalPeerPairRaii pair;
 //  ASSERT_NE(nullptr, pair.pc1());

@@ -7,6 +7,7 @@
 #include "interop_api.h"
 #include "local_video_track_interop.h"
 
+#include "test_utils.h"
 #include "video_test_utils.h"
 
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
@@ -16,9 +17,11 @@ namespace {
 // PeerConnectionI420VideoFrameCallback
 using I420VideoFrameCallback = InteropCallback<const I420AVideoFrame&>;
 
+class VideoTrackTests : public TestUtils::TestBase {};
+
 }  // namespace
 
-TEST(VideoTrack, Simple) {
+TEST_F(VideoTrackTests, Simple) {
   LocalPeerPairRaii pair;
 
   LocalVideoTrackInitConfig config{};
@@ -51,7 +54,7 @@ TEST(VideoTrack, Simple) {
   mrsLocalVideoTrackRemoveRef(track_handle);
 }
 
-TEST(VideoTrack, Muted) {
+TEST_F(VideoTrackTests, Muted) {
   LocalPeerPairRaii pair;
 
   LocalVideoTrackInitConfig config{};
@@ -105,6 +108,7 @@ void MRS_CALL enumDeviceCallback(const char* id,
   auto device_ids = (std::vector<std::string>*)user_data;
   device_ids->push_back(id);
 }
+
 void MRS_CALL enumDeviceCallbackCompleted(void* user_data) {
   auto ev = (Event*)user_data;
   ev->Set();
@@ -128,7 +132,7 @@ void MRS_CALL enumDeviceCallbackCompleted(void* user_data) {
 //  }
 //}
 
-TEST(VideoTrack, DeviceIdInvalid) {
+TEST_F(VideoTrackTests, DeviceIdInvalid) {
   LocalPeerPairRaii pair;
 
   LocalVideoTrackInitConfig config{};
@@ -140,7 +144,7 @@ TEST(VideoTrack, DeviceIdInvalid) {
   ASSERT_EQ(nullptr, track_handle);
 }
 
-TEST(VideoTrack, ExternalI420) {
+TEST_F(VideoTrackTests, ExternalI420) {
   LocalPeerPairRaii pair;
 
   ExternalVideoTrackSourceHandle source_handle = nullptr;

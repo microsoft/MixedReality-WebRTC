@@ -6,6 +6,14 @@
 #include "audio_frame.h"
 #include "interop_api.h"
 
+#include "test_utils.h"
+
+namespace {
+
+class AudioTrackTests : public TestUtils::TestBase {};
+
+}  // namespace
+
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 
 namespace {
@@ -69,7 +77,7 @@ bool IsSilent_int16(const int16_t* data,
 // silent from a perceptual point of view.
 //
 
-TEST(AudioTrack, Simple) {
+TEST_F(AudioTrackTests, Simple) {
   LocalPeerPairRaii pair;
 
   ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
@@ -126,7 +134,7 @@ TEST(AudioTrack, Simple) {
                                                     nullptr);
 }
 
-TEST(AudioTrack, Muted) {
+TEST_F(AudioTrackTests, Muted) {
   LocalPeerPairRaii pair;
 
   ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddLocalAudioTrack(pair.pc1()));
