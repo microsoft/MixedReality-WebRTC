@@ -293,8 +293,9 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
   }
 
   // This is read under the init mutex lock so can be relaxed, as it cannot
-  // decrease during that time.
-  const int num_refs = ref_count_.load(std::memory_order_relaxed);
+  // decrease during that time. However we should test the value before it's
+  // cleared below, so use acquire semantic.
+  const int num_refs = ref_count_.load(std::memory_order_acquire);
   if (num_refs > 0) {
     if (shutdown_action == ShutdownAction::kTryShutdownIfSafe) {
       return false;  // cannot shut down safely, staying initialized
@@ -313,6 +314,11 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
 #if defined(MR_SHARING_WIN)
     DebugBreak();
 #endif
+
+    // Clear debug infos and references. This leaks objects, but at least won't
+    // interact with future uses.
+    alive_objects_.clear();
+    ref_count_.store(0, std::memory_order_release);  // see "load acquire" above
   }
 
   // Shutdown
