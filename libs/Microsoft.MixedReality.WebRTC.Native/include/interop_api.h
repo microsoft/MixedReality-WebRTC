@@ -70,23 +70,112 @@ MRS_API void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept;
 // Interop
 //
 
+struct mrsAudioTransceiverConfig;
+struct mrsVideoTransceiverConfig;
+struct mrsRemoteAudioTrackConfig;
+struct mrsRemoteVideoTrackConfig;
 struct mrsDataChannelConfig;
 struct mrsDataChannelCallbacks;
+
+/// Opaque handle to a native PeerConnection C++ object.
+using PeerConnectionHandle = void*;
+
+/// Opaque handle to a native MediaTrack C++ object.
+using MediaTrackHandle = void*;
+
+/// Opaque handle to a native AudioTransceiver C++ object.
+using AudioTransceiverHandle = void*;
+
+/// Opaque handle to a native VideoTransceiver C++ object.
+using VideoTransceiverHandle = void*;
+
+/// Opaque handle to a native LocalAudioTrack C++ object.
+using LocalAudioTrackHandle = void*;
+
+/// Opaque handle to a native LocalVideoTrack C++ object.
+using LocalVideoTrackHandle = void*;
+
+/// Opaque handle to a native RemoteAudioTrack C++ object.
+using RemoteAudioTrackHandle = void*;
+
+/// Opaque handle to a native RemoteVideoTrack C++ object.
+using RemoteVideoTrackHandle = void*;
+
+/// Opaque handle to a native DataChannel C++ object.
+using DataChannelHandle = void*;
+
+/// Opaque handle to a native ExternalVideoTrackSource C++ object.
+using ExternalVideoTrackSourceHandle = void*;
 
 /// Opaque handle to the interop wrapper of a peer connection.
 using mrsPeerConnectionInteropHandle = void*;
 
+/// Opaque handle to the interop wrapper of an audio transceiver.
+using mrsAudioTransceiverInteropHandle = void*;
+
+/// Opaque handle to the interop wrapper of a video transceiver.
+using mrsVideoTransceiverInteropHandle = void*;
+
+/// Opaque handle to the interop wrapper of a local audio track.
+using mrsLocalAudioTrackInteropHandle = void*;
+
 /// Opaque handle to the interop wrapper of a local video track.
 using mrsLocalVideoTrackInteropHandle = void*;
 
+/// Opaque handle to the interop wrapper of a remote audio track.
+using mrsRemoteAudioTrackInteropHandle = void*;
+
+/// Opaque handle to the interop wrapper of a remote video track.
+using mrsRemoteVideoTrackInteropHandle = void*;
+
 /// Opaque handle to the interop wrapper of a data channel.
 using mrsDataChannelInteropHandle = void*;
+
+/// Callback to create an interop wrapper for an audio transceiver.
+/// The callback must return the handle of the created interop wrapper.
+using mrsAudioTransceiverCreateObjectCallback =
+    mrsAudioTransceiverInteropHandle(MRS_CALL*)(
+        mrsPeerConnectionInteropHandle parent,
+        const mrsAudioTransceiverConfig& config) noexcept;
+
+/// Callback to finish the creation of the interop wrapper by assigning to it
+/// the handle of the AudioTransceiver native object it wraps.
+/// This is called shortly after |mrsAudioTransceiverCreateObjectCallback|, with
+/// the same |mrsAudioTransceiverInteropHandle| returned by that callback.
+using mrsAudioTransceiverFinishCreateCallback =
+    void(MRS_CALL*)(mrsAudioTransceiverInteropHandle, AudioTransceiverHandle);
+
+/// Callback to create an interop wrapper for a video transceiver.
+/// The callback must return the handle of the created interop wrapper.
+using mrsVideoTransceiverCreateObjectCallback =
+    mrsVideoTransceiverInteropHandle(MRS_CALL*)(
+        mrsPeerConnectionInteropHandle parent,
+        const mrsVideoTransceiverConfig& config) noexcept;
+
+/// Callback to finish the creation of the interop wrapper by assigning to it
+/// the handle of the VideoTransceiver native object it wraps.
+/// This is called shortly after |mrsVideoTransceiverCreateObjectCallback|, with
+/// the same |mrsVideoTransceiverInteropHandle| returned by that callback.
+using mrsVideoTransceiverFinishCreateCallback =
+    void(MRS_CALL*)(mrsVideoTransceiverInteropHandle, VideoTransceiverHandle);
+
+/// Callback to create an interop wrapper for a remote audio track.
+using mrsRemoteAudioTrackCreateObjectCallback =
+    mrsRemoteAudioTrackInteropHandle(MRS_CALL*)(
+        mrsPeerConnectionInteropHandle parent,
+        const mrsRemoteAudioTrackConfig& config) noexcept;
+
+/// Callback to create an interop wrapper for a remote video track.
+using mrsRemoteVideoTrackCreateObjectCallback =
+    mrsRemoteVideoTrackInteropHandle(MRS_CALL*)(
+        mrsPeerConnectionInteropHandle parent,
+        const mrsRemoteVideoTrackConfig& config) noexcept;
 
 /// Callback to create an interop wrapper for a data channel.
 using mrsDataChannelCreateObjectCallback = mrsDataChannelInteropHandle(
     MRS_CALL*)(mrsPeerConnectionInteropHandle parent,
                const mrsDataChannelConfig& config,
-               mrsDataChannelCallbacks* callbacks);
+               mrsDataChannelCallbacks* callbacks) noexcept;
 
 //
 // Video capture enumeration
@@ -140,18 +229,6 @@ MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 //
 // Peer connection
 //
-
-/// Opaque handle to a native PeerConnection C++ object.
-using PeerConnectionHandle = void*;
-
-/// Opaque handle to a native LocalVideoTrack C++ object.
-using LocalVideoTrackHandle = void*;
-
-/// Opaque handle to a native DataChannel C++ object.
-using DataChannelHandle = void*;
-
-/// Opaque handle to a native ExternalVideoTrackSource C++ object.
-using ExternalVideoTrackSourceHandle = void*;
 
 /// Callback fired when the peer connection is connected, that is it finished
 /// the JSEP offer/answer exchange successfully.
@@ -209,24 +286,64 @@ enum class TrackKind : uint32_t {
   kDataTrack = 3,
 };
 
-/// Callback fired when a remote track is added to a connection.
-using PeerConnectionTrackAddedCallback = void(MRS_CALL*)(void* user_data,
-                                                         TrackKind track_kind);
+/// Callback fired when a remote audio track is added to a connection.
+/// The |audio_track| and |audio_transceiver| handle hold a reference to the
+/// underlying native object they are associated with, and therefore must be
+/// released with |mrsLocalAudioTrackRemoveRef()| and
+/// |mrsAudioTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+using PeerConnectionAudioTrackAddedCallback =
+    void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
+                    mrsRemoteAudioTrackInteropHandle audio_track_wrapper,
+                    RemoteAudioTrackHandle audio_track,
+                    mrsAudioTransceiverInteropHandle audio_transceiver_wrapper,
+                    AudioTransceiverHandle audio_transceiver);
 
-/// Callback fired when a remote track is removed from a connection.
-using PeerConnectionTrackRemovedCallback =
-    void(MRS_CALL*)(void* user_data, TrackKind track_kind);
+/// Callback fired when a remote audio track is removed from a connection.
+/// The |audio_track| and |audio_transceiver| handle hold a reference to the
+/// underlying native object they are associated with, and therefore must be
+/// released with |mrsLocalAudioTrackRemoveRef()| and
+/// |mrsAudioTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+using PeerConnectionAudioTrackRemovedCallback =
+    void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
+                    mrsRemoteAudioTrackInteropHandle audio_track_wrapper,
+                    RemoteAudioTrackHandle audio_track,
+                    mrsAudioTransceiverInteropHandle audio_transceiver_wrapper,
+                    AudioTransceiverHandle audio_transceiver);
+
+/// Callback fired when a remote video track is added to a connection.
+/// The |video_track| and |video_transceiver| handle hold a reference to the
+/// underlying native object they are associated with, and therefore must be
+/// released with |mrsLocalVideoTrackRemoveRef()| and
+/// |mrsVideoTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+using PeerConnectionVideoTrackAddedCallback =
+    void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
+                    mrsRemoteVideoTrackInteropHandle video_track_wrapper,
+                    RemoteVideoTrackHandle video_track,
+                    mrsVideoTransceiverInteropHandle video_transceiver_wrapper,
+                    VideoTransceiverHandle video_transceiver);
+
+/// Callback fired when a remote video track is removed from a connection.
+/// The |video_track| and |video_transceiver| handle hold a reference to the
+/// underlying native object they are associated with, and therefore must be
+/// released with |mrsLocalVideoTrackRemoveRef()| and
+/// |mrsVideoTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+using PeerConnectionVideoTrackRemovedCallback =
+    void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
+                    mrsRemoteVideoTrackInteropHandle video_track_wrapper,
+                    RemoteVideoTrackHandle video_track,
+                    mrsVideoTransceiverInteropHandle video_transceiver_wrapper,
+                    VideoTransceiverHandle video_transceiver);
 
 /// Callback fired when a data channel is added to the peer connection after
 /// being negotiated with the remote peer.
 using PeerConnectionDataChannelAddedCallback =
-    void(MRS_CALL*)(void* user_data,
+    void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsDataChannelInteropHandle data_channel_wrapper,
                     DataChannelHandle data_channel);
 
 /// Callback fired when a data channel is remoted from the peer connection.
 using PeerConnectionDataChannelRemovedCallback =
-    void(MRS_CALL*)(void* user_data,
+    void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsDataChannelInteropHandle data_channel_wrapper,
                     DataChannelHandle data_channel);
 
@@ -250,8 +367,8 @@ using mrsAudioFrame = Microsoft::MixedReality::WebRTC::AudioFrame;
 
 /// Callback fired when a local or remote (depending on use) audio frame is
 /// available to be consumed by the caller, usually for local output.
-using PeerConnectionAudioFrameCallback =
-    void(MRS_CALL*)(void* user_data, const mrsAudioFrame& frame);
+using mrsAudioFrameCallback = void(MRS_CALL*)(void* user_data,
+                                              const mrsAudioFrame& frame);
 
 /// Callback fired when a message is received on a data channel.
 using mrsDataChannelMessageCallback = void(MRS_CALL*)(void* user_data,
@@ -331,37 +448,67 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
                         mrsPeerConnectionInteropHandle interop_handle,
                         PeerConnectionHandle* peerHandleOut) noexcept;
 
+/// Callbacks needed to allow the native implementation to interact with the
+/// interop layer, and in particular to react to events which necessitate
+/// creating a new interop wrapper for a new native instance (whose creation was
+/// not initiated by the interop, so for which the native instance is created
+/// first).
 struct mrsPeerConnectionInteropCallbacks {
+  /// Construct an interop object for an AudioTransceiver instance.
+  mrsAudioTransceiverCreateObjectCallback audio_transceiver_create_object{};
+
+  /// Finish the construction of the interop object of an AudioTransceiver.
+  mrsAudioTransceiverFinishCreateCallback audio_transceiver_finish_create{};
+
+  /// Construct an interop object for a VideoTransceiver instance.
+  mrsVideoTransceiverCreateObjectCallback video_transceiver_create_object{};
+
+  /// Finish the construction of the interop object of a VideoTransceiver.
+  mrsVideoTransceiverFinishCreateCallback video_transceiver_finish_create{};
+
+  /// Construct an interop object for a RemoteAudioTrack instance.
+  mrsRemoteAudioTrackCreateObjectCallback remote_audio_track_create_object{};
+
+  /// Construct an interop object for a RemoteVideooTrack instance.
+  mrsRemoteVideoTrackCreateObjectCallback remote_video_track_create_object{};
+
   /// Construct an interop object for a DataChannel instance.
   mrsDataChannelCreateObjectCallback data_channel_create_object{};
 };
 
+/// Register the interop callbacks necessary to make interop work. To
+/// unregister, simply pass nullptr as the callback pointer. Only one set of
+/// callbacks can be registered at a time.
 MRS_API mrsResult MRS_CALL mrsPeerConnectionRegisterInteropCallbacks(
     PeerConnectionHandle peerHandle,
     mrsPeerConnectionInteropCallbacks* callbacks) noexcept;
 
-/// Register a callback fired once connected to a remote peer.
-/// To unregister, simply pass nullptr as the callback pointer.
+/// Register a callback invoked once connected to a remote peer. To unregister,
+/// simply pass nullptr as the callback pointer. Only one callback can be
+/// registered at a time.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterConnectedCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionConnectedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a local message is ready to be sent via the
-/// signaling service to a remote peer.
+/// Register a callback invoked when a local message is ready to be sent via the
+/// signaling service to a remote peer. Only one callback can be registered at a
+/// time.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionLocalSdpReadytoSendCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when an ICE candidate message is ready to be sent
-/// via the signaling service to a remote peer.
+/// Register a callback invoked when an ICE candidate message is ready to be
+/// sent via the signaling service to a remote peer. Only one callback can be
+/// registered at a time.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionIceCandidateReadytoSendCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when the ICE connection state changes.
+/// Register a callback invoked when the ICE connection state changes. Only one
+/// callback can be registered at a time.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterIceStateChangedCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionIceStateChangedCallback callback,
@@ -374,18 +521,44 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRenegotiationNeededCallback(
     PeerConnectionRenegotiationNeededCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a remote media track is added to the current
+/// Register a callback fired when a remote audio track is added to the current
 /// peer connection.
-MRS_API void MRS_CALL mrsPeerConnectionRegisterTrackAddedCallback(
+/// Note that the arguments include some object handles, which each hold a
+/// reference to the corresponding object and therefore must be released, even
+/// if the user does not make use of them in the callback.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackAddedCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionTrackAddedCallback callback,
+    PeerConnectionAudioTrackAddedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a remote media track is removed from the
+/// Register a callback fired when a remote audio track is removed from the
 /// current peer connection.
-MRS_API void MRS_CALL mrsPeerConnectionRegisterTrackRemovedCallback(
+/// Note that the arguments include some object handles, which each hold a
+/// reference to the corresponding object and therefore must be released, even
+/// if the user does not make use of them in the callback.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackRemovedCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionTrackRemovedCallback callback,
+    PeerConnectionAudioTrackRemovedCallback callback,
+    void* user_data) noexcept;
+
+/// Register a callback fired when a remote video track is added to the current
+/// peer connection.
+/// Note that the arguments include some object handles, which each hold a
+/// reference to the corresponding object and therefore must be released, even
+/// if the user does not make use of them in the callback.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterVideoTrackAddedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionVideoTrackAddedCallback callback,
+    void* user_data) noexcept;
+
+/// Register a callback fired when a remote video track is removed from the
+/// current peer connection.
+/// Note that the arguments include some object handles, which each hold a
+/// reference to the corresponding object and therefore must be released, even
+/// if the user does not make use of them in the callback.
+MRS_API void MRS_CALL mrsPeerConnectionRegisterVideoTrackRemovedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionVideoTrackRemovedCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a remote data channel is removed from the
@@ -400,20 +573,6 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelAddedCallback(
 MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionDataChannelRemovedCallback callback,
-    void* user_data) noexcept;
-
-/// Register a callback fired when a video frame from a video track was received
-/// from the remote peer.
-MRS_API void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
-    PeerConnectionHandle peerHandle,
-    mrsI420AVideoFrameCallback callback,
-    void* user_data) noexcept;
-
-/// Register a callback fired when a video frame from a video track was received
-/// from the remote peer.
-MRS_API void MRS_CALL mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback(
-    PeerConnectionHandle peerHandle,
-    mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept;
 
 /// Kind of video profile. Equivalent to org::webRtc::VideoProfileKind.
@@ -431,24 +590,77 @@ enum class VideoProfileKind : int32_t {
   kVideoHdr8,
 };
 
-/// Register a callback fired when an audio frame is available from a local
-/// audio track, usually from a local audio capture device (local microphone).
-///
-/// -- WARNING --
-/// Currently this callback is never fired, because the internal audio capture
-/// device implementation ignores any registration and only delivers its audio
-/// data to the internal WebRTC engine for sending to the remote peer.
-MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
-    PeerConnectionHandle peerHandle,
-    PeerConnectionAudioFrameCallback callback,
-    void* user_data) noexcept;
+enum class mrsTransceiverStateUpdatedReason : int32_t {
+  kLocalDesc,
+  kRemoteDesc,
+  kSetDirection
+};
 
-/// Register a callback fired when an audio frame from an audio track was
-/// received from the remote peer.
-MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
-    PeerConnectionHandle peerHandle,
-    PeerConnectionAudioFrameCallback callback,
-    void* user_data) noexcept;
+/// Flow direction of the media inside the transceiver. This maps to whether
+/// local and/or remote tracks are attached to the transceiver. The local
+/// track corresponds to the send direction, and the remote track to the
+/// receive direction.
+enum class mrsTransceiverDirection : int32_t {
+  kSendRecv = 0,
+  kSendOnly = 1,
+  kRecvOnly = 2,
+  kInactive = 3
+};
+
+/// Same as |mrsTransceiverDirection|, but including optional unset.
+enum class mrsTransceiverOptDirection : int32_t {
+  kNotSet = -1,
+  kSendRecv = 0,
+  kSendOnly = 1,
+  kRecvOnly = 2,
+  kInactive = 3
+};
+
+/// Configuration for creating a new audio transceiver.
+struct AudioTransceiverInitConfig {
+  /// Mandatory name of the audio transceiver. This must be a valid SDP token;
+  /// see |mrsSdpIsValidToken()|.
+  const char* name = nullptr;
+
+  /// Initial desired direction of the transceiver media when created.
+  mrsTransceiverDirection desired_direction =
+      mrsTransceiverDirection::kSendRecv;
+
+  /// Semi-colon separated list of stream IDs associated with the transceiver.
+  /// Use |Transceiver::DecodeStreamIDs()| and |Transceiver::EncodeStreamIDs()|.
+  const char* stream_ids = nullptr;
+
+  /// Handle of the audio transceiver interop wrapper, if any, which will be
+  /// associated with the native audio transceiver object.
+  mrsAudioTransceiverInteropHandle transceiver_interop_handle{};
+};
+
+/// Configuration for creating a new video transceiver.
+struct VideoTransceiverInitConfig {
+  /// Mandatory name of the video transceiver. This must be a valid SDP token;
+  /// see |mrsSdpIsValidToken()|.
+  const char* name = nullptr;
+
+  /// Initial desired direction of the transceiver media when created.
+  mrsTransceiverDirection desired_direction =
+      mrsTransceiverDirection::kSendRecv;
+
+  /// Semi-colon separated list of stream IDs associated with the transceiver.
+  /// Use |Transceiver::DecodeStreamIDs()| and |Transceiver::EncodeStreamIDs()|.
+  const char* stream_ids = nullptr;
+
+  /// Handle of the video transceiver interop wrapper, if any, which will be
+  /// associated with the native video transceiver object.
+  mrsVideoTransceiverInteropHandle transceiver_interop_handle{};
+};
+
+/// Configuration for opening a local audio capture device and creating a local
+/// audio track.
+struct LocalAudioTrackInitConfig {
+  /// Handle of the local audio track interop wrapper, if any, which will be
+  /// associated with the native local audio track object.
+  mrsLocalAudioTrackInteropHandle track_interop_handle{};
+};
 
 /// Configuration for opening a local video capture device and creating a local
 /// video track.
@@ -502,19 +714,12 @@ struct LocalVideoTrackInitConfig {
   mrsBool enable_mrc_recording_indicator = mrsBool::kTrue;
 };
 
-/// Add a local video track from a local video capture device (webcam) to
-/// the collection of tracks to send to the remote peer.
-/// |video_device_id| specifies the unique identifier of a video capture
-/// device to open, as obtained by enumerating devices with
-/// mrsEnumVideoCaptureDevicesAsync(), or null for any device.
-/// |enable_mrc| allows enabling Mixed Reality Capture on HoloLens devices, and
-/// is otherwise ignored for other video capture devices. On UWP this must be
-/// invoked from another thread than the main UI thread.
-MRS_API mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
-    PeerConnectionHandle peerHandle,
-    const char* track_name,
-    const LocalVideoTrackInitConfig* config,
-    LocalVideoTrackHandle* trackHandle) noexcept;
+/// Configuration for creating a local video track from an external source.
+struct LocalVideoTrackFromExternalSourceInitConfig {
+  /// Handle of the local video track interop wrapper, if any, which will be
+  /// associated with the native local video track object.
+  mrsLocalVideoTrackInteropHandle track_interop_handle{};
+};
 
 using mrsRequestExternalI420AVideoFrameCallback =
     mrsResult(MRS_CALL*)(void* user_data,
@@ -528,45 +733,57 @@ using mrsRequestExternalArgb32VideoFrameCallback =
                          uint32_t request_id,
                          int64_t timestamp_ms);
 
-/// Configuration for creating a local video track from an external source.
-struct LocalVideoTrackFromExternalSourceInitConfig {
-  /// Handle of the local video track interop wrapper, if any, which will be
-  /// associated with the native local video track object.
-  mrsLocalVideoTrackInteropHandle track_interop_handle{};
+/// Configuration for creating a new audio transceiver interop wrapper.
+struct mrsAudioTransceiverConfig {
+  /// Transceiver name, for pairing with remote peer's one. This is normally
+  /// extracted from the receiver's stream ID #0 if the transceiver was created
+  /// for a remote track, or is determined by the user-provided value if created
+  /// with |AddAudioTransceiver()|.
+  const char* name{};
+
+  /// Zero-based media line index for the transceiver. This is the index of the
+  /// m= line in the SDP offer/answer as determined when adding the transceiver.
+  /// This is provided by the implementation and is immutable (since we don't
+  /// support stopping transceivers, so m= lines are not recycled).
+  int mline_index = -1;
+
+  /// Initial desired direction when the transceiver is created. If the
+  /// transceiver is created by the implementation, this is generally set to the
+  /// current value on the implementation object, to keep the interop wrapper in
+  /// sync.
+  mrsTransceiverDirection initial_desired_direction =
+      mrsTransceiverDirection::kSendRecv;
 };
 
-/// Add a local video track from a custom video source external to the
-/// implementation. This allows feeding into WebRTC frames from any source,
-/// including generated or synthetic frames, for example for testing.
-/// The track source initially starts as capuring. Capture can be stopped with
-/// |mrsExternalVideoTrackSourceShutdown|.
-/// This returns a handle to a newly allocated object, which must be released
-/// once not used anymore with |mrsLocalVideoTrackRemoveRef()|.
-MRS_API mrsResult MRS_CALL
-mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
-    PeerConnectionHandle peerHandle,
-    const char* track_name,
-    ExternalVideoTrackSourceHandle source_handle,
-    const LocalVideoTrackFromExternalSourceInitConfig* config,
-    LocalVideoTrackHandle* track_handle) noexcept;
+/// Configuration for creating a new video transceiver interop wrapper.
+struct mrsVideoTransceiverConfig {
+  /// Transceiver name, for pairing with remote peer's one. This is normally
+  /// extracted from the receiver's stream ID #0 if the transceiver was created
+  /// for a remote track, or is determined by the user-provided value if created
+  /// with |AddVideoTransceiver()|.
+  const char* name{};
 
-/// Remove a local video track from the given peer connection and destroy it.
-/// After this call returned, the video track handle is invalid.
-MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
-    PeerConnectionHandle peer_handle,
-    LocalVideoTrackHandle track_handle) noexcept;
+  /// Zero-based media line index for the transceiver. This is the index of the
+  /// m= line in the SDP offer/answer as determined when adding the transceiver.
+  /// This is provided by the implementation and is immutable (since we don't
+  /// support stopping transceivers, so m= lines are not recycled).
+  int mline_index = -1;
 
-/// Remove all local video tracks backed by the given video track source from
-/// the given peer connection and destroy the video track source.
-/// After this call returned, the video track source handle is invalid.
-MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTracksFromSource(
-    PeerConnectionHandle peer_handle,
-    ExternalVideoTrackSourceHandle source_handle) noexcept;
+  /// Initial desired direction when the transceiver is created. If the
+  /// transceiver is created by the implementation, this is generally set to the
+  /// current value on the implementation object, to keep the interop wrapper in
+  /// sync.
+  mrsTransceiverDirection initial_desired_direction =
+      mrsTransceiverDirection::kSendRecv;
+};
 
-/// Add a local audio track from a local audio capture device (microphone) to
-/// the collection of tracks to send to the remote peer.
-MRS_API mrsResult MRS_CALL
-mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept;
+struct mrsRemoteAudioTrackConfig {
+  const char* track_name{};
+};
+
+struct mrsRemoteVideoTrackConfig {
+  const char* track_name{};
+};
 
 enum class mrsDataChannelConfigFlags : uint32_t {
   kOrdered = 0x1,
@@ -615,23 +832,9 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     mrsDataChannelCallbacks callbacks,
     DataChannelHandle* dataChannelHandleOut) noexcept;
 
-MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
-    PeerConnectionHandle peerHandle,
-    LocalVideoTrackHandle trackHandle) noexcept;
-
-MRS_API void MRS_CALL mrsPeerConnectionRemoveLocalAudioTrack(
-    PeerConnectionHandle peerHandle) noexcept;
-
 MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
     PeerConnectionHandle peerHandle,
     DataChannelHandle dataChannelHandle) noexcept;
-
-MRS_API mrsResult MRS_CALL
-mrsPeerConnectionSetLocalAudioTrackEnabled(PeerConnectionHandle peerHandle,
-                                           mrsBool enabled) noexcept;
-
-MRS_API mrsBool MRS_CALL mrsPeerConnectionIsLocalAudioTrackEnabled(
-    PeerConnectionHandle peerHandle) noexcept;
 
 MRS_API mrsResult MRS_CALL
 mrsDataChannelSendMessage(DataChannelHandle dataChannelHandle,
@@ -776,6 +979,7 @@ MRS_API void MRS_CALL mrsMemCpyStride(void* dst,
                                       int32_t src_stride,
                                       int32_t elem_size,
                                       int32_t elem_count) noexcept;
+
 //
 // Stats extraction.
 //
@@ -893,4 +1097,5 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
 /// Release a stats report.
 MRS_API mrsResult MRS_CALL
 mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report);
+
 }  // extern "C"

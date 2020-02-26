@@ -76,6 +76,11 @@ struct Semaphore {
   int64_t value_{0};
 };
 
+/// RAII helper to initialize and shutdown the library.
+struct LibraryInitRaii {
+  // TODO - remove this
+};
+
 /// Wrapper around an interop callback taking an extra raw pointer argument, to
 /// trampoline its call to a generic std::function for convenience (including
 /// lambda functions).

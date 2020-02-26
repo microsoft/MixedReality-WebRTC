@@ -32,8 +32,7 @@ TEST(PeerConnection, LocalNoIce) {
                     pc2.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
       ev.Wait();
       if (kOfferString == type) {
-        ASSERT_EQ(Result::kSuccess,
-                  mrsPeerConnectionCreateAnswer(pc2.handle()));
+        ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc2.handle()));
       }
     });
     SdpCallback sdp2_cb(pc2.handle(), [&pc1](const char* type,

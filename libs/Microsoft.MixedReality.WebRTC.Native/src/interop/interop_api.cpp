@@ -10,12 +10,16 @@
 #include "data_channel.h"
 #include "external_video_track_source_interop.h"
 #include "interop/global_factory.h"
+#include "interop/local_audio_track_interop.h"
 #include "interop_api.h"
+#include "local_video_track_interop.h"
 #include "media/external_video_track_source_impl.h"
+#include "media/local_audio_track.h"
 #include "media/local_video_track.h"
 #include "peer_connection.h"
 #include "peer_connection_interop.h"
 #include "sdp_utils.h"
+#include "utils.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
@@ -630,22 +634,51 @@ void MRS_CALL mrsPeerConnectionRegisterRenegotiationNeededCallback(
   }
 }
 
-void MRS_CALL mrsPeerConnectionRegisterTrackAddedCallback(
+void MRS_CALL mrsPeerConnectionRegisterAudioTrackAddedCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionTrackAddedCallback callback,
+    PeerConnectionAudioTrackAddedCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->RegisterTrackAddedCallback(Callback<TrackKind>{callback, user_data});
+    peer->RegisterAudioTrackAddedCallback(
+        Callback<mrsRemoteAudioTrackInteropHandle, RemoteAudioTrackHandle,
+                 mrsAudioTransceiverInteropHandle, AudioTransceiverHandle>{
+            callback, user_data});
   }
 }
 
-void MRS_CALL mrsPeerConnectionRegisterTrackRemovedCallback(
+void MRS_CALL mrsPeerConnectionRegisterAudioTrackRemovedCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionTrackRemovedCallback callback,
+    PeerConnectionAudioTrackRemovedCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->RegisterTrackRemovedCallback(
-        Callback<TrackKind>{callback, user_data});
+    peer->RegisterAudioTrackRemovedCallback(
+        Callback<mrsRemoteAudioTrackInteropHandle, RemoteAudioTrackHandle,
+                 mrsAudioTransceiverInteropHandle, AudioTransceiverHandle>{
+            callback, user_data});
+  }
+}
+
+void MRS_CALL mrsPeerConnectionRegisterVideoTrackAddedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionVideoTrackAddedCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterVideoTrackAddedCallback(
+        Callback<mrsRemoteVideoTrackInteropHandle, RemoteVideoTrackHandle,
+                 mrsVideoTransceiverInteropHandle, VideoTransceiverHandle>{
+            callback, user_data});
+  }
+}
+
+void MRS_CALL mrsPeerConnectionRegisterVideoTrackRemovedCallback(
+    PeerConnectionHandle peerHandle,
+    PeerConnectionVideoTrackRemovedCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+    peer->RegisterVideoTrackRemovedCallback(
+        Callback<mrsRemoteVideoTrackInteropHandle, RemoteVideoTrackHandle,
+                 mrsVideoTransceiverInteropHandle, VideoTransceiverHandle>{
+            callback, user_data});
   }
 }
 
@@ -671,53 +704,60 @@ void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
   }
 }
 
-void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
-    PeerConnectionHandle peerHandle,
-    mrsI420AVideoFrameCallback callback,
-    void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->RegisterRemoteVideoFrameCallback(
-        I420AFrameReadyCallback{callback, user_data});
-  }
-}
-
-void MRS_CALL mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback(
-    PeerConnectionHandle peerHandle,
-    mrsArgb32VideoFrameCallback callback,
-    void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->RegisterRemoteVideoFrameCallback(
-        Argb32FrameReadyCallback{callback, user_data});
-  }
-}
-
-void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
-    PeerConnectionHandle peerHandle,
-    PeerConnectionAudioFrameCallback callback,
-    void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->RegisterLocalAudioFrameCallback(
-        AudioFrameReadyCallback{callback, user_data});
-  }
-}
-
-void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
-    PeerConnectionHandle peerHandle,
-    PeerConnectionAudioFrameCallback callback,
-    void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->RegisterRemoteAudioFrameCallback(
-        AudioFrameReadyCallback{callback, user_data});
-  }
-}
-
-mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
-    PeerConnectionHandle peerHandle,
+mrsResult MRS_CALL mrsLocalAudioTrackCreateFromDevice(
+    const LocalAudioTrackInitConfig* config,
     const char* track_name,
+    LocalAudioTrackHandle* track_handle_out) noexcept {
+  if (IsStringNullOrEmpty(track_name)) {
+    RTC_LOG(LS_ERROR) << "Invalid empty local audio track name.";
+    return Result::kInvalidParameter;
+  }
+  if (!track_handle_out) {
+    RTC_LOG(LS_ERROR) << "Invalid NULL local audio track handle.";
+    return Result::kInvalidParameter;
+  }
+  *track_handle_out = nullptr;
+
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
+  auto pc_factory = global_factory->GetPeerConnectionFactory();
+  if (!pc_factory) {
+    return Result::kInvalidOperation;
+  }
+
+  // Create the audio track source
+  rtc::scoped_refptr<webrtc::AudioSourceInterface> audio_source =
+      pc_factory->CreateAudioSource(cricket::AudioOptions());
+  if (!audio_source) {
+    RTC_LOG(LS_ERROR) << "Failed to create local audio source.";
+    return Result::kUnknownError;
+  }
+
+  // Create the audio track
+  rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track =
+      pc_factory->CreateAudioTrack(track_name, audio_source);
+  if (!audio_track) {
+    RTC_LOG(LS_ERROR) << "Failed to create local audio track.";
+    return Result::kUnknownError;
+  }
+
+  // Create the audio track wrapper
+  RefPtr<LocalAudioTrack> track =
+      new LocalAudioTrack(std::move(global_factory), std::move(audio_track),
+                          config->track_interop_handle);
+  *track_handle_out = track.release();
+  return Result::kSuccess;
+}
+
+mrsResult MRS_CALL mrsLocalVideoTrackCreateFromDevice(
     const LocalVideoTrackInitConfig* config,
+    const char* track_name,
     LocalVideoTrackHandle* track_handle_out) noexcept {
   if (IsStringNullOrEmpty(track_name)) {
     RTC_LOG(LS_ERROR) << "Invalid empty local video track name.";
+    return Result::kInvalidParameter;
+  }
+  if (!config) {
+    RTC_LOG(LS_ERROR) << "Invalid NULL local video device configuration.";
     return Result::kInvalidParameter;
   }
   if (!track_handle_out) {
@@ -726,11 +766,6 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
   }
   *track_handle_out = nullptr;
 
-  auto peer = static_cast<PeerConnection*>(peerHandle);
-  if (!peer) {
-    RTC_LOG(LS_ERROR) << "Invalid NULL peer connection handle.";
-    return Result::kInvalidNativeHandle;
-  }
   RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   auto pc_factory = global_factory->GetPeerConnectionFactory();
   if (!pc_factory) {
@@ -767,117 +802,28 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
         SimpleMediaConstraints::MaxFrameRate(config->framerate));
   }
 
+  // Create the video track source
   rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
       pc_factory->CreateVideoSource(std::move(video_capturer),
                                     videoConstraints.get());
   if (!video_source) {
     return Result::kUnknownError;
   }
+
+  // Create the video track
   rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
       pc_factory->CreateVideoTrack(track_name, video_source);
   if (!video_track) {
     RTC_LOG(LS_ERROR) << "Failed to create local video track.";
     return Result::kUnknownError;
   }
-  auto result = peer->AddLocalVideoTrack(std::move(video_track),
-                                         config->track_interop_handle);
-  if (result.ok()) {
-    RefPtr<LocalVideoTrack>& video_track_wrapper = result.value();
-    video_track_wrapper->AddRef();  // for the handle
-    *track_handle_out = video_track_wrapper.get();
-    return Result::kSuccess;
-  }
-  RTC_LOG(LS_ERROR) << "Failed to add local video track to peer connection.";
-  return Result::kUnknownError;
-}
 
-mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
-    PeerConnectionHandle peer_handle,
-    const char* track_name,
-    ExternalVideoTrackSourceHandle source_handle,
-    const LocalVideoTrackFromExternalSourceInitConfig* config,
-    LocalVideoTrackHandle* track_handle_out) noexcept {
-  if (!track_handle_out) {
-    return Result::kInvalidParameter;
-  }
-  *track_handle_out = nullptr;
-  auto peer = static_cast<PeerConnection*>(peer_handle);
-  if (!peer) {
-    return Result::kInvalidNativeHandle;
-  }
-  auto track_source =
-      static_cast<detail::ExternalVideoTrackSourceImpl*>(source_handle);
-  if (!track_source) {
-    return Result::kInvalidNativeHandle;
-  }
-  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
-  auto pc_factory = global_factory->GetPeerConnectionFactory();
-  if (!pc_factory) {
-    return Result::kUnknownError;
-  }
-  std::string track_name_str;
-  if (track_name && (track_name[0] != '\0')) {
-    track_name_str = track_name;
-  } else {
-    track_name_str = "external_track";
-  }
-  // The video track keeps a reference to the video source; let's hope this
-  // does not change, because this is not explicitly mentioned in the docs,
-  // and the video track is the only one keeping the video source alive.
-  rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
-      pc_factory->CreateVideoTrack(track_name_str, track_source->impl());
-  if (!video_track) {
-    return Result::kUnknownError;
-  }
-  auto result = peer->AddLocalVideoTrack(std::move(video_track),
-                                         config->track_interop_handle);
-  if (result.ok()) {
-    *track_handle_out = result.value().release();
-    return Result::kSuccess;
-  }
-  RTC_LOG(LS_ERROR) << "Failed to add local video track: "
-                    << result.error().message();
-  return Result::kUnknownError;  //< TODO Convert from result.error()?
-}
-
-mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTracksFromSource(
-    PeerConnectionHandle peer_handle,
-    ExternalVideoTrackSourceHandle source_handle) noexcept {
-  auto peer = static_cast<PeerConnection*>(peer_handle);
-  if (!peer) {
-    return Result::kInvalidNativeHandle;
-  }
-  auto source = static_cast<ExternalVideoTrackSource*>(source_handle);
-  if (!source) {
-    return Result::kInvalidNativeHandle;
-  }
-  peer->RemoveLocalVideoTracksFromSource(*source);
+  // Create the video track wrapper
+  RefPtr<LocalVideoTrack> track =
+      new LocalVideoTrack(std::move(global_factory), std::move(video_track),
+                          config->track_interop_handle);
+  *track_handle_out = track.release();
   return Result::kSuccess;
-}
-
-mrsResult MRS_CALL
-mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
-    auto pc_factory = global_factory->GetPeerConnectionFactory();
-    if (!pc_factory) {
-      return Result::kInvalidOperation;
-    }
-    rtc::scoped_refptr<webrtc::AudioSourceInterface> audio_source =
-        pc_factory->CreateAudioSource(cricket::AudioOptions());
-    if (!audio_source) {
-      return Result::kUnknownError;
-    }
-    rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track =
-        pc_factory->CreateAudioTrack(kLocalAudioLabel, audio_source);
-    if (!audio_track) {
-      return Result::kUnknownError;
-    }
-    return (peer->AddLocalAudioTrack(std::move(audio_track))
-                ? Result::kSuccess
-                : Result::kUnknownError);
-  }
-  return Result::kUnknownError;
 }
 
 mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
@@ -916,30 +862,6 @@ mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
   return data_channel.error().result();
 }
 
-mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTrack(
-    PeerConnectionHandle peer_handle,
-    LocalVideoTrackHandle track_handle) noexcept {
-  auto peer = static_cast<PeerConnection*>(peer_handle);
-  if (!peer) {
-    return Result::kInvalidNativeHandle;
-  }
-  auto track = static_cast<LocalVideoTrack*>(track_handle);
-  if (!track) {
-    return Result::kInvalidNativeHandle;
-  }
-  const mrsResult res =
-      (peer->RemoveLocalVideoTrack(*track).ok() ? Result::kSuccess
-                                                : Result::kUnknownError);
-  return res;
-}
-
-void MRS_CALL mrsPeerConnectionRemoveLocalAudioTrack(
-    PeerConnectionHandle peerHandle) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->RemoveLocalAudioTrack();
-  }
-}
-
 mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
     PeerConnectionHandle peerHandle,
     DataChannelHandle dataChannelHandle) noexcept {
@@ -953,26 +875,6 @@ mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
   }
   peer->RemoveDataChannel(*data_channel);
   return Result::kSuccess;
-}
-
-mrsResult MRS_CALL
-mrsPeerConnectionSetLocalAudioTrackEnabled(PeerConnectionHandle peerHandle,
-                                           mrsBool enabled) noexcept {
-  auto peer = static_cast<PeerConnection*>(peerHandle);
-  if (!peer) {
-    return Result::kInvalidNativeHandle;
-  }
-  peer->SetLocalAudioTrackEnabled(enabled != mrsBool::kFalse);
-  return Result::kSuccess;
-}
-
-mrsBool MRS_CALL mrsPeerConnectionIsLocalAudioTrackEnabled(
-    PeerConnectionHandle peerHandle) noexcept {
-  auto peer = static_cast<PeerConnection*>(peerHandle);
-  if (!peer) {
-    return mrsBool::kFalse;
-  }
-  return (peer->IsLocalAudioTrackEnabled() ? mrsBool::kTrue : mrsBool::kFalse);
 }
 
 mrsResult MRS_CALL

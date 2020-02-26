@@ -19,8 +19,14 @@ class GlobalFactory;
 /// factory while alive.
 enum class ObjectType : int {
   kPeerConnection,
+  kLocalAudioTrack,
   kLocalVideoTrack,
   kExternalVideoTrackSource,
+  kRemoteAudioTrack,
+  kRemoteVideoTrack,
+  kDataChannel,
+  kAudioTransceiver,
+  kVideoTransceiver,
 };
 
 /// Object tracked for interop, exposing helper methods for debugging purpose.

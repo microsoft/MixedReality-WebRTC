@@ -58,11 +58,13 @@
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="peer_connection_test_helpers.h" />
+    <ClInclude Include="simple_interop.h" />
     <ClInclude Include="test_utils.h" />
     <ClInclude Include="video_test_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="audio_track_tests.cpp" />
+    <ClCompile Include="audio_transceiver_tests.cpp" />
     <ClCompile Include="external_video_track_source_tests.cpp" />
     <ClCompile Include="library_tests.cpp" />
     <ClCompile Include="memory_tests.cpp" />
@@ -73,8 +75,10 @@
     </ClCompile>
     <ClCompile Include="data_channel_tests.cpp" />
     <ClCompile Include="video_frame_observer_tests.cpp" />
+    <ClCompile Include="simple_interop.cpp" />
     <ClCompile Include="video_test_utils.cpp" />
     <ClCompile Include="video_track_tests.cpp" />
+    <ClCompile Include="video_transceiver_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\win32\Microsoft.MixedReality.WebRTC.Native.Win32.vcxproj">

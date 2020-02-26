@@ -4,35 +4,33 @@
 #include "pch.h"
 
 #include "interop/global_factory.h"
-#include "local_video_track.h"
+#include "local_audio_track.h"
 #include "peer_connection.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 
-LocalVideoTrack::LocalVideoTrack(
+LocalAudioTrack::LocalAudioTrack(
     RefPtr<GlobalFactory> global_factory,
-    rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
-    mrsLocalVideoTrackInteropHandle interop_handle) noexcept
-    : MediaTrack(std::move(global_factory), ObjectType::kLocalVideoTrack),
+    rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
+    mrsLocalAudioTrackInteropHandle interop_handle) noexcept
+    : MediaTrack(std::move(global_factory), ObjectType::kLocalAudioTrack),
       track_(std::move(track)),
       interop_handle_(interop_handle),
       track_name_(track_->id()) {
   RTC_CHECK(track_);
-  kind_ = TrackKind::kVideoTrack;
-  rtc::VideoSinkWants sink_settings{};
-  sink_settings.rotation_applied = true;
-  track_->AddOrUpdateSink(this, sink_settings);
+  kind_ = TrackKind::kAudioTrack;
+  track_->AddSink(this);  //< FIXME - Implementation is no-op
 }
 
-LocalVideoTrack::LocalVideoTrack(
+LocalAudioTrack::LocalAudioTrack(
     RefPtr<GlobalFactory> global_factory,
     PeerConnection& owner,
-    RefPtr<VideoTransceiver> transceiver,
-    rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
+    RefPtr<AudioTransceiver> transceiver,
+    rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
     rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
-    mrsLocalVideoTrackInteropHandle interop_handle) noexcept
+    mrsLocalAudioTrackInteropHandle interop_handle) noexcept
     : MediaTrack(std::move(global_factory),
-                 ObjectType::kLocalVideoTrack,
+                 ObjectType::kLocalAudioTrack,
                  owner),
       track_(std::move(track)),
       sender_(std::move(sender)),
@@ -43,45 +41,43 @@ LocalVideoTrack::LocalVideoTrack(
   RTC_CHECK(transceiver_);
   RTC_CHECK(track_);
   RTC_CHECK(sender_);
-  kind_ = TrackKind::kVideoTrack;
+  kind_ = TrackKind::kAudioTrack;
   transceiver_->OnLocalTrackAdded(this);
-  rtc::VideoSinkWants sink_settings{};
-  sink_settings.rotation_applied = true;
-  track_->AddOrUpdateSink(this, sink_settings);
+  track_->AddSink(this);  //< FIXME - Implementation is no-op
 }
 
-LocalVideoTrack::~LocalVideoTrack() {
+LocalAudioTrack::~LocalAudioTrack() {
   track_->RemoveSink(this);
   if (owner_) {
-    owner_->RemoveLocalVideoTrack(*this);
+    owner_->RemoveLocalAudioTrack(*this);
   }
   RTC_CHECK(!transceiver_);
   RTC_CHECK(!owner_);
 }
 
-void LocalVideoTrack::SetEnabled(bool enabled) const noexcept {
+void LocalAudioTrack::SetEnabled(bool enabled) const noexcept {
   track_->set_enabled(enabled);
 }
 
-bool LocalVideoTrack::IsEnabled() const noexcept {
+bool LocalAudioTrack::IsEnabled() const noexcept {
   return track_->enabled();
 }
 
-RefPtr<VideoTransceiver> LocalVideoTrack::GetTransceiver() const noexcept {
+RefPtr<AudioTransceiver> LocalAudioTrack::GetTransceiver() const noexcept {
   return transceiver_;
 }
 
-webrtc::VideoTrackInterface* LocalVideoTrack::impl() const {
+webrtc::AudioTrackInterface* LocalAudioTrack::impl() const {
   return track_.get();
 }
 
-webrtc::RtpSenderInterface* LocalVideoTrack::sender() const {
+webrtc::RtpSenderInterface* LocalAudioTrack::sender() const {
   return sender_.get();
 }
 
-void LocalVideoTrack::OnAddedToPeerConnection(
+void LocalAudioTrack::OnAddedToPeerConnection(
     PeerConnection& owner,
-    RefPtr<VideoTransceiver> transceiver,
+    RefPtr<AudioTransceiver> transceiver,
     rtc::scoped_refptr<webrtc::RtpSenderInterface> sender) {
   RTC_CHECK(!owner_);
   RTC_CHECK(!transceiver_);
@@ -94,9 +90,9 @@ void LocalVideoTrack::OnAddedToPeerConnection(
   transceiver_->OnLocalTrackAdded(this);
 }
 
-void LocalVideoTrack::OnRemovedFromPeerConnection(
+void LocalAudioTrack::OnRemovedFromPeerConnection(
     PeerConnection& old_owner,
-    RefPtr<VideoTransceiver> old_transceiver,
+    RefPtr<AudioTransceiver> old_transceiver,
     rtc::scoped_refptr<webrtc::RtpSenderInterface> old_sender) {
   RTC_CHECK_EQ(owner_, &old_owner);
   RTC_CHECK_EQ(transceiver_.get(), old_transceiver.get());
@@ -107,7 +103,7 @@ void LocalVideoTrack::OnRemovedFromPeerConnection(
   transceiver_ = nullptr;
 }
 
-void LocalVideoTrack::RemoveFromPeerConnection(
+void LocalAudioTrack::RemoveFromPeerConnection(
     webrtc::PeerConnectionInterface& peer) {
   if (sender_) {
     peer.RemoveTrack(sender_);

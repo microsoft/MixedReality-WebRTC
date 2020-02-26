@@ -6,6 +6,8 @@
 #include "audio_frame_observer.h"
 #include "callback.h"
 #include "data_channel.h"
+#include "media/audio_transceiver.h"
+#include "media/video_transceiver.h"
 #include "mrs_errors.h"
 #include "refptr.h"
 #include "tracked_object.h"
@@ -14,6 +16,7 @@
 namespace Microsoft::MixedReality::WebRTC {
 
 class PeerConnection;
+class LocalAudioTrack;
 class LocalVideoTrack;
 class ExternalVideoTrackSource;
 class DataChannel;
@@ -34,34 +37,36 @@ struct BitrateSettings {
 
 /// The PeerConnection class is the entry point to most of WebRTC.
 /// It encapsulates a single connection between a local peer and a remote peer,
-/// and hosts some critical events for signaling and video rendering.
+/// and hosts some critical events for signaling.
 ///
 /// The high level flow to establish a connection is as follow:
 /// - Create a peer connection object from a factory with
 /// PeerConnection::create().
-/// - Register a custom callback to the various signaling events.
+/// - Register custom callbacks to the various signaling events, and dispatch
+/// signaling messages back and forth using the chosen signaling solution.
 /// - Optionally add audio/video/data tracks. These can also be added after the
 /// connection is established, but see remark below.
-/// - Create a peer connection offer, or wait for the remote peer to send an
-/// offer, and respond with an answer.
+/// - Create a peer connection offer with |CreateOffer()|, or wait for the
+/// remote peer to send an offer, and respond with an answer with
+/// |CreateAnswer()|.
 ///
-/// At any point, before or after the connection is initated (CreateOffer() or
-/// CreateAnswer()) or established (RegisterConnectedCallback()), some audio,
-/// video, and data tracks can be added to it, with the following notable
+/// At any point, before or after the connection is initated (|CreateOffer()| or
+/// |CreateAnswer()|) or established (|RegisterConnectedCallback()|), some
+/// audio, video, and data tracks can be added to it, with the following notable
 /// remarks and restrictions:
 /// - Data tracks use the DTLS/SCTP protocol and are encrypted; this requires a
 /// handshake to exchange encryption secrets. This exchange is only performed
 /// during the initial connection handshake if at least one data track is
 /// present. As a consequence, at least one data track needs to be added before
-/// calling CreateOffer() or CreateAnswer() if the application ever need to use
-/// data channels. Otherwise trying to add a data channel after that initial
+/// calling |CreateOffer()| or |CreateAnswer()| if the application ever need to
+/// use data channels. Otherwise trying to add a data channel after that initial
 /// handshake will always fail.
 /// - Adding and removing any kind of tracks after the connection has been
-/// initiated result in a RenegotiationNeeded event to perform a new track
-/// negotitation, which requires signaling to be working. Therefore it is
+/// initiated result in a |RenegotiationNeeded| event to perform a new track
+/// negotiation, which requires signaling to be working. Therefore it is
 /// recommended when this is known in advance to add tracks before starting to
-/// establish a connection, to perform the first handshake with the correct
-/// tracks offer/answer right away.
+/// establish a connection, in order to perform the first handshake with the
+/// correct tracks offer/answer right away.
 class PeerConnection : public TrackedObject {
  public:
   /// Create a new PeerConnection based on the given |config|.
@@ -205,46 +210,23 @@ class PeerConnection : public TrackedObject {
   virtual bool IsClosed() const noexcept = 0;
 
   //
-  // Remote tracks
-  //
-
-  /// Callback fired when a remote track is added to the peer connection.
-  using TrackAddedCallback = Callback<TrackKind>;
-
-  /// Register a custom TrackAddedCallback.
-  virtual void RegisterTrackAddedCallback(
-      TrackAddedCallback&& callback) noexcept = 0;
-
-  /// Callback fired when a remote track is removed from the peer connection.
-  using TrackRemovedCallback = Callback<TrackKind>;
-
-  /// Register a custom TrackRemovedCallback.
-  virtual void RegisterTrackRemovedCallback(
-      TrackRemovedCallback&& callback) noexcept = 0;
-
-  //
   // Video
   //
 
-  /// Register a custom callback invoked when a remote video frame has been
-  /// received and decompressed, and is ready to be displayed locally.
-  virtual void RegisterRemoteVideoFrameCallback(
-      I420AFrameReadyCallback callback) noexcept = 0;
-
-  /// Register a custom callback invoked when a remote video frame has been
-  /// received and decompressed, and is ready to be displayed locally.
-  virtual void RegisterRemoteVideoFrameCallback(
-      Argb32FrameReadyCallback callback) noexcept = 0;
+  virtual ErrorOr<RefPtr<VideoTransceiver>> AddVideoTransceiver(
+      const VideoTransceiverInitConfig& config) noexcept = 0;
 
   /// Add a video track to the peer connection. If no RTP sender/transceiver
-  /// exist, create a new one for that track.
+  /// exist, create a new one for that track. Otherwise try to reuse an existing
+  /// one.
   virtual ErrorOr<RefPtr<LocalVideoTrack>> AddLocalVideoTrack(
       rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track,
-      mrsLocalVideoTrackInteropHandle interop_handle) noexcept = 0;
+      mrsVideoTransceiverInteropHandle transceiver_interop_handle,
+      mrsLocalVideoTrackInteropHandle track_interop_handle) noexcept = 0;
 
   /// Remove a local video track from the peer connection.
   /// The underlying RTP sender/transceiver are kept alive but inactive.
-  virtual webrtc::RTCError RemoveLocalVideoTrack(
+  virtual Result RemoveLocalVideoTrack(
       LocalVideoTrack& video_track) noexcept = 0;
 
   /// Remove all tracks sharing the given video track source.
@@ -252,6 +234,32 @@ class PeerConnection : public TrackedObject {
   /// remove at most a single track backed by the given source.
   virtual void RemoveLocalVideoTracksFromSource(
       ExternalVideoTrackSource& source) noexcept = 0;
+
+  /// Callback invoked when a remote video track is added to the peer
+  /// connection.
+  using VideoTrackAddedCallback = Callback<mrsRemoteVideoTrackInteropHandle,
+                                           RemoteVideoTrackHandle,
+                                           mrsVideoTransceiverInteropHandle,
+                                           VideoTransceiverHandle>;
+
+  /// Register a custom |VideoTrackAddedCallback| invoked when a remote video
+  /// track is added to the peer connection. Only one callback can be registered
+  /// at a time.
+  virtual void RegisterVideoTrackAddedCallback(
+      VideoTrackAddedCallback&& callback) noexcept = 0;
+
+  /// Callback invoked when a remote video track is removed from the peer
+  /// connection.
+  using VideoTrackRemovedCallback = Callback<mrsRemoteVideoTrackInteropHandle,
+                                             RemoteVideoTrackHandle,
+                                             mrsVideoTransceiverInteropHandle,
+                                             VideoTransceiverHandle>;
+
+  /// Register a custom |VideoTrackRemovedCallback| invoked when a remote video
+  /// track is removed from the peer connection. Only one callback can be
+  /// registered at a time.
+  virtual void RegisterVideoTrackRemovedCallback(
+      VideoTrackRemovedCallback&& callback) noexcept = 0;
 
   /// Rounding mode of video frame height for |SetFrameHeightRoundMode()|.
   /// This is only used on HoloLens 1 (UWP x86).
@@ -285,51 +293,47 @@ class PeerConnection : public TrackedObject {
   // Audio
   //
 
-  /// Register a custom callback invoked when a local audio frame is ready to be
-  /// output.
-  ///
-  /// FIXME - Current implementation of AddSink() for the local audio capture
-  /// device is no-op. So this callback is never fired.
-  virtual void RegisterLocalAudioFrameCallback(
-      AudioFrameReadyCallback callback) noexcept = 0;
+  virtual ErrorOr<RefPtr<AudioTransceiver>> AddAudioTransceiver(
+      const AudioTransceiverInitConfig& config) noexcept = 0;
 
-  /// Register a custom callback invoked when a remote audio frame has been
-  /// received and uncompressed, and is ready to be output locally.
-  virtual void RegisterRemoteAudioFrameCallback(
-      AudioFrameReadyCallback callback) noexcept = 0;
+  /// Add an audio track to the peer connection. If no RTP sender/transceiver
+  /// exist, create a new one for that track. Otherwise try to reuse an existing
+  /// one.
+  virtual ErrorOr<RefPtr<LocalAudioTrack>> AddLocalAudioTrack(
+      rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track,
+      mrsAudioTransceiverInteropHandle transceiver_interop_handle,
+      mrsLocalAudioTrackInteropHandle track_interop_handle) noexcept = 0;
 
-  /// Add to the peer connection an audio track backed by a local audio capture
-  /// device. If no RTP sender/transceiver exist, create a new one for that
-  /// track.
-  ///
-  /// Note: currently a single local video track is supported per peer
-  /// connection.
-  virtual bool AddLocalAudioTrack(
-      rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track) noexcept = 0;
-
-  /// Remove the existing local audio track from the peer connection.
+  /// Remove an existing local audio track from the peer connection.
   /// The underlying RTP sender/transceiver are kept alive but inactive.
-  ///
-  /// Note: currently a single local audio track is supported per peer
-  /// connection.
-  virtual void RemoveLocalAudioTrack() noexcept = 0;
+  virtual Result RemoveLocalAudioTrack(
+      LocalAudioTrack& audio_track) noexcept = 0;
 
-  /// Enable or disable the local audio track. Disabled audio tracks are still
-  /// active but are silent, and do not consume network bandwidth. Additionally,
-  /// enabling/disabling the local audio track does not require an SDP exchange.
-  /// Therefore this is a cheaper alternative to removing and re-adding the
-  /// track.
-  ///
-  /// Note: currently a single local audio track is supported per peer
+  /// Callback invoked when a remote audio track is added to the peer
   /// connection.
-  virtual void MRS_API
-  SetLocalAudioTrackEnabled(bool enabled = true) noexcept = 0;
+  using AudioTrackAddedCallback = Callback<mrsRemoteAudioTrackInteropHandle,
+                                           RemoteAudioTrackHandle,
+                                           mrsAudioTransceiverInteropHandle,
+                                           AudioTransceiverHandle>;
 
-  /// Check if the local audio frame is enabled.
-  ///
-  /// Note: currently a single local audio track is supported per peer
+  /// Register a custom AudioTrackAddedCallback invoked when a remote audio
+  /// track is is added to the peer connection. Only one callback can be
+  /// registered at a time.
+  virtual void RegisterAudioTrackAddedCallback(
+      AudioTrackAddedCallback&& callback) noexcept = 0;
+
+  /// Callback invoked when a remote audio track is removed from the peer
   /// connection.
-  virtual bool IsLocalAudioTrackEnabled() const noexcept = 0;
+  using AudioTrackRemovedCallback = Callback<mrsRemoteAudioTrackInteropHandle,
+                                             RemoteAudioTrackHandle,
+                                             mrsAudioTransceiverInteropHandle,
+                                             AudioTransceiverHandle>;
+
+  /// Register a custom AudioTrackRemovedCallback invoked when a remote audio
+  /// track is removed from the peer connection. Only one callback can be
+  /// registered at a time.
+  virtual void RegisterAudioTrackRemovedCallback(
+      AudioTrackRemovedCallback&& callback) noexcept = 0;
 
   //
   // Data channel
@@ -368,8 +372,7 @@ class PeerConnection : public TrackedObject {
 
   /// Close a given data channel and remove it from the peer connection.
   /// This invokes the DataChannelRemoved callback.
-  virtual void MRS_API
-  RemoveDataChannel(const DataChannel& data_channel) noexcept = 0;
+  virtual void RemoveDataChannel(const DataChannel& data_channel) noexcept = 0;
 
   /// Close and remove from the peer connection all data channels at once.
   /// This invokes the DataChannelRemoved callback for each data channel.
@@ -378,8 +381,7 @@ class PeerConnection : public TrackedObject {
   /// Notification from a non-negotiated DataChannel that it is open, so that
   /// the PeerConnection can fire a DataChannelAdded event. This is called
   /// automatically by non-negotiated data channels; do not call manually.
-  virtual void MRS_API
-  OnDataChannelAdded(const DataChannel& data_channel) noexcept = 0;
+  virtual void OnDataChannelAdded(const DataChannel& data_channel) noexcept = 0;
 
   /// Internal use.
   void GetStats(webrtc::RTCStatsCollectorCallback* callback);
@@ -393,6 +395,38 @@ class PeerConnection : public TrackedObject {
   /// manually.
   virtual mrsResult RegisterInteropCallbacks(
       const mrsPeerConnectionInteropCallbacks& callbacks) noexcept = 0;
+
+  //
+  // Internal
+  //
+
+  /// Internal callback on local audio track added to an audio transceiver of
+  /// this peer connection, to add it to the internal collection of local audio
+  /// tracks.
+  virtual void OnLocalTrackAddedToAudioTransceiver(
+      AudioTransceiver& transceiver,
+      LocalAudioTrack& track) = 0;
+
+  /// Internal callback on local audio track removed from an audio transceiver
+  /// of this peer connection, to remove it from the internal collection of
+  /// local audio tracks.
+  virtual void OnLocalTrackRemovedFromAudioTransceiver(
+      AudioTransceiver& transceiver,
+      LocalAudioTrack& track) = 0;
+
+  /// Internal callback on local video track added to a video transceiver of
+  /// this peer connection, to add it to the internal collection of local video
+  /// tracks.
+  virtual void OnLocalTrackAddedToVideoTransceiver(
+      VideoTransceiver& transceiver,
+      LocalVideoTrack& track) = 0;
+
+  /// Internal callback on local video track removed from a video transceiver
+  /// of this peer connection, to remove it from the internal collection of
+  /// local video tracks.
+  virtual void OnLocalTrackRemovedFromVideoTransceiver(
+      VideoTransceiver& transceiver,
+      LocalVideoTrack& track) = 0;
 
  protected:
   PeerConnection(RefPtr<GlobalFactory> global_factory);
