@@ -61,6 +61,12 @@ uint32_t GlobalFactory::StaticReportLiveObjects() noexcept {
   return 0;
 }
 
+mrsShutdownOptions GlobalFactory::GetShutdownOptions() noexcept {
+  GlobalFactory* const factory = GetInstance();
+  std::scoped_lock lock(factory->mutex_);
+  return factory->shutdown_options_;
+}
+
 void GlobalFactory::SetShutdownOptions(mrsShutdownOptions options) noexcept {
   // Unconditionally set shutdown options whether or not the instance is
   // initialized. So no need to acquire the init lock.
@@ -311,9 +317,11 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
     if ((shutdown_options_ & mrsShutdownOptions::kLogLiveObjects) != 0) {
       ReportLiveObjectsNoLock();
     }
+    if ((shutdown_options_ & mrsShutdownOptions::kDebugBreakOnForceShutdown) != 0) {
 #if defined(MR_SHARING_WIN)
-    DebugBreak();
+      DebugBreak();
 #endif
+    }
 
     // Clear debug infos and references. This leaks objects, but at least won't
     // interact with future uses.

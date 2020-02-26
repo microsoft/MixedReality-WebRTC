@@ -28,6 +28,12 @@ class GlobalFactory {
   /// returns 0. This is multithread-safe.
   static uint32_t StaticReportLiveObjects() noexcept;
 
+  /// Get the library shutdown options. This function does not initialize the
+  /// library, but will store the options for a future initializing. Conversely,
+  /// if the library is already initialized then the options are set
+  /// immediately. This is multithread-safe.
+  static mrsShutdownOptions GetShutdownOptions() noexcept;
+
   /// Set the library shutdown options. This function does not initialize the
   /// library, but will store the options for a future initializing. Conversely,
   /// if the library is already initialized then the options are set

@@ -94,7 +94,7 @@ mrsResult OpenVideoCaptureDevice(
     std::unique_ptr<cricket::VideoCapturer>& capturer_out) noexcept {
   capturer_out.reset();
 #if defined(WINUWP)
-  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   WebRtcFactoryPtr uwp_factory;
   {
     mrsResult res = global_factory->GetOrCreateWebRtcFactory(uwp_factory);
@@ -304,6 +304,22 @@ inline rtc::Thread* GetWorkerThread() {
   return GlobalFactory::InstancePtr()->GetWorkerThread();
 }
 
+uint32_t MRS_CALL mrsReportLiveObjects() noexcept {
+  return GlobalFactory::StaticReportLiveObjects();
+}
+
+mrsShutdownOptions MRS_CALL mrsGetShutdownOptions() noexcept {
+  return GlobalFactory::GetShutdownOptions();
+}
+
+void MRS_CALL mrsSetShutdownOptions(mrsShutdownOptions options) noexcept {
+  GlobalFactory::SetShutdownOptions(options);
+}
+
+void MRS_CALL mrsForceShutdown() noexcept {
+  GlobalFactory::ForceShutdown();
+}
+
 void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {
   if (handleRef) {
     if (auto& handle = *handleRef) {
@@ -323,7 +339,7 @@ mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     return Result::kInvalidParameter;
   }
 #if defined(WINUWP)
-  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   // The UWP factory needs to be initialized for getDevices() to work.
   if (!global_factory->GetPeerConnectionFactory()) {
     RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
@@ -388,7 +404,7 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
   }
 
 #if defined(WINUWP)
-  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   // The UWP factory needs to be initialized for getDevices() to work.
   WebRtcFactoryPtr uwp_factory;
   {
@@ -715,7 +731,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     RTC_LOG(LS_ERROR) << "Invalid NULL peer connection handle.";
     return Result::kInvalidNativeHandle;
   }
-  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   auto pc_factory = global_factory->GetPeerConnectionFactory();
   if (!pc_factory) {
     return Result::kInvalidOperation;
@@ -794,7 +810,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
   if (!track_source) {
     return Result::kInvalidNativeHandle;
   }
-  RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   auto pc_factory = global_factory->GetPeerConnectionFactory();
   if (!pc_factory) {
     return Result::kUnknownError;
@@ -842,7 +858,7 @@ mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTracksFromSource(
 mrsResult MRS_CALL
 mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    RefPtr<GlobalFactory> global_factory = GlobalFactory::InstancePtr();
+    RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
     auto pc_factory = global_factory->GetPeerConnectionFactory();
     if (!pc_factory) {
       return Result::kInvalidOperation;
