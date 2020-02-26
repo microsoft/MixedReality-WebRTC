@@ -27,7 +27,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Options for library shutdown.
         /// </summary>
         [Flags]
-        public enum ShutdownOptions : uint
+        public enum ShutdownOptionsFlags : uint
         {
             /// <summary>
             /// Do nothing specific.
@@ -46,20 +46,12 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Get the options used when shutting down the MixedReality-WebRTC library.
+        /// Options used when shutting down the MixedReality-WebRTC library.
         /// </summary>
-        public static ShutdownOptions GetShutdownOptions()
+        public static ShutdownOptionsFlags ShutdownOptions
         {
-            return Utils.LibraryGetShutdownOptions();
-        }
-
-        /// <summary>
-        /// Set the options used when shutting down the MixedReality-WebRTC library.
-        /// </summary>
-        /// <param name="options">Options for shutdown.</param>
-        public static void SetShutdownOptions(ShutdownOptions options)
-        {
-            Utils.LibrarySetShutdownOptions(options);
+            get { return Utils.LibraryGetShutdownOptions(); }
+            set { Utils.LibrarySetShutdownOptions(value); }
         }
 
         /// <summary>
