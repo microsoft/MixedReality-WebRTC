@@ -739,9 +739,11 @@ ErrorOr<std::shared_ptr<DataChannel>> PeerConnectionImpl::AddDataChannel(
   if (id < 0) {
     // In-band data channel with automatic ID assignment
     config.id = -1;
+    config.negotiated = false;
   } else if (id <= 0xFFFF) {
     // Out-of-band negotiated data channel with pre-established ID
     config.id = id;
+    config.negotiated = true;
   } else {
     // Valid IDs are 0-65535 (16 bits)
     return Error(Result::kOutOfRange);
