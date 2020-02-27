@@ -327,7 +327,8 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
     if ((shutdown_options_ & mrsShutdownOptions::kLogLiveObjects) != 0) {
       ReportLiveObjectsNoLock();
     }
-    if ((shutdown_options_ & mrsShutdownOptions::kDebugBreakOnForceShutdown) != 0) {
+    if ((shutdown_options_ & mrsShutdownOptions::kDebugBreakOnForceShutdown) !=
+        0) {
 #if defined(MR_SHARING_WIN)
       DebugBreak();
 #endif

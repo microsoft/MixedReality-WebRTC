@@ -4,8 +4,8 @@
 #include "pch.h"
 
 #include "external_video_track_source_interop.h"
-#include "interop/remote_video_track_interop.h"
-#include "interop/video_transceiver_interop.h"
+#include "remote_video_track_interop.h"
+#include "video_transceiver_interop.h"
 #include "interop_api.h"
 #include "local_video_track_interop.h"
 

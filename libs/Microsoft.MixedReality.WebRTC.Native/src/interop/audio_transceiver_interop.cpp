@@ -5,7 +5,7 @@
 // line, to prevent clang-format from reordering it with other headers.
 #include "pch.h"
 
-#include "interop/audio_transceiver_interop.h"
+#include "audio_transceiver_interop.h"
 #include "media/audio_transceiver.h"
 
 using namespace Microsoft::MixedReality::WebRTC;

@@ -3,9 +3,9 @@
 
 #include "pch.h"
 
-#include "interop/audio_transceiver_interop.h"
-#include "interop/local_audio_track_interop.h"
-#include "interop/remote_audio_track_interop.h"
+#include "audio_transceiver_interop.h"
+#include "local_audio_track_interop.h"
+#include "remote_audio_track_interop.h"
 #include "interop_api.h"
 
 #include "simple_interop.h"
