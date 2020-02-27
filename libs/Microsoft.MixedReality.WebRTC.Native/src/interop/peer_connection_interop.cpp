@@ -11,7 +11,7 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL mrsPeerConnectionAddRef(PeerConnectionHandle handle) noexcept {
+void MRS_CALL mrsPeerConnectionAddRef(mrsPeerConnectionHandle handle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(handle)) {
     peer->AddRef();
   } else {
@@ -20,7 +20,8 @@ void MRS_CALL mrsPeerConnectionAddRef(PeerConnectionHandle handle) noexcept {
   }
 }
 
-void MRS_CALL mrsPeerConnectionRemoveRef(PeerConnectionHandle handle) noexcept {
+void MRS_CALL
+mrsPeerConnectionRemoveRef(mrsPeerConnectionHandle handle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(handle)) {
     peer->RemoveRef();
   } else {
@@ -30,7 +31,7 @@ void MRS_CALL mrsPeerConnectionRemoveRef(PeerConnectionHandle handle) noexcept {
 }
 
 void MRS_CALL mrsPeerConnectionRegisterIceGatheringStateChangedCallback(
-    PeerConnectionHandle peer_handle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionIceGatheringStateChangedCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
@@ -39,10 +40,10 @@ void MRS_CALL mrsPeerConnectionRegisterIceGatheringStateChangedCallback(
   }
 }
 
-mrsResult MRS_CALL
-mrsPeerConnectionAddAudioTransceiver(PeerConnectionHandle peer_handle,
-                                     const AudioTransceiverInitConfig* config,
-                                     AudioTransceiverHandle* handle) noexcept {
+mrsResult MRS_CALL mrsPeerConnectionAddAudioTransceiver(
+    mrsPeerConnectionHandle peer_handle,
+    const AudioTransceiverInitConfig* config,
+    mrsAudioTransceiverHandle* handle) noexcept {
   if (!handle || !config) {
     return Result::kInvalidParameter;
   }
@@ -51,7 +52,7 @@ mrsPeerConnectionAddAudioTransceiver(PeerConnectionHandle peer_handle,
     ErrorOr<RefPtr<AudioTransceiver>> audio_transceiver =
         peer->AddAudioTransceiver(*config);
     if (audio_transceiver.ok()) {
-      *handle = (AudioTransceiverHandle)audio_transceiver.value().release();
+      *handle = (mrsAudioTransceiverHandle)audio_transceiver.value().release();
       return Result::kSuccess;
     }
     return audio_transceiver.error().result();
@@ -59,10 +60,10 @@ mrsPeerConnectionAddAudioTransceiver(PeerConnectionHandle peer_handle,
   return Result::kInvalidNativeHandle;
 }
 
-mrsResult MRS_CALL
-mrsPeerConnectionAddVideoTransceiver(PeerConnectionHandle peer_handle,
-                                     const VideoTransceiverInitConfig* config,
-                                     VideoTransceiverHandle* handle) noexcept {
+mrsResult MRS_CALL mrsPeerConnectionAddVideoTransceiver(
+    mrsPeerConnectionHandle peer_handle,
+    const VideoTransceiverInitConfig* config,
+    mrsVideoTransceiverHandle* handle) noexcept {
   if (!handle || !config) {
     return Result::kInvalidParameter;
   }
@@ -71,7 +72,7 @@ mrsPeerConnectionAddVideoTransceiver(PeerConnectionHandle peer_handle,
     ErrorOr<RefPtr<VideoTransceiver>> video_transceiver =
         peer->AddVideoTransceiver(*config);
     if (video_transceiver.ok()) {
-      *handle = (AudioTransceiverHandle)video_transceiver.value().release();
+      *handle = (mrsAudioTransceiverHandle)video_transceiver.value().release();
       return Result::kSuccess;
     }
     return video_transceiver.error().result();

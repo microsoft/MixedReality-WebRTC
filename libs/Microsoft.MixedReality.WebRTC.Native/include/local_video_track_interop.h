@@ -13,11 +13,11 @@ extern "C" {
 
 /// Add a reference to the native object associated with the given handle.
 MRS_API void MRS_CALL
-mrsLocalVideoTrackAddRef(LocalVideoTrackHandle handle) noexcept;
+mrsLocalVideoTrackAddRef(mrsLocalVideoTrackHandle handle) noexcept;
 
 /// Remove a reference from the native object associated with the given handle.
 MRS_API void MRS_CALL
-mrsLocalVideoTrackRemoveRef(LocalVideoTrackHandle handle) noexcept;
+mrsLocalVideoTrackRemoveRef(mrsLocalVideoTrackHandle handle) noexcept;
 
 /// Create a new local video track by opening a local video capture device
 /// (webcam).
@@ -25,20 +25,20 @@ mrsLocalVideoTrackRemoveRef(LocalVideoTrackHandle handle) noexcept;
 MRS_API mrsResult MRS_CALL mrsLocalVideoTrackCreateFromDevice(
     const LocalVideoTrackInitConfig* config,
     const char* track_name,
-    LocalVideoTrackHandle* track_handle_out) noexcept;
+    mrsLocalVideoTrackHandle* track_handle_out) noexcept;
 
 /// Create a new local video track by using an existing external video source.
 MRS_API mrsResult MRS_CALL mrsLocalVideoTrackCreateFromExternalSource(
-    ExternalVideoTrackSourceHandle source_handle,
+    mrsExternalVideoTrackSourceHandle source_handle,
     const LocalVideoTrackFromExternalSourceInitConfig* config,
     const char* track_name,
-    LocalVideoTrackHandle* track_handle_out) noexcept;
+    mrsLocalVideoTrackHandle* track_handle_out) noexcept;
 
 /// Register a custom callback to be called when the local video track captured
 /// a frame. The captured frames is passed to the registered callback in I420
 /// encoding.
 MRS_API void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
-    LocalVideoTrackHandle trackHandle,
+    mrsLocalVideoTrackHandle trackHandle,
     mrsI420AVideoFrameCallback callback,
     void* user_data) noexcept;
 
@@ -46,7 +46,7 @@ MRS_API void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
 /// a frame. The captured frames is passed to the registered callback in ARGB32
 /// encoding.
 MRS_API void MRS_CALL mrsLocalVideoTrackRegisterArgb32FrameCallback(
-    LocalVideoTrackHandle trackHandle,
+    mrsLocalVideoTrackHandle trackHandle,
     mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept;
 
@@ -55,11 +55,11 @@ MRS_API void MRS_CALL mrsLocalVideoTrackRegisterArgb32FrameCallback(
 /// frames, silent audio frames). Enabling/disabling a track is a lightweight
 /// concept similar to "mute", which does not require an SDP renegotiation.
 MRS_API mrsResult MRS_CALL
-mrsLocalVideoTrackSetEnabled(LocalVideoTrackHandle track_handle,
+mrsLocalVideoTrackSetEnabled(mrsLocalVideoTrackHandle track_handle,
                              mrsBool enabled) noexcept;
 
 /// Query a local video track for its enabled status.
 MRS_API mrsBool MRS_CALL
-mrsLocalVideoTrackIsEnabled(LocalVideoTrackHandle track_handle) noexcept;
+mrsLocalVideoTrackIsEnabled(mrsLocalVideoTrackHandle track_handle) noexcept;
 
 }  // extern "C"

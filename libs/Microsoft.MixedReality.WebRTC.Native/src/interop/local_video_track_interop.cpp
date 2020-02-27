@@ -13,7 +13,8 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL mrsLocalVideoTrackAddRef(LocalVideoTrackHandle handle) noexcept {
+void MRS_CALL
+mrsLocalVideoTrackAddRef(mrsLocalVideoTrackHandle handle) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(handle)) {
     track->AddRef();
   } else {
@@ -23,7 +24,7 @@ void MRS_CALL mrsLocalVideoTrackAddRef(LocalVideoTrackHandle handle) noexcept {
 }
 
 void MRS_CALL
-mrsLocalVideoTrackRemoveRef(LocalVideoTrackHandle handle) noexcept {
+mrsLocalVideoTrackRemoveRef(mrsLocalVideoTrackHandle handle) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(handle)) {
     track->RemoveRef();
   } else {
@@ -35,10 +36,10 @@ mrsLocalVideoTrackRemoveRef(LocalVideoTrackHandle handle) noexcept {
 // mrsLocalVideoTrackCreateFromDevice -> interop_api.cpp
 
 mrsResult MRS_CALL mrsLocalVideoTrackCreateFromExternalSource(
-    ExternalVideoTrackSourceHandle source_handle,
+    mrsExternalVideoTrackSourceHandle source_handle,
     const LocalVideoTrackFromExternalSourceInitConfig* config,
     const char* track_name,
-    LocalVideoTrackHandle* track_handle_out) noexcept {
+    mrsLocalVideoTrackHandle* track_handle_out) noexcept {
   if (!track_handle_out) {
     return Result::kInvalidParameter;
   }
@@ -81,7 +82,7 @@ mrsResult MRS_CALL mrsLocalVideoTrackCreateFromExternalSource(
 }
 
 void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
-    LocalVideoTrackHandle trackHandle,
+    mrsLocalVideoTrackHandle trackHandle,
     mrsI420AVideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(trackHandle)) {
@@ -90,7 +91,7 @@ void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
 }
 
 void MRS_CALL mrsLocalVideoTrackRegisterArgb32FrameCallback(
-    LocalVideoTrackHandle trackHandle,
+    mrsLocalVideoTrackHandle trackHandle,
     mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(trackHandle)) {
@@ -99,7 +100,7 @@ void MRS_CALL mrsLocalVideoTrackRegisterArgb32FrameCallback(
 }
 
 mrsResult MRS_CALL
-mrsLocalVideoTrackSetEnabled(LocalVideoTrackHandle track_handle,
+mrsLocalVideoTrackSetEnabled(mrsLocalVideoTrackHandle track_handle,
                              mrsBool enabled) noexcept {
   auto track = static_cast<LocalVideoTrack*>(track_handle);
   if (!track) {
@@ -110,7 +111,7 @@ mrsLocalVideoTrackSetEnabled(LocalVideoTrackHandle track_handle,
 }
 
 mrsBool MRS_CALL
-mrsLocalVideoTrackIsEnabled(LocalVideoTrackHandle track_handle) noexcept {
+mrsLocalVideoTrackIsEnabled(mrsLocalVideoTrackHandle track_handle) noexcept {
   auto track = static_cast<LocalVideoTrack*>(track_handle);
   if (!track) {
     return mrsBool::kFalse;

@@ -1083,7 +1083,7 @@ void PeerConnectionImpl::RemoveDataChannel(
     auto lock = std::scoped_lock{data_channel_removed_callback_mutex_};
     auto removed_cb = data_channel_removed_callback_;
     if (removed_cb) {
-      DataChannelHandle data_native_handle = (void*)&data_channel;
+      mrsDataChannelHandle data_native_handle = (void*)&data_channel;
       removed_cb(interop_handle, data_native_handle);
     }
   }
@@ -1106,7 +1106,7 @@ void PeerConnectionImpl::RemoveAllDataChannels() noexcept {
     // Invoke the DataChannelRemoved callback on the wrapper if any
     if (removed_cb) {
       if (auto interop_handle = data_channel->GetInteropHandle()) {
-        DataChannelHandle data_native_handle = (void*)&data_channel;
+        mrsDataChannelHandle data_native_handle = (void*)&data_channel;
         removed_cb(interop_handle, data_native_handle);
       }
     }
@@ -1139,7 +1139,7 @@ void PeerConnectionImpl::OnDataChannelAdded(
     auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
     auto added_cb = data_channel_added_callback_;
     if (added_cb) {
-      DataChannelHandle data_native_handle = (void*)&data_channel;
+      mrsDataChannelHandle data_native_handle = (void*)&data_channel;
       added_cb(interop_handle, data_native_handle);
     }
   }
@@ -1447,7 +1447,7 @@ void PeerConnectionImpl::OnDataChannel(
       auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
       auto added_cb = data_channel_added_callback_;
       if (added_cb) {
-        const DataChannelHandle data_native_handle = data_channel.get();
+        const mrsDataChannelHandle data_native_handle = data_channel.get();
         added_cb(data_channel_interop_handle, data_native_handle);
       }
     }
@@ -1553,8 +1553,8 @@ void PeerConnectionImpl::OnAddTrack(
       auto lock = std::scoped_lock{media_track_callback_mutex_};
       auto cb = audio_track_added_callback_;
       if (cb) {
-        AudioTransceiverHandle tranceiver_handle = transceiver.release();
-        RemoteAudioTrackHandle audio_handle = remote_audio_track.release();
+        mrsAudioTransceiverHandle tranceiver_handle = transceiver.release();
+        mrsRemoteAudioTrackHandle audio_handle = remote_audio_track.release();
         cb(interop_handle, audio_handle, transceiver_interop_handle,
            tranceiver_handle);
       }
@@ -1601,8 +1601,8 @@ void PeerConnectionImpl::OnAddTrack(
       auto lock = std::scoped_lock{media_track_callback_mutex_};
       auto cb = video_track_added_callback_;
       if (cb) {
-        VideoTransceiverHandle tranceiver_handle = transceiver.release();
-        RemoteVideoTrackHandle video_handle = remote_video_track.release();
+        mrsVideoTransceiverHandle tranceiver_handle = transceiver.release();
+        mrsRemoteVideoTrackHandle video_handle = remote_video_track.release();
         cb(interop_handle, video_handle, transceiver_interop_handle,
            tranceiver_handle);
       }

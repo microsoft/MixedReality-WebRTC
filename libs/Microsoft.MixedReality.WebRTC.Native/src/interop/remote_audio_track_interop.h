@@ -15,16 +15,16 @@ extern "C" {
 
 /// Add a reference to the native object associated with the given handle.
 MRS_API void MRS_CALL
-mrsRemoteAudioTrackAddRef(RemoteAudioTrackHandle handle) noexcept;
+mrsRemoteAudioTrackAddRef(mrsRemoteAudioTrackHandle handle) noexcept;
 
 /// Remove a reference from the native object associated with the given handle.
 MRS_API void MRS_CALL
-mrsRemoteAudioTrackRemoveRef(RemoteAudioTrackHandle handle) noexcept;
+mrsRemoteAudioTrackRemoveRef(mrsRemoteAudioTrackHandle handle) noexcept;
 
 /// Register a custom callback to be called when the local audio track received
 /// a frame.
 MRS_API void MRS_CALL
-mrsRemoteAudioTrackRegisterFrameCallback(RemoteAudioTrackHandle trackHandle,
+mrsRemoteAudioTrackRegisterFrameCallback(mrsRemoteAudioTrackHandle trackHandle,
                                          mrsAudioFrameCallback callback,
                                          void* user_data) noexcept;
 
@@ -33,11 +33,11 @@ mrsRemoteAudioTrackRegisterFrameCallback(RemoteAudioTrackHandle trackHandle,
 /// audio frames). Enabling/disabling a track is a lightweight concept similar
 /// to "mute", which does not require an SDP renegotiation.
 MRS_API mrsResult MRS_CALL
-mrsRemoteAudioTrackSetEnabled(RemoteAudioTrackHandle track_handle,
+mrsRemoteAudioTrackSetEnabled(mrsRemoteAudioTrackHandle track_handle,
                               mrsBool enabled) noexcept;
 
 /// Query a local audio track for its enabled status.
 MRS_API mrsBool MRS_CALL
-mrsRemoteAudioTrackIsEnabled(RemoteAudioTrackHandle track_handle) noexcept;
+mrsRemoteAudioTrackIsEnabled(mrsRemoteAudioTrackHandle track_handle) noexcept;
 
 }  // extern "C"

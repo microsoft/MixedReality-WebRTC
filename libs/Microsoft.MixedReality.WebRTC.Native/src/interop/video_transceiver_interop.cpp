@@ -11,7 +11,7 @@
 using namespace Microsoft::MixedReality::WebRTC;
 
 void MRS_CALL
-mrsVideoTransceiverAddRef(VideoTransceiverHandle handle) noexcept {
+mrsVideoTransceiverAddRef(mrsVideoTransceiverHandle handle) noexcept {
   if (auto transceiver = static_cast<VideoTransceiver*>(handle)) {
     transceiver->AddRef();
   } else {
@@ -21,7 +21,7 @@ mrsVideoTransceiverAddRef(VideoTransceiverHandle handle) noexcept {
 }
 
 void MRS_CALL
-mrsVideoTransceiverRemoveRef(VideoTransceiverHandle handle) noexcept {
+mrsVideoTransceiverRemoveRef(mrsVideoTransceiverHandle handle) noexcept {
   if (auto transceiver = static_cast<VideoTransceiver*>(handle)) {
     transceiver->RemoveRef();
   } else {
@@ -31,7 +31,7 @@ mrsVideoTransceiverRemoveRef(VideoTransceiverHandle handle) noexcept {
 }
 
 void MRS_CALL mrsVideoTransceiverRegisterStateUpdatedCallback(
-    VideoTransceiverHandle handle,
+    mrsVideoTransceiverHandle handle,
     mrsVideoTransceiverStateUpdatedCallback callback,
     void* user_data) noexcept {
   if (auto transceiver = static_cast<VideoTransceiver*>(handle)) {
@@ -41,7 +41,7 @@ void MRS_CALL mrsVideoTransceiverRegisterStateUpdatedCallback(
 }
 
 mrsResult MRS_CALL mrsVideoTransceiverSetDirection(
-    VideoTransceiverHandle transceiver_handle,
+    mrsVideoTransceiverHandle transceiver_handle,
     mrsTransceiverDirection new_direction) noexcept {
   if (auto transceiver = static_cast<VideoTransceiver*>(transceiver_handle)) {
     return transceiver->SetDirection(new_direction);
@@ -49,9 +49,9 @@ mrsResult MRS_CALL mrsVideoTransceiverSetDirection(
   return Result::kInvalidNativeHandle;
 }
 
-mrsResult MRS_CALL
-mrsVideoTransceiverSetLocalTrack(VideoTransceiverHandle transceiver_handle,
-                                 LocalVideoTrackHandle track_handle) noexcept {
+mrsResult MRS_CALL mrsVideoTransceiverSetLocalTrack(
+    mrsVideoTransceiverHandle transceiver_handle,
+    mrsLocalVideoTrackHandle track_handle) noexcept {
   if (!transceiver_handle) {
     return Result::kInvalidNativeHandle;
   }
@@ -61,8 +61,8 @@ mrsVideoTransceiverSetLocalTrack(VideoTransceiverHandle transceiver_handle,
 }
 
 mrsResult MRS_CALL mrsVideoTransceiverGetLocalTrack(
-    VideoTransceiverHandle transceiver_handle,
-    LocalVideoTrackHandle* track_handle_out) noexcept {
+    mrsVideoTransceiverHandle transceiver_handle,
+    mrsLocalVideoTrackHandle* track_handle_out) noexcept {
   if (!track_handle_out) {
     return Result::kInvalidParameter;
   }
@@ -74,8 +74,8 @@ mrsResult MRS_CALL mrsVideoTransceiverGetLocalTrack(
 }
 
 mrsResult MRS_CALL mrsVideoTransceiverGetRemoteTrack(
-    VideoTransceiverHandle transceiver_handle,
-    RemoteVideoTrackHandle* track_handle_out) noexcept {
+    mrsVideoTransceiverHandle transceiver_handle,
+    mrsRemoteVideoTrackHandle* track_handle_out) noexcept {
   if (!track_handle_out) {
     return Result::kInvalidParameter;
   }

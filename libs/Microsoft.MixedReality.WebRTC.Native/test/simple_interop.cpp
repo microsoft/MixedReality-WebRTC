@@ -5,7 +5,7 @@
 
 #include "simple_interop.h"
 
-void SimpleInterop::Register(PeerConnectionHandle pc) noexcept {
+void SimpleInterop::Register(mrsPeerConnectionHandle pc) noexcept {
   mrsPeerConnectionInteropCallbacks interop{};
   interop.remote_audio_track_create_object = &RemoteAudioTrackCreateStatic;
   interop.remote_video_track_create_object = &RemoteVideoTrackCreateStatic;
@@ -14,7 +14,7 @@ void SimpleInterop::Register(PeerConnectionHandle pc) noexcept {
             mrsPeerConnectionRegisterInteropCallbacks(pc, &interop));
 }
 
-void SimpleInterop::Unregister(PeerConnectionHandle pc) noexcept {
+void SimpleInterop::Unregister(mrsPeerConnectionHandle pc) noexcept {
   mrsPeerConnectionInteropCallbacks interop{};
   ASSERT_EQ(Result::kSuccess,
             mrsPeerConnectionRegisterInteropCallbacks(pc, &interop));

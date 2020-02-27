@@ -19,7 +19,7 @@ TEST(LibraryTests, SetShutdownOptions) {
 
 TEST(LibraryTests, ReportLiveObjects) {
   ASSERT_EQ(0u, mrsReportLiveObjects());
-  ExternalVideoTrackSourceHandle source_handle = nullptr;
+  mrsExternalVideoTrackSourceHandle source_handle = nullptr;
   ASSERT_EQ(mrsResult::kSuccess,
             mrsExternalVideoTrackSourceCreateFromI420ACallback(
                 &VideoTestUtils::MakeTestFrame, nullptr, &source_handle));
@@ -34,7 +34,7 @@ TEST(LibraryTests, ForceShutdown) {
   // Disable kDebugBreakOnForceShutdown; debug break makes the test fail
   mrsSetShutdownOptions(mrsShutdownOptions::kNone);
   ASSERT_EQ(0u, mrsReportLiveObjects());
-  ExternalVideoTrackSourceHandle source_handle = nullptr;
+  mrsExternalVideoTrackSourceHandle source_handle = nullptr;
   ASSERT_EQ(mrsResult::kSuccess,
             mrsExternalVideoTrackSourceCreateFromI420ACallback(
                 &VideoTestUtils::MakeTestFrame, nullptr, &source_handle));

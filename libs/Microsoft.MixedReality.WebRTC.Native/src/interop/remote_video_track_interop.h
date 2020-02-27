@@ -14,17 +14,17 @@ extern "C" {
 
 /// Add a reference to the native object associated with the given handle.
 MRS_API void MRS_CALL
-mrsRemoteVideoTrackAddRef(RemoteVideoTrackHandle handle) noexcept;
+mrsRemoteVideoTrackAddRef(mrsRemoteVideoTrackHandle handle) noexcept;
 
 /// Remove a reference from the native object associated with the given handle.
 MRS_API void MRS_CALL
-mrsRemoteVideoTrackRemoveRef(RemoteVideoTrackHandle handle) noexcept;
+mrsRemoteVideoTrackRemoveRef(mrsRemoteVideoTrackHandle handle) noexcept;
 
 /// Register a custom callback to be called when the remote video track received
 /// a frame. The received frames is passed to the registered callback in I420
 /// encoding.
 MRS_API void MRS_CALL mrsRemoteVideoTrackRegisterI420AFrameCallback(
-    RemoteVideoTrackHandle trackHandle,
+    mrsRemoteVideoTrackHandle trackHandle,
     mrsI420AVideoFrameCallback callback,
     void* user_data) noexcept;
 
@@ -32,7 +32,7 @@ MRS_API void MRS_CALL mrsRemoteVideoTrackRegisterI420AFrameCallback(
 /// a frame. The received frames is passed to the registered callback in ARGB32
 /// encoding.
 MRS_API void MRS_CALL mrsRemoteVideoTrackRegisterArgb32FrameCallback(
-    RemoteVideoTrackHandle trackHandle,
+    mrsRemoteVideoTrackHandle trackHandle,
     mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept;
 
@@ -41,11 +41,11 @@ MRS_API void MRS_CALL mrsRemoteVideoTrackRegisterArgb32FrameCallback(
 /// frames, silent audio frames). Enabling/disabling a track is a lightweight
 /// concept similar to "mute", which does not require an SDP renegotiation.
 MRS_API mrsResult MRS_CALL
-mrsRemoteVideoTrackSetEnabled(RemoteVideoTrackHandle track_handle,
+mrsRemoteVideoTrackSetEnabled(mrsRemoteVideoTrackHandle track_handle,
                               mrsBool enabled) noexcept;
 
 /// Query a local video track for its enabled status.
 MRS_API mrsBool MRS_CALL
-mrsRemoteVideoTrackIsEnabled(RemoteVideoTrackHandle track_handle) noexcept;
+mrsRemoteVideoTrackIsEnabled(mrsRemoteVideoTrackHandle track_handle) noexcept;
 
 }  // extern "C"
