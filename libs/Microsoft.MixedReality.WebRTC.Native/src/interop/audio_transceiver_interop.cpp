@@ -11,7 +11,7 @@
 using namespace Microsoft::MixedReality::WebRTC;
 
 void MRS_CALL
-mrsAudioTransceiverAddRef(AudioTransceiverHandle handle) noexcept {
+mrsAudioTransceiverAddRef(mrsAudioTransceiverHandle handle) noexcept {
   if (auto transceiver = static_cast<AudioTransceiver*>(handle)) {
     transceiver->AddRef();
   } else {
@@ -21,7 +21,7 @@ mrsAudioTransceiverAddRef(AudioTransceiverHandle handle) noexcept {
 }
 
 void MRS_CALL
-mrsAudioTransceiverRemoveRef(AudioTransceiverHandle handle) noexcept {
+mrsAudioTransceiverRemoveRef(mrsAudioTransceiverHandle handle) noexcept {
   if (auto transceiver = static_cast<AudioTransceiver*>(handle)) {
     transceiver->RemoveRef();
   } else {
@@ -31,7 +31,7 @@ mrsAudioTransceiverRemoveRef(AudioTransceiverHandle handle) noexcept {
 }
 
 void MRS_CALL mrsAudioTransceiverRegisterStateUpdatedCallback(
-    AudioTransceiverHandle handle,
+    mrsAudioTransceiverHandle handle,
     mrsAudioTransceiverStateUpdatedCallback callback,
     void* user_data) noexcept {
   if (auto transceiver = static_cast<AudioTransceiver*>(handle)) {
@@ -41,7 +41,7 @@ void MRS_CALL mrsAudioTransceiverRegisterStateUpdatedCallback(
 }
 
 mrsResult MRS_CALL mrsAudioTransceiverSetDirection(
-    AudioTransceiverHandle transceiver_handle,
+    mrsAudioTransceiverHandle transceiver_handle,
     mrsTransceiverDirection new_direction) noexcept {
   if (auto transceiver = static_cast<AudioTransceiver*>(transceiver_handle)) {
     return transceiver->SetDirection(new_direction);
@@ -49,9 +49,9 @@ mrsResult MRS_CALL mrsAudioTransceiverSetDirection(
   return Result::kInvalidNativeHandle;
 }
 
-mrsResult MRS_CALL
-mrsAudioTransceiverSetLocalTrack(AudioTransceiverHandle transceiver_handle,
-                                 LocalAudioTrackHandle track_handle) noexcept {
+mrsResult MRS_CALL mrsAudioTransceiverSetLocalTrack(
+    mrsAudioTransceiverHandle transceiver_handle,
+    mrsLocalAudioTrackHandle track_handle) noexcept {
   if (!transceiver_handle) {
     return Result::kInvalidNativeHandle;
   }
@@ -61,8 +61,8 @@ mrsAudioTransceiverSetLocalTrack(AudioTransceiverHandle transceiver_handle,
 }
 
 mrsResult MRS_CALL mrsAudioTransceiverGetLocalTrack(
-    AudioTransceiverHandle transceiver_handle,
-    LocalAudioTrackHandle* track_handle_out) noexcept {
+    mrsAudioTransceiverHandle transceiver_handle,
+    mrsLocalAudioTrackHandle* track_handle_out) noexcept {
   if (!track_handle_out) {
     return Result::kInvalidParameter;
   }
@@ -74,8 +74,8 @@ mrsResult MRS_CALL mrsAudioTransceiverGetLocalTrack(
 }
 
 mrsResult MRS_CALL mrsAudioTransceiverGetRemoteTrack(
-    AudioTransceiverHandle transceiver_handle,
-    RemoteAudioTrackHandle* track_handle_out) noexcept {
+    mrsAudioTransceiverHandle transceiver_handle,
+    mrsRemoteAudioTrackHandle* track_handle_out) noexcept {
   if (!track_handle_out) {
     return Result::kInvalidParameter;
   }

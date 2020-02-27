@@ -13,7 +13,7 @@
 using namespace Microsoft::MixedReality::WebRTC;
 
 void MRS_CALL mrsExternalVideoTrackSourceAddRef(
-    ExternalVideoTrackSourceHandle handle) noexcept {
+    mrsExternalVideoTrackSourceHandle handle) noexcept {
   if (auto track = static_cast<ExternalVideoTrackSource*>(handle)) {
     track->AddRef();
   } else {
@@ -23,7 +23,7 @@ void MRS_CALL mrsExternalVideoTrackSourceAddRef(
 }
 
 void MRS_CALL mrsExternalVideoTrackSourceRemoveRef(
-    ExternalVideoTrackSourceHandle handle) noexcept {
+    mrsExternalVideoTrackSourceHandle handle) noexcept {
   if (auto track = static_cast<ExternalVideoTrackSource*>(handle)) {
     track->RemoveRef();
   } else {
@@ -35,7 +35,7 @@ void MRS_CALL mrsExternalVideoTrackSourceRemoveRef(
 mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromI420ACallback(
     mrsRequestExternalI420AVideoFrameCallback callback,
     void* user_data,
-    ExternalVideoTrackSourceHandle* source_handle_out) noexcept {
+    mrsExternalVideoTrackSourceHandle* source_handle_out) noexcept {
   if (!source_handle_out) {
     return Result::kInvalidParameter;
   }
@@ -53,7 +53,7 @@ mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromI420ACallback(
 mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromArgb32Callback(
     mrsRequestExternalArgb32VideoFrameCallback callback,
     void* user_data,
-    ExternalVideoTrackSourceHandle* source_handle_out) noexcept {
+    mrsExternalVideoTrackSourceHandle* source_handle_out) noexcept {
   if (!source_handle_out) {
     return Result::kInvalidParameter;
   }
@@ -69,14 +69,14 @@ mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromArgb32Callback(
 }
 
 void MRS_CALL mrsExternalVideoTrackSourceFinishCreation(
-    ExternalVideoTrackSourceHandle source_handle) noexcept {
+    mrsExternalVideoTrackSourceHandle source_handle) noexcept {
   if (auto source = static_cast<ExternalVideoTrackSource*>(source_handle)) {
     source->FinishCreation();
   }
 }
 
 mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteI420AFrameRequest(
-    ExternalVideoTrackSourceHandle handle,
+    mrsExternalVideoTrackSourceHandle handle,
     uint32_t request_id,
     int64_t timestamp_ms,
     const mrsI420AVideoFrame* frame_view) noexcept {
@@ -90,7 +90,7 @@ mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteI420AFrameRequest(
 }
 
 mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteArgb32FrameRequest(
-    ExternalVideoTrackSourceHandle handle,
+    mrsExternalVideoTrackSourceHandle handle,
     uint32_t request_id,
     int64_t timestamp_ms,
     const mrsArgb32VideoFrame* frame_view) noexcept {
@@ -104,7 +104,7 @@ mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteArgb32FrameRequest(
 }
 
 void MRS_CALL mrsExternalVideoTrackSourceShutdown(
-    ExternalVideoTrackSourceHandle handle) noexcept {
+    mrsExternalVideoTrackSourceHandle handle) noexcept {
   if (auto track = static_cast<ExternalVideoTrackSource*>(handle)) {
     track->Shutdown();
   }
@@ -115,7 +115,7 @@ namespace {
 /// Adapter for a an interop-based I420A custom video source.
 struct I420AInteropVideoSource : I420AExternalVideoSource {
   using callback_type =
-      RetCallback<mrsResult, ExternalVideoTrackSourceHandle, uint32_t, int64_t>;
+      RetCallback<mrsResult, mrsExternalVideoTrackSourceHandle, uint32_t, int64_t>;
 
   /// Interop callback to generate frames.
   callback_type callback_;
@@ -139,7 +139,7 @@ struct I420AInteropVideoSource : I420AExternalVideoSource {
 /// Adapter for a an interop-based ARGB32 custom video source.
 struct Argb32InteropVideoSource : Argb32ExternalVideoSource {
   using callback_type =
-      RetCallback<mrsResult, ExternalVideoTrackSourceHandle, uint32_t, int64_t>;
+      RetCallback<mrsResult, mrsExternalVideoTrackSourceHandle, uint32_t, int64_t>;
 
   /// Interop callback to generate frames.
   callback_type callback_;

@@ -151,10 +151,10 @@ class PCRaii {
     create(config, interop_handle);
   }
   ~PCRaii() { mrsPeerConnectionRemoveRef(handle_); }
-  PeerConnectionHandle handle() const { return handle_; }
+  mrsPeerConnectionHandle handle() const { return handle_; }
 
  protected:
-  PeerConnectionHandle handle_{};
+  mrsPeerConnectionHandle handle_{};
   void create(const PeerConnectionConfiguration& config,
               mrsPeerConnectionInteropHandle interop_handle) {
     ASSERT_EQ(mrsResult::kSuccess,
@@ -168,8 +168,8 @@ class SdpCallback : public InteropCallback<const char*, const char*> {
  public:
   using Base = InteropCallback<const char*, const char*>;
   using callback_type = void(const char*, const char*);
-  SdpCallback(PeerConnectionHandle pc) : pc_(pc) {}
-  SdpCallback(PeerConnectionHandle pc, std::function<callback_type> func)
+  SdpCallback(mrsPeerConnectionHandle pc) : pc_(pc) {}
+  SdpCallback(mrsPeerConnectionHandle pc, std::function<callback_type> func)
       : Base(std::move(func)), pc_(pc) {
     mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(pc_, &StaticExec,
                                                          this);
@@ -188,7 +188,7 @@ class SdpCallback : public InteropCallback<const char*, const char*> {
   }
 
  protected:
-  PeerConnectionHandle pc_{};
+  mrsPeerConnectionHandle pc_{};
 };
 
 // OnIceCandidateReadyToSend
@@ -196,8 +196,8 @@ class IceCallback : public InteropCallback<const char*, int, const char*> {
  public:
   using Base = InteropCallback<const char*, int, const char*>;
   using callback_type = void(const char*, int, const char*);
-  IceCallback(PeerConnectionHandle pc) : pc_(pc) {}
-  IceCallback(PeerConnectionHandle pc, std::function<callback_type> func)
+  IceCallback(mrsPeerConnectionHandle pc) : pc_(pc) {}
+  IceCallback(mrsPeerConnectionHandle pc, std::function<callback_type> func)
       : Base(std::move(func)), pc_(pc) {
     mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(pc_, &StaticExec,
                                                              this);
@@ -217,7 +217,7 @@ class IceCallback : public InteropCallback<const char*, int, const char*> {
   }
 
  protected:
-  PeerConnectionHandle pc_{};
+  mrsPeerConnectionHandle pc_{};
 };
 
 constexpr const std::string_view kOfferString{"offer"};
@@ -252,8 +252,8 @@ class LocalPeerPairRaii {
   }
   ~LocalPeerPairRaii() { shutdown(); }
 
-  PeerConnectionHandle pc1() const { return pc1_.handle(); }
-  PeerConnectionHandle pc2() const { return pc2_.handle(); }
+  mrsPeerConnectionHandle pc1() const { return pc1_.handle(); }
+  mrsPeerConnectionHandle pc2() const { return pc2_.handle(); }
 
   void ConnectAndWait() {
     Event ev1, ev2;

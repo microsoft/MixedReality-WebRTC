@@ -10,7 +10,7 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL mrsLocalAudioTrackAddRef(LocalAudioTrackHandle handle) noexcept {
+void MRS_CALL mrsLocalAudioTrackAddRef(mrsLocalAudioTrackHandle handle) noexcept {
   if (auto track = static_cast<LocalAudioTrack*>(handle)) {
     track->AddRef();
   } else {
@@ -20,7 +20,7 @@ void MRS_CALL mrsLocalAudioTrackAddRef(LocalAudioTrackHandle handle) noexcept {
 }
 
 void MRS_CALL
-mrsLocalAudioTrackRemoveRef(LocalAudioTrackHandle handle) noexcept {
+mrsLocalAudioTrackRemoveRef(mrsLocalAudioTrackHandle handle) noexcept {
   if (auto track = static_cast<LocalAudioTrack*>(handle)) {
     track->RemoveRef();
   } else {
@@ -32,7 +32,7 @@ mrsLocalAudioTrackRemoveRef(LocalAudioTrackHandle handle) noexcept {
 // mrsLocalAudioTrackCreateFromDevice -> interop_api.cpp
 
 void MRS_CALL
-mrsLocalAudioTrackRegisterFrameCallback(LocalAudioTrackHandle trackHandle,
+mrsLocalAudioTrackRegisterFrameCallback(mrsLocalAudioTrackHandle trackHandle,
                                         mrsAudioFrameCallback callback,
                                         void* user_data) noexcept {
   if (auto track = static_cast<LocalAudioTrack*>(trackHandle)) {
@@ -41,7 +41,7 @@ mrsLocalAudioTrackRegisterFrameCallback(LocalAudioTrackHandle trackHandle,
 }
 
 mrsResult MRS_CALL
-mrsLocalAudioTrackSetEnabled(LocalAudioTrackHandle track_handle,
+mrsLocalAudioTrackSetEnabled(mrsLocalAudioTrackHandle track_handle,
                              mrsBool enabled) noexcept {
   auto track = static_cast<LocalAudioTrack*>(track_handle);
   if (!track) {
@@ -52,7 +52,7 @@ mrsLocalAudioTrackSetEnabled(LocalAudioTrackHandle track_handle,
 }
 
 mrsBool MRS_CALL
-mrsLocalAudioTrackIsEnabled(LocalAudioTrackHandle track_handle) noexcept {
+mrsLocalAudioTrackIsEnabled(mrsLocalAudioTrackHandle track_handle) noexcept {
   auto track = static_cast<LocalAudioTrack*>(track_handle);
   if (!track) {
     return mrsBool::kFalse;

@@ -11,7 +11,7 @@
 using namespace Microsoft::MixedReality::WebRTC;
 
 void MRS_CALL
-mrsRemoteVideoTrackAddRef(RemoteVideoTrackHandle handle) noexcept {
+mrsRemoteVideoTrackAddRef(mrsRemoteVideoTrackHandle handle) noexcept {
   if (auto track = static_cast<RemoteVideoTrack*>(handle)) {
     track->AddRef();
   } else {
@@ -21,7 +21,7 @@ mrsRemoteVideoTrackAddRef(RemoteVideoTrackHandle handle) noexcept {
 }
 
 void MRS_CALL
-mrsRemoteVideoTrackRemoveRef(RemoteVideoTrackHandle handle) noexcept {
+mrsRemoteVideoTrackRemoveRef(mrsRemoteVideoTrackHandle handle) noexcept {
   if (auto track = static_cast<RemoteVideoTrack*>(handle)) {
     track->RemoveRef();
   } else {
@@ -31,7 +31,7 @@ mrsRemoteVideoTrackRemoveRef(RemoteVideoTrackHandle handle) noexcept {
 }
 
 void MRS_CALL mrsRemoteVideoTrackRegisterI420AFrameCallback(
-    RemoteVideoTrackHandle trackHandle,
+    mrsRemoteVideoTrackHandle trackHandle,
     mrsI420AVideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto track = static_cast<RemoteVideoTrack*>(trackHandle)) {
@@ -40,7 +40,7 @@ void MRS_CALL mrsRemoteVideoTrackRegisterI420AFrameCallback(
 }
 
 void MRS_CALL mrsRemoteVideoTrackRegisterArgb32FrameCallback(
-    RemoteVideoTrackHandle trackHandle,
+    mrsRemoteVideoTrackHandle trackHandle,
     mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto track = static_cast<RemoteVideoTrack*>(trackHandle)) {
@@ -49,7 +49,7 @@ void MRS_CALL mrsRemoteVideoTrackRegisterArgb32FrameCallback(
 }
 
 mrsResult MRS_CALL
-mrsRemoteVideoTrackSetEnabled(RemoteVideoTrackHandle track_handle,
+mrsRemoteVideoTrackSetEnabled(mrsRemoteVideoTrackHandle track_handle,
                               mrsBool enabled) noexcept {
   auto track = static_cast<RemoteVideoTrack*>(track_handle);
   if (!track) {
@@ -60,7 +60,7 @@ mrsRemoteVideoTrackSetEnabled(RemoteVideoTrackHandle track_handle,
 }
 
 mrsBool MRS_CALL
-mrsRemoteVideoTrackIsEnabled(RemoteVideoTrackHandle track_handle) noexcept {
+mrsRemoteVideoTrackIsEnabled(mrsRemoteVideoTrackHandle track_handle) noexcept {
   auto track = static_cast<RemoteVideoTrack*>(track_handle);
   if (!track) {
     return mrsBool::kFalse;

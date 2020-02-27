@@ -11,7 +11,7 @@
 using namespace Microsoft::MixedReality::WebRTC;
 
 void MRS_CALL
-mrsRemoteAudioTrackAddRef(RemoteAudioTrackHandle handle) noexcept {
+mrsRemoteAudioTrackAddRef(mrsRemoteAudioTrackHandle handle) noexcept {
   if (auto track = static_cast<RemoteAudioTrack*>(handle)) {
     track->AddRef();
   } else {
@@ -21,7 +21,7 @@ mrsRemoteAudioTrackAddRef(RemoteAudioTrackHandle handle) noexcept {
 }
 
 void MRS_CALL
-mrsRemoteAudioTrackRemoveRef(RemoteAudioTrackHandle handle) noexcept {
+mrsRemoteAudioTrackRemoveRef(mrsRemoteAudioTrackHandle handle) noexcept {
   if (auto track = static_cast<RemoteAudioTrack*>(handle)) {
     track->RemoveRef();
   } else {
@@ -31,7 +31,7 @@ mrsRemoteAudioTrackRemoveRef(RemoteAudioTrackHandle handle) noexcept {
 }
 
 void MRS_CALL
-mrsRemoteAudioTrackRegisterFrameCallback(RemoteAudioTrackHandle trackHandle,
+mrsRemoteAudioTrackRegisterFrameCallback(mrsRemoteAudioTrackHandle trackHandle,
                                          mrsAudioFrameCallback callback,
                                          void* user_data) noexcept {
   if (auto track = static_cast<RemoteAudioTrack*>(trackHandle)) {
@@ -40,7 +40,7 @@ mrsRemoteAudioTrackRegisterFrameCallback(RemoteAudioTrackHandle trackHandle,
 }
 
 mrsResult MRS_CALL
-mrsRemoteAudioTrackSetEnabled(RemoteAudioTrackHandle track_handle,
+mrsRemoteAudioTrackSetEnabled(mrsRemoteAudioTrackHandle track_handle,
                               mrsBool enabled) noexcept {
   auto track = static_cast<RemoteAudioTrack*>(track_handle);
   if (!track) {
@@ -51,7 +51,7 @@ mrsRemoteAudioTrackSetEnabled(RemoteAudioTrackHandle track_handle,
 }
 
 mrsBool MRS_CALL
-mrsRemoteAudioTrackIsEnabled(RemoteAudioTrackHandle track_handle) noexcept {
+mrsRemoteAudioTrackIsEnabled(mrsRemoteAudioTrackHandle track_handle) noexcept {
   auto track = static_cast<RemoteAudioTrack*>(track_handle);
   if (!track) {
     return mrsBool::kFalse;
