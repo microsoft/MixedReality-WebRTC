@@ -114,8 +114,10 @@ namespace {
 
 /// Adapter for a an interop-based I420A custom video source.
 struct I420AInteropVideoSource : I420AExternalVideoSource {
-  using callback_type =
-      RetCallback<mrsResult, mrsExternalVideoTrackSourceHandle, uint32_t, int64_t>;
+  using callback_type = RetCallback<mrsResult,
+                                    mrsExternalVideoTrackSourceHandle,
+                                    uint32_t,
+                                    int64_t>;
 
   /// Interop callback to generate frames.
   callback_type callback_;
@@ -138,8 +140,10 @@ struct I420AInteropVideoSource : I420AExternalVideoSource {
 
 /// Adapter for a an interop-based ARGB32 custom video source.
 struct Argb32InteropVideoSource : Argb32ExternalVideoSource {
-  using callback_type =
-      RetCallback<mrsResult, mrsExternalVideoTrackSourceHandle, uint32_t, int64_t>;
+  using callback_type = RetCallback<mrsResult,
+                                    mrsExternalVideoTrackSourceHandle,
+                                    uint32_t,
+                                    int64_t>;
 
   /// Interop callback to generate frames.
   callback_type callback_;

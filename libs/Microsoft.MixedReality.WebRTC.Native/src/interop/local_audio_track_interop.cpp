@@ -5,12 +5,13 @@
 // line, to prevent clang-format from reordering it with other headers.
 #include "pch.h"
 
-#include "interop/local_audio_track_interop.h"
+#include "local_audio_track_interop.h"
 #include "media/local_audio_track.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL mrsLocalAudioTrackAddRef(mrsLocalAudioTrackHandle handle) noexcept {
+void MRS_CALL
+mrsLocalAudioTrackAddRef(mrsLocalAudioTrackHandle handle) noexcept {
   if (auto track = static_cast<LocalAudioTrack*>(handle)) {
     track->AddRef();
   } else {
