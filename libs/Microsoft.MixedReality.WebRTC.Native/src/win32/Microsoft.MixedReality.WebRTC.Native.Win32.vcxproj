@@ -123,24 +123,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="../pch.h" />
+    <ClInclude Include="..\..\include\audio_frame.h" />
     <ClInclude Include="..\..\include\export.h" />
     <ClInclude Include="..\..\include\external_video_track_source_interop.h" />
     <ClInclude Include="..\..\include\interop_api.h" />
     <ClInclude Include="..\..\include\local_video_track_interop.h" />
     <ClInclude Include="..\..\include\peer_connection_interop.h" />
     <ClInclude Include="..\..\include\result.h" />
+    <ClInclude Include="..\..\include\audio_transceiver_interop.h" />
+    <ClInclude Include="..\..\include\local_audio_track_interop.h" />
+    <ClInclude Include="..\..\include\remote_audio_track_interop.h" />
+    <ClInclude Include="..\..\include\remote_video_track_interop.h" />
+    <ClInclude Include="..\..\include\video_frame.h" />
+    <ClInclude Include="..\..\include\video_transceiver_interop.h" />
     <ClInclude Include="..\audio_frame_observer.h" />
     <ClInclude Include="..\callback.h" />
     <ClInclude Include="..\data_channel.h" />
-    <ClInclude Include="..\external_video_track_source.h" />
     <ClInclude Include="..\interop\global_factory.h" />
-    <ClInclude Include="..\local_video_track.h" />
-    <ClInclude Include="..\interop\audio_transceiver_interop.h" />
     <ClInclude Include="..\media\external_video_track_source.h" />
-    <ClInclude Include="..\interop\local_audio_track_interop.h" />
-    <ClInclude Include="..\interop\remote_audio_track_interop.h" />
-    <ClInclude Include="..\interop\remote_video_track_interop.h" />
-    <ClInclude Include="..\interop\video_transceiver_interop.h" />
     <ClInclude Include="..\media\audio_transceiver.h" />
     <ClInclude Include="..\media\external_video_track_source_impl.h" />
     <ClInclude Include="..\media\local_video_track.h" />
