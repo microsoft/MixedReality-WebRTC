@@ -231,13 +231,7 @@ namespace Microsoft.MixedReality.WebRTC
             var unsafeCallback = MessageReceivedUnsafe;
             if (unsafeCallback != null)
             {
-                unsafe
-                {
-                    fixed (void* ptr = msg)
-                    {
-                		unsafeCallback.Invoke((void*)data, size);
-                    }
-                }
+                unsafeCallback.Invoke(data, size);
             }
         }
 
