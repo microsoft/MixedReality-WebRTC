@@ -70,8 +70,8 @@ MRS_API void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept;
 // Interop
 //
 
-struct mrsAudioTransceiverConfig;
-struct mrsVideoTransceiverConfig;
+struct mrsTransceiverInitConfig;
+struct mrsTransceiverInitConfig;
 struct mrsRemoteAudioTrackConfig;
 struct mrsRemoteVideoTrackConfig;
 struct mrsDataChannelConfig;
@@ -140,7 +140,7 @@ using mrsDataChannelInteropHandle = void*;
 using mrsAudioTransceiverCreateObjectCallback =
     mrsAudioTransceiverInteropHandle(MRS_CALL*)(
         mrsPeerConnectionInteropHandle parent,
-        const mrsAudioTransceiverConfig& config) noexcept;
+        const mrsTransceiverInitConfig& config) noexcept;
 
 /// Callback to finish the creation of the interop wrapper by assigning to it
 /// the handle of the AudioTransceiver native object it wraps.
@@ -154,7 +154,7 @@ using mrsAudioTransceiverFinishCreateCallback = void(
 using mrsVideoTransceiverCreateObjectCallback =
     mrsVideoTransceiverInteropHandle(MRS_CALL*)(
         mrsPeerConnectionInteropHandle parent,
-        const mrsVideoTransceiverConfig& config) noexcept;
+        const mrsTransceiverInitConfig& config) noexcept;
 
 /// Callback to finish the creation of the interop wrapper by assigning to it
 /// the handle of the VideoTransceiver native object it wraps.
@@ -737,40 +737,18 @@ using mrsRequestExternalArgb32VideoFrameCallback =
                          uint32_t request_id,
                          int64_t timestamp_ms);
 
-/// Configuration for creating a new audio transceiver interop wrapper.
-struct mrsAudioTransceiverConfig {
-  /// Transceiver name, for pairing with remote peer's one. This is normally
-  /// extracted from the receiver's stream ID #0 if the transceiver was created
-  /// for a remote track, or is determined by the user-provided value if created
-  /// with |AddAudioTransceiver()|.
+/// Configuration for creating a new transceiver interop wrapper.
+struct mrsTransceiverInitConfig {
+  /// Transceiver name. This must be a valid SDP token.
   const char* name{};
 
-  /// Zero-based media line index for the transceiver. This is the index of the
-  /// m= line in the SDP offer/answer as determined when adding the transceiver.
-  /// This is provided by the implementation and is immutable (since we don't
-  /// support stopping transceivers, so m= lines are not recycled).
-  int mline_index = -1;
-
-  /// Initial desired direction when the transceiver is created. If the
-  /// transceiver is created by the implementation, this is generally set to the
-  /// current value on the implementation object, to keep the interop wrapper in
-  /// sync.
-  mrsTransceiverDirection initial_desired_direction =
-      mrsTransceiverDirection::kSendRecv;
-};
-
-/// Configuration for creating a new video transceiver interop wrapper.
-struct mrsVideoTransceiverConfig {
-  /// Transceiver name, for pairing with remote peer's one. This is normally
-  /// extracted from the receiver's stream ID #0 if the transceiver was created
-  /// for a remote track, or is determined by the user-provided value if created
-  /// with |AddVideoTransceiver()|.
-  const char* name{};
-
-  /// Zero-based media line index for the transceiver. This is the index of the
-  /// m= line in the SDP offer/answer as determined when adding the transceiver.
-  /// This is provided by the implementation and is immutable (since we don't
-  /// support stopping transceivers, so m= lines are not recycled).
+  /// Zero-based media line index for the transceiver. In Unified Plan, this is
+  /// the index of the m= line in the SDP offer/answer as determined when adding
+  /// the transceiver. This is provided by the implementation and is immutable
+  /// (since we don't support stopping transceivers, so m= lines are not
+  /// recycled). For Plan B this is still used but is only the index of the
+  /// transceiver in the collection of the peer connection (like in Unified
+  /// Plan), without any relation to the SDP offer/answer.
   int mline_index = -1;
 
   /// Initial desired direction when the transceiver is created. If the
