@@ -4,17 +4,17 @@
 #include "pch.h"
 
 #include "audio_transceiver_interop.h"
+#include "interop_api.h"
 #include "local_audio_track_interop.h"
 #include "remote_audio_track_interop.h"
-#include "interop_api.h"
 
 #include "simple_interop.h"
 
 namespace {
 
-class AudioTransceiverTests : public TestUtils::TestBase,
-                              public testing::WithParamInterface<SdpSemantic> {
-};
+class AudioTransceiverTests
+    : public TestUtils::TestBase,
+      public testing::WithParamInterface<mrsSdpSemantic> {};
 
 const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
     (void*)0x1;
@@ -70,7 +70,7 @@ INSTANTIATE_TEST_CASE_P(,
                         TestUtils::SdpSemanticToString);
 
 TEST_P(AudioTransceiverTests, InvalidName) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
   mrsAudioTransceiverHandle transceiver_handle1{};
@@ -83,7 +83,7 @@ TEST_P(AudioTransceiverTests, InvalidName) {
 }
 
 TEST_P(AudioTransceiverTests, SetDirection) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
   FakeInteropRaii interop({pair.pc1(), pair.pc2()});

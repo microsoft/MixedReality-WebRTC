@@ -36,7 +36,7 @@ void MRS_CALL mrsPeerConnectionRegisterIceGatheringStateChangedCallback(
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterIceGatheringStateChangedCallback(
-        Callback<IceGatheringState>{callback, user_data});
+        Callback<mrsIceGatheringState>{callback, user_data});
   }
 }
 

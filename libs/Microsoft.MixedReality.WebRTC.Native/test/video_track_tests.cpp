@@ -4,10 +4,10 @@
 #include "pch.h"
 
 #include "external_video_track_source_interop.h"
-#include "remote_video_track_interop.h"
-#include "video_transceiver_interop.h"
 #include "interop_api.h"
 #include "local_video_track_interop.h"
+#include "remote_video_track_interop.h"
+#include "video_transceiver_interop.h"
 
 #include "simple_interop.h"
 #include "test_utils.h"
@@ -18,7 +18,7 @@
 namespace {
 
 class VideoTrackTests : public TestUtils::TestBase,
-                        public testing::WithParamInterface<SdpSemantic> {};
+                        public testing::WithParamInterface<mrsSdpSemantic> {};
 
 const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
     (void*)0x1;
@@ -52,7 +52,7 @@ INSTANTIATE_TEST_CASE_P(,
                         TestUtils::SdpSemanticToString);
 
 TEST_P(VideoTrackTests, Simple) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
 
@@ -207,7 +207,7 @@ TEST_P(VideoTrackTests, Simple) {
 }
 
 TEST_P(VideoTrackTests, Muted) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
 
@@ -360,7 +360,7 @@ TEST_P(VideoTrackTests, Multi) {
   mrsPeerConnectionInteropHandle h2 =
       simple_interop2.CreateObject(ObjectType::kPeerConnection);
 
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config, h1, h2);
 
@@ -500,7 +500,7 @@ TEST_P(VideoTrackTests, Multi) {
 }
 
 TEST_P(VideoTrackTests, ExternalI420) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
 

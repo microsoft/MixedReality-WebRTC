@@ -28,7 +28,7 @@ RemoteVideoTrack::RemoteVideoTrack(
   RTC_CHECK(track_);
   RTC_CHECK(receiver_);
   RTC_CHECK(transceiver_);
-  kind_ = TrackKind::kVideoTrack;
+  kind_ = mrsTrackKind::kVideoTrack;
   transceiver_->OnRemoteTrackAdded(this);
   rtc::VideoSinkWants sink_settings{};
   sink_settings.rotation_applied = true;

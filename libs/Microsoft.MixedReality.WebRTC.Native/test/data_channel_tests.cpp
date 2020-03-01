@@ -10,7 +10,7 @@
 namespace {
 
 class DataChannelTests : public TestUtils::TestBase,
-                         public testing::WithParamInterface<SdpSemantic> {};
+                         public testing::WithParamInterface<mrsSdpSemantic> {};
 
 const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
     (void*)0x1;
@@ -48,7 +48,7 @@ INSTANTIATE_TEST_CASE_P(,
                         TestUtils::SdpSemanticToString);
 
 TEST_P(DataChannelTests, AddChannelBeforeInit) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   PCRaii pc(pc_config);
   ASSERT_NE(nullptr, pc.handle());
@@ -66,7 +66,7 @@ TEST_P(DataChannelTests, AddChannelBeforeInit) {
 
 TEST_P(DataChannelTests, InBand) {
   // Create PC
-  PeerConnectionConfiguration pc_config{};  // local connection only
+  mrsPeerConnectionConfiguration pc_config{};  // local connection only
   pc_config.sdp_semantic = GetParam();
   PCRaii pc1(pc_config);
   ASSERT_NE(nullptr, pc1.handle());
@@ -211,7 +211,7 @@ TEST_P(DataChannelTests, InBand) {
 }
 
 TEST_P(DataChannelTests, MultiThreadCreate) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   PCRaii pc(pc_config);
   constexpr int kNumThreads = 16;
@@ -235,7 +235,7 @@ TEST_P(DataChannelTests, MultiThreadCreate) {
 }
 
 TEST_P(DataChannelTests, Send) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
 

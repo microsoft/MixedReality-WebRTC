@@ -730,9 +730,9 @@ void ensureNullTerminatedCString(std::string& str) {
 /// Convert an implementation value to a native API value of the ICE connection
 /// state. This ensures API stability if the implementation changes, although
 /// currently API values are mapped 1:1 with the implementation.
-IceConnectionState IceStateFromImpl(
+mrsIceConnectionState IceStateFromImpl(
     webrtc::PeerConnectionInterface::IceConnectionState impl_state) {
-  using Native = IceConnectionState;
+  using Native = mrsIceConnectionState;
   using Impl = webrtc::PeerConnectionInterface::IceConnectionState;
   static_assert((int)Native::kNew == (int)Impl::kIceConnectionNew);
   static_assert((int)Native::kChecking == (int)Impl::kIceConnectionChecking);
@@ -742,20 +742,20 @@ IceConnectionState IceStateFromImpl(
   static_assert((int)Native::kDisconnected ==
                 (int)Impl::kIceConnectionDisconnected);
   static_assert((int)Native::kClosed == (int)Impl::kIceConnectionClosed);
-  return (IceConnectionState)impl_state;
+  return (mrsIceConnectionState)impl_state;
 }
 
 /// Convert an implementation value to a native API value of the ICE gathering
 /// state. This ensures API stability if the implementation changes, although
 /// currently API values are mapped 1:1 with the implementation.
-IceGatheringState IceGatheringStateFromImpl(
+mrsIceGatheringState IceGatheringStateFromImpl(
     webrtc::PeerConnectionInterface::IceGatheringState impl_state) {
-  using Native = IceGatheringState;
+  using Native = mrsIceGatheringState;
   using Impl = webrtc::PeerConnectionInterface::IceGatheringState;
   static_assert((int)Native::kNew == (int)Impl::kIceGatheringNew);
   static_assert((int)Native::kGathering == (int)Impl::kIceGatheringGathering);
   static_assert((int)Native::kComplete == (int)Impl::kIceGatheringComplete);
-  return (IceGatheringState)impl_state;
+  return (mrsIceGatheringState)impl_state;
 }
 
 ErrorOr<RefPtr<VideoTransceiver>> PeerConnectionImpl::AddVideoTransceiver(
@@ -2545,24 +2545,24 @@ bool PeerConnectionImpl::ExtractMlineIndexAndNameFromReceiverPlanB(
 }
 
 webrtc::PeerConnectionInterface::IceTransportsType ICETransportTypeToNative(
-    IceTransportType mrsValue) {
+    mrsIceTransportType value) {
   using Native = webrtc::PeerConnectionInterface::IceTransportsType;
-  using Impl = IceTransportType;
+  using Impl = mrsIceTransportType;
   static_assert((int)Native::kNone == (int)Impl::kNone);
   static_assert((int)Native::kNoHost == (int)Impl::kNoHost);
   static_assert((int)Native::kRelay == (int)Impl::kRelay);
   static_assert((int)Native::kAll == (int)Impl::kAll);
-  return static_cast<Native>(mrsValue);
+  return static_cast<Native>(value);
 }
 
 webrtc::PeerConnectionInterface::BundlePolicy BundlePolicyToNative(
-    BundlePolicy mrsValue) {
+    mrsBundlePolicy value) {
   using Native = webrtc::PeerConnectionInterface::BundlePolicy;
-  using Impl = BundlePolicy;
+  using Impl = mrsBundlePolicy;
   static_assert((int)Native::kBundlePolicyBalanced == (int)Impl::kBalanced);
   static_assert((int)Native::kBundlePolicyMaxBundle == (int)Impl::kMaxBundle);
   static_assert((int)Native::kBundlePolicyMaxCompat == (int)Impl::kMaxCompat);
-  return static_cast<Native>(mrsValue);
+  return static_cast<Native>(value);
 }
 
 }  // namespace
@@ -2570,7 +2570,7 @@ webrtc::PeerConnectionInterface::BundlePolicy BundlePolicyToNative(
 namespace Microsoft::MixedReality::WebRTC {
 
 ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
-    const PeerConnectionConfiguration& config,
+    const mrsPeerConnectionConfiguration& config,
     mrsPeerConnectionInteropHandle interop_handle) {
   // Set the default value for the HL1 workaround before creating any
   // connection. This has no effect on other platforms.
@@ -2594,9 +2594,10 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
   rtc_config.enable_dtls_srtp = true;          // Always true for security
   rtc_config.type = ICETransportTypeToNative(config.ice_transport_type);
   rtc_config.bundle_policy = BundlePolicyToNative(config.bundle_policy);
-  rtc_config.sdp_semantics = (config.sdp_semantic == SdpSemantic::kUnifiedPlan
-                                  ? webrtc::SdpSemantics::kUnifiedPlan
-                                  : webrtc::SdpSemantics::kPlanB);
+  rtc_config.sdp_semantics =
+      (config.sdp_semantic == mrsSdpSemantic::kUnifiedPlan
+           ? webrtc::SdpSemantics::kUnifiedPlan
+           : webrtc::SdpSemantics::kPlanB);
   auto peer = new PeerConnectionImpl(std::move(global_factory), interop_handle);
   webrtc::PeerConnectionDependencies dependencies(peer);
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> impl =

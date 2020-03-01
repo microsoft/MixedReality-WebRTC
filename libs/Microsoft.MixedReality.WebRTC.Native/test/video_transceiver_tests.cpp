@@ -14,9 +14,9 @@
 
 namespace {
 
-class VideoTransceiverTests : public TestUtils::TestBase,
-                              public testing::WithParamInterface<SdpSemantic> {
-};
+class VideoTransceiverTests
+    : public TestUtils::TestBase,
+      public testing::WithParamInterface<mrsSdpSemantic> {};
 
 const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
     (void*)0x1;
@@ -72,7 +72,7 @@ INSTANTIATE_TEST_CASE_P(,
                         TestUtils::SdpSemanticToString);
 
 TEST_P(VideoTransceiverTests, InvalidName) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
   mrsVideoTransceiverHandle transceiver_handle1{};
@@ -85,7 +85,7 @@ TEST_P(VideoTransceiverTests, InvalidName) {
 }
 
 TEST_P(VideoTransceiverTests, SetDirection) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
   FakeInteropRaii interop({pair.pc1(), pair.pc2()});
@@ -237,7 +237,7 @@ TEST_F(VideoTransceiverTests, SetDirection_InvalidHandle) {
 }
 
 TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
   FakeInteropRaii interop({pair.pc1(), pair.pc2()});
@@ -434,7 +434,7 @@ TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
 }
 
 TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
   FakeInteropRaii interop({pair.pc1(), pair.pc2()});

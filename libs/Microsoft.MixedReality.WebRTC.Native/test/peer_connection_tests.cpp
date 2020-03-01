@@ -10,7 +10,8 @@
 namespace {
 
 class PeerConnectionTests : public TestUtils::TestBase,
-                            public testing::WithParamInterface<SdpSemantic> {};
+                            public testing::WithParamInterface<mrsSdpSemantic> {
+};
 
 }  // namespace
 
@@ -22,7 +23,7 @@ INSTANTIATE_TEST_CASE_P(,
 TEST_P(PeerConnectionTests, LocalNoIce) {
   for (int i = 0; i < 3; ++i) {
     // Create PC -- do not use PCRaii, which registers ICE callbacks
-    PeerConnectionConfiguration pc_config{};  // local connection only
+    mrsPeerConnectionConfiguration pc_config{};  // local connection only
     pc_config.sdp_semantic = GetParam();
     PCRaii pc1(pc_config);
     ASSERT_NE(nullptr, pc1.handle());
@@ -75,7 +76,7 @@ TEST_P(PeerConnectionTests, LocalNoIce) {
 
 TEST_P(PeerConnectionTests, LocalIce) {
   for (int i = 0; i < 3; ++i) {
-    PeerConnectionConfiguration pc_config{};  // local connection only
+    mrsPeerConnectionConfiguration pc_config{};  // local connection only
     pc_config.sdp_semantic = GetParam();
     LocalPeerPairRaii pair(pc_config);
     ASSERT_NE(nullptr, pair.pc1());

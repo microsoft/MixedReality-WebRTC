@@ -145,12 +145,12 @@ class PCRaii {
   /// networking (e.g. airplane mode, or no network interface) will prevent the
   /// connection from being established.
   PCRaii() {
-    PeerConnectionConfiguration config{};
+    mrsPeerConnectionConfiguration config{};
     mrsPeerConnectionInteropHandle interop_handle = (void*)0x1;
     create(config, interop_handle);
   }
   /// Create a peer connection with a specific configuration.
-  PCRaii(const PeerConnectionConfiguration& config,
+  PCRaii(const mrsPeerConnectionConfiguration& config,
          mrsPeerConnectionInteropHandle interop_handle = (void*)0x1) {
     create(config, interop_handle);
   }
@@ -159,7 +159,7 @@ class PCRaii {
 
  protected:
   mrsPeerConnectionHandle handle_{};
-  void create(const PeerConnectionConfiguration& config,
+  void create(const mrsPeerConnectionConfiguration& config,
               mrsPeerConnectionInteropHandle interop_handle) {
     ASSERT_EQ(mrsResult::kSuccess,
               mrsPeerConnectionCreate(config, interop_handle, &handle_));
@@ -234,7 +234,7 @@ class LocalPeerPairRaii {
       : sdp1_cb_(pc1()), sdp2_cb_(pc2()), ice1_cb_(pc1()), ice2_cb_(pc2()) {
     setup();
   }
-  LocalPeerPairRaii(const PeerConnectionConfiguration& config)
+  LocalPeerPairRaii(const mrsPeerConnectionConfiguration& config)
       : pc1_(config),
         pc2_(config),
         sdp1_cb_(pc1()),
@@ -243,7 +243,7 @@ class LocalPeerPairRaii {
         ice2_cb_(pc2()) {
     setup();
   }
-  LocalPeerPairRaii(const PeerConnectionConfiguration& config,
+  LocalPeerPairRaii(const mrsPeerConnectionConfiguration& config,
                     mrsPeerConnectionInteropHandle h1,
                     mrsPeerConnectionInteropHandle h2)
       : pc1_(config, h1),
