@@ -12,6 +12,10 @@
 
 namespace {
 
+class AudioTransceiverTests : public TestUtils::TestBase,
+                              public testing::WithParamInterface<SdpSemantic> {
+};
+
 const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
     (void*)0x1;
 
@@ -29,6 +33,25 @@ mrsRemoteAudioTrackInteropHandle MRS_CALL FakeIterop_RemoteAudioTrackCreate(
   return kFakeInteropRemoteAudioTrackHandle;
 }
 
+struct FakeInteropRaii {
+  FakeInteropRaii(std::initializer_list<mrsPeerConnectionHandle> handles)
+      : handles_(handles) {
+    setup();
+  }
+  ~FakeInteropRaii() { cleanup(); }
+  void setup() {
+    mrsPeerConnectionInteropCallbacks interop{};
+    interop.remote_audio_track_create_object =
+        &FakeIterop_RemoteAudioTrackCreate;
+    for (auto&& h : handles_) {
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionRegisterInteropCallbacks(h, &interop));
+    }
+  }
+  void cleanup() {}
+  std::vector<mrsPeerConnectionHandle> handles_;
+};
+
 // PeerConnectionAudioTrackAddedCallback
 using AudioTrackAddedCallback =
     InteropCallback<mrsRemoteAudioTrackInteropHandle,
@@ -41,8 +64,15 @@ using I420AudioFrameCallback = InteropCallback<const AudioFrame&>;
 
 }  // namespace
 
-TEST(AudioTransceiver, InvalidName) {
-  LocalPeerPairRaii pair;
+INSTANTIATE_TEST_CASE_P(,
+                        AudioTransceiverTests,
+                        testing::ValuesIn(TestUtils::TestSemantics),
+                        TestUtils::SdpSemanticToString);
+
+TEST_P(AudioTransceiverTests, InvalidName) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
   mrsAudioTransceiverHandle transceiver_handle1{};
   AudioTransceiverInitConfig transceiver_config{};
   transceiver_config.name = "invalid name with space";
@@ -52,17 +82,11 @@ TEST(AudioTransceiver, InvalidName) {
   ASSERT_EQ(nullptr, transceiver_handle1);
 }
 
-TEST(AudioTransceiver, SetDirection) {
-  LocalPeerPairRaii pair;
-
-  // In order to allow creating interop wrappers from native code, register the
-  // necessary interop callbacks.
-  mrsPeerConnectionInteropCallbacks interop{};
-  interop.remote_audio_track_create_object = &FakeIterop_RemoteAudioTrackCreate;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionRegisterInteropCallbacks(pair.pc1(), &interop));
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionRegisterInteropCallbacks(pair.pc2(), &interop));
+TEST_P(AudioTransceiverTests, SetDirection) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
+  FakeInteropRaii interop({pair.pc1(), pair.pc2()});
 
   // Register event for renegotiation needed
   Event renegotiation_needed1_ev;
@@ -145,11 +169,10 @@ TEST(AudioTransceiver, SetDirection) {
   // Connect #1 and #2
   pair.ConnectAndWait();
 
-  // Because the state updated event handler is registered after the transceiver
-  // is created, the state is stale, and applying the local description during
-  // |CreateOffer()| will generate some event.
-  ASSERT_TRUE(state_updated1_ev_local.WaitFor(10s));
-  state_updated1_ev_local.Reset();
+  // The transceiver is created in its desired state, and peer #1 creates the
+  // offer, so there is no event for updating the state due to a local
+  // description.
+  ASSERT_FALSE(state_updated1_ev_local.IsSignaled());
 
   // Wait for transceiver to be updated; this happens *after* connect,
   // during SetRemoteDescription().
@@ -173,13 +196,14 @@ TEST(AudioTransceiver, SetDirection) {
 
   // Check audio transceiver #1 consistency
   {
-    // Desired state is Receive, negotiated is still Send+Receive
+    // Desired state is Receive, negotiated is still Send only
     ASSERT_EQ(mrsTransceiverOptDirection::kSendOnly,
               dir_negotiated1);  // no change
     ASSERT_EQ(mrsTransceiverDirection::kRecvOnly, dir_desired1);
   }
 
-  // Renegotiate
+  // Renegotiate once the previous exchange is done
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(5s));
   pair.ConnectAndWait();
 
   // Wait for transceiver to be updated; this happens *after* connect, during
@@ -204,13 +228,13 @@ TEST(AudioTransceiver, SetDirection) {
   mrsAudioTransceiverRemoveRef(transceiver_handle1);
 }
 
-TEST(AudioTransceiver, SetDirection_InvalidHandle) {
+TEST_F(AudioTransceiverTests, SetDirection_InvalidHandle) {
   ASSERT_EQ(Result::kInvalidNativeHandle,
             mrsAudioTransceiverSetDirection(
                 nullptr, mrsTransceiverDirection::kRecvOnly));
 }
 
-TEST(AudioTransceiver, SetLocalTrack_InvalidHandle) {
+TEST_F(AudioTransceiverTests, SetLocalTrack_InvalidHandle) {
   mrsLocalAudioTrackHandle dummy = (void*)0x1;  // looks legit
   ASSERT_EQ(Result::kInvalidNativeHandle,
             mrsAudioTransceiverSetLocalTrack(nullptr, dummy));

@@ -1,8 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+#pragma once
+
 #include "../include/interop_api.h"
 #include "../include/peer_connection_interop.h"
+
+#include "test_utils.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
@@ -263,9 +267,18 @@ class LocalPeerPairRaii {
     connected1_cb_.is_registered_ = true;
     mrsPeerConnectionRegisterConnectedCallback(pc2(), CB(connected2_cb_));
     connected2_cb_.is_registered_ = true;
+    ASSERT_FALSE(is_exchange_pending_);
+    is_exchange_pending_ = true;
+    exchange_completed_.Reset();
     ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateOffer(pc1()));
     ASSERT_EQ(true, ev1.WaitFor(60s));
     ASSERT_EQ(true, ev2.WaitFor(60s));
+  }
+
+  /// Wait until the SDP exchange is completed, that is the SDP answer was
+  /// applied on the offering peer.
+  bool WaitExchangeCompletedFor(std::chrono::seconds timeout) {
+    return exchange_completed_.WaitFor(timeout);
   }
 
  protected:
@@ -277,27 +290,37 @@ class LocalPeerPairRaii {
   IceCallback ice2_cb_;
   InteropCallback<> connected1_cb_;
   InteropCallback<> connected2_cb_;
+  bool is_exchange_pending_{false};
+  Event exchange_completed_;
   void setup() {
     sdp1_cb_ = [this](const char* type, const char* sdp_data) {
       Event ev;
-      ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionSetRemoteDescriptionAsync(
-                    pc2_.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
+                                      pc2_.handle(), type, sdp_data,
+                                      &TestUtils::SetEventOnCompleted, &ev));
       ev.Wait();
       if (kOfferString == type) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc2_.handle()));
+      } else {
+        ASSERT_TRUE(is_exchange_pending_);
+        is_exchange_pending_ = false;
+        exchange_completed_.Set();
       }
     };
     sdp2_cb_ = [this](const char* type, const char* sdp_data) {
       Event ev;
-      ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionSetRemoteDescriptionAsync(
-                    pc1_.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
+                                      pc1_.handle(), type, sdp_data,
+                                      &TestUtils::SetEventOnCompleted, &ev));
       ev.Wait();
       if (kOfferString == type) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc1_.handle()));
+      } else {
+        ASSERT_TRUE(is_exchange_pending_);
+        is_exchange_pending_ = false;
+        exchange_completed_.Set();
       }
     };
     ice1_cb_ = [this](const char* candidate, int sdpMlineindex,
@@ -323,10 +346,5 @@ class LocalPeerPairRaii {
       mrsPeerConnectionRegisterConnectedCallback(pc2(), nullptr, nullptr);
       connected2_cb_.is_registered_ = false;
     }
-  }
-
-  static void MRS_CALL SetEventOnCompleted(void* user_data) {
-    Event* ev = (Event*)user_data;
-    ev->Set();
   }
 };

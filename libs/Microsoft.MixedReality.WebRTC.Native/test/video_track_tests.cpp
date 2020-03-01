@@ -17,6 +17,9 @@
 
 namespace {
 
+class VideoTrackTests : public TestUtils::TestBase,
+                        public testing::WithParamInterface<SdpSemantic> {};
+
 const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
     (void*)0x1;
 
@@ -41,12 +44,17 @@ using VideoTrackAddedCallback =
 // PeerConnectionI420VideoFrameCallback
 using I420VideoFrameCallback = InteropCallback<const I420AVideoFrame&>;
 
-class VideoTrackTests : public TestUtils::TestBase {};
-
 }  // namespace
 
-TEST_F(VideoTrackTests, Simple) {
-  LocalPeerPairRaii pair;
+INSTANTIATE_TEST_CASE_P(,
+                        VideoTrackTests,
+                        testing::ValuesIn(TestUtils::TestSemantics),
+                        TestUtils::SdpSemanticToString);
+
+TEST_P(VideoTrackTests, Simple) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
 
   // In order to allow creating interop wrappers from native code, register the
   // necessary interop callbacks.
@@ -182,10 +190,12 @@ TEST_F(VideoTrackTests, Simple) {
   };
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, CB(i420cb));
 
-  // Wait 5 seconds and check the frame callback is called
+  // Wait 3 seconds and check the frame callback is called
   Event ev;
-  ev.WaitFor(5s);
-  ASSERT_LT(50u, frame_count) << "Expected at least 10 FPS";
+  ev.WaitFor(3s);
+  ASSERT_LT(30u, frame_count) << "Expected at least 10 FPS";
+
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(5s));
 
   // Clean-up
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
@@ -196,8 +206,10 @@ TEST_F(VideoTrackTests, Simple) {
   mrsVideoTransceiverRemoveRef(transceiver_handle1);
 }
 
-TEST_F(VideoTrackTests, Muted) {
-  LocalPeerPairRaii pair;
+TEST_P(VideoTrackTests, Muted) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
 
   // In order to allow creating interop wrappers from native code, register the
   // necessary interop callbacks.
@@ -284,10 +296,12 @@ TEST_F(VideoTrackTests, Muted) {
   };
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, CB(i420cb));
 
-  // Wait 5 seconds and check the frame callback is called
+  // Wait 3 seconds and check the frame callback is called
   Event ev;
-  ev.WaitFor(5s);
-  ASSERT_LT(50u, frame_count) << "Expected at least 10 FPS";
+  ev.WaitFor(3s);
+  ASSERT_LT(30u, frame_count) << "Expected at least 10 FPS";
+
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(5s));
 
   // Clean-up
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
@@ -337,7 +351,7 @@ TEST_F(VideoTrackTests, DeviceIdInvalid) {
   ASSERT_EQ(nullptr, track_handle);
 }
 
-TEST_F(VideoTrackTests, Multi) {
+TEST_P(VideoTrackTests, Multi) {
   SimpleInterop simple_interop1;
   SimpleInterop simple_interop2;
 
@@ -347,6 +361,7 @@ TEST_F(VideoTrackTests, Multi) {
       simple_interop2.CreateObject(ObjectType::kPeerConnection);
 
   PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config, h1, h2);
 
   constexpr const int kNumTracks = 5;
@@ -462,10 +477,12 @@ TEST_F(VideoTrackTests, Multi) {
   }
 
   Event ev;
-  ev.WaitFor(5s);
+  ev.WaitFor(3s);
   for (auto&& track : tracks) {
-    ASSERT_LT(50, track.frame_count) << "Expected at least 10 FPS";
+    ASSERT_LT(30, track.frame_count) << "Expected at least 10 FPS";
   }
+
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(5s));
 
   // Clean-up
   for (auto&& track : tracks) {
@@ -476,13 +493,16 @@ TEST_F(VideoTrackTests, Multi) {
     mrsLocalVideoTrackRemoveRef(track.local_handle);
     mrsVideoTransceiverRemoveRef(track.local_transceiver_handle);
   }
+  mrsExternalVideoTrackSourceRemoveRef(source_handle1);
 
   simple_interop1.Unregister(pair.pc1());
   simple_interop2.Unregister(pair.pc2());
 }
 
-TEST_F(VideoTrackTests, ExternalI420) {
-  LocalPeerPairRaii pair;
+TEST_P(VideoTrackTests, ExternalI420) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
 
   // In order to allow creating interop wrappers from native code, register the
   // necessary interop callbacks.
@@ -576,8 +596,10 @@ TEST_F(VideoTrackTests, ExternalI420) {
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, CB(i420cb));
 
   Event ev;
-  ev.WaitFor(5s);
-  ASSERT_LT(50u, frame_count) << "Expected at least 10 FPS";
+  ev.WaitFor(3s);
+  ASSERT_LT(30u, frame_count) << "Expected at least 10 FPS";
+
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(5s));
 
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);

@@ -38,7 +38,7 @@ using namespace std::chrono_literals;
 #include "gtest/gtest.h"
 
 #pragma warning(push)
-#pragma warning(disable : 4100 4127)
+#pragma warning(disable : 4100 4127 4244)
 #include "api/datachannelinterface.h"
 #include "api/peerconnectioninterface.h"
 #include "rtc_base/memory/aligned_malloc.h"

@@ -22,7 +22,7 @@ class AudioTransceiver : public Transceiver {
                    PeerConnection& owner,
                    int mline_index,
                    std::string name,
-                   mrsAudioTransceiverInteropHandle interop_handle) noexcept;
+                   const AudioTransceiverInitConfig& config) noexcept;
 
   /// Constructor for Unified Plan.
   AudioTransceiver(
@@ -31,7 +31,7 @@ class AudioTransceiver : public Transceiver {
       int mline_index,
       std::string name,
       rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
-      mrsAudioTransceiverInteropHandle interop_handle) noexcept;
+      const AudioTransceiverInitConfig& config) noexcept;
 
   ~AudioTransceiver() override;
 

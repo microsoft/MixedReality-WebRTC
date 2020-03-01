@@ -5,74 +5,83 @@
 
 #include "interop_api.h"
 
+#include "test_utils.h"
+
 namespace {
 
-void MRS_CALL SetEventOnCompleted(void* user_data) {
-  Event* ev = (Event*)user_data;
-  ev->Set();
-}
+class PeerConnectionTests : public TestUtils::TestBase,
+                            public testing::WithParamInterface<SdpSemantic> {};
 
 }  // namespace
 
-TEST(PeerConnection, LocalNoIce) {
+INSTANTIATE_TEST_CASE_P(,
+                        PeerConnectionTests,
+                        testing::ValuesIn(TestUtils::TestSemantics),
+                        TestUtils::SdpSemanticToString);
+
+TEST_P(PeerConnectionTests, LocalNoIce) {
   for (int i = 0; i < 3; ++i) {
     // Create PC -- do not use PCRaii, which registers ICE callbacks
-    PeerConnectionConfiguration config{};  // local connection only
-    PCRaii pc1(config);
+    PeerConnectionConfiguration pc_config{};  // local connection only
+    pc_config.sdp_semantic = GetParam();
+    PCRaii pc1(pc_config);
     ASSERT_NE(nullptr, pc1.handle());
-    PCRaii pc2(config);
+    PCRaii pc2(pc_config);
     ASSERT_NE(nullptr, pc2.handle());
 
     // Setup signaling
-    SdpCallback sdp1_cb(pc1.handle(), [&pc2](const char* type,
-                                             const char* sdp_data) {
+    Event ev_completed;
+    SdpCallback sdp1_cb(pc1.handle(), [&pc2, &ev_completed](
+                                          const char* type,
+                                          const char* sdp_data) {
       Event ev;
-      ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionSetRemoteDescriptionAsync(
-                    pc2.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
+                                      pc2.handle(), type, sdp_data,
+                                      &TestUtils::SetEventOnCompleted, &ev));
       ev.Wait();
       if (kOfferString == type) {
-        ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc2.handle()));
+        ASSERT_EQ(Result::kSuccess,
+                  mrsPeerConnectionCreateAnswer(pc2.handle()));
+      } else {
+        ev_completed.Set();
       }
     });
-    SdpCallback sdp2_cb(pc2.handle(), [&pc1](const char* type,
-                                             const char* sdp_data) {
+    SdpCallback sdp2_cb(pc2.handle(), [&pc1, &ev_completed](
+                                          const char* type,
+                                          const char* sdp_data) {
       Event ev;
-      ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionSetRemoteDescriptionAsync(
-                    pc1.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
+                                      pc1.handle(), type, sdp_data,
+                                      &TestUtils::SetEventOnCompleted, &ev));
       ev.Wait();
       if (kOfferString == type) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc1.handle()));
+      } else {
+        ev_completed.Set();
       }
     });
 
     // Connect
-    Event ev;
-    InteropCallback<> on_connected([&ev]() { ev.Set(); });
+    Event ev_connected;
+    InteropCallback<> on_connected([&ev_connected]() { ev_connected.Set(); });
     mrsPeerConnectionRegisterConnectedCallback(pc1.handle(), CB(on_connected));
+    ev_completed.Reset();
     ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateOffer(pc1.handle()));
-    ASSERT_EQ(true, ev.WaitFor(5s));  // should complete within 5s (usually ~1s)
+    ASSERT_TRUE(ev_connected.WaitFor(5s));
+    ASSERT_TRUE(ev_completed.WaitFor(5s));
   }
 }
 
-TEST(PeerConnection, LocalIce) {
+TEST_P(PeerConnectionTests, LocalIce) {
   for (int i = 0; i < 3; ++i) {
-    // Create PC
-    PeerConnectionConfiguration config{};  // local connection only
-    LocalPeerPairRaii pair(config);
+    PeerConnectionConfiguration pc_config{};  // local connection only
+    pc_config.sdp_semantic = GetParam();
+    LocalPeerPairRaii pair(pc_config);
     ASSERT_NE(nullptr, pair.pc1());
     ASSERT_NE(nullptr, pair.pc2());
-
-    // Connect
-    Event ev;
-    InteropCallback<> on_connected([&ev]() { ev.Set(); });
-    mrsPeerConnectionRegisterConnectedCallback(pair.pc1(), CB(on_connected));
-    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateOffer(pair.pc1()));
-    ASSERT_EQ(true, ev.WaitFor(5s));  // should complete within 5s (usually ~1s)
-
-    // Clean-up, because ICE candidates continue to arrive
+    pair.ConnectAndWait();
+    ASSERT_TRUE(pair.WaitExchangeCompletedFor(5s));
     mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(pair.pc1(),
                                                              nullptr, nullptr);
     mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(pair.pc2(),

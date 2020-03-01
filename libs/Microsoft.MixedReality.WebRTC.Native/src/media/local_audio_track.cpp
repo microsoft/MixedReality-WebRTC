@@ -72,6 +72,7 @@ webrtc::AudioTrackInterface* LocalAudioTrack::impl() const {
 }
 
 webrtc::RtpSenderInterface* LocalAudioTrack::sender() const {
+  RTC_DCHECK(transceiver_->IsUnifiedPlan());  // sender invalid in Plan B
   return sender_.get();
 }
 
@@ -83,9 +84,11 @@ void LocalAudioTrack::OnAddedToPeerConnection(
   RTC_CHECK(!transceiver_);
   RTC_CHECK(!sender_);
   RTC_CHECK(transceiver);
-  RTC_CHECK(sender);
+  // In Plan B the RTP sender is not always available (depends on transceiver
+  // direction) so |sender| is invalid here.
+  RTC_CHECK(transceiver->IsPlanB() || sender);
   owner_ = &owner;
-  sender_ = std::move(sender);
+  sender_ = std::move(sender);  // NULL in Plan B
   transceiver_ = std::move(transceiver);
   transceiver_->OnLocalTrackAdded(this);
 }
@@ -96,7 +99,9 @@ void LocalAudioTrack::OnRemovedFromPeerConnection(
     rtc::scoped_refptr<webrtc::RtpSenderInterface> old_sender) {
   RTC_CHECK_EQ(owner_, &old_owner);
   RTC_CHECK_EQ(transceiver_.get(), old_transceiver.get());
-  RTC_CHECK_EQ(sender_.get(), old_sender.get());
+  // In Plan B the RTP sender is not always available (depends on transceiver
+  // direction) so |old_sender| is invalid here.
+  RTC_CHECK(old_transceiver->IsPlanB() || (sender_ == old_sender.get()));
   owner_ = nullptr;
   sender_ = nullptr;
   transceiver_->OnLocalTrackRemoved(this);
@@ -105,9 +110,17 @@ void LocalAudioTrack::OnRemovedFromPeerConnection(
 
 void LocalAudioTrack::RemoveFromPeerConnection(
     webrtc::PeerConnectionInterface& peer) {
-  if (sender_) {
-    peer.RemoveTrack(sender_);
-    sender_ = nullptr;
+  if (transceiver_->IsUnifiedPlan()) {
+    if (sender_) {
+      peer.RemoveTrack(sender_);
+      sender_ = nullptr;
+      owner_ = nullptr;
+      transceiver_->OnLocalTrackRemoved(this);
+      transceiver_ = nullptr;
+    }
+  } else {
+    transceiver_->SetTrackPlanB(nullptr);
+    transceiver_->SyncSenderPlanB(false, &peer, nullptr, nullptr);
     owner_ = nullptr;
     transceiver_->OnLocalTrackRemoved(this);
     transceiver_ = nullptr;
