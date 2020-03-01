@@ -28,8 +28,8 @@ mrsRemoteAudioTrackRegisterFrameCallback(mrsRemoteAudioTrackHandle trackHandle,
                                          mrsAudioFrameCallback callback,
                                          void* user_data) noexcept;
 
-/// Enable or disable a local audio track. Enabled tracks output their media
-/// content as usual. Disabled track output some void media content (silent
+/// Enable or disable a remote audio track. Enabled tracks output their media
+/// content as usual. Disabled tracks output some void media content (silent
 /// audio frames). Enabling/disabling a track is a lightweight concept similar
 /// to "mute", which does not require an SDP renegotiation.
 MRS_API mrsResult MRS_CALL

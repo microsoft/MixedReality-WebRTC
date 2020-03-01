@@ -37,9 +37,10 @@ MRS_API void MRS_CALL mrsRemoteVideoTrackRegisterArgb32FrameCallback(
     void* user_data) noexcept;
 
 /// Enable or disable a remote video track. Enabled tracks output their media
-/// content as usual. Disabled track output some void media content (black video
-/// frames, silent audio frames). Enabling/disabling a track is a lightweight
-/// concept similar to "mute", which does not require an SDP renegotiation.
+/// content as usual. Disabled tracks output some void media content (black
+/// video frames, silent audio frames). Enabling/disabling a track is a
+/// lightweight concept similar to "mute", which does not require an SDP
+/// renegotiation.
 MRS_API mrsResult MRS_CALL
 mrsRemoteVideoTrackSetEnabled(mrsRemoteVideoTrackHandle track_handle,
                               mrsBool enabled) noexcept;
