@@ -2302,7 +2302,7 @@ PeerConnectionImpl::CreateAudioTransceiverUnifiedPlan(
   // Create an interop wrapper for the new native object if needed
   mrsAudioTransceiverInteropHandle interop_handle{};
   if (auto create_cb = interop_callbacks_.audio_transceiver_create_object) {
-    mrsAudioTransceiverConfig config{};
+    mrsTransceiverInitConfig config{};
     config.name = name.c_str();
     config.mline_index = mline_index;
     config.initial_desired_direction = desired_direction;
@@ -2352,7 +2352,7 @@ PeerConnectionImpl::CreateAudioTransceiverPlanB(
   // Create an interop wrapper for the new native object if needed
   mrsAudioTransceiverInteropHandle interop_handle{};
   if (auto create_cb = interop_callbacks_.audio_transceiver_create_object) {
-    mrsAudioTransceiverConfig config{};
+    mrsTransceiverInitConfig config{};
     config.name = name.c_str();
     config.mline_index = mline_index;
     config.initial_desired_direction = Transceiver::Direction::kRecvOnly;
@@ -2391,7 +2391,7 @@ PeerConnectionImpl::CreateVideoTransceiverUnifiedPlan(
   // Create an interop wrapper for the new native object if needed
   mrsVideoTransceiverInteropHandle interop_handle{};
   if (auto create_cb = interop_callbacks_.video_transceiver_create_object) {
-    mrsVideoTransceiverConfig config{};
+    mrsTransceiverInitConfig config{};
     config.name = name.c_str();
     config.mline_index = mline_index;
     config.initial_desired_direction = desired_direction;
@@ -2441,7 +2441,7 @@ PeerConnectionImpl::CreateVideoTransceiverPlanB(
   // Create an interop wrapper for the new native object if needed
   mrsVideoTransceiverInteropHandle interop_handle{};
   if (auto create_cb = interop_callbacks_.video_transceiver_create_object) {
-    mrsVideoTransceiverConfig config{};
+    mrsTransceiverInitConfig config{};
     config.name = name.c_str();
     config.mline_index = mline_index;
     config.initial_desired_direction = Transceiver::Direction::kRecvOnly;
