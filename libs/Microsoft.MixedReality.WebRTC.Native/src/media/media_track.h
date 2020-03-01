@@ -34,14 +34,14 @@ class MediaTrack : public TrackedObject {
   ~MediaTrack() override;
 
   /// Get the kind of track.
-  TrackKind GetKind() const noexcept { return kind_; }
+  mrsTrackKind GetKind() const noexcept { return kind_; }
 
  protected:
   /// Weak reference to the PeerConnection object owning this track.
   PeerConnection* owner_{};
 
   /// Track kind.
-  TrackKind kind_ = TrackKind::kUnknownTrack;
+  mrsTrackKind kind_ = mrsTrackKind::kUnknownTrack;
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

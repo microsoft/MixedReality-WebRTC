@@ -72,7 +72,7 @@ class PeerConnection : public TrackedObject {
   /// Create a new PeerConnection based on the given |config|.
   /// This serves as the constructor for PeerConnection.
   static ErrorOr<RefPtr<PeerConnection>> create(
-      const PeerConnectionConfiguration& config,
+      const mrsPeerConnectionConfiguration& config,
       mrsPeerConnectionInteropHandle interop_handle);
 
   /// Set the name of the peer connection. This is a friendly name opaque to the
@@ -124,7 +124,7 @@ class PeerConnection : public TrackedObject {
   /// Note that the current implementation (M71) mixes the state of ICE and
   /// DTLS, so this does not correspond exactly to the ICE connection state of
   /// the WebRTC 1.0 standard.
-  using IceStateChangedCallback = Callback<IceConnectionState>;
+  using IceStateChangedCallback = Callback<mrsIceConnectionState>;
 
   /// Register a custom |IceStateChangedCallback| invoked when the state of the
   /// ICE connection changed. Only one callback can be registered at a time.
@@ -132,7 +132,7 @@ class PeerConnection : public TrackedObject {
       IceStateChangedCallback&& callback) noexcept = 0;
 
   /// Callback invoked when the state of the ICE gathering changed.
-  using IceGatheringStateChangedCallback = Callback<IceGatheringState>;
+  using IceGatheringStateChangedCallback = Callback<mrsIceGatheringState>;
 
   /// Register a custom |IceStateChangedCallback| invoked when the state of the
   /// ICE gathering process changed. Only one callback can be registered at a

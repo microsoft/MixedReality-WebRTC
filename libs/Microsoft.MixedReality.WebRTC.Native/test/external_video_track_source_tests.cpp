@@ -18,7 +18,7 @@ namespace {
 
 class ExternalVideoTrackSourceTests
     : public TestUtils::TestBase,
-      public testing::WithParamInterface<SdpSemantic> {};
+      public testing::WithParamInterface<mrsSdpSemantic> {};
 
 }  // namespace
 
@@ -134,7 +134,7 @@ INSTANTIATE_TEST_CASE_P(,
                         TestUtils::SdpSemanticToString);
 
 TEST_P(ExternalVideoTrackSourceTests, Simple) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
 

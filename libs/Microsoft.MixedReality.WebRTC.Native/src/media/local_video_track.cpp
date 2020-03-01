@@ -18,7 +18,7 @@ LocalVideoTrack::LocalVideoTrack(
       interop_handle_(interop_handle),
       track_name_(track_->id()) {
   RTC_CHECK(track_);
-  kind_ = TrackKind::kVideoTrack;
+  kind_ = mrsTrackKind::kVideoTrack;
   rtc::VideoSinkWants sink_settings{};
   sink_settings.rotation_applied = true;
   track_->AddOrUpdateSink(this, sink_settings);
@@ -43,7 +43,7 @@ LocalVideoTrack::LocalVideoTrack(
   RTC_CHECK(transceiver_);
   RTC_CHECK(track_);
   RTC_CHECK(sender_);
-  kind_ = TrackKind::kVideoTrack;
+  kind_ = mrsTrackKind::kVideoTrack;
   transceiver_->OnLocalTrackAdded(this);
   rtc::VideoSinkWants sink_settings{};
   sink_settings.rotation_applied = true;

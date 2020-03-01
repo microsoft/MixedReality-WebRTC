@@ -28,7 +28,7 @@ RemoteAudioTrack::RemoteAudioTrack(
   RTC_CHECK(track_);
   RTC_CHECK(receiver_);
   RTC_CHECK(transceiver_);
-  kind_ = TrackKind::kAudioTrack;
+  kind_ = mrsTrackKind::kAudioTrack;
   transceiver_->OnRemoteTrackAdded(this);
   track_->AddSink(this);
 }

@@ -236,16 +236,16 @@ MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 
 /// Callback fired when the peer connection is connected, that is it finished
 /// the JSEP offer/answer exchange successfully.
-using PeerConnectionConnectedCallback = void(MRS_CALL*)(void* user_data);
+using mrsPeerConnectionConnectedCallback = void(MRS_CALL*)(void* user_data);
 
 /// Callback fired when a local SDP message has been prepared and is ready to be
 /// sent by the user via the signaling service.
-using PeerConnectionLocalSdpReadytoSendCallback =
+using mrsPeerConnectionLocalSdpReadytoSendCallback =
     void(MRS_CALL*)(void* user_data, const char* type, const char* sdp_data);
 
 /// Callback fired when an ICE candidate has been prepared and is ready to be
 /// sent by the user via the signaling service.
-using PeerConnectionIceCandidateReadytoSendCallback =
+using mrsPeerConnectionIceCandidateReadytoSendCallback =
     void(MRS_CALL*)(void* user_data,
                     const char* candidate,
                     int sdpMlineindex,
@@ -254,7 +254,7 @@ using PeerConnectionIceCandidateReadytoSendCallback =
 /// State of the ICE connection.
 /// See https://www.w3.org/TR/webrtc/#rtciceconnectionstate-enum.
 /// Note that there is a mismatch currently due to the m71 implementation.
-enum class IceConnectionState : int32_t {
+enum class mrsIceConnectionState : int32_t {
   kNew = 0,
   kChecking = 1,
   kConnected = 2,
@@ -266,24 +266,24 @@ enum class IceConnectionState : int32_t {
 
 /// State of the ICE gathering process.
 /// See https://www.w3.org/TR/webrtc/#rtcicegatheringstate-enum
-enum class IceGatheringState : int32_t {
+enum class mrsIceGatheringState : int32_t {
   kNew = 0,
   kGathering = 1,
   kComplete = 2,
 };
 
 /// Callback fired when the state of the ICE connection changed.
-using PeerConnectionIceStateChangedCallback =
-    void(MRS_CALL*)(void* user_data, IceConnectionState new_state);
+using mrsPeerConnectionIceStateChangedCallback =
+    void(MRS_CALL*)(void* user_data, mrsIceConnectionState new_state);
 
 /// Callback fired when a renegotiation of the current session needs to occur to
 /// account for new parameters (e.g. added or removed tracks).
-using PeerConnectionRenegotiationNeededCallback =
+using mrsPeerConnectionRenegotiationNeededCallback =
     void(MRS_CALL*)(void* user_data);
 
 /// Kind of media track. Equivalent to
 /// webrtc::MediaStreamTrackInterface::kind().
-enum class TrackKind : uint32_t {
+enum class mrsTrackKind : uint32_t {
   kUnknownTrack = 0,
   kAudioTrack = 1,
   kVideoTrack = 2,
@@ -295,7 +295,7 @@ enum class TrackKind : uint32_t {
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsLocalAudioTrackRemoveRef()| and
 /// |mrsAudioTransceiverRemoveRef()|, respectively, to avoid memory leaks.
-using PeerConnectionAudioTrackAddedCallback =
+using mrsPeerConnectionAudioTrackAddedCallback =
     void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsRemoteAudioTrackInteropHandle audio_track_wrapper,
                     mrsRemoteAudioTrackHandle audio_track,
@@ -307,7 +307,7 @@ using PeerConnectionAudioTrackAddedCallback =
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsLocalAudioTrackRemoveRef()| and
 /// |mrsAudioTransceiverRemoveRef()|, respectively, to avoid memory leaks.
-using PeerConnectionAudioTrackRemovedCallback =
+using mrsPeerConnectionAudioTrackRemovedCallback =
     void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsRemoteAudioTrackInteropHandle audio_track_wrapper,
                     mrsRemoteAudioTrackHandle audio_track,
@@ -319,7 +319,7 @@ using PeerConnectionAudioTrackRemovedCallback =
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsLocalVideoTrackRemoveRef()| and
 /// |mrsVideoTransceiverRemoveRef()|, respectively, to avoid memory leaks.
-using PeerConnectionVideoTrackAddedCallback =
+using mrsPeerConnectionVideoTrackAddedCallback =
     void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsRemoteVideoTrackInteropHandle video_track_wrapper,
                     mrsRemoteVideoTrackHandle video_track,
@@ -331,7 +331,7 @@ using PeerConnectionVideoTrackAddedCallback =
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsLocalVideoTrackRemoveRef()| and
 /// |mrsVideoTransceiverRemoveRef()|, respectively, to avoid memory leaks.
-using PeerConnectionVideoTrackRemovedCallback =
+using mrsPeerConnectionVideoTrackRemovedCallback =
     void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsRemoteVideoTrackInteropHandle video_track_wrapper,
                     mrsRemoteVideoTrackHandle video_track,
@@ -340,13 +340,13 @@ using PeerConnectionVideoTrackRemovedCallback =
 
 /// Callback fired when a data channel is added to the peer connection after
 /// being negotiated with the remote peer.
-using PeerConnectionDataChannelAddedCallback =
+using mrsPeerConnectionDataChannelAddedCallback =
     void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsDataChannelInteropHandle data_channel_wrapper,
                     mrsDataChannelHandle data_channel);
 
 /// Callback fired when a data channel is remoted from the peer connection.
-using PeerConnectionDataChannelRemovedCallback =
+using mrsPeerConnectionDataChannelRemovedCallback =
     void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsDataChannelInteropHandle data_channel_wrapper,
                     mrsDataChannelHandle data_channel);
@@ -397,7 +397,7 @@ using mrsDataChannelStateCallback = void(MRS_CALL*)(void* user_data,
 /// ICE transport type. See webrtc::PeerConnectionInterface::IceTransportsType.
 /// Currently values are aligned, but kept as a separate structure to allow
 /// backward compatilibity in case of changes in WebRTC.
-enum class IceTransportType : int32_t {
+enum class mrsIceTransportType : int32_t {
   kNone = 0,
   kRelay = 1,
   kNoHost = 2,
@@ -407,7 +407,7 @@ enum class IceTransportType : int32_t {
 /// Bundle policy. See webrtc::PeerConnectionInterface::BundlePolicy.
 /// Currently values are aligned, but kept as a separate structure to allow
 /// backward compatilibity in case of changes in WebRTC.
-enum class BundlePolicy : int32_t {
+enum class mrsBundlePolicy : int32_t {
   kBalanced = 0,
   kMaxBundle = 1,
   kMaxCompat = 2
@@ -415,7 +415,7 @@ enum class BundlePolicy : int32_t {
 
 /// SDP semantic (protocol dialect) for (re)negotiating a peer connection.
 /// This cannot be changed after the connection is established.
-enum class SdpSemantic : int32_t {
+enum class mrsSdpSemantic : int32_t {
   /// Unified Plan - default and recommended. Standardized in WebRTC 1.0.
   kUnifiedPlan = 0,
   /// Plan B - deprecated and soon to be removed. Do not use unless for
@@ -424,20 +424,20 @@ enum class SdpSemantic : int32_t {
 };
 
 /// Configuration to intialize a peer connection object.
-struct PeerConnectionConfiguration {
+struct mrsPeerConnectionConfiguration {
   /// ICE servers, encoded as a single string buffer.
   /// See |EncodeIceServers| and |DecodeIceServers|.
   const char* encoded_ice_servers = nullptr;
 
   /// ICE transport type for the connection.
-  IceTransportType ice_transport_type = IceTransportType::kAll;
+  mrsIceTransportType ice_transport_type = mrsIceTransportType::kAll;
 
   /// Bundle policy for the connection.
-  BundlePolicy bundle_policy = BundlePolicy::kBalanced;
+  mrsBundlePolicy bundle_policy = mrsBundlePolicy::kBalanced;
 
   /// SDP semantic for connection negotiation.
   /// Do not use Plan B unless there is a problem with Unified Plan.
-  SdpSemantic sdp_semantic = SdpSemantic::kUnifiedPlan;
+  mrsSdpSemantic sdp_semantic = mrsSdpSemantic::kUnifiedPlan;
 };
 
 /// Create a peer connection and return a handle to it.
@@ -448,7 +448,7 @@ struct PeerConnectionConfiguration {
 /// |mrsPeerConnectionRemoveRef|. When the last reference is removed, the native
 /// object is destroyed.
 MRS_API mrsResult MRS_CALL
-mrsPeerConnectionCreate(PeerConnectionConfiguration config,
+mrsPeerConnectionCreate(mrsPeerConnectionConfiguration config,
                         mrsPeerConnectionInteropHandle interop_handle,
                         mrsPeerConnectionHandle* peerHandleOut) noexcept;
 
@@ -492,7 +492,7 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionRegisterInteropCallbacks(
 /// registered at a time.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterConnectedCallback(
     mrsPeerConnectionHandle peerHandle,
-    PeerConnectionConnectedCallback callback,
+    mrsPeerConnectionConnectedCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback invoked when a local message is ready to be sent via the
@@ -500,7 +500,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterConnectedCallback(
 /// time.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(
     mrsPeerConnectionHandle peerHandle,
-    PeerConnectionLocalSdpReadytoSendCallback callback,
+    mrsPeerConnectionLocalSdpReadytoSendCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback invoked when an ICE candidate message is ready to be
@@ -508,21 +508,21 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(
 /// registered at a time.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(
     mrsPeerConnectionHandle peerHandle,
-    PeerConnectionIceCandidateReadytoSendCallback callback,
+    mrsPeerConnectionIceCandidateReadytoSendCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback invoked when the ICE connection state changes. Only one
 /// callback can be registered at a time.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterIceStateChangedCallback(
     mrsPeerConnectionHandle peerHandle,
-    PeerConnectionIceStateChangedCallback callback,
+    mrsPeerConnectionIceStateChangedCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a renegotiation of the current session needs
 /// to occur to account for new parameters (e.g. added or removed tracks).
 MRS_API void MRS_CALL mrsPeerConnectionRegisterRenegotiationNeededCallback(
     mrsPeerConnectionHandle peerHandle,
-    PeerConnectionRenegotiationNeededCallback callback,
+    mrsPeerConnectionRenegotiationNeededCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a remote audio track is added to the current
@@ -532,7 +532,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRenegotiationNeededCallback(
 /// if the user does not make use of them in the callback.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackAddedCallback(
     mrsPeerConnectionHandle peerHandle,
-    PeerConnectionAudioTrackAddedCallback callback,
+    mrsPeerConnectionAudioTrackAddedCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a remote audio track is removed from the
@@ -542,7 +542,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackAddedCallback(
 /// if the user does not make use of them in the callback.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackRemovedCallback(
     mrsPeerConnectionHandle peerHandle,
-    PeerConnectionAudioTrackRemovedCallback callback,
+    mrsPeerConnectionAudioTrackRemovedCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a remote video track is added to the current
@@ -552,7 +552,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackRemovedCallback(
 /// if the user does not make use of them in the callback.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterVideoTrackAddedCallback(
     mrsPeerConnectionHandle peerHandle,
-    PeerConnectionVideoTrackAddedCallback callback,
+    mrsPeerConnectionVideoTrackAddedCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a remote video track is removed from the
@@ -562,21 +562,21 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterVideoTrackAddedCallback(
 /// if the user does not make use of them in the callback.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterVideoTrackRemovedCallback(
     mrsPeerConnectionHandle peerHandle,
-    PeerConnectionVideoTrackRemovedCallback callback,
+    mrsPeerConnectionVideoTrackRemovedCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a remote data channel is removed from the
 /// current peer connection.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelAddedCallback(
     mrsPeerConnectionHandle peerHandle,
-    PeerConnectionDataChannelAddedCallback callback,
+    mrsPeerConnectionDataChannelAddedCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a remote data channel is removed from the
 /// current peer connection.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
     mrsPeerConnectionHandle peerHandle,
-    PeerConnectionDataChannelRemovedCallback callback,
+    mrsPeerConnectionDataChannelRemovedCallback callback,
     void* user_data) noexcept;
 
 /// Kind of video profile. Equivalent to org::webRtc::VideoProfileKind.
@@ -1050,7 +1050,7 @@ struct mrsTransportStats {
 using mrsStatsReportHandle = const void*;
 
 /// Called by mrsPeerConnectionGetSimpleStats when a stats report is ready.
-using PeerConnectionGetSimpleStatsCallback =
+using mrsPeerConnectionGetSimpleStatsCallback =
     void(MRS_CALL*)(void* user_data, mrsStatsReportHandle stats_report);
 
 /// Called by mrsStatsReportGetObjects for every instance of the requested stats
@@ -1061,10 +1061,10 @@ using mrsStatsReportGetObjectCallback =
 /// Get a stats report for the connection.
 /// The report passed to the callback must be released when finished through
 /// mrsStatsReportRemoveRef.
-MRS_API mrsResult MRS_CALL
-mrsPeerConnectionGetSimpleStats(mrsPeerConnectionHandle peer_handle,
-                                PeerConnectionGetSimpleStatsCallback callback,
-                                void* user_data);
+MRS_API mrsResult MRS_CALL mrsPeerConnectionGetSimpleStats(
+    mrsPeerConnectionHandle peer_handle,
+    mrsPeerConnectionGetSimpleStatsCallback callback,
+    void* user_data);
 
 /// Get all the instances of the requested stats type.
 /// The type must be one of "DataChannelStats", "AudioSenderStats",

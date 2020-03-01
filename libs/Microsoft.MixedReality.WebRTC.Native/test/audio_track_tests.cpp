@@ -5,16 +5,16 @@
 
 #include "audio_frame.h"
 #include "audio_transceiver_interop.h"
+#include "interop_api.h"
 #include "local_audio_track_interop.h"
 #include "remote_audio_track_interop.h"
-#include "interop_api.h"
 
 #include "test_utils.h"
 
 namespace {
 
 class AudioTrackTests : public TestUtils::TestBase,
-                        public testing::WithParamInterface<SdpSemantic> {};
+                        public testing::WithParamInterface<mrsSdpSemantic> {};
 
 }  // namespace
 
@@ -105,7 +105,7 @@ INSTANTIATE_TEST_CASE_P(,
 //
 
 TEST_P(AudioTrackTests, Simple) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
 
@@ -266,7 +266,7 @@ TEST_P(AudioTrackTests, Simple) {
 }
 
 TEST_P(AudioTrackTests, Muted) {
-  PeerConnectionConfiguration pc_config{};
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
 
