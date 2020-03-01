@@ -16,7 +16,9 @@
 
 namespace {
 
-class ExternalVideoTrackSourceTests : public TestUtils::TestBase {};
+class ExternalVideoTrackSourceTests
+    : public TestUtils::TestBase,
+      public testing::WithParamInterface<SdpSemantic> {};
 
 }  // namespace
 
@@ -126,8 +128,15 @@ using Argb32VideoFrameCallback = InteropCallback<const mrsArgb32VideoFrame&>;
 
 }  // namespace
 
-TEST_F(ExternalVideoTrackSourceTests, Simple) {
-  LocalPeerPairRaii pair;
+INSTANTIATE_TEST_CASE_P(,
+                        ExternalVideoTrackSourceTests,
+                        testing::ValuesIn(TestUtils::TestSemantics),
+                        TestUtils::SdpSemanticToString);
+
+TEST_P(ExternalVideoTrackSourceTests, Simple) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
 
   // Grab the handle of the remote track from the remote peer (#2) via the
   // VideoTrackAdded callback.
@@ -249,10 +258,10 @@ TEST_F(ExternalVideoTrackSourceTests, Simple) {
       };
   mrsRemoteVideoTrackRegisterArgb32FrameCallback(track_handle2, CB(argb_cb));
 
-  // Wait 5 seconds and check the frame callback is called
+  // Wait 3 seconds and check the frame callback is called
   Event ev;
-  ev.WaitFor(5s);
-  ASSERT_LT(50u, frame_count) << "Expected at least 10 FPS";
+  ev.WaitFor(3s);
+  ASSERT_LT(30u, frame_count) << "Expected at least 10 FPS";
 
   // Clean-up
   mrsRemoteVideoTrackRegisterArgb32FrameCallback(track_handle2, nullptr,

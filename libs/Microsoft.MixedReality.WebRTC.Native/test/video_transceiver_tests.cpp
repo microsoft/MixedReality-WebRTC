@@ -4,15 +4,19 @@
 #include "pch.h"
 
 #include "external_video_track_source_interop.h"
-#include "interop/remote_video_track_interop.h"
-#include "interop/video_transceiver_interop.h"
 #include "interop_api.h"
 #include "local_video_track_interop.h"
+#include "remote_video_track_interop.h"
+#include "video_transceiver_interop.h"
 
 #include "simple_interop.h"
 #include "video_test_utils.h"
 
 namespace {
+
+class VideoTransceiverTests : public TestUtils::TestBase,
+                              public testing::WithParamInterface<SdpSemantic> {
+};
 
 const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
     (void*)0x1;
@@ -62,8 +66,15 @@ using I420VideoFrameCallback = InteropCallback<const I420AVideoFrame&>;
 
 }  // namespace
 
-TEST(VideoTransceiver, InvalidName) {
-  LocalPeerPairRaii pair;
+INSTANTIATE_TEST_CASE_P(,
+                        VideoTransceiverTests,
+                        testing::ValuesIn(TestUtils::TestSemantics),
+                        TestUtils::SdpSemanticToString);
+
+TEST_P(VideoTransceiverTests, InvalidName) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
   mrsVideoTransceiverHandle transceiver_handle1{};
   VideoTransceiverInitConfig transceiver_config{};
   transceiver_config.name = "invalid name with space";
@@ -73,8 +84,10 @@ TEST(VideoTransceiver, InvalidName) {
   ASSERT_EQ(nullptr, transceiver_handle1);
 }
 
-TEST(VideoTransceiver, SetDirection) {
-  LocalPeerPairRaii pair;
+TEST_P(VideoTransceiverTests, SetDirection) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
   FakeInteropRaii interop({pair.pc1(), pair.pc2()});
 
   // Register event for renegotiation needed
@@ -158,11 +171,10 @@ TEST(VideoTransceiver, SetDirection) {
   // Connect #1 and #2
   pair.ConnectAndWait();
 
-  // Because the state updated event handler is registered after the transceiver
-  // is created, the state is stale, and applying the local description during
-  // |CreateOffer()| will generate some event.
-  ASSERT_TRUE(state_updated1_ev_local.WaitFor(10s));
-  state_updated1_ev_local.Reset();
+  // The transceiver is created in its desired state, and peer #1 creates the
+  // offer, so there is no event for updating the state due to a local
+  // description.
+  ASSERT_FALSE(state_updated1_ev_local.IsSignaled());
 
   // Wait for transceiver to be updated; this happens *after* connect,
   // during SetRemoteDescription().
@@ -186,13 +198,14 @@ TEST(VideoTransceiver, SetDirection) {
 
   // Check video transceiver #1 consistency
   {
-    // Desired state is Receive, negotiated is still Send+Receive
+    // Desired state is Receive, negotiated is still Send only
     ASSERT_EQ(mrsTransceiverOptDirection::kSendOnly,
               dir_negotiated1);  // no change
     ASSERT_EQ(mrsTransceiverDirection::kRecvOnly, dir_desired1);
   }
 
-  // Renegotiate
+  // Renegotiate once the previous exchange is done
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(5s));
   pair.ConnectAndWait();
 
   // Wait for transceiver to be updated; this happens *after* connect, during
@@ -217,14 +230,16 @@ TEST(VideoTransceiver, SetDirection) {
   mrsVideoTransceiverRemoveRef(transceiver_handle1);
 }
 
-TEST(VideoTransceiver, SetDirection_InvalidHandle) {
+TEST_F(VideoTransceiverTests, SetDirection_InvalidHandle) {
   ASSERT_EQ(Result::kInvalidNativeHandle,
             mrsVideoTransceiverSetDirection(
                 nullptr, mrsTransceiverDirection::kRecvOnly));
 }
 
-TEST(VideoTransceiver, SetLocalTrackSendRecv) {
-  LocalPeerPairRaii pair;
+TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
   FakeInteropRaii interop({pair.pc1(), pair.pc2()});
 
   // Register event for renegotiation needed
@@ -248,6 +263,7 @@ TEST(VideoTransceiver, SetLocalTrackSendRecv) {
     transceiver_config.name = "video_transceiver_1";
     transceiver_config.transceiver_interop_handle =
         kFakeInteropVideoTransceiverHandle;
+    transceiver_config.desired_direction = mrsTransceiverDirection::kInactive;
     renegotiation_needed1_ev.Reset();
     ASSERT_EQ(Result::kSuccess,
               mrsPeerConnectionAddVideoTransceiver(
@@ -377,6 +393,8 @@ TEST(VideoTransceiver, SetLocalTrackSendRecv) {
   // Remove track from transceiver #1 with non-null track
   ASSERT_EQ(Result::kSuccess,
             mrsVideoTransceiverSetLocalTrack(transceiver_handle1, nullptr));
+  mrsLocalVideoTrackRemoveRef(track_handle1);
+  mrsExternalVideoTrackSourceRemoveRef(source_handle1);
 
   // Check video transceiver #1 consistency
   {
@@ -402,20 +420,23 @@ TEST(VideoTransceiver, SetLocalTrackSendRecv) {
   pair.ConnectAndWait();
 
   // Check video transceiver #1 consistency
-  //< FIXME - In theory should wait for SetRemoteDesc on #1 (from #2's answer),
-  // but since state doesn't change there is no way to wait for that.
   {
     // Again, nothing changed
     ASSERT_EQ(mrsTransceiverOptDirection::kSendOnly, dir_negotiated1);
     ASSERT_EQ(mrsTransceiverDirection::kSendRecv, dir_desired1);
   }
 
+  // Wait until the SDP session exchange completed before cleaning-up
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(10s));
+
   // Clean-up
   mrsVideoTransceiverRemoveRef(transceiver_handle1);
 }
 
-TEST(VideoTransceiver, SetLocalTrackRecvOnly) {
-  LocalPeerPairRaii pair;
+TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
   FakeInteropRaii interop({pair.pc1(), pair.pc2()});
 
   // Register event for renegotiation needed
@@ -567,6 +588,8 @@ TEST(VideoTransceiver, SetLocalTrackRecvOnly) {
   // Remote track from transceiver #1 with non-null track
   ASSERT_EQ(Result::kSuccess,
             mrsVideoTransceiverSetLocalTrack(transceiver_handle1, nullptr));
+  mrsLocalVideoTrackRemoveRef(track_handle1);
+  mrsExternalVideoTrackSourceRemoveRef(source_handle1);
 
   // Check video transceiver #1 consistency
   {
@@ -591,8 +614,6 @@ TEST(VideoTransceiver, SetLocalTrackRecvOnly) {
   pair.ConnectAndWait();
 
   // Check video transceiver #1 consistency
-  //< FIXME - In theory should wait for SetRemoteDesc on #1 (from #2's answer),
-  // but since state doesn't change there is no way to wait for that.
   {
     // Note how nothing changed, because SetLocalTrack() does not change the
     // desired direction of Receive, and the remote peer #2 still doesn't have a
@@ -601,11 +622,14 @@ TEST(VideoTransceiver, SetLocalTrackRecvOnly) {
     ASSERT_EQ(mrsTransceiverDirection::kRecvOnly, dir_desired1);
   }
 
+  // Wait until the SDP session exchange completed before cleaning-up
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(10s));
+
   // Clean-up
   mrsVideoTransceiverRemoveRef(transceiver_handle1);
 }
 
-TEST(VideoTransceiver, SetLocalTrack_InvalidHandle) {
+TEST_F(VideoTransceiverTests, SetLocalTrack_InvalidHandle) {
   mrsLocalVideoTrackHandle dummy = (void*)0x1;  // looks legit
   ASSERT_EQ(Result::kInvalidNativeHandle,
             mrsVideoTransceiverSetLocalTrack(nullptr, dummy));

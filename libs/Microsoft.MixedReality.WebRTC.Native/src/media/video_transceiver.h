@@ -22,7 +22,7 @@ class VideoTransceiver : public Transceiver {
                    PeerConnection& owner,
                    int mline_index,
                    std::string name,
-                   mrsVideoTransceiverInteropHandle interop_handle) noexcept;
+                   const VideoTransceiverInitConfig& config) noexcept;
 
   /// Constructor for Unified Plan.
   VideoTransceiver(
@@ -31,7 +31,7 @@ class VideoTransceiver : public Transceiver {
       int mline_index,
       std::string name,
       rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
-      mrsVideoTransceiverInteropHandle interop_handle) noexcept;
+      const VideoTransceiverInitConfig& config) noexcept;
 
   ~VideoTransceiver() override;
 

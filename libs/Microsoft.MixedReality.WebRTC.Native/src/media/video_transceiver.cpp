@@ -13,11 +13,14 @@ VideoTransceiver::VideoTransceiver(
     PeerConnection& owner,
     int mline_index,
     std::string name,
-    mrsVideoTransceiverInteropHandle interop_handle) noexcept
-    : Transceiver(std::move(global_factory), MediaKind::kVideo, owner),
+    const VideoTransceiverInitConfig& config) noexcept
+    : Transceiver(std::move(global_factory),
+                  MediaKind::kVideo,
+                  owner,
+                  config.desired_direction),
       mline_index_(mline_index),
       name_(std::move(name)),
-      interop_handle_(interop_handle) {}
+      interop_handle_(config.transceiver_interop_handle) {}
 
 VideoTransceiver::VideoTransceiver(
     RefPtr<GlobalFactory> global_factory,
@@ -25,14 +28,15 @@ VideoTransceiver::VideoTransceiver(
     int mline_index,
     std::string name,
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
-    mrsVideoTransceiverInteropHandle interop_handle) noexcept
+    const VideoTransceiverInitConfig& config) noexcept
     : Transceiver(std::move(global_factory),
                   MediaKind::kVideo,
                   owner,
-                  transceiver),
+                  transceiver,
+                  config.desired_direction),
       mline_index_(mline_index),
       name_(std::move(name)),
-      interop_handle_(interop_handle) {}
+      interop_handle_(config.transceiver_interop_handle) {}
 
 VideoTransceiver::~VideoTransceiver() {
   // Be sure to clean-up WebRTC objects before unregistering ourself, which
@@ -48,8 +52,7 @@ Result VideoTransceiver::SetDirection(Direction new_direction) noexcept {
     }
     transceiver_->SetDirection(ToRtp(new_direction));
   } else {  // Plan B
-    //< TODO
-    return Result::kUnknownError;
+    // nothing to do
   }
   desired_direction_ = new_direction;
   FireStateUpdatedEvent(mrsTransceiverStateUpdatedReason::kSetDirection);
@@ -62,31 +65,17 @@ Result VideoTransceiver::SetLocalTrack(
     return Result::kSuccess;
   }
   Result result = Result::kSuccess;
-  if (transceiver_) {  // Unified Plan
-    // We are running under the assumption that SetTrack() never changes any of
-    // the transceiver's directions. This is not 100% clear in the standard, so
-    // double-check it here in Debug, under RTC_DCHECK_IS_ON because it's
-    // potentially a bit expensive (proxied calls).
-#if RTC_DCHECK_IS_ON
-    auto desired0 = transceiver_->direction();
-    auto negotiated0 = transceiver_->current_direction();
-#endif
-    if (!transceiver_->sender()->SetTrack(local_track ? local_track->impl()
-                                                      : nullptr)) {
+  webrtc::MediaStreamTrackInterface* const new_track =
+      local_track ? local_track->impl() : nullptr;
+  rtc::scoped_refptr<webrtc::RtpSenderInterface> rtp_sender;
+  if (IsUnifiedPlan()) {
+    rtp_sender = transceiver_->sender();
+    if (!rtp_sender->SetTrack(new_track)) {
       result = Result::kInvalidOperation;
     }
-#if RTC_DCHECK_IS_ON
-    auto desired1 = transceiver_->direction();
-    auto negotiated1 = transceiver_->current_direction();
-    RTC_DCHECK(desired0 == desired1);
-    RTC_DCHECK(negotiated0 == negotiated1);
-#endif
-  } else {  // Plan B
-    // auto ret = owner_->ReplaceTrackPlanB(local_track_, local_track);
-    // if (!ret.ok()) {
-    //  result = ret.error().result();
-    //}
-    result = Result::kUnknownError;  //< TODO
+  } else {
+    RTC_DCHECK(IsPlanB());
+    SetTrackPlanB(new_track);
   }
   if (result != Result::kSuccess) {
     if (local_track) {
@@ -102,17 +91,16 @@ Result VideoTransceiver::SetLocalTrack(
   }
   if (local_track_) {
     // Detach old local track
-    // Keep a pointer to the track because local_track_ gets NULL'd. No need to
-    // keep a reference, because owner_ has one.
+    // Keep a pointer to the track because |local_track_| gets NULL'd. No need
+    // to keep a reference, because |owner_| has one.
     LocalVideoTrack* const track = local_track_.get();
-    track->OnRemovedFromPeerConnection(*owner_, this, transceiver_->sender());
+    track->OnRemovedFromPeerConnection(*owner_, this, rtp_sender);
     owner_->OnLocalTrackRemovedFromVideoTransceiver(*this, *track);
   }
   local_track_ = std::move(local_track);
   if (local_track_) {
     // Attach new local track
-    local_track_->OnAddedToPeerConnection(*owner_, this,
-                                          transceiver_->sender());
+    local_track_->OnAddedToPeerConnection(*owner_, this, rtp_sender);
     owner_->OnLocalTrackAddedToVideoTransceiver(*this, *local_track_);
   }
   return Result::kSuccess;

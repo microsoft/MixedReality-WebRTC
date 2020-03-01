@@ -13,7 +13,8 @@
 
 namespace {
 
-class AudioTrackTests : public TestUtils::TestBase {};
+class AudioTrackTests : public TestUtils::TestBase,
+                        public testing::WithParamInterface<SdpSemantic> {};
 
 }  // namespace
 
@@ -82,6 +83,11 @@ bool IsSilent_int16(const int16_t* data,
 
 }  // namespace
 
+INSTANTIATE_TEST_CASE_P(,
+                        AudioTrackTests,
+                        testing::ValuesIn(TestUtils::TestSemantics),
+                        TestUtils::SdpSemanticToString);
+
 //
 // TODO : Those tests are currently partially disabled because
 // - when not muted, the audio track needs some non-zero signal from the
@@ -98,8 +104,10 @@ bool IsSilent_int16(const int16_t* data,
 // silent from a perceptual point of view.
 //
 
-TEST_F(AudioTrackTests, Simple) {
-  LocalPeerPairRaii pair;
+TEST_P(AudioTrackTests, Simple) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
 
   // In order to allow creating interop wrappers from native code, register the
   // necessary interop callbacks.
@@ -241,11 +249,13 @@ TEST_F(AudioTrackTests, Simple) {
 
   // Give the track some time to stream audio data
   Event ev;
-  ev.WaitFor(5s);
-  ASSERT_LT(50u, call_count) << "Expected at least 10 CPS";
+  ev.WaitFor(3s);
+  ASSERT_LT(30u, call_count) << "Expected at least 10 CPS";
 
   // Same as above
   ASSERT_NE(mrsBool::kFalse, mrsLocalAudioTrackIsEnabled(audio_track1));
+
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(5s));
 
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);
@@ -255,8 +265,10 @@ TEST_F(AudioTrackTests, Simple) {
   mrsAudioTransceiverRemoveRef(audio_transceiver1);
 }
 
-TEST_F(AudioTrackTests, Muted) {
-  LocalPeerPairRaii pair;
+TEST_P(AudioTrackTests, Muted) {
+  PeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
 
   // In order to allow creating interop wrappers from native code, register the
   // necessary interop callbacks.
@@ -385,11 +397,13 @@ TEST_F(AudioTrackTests, Muted) {
   ASSERT_EQ(mrsBool::kFalse, mrsLocalAudioTrackIsEnabled(audio_track1));
 
   Event ev;
-  ev.WaitFor(5s);
-  ASSERT_LT(50u, call_count) << "Expected at least 10 CPS";
+  ev.WaitFor(3s);
+  ASSERT_LT(30u, call_count) << "Expected at least 10 CPS";
 
   // Same as above
   ASSERT_EQ(mrsBool::kFalse, mrsLocalAudioTrackIsEnabled(audio_track1));
+
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(5s));
 
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);

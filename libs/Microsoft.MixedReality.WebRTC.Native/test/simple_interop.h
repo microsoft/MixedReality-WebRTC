@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+#pragma once
+
 #include "../include/interop_api.h"
 #include "../include/peer_connection_interop.h"
 #include "../src/interop/global_factory.h"
