@@ -198,10 +198,10 @@ namespace Microsoft.MixedReality.WebRTC
         /// <seealso cref="PeerConnection.InitializeAsync"/>
         /// <seealso cref="PeerConnection.Initialized"/>
         /// <seealso cref="BufferingChanged"/>
-        public void SendMessage(IntPtr message, ulong messageByteSize)
+        public void SendMessage(IntPtr message, ulong size)
         {
-            MainEventSource.Log.DataChannelSendMessage(ID, size);
-            uint res = DataChannelInterop.DataChannel_SendMessage(_interopHandle, message, messageByteSize);
+            MainEventSource.Log.DataChannelSendMessage(ID, (int)size);
+            uint res = DataChannelInterop.DataChannel_SendMessage(_interopHandle, message, size);
             Utils.ThrowOnErrorCode(res);
         }
 
