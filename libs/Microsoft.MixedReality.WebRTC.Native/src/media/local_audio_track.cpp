@@ -25,7 +25,7 @@ LocalAudioTrack::LocalAudioTrack(
 LocalAudioTrack::LocalAudioTrack(
     RefPtr<GlobalFactory> global_factory,
     PeerConnection& owner,
-    RefPtr<AudioTransceiver> transceiver,
+    RefPtr<Transceiver> transceiver,
     rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
     rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
     mrsLocalAudioTrackInteropHandle interop_handle) noexcept
@@ -39,6 +39,7 @@ LocalAudioTrack::LocalAudioTrack(
       track_name_(track_->id()) {
   RTC_CHECK(owner_);
   RTC_CHECK(transceiver_);
+  RTC_CHECK(transceiver_->GetMediaKind() == mrsMediaKind::kAudio);
   RTC_CHECK(track_);
   RTC_CHECK(sender_);
   kind_ = mrsTrackKind::kAudioTrack;
@@ -63,7 +64,7 @@ bool LocalAudioTrack::IsEnabled() const noexcept {
   return track_->enabled();
 }
 
-RefPtr<AudioTransceiver> LocalAudioTrack::GetTransceiver() const noexcept {
+RefPtr<Transceiver> LocalAudioTrack::GetTransceiver() const noexcept {
   return transceiver_;
 }
 
@@ -78,12 +79,13 @@ webrtc::RtpSenderInterface* LocalAudioTrack::sender() const {
 
 void LocalAudioTrack::OnAddedToPeerConnection(
     PeerConnection& owner,
-    RefPtr<AudioTransceiver> transceiver,
+    RefPtr<Transceiver> transceiver,
     rtc::scoped_refptr<webrtc::RtpSenderInterface> sender) {
   RTC_CHECK(!owner_);
   RTC_CHECK(!transceiver_);
   RTC_CHECK(!sender_);
   RTC_CHECK(transceiver);
+  RTC_CHECK(transceiver_->GetMediaKind() == mrsMediaKind::kAudio);
   // In Plan B the RTP sender is not always available (depends on transceiver
   // direction) so |sender| is invalid here.
   RTC_CHECK(transceiver->IsPlanB() || sender);
@@ -95,10 +97,11 @@ void LocalAudioTrack::OnAddedToPeerConnection(
 
 void LocalAudioTrack::OnRemovedFromPeerConnection(
     PeerConnection& old_owner,
-    RefPtr<AudioTransceiver> old_transceiver,
+    RefPtr<Transceiver> old_transceiver,
     rtc::scoped_refptr<webrtc::RtpSenderInterface> old_sender) {
   RTC_CHECK_EQ(owner_, &old_owner);
   RTC_CHECK_EQ(transceiver_.get(), old_transceiver.get());
+  RTC_CHECK(old_transceiver->GetMediaKind() == mrsMediaKind::kAudio);
   // In Plan B the RTP sender is not always available (depends on transceiver
   // direction) so |old_sender| is invalid here.
   RTC_CHECK(old_transceiver->IsPlanB() || (sender_ == old_sender.get()));

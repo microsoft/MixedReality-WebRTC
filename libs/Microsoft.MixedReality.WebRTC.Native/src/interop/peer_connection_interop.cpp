@@ -6,6 +6,7 @@
 #include "pch.h"
 
 #include "interop/global_factory.h"
+#include "media/transceiver.h"
 #include "peer_connection.h"
 #include "peer_connection_interop.h"
 
@@ -40,19 +41,21 @@ void MRS_CALL mrsPeerConnectionRegisterIceGatheringStateChangedCallback(
   }
 }
 
-mrsResult MRS_CALL mrsPeerConnectionAddAudioTransceiver(
-    mrsPeerConnectionHandle peer_handle,
-    const AudioTransceiverInitConfig* config,
-    mrsAudioTransceiverHandle* handle) noexcept {
+mrsResult MRS_CALL
+mrsPeerConnectionAddAudioTransceiver(mrsPeerConnectionHandle peer_handle,
+                                     const mrsTransceiverInitConfig* config,
+                                     mrsTransceiverHandle* handle) noexcept {
   if (!handle || !config) {
     return Result::kInvalidParameter;
   }
   *handle = nullptr;
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
-    ErrorOr<RefPtr<AudioTransceiver>> audio_transceiver =
+    ErrorOr<RefPtr<Transceiver>> audio_transceiver =
         peer->AddAudioTransceiver(*config);
     if (audio_transceiver.ok()) {
-      *handle = (mrsAudioTransceiverHandle)audio_transceiver.value().release();
+      auto transceiver = audio_transceiver.MoveValue();
+      *handle = transceiver->asHandle();
+      transceiver.release();  // handles now implicitly owns a reference
       return Result::kSuccess;
     }
     return audio_transceiver.error().result();
@@ -60,19 +63,21 @@ mrsResult MRS_CALL mrsPeerConnectionAddAudioTransceiver(
   return Result::kInvalidNativeHandle;
 }
 
-mrsResult MRS_CALL mrsPeerConnectionAddVideoTransceiver(
-    mrsPeerConnectionHandle peer_handle,
-    const VideoTransceiverInitConfig* config,
-    mrsVideoTransceiverHandle* handle) noexcept {
+mrsResult MRS_CALL
+mrsPeerConnectionAddVideoTransceiver(mrsPeerConnectionHandle peer_handle,
+                                     const mrsTransceiverInitConfig* config,
+                                     mrsTransceiverHandle* handle) noexcept {
   if (!handle || !config) {
     return Result::kInvalidParameter;
   }
   *handle = nullptr;
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
-    ErrorOr<RefPtr<VideoTransceiver>> video_transceiver =
+    ErrorOr<RefPtr<Transceiver>> video_transceiver =
         peer->AddVideoTransceiver(*config);
     if (video_transceiver.ok()) {
-      *handle = (mrsAudioTransceiverHandle)video_transceiver.value().release();
+      auto transceiver = video_transceiver.MoveValue();
+      *handle = transceiver->asHandle();
+      transceiver.release();  // handles now implicitly owns a reference
       return Result::kSuccess;
     }
     return video_transceiver.error().result();

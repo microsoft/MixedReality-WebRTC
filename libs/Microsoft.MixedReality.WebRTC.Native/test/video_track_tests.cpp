@@ -7,7 +7,7 @@
 #include "interop_api.h"
 #include "local_video_track_interop.h"
 #include "remote_video_track_interop.h"
-#include "video_transceiver_interop.h"
+#include "transceiver_interop.h"
 
 #include "simple_interop.h"
 #include "test_utils.h"
@@ -38,8 +38,8 @@ mrsRemoteVideoTrackInteropHandle MRS_CALL FakeIterop_RemoteVideoTrackCreate(
 using VideoTrackAddedCallback =
     InteropCallback<mrsRemoteVideoTrackInteropHandle,
                     mrsRemoteVideoTrackHandle,
-                    mrsVideoTransceiverInteropHandle,
-                    mrsVideoTransceiverHandle>;
+                    mrsTransceiverInteropHandle,
+                    mrsTransceiverHandle>;
 
 // PeerConnectionI420VideoFrameCallback
 using I420VideoFrameCallback = InteropCallback<const I420AVideoFrame&>;
@@ -74,14 +74,14 @@ TEST_P(VideoTrackTests, Simple) {
   // Grab the handle of the remote track from the remote peer (#2) via the
   // VideoTrackAdded callback.
   mrsRemoteVideoTrackHandle track_handle2{};
-  mrsVideoTransceiverHandle transceiver_handle2{};
+  mrsTransceiverHandle transceiver_handle2{};
   Event track_added2_ev;
   VideoTrackAddedCallback track_added2_cb =
       [&track_handle2, &transceiver_handle2, &track_added2_ev](
           mrsRemoteVideoTrackInteropHandle /*interop_handle*/,
           mrsRemoteVideoTrackHandle track_native_handle,
-          mrsVideoTransceiverInteropHandle /*interop_handle*/,
-          mrsVideoTransceiverHandle transceiver_native_handle) {
+          mrsTransceiverInteropHandle /*interop_handle*/,
+          mrsTransceiverHandle transceiver_native_handle) {
         track_handle2 = track_native_handle;
         transceiver_handle2 = transceiver_native_handle;
         track_added2_ev.Set();
@@ -90,10 +90,10 @@ TEST_P(VideoTrackTests, Simple) {
                                                    CB(track_added2_cb));
 
   // Create the video transceiver #1
-  mrsVideoTransceiverHandle transceiver_handle1{};
+  mrsTransceiverHandle transceiver_handle1{};
   {
     renegotiation_needed1_ev.Reset();
-    VideoTransceiverInitConfig config{};
+    mrsTransceiverInitConfig config{};
     config.name = "transceiver_1";
     ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddVideoTransceiver(
                                     pair.pc1(), &config, &transceiver_handle1));
@@ -106,13 +106,13 @@ TEST_P(VideoTrackTests, Simple) {
   {
     // Local track is NULL
     mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetLocalTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(nullptr, track_handle_local);
 
     // Remote track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetRemoteTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle1, &track_handle_remote));
     ASSERT_EQ(nullptr, track_handle_remote);
   }
@@ -132,7 +132,7 @@ TEST_P(VideoTrackTests, Simple) {
 
   // Add the local track #1 on the transceiver #1.
   ASSERT_FALSE(renegotiation_needed1_ev.IsSignaled());
-  ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverSetLocalTrack(
+  ASSERT_EQ(Result::kSuccess, mrsTransceiverSetLocalVideoTrack(
                                   transceiver_handle1, track_handle1));
   ASSERT_FALSE(
       renegotiation_needed1_ev
@@ -143,14 +143,14 @@ TEST_P(VideoTrackTests, Simple) {
   {
     // Local track is track_handle1
     mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetLocalTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(track_handle1, track_handle_local);
     mrsLocalVideoTrackRemoveRef(track_handle_local);
 
     // Remote track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetRemoteTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle1, &track_handle_remote));
     ASSERT_EQ(nullptr, track_handle_remote);
   }
@@ -166,13 +166,13 @@ TEST_P(VideoTrackTests, Simple) {
   {
     // Local track is NULL
     mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetLocalTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle2, &track_handle_local));
     ASSERT_EQ(nullptr, track_handle_local);
 
     // Remote track is track_handle2
     mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetRemoteTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle2, &track_handle_remote));
     ASSERT_EQ(track_handle2, track_handle_remote);
     mrsRemoteVideoTrackRemoveRef(track_handle_remote);
@@ -201,9 +201,9 @@ TEST_P(VideoTrackTests, Simple) {
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
   mrsRemoteVideoTrackRemoveRef(track_handle2);
-  mrsVideoTransceiverRemoveRef(transceiver_handle2);
+  mrsTransceiverRemoveRef(transceiver_handle2);
   mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsVideoTransceiverRemoveRef(transceiver_handle1);
+  mrsTransceiverRemoveRef(transceiver_handle1);
 }
 
 TEST_P(VideoTrackTests, Muted) {
@@ -221,14 +221,14 @@ TEST_P(VideoTrackTests, Muted) {
   // Grab the handle of the remote track from the remote peer (#2) via the
   // VideoTrackAdded callback.
   mrsRemoteVideoTrackHandle track_handle2{};
-  mrsVideoTransceiverHandle transceiver_handle2{};
+  mrsTransceiverHandle transceiver_handle2{};
   Event track_added2_ev;
   VideoTrackAddedCallback track_added2_cb =
       [&track_handle2, &transceiver_handle2, &track_added2_ev](
           mrsRemoteVideoTrackInteropHandle /*interop_handle*/,
           mrsRemoteVideoTrackHandle track_native_handle,
-          mrsVideoTransceiverInteropHandle /*interop_handle*/,
-          mrsVideoTransceiverHandle transceiver_native_handle) {
+          mrsTransceiverInteropHandle /*interop_handle*/,
+          mrsTransceiverHandle transceiver_native_handle) {
         track_handle2 = track_native_handle;
         transceiver_handle2 = transceiver_native_handle;
         track_added2_ev.Set();
@@ -237,9 +237,9 @@ TEST_P(VideoTrackTests, Muted) {
                                                    CB(track_added2_cb));
 
   // Create the video transceiver #1
-  mrsVideoTransceiverHandle transceiver_handle1{};
+  mrsTransceiverHandle transceiver_handle1{};
   {
-    VideoTransceiverInitConfig config{};
+    mrsTransceiverInitConfig config{};
     config.name = "transceiver_1";
     ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddVideoTransceiver(
                                     pair.pc1(), &config, &transceiver_handle1));
@@ -265,7 +265,7 @@ TEST_P(VideoTrackTests, Muted) {
   ASSERT_EQ(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle1));
 
   // Add the local track #1 on the transceiver #1
-  ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverSetLocalTrack(
+  ASSERT_EQ(Result::kSuccess, mrsTransceiverSetLocalVideoTrack(
                                   transceiver_handle1, track_handle1));
 
   // Connect #1 and #2
@@ -307,9 +307,9 @@ TEST_P(VideoTrackTests, Muted) {
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
   mrsRemoteVideoTrackRemoveRef(track_handle2);
-  mrsVideoTransceiverRemoveRef(transceiver_handle2);
+  mrsTransceiverRemoveRef(transceiver_handle2);
   mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsVideoTransceiverRemoveRef(transceiver_handle1);
+  mrsTransceiverRemoveRef(transceiver_handle1);
 }
 
 void MRS_CALL enumDeviceCallback(const char* id,
@@ -371,8 +371,8 @@ TEST_P(VideoTrackTests, Multi) {
     I420VideoFrameCallback frame_cb{};
     mrsLocalVideoTrackHandle local_handle{};
     mrsRemoteVideoTrackHandle remote_handle{};
-    mrsVideoTransceiverHandle local_transceiver_handle{};
-    mrsVideoTransceiverHandle remote_transceiver_handle{};
+    mrsTransceiverHandle local_transceiver_handle{};
+    mrsTransceiverHandle remote_transceiver_handle{};
   };
   TestTrack tracks[kNumTracks];
 
@@ -389,8 +389,8 @@ TEST_P(VideoTrackTests, Multi) {
       [&track_added2_sem, &track_id, &tracks, kNumTracks](
           mrsRemoteVideoTrackInteropHandle /*interop_handle*/,
           mrsRemoteVideoTrackHandle track_handle,
-          mrsVideoTransceiverInteropHandle /*interop_handle*/,
-          mrsVideoTransceiverHandle transceiver_handle) {
+          mrsTransceiverInteropHandle /*interop_handle*/,
+          mrsTransceiverHandle transceiver_handle) {
         int id = track_id.fetch_add(1);
         ASSERT_LT(id, kNumTracks);
         tracks[id].remote_handle = track_handle;
@@ -414,7 +414,7 @@ TEST_P(VideoTrackTests, Multi) {
   for (auto&& track : tracks) {
     std::stringstream strstr;
     std::string str;
-    VideoTransceiverInitConfig tranceiver_config{};
+    mrsTransceiverInitConfig tranceiver_config{};
     strstr << "transceiver_1_" << idx;
     str = strstr.str();  // keep alive
     tranceiver_config.name = str.c_str();
@@ -430,7 +430,7 @@ TEST_P(VideoTrackTests, Multi) {
                                     &track.local_handle));
     ASSERT_NE(nullptr, track.local_handle);
     ASSERT_EQ(Result::kSuccess,
-              mrsVideoTransceiverSetLocalTrack(track.local_transceiver_handle,
+              mrsTransceiverSetLocalVideoTrack(track.local_transceiver_handle,
                                                track.local_handle));
     ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track.local_handle));
 
@@ -438,14 +438,14 @@ TEST_P(VideoTrackTests, Multi) {
     {
       mrsLocalVideoTrackHandle track_handle_local{};
       ASSERT_EQ(Result::kSuccess,
-                mrsVideoTransceiverGetLocalTrack(track.local_transceiver_handle,
+                mrsTransceiverGetLocalVideoTrack(track.local_transceiver_handle,
                                                  &track_handle_local));
       ASSERT_EQ(track.local_handle, track_handle_local);
       mrsLocalVideoTrackRemoveRef(track_handle_local);
 
       mrsRemoteVideoTrackHandle track_handle_remote{};
       ASSERT_EQ(Result::kSuccess,
-                mrsVideoTransceiverGetRemoteTrack(
+                mrsTransceiverGetRemoteVideoTrack(
                     track.local_transceiver_handle, &track_handle_remote));
       ASSERT_EQ(nullptr, track_handle_remote);
     }
@@ -489,9 +489,9 @@ TEST_P(VideoTrackTests, Multi) {
     mrsRemoteVideoTrackRegisterI420AFrameCallback(track.remote_handle, nullptr,
                                                   nullptr);
     mrsRemoteVideoTrackRemoveRef(track.remote_handle);
-    mrsVideoTransceiverRemoveRef(track.remote_transceiver_handle);
+    mrsTransceiverRemoveRef(track.remote_transceiver_handle);
     mrsLocalVideoTrackRemoveRef(track.local_handle);
-    mrsVideoTransceiverRemoveRef(track.local_transceiver_handle);
+    mrsTransceiverRemoveRef(track.local_transceiver_handle);
   }
   mrsExternalVideoTrackSourceRemoveRef(source_handle1);
 
@@ -514,14 +514,14 @@ TEST_P(VideoTrackTests, ExternalI420) {
   // Grab the handle of the remote track from the remote peer (#2) via the
   // VideoTrackAdded callback.
   mrsRemoteVideoTrackHandle track_handle2{};
-  mrsVideoTransceiverHandle transceiver_handle2{};
+  mrsTransceiverHandle transceiver_handle2{};
   Event track_added2_ev;
   VideoTrackAddedCallback track_added2_cb =
       [&track_handle2, &transceiver_handle2, &track_added2_ev](
           mrsRemoteVideoTrackInteropHandle /*interop_handle*/,
           mrsRemoteVideoTrackHandle track_native_handle,
-          mrsVideoTransceiverInteropHandle /*interop_handle*/,
-          mrsVideoTransceiverHandle transceiver_native_handle) {
+          mrsTransceiverInteropHandle /*interop_handle*/,
+          mrsTransceiverHandle transceiver_native_handle) {
         track_handle2 = track_native_handle;
         transceiver_handle2 = transceiver_native_handle;
         track_added2_ev.Set();
@@ -530,9 +530,9 @@ TEST_P(VideoTrackTests, ExternalI420) {
                                                    CB(track_added2_cb));
 
   // Create the video transceiver #1
-  mrsVideoTransceiverHandle transceiver_handle1{};
+  mrsTransceiverHandle transceiver_handle1{};
   {
-    VideoTransceiverInitConfig config{};
+    mrsTransceiverInitConfig config{};
     config.name = "transceiver_1";
     ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddVideoTransceiver(
                                     pair.pc1(), &config, &transceiver_handle1));
@@ -560,21 +560,21 @@ TEST_P(VideoTrackTests, ExternalI420) {
   }
 
   // Add the local track #1 on the transceiver #1
-  ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverSetLocalTrack(
+  ASSERT_EQ(Result::kSuccess, mrsTransceiverSetLocalVideoTrack(
                                   transceiver_handle1, track_handle1));
 
   // Check video transceiver #1 consistency
   {
     // Local track is track_handle1
     mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetLocalTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(track_handle1, track_handle_local);
     mrsLocalVideoTrackRemoveRef(track_handle_local);
 
     // Remote track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetRemoteTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle1, &track_handle_remote));
     ASSERT_EQ(nullptr, track_handle_remote);
   }
@@ -604,9 +604,9 @@ TEST_P(VideoTrackTests, ExternalI420) {
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
   mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsVideoTransceiverRemoveRef(transceiver_handle1);
+  mrsTransceiverRemoveRef(transceiver_handle1);
   mrsRemoteVideoTrackRemoveRef(track_handle2);
-  mrsVideoTransceiverRemoveRef(transceiver_handle2);
+  mrsTransceiverRemoveRef(transceiver_handle2);
   mrsExternalVideoTrackSourceShutdown(source_handle1);
   mrsExternalVideoTrackSourceRemoveRef(source_handle1);
 }

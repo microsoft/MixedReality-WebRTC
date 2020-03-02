@@ -140,12 +140,10 @@
     <ClInclude Include="..\str.h" />
     <ClInclude Include="..\targetver.h" />
     <ClInclude Include="..\tracked_object.h" />
-    <ClInclude Include="..\..\include\audio_transceiver_interop.h" />
+    <ClInclude Include="..\..\include\transceiver_interop.h" />
     <ClInclude Include="..\..\include\local_audio_track_interop.h" />
     <ClInclude Include="..\..\include\remote_audio_track_interop.h" />
     <ClInclude Include="..\..\include\remote_video_track_interop.h" />
-    <ClInclude Include="..\..\include\video_transceiver_interop.h" />
-    <ClInclude Include="..\media\audio_transceiver.h" />
     <ClInclude Include="..\utils.h" />
     <ClInclude Include="..\video_frame_observer.h" />
     <ClInclude Include="..\media\local_audio_track.h" />
@@ -153,7 +151,6 @@
     <ClInclude Include="..\media\remote_audio_track.h" />
     <ClInclude Include="..\media\remote_video_track.h" />
     <ClInclude Include="..\media\transceiver.h" />
-    <ClInclude Include="..\media\video_transceiver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../pch.cpp">
@@ -168,18 +165,15 @@
     <ClCompile Include="..\interop\peer_connection_interop.cpp" />
     <ClCompile Include="..\media\external_video_track_source.cpp" />
     <ClCompile Include="..\media\local_video_track.cpp" />
-    <ClCompile Include="..\interop\audio_transceiver_interop.cpp" />
+    <ClCompile Include="..\interop\transceiver_interop.cpp" />
     <ClCompile Include="..\interop\local_audio_track_interop.cpp" />
     <ClCompile Include="..\interop\remote_audio_track_interop.cpp" />
     <ClCompile Include="..\interop\remote_video_track_interop.cpp" />
-    <ClCompile Include="..\interop\video_transceiver_interop.cpp" />
-    <ClCompile Include="..\media\audio_transceiver.cpp" />
     <ClCompile Include="..\media\local_audio_track.cpp" />
     <ClCompile Include="..\media\media_track.cpp" />
     <ClCompile Include="..\media\remote_audio_track.cpp" />
     <ClCompile Include="..\media\remote_video_track.cpp" />
     <ClCompile Include="..\media\transceiver.cpp" />
-    <ClCompile Include="..\media\video_transceiver.cpp" />
     <ClCompile Include="..\mrs_errors.cpp" />
     <ClCompile Include="..\peer_connection.cpp" />
     <ClCompile Include="..\sdp_utils.cpp" />

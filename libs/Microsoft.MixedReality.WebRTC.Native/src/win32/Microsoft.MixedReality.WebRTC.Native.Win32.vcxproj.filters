@@ -46,16 +46,7 @@
     <ClCompile Include="..\media\transceiver.cpp">
       <Filter>src\media</Filter>
     </ClCompile>
-    <ClCompile Include="..\media\audio_transceiver.cpp">
-      <Filter>src\media</Filter>
-    </ClCompile>
-    <ClCompile Include="..\media\video_transceiver.cpp">
-      <Filter>src\media</Filter>
-    </ClCompile>
-    <ClCompile Include="..\interop\audio_transceiver_interop.cpp">
-      <Filter>src\interop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\interop\video_transceiver_interop.cpp">
+    <ClCompile Include="..\interop\transceiver_interop.cpp">
       <Filter>src\interop</Filter>
     </ClCompile>
     <ClCompile Include="..\data_channel.cpp">
@@ -111,13 +102,7 @@
     <ClInclude Include="..\media\transceiver.h">
       <Filter>src\media</Filter>
     </ClInclude>
-    <ClInclude Include="..\media\audio_transceiver.h">
-      <Filter>src\media</Filter>
-    </ClInclude>
-    <ClInclude Include="..\media\video_transceiver.h">
-      <Filter>src\media</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\video_transceiver_interop.h">
+    <ClInclude Include="..\..\include\transceiver_interop.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\remote_video_track_interop.h">
@@ -141,16 +126,10 @@
     <ClInclude Include="..\..\include\external_video_track_source_interop.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\audio_transceiver_interop.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\data_channel.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\callback.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\local_video_track.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\mrs_errors.h">

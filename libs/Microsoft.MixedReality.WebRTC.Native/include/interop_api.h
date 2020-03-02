@@ -70,8 +70,7 @@ MRS_API void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept;
 // Interop
 //
 
-struct mrsTransceiverInitConfig;
-struct mrsTransceiverInitConfig;
+struct mrsTransceiverWrapperInitConfig;
 struct mrsRemoteAudioTrackConfig;
 struct mrsRemoteVideoTrackConfig;
 struct mrsDataChannelConfig;
@@ -85,11 +84,8 @@ using mrsPeerConnectionHandle = void*;
 /// Opaque handle to a native MediaTrack interop object.
 using mrsMediaTrackHandle = void*;
 
-/// Opaque handle to a native AudioTransceiver interop object.
-using mrsAudioTransceiverHandle = void*;
-
-/// Opaque handle to a native VideoTransceiver interop object.
-using mrsVideoTransceiverHandle = void*;
+/// Opaque handle to a native Transceiver interop object.
+using mrsTransceiverHandle = void*;
 
 /// Opaque handle to a native LocalAudioTrack interop object.
 using mrsLocalAudioTrackHandle = void*;
@@ -114,11 +110,8 @@ using mrsExternalVideoTrackSourceHandle = void*;
 /// Opaque handle to the interop wrapper of a peer connection.
 using mrsPeerConnectionInteropHandle = void*;
 
-/// Opaque handle to the interop wrapper of an audio transceiver.
-using mrsAudioTransceiverInteropHandle = void*;
-
-/// Opaque handle to the interop wrapper of a video transceiver.
-using mrsVideoTransceiverInteropHandle = void*;
+/// Opaque handle to the interop wrapper of a transceiver.
+using mrsTransceiverInteropHandle = void*;
 
 /// Opaque handle to the interop wrapper of a local audio track.
 using mrsLocalAudioTrackInteropHandle = void*;
@@ -135,33 +128,18 @@ using mrsRemoteVideoTrackInteropHandle = void*;
 /// Opaque handle to the interop wrapper of a data channel.
 using mrsDataChannelInteropHandle = void*;
 
-/// Callback to create an interop wrapper for an audio transceiver.
+/// Callback to create an interop wrapper for a transceiver.
 /// The callback must return the handle of the created interop wrapper.
-using mrsAudioTransceiverCreateObjectCallback =
-    mrsAudioTransceiverInteropHandle(MRS_CALL*)(
-        mrsPeerConnectionInteropHandle parent,
-        const mrsTransceiverInitConfig& config) noexcept;
+using mrsTransceiverCreateObjectCallback = mrsTransceiverInteropHandle(
+    MRS_CALL*)(mrsPeerConnectionInteropHandle parent,
+               const mrsTransceiverWrapperInitConfig& config) noexcept;
 
 /// Callback to finish the creation of the interop wrapper by assigning to it
-/// the handle of the AudioTransceiver native object it wraps.
-/// This is called shortly after |mrsAudioTransceiverCreateObjectCallback|, with
-/// the same |mrsAudioTransceiverInteropHandle| returned by that callback.
-using mrsAudioTransceiverFinishCreateCallback = void(
-    MRS_CALL*)(mrsAudioTransceiverInteropHandle, mrsAudioTransceiverHandle);
-
-/// Callback to create an interop wrapper for a video transceiver.
-/// The callback must return the handle of the created interop wrapper.
-using mrsVideoTransceiverCreateObjectCallback =
-    mrsVideoTransceiverInteropHandle(MRS_CALL*)(
-        mrsPeerConnectionInteropHandle parent,
-        const mrsTransceiverInitConfig& config) noexcept;
-
-/// Callback to finish the creation of the interop wrapper by assigning to it
-/// the handle of the VideoTransceiver native object it wraps.
-/// This is called shortly after |mrsVideoTransceiverCreateObjectCallback|, with
-/// the same |mrsVideoTransceiverInteropHandle| returned by that callback.
-using mrsVideoTransceiverFinishCreateCallback = void(
-    MRS_CALL*)(mrsVideoTransceiverInteropHandle, mrsVideoTransceiverHandle);
+/// the handle of the Transceiver native object it wraps.
+/// This is called shortly after |mrsTransceiverCreateObjectCallback|, with
+/// the same |mrsTransceiverInteropHandle| returned by that callback.
+using mrsTransceiverFinishCreateCallback =
+    void(MRS_CALL*)(mrsTransceiverInteropHandle, mrsTransceiverHandle);
 
 /// Callback to create an interop wrapper for a remote audio track.
 using mrsRemoteAudioTrackCreateObjectCallback =
@@ -294,49 +272,49 @@ enum class mrsTrackKind : uint32_t {
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsLocalAudioTrackRemoveRef()| and
-/// |mrsAudioTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
 using mrsPeerConnectionAudioTrackAddedCallback =
     void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsRemoteAudioTrackInteropHandle audio_track_wrapper,
                     mrsRemoteAudioTrackHandle audio_track,
-                    mrsAudioTransceiverInteropHandle audio_transceiver_wrapper,
-                    mrsAudioTransceiverHandle audio_transceiver);
+                    mrsTransceiverInteropHandle transceiver_wrapper,
+                    mrsTransceiverHandle transceiver);
 
 /// Callback fired when a remote audio track is removed from a connection.
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsLocalAudioTrackRemoveRef()| and
-/// |mrsAudioTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
 using mrsPeerConnectionAudioTrackRemovedCallback =
     void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsRemoteAudioTrackInteropHandle audio_track_wrapper,
                     mrsRemoteAudioTrackHandle audio_track,
-                    mrsAudioTransceiverInteropHandle audio_transceiver_wrapper,
-                    mrsAudioTransceiverHandle audio_transceiver);
+                    mrsTransceiverInteropHandle transceiver_wrapper,
+                    mrsTransceiverHandle transceiver);
 
 /// Callback fired when a remote video track is added to a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsLocalVideoTrackRemoveRef()| and
-/// |mrsVideoTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
 using mrsPeerConnectionVideoTrackAddedCallback =
     void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsRemoteVideoTrackInteropHandle video_track_wrapper,
                     mrsRemoteVideoTrackHandle video_track,
-                    mrsVideoTransceiverInteropHandle video_transceiver_wrapper,
-                    mrsVideoTransceiverHandle video_transceiver);
+                    mrsTransceiverInteropHandle transceiver_wrapper,
+                    mrsTransceiverHandle transceiver);
 
 /// Callback fired when a remote video track is removed from a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsLocalVideoTrackRemoveRef()| and
-/// |mrsVideoTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
 using mrsPeerConnectionVideoTrackRemovedCallback =
     void(MRS_CALL*)(mrsPeerConnectionInteropHandle peer,
                     mrsRemoteVideoTrackInteropHandle video_track_wrapper,
                     mrsRemoteVideoTrackHandle video_track,
-                    mrsVideoTransceiverInteropHandle video_transceiver_wrapper,
-                    mrsVideoTransceiverHandle video_transceiver);
+                    mrsTransceiverInteropHandle transceiver_wrapper,
+                    mrsTransceiverHandle transceiver);
 
 /// Callback fired when a data channel is added to the peer connection after
 /// being negotiated with the remote peer.
@@ -458,17 +436,11 @@ mrsPeerConnectionCreate(mrsPeerConnectionConfiguration config,
 /// not initiated by the interop, so for which the native instance is created
 /// first).
 struct mrsPeerConnectionInteropCallbacks {
-  /// Construct an interop object for an AudioTransceiver instance.
-  mrsAudioTransceiverCreateObjectCallback audio_transceiver_create_object{};
+  /// Construct an interop object for a Transceiver instance.
+  mrsTransceiverCreateObjectCallback transceiver_create_object{};
 
-  /// Finish the construction of the interop object of an AudioTransceiver.
-  mrsAudioTransceiverFinishCreateCallback audio_transceiver_finish_create{};
-
-  /// Construct an interop object for a VideoTransceiver instance.
-  mrsVideoTransceiverCreateObjectCallback video_transceiver_create_object{};
-
-  /// Finish the construction of the interop object of a VideoTransceiver.
-  mrsVideoTransceiverFinishCreateCallback video_transceiver_finish_create{};
+  /// Finish the construction of the interop object of a Transceiver.
+  mrsTransceiverFinishCreateCallback transceiver_finish_create{};
 
   /// Construct an interop object for a RemoteAudioTrack instance.
   mrsRemoteAudioTrackCreateObjectCallback remote_audio_track_create_object{};
@@ -620,29 +592,13 @@ enum class mrsTransceiverOptDirection : int32_t {
   kInactive = 3
 };
 
-/// Configuration for creating a new audio transceiver.
-struct AudioTransceiverInitConfig {
-  /// Mandatory name of the audio transceiver. This must be a valid SDP token;
-  /// see |mrsSdpIsValidToken()|.
-  const char* name = nullptr;
+/// Media kind for tracks and transceivers.
+enum class mrsMediaKind : uint32_t { kAudio = 0, kVideo = 1 };
 
-  /// Initial desired direction of the transceiver media when created.
-  mrsTransceiverDirection desired_direction =
-      mrsTransceiverDirection::kSendRecv;
-
-  /// Semi-colon separated list of stream IDs associated with the transceiver.
-  /// Use |Transceiver::DecodeStreamIDs()| and |Transceiver::EncodeStreamIDs()|.
-  const char* stream_ids = nullptr;
-
-  /// Handle of the audio transceiver interop wrapper, if any, which will be
-  /// associated with the native audio transceiver object.
-  mrsAudioTransceiverInteropHandle transceiver_interop_handle{};
-};
-
-/// Configuration for creating a new video transceiver.
-struct VideoTransceiverInitConfig {
-  /// Mandatory name of the video transceiver. This must be a valid SDP token;
-  /// see |mrsSdpIsValidToken()|.
+/// Configuration for creating a new transceiver.
+struct mrsTransceiverInitConfig {
+  /// Name of the transceiver. This must be a valid SDP token; see
+  /// |mrsSdpIsValidToken()|.
   const char* name = nullptr;
 
   /// Initial desired direction of the transceiver media when created.
@@ -652,9 +608,9 @@ struct VideoTransceiverInitConfig {
   /// Semi-colon separated list of stream IDs associated with the transceiver.
   const char* stream_ids = nullptr;
 
-  /// Handle of the video transceiver interop wrapper, if any, which will be
-  /// associated with the native video transceiver object.
-  mrsVideoTransceiverInteropHandle transceiver_interop_handle{};
+  /// Handle of the transceiver interop wrapper, if any, which will be
+  /// associated with the native transceiver object.
+  mrsTransceiverInteropHandle transceiver_interop_handle{};
 };
 
 /// Configuration for opening a local audio capture device and creating a local
@@ -736,10 +692,15 @@ using mrsRequestExternalArgb32VideoFrameCallback =
                          uint32_t request_id,
                          int64_t timestamp_ms);
 
-/// Configuration for creating a new transceiver interop wrapper.
-struct mrsTransceiverInitConfig {
-  /// Transceiver name. This must be a valid SDP token.
-  const char* name{};
+/// Configuration for creating a new transceiver interop wrapper when the
+/// implementation initiates the creating, generally as a result of applying a
+/// remote description.
+struct mrsTransceiverWrapperInitConfig {
+  /// Transceiver name. This is always a valid SDP token.
+  const char* name{nullptr};
+
+  /// Media kind the transceiver is transporting.
+  mrsMediaKind media_kind{mrsMediaKind::kAudio};
 
   /// Zero-based media line index for the transceiver. In Unified Plan, this is
   /// the index of the m= line in the SDP offer/answer as determined when adding
@@ -748,14 +709,13 @@ struct mrsTransceiverInitConfig {
   /// recycled). For Plan B this is still used but is only the index of the
   /// transceiver in the collection of the peer connection (like in Unified
   /// Plan), without any relation to the SDP offer/answer.
-  int mline_index = -1;
+  int mline_index{-1};
 
-  /// Initial desired direction when the transceiver is created. If the
-  /// transceiver is created by the implementation, this is generally set to the
-  /// current value on the implementation object, to keep the interop wrapper in
-  /// sync.
-  mrsTransceiverDirection initial_desired_direction =
-      mrsTransceiverDirection::kSendRecv;
+  /// Initial desired direction when the transceiver is created. This is
+  /// generally set to the current value on the implementation object, to keep
+  /// the interop wrapper in sync.
+  mrsTransceiverDirection initial_desired_direction{
+      mrsTransceiverDirection::kSendRecv};
 };
 
 struct mrsRemoteAudioTrackConfig {
