@@ -1818,9 +1818,9 @@ ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::AddTransceiverImpl(
     case webrtc::SdpSemantics::kPlanB: {
       // Plan B doesn't have transceivers; just create a wrapper.
       mline_index = (int)transceivers_.size();  // append
-      wrapper = new Transceiver(global_factory_, media_kind, *this, mline_index,
-                                std::move(name), config.desired_direction,
-                                config.transceiver_interop_handle);
+      wrapper = Transceiver::CreateForPlanB(
+          global_factory_, media_kind, *this, mline_index, std::move(name),
+          config.desired_direction, config.transceiver_interop_handle);
       // Manually invoke the renegotiation needed event for parity with Unified
       // Plan, like the internal implementation would do.
       OnRenegotiationNeeded();
@@ -1853,10 +1853,10 @@ ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::AddTransceiverImpl(
       }
 
       // Create the transceiver wrapper
-      wrapper = new Transceiver(global_factory_, media_kind, *this, mline_index,
-                                std::move(name), std::move(impl),
-                                config.desired_direction,
-                                config.transceiver_interop_handle);
+      wrapper = Transceiver::CreateForUnifiedPlan(
+          global_factory_, media_kind, *this, mline_index, std::move(name),
+          std::move(impl), config.desired_direction,
+          config.transceiver_interop_handle);
     } break;
     default:
       return Error(Result::kUnknownError, "Unknown SDP semantic.");
@@ -1937,10 +1937,10 @@ PeerConnectionImpl::GetOrCreateTransceiverForSender(
     mrsTransceiverInitConfig config{};
     config.desired_direction = Transceiver::Direction::kSendRecv;  //?
     config.transceiver_interop_handle = transceiver_interop_handle;
-    wrapper = new Transceiver(global_factory_, media_kind, *this, mline_index,
-                              std::move(name), std::move(impl),
-                              config.desired_direction,
-                              config.transceiver_interop_handle);
+    wrapper = Transceiver::CreateForUnifiedPlan(
+        global_factory_, media_kind, *this, mline_index, std::move(name),
+        std::move(impl), config.desired_direction,
+        config.transceiver_interop_handle);
 
     // Note: at this point the native wrapper knows about the interop wrapper,
     // but not the opposite. Normally we'd fire another "created-callback"
@@ -2115,7 +2115,7 @@ ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::CreateTransceiverUnifiedPlan(
       mrsTransceiverInitConfig config{};
       config.desired_direction = desired_direction;
       config.transceiver_interop_handle = interop_handle;
-      transceiver = new Transceiver(
+      transceiver = Transceiver::CreateForUnifiedPlan(
           global_factory_, media_kind, *this, mline_index, std::move(name),
           std::move(rtp_transceiver), config.desired_direction,
           config.transceiver_interop_handle);
@@ -2160,7 +2160,7 @@ ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::CreateTransceiverPlanB(
   mrsTransceiverInitConfig config{};
   config.desired_direction = Transceiver::Direction::kRecvOnly;
   config.transceiver_interop_handle = interop_handle;
-  RefPtr<Transceiver> transceiver = new Transceiver(
+  RefPtr<Transceiver> transceiver = Transceiver::CreateForPlanB(
       global_factory_, media_kind, *this, mline_index, std::move(name),
       config.desired_direction, config.transceiver_interop_handle);
   transceiver->SetReceiverPlanB(receiver);

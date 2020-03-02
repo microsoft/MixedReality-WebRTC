@@ -27,6 +27,32 @@ struct Transceiver::PlanBEmulation {
   rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> sender_track_;
 };
 
+RefPtr<Transceiver> Transceiver::CreateForPlanB(
+    RefPtr<GlobalFactory> global_factory,
+    MediaKind kind,
+    PeerConnection& owner,
+    int mline_index,
+    std::string name,
+    Direction desired_direction,
+    mrsTransceiverHandle interop_handle) noexcept {
+  return new Transceiver(std::move(global_factory), kind, owner, mline_index,
+                         std::move(name), desired_direction, interop_handle);
+}
+
+RefPtr<Transceiver> Transceiver::CreateForUnifiedPlan(
+    RefPtr<GlobalFactory> global_factory,
+    MediaKind kind,
+    PeerConnection& owner,
+    int mline_index,
+    std::string name,
+    rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
+    Direction desired_direction,
+    mrsTransceiverHandle interop_handle) noexcept {
+  return new Transceiver(std::move(global_factory), kind, owner, mline_index,
+                         std::move(name), std::move(transceiver),
+                         desired_direction, interop_handle);
+}
+
 Transceiver::Transceiver(RefPtr<GlobalFactory> global_factory,
                          MediaKind kind,
                          PeerConnection& owner,
