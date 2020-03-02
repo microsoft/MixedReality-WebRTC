@@ -1049,9 +1049,11 @@ void PeerConnectionImpl::OnStreamChanged(
                    << " changed: " << audio_tracks.size()
                    << " audio tracks and " << video_tracks.size()
                    << " video tracks.";
-  // for (auto&& audio_track : remote_audio_tracks_) {
-  //  if (audio_track == audio_tracks[0])
-  //}
+  // TODO - Clarify if media streams are of any use and if/how they can be used.
+  // The old API from ~2013 was based on them, but the WebRTC 1.0 standard is
+  // not, and it seems the media streams are now in Unified Plan just some
+  // metadata, though in Plan B they might still have a role for A/V tracks
+  // symchronization.
 }
 
 bool PeerConnectionImpl::AddIceCandidate(const char* sdp_mid,

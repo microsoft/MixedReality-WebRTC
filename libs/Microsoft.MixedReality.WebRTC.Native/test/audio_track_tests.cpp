@@ -179,7 +179,6 @@ TEST_P(AudioTrackTests, Simple) {
     ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalAudioTrack(
                                     audio_transceiver1, &track_handle_local));
     ASSERT_EQ(audio_track1, track_handle_local);
-    mrsLocalAudioTrackRemoveRef(track_handle_local);
 
     // Remote track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
@@ -209,7 +208,6 @@ TEST_P(AudioTrackTests, Simple) {
     ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteAudioTrack(
                                     audio_transceiver2, &track_handle_remote));
     ASSERT_EQ(audio_track2, track_handle_remote);
-    mrsRemoteAudioTrackRemoveRef(track_handle_remote);
   }
 
   // Register a callback on the remote track of #2
@@ -340,7 +338,6 @@ TEST_P(AudioTrackTests, Muted) {
     ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalAudioTrack(
                                     audio_transceiver1, &track_handle_local));
     ASSERT_EQ(audio_track1, track_handle_local);
-    mrsLocalAudioTrackRemoveRef(track_handle_local);
 
     // Remote track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
