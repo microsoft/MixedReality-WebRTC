@@ -193,6 +193,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// The internal buffering is monitored via the <see cref="BufferingChanged"/> event.
         /// </summary>
         /// <param name="message">The message to send to the remote peer.</param>
+        /// <param name="size">The size of the message to send in octects.</param>
         /// <exception xref="InvalidOperationException">The native data channel is not initialized.</exception>
         /// <exception xref="Exception">The internal buffer is full.</exception>
         /// <seealso cref="PeerConnection.InitializeAsync"/>
