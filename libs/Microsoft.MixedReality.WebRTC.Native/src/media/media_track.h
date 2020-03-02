@@ -34,7 +34,10 @@ class MediaTrack : public TrackedObject {
   ~MediaTrack() override;
 
   /// Get the kind of track.
-  mrsTrackKind GetKind() const noexcept { return kind_; }
+  [[nodiscard]] mrsTrackKind GetKind() const noexcept { return kind_; }
+
+  [[nodiscard]] virtual webrtc::MediaStreamTrackInterface* GetMediaImpl()
+      const = 0;
 
  protected:
   /// Weak reference to the PeerConnection object owning this track.

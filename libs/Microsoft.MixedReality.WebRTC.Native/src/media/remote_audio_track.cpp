@@ -4,15 +4,15 @@
 #include "pch.h"
 
 #include "interop/global_factory.h"
+#include "media/remote_audio_track.h"
 #include "peer_connection.h"
-#include "remote_audio_track.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 
 RemoteAudioTrack::RemoteAudioTrack(
     RefPtr<GlobalFactory> global_factory,
     PeerConnection& owner,
-    RefPtr<AudioTransceiver> transceiver,
+    RefPtr<Transceiver> transceiver,
     rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
     mrsRemoteAudioTrackInteropHandle interop_handle) noexcept
@@ -28,6 +28,7 @@ RemoteAudioTrack::RemoteAudioTrack(
   RTC_CHECK(track_);
   RTC_CHECK(receiver_);
   RTC_CHECK(transceiver_);
+  RTC_CHECK(transceiver_->GetMediaKind() == mrsMediaKind::kAudio);
   kind_ = mrsTrackKind::kAudioTrack;
   transceiver_->OnRemoteTrackAdded(this);
   track_->AddSink(this);
@@ -46,7 +47,7 @@ webrtc::RtpReceiverInterface* RemoteAudioTrack::receiver() const {
   return receiver_.get();
 }
 
-AudioTransceiver* RemoteAudioTrack::GetTransceiver() const {
+Transceiver* RemoteAudioTrack::GetTransceiver() const {
   return transceiver_.get();
 }
 

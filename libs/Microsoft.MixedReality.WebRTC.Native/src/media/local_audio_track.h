@@ -23,7 +23,7 @@ class AudioTrackInterface;
 namespace Microsoft::MixedReality::WebRTC {
 
 class PeerConnection;
-class AudioTransceiver;
+class Transceiver;
 
 /// A local audio track is a media track for a peer connection backed by a local
 /// source, and transmitted to a remote peer.
@@ -47,7 +47,7 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// Constructor for a track added to a peer connection.
   LocalAudioTrack(RefPtr<GlobalFactory> global_factory,
                   PeerConnection& owner,
-                  RefPtr<AudioTransceiver> transceiver,
+                  RefPtr<Transceiver> transceiver,
                   rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
                   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
                   mrsLocalAudioTrackInteropHandle interop_handle) noexcept;
@@ -66,7 +66,7 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// See |SetEnabled(bool)|.
   [[nodiscard]] bool IsEnabled() const noexcept;
 
-  [[nodiscard]] RefPtr<AudioTransceiver> GetTransceiver() const noexcept;
+  [[nodiscard]] RefPtr<Transceiver> GetTransceiver() const noexcept;
 
   //
   // Advanced use
@@ -74,6 +74,11 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
 
   [[nodiscard]] webrtc::AudioTrackInterface* impl() const;
   [[nodiscard]] webrtc::RtpSenderInterface* sender() const;
+
+  [[nodiscard]] webrtc::MediaStreamTrackInterface* GetMediaImpl()
+      const override {
+    return impl();
+  }
 
   [[nodiscard]] mrsLocalAudioTrackInteropHandle GetInteropHandle() const
       noexcept {
@@ -84,14 +89,14 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// state of the object.
   void OnAddedToPeerConnection(
       PeerConnection& owner,
-      RefPtr<AudioTransceiver> transceiver,
+      RefPtr<Transceiver> transceiver,
       rtc::scoped_refptr<webrtc::RtpSenderInterface> sender);
 
   /// Internal callback on removed from a peer connection to update the internal
   /// state of the object.
   void OnRemovedFromPeerConnection(
       PeerConnection& old_owner,
-      RefPtr<AudioTransceiver> old_transceiver,
+      RefPtr<Transceiver> old_transceiver,
       rtc::scoped_refptr<webrtc::RtpSenderInterface> old_sender);
 
   void RemoveFromPeerConnection(webrtc::PeerConnectionInterface& peer);
@@ -104,7 +109,7 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender_;
 
   /// Transceiver this track is associated with, if any.
-  RefPtr<AudioTransceiver> transceiver_;
+  RefPtr<Transceiver> transceiver_;
 
   /// Optional interop handle, if associated with an interop wrapper.
   mrsLocalAudioTrackInteropHandle interop_handle_{};

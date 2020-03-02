@@ -7,7 +7,7 @@
 #include "interop_api.h"
 #include "local_video_track_interop.h"
 #include "remote_video_track_interop.h"
-#include "video_transceiver_interop.h"
+#include "transceiver_interop.h"
 
 #include "simple_interop.h"
 #include "video_test_utils.h"
@@ -24,7 +24,7 @@ const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
 const mrsRemoteVideoTrackInteropHandle kFakeInteropRemoteVideoTrackHandle =
     (void*)0x2;
 
-const mrsVideoTransceiverInteropHandle kFakeInteropVideoTransceiverHandle =
+const mrsTransceiverInteropHandle kFakeInteropVideoTransceiverHandle =
     (void*)0x3;
 
 /// Fake interop callback always returning the same fake remote video track
@@ -58,8 +58,8 @@ struct FakeInteropRaii {
 using VideoTrackAddedCallback =
     InteropCallback<mrsRemoteVideoTrackInteropHandle,
                     mrsRemoteVideoTrackHandle,
-                    mrsVideoTransceiverInteropHandle,
-                    mrsVideoTransceiverHandle>;
+                    mrsTransceiverInteropHandle,
+                    mrsTransceiverHandle>;
 
 // PeerConnectionI420VideoFrameCallback
 using I420VideoFrameCallback = InteropCallback<const I420AVideoFrame&>;
@@ -75,8 +75,8 @@ TEST_P(VideoTransceiverTests, InvalidName) {
   mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
-  mrsVideoTransceiverHandle transceiver_handle1{};
-  VideoTransceiverInitConfig transceiver_config{};
+  mrsTransceiverHandle transceiver_handle1{};
+  mrsTransceiverInitConfig transceiver_config{};
   transceiver_config.name = "invalid name with space";
   ASSERT_EQ(Result::kInvalidParameter,
             mrsPeerConnectionAddVideoTransceiver(
@@ -105,9 +105,9 @@ TEST_P(VideoTransceiverTests, SetDirection) {
       pair.pc2(), CB(renegotiation_needed2_cb));
 
   // Add a transceiver to the local peer (#1)
-  mrsVideoTransceiverHandle transceiver_handle1{};
+  mrsTransceiverHandle transceiver_handle1{};
   {
-    VideoTransceiverInitConfig transceiver_config{};
+    mrsTransceiverInitConfig transceiver_config{};
     transceiver_config.name = "video_transceiver_1";
     transceiver_config.transceiver_interop_handle =
         kFakeInteropVideoTransceiverHandle;
@@ -146,8 +146,8 @@ TEST_P(VideoTransceiverTests, SetDirection) {
             break;
         }
       };
-  mrsVideoTransceiverRegisterStateUpdatedCallback(transceiver_handle1,
-                                                  CB(state_updated1_cb));
+  mrsTransceiverRegisterStateUpdatedCallback(transceiver_handle1,
+                                             CB(state_updated1_cb));
 
   // Check video transceiver #1 consistency
   {
@@ -157,13 +157,13 @@ TEST_P(VideoTransceiverTests, SetDirection) {
 
     // Local video track is NULL
     mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetLocalTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(nullptr, track_handle_local);
 
     // Remote video track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetRemoteTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle1, &track_handle_remote));
     ASSERT_EQ(nullptr, track_handle_remote);
   }
@@ -191,8 +191,8 @@ TEST_P(VideoTransceiverTests, SetDirection) {
 
   // Set transceiver #1 direction to Receive
   ASSERT_EQ(Result::kSuccess,
-            mrsVideoTransceiverSetDirection(
-                transceiver_handle1, mrsTransceiverDirection::kRecvOnly));
+            mrsTransceiverSetDirection(transceiver_handle1,
+                                       mrsTransceiverDirection::kRecvOnly));
   ASSERT_TRUE(state_updated1_ev_setdir.IsSignaled());
   state_updated1_ev_setdir.Reset();
 
@@ -227,13 +227,13 @@ TEST_P(VideoTransceiverTests, SetDirection) {
   }
 
   // Clean-up
-  mrsVideoTransceiverRemoveRef(transceiver_handle1);
+  mrsTransceiverRemoveRef(transceiver_handle1);
 }
 
 TEST_F(VideoTransceiverTests, SetDirection_InvalidHandle) {
-  ASSERT_EQ(Result::kInvalidNativeHandle,
-            mrsVideoTransceiverSetDirection(
-                nullptr, mrsTransceiverDirection::kRecvOnly));
+  ASSERT_EQ(
+      Result::kInvalidNativeHandle,
+      mrsTransceiverSetDirection(nullptr, mrsTransceiverDirection::kRecvOnly));
 }
 
 TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
@@ -257,9 +257,9 @@ TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
       pair.pc2(), CB(renegotiation_needed2_cb));
 
   // Add a transceiver to the local peer (#1)
-  mrsVideoTransceiverHandle transceiver_handle1{};
+  mrsTransceiverHandle transceiver_handle1{};
   {
-    VideoTransceiverInitConfig transceiver_config{};
+    mrsTransceiverInitConfig transceiver_config{};
     transceiver_config.name = "video_transceiver_1";
     transceiver_config.transceiver_interop_handle =
         kFakeInteropVideoTransceiverHandle;
@@ -299,14 +299,14 @@ TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
             break;
         }
       };
-  mrsVideoTransceiverRegisterStateUpdatedCallback(transceiver_handle1,
-                                                  CB(state_updated1_cb));
+  mrsTransceiverRegisterStateUpdatedCallback(transceiver_handle1,
+                                             CB(state_updated1_cb));
 
   // Start in Send+Receive mode for this test
   state_updated1_ev_setdir.Reset();
   ASSERT_EQ(Result::kSuccess,
-            mrsVideoTransceiverSetDirection(
-                transceiver_handle1, mrsTransceiverDirection::kSendRecv));
+            mrsTransceiverSetDirection(transceiver_handle1,
+                                       mrsTransceiverDirection::kSendRecv));
   ASSERT_TRUE(state_updated1_ev_setdir.WaitFor(10s));
   state_updated1_ev_setdir.Reset();
 
@@ -318,13 +318,13 @@ TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
 
     // Local video track is NULL
     mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetLocalTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(nullptr, track_handle_local);
 
     // Remote video track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetRemoteTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle1, &track_handle_remote));
     ASSERT_EQ(nullptr, track_handle_remote);
   }
@@ -366,7 +366,7 @@ TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
   }
 
   // Add track to transceiver #1
-  ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverSetLocalTrack(
+  ASSERT_EQ(Result::kSuccess, mrsTransceiverSetLocalVideoTrack(
                                   transceiver_handle1, track_handle1));
 
   // Check video transceiver #1 consistency
@@ -378,21 +378,21 @@ TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
 
     // Local video track is track_handle1
     mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetLocalTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(track_handle1, track_handle_local);
     mrsLocalVideoTrackRemoveRef(track_handle_local);
 
     // Remote video track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetRemoteTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle1, &track_handle_remote));
     ASSERT_EQ(nullptr, track_handle_remote);
   }
 
   // Remove track from transceiver #1 with non-null track
   ASSERT_EQ(Result::kSuccess,
-            mrsVideoTransceiverSetLocalTrack(transceiver_handle1, nullptr));
+            mrsTransceiverSetLocalVideoTrack(transceiver_handle1, nullptr));
   mrsLocalVideoTrackRemoveRef(track_handle1);
   mrsExternalVideoTrackSourceRemoveRef(source_handle1);
 
@@ -405,13 +405,13 @@ TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
 
     // Local video track is track_handle1
     mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetLocalTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(nullptr, track_handle_local);
 
     // Remote video track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetRemoteTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle1, &track_handle_remote));
     ASSERT_EQ(nullptr, track_handle_remote);
   }
@@ -430,7 +430,7 @@ TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
   ASSERT_TRUE(pair.WaitExchangeCompletedFor(10s));
 
   // Clean-up
-  mrsVideoTransceiverRemoveRef(transceiver_handle1);
+  mrsTransceiverRemoveRef(transceiver_handle1);
 }
 
 TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
@@ -454,9 +454,9 @@ TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
       pair.pc2(), CB(renegotiation_needed2_cb));
 
   // Add a transceiver to the local peer (#1)
-  mrsVideoTransceiverHandle transceiver_handle1{};
+  mrsTransceiverHandle transceiver_handle1{};
   {
-    VideoTransceiverInitConfig transceiver_config{};
+    mrsTransceiverInitConfig transceiver_config{};
     transceiver_config.name = "video_transceiver_1";
     transceiver_config.transceiver_interop_handle =
         kFakeInteropVideoTransceiverHandle;
@@ -495,14 +495,14 @@ TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
             break;
         }
       };
-  mrsVideoTransceiverRegisterStateUpdatedCallback(transceiver_handle1,
-                                                  CB(state_updated1_cb));
+  mrsTransceiverRegisterStateUpdatedCallback(transceiver_handle1,
+                                             CB(state_updated1_cb));
 
   // Start in receive mode for this test
   state_updated1_ev_setdir.Reset();
   ASSERT_EQ(Result::kSuccess,
-            mrsVideoTransceiverSetDirection(
-                transceiver_handle1, mrsTransceiverDirection::kRecvOnly));
+            mrsTransceiverSetDirection(transceiver_handle1,
+                                       mrsTransceiverDirection::kRecvOnly));
   ASSERT_TRUE(state_updated1_ev_setdir.WaitFor(10s));
   state_updated1_ev_setdir.Reset();
 
@@ -514,13 +514,13 @@ TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
 
     // Local video track is NULL
     mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetLocalTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(nullptr, track_handle_local);
 
     // Remote video track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetRemoteTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle1, &track_handle_remote));
     ASSERT_EQ(nullptr, track_handle_remote);
   }
@@ -562,7 +562,7 @@ TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
   }
 
   // Add track to transceiver #1
-  ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverSetLocalTrack(
+  ASSERT_EQ(Result::kSuccess, mrsTransceiverSetLocalVideoTrack(
                                   transceiver_handle1, track_handle1));
 
   // Check video transceiver #1 consistency
@@ -573,21 +573,21 @@ TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
 
     // Local video track is track_handle1
     mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetLocalTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(track_handle1, track_handle_local);
     mrsLocalVideoTrackRemoveRef(track_handle_local);
 
     // Remote video track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetRemoteTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle1, &track_handle_remote));
     ASSERT_EQ(nullptr, track_handle_remote);
   }
 
   // Remote track from transceiver #1 with non-null track
   ASSERT_EQ(Result::kSuccess,
-            mrsVideoTransceiverSetLocalTrack(transceiver_handle1, nullptr));
+            mrsTransceiverSetLocalVideoTrack(transceiver_handle1, nullptr));
   mrsLocalVideoTrackRemoveRef(track_handle1);
   mrsExternalVideoTrackSourceRemoveRef(source_handle1);
 
@@ -599,13 +599,13 @@ TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
 
     // Local video track is NULL
     mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetLocalTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(nullptr, track_handle_local);
 
     // Remote video track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTransceiverGetRemoteTrack(
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle1, &track_handle_remote));
     ASSERT_EQ(nullptr, track_handle_remote);
   }
@@ -626,11 +626,11 @@ TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
   ASSERT_TRUE(pair.WaitExchangeCompletedFor(10s));
 
   // Clean-up
-  mrsVideoTransceiverRemoveRef(transceiver_handle1);
+  mrsTransceiverRemoveRef(transceiver_handle1);
 }
 
 TEST_F(VideoTransceiverTests, SetLocalTrack_InvalidHandle) {
   mrsLocalVideoTrackHandle dummy = (void*)0x1;  // looks legit
   ASSERT_EQ(Result::kInvalidNativeHandle,
-            mrsVideoTransceiverSetLocalTrack(nullptr, dummy));
+            mrsTransceiverSetLocalVideoTrack(nullptr, dummy));
 }

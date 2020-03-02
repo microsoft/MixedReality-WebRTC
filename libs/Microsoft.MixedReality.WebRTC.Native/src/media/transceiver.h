@@ -5,6 +5,10 @@
 
 #include "callback.h"
 #include "interop_api.h"
+#include "media/local_audio_track.h"
+#include "media/local_video_track.h"
+#include "media/remote_audio_track.h"
+#include "media/remote_video_track.h"
 #include "tracked_object.h"
 
 namespace rtc {
@@ -20,12 +24,10 @@ namespace Microsoft::MixedReality::WebRTC {
 
 class PeerConnection;
 
-/// Media kind for tracks and transceivers.
-enum class MediaKind : uint32_t { kAudio, kVideo };
-
 /// Base class for audio and video transceivers.
 class Transceiver : public TrackedObject {
  public:
+  using MediaKind = mrsMediaKind;
   using Direction = mrsTransceiverDirection;
   using OptDirection = mrsTransceiverOptDirection;
 
@@ -35,19 +37,25 @@ class Transceiver : public TrackedObject {
   Transceiver(RefPtr<GlobalFactory> global_factory,
               MediaKind kind,
               PeerConnection& owner,
-              Direction desired_direction) noexcept;
+              int mline_index,
+              std::string name,
+              Direction desired_direction,
+              mrsTransceiverHandle interop_handle) noexcept;
 
   /// Construct a Unified Plan transceiver wrapper referencing an actual WebRTC
   /// transceiver implementation object as defined in Unified Plan.
   Transceiver(RefPtr<GlobalFactory> global_factory,
               MediaKind kind,
               PeerConnection& owner,
+              int mline_index,
+              std::string name,
               rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
-              Direction desired_direction) noexcept;
+              Direction desired_direction,
+              mrsTransceiverHandle interop_handle) noexcept;
 
   ~Transceiver() override;
 
-  [[nodiscard]] std::string GetName() const override;
+  [[nodiscard]] std::string GetName() const override { return name_; }
 
   /// Get the kind of transceiver. This is generally used for determining what
   /// type to static_cast<> a |Transceiver| pointer to. If this is |kAudio| then
@@ -65,6 +73,10 @@ class Transceiver : public TrackedObject {
     return direction_;
   }
 
+  /// Set the new desired transceiver direction to use in next SDP
+  /// offers/answers.
+  Result SetDirection(Direction new_direction) noexcept;
+
   [[nodiscard]] bool IsUnifiedPlan() const {
     RTC_DCHECK(!plan_b_ != !transceiver_);
     return (transceiver_ != nullptr);
@@ -74,6 +86,51 @@ class Transceiver : public TrackedObject {
 
   [[nodiscard]] bool HasSender(webrtc::RtpSenderInterface* sender) const;
   [[nodiscard]] bool HasReceiver(webrtc::RtpReceiverInterface* receiver) const;
+
+  Result SetLocalTrack(RefPtr<LocalAudioTrack> local_track) noexcept {
+    return SetLocalTrackImpl(std::move(local_track));
+  }
+
+  Result SetLocalTrack(RefPtr<LocalVideoTrack> local_track) noexcept {
+    return SetLocalTrackImpl(std::move(local_track));
+  }
+
+  RefPtr<LocalAudioTrack> GetLocalAudioTrack() const {
+    if (GetMediaKind() != MediaKind::kAudio) {
+      return nullptr;
+    }
+    return static_cast<LocalAudioTrack*>(local_track_.get());
+  }
+
+  RefPtr<LocalVideoTrack> GetLocalVideoTrack() const {
+    if (GetMediaKind() != MediaKind::kVideo) {
+      return nullptr;
+    }
+    return static_cast<LocalVideoTrack*>(local_track_.get());
+  }
+
+  RefPtr<RemoteAudioTrack> GetRemoteAudioTrack() const {
+    if (GetMediaKind() != MediaKind::kAudio) {
+      return nullptr;
+    }
+    return static_cast<RemoteAudioTrack*>(remote_track_.get());
+  }
+
+  RefPtr<RemoteVideoTrack> GetRemoteVideoTrack() const {
+    if (GetMediaKind() != MediaKind::kVideo) {
+      return nullptr;
+    }
+    return static_cast<RemoteVideoTrack*>(remote_track_.get());
+  }
+
+  void OnLocalTrackAdded(RefPtr<LocalAudioTrack> track);
+  void OnLocalTrackAdded(RefPtr<LocalVideoTrack> track);
+  void OnRemoteTrackAdded(RefPtr<RemoteAudioTrack> track);
+  void OnRemoteTrackAdded(RefPtr<RemoteVideoTrack> track);
+  void OnLocalTrackRemoved(LocalAudioTrack* track);
+  void OnLocalTrackRemoved(LocalVideoTrack* track);
+  void OnRemoteTrackRemoved(RemoteAudioTrack* track);
+  void OnRemoteTrackRemoved(RemoteVideoTrack* track);
 
   //
   // Interop callbacks
@@ -93,8 +150,18 @@ class Transceiver : public TrackedObject {
   // Advanced
   //
 
+  /// Get a handle to the tranceiver. This is not virtual on purpose, as the API
+  /// doesn't differentiate between audio and video transceivers, so any handle
+  /// would be cast back to a base class |Transceiver| pointer.
+  mrsTransceiverHandle asHandle() const { return (mrsTransceiverHandle)this; }
+
   [[nodiscard]] rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl()
       const;
+
+  [[nodiscard]] constexpr mrsTransceiverInteropHandle GetInteropHandle() const
+      noexcept {
+    return interop_handle_;
+  }
 
   /// Synchronize the RTP sender with the desired direction when using Plan B.
   /// |needed| indicate whether an RTP sender is needed or not. |peer| is passed
@@ -142,6 +209,10 @@ class Transceiver : public TrackedObject {
       const std::vector<std::string>& stream_ids);
 
  protected:
+  Result SetLocalTrackImpl(RefPtr<MediaTrack> local_track) noexcept;
+  Result SetRemoteTrackImpl(RefPtr<MediaTrack> remote_track) noexcept;
+
+ protected:
   struct PlanBEmulation;
 
   /// Weak reference to the PeerConnection object owning this transceiver.
@@ -149,6 +220,21 @@ class Transceiver : public TrackedObject {
 
   /// Transceiver media kind.
   MediaKind kind_;
+
+  /// Media line index (or "mline" index) is the index of the transceiver into
+  /// the collection of its owner peer connection. In Unified Plan, this is also
+  /// the index of the "m=" line in any SDP message.
+  int mline_index_{-1};
+
+  std::string name_;
+
+  /// Local media track, either |LocalAudioTrack| or |LocalVideoTrack| depending
+  /// on |kind_|.
+  RefPtr<MediaTrack> local_track_;
+
+  /// Remote media track, either |RemoteAudioTrack| or |RemoteVideoTrack|
+  /// depending on |kind_|.
+  RefPtr<MediaTrack> remote_track_;
 
   /// Current transceiver direction, as last negotiated.
   /// This does not map 1:1 with the presence/absence of the local and remote
@@ -179,6 +265,9 @@ class Transceiver : public TrackedObject {
   StateUpdatedCallback state_updated_callback_ RTC_GUARDED_BY(cb_mutex_);
 
   std::mutex cb_mutex_;
+
+  /// Optional interop handle, if associated with an interop wrapper.
+  mrsTransceiverInteropHandle interop_handle_{};
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

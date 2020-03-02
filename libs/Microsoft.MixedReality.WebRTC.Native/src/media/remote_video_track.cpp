@@ -12,7 +12,7 @@ namespace Microsoft::MixedReality::WebRTC {
 RemoteVideoTrack::RemoteVideoTrack(
     RefPtr<GlobalFactory> global_factory,
     PeerConnection& owner,
-    RefPtr<VideoTransceiver> transceiver,
+    RefPtr<Transceiver> transceiver,
     rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
     mrsRemoteVideoTrackInteropHandle interop_handle) noexcept
@@ -28,6 +28,7 @@ RemoteVideoTrack::RemoteVideoTrack(
   RTC_CHECK(track_);
   RTC_CHECK(receiver_);
   RTC_CHECK(transceiver_);
+  RTC_CHECK(transceiver_->GetMediaKind() == mrsMediaKind::kVideo);
   kind_ = mrsTrackKind::kVideoTrack;
   transceiver_->OnRemoteTrackAdded(this);
   rtc::VideoSinkWants sink_settings{};
@@ -56,7 +57,7 @@ webrtc::RtpReceiverInterface* RemoteVideoTrack::receiver() const {
   return receiver_.get();
 }
 
-VideoTransceiver* RemoteVideoTrack::GetTransceiver() const {
+Transceiver* RemoteVideoTrack::GetTransceiver() const {
   return transceiver_.get();
 }
 

@@ -641,7 +641,7 @@ void MRS_CALL mrsPeerConnectionRegisterAudioTrackAddedCallback(
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RegisterAudioTrackAddedCallback(
         Callback<mrsRemoteAudioTrackInteropHandle, mrsRemoteAudioTrackHandle,
-                 mrsAudioTransceiverInteropHandle, mrsAudioTransceiverHandle>{
+                 mrsTransceiverInteropHandle, mrsTransceiverHandle>{
             callback, user_data});
   }
 }
@@ -653,7 +653,7 @@ void MRS_CALL mrsPeerConnectionRegisterAudioTrackRemovedCallback(
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RegisterAudioTrackRemovedCallback(
         Callback<mrsRemoteAudioTrackInteropHandle, mrsRemoteAudioTrackHandle,
-                 mrsAudioTransceiverInteropHandle, mrsAudioTransceiverHandle>{
+                 mrsTransceiverInteropHandle, mrsTransceiverHandle>{
             callback, user_data});
   }
 }
@@ -665,7 +665,7 @@ void MRS_CALL mrsPeerConnectionRegisterVideoTrackAddedCallback(
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RegisterVideoTrackAddedCallback(
         Callback<mrsRemoteVideoTrackInteropHandle, mrsRemoteVideoTrackHandle,
-                 mrsVideoTransceiverInteropHandle, mrsVideoTransceiverHandle>{
+                 mrsTransceiverInteropHandle, mrsTransceiverHandle>{
             callback, user_data});
   }
 }
@@ -677,7 +677,7 @@ void MRS_CALL mrsPeerConnectionRegisterVideoTrackRemovedCallback(
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RegisterVideoTrackRemovedCallback(
         Callback<mrsRemoteVideoTrackInteropHandle, mrsRemoteVideoTrackHandle,
-                 mrsVideoTransceiverInteropHandle, mrsVideoTransceiverHandle>{
+                 mrsTransceiverInteropHandle, mrsTransceiverHandle>{
             callback, user_data});
   }
 }
