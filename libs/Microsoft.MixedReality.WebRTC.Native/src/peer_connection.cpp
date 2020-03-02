@@ -1267,21 +1267,14 @@ bool PeerConnectionImpl::SetRemoteDescriptionAsync(
           }
         } else {
           RTC_DCHECK(IsPlanB());
-          // auto receivers = peer_->GetReceivers();
-          // for (auto&& receiver : receivers) {
-          //  int mline_index;
-          //  std::string name;
-          //  if (!ExtractMlineIndexAndNameFromReceiverPlanB(receiver,
-          //                                                 mline_index, name))
-          //                                                 {
-          //    continue;
-          //  }
-          //  ErrorOr<RefPtr<Transceiver>> err = GetOrCreateTransceiverPlanB(
-          //      mline_index, receiver, std::move(name));
-          //  RTC_DCHECK(err.ok());
-          //  err.value()->OnSessionDescUpdated(/*remote=*/true);
-          //  ++mline_index;
-          //}
+          // In Plan B there is no transceiver, and all remote tracks which
+          // start/stop receiving are triggering a TrackAdded or TrackRemoved
+          // event. Therefore there is no extra work to do like there was in
+          // Unified Plan above.
+
+          // TODO - Clarify if this is really needed (and if we really need to
+          // force the update) for parity with Unified Plan and to get the
+          // transceiver update event fired once and once only.
           for (auto&& tr : transceivers_) {
             tr->OnSessionDescUpdated(/*remote=*/true, /*forced=*/true);
           }
