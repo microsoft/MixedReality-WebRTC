@@ -37,7 +37,7 @@ mrsLocalVideoTrackRemoveRef(mrsLocalVideoTrackHandle handle) noexcept {
 
 mrsResult MRS_CALL mrsLocalVideoTrackCreateFromExternalSource(
     mrsExternalVideoTrackSourceHandle source_handle,
-    const LocalVideoTrackFromExternalSourceInitConfig* config,
+    const mrsLocalVideoTrackFromExternalSourceInitConfig* config,
     const char* track_name,
     mrsLocalVideoTrackHandle* track_handle_out) noexcept {
   if (!track_handle_out) {
