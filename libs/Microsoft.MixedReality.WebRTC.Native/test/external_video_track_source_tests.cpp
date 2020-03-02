@@ -167,7 +167,7 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
   // Create the local track itself for #1
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    LocalVideoTrackFromExternalSourceInitConfig source_config{};
+    mrsLocalVideoTrackFromExternalSourceInitConfig source_config{};
     ASSERT_EQ(mrsResult::kSuccess,
               mrsLocalVideoTrackCreateFromExternalSource(
                   source_handle1, &source_config, "gen_track", &track_handle1));

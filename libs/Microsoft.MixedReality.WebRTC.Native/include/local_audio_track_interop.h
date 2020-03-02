@@ -9,9 +9,13 @@
 
 extern "C" {
 
-//
-// Wrapper
-//
+/// Configuration for opening a local audio capture device and creating a local
+/// audio track.
+struct mrsLocalAudioTrackInitConfig {
+  /// Handle of the local audio track interop wrapper, if any, which will be
+  /// associated with the native local audio track object.
+  mrsLocalAudioTrackInteropHandle track_interop_handle{};
+};
 
 /// Add a reference to the native object associated with the given handle.
 MRS_API void MRS_CALL

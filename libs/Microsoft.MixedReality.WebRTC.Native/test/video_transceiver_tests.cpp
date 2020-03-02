@@ -356,7 +356,7 @@ TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
   // Create the local video track (#1)
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    LocalVideoTrackFromExternalSourceInitConfig config{};
+    mrsLocalVideoTrackFromExternalSourceInitConfig config{};
     ASSERT_EQ(
         mrsResult::kSuccess,
         mrsLocalVideoTrackCreateFromExternalSource(
@@ -552,7 +552,7 @@ TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
   // Create the local video track (#1)
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    LocalVideoTrackFromExternalSourceInitConfig config{};
+    mrsLocalVideoTrackFromExternalSourceInitConfig config{};
     ASSERT_EQ(
         mrsResult::kSuccess,
         mrsLocalVideoTrackCreateFromExternalSource(

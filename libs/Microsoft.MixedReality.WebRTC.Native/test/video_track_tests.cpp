@@ -409,7 +409,7 @@ TEST_P(VideoTrackTests, Multi) {
   mrsExternalVideoTrackSourceFinishCreation(source_handle1);
 
   // Create local video tracks on the local peer (#1)
-  LocalVideoTrackFromExternalSourceInitConfig track_config{};
+  mrsLocalVideoTrackFromExternalSourceInitConfig track_config{};
   int idx = 0;
   for (auto&& track : tracks) {
     std::stringstream strstr;
@@ -550,7 +550,7 @@ TEST_P(VideoTrackTests, ExternalI420) {
   // Create the local video track (#1)
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    LocalVideoTrackFromExternalSourceInitConfig config{};
+    mrsLocalVideoTrackFromExternalSourceInitConfig config{};
     ASSERT_EQ(
         mrsResult::kSuccess,
         mrsLocalVideoTrackCreateFromExternalSource(
