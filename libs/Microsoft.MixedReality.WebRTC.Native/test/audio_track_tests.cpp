@@ -144,7 +144,7 @@ TEST_P(AudioTrackTests, Simple) {
   ASSERT_NE(nullptr, audio_transceiver1);
 
   // Create the local audio track #1
-  LocalAudioTrackInitConfig config{};
+  mrsLocalAudioTrackInitConfig config{};
   mrsLocalAudioTrackHandle audio_track1{};
   ASSERT_EQ(Result::kSuccess, mrsLocalAudioTrackCreateFromDevice(
                                   &config, "test_audio_track", &audio_track1));
@@ -305,7 +305,7 @@ TEST_P(AudioTrackTests, Muted) {
   ASSERT_NE(nullptr, audio_transceiver1);
 
   // Create the local audio track #1
-  LocalAudioTrackInitConfig config{};
+  mrsLocalAudioTrackInitConfig config{};
   mrsLocalAudioTrackHandle audio_track1{};
   ASSERT_EQ(Result::kSuccess, mrsLocalAudioTrackCreateFromDevice(
                                   &config, "test_audio_track", &audio_track1));

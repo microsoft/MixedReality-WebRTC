@@ -120,7 +120,7 @@ TEST_P(VideoTrackTests, Simple) {
   // Create the local video track #1
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    LocalVideoTrackInitConfig config{};
+    mrsLocalVideoTrackInitConfig config{};
     ASSERT_EQ(Result::kSuccess,
               mrsLocalVideoTrackCreateFromDevice(&config, "local_video_track",
                                                  &track_handle1));
@@ -249,7 +249,7 @@ TEST_P(VideoTrackTests, Muted) {
   // Create the local video track #1
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    LocalVideoTrackInitConfig config{};
+    mrsLocalVideoTrackInitConfig config{};
     ASSERT_EQ(Result::kSuccess,
               mrsLocalVideoTrackCreateFromDevice(&config, "local_video_track",
                                                  &track_handle1));
@@ -335,7 +335,7 @@ void MRS_CALL enumDeviceCallbackCompleted(void* user_data) {
 //  ev.Wait();
 //
 //  for (auto&& id : device_ids) {
-//    LocalVideoTrackInitConfig config{};
+//    mrsLocalVideoTrackInitConfig config{};
 //    config.video_device_id = id.c_str();
 //    ASSERT_EQ(Result::kSuccess,
 //              mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), config));
@@ -343,7 +343,7 @@ void MRS_CALL enumDeviceCallbackCompleted(void* user_data) {
 //}
 
 TEST_F(VideoTrackTests, DeviceIdInvalid) {
-  LocalVideoTrackInitConfig config{};
+  mrsLocalVideoTrackInitConfig config{};
   mrsLocalVideoTrackHandle track_handle{};
   config.video_device_id = "[[INVALID DEVICE ID]]";
   ASSERT_EQ(Result::kNotFound, mrsLocalVideoTrackCreateFromDevice(

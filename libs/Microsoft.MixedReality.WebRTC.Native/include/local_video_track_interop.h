@@ -23,7 +23,7 @@ mrsLocalVideoTrackRemoveRef(mrsLocalVideoTrackHandle handle) noexcept;
 /// (webcam).
 /// [UWP] This must be invoked from another thread than the main UI thread.
 MRS_API mrsResult MRS_CALL mrsLocalVideoTrackCreateFromDevice(
-    const LocalVideoTrackInitConfig* config,
+    const mrsLocalVideoTrackInitConfig* config,
     const char* track_name,
     mrsLocalVideoTrackHandle* track_handle_out) noexcept;
 
