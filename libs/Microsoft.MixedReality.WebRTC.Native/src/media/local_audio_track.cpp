@@ -85,7 +85,7 @@ void LocalAudioTrack::OnAddedToPeerConnection(
   RTC_CHECK(!transceiver_);
   RTC_CHECK(!sender_);
   RTC_CHECK(transceiver);
-  RTC_CHECK(transceiver_->GetMediaKind() == mrsMediaKind::kAudio);
+  RTC_CHECK(transceiver->GetMediaKind() == mrsMediaKind::kAudio);
   // In Plan B the RTP sender is not always available (depends on transceiver
   // direction) so |sender| is invalid here.
   RTC_CHECK(transceiver->IsPlanB() || sender);

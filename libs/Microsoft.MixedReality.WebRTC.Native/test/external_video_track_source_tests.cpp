@@ -212,7 +212,6 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
     ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(track_handle1, track_handle_local);
-    mrsLocalVideoTrackRemoveRef(track_handle_local);
 
     // Remote track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
@@ -242,7 +241,6 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
     ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
                                     transceiver_handle2, &track_handle_remote));
     ASSERT_EQ(track_handle2, track_handle_remote);
-    mrsRemoteVideoTrackRemoveRef(track_handle_remote);
   }
 
   // Register a frame callback for the remote video of #2

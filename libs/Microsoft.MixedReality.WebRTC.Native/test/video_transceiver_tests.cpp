@@ -381,7 +381,6 @@ TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
     ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(track_handle1, track_handle_local);
-    mrsLocalVideoTrackRemoveRef(track_handle_local);
 
     // Remote video track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
@@ -576,7 +575,6 @@ TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
     ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
                                     transceiver_handle1, &track_handle_local));
     ASSERT_EQ(track_handle1, track_handle_local);
-    mrsLocalVideoTrackRemoveRef(track_handle_local);
 
     // Remote video track is NULL
     mrsRemoteVideoTrackHandle track_handle_remote{};
