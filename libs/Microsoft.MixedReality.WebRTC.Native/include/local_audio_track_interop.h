@@ -24,7 +24,7 @@ mrsLocalAudioTrackRemoveRef(mrsLocalAudioTrackHandle handle) noexcept;
 /// Create a new local audio track by opening a local audio capture device
 /// (webcam).
 MRS_API mrsResult MRS_CALL mrsLocalAudioTrackCreateFromDevice(
-    const LocalAudioTrackInitConfig* config,
+    const mrsLocalAudioTrackInitConfig* config,
     const char* track_name,
     mrsLocalAudioTrackHandle* track_handle_out) noexcept;
 

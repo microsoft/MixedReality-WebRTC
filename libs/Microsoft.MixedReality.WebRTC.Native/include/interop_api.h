@@ -580,7 +580,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
     void* user_data) noexcept;
 
 /// Kind of video profile. Equivalent to org::webRtc::VideoProfileKind.
-enum class VideoProfileKind : int32_t {
+enum class mrsVideoProfileKind : int32_t {
   kUnspecified,
   kVideoRecording,
   kHighQualityPhoto,
@@ -650,7 +650,6 @@ struct VideoTransceiverInitConfig {
       mrsTransceiverDirection::kSendRecv;
 
   /// Semi-colon separated list of stream IDs associated with the transceiver.
-  /// Use |Transceiver::DecodeStreamIDs()| and |Transceiver::EncodeStreamIDs()|.
   const char* stream_ids = nullptr;
 
   /// Handle of the video transceiver interop wrapper, if any, which will be
@@ -660,7 +659,7 @@ struct VideoTransceiverInitConfig {
 
 /// Configuration for opening a local audio capture device and creating a local
 /// audio track.
-struct LocalAudioTrackInitConfig {
+struct mrsLocalAudioTrackInitConfig {
   /// Handle of the local audio track interop wrapper, if any, which will be
   /// associated with the native local audio track object.
   mrsLocalAudioTrackInteropHandle track_interop_handle{};
@@ -668,7 +667,7 @@ struct LocalAudioTrackInitConfig {
 
 /// Configuration for opening a local video capture device and creating a local
 /// video track.
-struct LocalVideoTrackInitConfig {
+struct mrsLocalVideoTrackInitConfig {
   /// Handle of the local video track interop wrapper, if any, which will be
   /// associated with the native local video track object.
   mrsLocalVideoTrackInteropHandle track_interop_handle{};
@@ -686,7 +685,7 @@ struct LocalVideoTrackInitConfig {
   /// If a video profile ID is specified with |video_profile_id| it is
   /// recommended to leave this as kUnspecified to avoid over-constraining the
   /// video capture format selection.
-  VideoProfileKind video_profile_kind = VideoProfileKind::kUnspecified;
+  mrsVideoProfileKind video_profile_kind = mrsVideoProfileKind::kUnspecified;
 
   /// Optional preferred capture resolution width, in pixels, or zero for
   /// unconstrained.

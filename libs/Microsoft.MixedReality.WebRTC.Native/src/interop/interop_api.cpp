@@ -94,7 +94,7 @@ class SimpleMediaConstraints : public webrtc::MediaConstraintsInterface {
 
 /// Helper to open a video capture device.
 mrsResult OpenVideoCaptureDevice(
-    const LocalVideoTrackInitConfig& config,
+    const mrsLocalVideoTrackInitConfig& config,
     std::unique_ptr<cricket::VideoCapturer>& capturer_out) noexcept {
   capturer_out.reset();
 #if defined(WINUWP)
@@ -705,7 +705,7 @@ void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
 }
 
 mrsResult MRS_CALL mrsLocalAudioTrackCreateFromDevice(
-    const LocalAudioTrackInitConfig* config,
+    const mrsLocalAudioTrackInitConfig* config,
     const char* track_name,
     mrsLocalAudioTrackHandle* track_handle_out) noexcept {
   if (IsStringNullOrEmpty(track_name)) {
@@ -749,7 +749,7 @@ mrsResult MRS_CALL mrsLocalAudioTrackCreateFromDevice(
 }
 
 mrsResult MRS_CALL mrsLocalVideoTrackCreateFromDevice(
-    const LocalVideoTrackInitConfig* config,
+    const mrsLocalVideoTrackInitConfig* config,
     const char* track_name,
     mrsLocalVideoTrackHandle* track_handle_out) noexcept {
   if (IsStringNullOrEmpty(track_name)) {
