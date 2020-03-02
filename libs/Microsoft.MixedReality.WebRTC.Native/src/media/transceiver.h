@@ -34,24 +34,26 @@ class Transceiver : public TrackedObject {
   /// Construct a Plan B transceiver abstraction which tries to mimic a
   /// transceiver for Plan B despite the fact that this semantic doesn't have
   /// any concept of transceiver.
-  Transceiver(RefPtr<GlobalFactory> global_factory,
-              MediaKind kind,
-              PeerConnection& owner,
-              int mline_index,
-              std::string name,
-              Direction desired_direction,
-              mrsTransceiverHandle interop_handle) noexcept;
+  static RefPtr<Transceiver> CreateForPlanB(
+      RefPtr<GlobalFactory> global_factory,
+      MediaKind kind,
+      PeerConnection& owner,
+      int mline_index,
+      std::string name,
+      Direction desired_direction,
+      mrsTransceiverHandle interop_handle) noexcept;
 
   /// Construct a Unified Plan transceiver wrapper referencing an actual WebRTC
   /// transceiver implementation object as defined in Unified Plan.
-  Transceiver(RefPtr<GlobalFactory> global_factory,
-              MediaKind kind,
-              PeerConnection& owner,
-              int mline_index,
-              std::string name,
-              rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
-              Direction desired_direction,
-              mrsTransceiverHandle interop_handle) noexcept;
+  static RefPtr<Transceiver> CreateForUnifiedPlan(
+      RefPtr<GlobalFactory> global_factory,
+      MediaKind kind,
+      PeerConnection& owner,
+      int mline_index,
+      std::string name,
+      rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
+      Direction desired_direction,
+      mrsTransceiverHandle interop_handle) noexcept;
 
   ~Transceiver() override;
 
@@ -209,6 +211,28 @@ class Transceiver : public TrackedObject {
       const std::vector<std::string>& stream_ids);
 
  protected:
+  /// Construct a Plan B transceiver abstraction which tries to mimic a
+  /// transceiver for Plan B despite the fact that this semantic doesn't have
+  /// any concept of transceiver.
+  Transceiver(RefPtr<GlobalFactory> global_factory,
+              MediaKind kind,
+              PeerConnection& owner,
+              int mline_index,
+              std::string name,
+              Direction desired_direction,
+              mrsTransceiverHandle interop_handle) noexcept;
+
+  /// Construct a Unified Plan transceiver wrapper referencing an actual WebRTC
+  /// transceiver implementation object as defined in Unified Plan.
+  Transceiver(RefPtr<GlobalFactory> global_factory,
+              MediaKind kind,
+              PeerConnection& owner,
+              int mline_index,
+              std::string name,
+              rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
+              Direction desired_direction,
+              mrsTransceiverHandle interop_handle) noexcept;
+
   Result SetLocalTrackImpl(RefPtr<MediaTrack> local_track) noexcept;
   Result SetRemoteTrackImpl(RefPtr<MediaTrack> remote_track) noexcept;
 
