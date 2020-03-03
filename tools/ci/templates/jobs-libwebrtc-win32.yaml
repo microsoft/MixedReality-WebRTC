@@ -34,6 +34,7 @@ jobs:
     env:
       MRWEBRTCVERSION: $(MRWebRTCVersion)
       MRWEBRTCRELEASETAG: $(MRWebRTCReleaseTag)
+      BUILDTRIPLE: $(buildTriple)
 
   # Map build* variables to script* ones
   - task: PowerShell@2
@@ -77,7 +78,7 @@ jobs:
       command: publish
       publishDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/pdbs'
       vstsFeedPublish: $(MRWebRTC_PdbFeed)
-      vstsFeedPackagePublish: 'mr-webrtc-core_pdbs_$(buildTriple)'
+      vstsFeedPackagePublish: $(MRWebRTC_PackageVersion)
       versionOption: custom
       versionPublish: $(MRWebRTC_PackageVersion)
       packagePublishDescription: 'PDBs for MixedReality-WebRTC core (webrtc.lib) $(buildTriple)'
