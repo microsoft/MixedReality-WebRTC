@@ -186,39 +186,9 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
     ASSERT_NE(nullptr, transceiver_handle1);
   }
 
-  // Check video transceiver #1 consistency
-  {
-    // Local track is NULL
-    mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
-                                    transceiver_handle1, &track_handle_local));
-    ASSERT_EQ(nullptr, track_handle_local);
-
-    // Remote track is NULL
-    mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
-                                    transceiver_handle1, &track_handle_remote));
-    ASSERT_EQ(nullptr, track_handle_remote);
-  }
-
   // Add the track #1 to the transceiver #1
   ASSERT_EQ(mrsResult::kSuccess, mrsTransceiverSetLocalVideoTrack(
                                      transceiver_handle1, track_handle1));
-
-  // Check video transceiver #1 consistency
-  {
-    // Local track is track_handle1
-    mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
-                                    transceiver_handle1, &track_handle_local));
-    ASSERT_EQ(track_handle1, track_handle_local);
-
-    // Remote track is NULL
-    mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
-                                    transceiver_handle1, &track_handle_remote));
-    ASSERT_EQ(nullptr, track_handle_remote);
-  }
 
   // Connect #1 and #2
   pair.ConnectAndWait();
@@ -227,21 +197,6 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
   ASSERT_TRUE(track_added2_ev.WaitFor(5s));
   ASSERT_NE(nullptr, track_handle2);
   ASSERT_NE(nullptr, transceiver_handle2);
-
-  // Check video transceiver #2 consistency
-  {
-    // Local track is NULL
-    mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
-                                    transceiver_handle2, &track_handle_local));
-    ASSERT_EQ(nullptr, track_handle_local);
-
-    // Remote track is track_handle2
-    mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
-                                    transceiver_handle2, &track_handle_remote));
-    ASSERT_EQ(track_handle2, track_handle_remote);
-  }
 
   // Register a frame callback for the remote video of #2
   uint32_t frame_count = 0;
