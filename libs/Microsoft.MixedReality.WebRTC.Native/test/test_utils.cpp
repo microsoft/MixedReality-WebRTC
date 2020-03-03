@@ -19,6 +19,8 @@ std::string SdpSemanticToString(
       return "PlanB";
     case mrsSdpSemantic::kUnifiedPlan:
       return "UnifiedPlan";
+    default:
+      return "Invalid mrsSdpSemantic !";
   }
 }
 
