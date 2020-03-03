@@ -4,7 +4,9 @@ param(
     [string]$CorePath,
     [string]$WrapperPath,
     [string]$WrapperGluePath,
-    [string]$OutputPath
+    [string]$OutputPath,
+    [ValidateSet('Debug','Release')]
+    [string]$BuildConfig
 )
 
 # Copied from https://github.com/microsoft/MixedReality-Sharing/blob/master/tools/ci/utils.ps1
@@ -25,5 +27,10 @@ Write-Host "Copying PDB for Org.WebRtc.dll..."
 Copy-Item -Path $(Join-Path $WrapperPath "Org.WebRtc.pdb") -Destination $OutputPath
 
 # Copy wrapper glue PDB (Org.WebRtc.WrapperGlue.pdb)
-Write-Host "Copying PDB for Org.WebRtc.WrapperGlue.lib..."
-Copy-Item -Path $(Join-Path $WrapperGluePath "Org.WebRtc.WrapperGlue.pdb") -Destination $OutputPath
+# In Release there is no PDB; the project does not specify /DEBUG so defaults to Debug-only PDBs.
+if ($BuildConfig -eq "Release") {
+    Write-Host "Skipping PDB for Org.WebRtc.WrapperGlue.lib (not generated in Release)"
+} else {
+    Write-Host "Copying PDB for Org.WebRtc.WrapperGlue.lib..."
+    Copy-Item -Path $(Join-Path $WrapperGluePath "Org.WebRtc.WrapperGlue.pdb") -Destination $OutputPath
+}
