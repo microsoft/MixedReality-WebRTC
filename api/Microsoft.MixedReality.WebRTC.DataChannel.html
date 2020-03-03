@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class DataChannel
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.49.0.0">
+    <meta name="generator" content="docfx 2.50.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -323,7 +323,7 @@ data channel. Changes to this state are notified via the <a class="xref" href="M
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_Dispose.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L156">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L162">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_DataChannel_Dispose_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.Dispose*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_Dispose" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.Dispose">Dispose()</h4>
@@ -339,7 +339,7 @@ data channel. Changes to this state are notified via the <a class="xref" href="M
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_Finalize.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.Finalize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L148">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L154">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_DataChannel_Finalize_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.Finalize*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_Finalize" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.Finalize">Finalize()</h4>
@@ -353,10 +353,58 @@ and the managed resources are cleaned-up.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_IntPtr_System_UInt64_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(IntPtr%2CSystem.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L202">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_IntPtr_System_UInt64_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(IntPtr,System.UInt64)">SendMessage(IntPtr, UInt64)</h4>
+  <div class="markdown level1 summary"><p>Send a message through the data channel. If the message cannot be sent, for example because of congestion
+control, it is buffered internally. If this buffer gets full, an exception is thrown and this call is aborted.
+The internal buffering is monitored via the <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged">BufferingChanged</a> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SendMessage(IntPtr message, ulong size)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">message</span></td>
+        <td><p>The message to send to the remote peer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
+        <td><span class="parametername">size</span></td>
+        <td><p>The size of the message to send in octects.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_IntPtr_System_UInt64__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_Microsoft_MixedReality_WebRTC_PeerConnectionConfiguration_CancellationToken_">InitializeAsync(PeerConnectionConfiguration, CancellationToken)</a></div>
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Initialized">Initialized</a></div>
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged">BufferingChanged</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(System.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L177">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L183">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(System.Byte[])">SendMessage(Byte[])</h4>
@@ -466,6 +514,40 @@ will fail until some mesages are processed and removed to make space.</p>
   <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_MessageReceived_seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___">SendMessage(Byte[])</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_MessageReceivedUnsafe.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedUnsafe%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L125">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_MessageReceivedUnsafe" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedUnsafe">MessageReceivedUnsafe</h4>
+  <div class="markdown level1 summary"><p>Event fires when a message is received through the data channel.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event Action&lt;IntPtr, ulong&gt; MessageReceivedUnsafe</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Action</span>&lt;<span class="xref">IntPtr</span>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_MessageReceivedUnsafe_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_IntPtr_System_UInt64_">SendMessage(IntPtr, UInt64)</a></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>

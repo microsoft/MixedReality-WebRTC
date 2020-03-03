@@ -282,6 +282,12 @@ references:
   commentId: E:Microsoft.MixedReality.WebRTC.DataChannel.MessageReceived
   fullName: Microsoft.MixedReality.WebRTC.DataChannel.MessageReceived
   nameWithType: DataChannel.MessageReceived
+- uid: Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedUnsafe
+  name: MessageReceivedUnsafe
+  href: api/Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_MessageReceivedUnsafe
+  commentId: E:Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedUnsafe
+  fullName: Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedUnsafe
+  nameWithType: DataChannel.MessageReceivedUnsafe
 - uid: Microsoft.MixedReality.WebRTC.DataChannel.Ordered
   name: Ordered
   href: api/Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_Ordered
@@ -321,6 +327,12 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.DataChannel.Reliable
   nameWithType: DataChannel.Reliable
+- uid: Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(IntPtr,System.UInt64)
+  name: SendMessage(IntPtr, UInt64)
+  href: api/Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_IntPtr_System_UInt64_
+  commentId: M:Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(IntPtr,System.UInt64)
+  fullName: Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(IntPtr, System.UInt64)
+  nameWithType: DataChannel.SendMessage(IntPtr, UInt64)
 - uid: Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(System.Byte[])
   name: SendMessage(Byte[])
   href: api/Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___
