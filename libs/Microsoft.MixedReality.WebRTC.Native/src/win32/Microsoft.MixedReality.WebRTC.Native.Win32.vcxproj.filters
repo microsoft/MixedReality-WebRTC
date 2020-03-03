@@ -25,7 +25,7 @@
     <ClInclude Include="../interop/interop_api.h">
       <Filter>interop</Filter>
     </ClInclude>
-    <ClInclude Include="../data_channel.h">
+    <ClInclude Include="../../include/data_channel.h">
       <Filter>media</Filter>
     </ClInclude>
     <ClInclude Include="../../include/str.h" />
