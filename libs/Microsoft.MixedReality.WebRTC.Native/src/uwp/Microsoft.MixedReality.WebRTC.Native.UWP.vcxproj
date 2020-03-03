@@ -91,6 +91,12 @@
   <PropertyGroup Condition="'$(PlatformTarget)' == 'ARM'">
     <UnityPluginDirectory>$(ProjectDir)..\..\..\\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\WSA\ARM</UnityPluginDirectory>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <ItemGroup>
     <NativeUnityPluginSourceFiles Include="$(OutDir)\Microsoft.MixedReality.WebRTC.Native.dll;$(OutDir)\Microsoft.MixedReality.WebRTC.Native.pdb" />
   </ItemGroup>
@@ -115,6 +121,27 @@
       <ModuleDefinitionFile>..\exports.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\OUTPUT\webrtc\winuwp\$(PlatformTarget)\$(Configuration);$(WebRTCCoreRepoPath)webrtc\windows\projects\msvc\Org.WebRtc.WrapperGlue.Universal\Build\Output\Org.WebRtc.WrapperGlue\$(Configuration)\$(PlatformTarget);$(WebRTCCoreRepoPath)webrtc\windows\projects\msvc\Org.WebRtc.Universal\Build\Output\Org.WebRtc\$(Configuration)\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
