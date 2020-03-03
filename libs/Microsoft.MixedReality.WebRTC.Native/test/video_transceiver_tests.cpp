@@ -64,6 +64,206 @@ using VideoTrackAddedCallback =
 // PeerConnectionI420VideoFrameCallback
 using I420VideoFrameCallback = InteropCallback<const I420AVideoFrame&>;
 
+/// Test that SetLocalTrack() on a transceiver does not change its desired or
+/// negotiated directions.
+void Test_SetLocalTrack(mrsSdpSemantic sdp_semantic,
+                        mrsTransceiverDirection start_dir,
+                        mrsTransceiverOptDirection neg_dir) {
+  mrsPeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = sdp_semantic;
+  LocalPeerPairRaii pair(pc_config);
+  FakeInteropRaii interop({pair.pc1(), pair.pc2()});
+
+  // Register event for renegotiation needed
+  Event renegotiation_needed1_ev;
+  InteropCallback renegotiation_needed1_cb = [&renegotiation_needed1_ev]() {
+    renegotiation_needed1_ev.Set();
+  };
+  mrsPeerConnectionRegisterRenegotiationNeededCallback(
+      pair.pc1(), CB(renegotiation_needed1_cb));
+  Event renegotiation_needed2_ev;
+  InteropCallback renegotiation_needed2_cb = [&renegotiation_needed2_ev]() {
+    renegotiation_needed2_ev.Set();
+  };
+  mrsPeerConnectionRegisterRenegotiationNeededCallback(
+      pair.pc2(), CB(renegotiation_needed2_cb));
+
+  // Add an inactive transceiver to the local peer (#1)
+  const mrsTransceiverDirection created_dir1 =
+      mrsTransceiverDirection::kInactive;
+  mrsTransceiverHandle transceiver_handle1{};
+  {
+    mrsTransceiverInitConfig transceiver_config{};
+    transceiver_config.name = "video_transceiver_1";
+    transceiver_config.transceiver_interop_handle =
+        kFakeInteropVideoTransceiverHandle;
+    transceiver_config.desired_direction = created_dir1;
+    renegotiation_needed1_ev.Reset();
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionAddVideoTransceiver(
+                  pair.pc1(), &transceiver_config, &transceiver_handle1));
+    ASSERT_NE(nullptr, transceiver_handle1);
+    ASSERT_TRUE(renegotiation_needed1_ev.IsSignaled());
+    renegotiation_needed1_ev.Reset();
+  }
+
+  // Register event for transceiver state update
+  Event state_updated1_ev_local;
+  Event state_updated1_ev_remote;
+  Event state_updated1_ev_setdir;
+  mrsTransceiverDirection dir_desired1 = created_dir1;
+  mrsTransceiverOptDirection dir_negotiated1 =
+      mrsTransceiverOptDirection::kNotSet;
+  InteropCallback<mrsTransceiverStateUpdatedReason, mrsTransceiverOptDirection,
+                  mrsTransceiverDirection>
+      state_updated1_cb = [&](mrsTransceiverStateUpdatedReason reason,
+                              mrsTransceiverOptDirection negotiated,
+                              mrsTransceiverDirection desired) {
+        dir_negotiated1 = negotiated;
+        dir_desired1 = desired;
+        switch (reason) {
+          case mrsTransceiverStateUpdatedReason::kLocalDesc:
+            state_updated1_ev_local.Set();
+            break;
+          case mrsTransceiverStateUpdatedReason::kRemoteDesc:
+            state_updated1_ev_remote.Set();
+            break;
+          case mrsTransceiverStateUpdatedReason::kSetDirection:
+            state_updated1_ev_setdir.Set();
+            break;
+        }
+      };
+  mrsTransceiverRegisterStateUpdatedCallback(transceiver_handle1,
+                                             CB(state_updated1_cb));
+
+  // Start in desired mode for this test
+  state_updated1_ev_setdir.Reset();
+  ASSERT_EQ(Result::kSuccess,
+            mrsTransceiverSetDirection(transceiver_handle1, start_dir));
+  ASSERT_TRUE(state_updated1_ev_setdir.WaitFor(10s));
+  state_updated1_ev_setdir.Reset();
+
+  // Check video transceiver #1 consistency
+  {
+    // Default values inchanged (callback was just registered)
+    ASSERT_EQ(mrsTransceiverOptDirection::kNotSet, dir_negotiated1);
+    ASSERT_EQ(start_dir, dir_desired1);
+
+    // Local video track is NULL
+    mrsLocalVideoTrackHandle track_handle_local{};
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
+                                    transceiver_handle1, &track_handle_local));
+    ASSERT_EQ(nullptr, track_handle_local);
+
+    // Remote video track is NULL
+    mrsRemoteVideoTrackHandle track_handle_remote{};
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
+                                    transceiver_handle1, &track_handle_remote));
+    ASSERT_EQ(nullptr, track_handle_remote);
+  }
+
+  // Connect #1 and #2
+  pair.ConnectAndWait();
+
+  // Wait for transceiver to be updated; this happens *after* connect,
+  // during SetRemoteDescription().
+  ASSERT_TRUE(state_updated1_ev_remote.WaitFor(10s));
+  state_updated1_ev_remote.Reset();
+
+  // Check video transceiver #1 consistency
+  {
+    // Desired state is inchanged, negotiated is the intersection of the desired
+    // state and the ReceiveOnly state from the remote peer who refused to send
+    // (no track added for that).
+    ASSERT_EQ(neg_dir, dir_negotiated1);
+    ASSERT_EQ(start_dir, dir_desired1);
+  }
+
+  // Create the external source for the local video track of the local peer (#1)
+  mrsExternalVideoTrackSourceHandle source_handle1 = nullptr;
+  ASSERT_EQ(mrsResult::kSuccess,
+            mrsExternalVideoTrackSourceCreateFromI420ACallback(
+                &VideoTestUtils::MakeTestFrame, nullptr, &source_handle1));
+  ASSERT_NE(nullptr, source_handle1);
+  mrsExternalVideoTrackSourceFinishCreation(source_handle1);
+
+  // Create the local video track (#1)
+  mrsLocalVideoTrackHandle track_handle1{};
+  {
+    mrsLocalVideoTrackFromExternalSourceInitConfig config{};
+    ASSERT_EQ(
+        mrsResult::kSuccess,
+        mrsLocalVideoTrackCreateFromExternalSource(
+            source_handle1, &config, "simulated_video_track1", &track_handle1));
+    ASSERT_NE(nullptr, track_handle1);
+    ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle1));
+  }
+
+  // Add track to transceiver #1
+  ASSERT_EQ(Result::kSuccess, mrsTransceiverSetLocalVideoTrack(
+                                  transceiver_handle1, track_handle1));
+
+  // Check video transceiver #1 consistency
+  {
+    // Desired and negotiated state are still unchanged
+    ASSERT_EQ(neg_dir, dir_negotiated1);
+    ASSERT_EQ(start_dir, dir_desired1);
+
+    // Local video track is track_handle1
+    mrsLocalVideoTrackHandle track_handle_local{};
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
+                                    transceiver_handle1, &track_handle_local));
+    ASSERT_EQ(track_handle1, track_handle_local);
+
+    // Remote video track is NULL
+    mrsRemoteVideoTrackHandle track_handle_remote{};
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
+                                    transceiver_handle1, &track_handle_remote));
+    ASSERT_EQ(nullptr, track_handle_remote);
+  }
+
+  // Remote track from transceiver #1 with non-null track
+  ASSERT_EQ(Result::kSuccess,
+            mrsTransceiverSetLocalVideoTrack(transceiver_handle1, nullptr));
+  mrsLocalVideoTrackRemoveRef(track_handle1);
+  mrsExternalVideoTrackSourceRemoveRef(source_handle1);
+
+  // Check video transceiver #1 consistency
+  {
+    // Desired and negotiated state are still unchanged
+    ASSERT_EQ(neg_dir, dir_negotiated1);
+    ASSERT_EQ(start_dir, dir_desired1);
+
+    // Local video track is NULL
+    mrsLocalVideoTrackHandle track_handle_local{};
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
+                                    transceiver_handle1, &track_handle_local));
+    ASSERT_EQ(nullptr, track_handle_local);
+
+    // Remote video track is NULL
+    mrsRemoteVideoTrackHandle track_handle_remote{};
+    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
+                                    transceiver_handle1, &track_handle_remote));
+    ASSERT_EQ(nullptr, track_handle_remote);
+  }
+
+  // Renegotiate
+  pair.ConnectAndWait();
+
+  // Check video transceiver #1 consistency
+  {
+    // Desired and negotiated state are still unchanged
+    ASSERT_EQ(neg_dir, dir_negotiated1);
+    ASSERT_EQ(start_dir, dir_desired1);
+  }
+
+  // Wait until the SDP session exchange completed before cleaning-up
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(10s));
+
+  // Clean-up
+  mrsTransceiverRemoveRef(transceiver_handle1);
+}
+
 }  // namespace
 
 INSTANTIATE_TEST_CASE_P(,
@@ -237,394 +437,15 @@ TEST_F(VideoTransceiverTests, SetDirection_InvalidHandle) {
 }
 
 TEST_P(VideoTransceiverTests, SetLocalTrackSendRecv) {
-  mrsPeerConnectionConfiguration pc_config{};
-  pc_config.sdp_semantic = GetParam();
-  LocalPeerPairRaii pair(pc_config);
-  FakeInteropRaii interop({pair.pc1(), pair.pc2()});
-
-  // Register event for renegotiation needed
-  Event renegotiation_needed1_ev;
-  InteropCallback renegotiation_needed1_cb = [&renegotiation_needed1_ev]() {
-    renegotiation_needed1_ev.Set();
-  };
-  mrsPeerConnectionRegisterRenegotiationNeededCallback(
-      pair.pc1(), CB(renegotiation_needed1_cb));
-  Event renegotiation_needed2_ev;
-  InteropCallback renegotiation_needed2_cb = [&renegotiation_needed2_ev]() {
-    renegotiation_needed2_ev.Set();
-  };
-  mrsPeerConnectionRegisterRenegotiationNeededCallback(
-      pair.pc2(), CB(renegotiation_needed2_cb));
-
-  // Add a transceiver to the local peer (#1)
-  mrsTransceiverHandle transceiver_handle1{};
-  {
-    mrsTransceiverInitConfig transceiver_config{};
-    transceiver_config.name = "video_transceiver_1";
-    transceiver_config.transceiver_interop_handle =
-        kFakeInteropVideoTransceiverHandle;
-    transceiver_config.desired_direction = mrsTransceiverDirection::kInactive;
-    renegotiation_needed1_ev.Reset();
-    ASSERT_EQ(Result::kSuccess,
-              mrsPeerConnectionAddVideoTransceiver(
-                  pair.pc1(), &transceiver_config, &transceiver_handle1));
-    ASSERT_NE(nullptr, transceiver_handle1);
-    ASSERT_TRUE(renegotiation_needed1_ev.IsSignaled());
-    renegotiation_needed1_ev.Reset();
-  }
-
-  // Register event for transceiver state update
-  Event state_updated1_ev_local;
-  Event state_updated1_ev_remote;
-  Event state_updated1_ev_setdir;
-  mrsTransceiverDirection dir_desired1 = mrsTransceiverDirection::kInactive;
-  mrsTransceiverOptDirection dir_negotiated1 =
-      mrsTransceiverOptDirection::kNotSet;
-  InteropCallback<mrsTransceiverStateUpdatedReason, mrsTransceiverOptDirection,
-                  mrsTransceiverDirection>
-      state_updated1_cb = [&](mrsTransceiverStateUpdatedReason reason,
-                              mrsTransceiverOptDirection negotiated,
-                              mrsTransceiverDirection desired) {
-        dir_negotiated1 = negotiated;
-        dir_desired1 = desired;
-        switch (reason) {
-          case mrsTransceiverStateUpdatedReason::kLocalDesc:
-            state_updated1_ev_local.Set();
-            break;
-          case mrsTransceiverStateUpdatedReason::kRemoteDesc:
-            state_updated1_ev_remote.Set();
-            break;
-          case mrsTransceiverStateUpdatedReason::kSetDirection:
-            state_updated1_ev_setdir.Set();
-            break;
-        }
-      };
-  mrsTransceiverRegisterStateUpdatedCallback(transceiver_handle1,
-                                             CB(state_updated1_cb));
-
-  // Start in Send+Receive mode for this test
-  state_updated1_ev_setdir.Reset();
-  ASSERT_EQ(Result::kSuccess,
-            mrsTransceiverSetDirection(transceiver_handle1,
-                                       mrsTransceiverDirection::kSendRecv));
-  ASSERT_TRUE(state_updated1_ev_setdir.WaitFor(10s));
-  state_updated1_ev_setdir.Reset();
-
-  // Check video transceiver #1 consistency
-  {
-    // Default values inchanged (callback was just registered)
-    ASSERT_EQ(mrsTransceiverOptDirection::kNotSet, dir_negotiated1);
-    ASSERT_EQ(mrsTransceiverDirection::kSendRecv, dir_desired1);
-
-    // Local video track is NULL
-    mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
-                                    transceiver_handle1, &track_handle_local));
-    ASSERT_EQ(nullptr, track_handle_local);
-
-    // Remote video track is NULL
-    mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
-                                    transceiver_handle1, &track_handle_remote));
-    ASSERT_EQ(nullptr, track_handle_remote);
-  }
-
-  // Connect #1 and #2
-  pair.ConnectAndWait();
-
-  // Wait for transceiver to be updated; this happens *after* connect,
-  // during SetRemoteDescription().
-  ASSERT_TRUE(state_updated1_ev_remote.WaitFor(10s));
-  state_updated1_ev_remote.Reset();
-
-  // Check video transceiver #1 consistency
-  {
-    // Desired state is Send+Receive, negotiated is Send only because the remote
-    // peer refused to send (no track added for that).
-    ASSERT_EQ(mrsTransceiverOptDirection::kSendOnly, dir_negotiated1);
-    ASSERT_EQ(mrsTransceiverDirection::kSendRecv, dir_desired1);
-  }
-
-  // Create the external source for the local video track of the local peer (#1)
-  mrsExternalVideoTrackSourceHandle source_handle1 = nullptr;
-  ASSERT_EQ(mrsResult::kSuccess,
-            mrsExternalVideoTrackSourceCreateFromI420ACallback(
-                &VideoTestUtils::MakeTestFrame, nullptr, &source_handle1));
-  ASSERT_NE(nullptr, source_handle1);
-  mrsExternalVideoTrackSourceFinishCreation(source_handle1);
-
-  // Create the local video track (#1)
-  mrsLocalVideoTrackHandle track_handle1{};
-  {
-    mrsLocalVideoTrackFromExternalSourceInitConfig config{};
-    ASSERT_EQ(
-        mrsResult::kSuccess,
-        mrsLocalVideoTrackCreateFromExternalSource(
-            source_handle1, &config, "simulated_video_track1", &track_handle1));
-    ASSERT_NE(nullptr, track_handle1);
-    ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle1));
-  }
-
-  // Add track to transceiver #1
-  ASSERT_EQ(Result::kSuccess, mrsTransceiverSetLocalVideoTrack(
-                                  transceiver_handle1, track_handle1));
-
-  // Check video transceiver #1 consistency
-  {
-    // Desired state is Send+Receive, negotiated is still Send only.
-    // SetLocalTrack() doesn't change the transceiver directions.
-    ASSERT_EQ(mrsTransceiverOptDirection::kSendOnly, dir_negotiated1);
-    ASSERT_EQ(mrsTransceiverDirection::kSendRecv, dir_desired1);
-
-    // Local video track is track_handle1
-    mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
-                                    transceiver_handle1, &track_handle_local));
-    ASSERT_EQ(track_handle1, track_handle_local);
-
-    // Remote video track is NULL
-    mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
-                                    transceiver_handle1, &track_handle_remote));
-    ASSERT_EQ(nullptr, track_handle_remote);
-  }
-
-  // Remove track from transceiver #1 with non-null track
-  ASSERT_EQ(Result::kSuccess,
-            mrsTransceiverSetLocalVideoTrack(transceiver_handle1, nullptr));
-  mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsExternalVideoTrackSourceRemoveRef(source_handle1);
-
-  // Check video transceiver #1 consistency
-  {
-    // Desired state is Send+Receive, negotiated is still Send only.
-    // SetLocalTrack() doesn't change the transceiver directions.
-    ASSERT_EQ(mrsTransceiverOptDirection::kSendOnly, dir_negotiated1);
-    ASSERT_EQ(mrsTransceiverDirection::kSendRecv, dir_desired1);
-
-    // Local video track is track_handle1
-    mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
-                                    transceiver_handle1, &track_handle_local));
-    ASSERT_EQ(nullptr, track_handle_local);
-
-    // Remote video track is NULL
-    mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
-                                    transceiver_handle1, &track_handle_remote));
-    ASSERT_EQ(nullptr, track_handle_remote);
-  }
-
-  // Renegotiate
-  pair.ConnectAndWait();
-
-  // Check video transceiver #1 consistency
-  {
-    // Again, nothing changed
-    ASSERT_EQ(mrsTransceiverOptDirection::kSendOnly, dir_negotiated1);
-    ASSERT_EQ(mrsTransceiverDirection::kSendRecv, dir_desired1);
-  }
-
-  // Wait until the SDP session exchange completed before cleaning-up
-  ASSERT_TRUE(pair.WaitExchangeCompletedFor(10s));
-
-  // Clean-up
-  mrsTransceiverRemoveRef(transceiver_handle1);
+  const mrsSdpSemantic sdp_semantic = GetParam();
+  Test_SetLocalTrack(sdp_semantic, mrsTransceiverDirection::kSendRecv,
+                     mrsTransceiverOptDirection::kSendOnly);
 }
 
 TEST_P(VideoTransceiverTests, SetLocalTrackRecvOnly) {
-  mrsPeerConnectionConfiguration pc_config{};
-  pc_config.sdp_semantic = GetParam();
-  LocalPeerPairRaii pair(pc_config);
-  FakeInteropRaii interop({pair.pc1(), pair.pc2()});
-
-  // Register event for renegotiation needed
-  Event renegotiation_needed1_ev;
-  InteropCallback renegotiation_needed1_cb = [&renegotiation_needed1_ev]() {
-    renegotiation_needed1_ev.Set();
-  };
-  mrsPeerConnectionRegisterRenegotiationNeededCallback(
-      pair.pc1(), CB(renegotiation_needed1_cb));
-  Event renegotiation_needed2_ev;
-  InteropCallback renegotiation_needed2_cb = [&renegotiation_needed2_ev]() {
-    renegotiation_needed2_ev.Set();
-  };
-  mrsPeerConnectionRegisterRenegotiationNeededCallback(
-      pair.pc2(), CB(renegotiation_needed2_cb));
-
-  // Add a transceiver to the local peer (#1)
-  mrsTransceiverHandle transceiver_handle1{};
-  {
-    mrsTransceiverInitConfig transceiver_config{};
-    transceiver_config.name = "video_transceiver_1";
-    transceiver_config.transceiver_interop_handle =
-        kFakeInteropVideoTransceiverHandle;
-    renegotiation_needed1_ev.Reset();
-    ASSERT_EQ(Result::kSuccess,
-              mrsPeerConnectionAddVideoTransceiver(
-                  pair.pc1(), &transceiver_config, &transceiver_handle1));
-    ASSERT_NE(nullptr, transceiver_handle1);
-    ASSERT_TRUE(renegotiation_needed1_ev.IsSignaled());
-    renegotiation_needed1_ev.Reset();
-  }
-
-  // Register event for transceiver state update
-  Event state_updated1_ev_local;
-  Event state_updated1_ev_remote;
-  Event state_updated1_ev_setdir;
-  mrsTransceiverDirection dir_desired1 = mrsTransceiverDirection::kInactive;
-  mrsTransceiverOptDirection dir_negotiated1 =
-      mrsTransceiverOptDirection::kNotSet;
-  InteropCallback<mrsTransceiverStateUpdatedReason, mrsTransceiverOptDirection,
-                  mrsTransceiverDirection>
-      state_updated1_cb = [&](mrsTransceiverStateUpdatedReason reason,
-                              mrsTransceiverOptDirection negotiated,
-                              mrsTransceiverDirection desired) {
-        dir_negotiated1 = negotiated;
-        dir_desired1 = desired;
-        switch (reason) {
-          case mrsTransceiverStateUpdatedReason::kLocalDesc:
-            state_updated1_ev_local.Set();
-            break;
-          case mrsTransceiverStateUpdatedReason::kRemoteDesc:
-            state_updated1_ev_remote.Set();
-            break;
-          case mrsTransceiverStateUpdatedReason::kSetDirection:
-            state_updated1_ev_setdir.Set();
-            break;
-        }
-      };
-  mrsTransceiverRegisterStateUpdatedCallback(transceiver_handle1,
-                                             CB(state_updated1_cb));
-
-  // Start in receive mode for this test
-  state_updated1_ev_setdir.Reset();
-  ASSERT_EQ(Result::kSuccess,
-            mrsTransceiverSetDirection(transceiver_handle1,
-                                       mrsTransceiverDirection::kRecvOnly));
-  ASSERT_TRUE(state_updated1_ev_setdir.WaitFor(10s));
-  state_updated1_ev_setdir.Reset();
-
-  // Check video transceiver #1 consistency
-  {
-    // Default values inchanged (callback was just registered)
-    ASSERT_EQ(mrsTransceiverOptDirection::kNotSet, dir_negotiated1);
-    ASSERT_EQ(mrsTransceiverDirection::kRecvOnly, dir_desired1);
-
-    // Local video track is NULL
-    mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
-                                    transceiver_handle1, &track_handle_local));
-    ASSERT_EQ(nullptr, track_handle_local);
-
-    // Remote video track is NULL
-    mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
-                                    transceiver_handle1, &track_handle_remote));
-    ASSERT_EQ(nullptr, track_handle_remote);
-  }
-
-  // Connect #1 and #2
-  pair.ConnectAndWait();
-
-  // Wait for transceiver to be updated; this happens *after* connect,
-  // during SetRemoteDescription().
-  ASSERT_TRUE(state_updated1_ev_remote.WaitFor(10s));
-  state_updated1_ev_remote.Reset();
-
-  // Check video transceiver #1 consistency
-  {
-    // Desired state is Receive, negotiated is Inactive only because the remote
-    // peer refused to send (no track added for that).
-    ASSERT_EQ(mrsTransceiverOptDirection::kInactive, dir_negotiated1);
-    ASSERT_EQ(mrsTransceiverDirection::kRecvOnly, dir_desired1);
-  }
-
-  // Create the external source for the local video track of the local peer (#1)
-  mrsExternalVideoTrackSourceHandle source_handle1 = nullptr;
-  ASSERT_EQ(mrsResult::kSuccess,
-            mrsExternalVideoTrackSourceCreateFromI420ACallback(
-                &VideoTestUtils::MakeTestFrame, nullptr, &source_handle1));
-  ASSERT_NE(nullptr, source_handle1);
-  mrsExternalVideoTrackSourceFinishCreation(source_handle1);
-
-  // Create the local video track (#1)
-  mrsLocalVideoTrackHandle track_handle1{};
-  {
-    mrsLocalVideoTrackFromExternalSourceInitConfig config{};
-    ASSERT_EQ(
-        mrsResult::kSuccess,
-        mrsLocalVideoTrackCreateFromExternalSource(
-            source_handle1, &config, "simulated_video_track1", &track_handle1));
-    ASSERT_NE(nullptr, track_handle1);
-    ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle1));
-  }
-
-  // Add track to transceiver #1
-  ASSERT_EQ(Result::kSuccess, mrsTransceiverSetLocalVideoTrack(
-                                  transceiver_handle1, track_handle1));
-
-  // Check video transceiver #1 consistency
-  {
-    // Desired state is Receive, negotiated is still Inactive
-    ASSERT_EQ(mrsTransceiverOptDirection::kInactive, dir_negotiated1);
-    ASSERT_EQ(mrsTransceiverDirection::kRecvOnly, dir_desired1);
-
-    // Local video track is track_handle1
-    mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
-                                    transceiver_handle1, &track_handle_local));
-    ASSERT_EQ(track_handle1, track_handle_local);
-
-    // Remote video track is NULL
-    mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
-                                    transceiver_handle1, &track_handle_remote));
-    ASSERT_EQ(nullptr, track_handle_remote);
-  }
-
-  // Remote track from transceiver #1 with non-null track
-  ASSERT_EQ(Result::kSuccess,
-            mrsTransceiverSetLocalVideoTrack(transceiver_handle1, nullptr));
-  mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsExternalVideoTrackSourceRemoveRef(source_handle1);
-
-  // Check video transceiver #1 consistency
-  {
-    // Desired state is Receive, negotiated is still Inactive
-    ASSERT_EQ(mrsTransceiverOptDirection::kInactive, dir_negotiated1);
-    ASSERT_EQ(mrsTransceiverDirection::kRecvOnly, dir_desired1);
-
-    // Local video track is NULL
-    mrsLocalVideoTrackHandle track_handle_local{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetLocalVideoTrack(
-                                    transceiver_handle1, &track_handle_local));
-    ASSERT_EQ(nullptr, track_handle_local);
-
-    // Remote video track is NULL
-    mrsRemoteVideoTrackHandle track_handle_remote{};
-    ASSERT_EQ(Result::kSuccess, mrsTransceiverGetRemoteVideoTrack(
-                                    transceiver_handle1, &track_handle_remote));
-    ASSERT_EQ(nullptr, track_handle_remote);
-  }
-
-  // Renegotiate
-  pair.ConnectAndWait();
-
-  // Check video transceiver #1 consistency
-  {
-    // Note how nothing changed, because SetLocalTrack() does not change the
-    // desired direction of Receive, and the remote peer #2 still doesn't have a
-    // track to send us.
-    ASSERT_EQ(mrsTransceiverOptDirection::kInactive, dir_negotiated1);
-    ASSERT_EQ(mrsTransceiverDirection::kRecvOnly, dir_desired1);
-  }
-
-  // Wait until the SDP session exchange completed before cleaning-up
-  ASSERT_TRUE(pair.WaitExchangeCompletedFor(10s));
-
-  // Clean-up
-  mrsTransceiverRemoveRef(transceiver_handle1);
+  const mrsSdpSemantic sdp_semantic = GetParam();
+  Test_SetLocalTrack(sdp_semantic, mrsTransceiverDirection::kRecvOnly,
+                     mrsTransceiverOptDirection::kInactive);
 }
 
 TEST_F(VideoTransceiverTests, SetLocalTrack_InvalidHandle) {
