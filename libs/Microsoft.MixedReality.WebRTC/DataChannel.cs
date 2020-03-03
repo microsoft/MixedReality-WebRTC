@@ -119,6 +119,12 @@ namespace Microsoft.MixedReality.WebRTC
         public event Action<byte[]> MessageReceived;
 
         /// <summary>
+        /// Event fires when a message is received through the data channel.
+        /// </summary>
+        /// <seealso cref="SendMessage(IntPtr,ulong)"/>
+        public event Action<IntPtr, ulong> MessageReceivedUnsafe;
+
+        /// <summary>
         /// GC handle keeping the internal delegates alive while they are registered
         /// as callbacks with the native code.
         /// </summary>
@@ -181,6 +187,25 @@ namespace Microsoft.MixedReality.WebRTC
             Utils.ThrowOnErrorCode(res);
         }
 
+        /// <summary>
+        /// Send a message through the data channel. If the message cannot be sent, for example because of congestion
+        /// control, it is buffered internally. If this buffer gets full, an exception is thrown and this call is aborted.
+        /// The internal buffering is monitored via the <see cref="BufferingChanged"/> event.
+        /// </summary>
+        /// <param name="message">The message to send to the remote peer.</param>
+        /// <param name="size">The size of the message to send in octects.</param>
+        /// <exception xref="InvalidOperationException">The native data channel is not initialized.</exception>
+        /// <exception xref="Exception">The internal buffer is full.</exception>
+        /// <seealso cref="PeerConnection.InitializeAsync"/>
+        /// <seealso cref="PeerConnection.Initialized"/>
+        /// <seealso cref="BufferingChanged"/>
+        public void SendMessage(IntPtr message, ulong size)
+        {
+            MainEventSource.Log.DataChannelSendMessage(ID, (int)size);
+            uint res = DataChannelInterop.DataChannel_SendMessage(_interopHandle, message, size);
+            Utils.ThrowOnErrorCode(res);
+        }
+
         internal void OnMessageReceived(IntPtr data, ulong size)
         {
             MainEventSource.Log.DataChannelMessageReceived(ID, (int)size);
@@ -202,6 +227,12 @@ namespace Microsoft.MixedReality.WebRTC
                     }
                 }
                 callback.Invoke(msg);
+            }
+
+            var unsafeCallback = MessageReceivedUnsafe;
+            if (unsafeCallback != null)
+            {
+                unsafeCallback.Invoke(data, size);
             }
         }
 
