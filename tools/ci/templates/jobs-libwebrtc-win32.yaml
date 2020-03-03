@@ -31,6 +31,9 @@ jobs:
     inputs:
       targetType: filePath
       filePath: tools/ci/computePackageVersion.ps1
+    env:
+      MRWEBRTCVERSION: $(MRWebRTCVersion)
+      MRWEBRTCRELEASETAG: $(MRWebRTCReleaseTag)
 
   # Map build* variables to script* ones
   - task: PowerShell@2
