@@ -20,22 +20,29 @@ using namespace Microsoft::MixedReality::WebRTC;
 /// returns a view over a global constant buffer (static storage), which is
 /// always valid, never deallocated.
 std::string_view ObjectTypeToString(ObjectType type) {
-  static_assert((int)ObjectType::kPeerConnection == 0, "");
-  static_assert((int)ObjectType::kLocalAudioTrack == 1, "");
-  static_assert((int)ObjectType::kLocalVideoTrack == 2, "");
-  static_assert((int)ObjectType::kExternalVideoTrackSource == 3, "");
-  static_assert((int)ObjectType::kRemoteAudioTrack == 4, "");
-  static_assert((int)ObjectType::kRemoteVideoTrack == 5, "");
-  static_assert((int)ObjectType::kDataChannel == 6, "");
-  static_assert((int)ObjectType::kAudioTransceiver == 7, "");
-  static_assert((int)ObjectType::kVideoTransceiver == 8, "");
-  constexpr const std::string_view s_types[] = {
-      "PeerConnection",   "LocalAudioTrack",
-      "LocalVideoTrack",  "ExternalVideoTrackSource",
-      "RemoteAudioTrack", "RemoteVideoTrack",
-      "DataChannel",      "AudioTransceiver",
-      "VideoTransceiver"};
-  return s_types[(int)type];
+  switch (type) {
+    case ObjectType::kPeerConnection:
+      return "PeerConnection";
+    case ObjectType::kLocalAudioTrack:
+      return "LocalAudioTrack";
+    case ObjectType::kLocalVideoTrack:
+      return "LocalVideoTrack";
+    case ObjectType::kExternalVideoTrackSource:
+      return "ExternalVideoTrackSource";
+    case ObjectType::kRemoteAudioTrack:
+      return "RemoteAudioTrack";
+    case ObjectType::kRemoteVideoTrack:
+      return "RemoteVideoTrack";
+    case ObjectType::kDataChannel:
+      return "DataChannel";
+    case ObjectType::kAudioTransceiver:
+      return "AudioTransceiver";
+    case ObjectType::kVideoTransceiver:
+      return "VideoTransceiver";
+    default:
+      RTC_NOTREACHED();
+      return "<UnknownObjectType>";
+  }
 }
 
 /// Utility to format a tracked object into a string, for debugging purpose.
