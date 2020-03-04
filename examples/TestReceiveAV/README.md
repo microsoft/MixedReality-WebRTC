@@ -10,15 +10,15 @@
 
  A web socket connection is used to exchange the SDP offer and answer as well as ICE candidates. The web socket connection will only work if listening port on the test application can be accessed by the browser. It should work correctly if both are on the same development machine or local network.
 
- A PKCS12 archive file which contains an X509 certificate with a common name of "localhost" and a private key is required. The archive file is needed for the web socket server and is suitable for use when the web socket connection is between a browser and the test application running on the same machine. The instructions use to generate the certificate using openssl are below:
+ A PKCS12 archive file which contains an X509 certificate with a common name of "localhost" and a private key is required. The archive file is needed for the web socket server and is suitable for use when the web socket connection is between a browser and the test application running on the same machine. The instructions use to generate the certificate using openssl are below. 
+ 
+ In the steps below the `openssl pkcs12 -export` step asks for a password. The example program assumes a blank password is set.
 
  ````
-openssl req -config req.conf -x509 -newkey rsa:4096 -keyout private/localhost.pem -out localhost.pem -nodes -days 3650
-openssl pkcs12 -export -in localhost.pem -inkey private/localhost.pem -out localhost.pfx -nodes
-
-openssl req -config req.conf -x509 -newkey rsa:2048 -keyout winsvr19-test-key.pem -out winsvr19-test.pem -nodes -days 3650
-openssl pkcs12 -export -in winsvr19-test.pem -inkey winsvr19-test-key.pem -out winsvr19-test.pfx -nodes
+openssl req -config req.conf -x509 -newkey rsa:4096 -keyout localhost_key.pem -out localhost.pem -nodes -days 3650
+openssl pkcs12 -export -in localhost.pem -inkey localhost_key.pem -out localhost.pfx -nodes
 ````
+
 An example req.conf file contents:
 
 ````
@@ -33,13 +33,21 @@ string_mask = utf8only
 [dn]
 CN = localhost
 [x509_ext]
-subjectAltName = localhost, IP:127.0.0.1, IP:::1 
+subjectAltName = DNS:localhost, IP:127.0.0.1, IP:::1 
 keyUsage = Digital Signature, Key Encipherment, Data Encipherment
 extendedKeyUsage = TLS Web Server Authentication
 ````
 
-To get the thumbprint for certificate used for DTLS use:
+By default the program attempts to load the certificate archive file from `C:\temp\certs\localhost.pfx`. If it's placed in a different location the path in the main program source file will need to be updated.
 
-````
-openssl x509 -fingerprint -sha256 -in localhost.pem
-````
+To get Chrome (and Edge (Chromium)) to accept the certificate there are two choices:
+
+1. Allow untrusted localhost certificates by setting `chrome://flags/#allow-insecure-localhost` to `Enabled`.
+
+2. Trust the localhost certificate by.
+ - chrome://settings/?search=cert (or open CertMgr and select the User Certificate Store from Windows Run).
+ - More->Manage Certificates.
+ - Add the certificate to BOTH the `Personal` AND `Trusted Root Certification Authorities`.
+ - Close all Chrome instances and restart.
+
+

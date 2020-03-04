@@ -33,7 +33,7 @@ namespace TestReceiveAV
 
     class Program
     {
-        private const string WEBSOCKET_CERTIFICATE_PATH = "certs/localhost.pfx";
+        private const string WEBSOCKET_CERTIFICATE_PATH = "c:/temp/certs/localhost.pfx";
         private const int WEBSOCKET_PORT = 8081;
 
         static void Main()
@@ -45,6 +45,7 @@ namespace TestReceiveAV
                 var webSocketServer = new WebSocketServer(IPAddress.Any, WEBSOCKET_PORT, true);
                 webSocketServer.SslConfiguration.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(WEBSOCKET_CERTIFICATE_PATH);
                 webSocketServer.SslConfiguration.CheckCertificateRevocation = false;
+                //webSocketServer.Log.Level = WebSocketSharp.LogLevel.Debug;
                 webSocketServer.AddWebSocketService<WebRtcSession>("/", (session) =>
                 {
                     session.MessageReceived += MessageReceived;
