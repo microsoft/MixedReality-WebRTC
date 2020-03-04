@@ -535,16 +535,6 @@ class PeerConnectionImpl : public PeerConnection,
                                       RefPtr<Transceiver> transceiver);
 
   /// Get an existing or create a new |Transceiver| wrapper for a given RTP
-  /// sender of a local audio track. The sender should have an RTP transceiver
-  /// already, and this only takes care of finding/creating a wrapper for it, so
-  /// should never fail as long as the sender is indeed associated with this
-  /// peer connection.
-  ErrorOr<RefPtr<Transceiver>> GetOrCreateTransceiverForSender(
-      mrsMediaKind media_kind,
-      webrtc::RtpSenderInterface* sender,
-      mrsTransceiverInteropHandle transceiver_interop_handle);
-
-  /// Get an existing or create a new |Transceiver| wrapper for a given RTP
   /// receiver of a newly added remote track. The receiver should have an RTP
   /// transceiver already, and this only takes care of finding/creating a
   /// wrapper for it, so should never fail as long as the receiver is indeed
@@ -1603,72 +1593,6 @@ Error PeerConnectionImpl::InsertTransceiverAtMlineIndex(
     transceivers_[mline_index] = transceiver;
   }
   return Error(Result::kSuccess);
-}
-
-ErrorOr<RefPtr<Transceiver>>
-PeerConnectionImpl::GetOrCreateTransceiverForSender(
-    mrsMediaKind media_kind,
-    webrtc::RtpSenderInterface* sender,
-    mrsTransceiverInteropHandle transceiver_interop_handle) {
-  RTC_DCHECK(MediaKindFromRtc(sender->media_type()) == media_kind);
-
-  // Find existing transceiver for sender
-  auto it = std::find_if(transceivers_.begin(), transceivers_.end(),
-                         [sender](const RefPtr<Transceiver>& tr) {
-                           return (tr && (tr->impl()->sender() == sender));
-                         });
-  if (it != transceivers_.end()) {
-    RTC_DCHECK(media_kind == it->get()->GetMediaKind());
-    RefPtr<Transceiver> transceiver = static_cast<Transceiver*>(it->get());
-    RTC_DCHECK_EQ(transceiver_interop_handle, transceiver->GetInteropHandle());
-    return transceiver;
-  }
-
-  std::string name = ExtractTransceiverNameFromSender(sender);
-
-  // Create new transceiver for local track
-  RefPtr<Transceiver> wrapper;
-  int mline_index = -1;
-  if (IsUnifiedPlan()) {
-    // Find transceiver implementation. It doesn't seem like there is a direct
-    // back-link, so iterate over all the peer connection transceivers.
-    auto transceivers = peer_->GetTransceivers();
-    auto it_tr = std::find_if(
-        transceivers.begin(), transceivers.end(),
-        [sender](auto const& tr) { return (tr->sender() == sender); });
-    if (it_tr == transceivers.end()) {
-      return Error(Result::kInvalidOperation,
-                   "Cannot match RTP sender with RTP transceiver.");
-    }
-    rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl = *it_tr;
-    mline_index = (int)std::distance(transceivers.begin(), it_tr);
-
-    // Create the transceiver wrapper
-    mrsTransceiverInitConfig config{};
-    config.desired_direction = Transceiver::Direction::kSendRecv;  //?
-    config.transceiver_interop_handle = transceiver_interop_handle;
-    wrapper = Transceiver::CreateForUnifiedPlan(
-        global_factory_, media_kind, *this, mline_index, std::move(name),
-        std::move(impl), config.desired_direction,
-        config.transceiver_interop_handle);
-
-    // Note: at this point the native wrapper knows about the interop wrapper,
-    // but not the opposite. Normally we'd fire another "created-callback"
-    // with the native wrapper handle to sync the interop wrapper, but here it
-    // is being created as part of a local track creation, so we bundle that
-    // with the "track-created" event.
-  } else {
-    RTC_DCHECK(IsPlanB());
-  }
-  if (wrapper) {
-    auto err = InsertTransceiverAtMlineIndex(mline_index, wrapper);
-    if (!err.ok()) {
-      return err;
-    }
-    return wrapper;
-  }
-  return Error(Result::kUnknownError,
-               "Failed to create a new transceiver for local track.");
 }
 
 ErrorOr<RefPtr<Transceiver>>
