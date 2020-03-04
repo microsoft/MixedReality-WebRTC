@@ -125,7 +125,7 @@ jobs:
 
   # Delete PDBs to save disk space, otherwise the NuGet download below fails in Debug
   - powershell: |
-      Remove-Item "bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}/*" -Force -Include "*.pdb" -Exclude "Microsoft.MixedReality.WebRTC.*" -Exclude "NativeLib.*" -Exclude "NativeTests.*"
+      Remove-Item "bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}/*" -Force -Include "*.pdb" -Exclude "Microsoft.MixedReality.WebRTC.*","NativeLib.*","NativeTests.*"
     displayName: 'Delete PDBs after linking webrtc.lib'
 
   # Restore the NuGet packages for the C++ tests
