@@ -618,6 +618,150 @@ class PeerConnectionImpl : public PeerConnection,
       webrtc::RtpReceiverInterface* receiver,
       int& mline_index,
       std::string& name);
+
+  /// Media trait to specialize some implementations for audio or video while
+  /// retaining a single copy of the code.
+  template <mrsMediaKind MEDIA_KIND>
+  struct MediaTrait;
+
+  template <>
+  struct MediaTrait<mrsMediaKind::kAudio> {
+    constexpr static const mrsMediaKind kMediaKind = mrsMediaKind::kAudio;
+    using RtcMediaTrackInterfaceT = webrtc::AudioTrackInterface;
+    using RemoteMediaTrackT = RemoteAudioTrack;
+    using RemoteMediaTrackHandleT = mrsRemoteAudioTrackHandle;
+    using RemoteMediaTrackInteropHandleT = mrsRemoteAudioTrackInteropHandle;
+    using RemoteMediaTrackConfigT = mrsRemoteAudioTrackConfig;
+    using MediaTrackCallbackT = Callback<mrsRemoteAudioTrackInteropHandle,
+                                         mrsRemoteAudioTrackHandle,
+                                         mrsTransceiverInteropHandle,
+                                         mrsTransceiverHandle>;
+    using CreateObjectCallbackT = mrsRemoteAudioTrackInteropHandle(MRS_CALL*)(
+        mrsPeerConnectionInteropHandle parent,
+        const mrsRemoteAudioTrackConfig& config) noexcept;
+  };
+
+  template <>
+  struct MediaTrait<mrsMediaKind::kVideo> {
+    constexpr static const mrsMediaKind kMediaKind = mrsMediaKind::kVideo;
+    using RtcMediaTrackInterfaceT = webrtc::VideoTrackInterface;
+    using RemoteMediaTrackT = RemoteVideoTrack;
+    using RemoteMediaTrackHandleT = mrsRemoteVideoTrackHandle;
+    using RemoteMediaTrackInteropHandleT = mrsRemoteVideoTrackInteropHandle;
+    using RemoteMediaTrackConfigT = mrsRemoteVideoTrackConfig;
+    using MediaTrackCallbackT = Callback<mrsRemoteVideoTrackInteropHandle,
+                                         mrsRemoteVideoTrackHandle,
+                                         mrsTransceiverInteropHandle,
+                                         mrsTransceiverHandle>;
+    using CreateObjectCallbackT = mrsRemoteVideoTrackInteropHandle(MRS_CALL*)(
+        mrsPeerConnectionInteropHandle parent,
+        const mrsRemoteVideoTrackConfig& config) noexcept;
+  };
+
+  /// Create a new remote media (audio or video) track wrapper for an existing
+  /// RTP media receiver which was just created or started receiving (Unified
+  /// Plan) or was created for a newly receiving track (Plan B).
+  template <mrsMediaKind MEDIA_KIND>
+  void AddRemoteMediaTrack(
+      rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
+      const char* track_name,
+      webrtc::RtpReceiverInterface* receiver,
+      std::vector<RefPtr<typename MediaTrait<MEDIA_KIND>::RemoteMediaTrackT>>&
+          remote_media_tracks,
+      typename MediaTrait<MEDIA_KIND>::CreateObjectCallbackT create_cb,
+      typename MediaTrait<MEDIA_KIND>::MediaTrackCallbackT* track_added_cb) {
+    using Media = MediaTrait<MEDIA_KIND>;
+
+    rtc::scoped_refptr<typename Media::RtcMediaTrackInterfaceT> media_track(
+        static_cast<typename Media::RtcMediaTrackInterfaceT*>(track.release()));
+
+    // Create an interop wrapper for the new native object if needed
+    mrsRemoteVideoTrackInteropHandle interop_handle{};
+    if (create_cb) {
+      typename Media::RemoteMediaTrackConfigT config;
+      config.track_name = track_name;
+      interop_handle = (*create_cb)(interop_handle_, config);
+    }
+
+    // Get or create the transceiver wrapper based on the RTP receiver. Because
+    // this callback is fired before the one at the end of the remote
+    // description being applied, the transceiver wrappers for the newly added
+    // RTP transceivers have not been created yet, so create them here.
+    auto ret =
+        GetOrCreateTransceiverForNewRemoteTrack(Media::kMediaKind, receiver);
+    if (!ret.ok()) {
+      return;
+    }
+    RefPtr<Transceiver> transceiver = ret.MoveValue();
+
+    // The transceiver wrapper might have been created, in which case we need to
+    // inform its interop wrapper of its handle.
+    mrsTransceiverInteropHandle transceiver_interop_handle =
+        transceiver->GetInteropHandle();
+
+    // Create the native object
+    RefPtr<typename Media::RemoteMediaTrackT> remote_media_track = new
+        typename Media::RemoteMediaTrackT(global_factory_, *this, transceiver,
+                                          std::move(media_track),
+                                          std::move(receiver), interop_handle);
+    {
+      rtc::CritScope lock(&tracks_mutex_);
+      remote_media_tracks.emplace_back(remote_media_track);
+    }
+
+    // Invoke the TrackAdded callback, which will set the native handle on the
+    // interop wrapper (if created above)
+    {
+      auto lock = std::scoped_lock{media_track_callback_mutex_};
+      // Read the function pointer inside the lock to avoid race condition
+      if (auto cb = *track_added_cb) {
+        mrsTransceiverHandle tranceiver_handle = transceiver.release();
+        typename Media::RemoteMediaTrackHandleT media_handle =
+            remote_media_track.release();
+        cb(interop_handle, media_handle, transceiver_interop_handle,
+           tranceiver_handle);
+      }
+    }
+  }
+
+  /// Destroy an existing remote media (audio or video) track wrapper for an
+  /// existing RTP media receiver which stopped receiving (Unified Plan) or is
+  /// about to be destroyed itself (Plan B).
+  template <mrsMediaKind MEDIA_KIND>
+  void RemoveRemoteMediaTrack(
+      webrtc::RtpReceiverInterface* receiver,
+      std::vector<RefPtr<typename MediaTrait<MEDIA_KIND>::RemoteMediaTrackT>>&
+          remote_media_tracks,
+      typename MediaTrait<MEDIA_KIND>::MediaTrackCallbackT* track_removed_cb) {
+    using Media = MediaTrait<MEDIA_KIND>;
+
+    rtc::CritScope tracks_lock(&tracks_mutex_);
+    auto it = std::find_if(
+        remote_media_tracks.begin(), remote_media_tracks.end(),
+        [receiver](
+            const RefPtr<typename Media::RemoteMediaTrackT>& remote_track) {
+          return (remote_track->receiver() == receiver);
+        });
+    if (it == remote_media_tracks.end()) {
+      return;
+    }
+    RefPtr<typename Media::RemoteMediaTrackT> media_track = std::move(*it);
+    RefPtr<Transceiver> transceiver = media_track->GetTransceiver();
+    remote_media_tracks.erase(it);
+    media_track->OnTrackRemoved(*this);
+
+    // Invoke the TrackRemoved callback
+    if (auto interop_handle = media_track->GetInteropHandle()) {
+      auto lock = std::scoped_lock{media_track_callback_mutex_};
+      // Read the function pointer inside the lock to avoid race condition
+      if (auto cb = *track_removed_cb) {
+        auto transceiver_interop_handle = transceiver->GetInteropHandle();
+        cb(interop_handle, media_track.get(), transceiver_interop_handle,
+           transceiver.get());
+      }
+    }
+    // |media_track| goes out of scope and destroys the C++ instance
+  }
 };
 
 void StreamObserver::OnChanged() {
@@ -1428,110 +1572,22 @@ void PeerConnectionImpl::OnAddTrack(
     RTC_LOG(LS_INFO) << "+ Track #" << receiver->track()->id()
                      << " with stream #" << stream->id();
   }
-
-  // Create the remote track wrapper
   rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
       receiver->track();
   const std::string& track_name = track->id();
   const std::string& track_kind_str = track->kind();
   if (track_kind_str == webrtc::MediaStreamTrackInterface::kAudioKind) {
-    rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track(
-        static_cast<webrtc::AudioTrackInterface*>(track.release()));
-
-    // Create an interop wrapper for the new native object if needed
-    mrsRemoteAudioTrackInteropHandle interop_handle{};
-    if (auto create_cb = interop_callbacks_.remote_audio_track_create_object) {
-      mrsRemoteAudioTrackConfig config;
-      config.track_name = track_name.c_str();
-      interop_handle = (*create_cb)(interop_handle_, config);
-    }
-
-    // Get or create the transceiver wrapper based on the RTP receiver. Because
-    // this callback is fired before the one at the end of the remote
-    // description being applied, the transceiver wrappers for the newly added
-    // RTP transceivers have not been created yet, so create them here.
-    auto ret =
-        GetOrCreateTransceiverForNewRemoteTrack(mrsMediaKind::kAudio, receiver);
-    if (!ret.ok()) {
-      return;
-    }
-    RefPtr<Transceiver> transceiver = ret.MoveValue();
-
-    // The transceiver wrapper might have been created, in which case we need to
-    // inform its interop wrapper of its handle.
-    mrsTransceiverInteropHandle transceiver_interop_handle =
-        transceiver->GetInteropHandle();
-
-    // Create the native object
-    RefPtr<RemoteAudioTrack> remote_audio_track = new RemoteAudioTrack(
-        global_factory_, *this, transceiver, std::move(audio_track),
-        std::move(receiver), interop_handle);
-    {
-      rtc::CritScope lock(&tracks_mutex_);
-      remote_audio_tracks_.emplace_back(remote_audio_track);
-    }
-
-    // Invoke the AudioTrackAdded callback, which will set the native handle on
-    // the interop wrapper (if created above)
-    {
-      auto lock = std::scoped_lock{media_track_callback_mutex_};
-      auto cb = audio_track_added_callback_;
-      if (cb) {
-        mrsTransceiverHandle tranceiver_handle = transceiver.release();
-        mrsRemoteAudioTrackHandle audio_handle = remote_audio_track.release();
-        cb(interop_handle, audio_handle, transceiver_interop_handle,
-           tranceiver_handle);
-      }
-    }
+    AddRemoteMediaTrack<mrsMediaKind::kAudio>(
+        std::move(track), track_name.c_str(), receiver.get(),
+        remote_audio_tracks_,
+        interop_callbacks_.remote_audio_track_create_object,
+        &audio_track_added_callback_);
   } else if (track_kind_str == webrtc::MediaStreamTrackInterface::kVideoKind) {
-    rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track(
-        static_cast<webrtc::VideoTrackInterface*>(track.release()));
-
-    // Create an interop wrapper for the new native object if needed
-    mrsRemoteVideoTrackInteropHandle interop_handle{};
-    if (auto create_cb = interop_callbacks_.remote_video_track_create_object) {
-      mrsRemoteVideoTrackConfig config;
-      config.track_name = track_name.c_str();
-      interop_handle = (*create_cb)(interop_handle_, config);
-    }
-
-    // Get or create the transceiver wrapper based on the RTP receiver. Because
-    // this callback is fired before the one at the end of the remote
-    // description being applied, the transceiver wrappers for the newly added
-    // RTP transceivers have not been created yet, so create them here.
-    auto ret =
-        GetOrCreateTransceiverForNewRemoteTrack(mrsMediaKind::kVideo, receiver);
-    if (!ret.ok()) {
-      return;
-    }
-    RefPtr<Transceiver> transceiver = ret.MoveValue();
-
-    // The transceiver wrapper might have been created, in which case we need to
-    // inform its interop wrapper of its handle.
-    mrsTransceiverInteropHandle transceiver_interop_handle =
-        transceiver->GetInteropHandle();
-
-    // Create the native object
-    RefPtr<RemoteVideoTrack> remote_video_track = new RemoteVideoTrack(
-        global_factory_, *this, transceiver, std::move(video_track),
-        std::move(receiver), interop_handle);
-    {
-      rtc::CritScope lock(&tracks_mutex_);
-      remote_video_tracks_.emplace_back(remote_video_track);
-    }
-
-    // Invoke the VideoTrackAdded callback, which will set the native handle on
-    // the interop wrapper (if created above)
-    {
-      auto lock = std::scoped_lock{media_track_callback_mutex_};
-      auto cb = video_track_added_callback_;
-      if (cb) {
-        mrsTransceiverHandle tranceiver_handle = transceiver.release();
-        mrsRemoteVideoTrackHandle video_handle = remote_video_track.release();
-        cb(interop_handle, video_handle, transceiver_interop_handle,
-           tranceiver_handle);
-      }
-    }
+    AddRemoteMediaTrack<mrsMediaKind::kVideo>(
+        std::move(track), track_name.c_str(), receiver.get(),
+        remote_video_tracks_,
+        interop_callbacks_.remote_video_track_create_object,
+        &video_track_added_callback_);
   }
 }
 
@@ -1571,63 +1627,15 @@ void PeerConnectionImpl::OnRemoveTrack(
     RTC_LOG(LS_INFO) << "- Track #" << receiver->id() << " with stream #"
                      << stream->id();
   }
-
-  // Unregister the remote observer
   rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
       receiver->track();
   const std::string& track_kind_str = track->kind();
   if (track_kind_str == webrtc::MediaStreamTrackInterface::kAudioKind) {
-    rtc::CritScope tracks_lock(&tracks_mutex_);
-    auto it =
-        std::find_if(remote_audio_tracks_.begin(), remote_audio_tracks_.end(),
-                     [&receiver](const RefPtr<RemoteAudioTrack>& remote_track) {
-                       return (remote_track->receiver() == receiver);
-                     });
-    if (it == remote_audio_tracks_.end()) {
-      return;
-    }
-    RefPtr<RemoteAudioTrack> audio_track = std::move(*it);
-    RefPtr<Transceiver> audio_transceiver = audio_track->GetTransceiver();
-    remote_audio_tracks_.erase(it);
-    audio_track->OnTrackRemoved(*this);
-
-    // Invoke the TrackRemoved callback
-    if (auto interop_handle = audio_track->GetInteropHandle()) {
-      auto lock = std::scoped_lock{media_track_callback_mutex_};
-      auto cb = audio_track_removed_callback_;
-      if (cb) {
-        auto transceiver_interop_handle = audio_transceiver->GetInteropHandle();
-        cb(interop_handle, audio_track.get(), transceiver_interop_handle,
-           audio_transceiver.get());
-      }
-    }
-    // |audio_track| goes out of scope and destroys the C++ instance
+    RemoveRemoteMediaTrack<mrsMediaKind::kAudio>(
+        receiver.get(), remote_audio_tracks_, &audio_track_removed_callback_);
   } else if (track_kind_str == webrtc::MediaStreamTrackInterface::kVideoKind) {
-    rtc::CritScope tracks_lock(&tracks_mutex_);
-    auto it =
-        std::find_if(remote_video_tracks_.begin(), remote_video_tracks_.end(),
-                     [&receiver](const RefPtr<RemoteVideoTrack>& remote_track) {
-                       return (remote_track->receiver() == receiver);
-                     });
-    if (it == remote_video_tracks_.end()) {
-      return;
-    }
-    RefPtr<RemoteVideoTrack> video_track = std::move(*it);
-    RefPtr<Transceiver> video_transceiver = video_track->GetTransceiver();
-    remote_video_tracks_.erase(it);
-    video_track->OnTrackRemoved(*this);
-
-    // Invoke the TrackRemoved callback
-    if (auto interop_handle = video_track->GetInteropHandle()) {
-      auto lock = std::scoped_lock{media_track_callback_mutex_};
-      auto cb = video_track_removed_callback_;
-      if (cb) {
-        auto transceiver_interop_handle = video_transceiver->GetInteropHandle();
-        cb(interop_handle, video_track.get(), transceiver_interop_handle,
-           video_transceiver.get());
-      }
-    }
-    // |video_track| goes out of scope and destroys the C++ instance
+    RemoveRemoteMediaTrack<mrsMediaKind::kVideo>(
+        receiver.get(), remote_video_tracks_, &video_track_removed_callback_);
   }
 }
 
