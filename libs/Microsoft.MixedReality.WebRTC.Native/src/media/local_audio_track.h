@@ -47,7 +47,7 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// Constructor for a track added to a peer connection.
   LocalAudioTrack(RefPtr<GlobalFactory> global_factory,
                   PeerConnection& owner,
-                  RefPtr<Transceiver> transceiver,
+                  Transceiver* transceiver,
                   rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
                   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
                   mrsLocalAudioTrackInteropHandle interop_handle) noexcept;
@@ -66,7 +66,9 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// See |SetEnabled(bool)|.
   [[nodiscard]] bool IsEnabled() const noexcept;
 
-  [[nodiscard]] RefPtr<Transceiver> GetTransceiver() const noexcept;
+  [[nodiscard]] Transceiver* GetTransceiver() const noexcept {
+    return transceiver_;
+  }
 
   //
   // Advanced use
@@ -89,14 +91,14 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// state of the object.
   void OnAddedToPeerConnection(
       PeerConnection& owner,
-      RefPtr<Transceiver> transceiver,
+      Transceiver* transceiver,
       rtc::scoped_refptr<webrtc::RtpSenderInterface> sender);
 
   /// Internal callback on removed from a peer connection to update the internal
   /// state of the object.
   void OnRemovedFromPeerConnection(
       PeerConnection& old_owner,
-      RefPtr<Transceiver> old_transceiver,
+      Transceiver* old_transceiver,
       rtc::scoped_refptr<webrtc::RtpSenderInterface> old_sender);
 
   void RemoveFromPeerConnection(webrtc::PeerConnectionInterface& peer);
@@ -108,8 +110,9 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// RTP sender this track is associated with.
   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender_;
 
-  /// Transceiver this track is associated with, if any.
-  RefPtr<Transceiver> transceiver_;
+  /// Weak back-pointer to the Transceiver this track is associated with, if
+  /// any. This avoids a circular reference with the transceiver itself.
+  Transceiver* transceiver_{nullptr};
 
   /// Optional interop handle, if associated with an interop wrapper.
   mrsLocalAudioTrackInteropHandle interop_handle_{};
