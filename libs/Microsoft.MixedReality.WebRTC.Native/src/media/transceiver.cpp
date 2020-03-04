@@ -108,12 +108,12 @@ Transceiver::Transceiver(
 Transceiver::~Transceiver() {
   // RTC_CHECK(!owner_);
 
-  // Keep the local track alive for now. This prevents it from being destroyed
-  // when detaching from it below if |local_track_| is the last reference, which
-  // would invoke its destructor while the transceiver is in an inconsistent
-  // state (in the middle of being destroyed), and would trigger some assertion
-  // in Debug build.
+  // Keep the tracks alive for now. This prevents them from being destroyed when
+  // detaching them below, which would invoke their destructor while the
+  // transceiver is in an inconsistent state (in the middle of being destroyed),
+  // and would trigger some assertion in Debug build.
   RefPtr<MediaTrack> local_track = local_track_;
+  RefPtr<MediaTrack> remote_track = remote_track_;
 
   // Detach the local track from this transceiver. This will clear the
   // |local_track_| member.
@@ -135,7 +135,17 @@ Transceiver::~Transceiver() {
 
   // Detach the remote track too. This transceiver is its sole owner, so this
   // will destroy it.
-  remote_track_ = nullptr;
+  if (remote_track_) {
+    if (GetMediaKind() == MediaKind::kAudio) {
+      auto const track = (RemoteAudioTrack*)remote_track_.get();
+      track->OnTrackRemoved(*owner_);
+    } else {
+      RTC_DCHECK(GetMediaKind() == MediaKind::kVideo);
+      auto const track = (RemoteVideoTrack*)remote_track_.get();
+      track->OnTrackRemoved(*owner_);
+    }
+  }
+  RTC_DCHECK(!remote_track_);
 
   // Be sure to clean-up WebRTC objects before unregistering ourself, which
   // could lead to the GlobalFactory being destroyed and the WebRTC threads

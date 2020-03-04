@@ -12,7 +12,7 @@ namespace Microsoft::MixedReality::WebRTC {
 RemoteAudioTrack::RemoteAudioTrack(
     RefPtr<GlobalFactory> global_factory,
     PeerConnection& owner,
-    RefPtr<Transceiver> transceiver,
+    Transceiver* transceiver,
     rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
     mrsRemoteAudioTrackInteropHandle interop_handle) noexcept
@@ -21,7 +21,7 @@ RemoteAudioTrack::RemoteAudioTrack(
                  owner),
       track_(std::move(track)),
       receiver_(std::move(receiver)),
-      transceiver_(std::move(transceiver)),
+      transceiver_(transceiver),
       interop_handle_(interop_handle),
       track_name_(track_->id()) {
   RTC_CHECK(owner_);
@@ -47,14 +47,10 @@ webrtc::RtpReceiverInterface* RemoteAudioTrack::receiver() const {
   return receiver_.get();
 }
 
-Transceiver* RemoteAudioTrack::GetTransceiver() const {
-  return transceiver_.get();
-}
-
 void RemoteAudioTrack::OnTrackRemoved(PeerConnection& owner) {
   RTC_DCHECK(owner_ == &owner);
   RTC_DCHECK(receiver_ != nullptr);
-  RTC_DCHECK(transceiver_.get() != nullptr);
+  RTC_DCHECK(transceiver_ != nullptr);
   owner_ = nullptr;
   receiver_ = nullptr;
   transceiver_->OnRemoteTrackRemoved(this);
