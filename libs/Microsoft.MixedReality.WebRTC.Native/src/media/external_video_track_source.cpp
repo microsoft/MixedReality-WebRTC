@@ -116,31 +116,33 @@ namespace detail {
 constexpr const size_t kMaxPendingRequestCount = 64;
 
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceImpl::create(
+    RefPtr<GlobalFactory> global_factory,
     std::unique_ptr<BufferAdapter> adapter) {
-  auto source = new ExternalVideoTrackSourceImpl(std::move(adapter));
-
-  // Video track sources start already capturing; there is no start/stop
-  // mechanism at the track level in WebRTC. A source is either being
-  // initialized, or is already live.
-  source->StartCapture();
-
+  auto source = new ExternalVideoTrackSourceImpl(std::move(global_factory),
+                                                 std::move(adapter));
+  // Note: Video track sources always start already capturing; there is no
+  // start/stop mechanism at the track level in WebRTC. A source is either being
+  // initialized, or is already live. However because of wrappers and interop
+  // this step is delayed until |FinishCreation()| is called by the wrapper.
   return source;
 }
 
 ExternalVideoTrackSourceImpl::ExternalVideoTrackSourceImpl(
+    RefPtr<GlobalFactory> global_factory,
     std::unique_ptr<BufferAdapter> adapter)
-    : track_source_(new rtc::RefCountedObject<CustomTrackSourceAdapter>()),
+    : ExternalVideoTrackSource(std::move(global_factory)),
+      track_source_(new rtc::RefCountedObject<CustomTrackSourceAdapter>()),
       adapter_(std::forward<std::unique_ptr<BufferAdapter>>(adapter)),
       capture_thread_(rtc::Thread::Create()) {
   capture_thread_->SetName("ExternalVideoTrackSource capture thread", this);
-  GlobalFactory::Instance()->AddObject(ObjectType::kExternalVideoTrackSource,
-                                       this);
 }
 
 ExternalVideoTrackSourceImpl::~ExternalVideoTrackSourceImpl() {
   StopCapture();
-  GlobalFactory::Instance()->RemoveObject(ObjectType::kExternalVideoTrackSource,
-                                          this);
+}
+
+void ExternalVideoTrackSourceImpl::FinishCreation() {
+  StartCapture();
 }
 
 void ExternalVideoTrackSourceImpl::StartCapture() {
@@ -280,15 +282,24 @@ void ExternalVideoTrackSourceImpl::OnMessage(rtc::Message* message) {
 
 }  // namespace detail
 
+ExternalVideoTrackSource::ExternalVideoTrackSource(
+    RefPtr<GlobalFactory> global_factory)
+    : TrackedObject(std::move(global_factory),
+                    ObjectType::kExternalVideoTrackSource) {}
+
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSource::createFromI420A(
+    RefPtr<GlobalFactory> global_factory,
     RefPtr<I420AExternalVideoSource> video_source) {
   return detail::ExternalVideoTrackSourceImpl::create(
+      std::move(global_factory),
       std::make_unique<I420ABufferAdapter>(std::move(video_source)));
 }
 
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSource::createFromArgb32(
+    RefPtr<GlobalFactory> global_factory,
     RefPtr<Argb32ExternalVideoSource> video_source) {
   return detail::ExternalVideoTrackSourceImpl::create(
+      std::move(global_factory),
       std::make_unique<Argb32BufferAdapter>(std::move(video_source)));
 }
 

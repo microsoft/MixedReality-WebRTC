@@ -53,7 +53,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Internal timing helper
         /// </summary>
         private float timeSincePollMs = 0f;
-        
+
         /// <summary>
         /// Internal last poll response status flag
         /// </summary>
@@ -223,12 +223,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     switch (msg.MessageType)
                     {
                         case Message.WireMessageType.Offer:
-                            _nativePeer.SetRemoteDescription("offer", msg.Data);
+                            _nativePeer.SetRemoteDescriptionAsync("offer", msg.Data).Wait();
                             // if we get an offer, we immediately send an answer
                             _nativePeer.CreateAnswer();
                             break;
                         case Message.WireMessageType.Answer:
-                            _nativePeer.SetRemoteDescription("answer", msg.Data);
+                            _ = _nativePeer.SetRemoteDescriptionAsync("answer", msg.Data);
                             break;
                         case Message.WireMessageType.Ice:
                             // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
@@ -248,6 +248,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                             Debug.Log("Unknown message: " + msg.MessageType + ": " + msg.Data);
                             break;
                     }
+
+                    timeSincePollMs = PollTimeMs + 1f; //fast forward next request
                 }
                 else if (AutoLogErrors)
                 {

@@ -13,7 +13,7 @@
 #include "str.h"
 
 // Internal
-#include "interop/interop_api.h"
+#include "interop_api.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 
@@ -75,7 +75,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   [[nodiscard]] int id() const { return data_channel_->id(); }
 
   /// Get the friendly channel name.
-  [[nodiscard]] MRS_API str label() const;
+  [[nodiscard]] str label() const;
 
   void SetMessageCallback(MessageCallback callback) noexcept;
   void SetBufferingCallback(BufferingCallback callback) noexcept;
@@ -83,10 +83,10 @@ class DataChannel : public webrtc::DataChannelObserver {
 
   /// Get the maximum buffering size, in bytes, before |Send()| stops accepting
   /// data.
-  [[nodiscard]] MRS_API size_t GetMaxBufferingSize() const noexcept;
+  [[nodiscard]] size_t GetMaxBufferingSize() const noexcept;
 
   /// Send a blob of data through the data channel.
-  MRS_API bool Send(const void* data, size_t size) noexcept;
+  bool Send(const void* data, size_t size) noexcept;
 
   //
   // Advanced use

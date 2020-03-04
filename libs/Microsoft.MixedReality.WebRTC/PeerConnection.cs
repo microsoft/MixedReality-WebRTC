@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -350,152 +349,6 @@ namespace Microsoft.MixedReality.WebRTC
             /// </summary>
             Data = 3
         };
-
-        /// <summary>
-        /// Kind of video profile. This corresponds to the <see xref="Windows.Media.Capture.KnownVideoProfile"/>
-        /// enum of the <see xref="Windows.Media.Capture.MediaCapture"/> API.
-        /// </summary>
-        /// <seealso href="https://docs.microsoft.com/en-us/uwp/api/windows.media.capture.knownvideoprofile"/>
-        public enum VideoProfileKind : int
-        {
-            /// <summary>
-            /// Unspecified video profile kind. Used to remove any constraint on the video profile kind.
-            /// </summary>
-            Unspecified,
-
-            /// <summary>
-            /// Video profile for video recording, often of higher quality and framerate at the expense
-            /// of power consumption and latency.
-            /// </summary>
-            VideoRecording,
-
-            /// <summary>
-            /// Video profile for high quality photo capture.
-            /// </summary>
-            HighQualityPhoto,
-
-            /// <summary>
-            /// Balanced video profile to capture both videos and photos.
-            /// </summary>
-            BalancedVideoAndPhoto,
-
-            /// <summary>
-            /// Video profile for video conferencing, often of lower power consumption
-            /// and lower latency by deprioritizing higher resolutions.
-            /// This is the recommended profile for most WebRTC applications, if supported.
-            /// </summary>
-            VideoConferencing,
-
-            /// <summary>
-            /// Video profile for capturing a sequence of photos.
-            /// </summary>
-            PhotoSequence,
-
-            /// <summary>
-            /// Video profile containing high framerate capture formats.
-            /// </summary>
-            HighFrameRate,
-
-            /// <summary>
-            /// Video profile for capturing a variable sequence of photos.
-            /// </summary>
-            VariablePhotoSequence,
-
-            /// <summary>
-            /// Video profile for capturing videos with High Dynamic Range (HDR) and Wide Color Gamut (WCG).
-            /// </summary>
-            HdrWithWcgVideo,
-
-            /// <summary>
-            /// Video profile for capturing photos with High Dynamic Range (HDR) and Wide Color Gamut (WCG).
-            /// </summary>
-            HdrWithWcgPhoto,
-
-            /// <summary>
-            /// Video profile for capturing videos with High Dynamic Range (HDR).
-            /// </summary>
-            VideoHdr8,
-        };
-
-        /// <summary>
-        /// Settings for adding a local video track.
-        /// </summary>
-        public class LocalVideoTrackSettings
-        {
-            /// <summary>
-            /// Name of the track to create, as used for the SDP negotiation.
-            /// This name needs to comply with the requirements of an SDP token, as described in the SDP RFC
-            /// https://tools.ietf.org/html/rfc4566#page-43. In particular the name cannot contain spaces nor
-            /// double quotes <code>"</code>.
-            /// The track name can optionally be empty, in which case the implementation will create a valid
-            /// random track name.
-            /// </summary>
-            public string trackName = string.Empty;
-
-            /// <summary>
-            /// Optional video capture device to use for capture.
-            /// Use the default device if not specified.
-            /// </summary>
-            public VideoCaptureDevice videoDevice = default;
-
-            /// <summary>
-            /// Optional unique identifier of the video profile to use for capture,
-            /// if the device supports video profiles, as retrieved by one of:
-            /// - <see xref="MediaCapture.FindAllVideoProfiles"/>
-            /// - <see xref="MediaCapture.FindKnownVideoProfiles"/>
-            /// This requires <see cref="videoDevice"/> to be specified.
-            /// </summary>
-            public string videoProfileId = string.Empty;
-
-            /// <summary>
-            /// Optional video profile kind to restrict the list of video profiles to consider.
-            /// Note that this is not exclusive with <see cref="videoProfileId"/>, although in
-            /// practice it is recommended to specify only one or the other.
-            /// This requires <see cref="videoDevice"/> to be specified.
-            /// </summary>
-            public VideoProfileKind videoProfileKind = VideoProfileKind.Unspecified;
-
-            /// <summary>
-            /// Enable Mixed Reality Capture (MRC) on devices supporting the feature.
-            /// This setting is silently ignored on device not supporting MRC.
-            /// </summary>
-            /// <remarks>
-            /// This is only supported on UWP.
-            /// </remarks>
-            public bool enableMrc = true;
-
-            /// <summary>
-            /// Display the on-screen recording indicator while MRC is enabled.
-            /// This setting is silently ignored on device not supporting MRC, or if
-            /// <see cref="enableMrc"/> is set to <c>false</c>.
-            /// </summary>
-            /// <remarks>
-            /// This is only supported on UWP.
-            /// </remarks>
-            public bool enableMrcRecordingIndicator = true;
-
-            /// <summary>
-            /// Optional capture resolution width, in pixels.
-            /// This must be a resolution width the device supports.
-            /// </summary>
-            public uint? width;
-
-            /// <summary>
-            /// Optional capture resolution height, in pixels.
-            /// This must be a resolution width the device supports.
-            /// </summary>
-            public uint? height;
-
-            /// <summary>
-            /// Optional capture frame rate, in frames per second (FPS).
-            /// This must be a capture framerate the device supports.
-            /// </summary>
-            /// <remarks>
-            /// This is compared by strict equality, so is best left unspecified or to an exact value
-            /// retrieved by <see cref="GetVideoCaptureFormatsAsync"/>.
-            /// </remarks>
-            public double? framerate;
-        }
 
 
         #region Codec filtering
@@ -1069,27 +922,25 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 // On UWP this cannot be called from the main UI thread, so always call it from
                 // a background worker thread.
-                var config = (settings != null ? new PeerConnectionInterop.VideoDeviceConfiguration
-                {
-                    VideoDeviceId = settings.videoDevice.id,
-                    VideoProfileId = settings.videoProfileId,
-                    VideoProfileKind = settings.videoProfileKind,
-                    Width = settings.width.GetValueOrDefault(0),
-                    Height = settings.height.GetValueOrDefault(0),
-                    Framerate = settings.framerate.GetValueOrDefault(0.0),
-                    EnableMixedRealityCapture = (mrsBool)settings.enableMrc,
-                    EnableMRCRecordingIndicator = (mrsBool)settings.enableMrcRecordingIndicator
-                } : new PeerConnectionInterop.VideoDeviceConfiguration());
-                string trackName = settings.trackName;
-                if (trackName.Length == 0)
+
+                string trackName = settings?.trackName;
+                if (string.IsNullOrEmpty(trackName))
                 {
                     trackName = Guid.NewGuid().ToString();
                 }
-                uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, trackName, config,
+
+                // Create interop wrappers
+                var trackWrapper = new LocalVideoTrack(this, trackName);
+
+                // Parse settings
+                var config = new PeerConnectionInterop.LocalVideoTrackInteropInitConfig(trackWrapper, settings);
+
+                // Create native implementation objects
+                uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, trackName, in config,
                     out LocalVideoTrackHandle trackHandle);
                 Utils.ThrowOnErrorCode(res);
-                var track = new LocalVideoTrack(trackHandle, this, settings.trackName);
-                return track;
+                trackWrapper.SetHandle(trackHandle);
+                return trackWrapper;
             });
         }
 
@@ -1111,12 +962,29 @@ namespace Microsoft.MixedReality.WebRTC
         /// provides video frames directly to WebRTC when asked to do so via the provided callback.
         /// </summary>
         /// <param name="trackName">Name of the new track.</param>
-        /// <param name="externalSource">External source providing the frames for the track.</param>
-        public LocalVideoTrack AddCustomLocalVideoTrack(string trackName, ExternalVideoTrackSource externalSource)
+        /// <param name="source">External source providing the frames for the track.</param>
+        public LocalVideoTrack AddCustomLocalVideoTrack(string trackName, ExternalVideoTrackSource source)
         {
             ThrowIfConnectionNotOpen();
-            return PeerConnectionInterop.AddLocalVideoTrackFromExternalSource(this, _nativePeerhandle,
-                trackName, externalSource);
+
+            if (string.IsNullOrEmpty(trackName))
+            {
+                trackName = Guid.NewGuid().ToString();
+            }
+
+            // Create interop wrappers
+            var trackWrapper = new LocalVideoTrack(this, trackName, source);
+
+            // Parse settings
+            var config = new PeerConnectionInterop.LocalVideoTrackFromExternalSourceInteropInitConfig(trackWrapper, source);
+
+            // Create native implementation objects
+            uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrackFromExternalSource(_nativePeerhandle, trackName,
+                source._nativeHandle, in config, out LocalVideoTrackHandle trackHandle);
+            Utils.ThrowOnErrorCode(res);
+            trackWrapper.SetHandle(trackHandle);
+            source.OnTracksAddedToSource(this);
+            return trackWrapper;
         }
 
         /// <summary>
@@ -1280,26 +1148,24 @@ namespace Microsoft.MixedReality.WebRTC
         /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         private async Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable)
         {
-            // Preconditions
             ThrowIfConnectionNotOpen();
-
-            // Create the wrapper
-            var config = new DataChannelInterop.CreateConfig
-            {
-                id = id,
-                label = label,
-                flags = (ordered ? 0x1u : 0x0u) | (reliable ? 0x2u : 0x0u)
-            };
-            DataChannelInterop.Callbacks callbacks;
-            var dataChannel = DataChannelInterop.CreateWrapper(this, config, out callbacks);
-            if (dataChannel == null)
-            {
-                return null;
-            }
 
             // Create the native channel
             return await Task.Run(() =>
             {
+                // Create the wrapper
+                var config = new DataChannelInterop.CreateConfig
+                {
+                    id = id,
+                    label = label,
+                    flags = (ordered ? 0x1u : 0x0u) | (reliable ? 0x2u : 0x0u)
+                };
+                DataChannelInterop.Callbacks callbacks;
+                var dataChannel = DataChannelInterop.CreateWrapper(this, config, out callbacks);
+                if (dataChannel == null)
+                {
+                    return null;
+                }
                 IntPtr nativeHandle = IntPtr.Zero;
                 var wrapperGCHandle = GCHandle.Alloc(dataChannel, GCHandleType.Normal);
                 var wrapperHandle = GCHandle.ToIntPtr(wrapperGCHandle);
@@ -1405,26 +1271,18 @@ namespace Microsoft.MixedReality.WebRTC
         /// Pass the given SDP description received from the remote peer via signaling to the
         /// underlying WebRTC implementation, which will parse and use it.
         ///
-        /// This must be called by the signaler when receiving a message.
+        /// This must be called by the signaler when receiving a message. Once this operation
+        /// has completed, it is safe to call <see cref="CreateAnswer"/>.
         /// </summary>
         /// <param name="type">The type of SDP message ("offer" or "answer")</param>
         /// <param name="sdp">The content of the SDP message</param>
+        /// <returns>Returns a task which completes once the remote description has been applied and transceivers
+        /// have been updated.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
-        public void SetRemoteDescription(string type, string sdp)
+        public Task SetRemoteDescriptionAsync(string type, string sdp)
         {
             ThrowIfConnectionNotOpen();
-
-            // If the user specified a preferred audio or video codec, manipulate the SDP message
-            // to exclude other codecs if the preferred one is supported.
-            // We set the local codec params by forcing them here. There seems to be no direct way to set
-            // local codec params so we "pretend" that the remote endpoint is asking for them.
-            string newSdp = ForceSdpCodecs(sdp: sdp,
-                audio: PreferredAudioCodec,
-                audioParams: PreferredAudioCodecExtraParamsLocal,
-                video: PreferredVideoCodec,
-                videoParams: PreferredVideoCodecExtraParamsLocal);
-
-            PeerConnectionInterop.PeerConnection_SetRemoteDescription(_nativePeerhandle, type, newSdp);
+            return PeerConnectionInterop.SetRemoteDescriptionAsync(_nativePeerhandle, type, sdp);
         }
 
         #endregion
@@ -1832,30 +1690,32 @@ namespace Microsoft.MixedReality.WebRTC
             // Ensure the logging system is ready before using PInvoke.
             MainEventSource.Log.Initialize();
 
-            var devices = new List<VideoCaptureDevice>();
-            var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-            var wrapper = new PeerConnectionInterop.EnumVideoCaptureDeviceWrapper()
-            {
-                enumCallback = (id, name) =>
-                {
-                    devices.Add(new VideoCaptureDevice() { id = id, name = name });
-                },
-                completedCallback = () =>
-                {
-                    // On enumeration end, signal the caller thread
-                    eventWaitHandle.Set();
-                },
-                // Keep delegates alive
-                EnumTrampoline = PeerConnectionInterop.VideoCaptureDevice_EnumCallback,
-                CompletedTrampoline = PeerConnectionInterop.VideoCaptureDevice_EnumCompletedCallback
-            };
-
-            // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
-            var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
-            IntPtr userData = GCHandle.ToIntPtr(handle);
-
+            // Always call this on a background thread, this is possibly the first call to the library so needs
+            // to initialize the global factory, and that cannot be done from the main UI thread on UWP.
             return Task.Run(() =>
             {
+                var devices = new List<VideoCaptureDevice>();
+                var eventWaitHandle = new ManualResetEventSlim(initialState: false);
+                var wrapper = new PeerConnectionInterop.EnumVideoCaptureDeviceWrapper()
+                {
+                    enumCallback = (id, name) =>
+                    {
+                        devices.Add(new VideoCaptureDevice() { id = id, name = name });
+                    },
+                    completedCallback = () =>
+                    {
+                        // On enumeration end, signal the caller thread
+                        eventWaitHandle.Set();
+                    },
+                    // Keep delegates alive
+                    EnumTrampoline = PeerConnectionInterop.VideoCaptureDevice_EnumCallback,
+                    CompletedTrampoline = PeerConnectionInterop.VideoCaptureDevice_EnumCompletedCallback
+                };
+
+                // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
+                var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
+                IntPtr userData = GCHandle.ToIntPtr(handle);
+
                 // Execute the native async callback
                 uint res = PeerConnectionInterop.EnumVideoCaptureDevicesAsync(
                     wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
@@ -1869,7 +1729,7 @@ namespace Microsoft.MixedReality.WebRTC
                 }
 
                 // Wait for end of enumerating
-                eventWaitHandle.WaitOne();
+                eventWaitHandle.Wait();
 
                 // Clean-up and release the wrapper delegates
                 handle.Free();
@@ -1890,42 +1750,44 @@ namespace Microsoft.MixedReality.WebRTC
             // Ensure the logging system is ready before using PInvoke.
             MainEventSource.Log.Initialize();
 
-            var formats = new List<VideoCaptureFormat>();
-            var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-            var wrapper = new PeerConnectionInterop.EnumVideoCaptureFormatsWrapper()
-            {
-                enumCallback = (width, height, framerate, fourcc) =>
-                {
-                    formats.Add(new VideoCaptureFormat() { width = width, height = height, framerate = framerate, fourcc = fourcc });
-                },
-                completedCallback = (Exception _) =>
-                {
-                    // On enumeration end, signal the caller thread
-                    eventWaitHandle.Set();
-                },
-                // Keep delegates alive
-                EnumTrampoline = PeerConnectionInterop.VideoCaptureFormat_EnumCallback,
-                CompletedTrampoline = PeerConnectionInterop.VideoCaptureFormat_EnumCompletedCallback
-            };
-
-            // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
-            var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
-            IntPtr userData = GCHandle.ToIntPtr(handle);
-
-            // Execute the native async callback
-            uint res = PeerConnectionInterop.EnumVideoCaptureFormatsAsync(deviceId,
-                    wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
-            if (res != Utils.MRS_SUCCESS)
-            {
-                // Clean-up and release the wrapper delegates
-                handle.Free();
-
-                Utils.ThrowOnErrorCode(res);
-                return null; // for the compiler
-            }
-
+            // Always call this on a background thread, this is possibly the first call to the library so needs
+            // to initialize the global factory, and that cannot be done from the main UI thread on UWP.
             return Task.Run(() =>
             {
+                var formats = new List<VideoCaptureFormat>();
+                var eventWaitHandle = new EventWaitHandle(initialState: false, EventResetMode.ManualReset);
+                var wrapper = new PeerConnectionInterop.EnumVideoCaptureFormatsWrapper()
+                {
+                    enumCallback = (width, height, framerate, fourcc) =>
+                    {
+                        formats.Add(new VideoCaptureFormat() { width = width, height = height, framerate = framerate, fourcc = fourcc });
+                    },
+                    completedCallback = (Exception _) =>
+                    {
+                        // On enumeration end, signal the caller thread
+                        eventWaitHandle.Set();
+                    },
+                    // Keep delegates alive
+                    EnumTrampoline = PeerConnectionInterop.VideoCaptureFormat_EnumCallback,
+                    CompletedTrampoline = PeerConnectionInterop.VideoCaptureFormat_EnumCompletedCallback
+                };
+
+                // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
+                var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
+                IntPtr userData = GCHandle.ToIntPtr(handle);
+
+                // Execute the native async callback.
+                uint res = PeerConnectionInterop.EnumVideoCaptureFormatsAsync(deviceId,
+                    wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
+                if (res != Utils.MRS_SUCCESS)
+                {
+                    // Clean-up and release the wrapper delegates
+                    handle.Free();
+
+                    Utils.ThrowOnErrorCode(res);
+                    return null; // for the compiler
+                }
+
                 // Wait for end of enumerating
                 eventWaitHandle.WaitOne();
 

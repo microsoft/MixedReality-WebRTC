@@ -6,18 +6,15 @@
 #include "pch.h"
 
 #include "interop/global_factory.h"
-#include "local_video_track.h"
+#include "media/local_video_track.h"
 #include "peer_connection.h"
+#include "utils.h"
+
+#include <exception>
 
 namespace {
 
 using namespace Microsoft::MixedReality::WebRTC;
-
-/// Global factory of all global objects, including the peer connection factory
-/// itself, with added thread safety. This keeps a track of all objects alive,
-/// to determine when it is safe to release the WebRTC threads, thereby allowing
-/// a DLL linking this code to be unloaded.
-std::unique_ptr<GlobalFactory> g_factory = std::make_unique<GlobalFactory>();
 
 /// Utility to convert an ObjectType to a string, for debugging purpose. This
 /// returns a view over a global constant buffer (static storage), which is
@@ -32,20 +29,20 @@ std::string_view ObjectTypeToString(ObjectType type) {
 }
 
 /// Utility to format a tracked object into a string, for debugging purpose.
-std::string ObjectToString(ObjectType type, TrackedObject* obj) {
+std::string ObjectToString(TrackedObject* obj) {
   // rtc::StringBuilder doesn't support std::string_view, nor Append(). And
   // asbl::string_view is not constexpr-friendly on MSVC due to strlen().
   // rtc::SimpleStringBuilder supports Append(), but cannot dynamically resize.
   // Assume that the object name will not be too long, and use that one.
   char buffer[512];
   rtc::SimpleStringBuilder builder(buffer);
-  builder << "(";
-  std::string_view sv = ObjectTypeToString(type);
-  builder.Append(sv.data(), sv.length());
   if (obj) {
+    builder << "(";
+    std::string_view sv = ObjectTypeToString(obj->GetObjectType());
+    builder.Append(sv.data(), sv.length());
     builder << ") " << obj->GetName();
   } else {
-    builder << ") NULL";
+    builder << "NULL";
   }
   return builder.str();
 }
@@ -54,61 +51,110 @@ std::string ObjectToString(ObjectType type, TrackedObject* obj) {
 
 namespace Microsoft::MixedReality::WebRTC {
 
-const std::unique_ptr<GlobalFactory>& GlobalFactory::Instance() {
-  return g_factory;
+uint32_t GlobalFactory::StaticReportLiveObjects() noexcept {
+  // Lock the instance to prevent shutdown if it already exists, while
+  // enumerating live objects.
+  RefPtr<GlobalFactory> factory(InstancePtrIfExist());
+  if (factory) {
+    return factory->ReportLiveObjects();
+  }
+  return 0;
+}
+
+mrsShutdownOptions GlobalFactory::GetShutdownOptions() noexcept {
+  GlobalFactory* const factory = GetInstance();
+  std::scoped_lock lock(factory->mutex_);
+  return factory->shutdown_options_;
+}
+
+void GlobalFactory::SetShutdownOptions(mrsShutdownOptions options) noexcept {
+  // Unconditionally set shutdown options whether or not the instance is
+  // initialized. So no need to acquire the init lock.
+  GlobalFactory* const factory = GetInstance();
+  // However, acquire the thread-safety mutex protecting concurrent accesses.
+  std::scoped_lock lock(factory->mutex_);
+  factory->shutdown_options_ = options;
+}
+
+void GlobalFactory::ForceShutdown() noexcept {
+  GlobalFactory* const factory = GetInstance();
+  std::scoped_lock lock(factory->init_mutex_);
+  if (!factory->peer_factory_) {
+    return;
+  }
+  try {
+    factory->ShutdownImplNoLock(ShutdownAction::kForceShutdown);
+  } catch (std::exception& e) {
+    RTC_LOG(LS_ERROR) << "Failed to shutdown library with exception: "
+                      << e.what();
+  } catch (...) {
+    RTC_LOG(LS_ERROR) << "Failed to shutdown library due to unknown exception.";
+  }
+}
+
+bool GlobalFactory::TryShutdown() noexcept {
+  GlobalFactory* const factory = GetInstance();
+  std::scoped_lock lock(factory->init_mutex_);
+  if (!factory->peer_factory_) {
+    return true;
+  }
+  try {
+    return factory->ShutdownImplNoLock(ShutdownAction::kTryShutdownIfSafe);
+  } catch (std::exception& e) {
+    RTC_LOG(LS_ERROR)
+        << "Failed to attempt to shutdown library with exception: " << e.what();
+  } catch (...) {
+    RTC_LOG(LS_ERROR)
+        << "Failed to attempt to shutdown library due to unknown exception.";
+  }
+  return false;  // failed to shutdown
+}
+
+GlobalFactory* GlobalFactory::GetInstance() {
+  // Use C++11 thread-safety guarantee to ensure a single instance is created.
+  // It will be destroyed automatically on module unload. The "library
+  // initialized" concept refers to this instance being initialized or not.
+  static std::unique_ptr<GlobalFactory> s_factory(new GlobalFactory());
+  return s_factory.get();
+}
+
+RefPtr<GlobalFactory> GlobalFactory::GetInstancePtrImpl(
+    bool ensureInitialized) {
+  GlobalFactory* const factory = GetInstance();
+  std::scoped_lock lock(factory->init_mutex_);
+  if (factory->peer_factory_) {
+    RefPtr<GlobalFactory> ptr(factory);
+    return ptr;  // moved
+  }
+  if (!ensureInitialized) {
+    return nullptr;
+  }
+  mrsResult result = factory->InitializeImplNoLock();
+  if (result != Result::kSuccess) {
+    RTC_LOG(LS_ERROR) << "Failed to initialize global MixedReality-WebRTC "
+                         "factory: error code #"
+                      << (int)result;
+    return nullptr;
+  }
+  RefPtr<GlobalFactory> ptr(factory);
+  return ptr;  // moved
 }
 
 GlobalFactory::~GlobalFactory() {
-  std::scoped_lock lock(mutex_);
-  if (!alive_objects_.empty()) {
-    // WebRTC object destructors are also dispatched to the signaling thread,
-    // like all method calls, but the threads are stopped by the GlobalFactory
-    // shutdown, so dispatching will never complete.
-    RTC_LOG(LS_ERROR) << "Shutting down the global factory while "
-                      << alive_objects_.size()
-                      << " objects are still alive. This will likely deadlock.";
-    for (auto&& pair : alive_objects_) {
-      RTC_LOG(LS_ERROR) << "- " << ObjectToString(pair.second, pair.first)
-                        << " [" << pair.first->GetApproxRefCount()
-                        << " ref(s)]";
-    }
-  }
-  ShutdownNoLock();
+  std::scoped_lock lock(init_mutex_);
+  ShutdownImplNoLock(ShutdownAction::kFromObjectDestructor);
 }
 
 rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
-GlobalFactory::GetOrCreate() {
-  std::scoped_lock lock(mutex_);
-  if (!factory_) {
-    if (Initialize() != Result::kSuccess) {
-      return nullptr;
-    }
-  }
-  return factory_;
+GlobalFactory::GetPeerConnectionFactory() noexcept {
+  // This only requires init_mutex_ read lock, which must be acquired to access
+  // the singleton instance.
+  return peer_factory_;
 }
 
-mrsResult GlobalFactory::GetOrCreate(
-    rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>& factory) {
-  factory = nullptr;
-  std::scoped_lock lock(mutex_);
-  if (!factory_) {
-    mrsResult res = Initialize();
-    if (res != Result::kSuccess) {
-      return res;
-    }
-  }
-  factory = factory_;
-  return (factory ? Result::kSuccess : Result::kUnknownError);
-}
-
-rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
-GlobalFactory::GetExisting() noexcept {
-  std::scoped_lock lock(mutex_);
-  return factory_;
-}
-
-rtc::Thread* GlobalFactory::GetWorkerThread() noexcept {
-  std::scoped_lock lock(mutex_);
+rtc::Thread* GlobalFactory::GetWorkerThread() const noexcept {
+  // This only requires init_mutex_ read lock, which must be acquired to access
+  // the singleton instance.
 #if defined(WINUWP)
   return impl_->workerThread.get();
 #else   // defined(WINUWP)
@@ -116,27 +162,31 @@ rtc::Thread* GlobalFactory::GetWorkerThread() noexcept {
 #endif  // defined(WINUWP)
 }
 
-void GlobalFactory::AddObject(ObjectType type, TrackedObject* obj) noexcept {
+void GlobalFactory::AddObject(TrackedObject* obj) noexcept {
   try {
     std::scoped_lock lock(mutex_);
-    alive_objects_.emplace(obj, type);
+    RTC_DCHECK(std::find(alive_objects_.begin(), alive_objects_.end(), obj) ==
+               alive_objects_.end());
+    alive_objects_.push_back(obj);
   } catch (...) {
   }
 }
 
-void GlobalFactory::RemoveObject(ObjectType type, TrackedObject* obj) noexcept {
+void GlobalFactory::RemoveObject(TrackedObject* obj) noexcept {
   try {
     std::scoped_lock lock(mutex_);
-    auto it = alive_objects_.find(obj);
+    auto it = std::find(alive_objects_.begin(), alive_objects_.end(), obj);
     if (it != alive_objects_.end()) {
-      RTC_CHECK(it->second == type);
       alive_objects_.erase(it);
-      if (alive_objects_.empty()) {
-        ShutdownNoLock();
-      }
     }
   } catch (...) {
   }
+}
+
+uint32_t GlobalFactory::ReportLiveObjects() {
+  std::scoped_lock lock(mutex_);
+  ReportLiveObjectsNoLock();
+  return static_cast<uint32_t>(alive_objects_.size());
 }
 
 #if defined(WINUWP)
@@ -145,9 +195,9 @@ using WebRtcFactoryPtr =
     std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>;
 
 WebRtcFactoryPtr GlobalFactory::get() {
-  std::scoped_lock lock(mutex_);
+  std::scoped_lock lock(init_mutex_);
   if (!impl_) {
-    if (Initialize() != Result::kSuccess) {
+    if (InitializeImplNoLock() != Result::kSuccess) {
       return nullptr;
     }
   }
@@ -156,9 +206,9 @@ WebRtcFactoryPtr GlobalFactory::get() {
 
 mrsResult GlobalFactory::GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory) {
   factory.reset();
-  std::scoped_lock lock(mutex_);
+  std::scoped_lock lock(init_mutex_);
   if (!impl_) {
-    mrsResult res = Initialize();
+    mrsResult res = InitializeImplNoLock();
     if (res != Result::kSuccess) {
       return res;
     }
@@ -169,8 +219,10 @@ mrsResult GlobalFactory::GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory) {
 
 #endif  // defined(WINUWP)
 
-mrsResult GlobalFactory::Initialize() {
-  RTC_CHECK(!factory_);
+mrsResult GlobalFactory::InitializeImplNoLock() {
+  if (peer_factory_) {
+    return Result::kSuccess;
+  }
 
 #if defined(WINUWP)
   RTC_CHECK(!impl_);
@@ -209,7 +261,7 @@ mrsResult GlobalFactory::Initialize() {
   impl_->internalSetup();
 
   // Cache the peer connection factory
-  factory_ = impl_->peerConnectionFactory();
+  peer_factory_ = impl_->peerConnectionFactory();
 #else   // defined(WINUWP)
   network_thread_ = rtc::Thread::CreateWithSocketServer();
   RTC_CHECK(network_thread_.get());
@@ -225,7 +277,7 @@ mrsResult GlobalFactory::Initialize() {
                              signaling_thread_.get());
   signaling_thread_->Start();
 
-  factory_ = webrtc::CreatePeerConnectionFactory(
+  peer_factory_ = webrtc::CreatePeerConnectionFactory(
       network_thread_.get(), worker_thread_.get(), signaling_thread_.get(),
       nullptr, webrtc::CreateBuiltinAudioEncoderFactory(),
       webrtc::CreateBuiltinAudioDecoderFactory(),
@@ -237,11 +289,48 @@ mrsResult GlobalFactory::Initialize() {
               absl::make_unique<webrtc::InternalDecoderFactory>())),
       nullptr, nullptr);
 #endif  // defined(WINUWP)
-  return (factory_.get() != nullptr ? Result::kSuccess : Result::kUnknownError);
+  return (peer_factory_.get() != nullptr ? Result::kSuccess
+                                         : Result::kUnknownError);
 }
 
-void GlobalFactory::ShutdownNoLock() {
-  factory_ = nullptr;
+bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
+  if (!peer_factory_) {
+    return true;  // already shut down
+  }
+
+  // This is read under the init mutex lock so can be relaxed, as it cannot
+  // decrease during that time. However we should test the value before it's
+  // cleared below, so use acquire semantic.
+  const int num_refs = ref_count_.load(std::memory_order_acquire);
+  if (num_refs > 0) {
+    if (shutdown_action == ShutdownAction::kTryShutdownIfSafe) {
+      return false;  // cannot shut down safely, staying initialized
+    }
+    bool fromDtor = (shutdown_action == ShutdownAction::kFromObjectDestructor);
+    RTC_LOG(LS_ERROR)
+        << "Force-shutting down the global MixedReality-WebRTC "
+           "factory while it still has "
+        << num_refs << " references."
+        << (fromDtor ? " This will likely deadlock when dispatching the peer "
+                       "connection factory destructor to the signaling thread."
+                     : "");
+    if ((shutdown_options_ & mrsShutdownOptions::kLogLiveObjects) != 0) {
+      ReportLiveObjectsNoLock();
+    }
+    if ((shutdown_options_ & mrsShutdownOptions::kDebugBreakOnForceShutdown) != 0) {
+#if defined(MR_SHARING_WIN)
+      DebugBreak();
+#endif
+    }
+
+    // Clear debug infos and references. This leaks objects, but at least won't
+    // interact with future uses.
+    alive_objects_.clear();
+    ref_count_.store(0, std::memory_order_release);  // see "load acquire" above
+  }
+
+  // Shutdown
+  peer_factory_ = nullptr;
 #if defined(WINUWP)
   impl_ = nullptr;
 #else   // defined(WINUWP)
@@ -249,6 +338,18 @@ void GlobalFactory::ShutdownNoLock() {
   worker_thread_.reset();
   signaling_thread_.reset();
 #endif  // defined(WINUWP)
+  return true;
+}
+
+void GlobalFactory::ReportLiveObjectsNoLock() {
+  RTC_LOG(LS_INFO) << "mr-webrtc alive objects report for "
+                   << alive_objects_.size() << " objects:";
+  int i = 0;
+  for (auto&& obj : alive_objects_) {
+    RTC_LOG(LS_INFO) << "[" << i << "] " << ObjectToString(obj) << " [~"
+                     << obj->GetApproxRefCount() << " ref(s)]";
+    ++i;
+  }
 }
 
 }  // namespace Microsoft::MixedReality::WebRTC

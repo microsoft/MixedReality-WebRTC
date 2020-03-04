@@ -8,14 +8,13 @@
 #include "api/stats/rtcstats_objects.h"
 
 #include "data_channel.h"
-#include "external_video_track_source.h"
-#include "interop/external_video_track_source_interop.h"
+#include "external_video_track_source_interop.h"
 #include "interop/global_factory.h"
-#include "interop/interop_api.h"
-#include "interop/peer_connection_interop.h"
-#include "local_video_track.h"
+#include "interop_api.h"
 #include "media/external_video_track_source_impl.h"
+#include "media/local_video_track.h"
 #include "peer_connection.h"
+#include "peer_connection_interop.h"
 #include "sdp_utils.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
@@ -26,10 +25,6 @@ struct mrsEnumerator {
 };
 
 namespace {
-
-inline bool IsStringNullOrEmpty(const char* str) noexcept {
-  return ((str == nullptr) || (str[0] == '\0'));
-}
 
 mrsResult RTCToAPIError(const webrtc::RTCError& error) {
   if (error.ok()) {
@@ -95,14 +90,14 @@ class SimpleMediaConstraints : public webrtc::MediaConstraintsInterface {
 
 /// Helper to open a video capture device.
 mrsResult OpenVideoCaptureDevice(
-    const VideoDeviceConfiguration& config,
+    const LocalVideoTrackInitConfig& config,
     std::unique_ptr<cricket::VideoCapturer>& capturer_out) noexcept {
   capturer_out.reset();
 #if defined(WINUWP)
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   WebRtcFactoryPtr uwp_factory;
   {
-    mrsResult res =
-        GlobalFactory::Instance()->GetOrCreateWebRtcFactory(uwp_factory);
+    mrsResult res = global_factory->GetOrCreateWebRtcFactory(uwp_factory);
     if (res != Result::kSuccess) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
       return res;
@@ -306,7 +301,23 @@ uint32_t FourCCFromVideoType(webrtc::VideoType videoType) {
 }  // namespace
 
 inline rtc::Thread* GetWorkerThread() {
-  return GlobalFactory::Instance()->GetWorkerThread();
+  return GlobalFactory::InstancePtr()->GetWorkerThread();
+}
+
+uint32_t MRS_CALL mrsReportLiveObjects() noexcept {
+  return GlobalFactory::StaticReportLiveObjects();
+}
+
+mrsShutdownOptions MRS_CALL mrsGetShutdownOptions() noexcept {
+  return GlobalFactory::GetShutdownOptions();
+}
+
+void MRS_CALL mrsSetShutdownOptions(mrsShutdownOptions options) noexcept {
+  GlobalFactory::SetShutdownOptions(options);
+}
+
+void MRS_CALL mrsForceShutdown() noexcept {
+  GlobalFactory::ForceShutdown();
 }
 
 void MRS_CALL mrsCloseEnum(mrsEnumHandle* handleRef) noexcept {
@@ -328,8 +339,9 @@ mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     return Result::kInvalidParameter;
   }
 #if defined(WINUWP)
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   // The UWP factory needs to be initialized for getDevices() to work.
-  if (!GlobalFactory::Instance()->GetOrCreate()) {
+  if (!global_factory->GetPeerConnectionFactory()) {
     RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
     return Result::kUnknownError;
   }
@@ -392,11 +404,11 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
   }
 
 #if defined(WINUWP)
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   // The UWP factory needs to be initialized for getDevices() to work.
   WebRtcFactoryPtr uwp_factory;
   {
-    mrsResult res =
-        GlobalFactory::Instance()->GetOrCreateWebRtcFactory(uwp_factory);
+    mrsResult res = global_factory->GetOrCreateWebRtcFactory(uwp_factory);
     if (res != Result::kSuccess) {
       RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
       return res;
@@ -661,7 +673,7 @@ void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
 
 void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionI420AVideoFrameCallback callback,
+    mrsI420AVideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RegisterRemoteVideoFrameCallback(
@@ -671,7 +683,7 @@ void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
 
 void MRS_CALL mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionArgb32VideoFrameCallback callback,
+    mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RegisterRemoteVideoFrameCallback(
@@ -679,7 +691,7 @@ void MRS_CALL mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback(
   }
 }
 
-MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
+void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionAudioFrameCallback callback,
     void* user_data) noexcept {
@@ -689,7 +701,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterLocalAudioFrameCallback(
   }
 }
 
-MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
+void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
     PeerConnectionHandle peerHandle,
     PeerConnectionAudioFrameCallback callback,
     void* user_data) noexcept {
@@ -702,31 +714,32 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
 mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     PeerConnectionHandle peerHandle,
     const char* track_name,
-    VideoDeviceConfiguration config,
-    LocalVideoTrackHandle* trackHandle) noexcept {
+    const LocalVideoTrackInitConfig* config,
+    LocalVideoTrackHandle* track_handle_out) noexcept {
   if (IsStringNullOrEmpty(track_name)) {
     RTC_LOG(LS_ERROR) << "Invalid empty local video track name.";
     return Result::kInvalidParameter;
   }
-  if (!trackHandle) {
+  if (!track_handle_out) {
     RTC_LOG(LS_ERROR) << "Invalid NULL local video track handle.";
     return Result::kInvalidParameter;
   }
-  *trackHandle = nullptr;
+  *track_handle_out = nullptr;
 
   auto peer = static_cast<PeerConnection*>(peerHandle);
   if (!peer) {
     RTC_LOG(LS_ERROR) << "Invalid NULL peer connection handle.";
     return Result::kInvalidNativeHandle;
   }
-  auto pc_factory = GlobalFactory::Instance()->GetExisting();
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
+  auto pc_factory = global_factory->GetPeerConnectionFactory();
   if (!pc_factory) {
     return Result::kInvalidOperation;
   }
 
   // Open the video capture device
   std::unique_ptr<cricket::VideoCapturer> video_capturer;
-  auto res = OpenVideoCaptureDevice(config, video_capturer);
+  auto res = OpenVideoCaptureDevice(*config, video_capturer);
   if (res != Result::kSuccess) {
     RTC_LOG(LS_ERROR) << "Failed to open video capture device.";
     return res;
@@ -735,23 +748,23 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
 
   // Apply the same constraints used for opening the video capturer
   auto videoConstraints = std::make_unique<SimpleMediaConstraints>();
-  if (config.width > 0) {
+  if (config->width > 0) {
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MinWidth(config.width));
+        SimpleMediaConstraints::MinWidth(config->width));
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MaxWidth(config.width));
+        SimpleMediaConstraints::MaxWidth(config->width));
   }
-  if (config.height > 0) {
+  if (config->height > 0) {
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MinHeight(config.height));
+        SimpleMediaConstraints::MinHeight(config->height));
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MaxHeight(config.height));
+        SimpleMediaConstraints::MaxHeight(config->height));
   }
-  if (config.framerate > 0) {
+  if (config->framerate > 0) {
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MinFrameRate(config.framerate));
+        SimpleMediaConstraints::MinFrameRate(config->framerate));
     videoConstraints->mandatory_.push_back(
-        SimpleMediaConstraints::MaxFrameRate(config.framerate));
+        SimpleMediaConstraints::MaxFrameRate(config->framerate));
   }
 
   rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
@@ -766,11 +779,12 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     RTC_LOG(LS_ERROR) << "Failed to create local video track.";
     return Result::kUnknownError;
   }
-  auto result = peer->AddLocalVideoTrack(std::move(video_track));
+  auto result = peer->AddLocalVideoTrack(std::move(video_track),
+                                         config->track_interop_handle);
   if (result.ok()) {
     RefPtr<LocalVideoTrack>& video_track_wrapper = result.value();
     video_track_wrapper->AddRef();  // for the handle
-    *trackHandle = video_track_wrapper.get();
+    *track_handle_out = video_track_wrapper.get();
     return Result::kSuccess;
   }
   RTC_LOG(LS_ERROR) << "Failed to add local video track to peer connection.";
@@ -781,6 +795,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
     PeerConnectionHandle peer_handle,
     const char* track_name,
     ExternalVideoTrackSourceHandle source_handle,
+    const LocalVideoTrackFromExternalSourceInitConfig* config,
     LocalVideoTrackHandle* track_handle_out) noexcept {
   if (!track_handle_out) {
     return Result::kInvalidParameter;
@@ -795,7 +810,8 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
   if (!track_source) {
     return Result::kInvalidNativeHandle;
   }
-  auto pc_factory = GlobalFactory::Instance()->GetExisting();
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
+  auto pc_factory = global_factory->GetPeerConnectionFactory();
   if (!pc_factory) {
     return Result::kUnknownError;
   }
@@ -813,7 +829,8 @@ mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
   if (!video_track) {
     return Result::kUnknownError;
   }
-  auto result = peer->AddLocalVideoTrack(std::move(video_track));
+  auto result = peer->AddLocalVideoTrack(std::move(video_track),
+                                         config->track_interop_handle);
   if (result.ok()) {
     *track_handle_out = result.value().release();
     return Result::kSuccess;
@@ -841,7 +858,8 @@ mrsResult MRS_CALL mrsPeerConnectionRemoveLocalVideoTracksFromSource(
 mrsResult MRS_CALL
 mrsPeerConnectionAddLocalAudioTrack(PeerConnectionHandle peerHandle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    auto pc_factory = GlobalFactory::Instance()->GetExisting();
+    RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
+    auto pc_factory = global_factory->GetPeerConnectionFactory();
     if (!pc_factory) {
       return Result::kInvalidOperation;
     }
@@ -1019,12 +1037,16 @@ mrsResult MRS_CALL mrsPeerConnectionSetBitrate(PeerConnectionHandle peer_handle,
 }
 
 mrsResult MRS_CALL
-mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
-                                      const char* type,
-                                      const char* sdp) noexcept {
+mrsPeerConnectionSetRemoteDescriptionAsync(PeerConnectionHandle peerHandle,
+                                           const char* type,
+                                           const char* sdp,
+                                           ActionCallback callback,
+                                           void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return (peer->SetRemoteDescription(type, sdp) ? Result::kSuccess
-                                                  : Result::kUnknownError);
+    return (peer->SetRemoteDescriptionAsync(type, sdp,
+                                            Callback<>{callback, user_data})
+                ? Result::kSuccess
+                : Result::kUnknownError);
   }
   return Result::kInvalidNativeHandle;
 }
@@ -1076,6 +1098,11 @@ mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
   memcpy(buffer, out_message.c_str(), size);
   buffer[size] = '\0';
   return Result::kSuccess;
+}
+
+mrsBool MRS_CALL mrsSdpIsValidToken(const char* token) noexcept {
+  return ((token != nullptr) && SdpIsValidToken(token) ? mrsBool::kTrue
+                                                       : mrsBool::kFalse);
 }
 
 void MRS_CALL mrsSetFrameHeightRoundMode(FrameHeightRoundMode value) {
@@ -1173,7 +1200,7 @@ T GetValueIfDefined(const webrtc::RTCStatsMember<T>& member) {
   return member.is_defined() ? *member : 0;
 }
 
-}
+}  // namespace
 
 mrsResult MRS_CALL
 mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
@@ -1287,7 +1314,8 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
             dest_stats.track_identifier = track_stats.track_identifier->c_str();
             dest_stats.frames_sent = GetValueIfDefined(track_stats.frames_sent);
-            dest_stats.huge_frames_sent = GetValueIfDefined(track_stats.huge_frames_sent);
+            dest_stats.huge_frames_sent =
+                GetValueIfDefined(track_stats.huge_frames_sent);
           }
         }
       }
@@ -1316,8 +1344,10 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
             auto& dest_stats = FindOrInsert(pending_stats, track_stats.id());
             dest_stats.track_stats_timestamp_us = track_stats.timestamp_us();
             dest_stats.track_identifier = track_stats.track_identifier->c_str();
-            dest_stats.frames_received = GetValueIfDefined(track_stats.frames_received);
-            dest_stats.frames_dropped = GetValueIfDefined(track_stats.frames_dropped);
+            dest_stats.frames_received =
+                GetValueIfDefined(track_stats.frames_received);
+            dest_stats.frames_dropped =
+                GetValueIfDefined(track_stats.frames_dropped);
           }
         }
       }
@@ -1339,8 +1369,7 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
   return Result::kSuccess;
 }
 
-MRS_API mrsResult MRS_CALL
-mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report) {
+mrsResult MRS_CALL mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report) {
   if (auto rep = static_cast<const webrtc::RTCStatsReport*>(stats_report)) {
     rep->Release();
     return Result::kSuccess;

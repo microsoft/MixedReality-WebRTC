@@ -3,16 +3,9 @@
 
 #pragma once
 
-#if defined(WINUWP)
-// Non-API helper. Returned object can be deleted at any time in theory.
-// In practice because it's provided by a global object it's safe.
-//< TODO - Remove that, clean-up API, this is bad (c).
-rtc::Thread* UnsafeGetWorkerThread();
-#endif
-
 #include "audio_frame.h"
 #include "export.h"
-#include "mrs_errors.h"
+#include "result.h"
 #include "video_frame.h"
 
 extern "C" {
@@ -20,11 +13,48 @@ extern "C" {
 /// 32-bit boolean for interop API.
 enum class mrsBool : int32_t { kTrue = -1, kFalse = 0 };
 
-using mrsResult = Microsoft::MixedReality::WebRTC::Result;
-
 //
 // Generic utilities
 //
+
+/// Report live objects to debug output, and return the number of live objects.
+MRS_API uint32_t MRS_CALL mrsReportLiveObjects() noexcept;
+
+/// Global MixedReality-WebRTC library shutdown options.
+enum class mrsShutdownOptions : uint32_t {
+  kNone = 0,
+
+  /// Log some report about live objects when trying to shutdown, to help
+  /// debugging. This flag is set by default.
+  kLogLiveObjects = 0x1,
+
+  /// When forcing shutdown, either because |mrsForceShutdown()| is called or
+  /// because the program terminates, and some objects are still alive, attempt
+  /// to break into the debugger. This is not available for all platforms.
+  kDebugBreakOnForceShutdown = 0x2,
+
+  /// Default flags value.
+  kDefault = kLogLiveObjects
+};
+
+/// Get options for the automatic shutdown of the MixedReality-WebRTC library.
+/// This enables controlling the behavior of the library when it is shut down as
+/// a result of all tracked objects being released, or when the program
+/// terminates.
+MRS_API mrsShutdownOptions MRS_CALL mrsGetShutdownOptions() noexcept;
+
+/// Set options for the automatic shutdown of the MixedReality-WebRTC library.
+/// This enables controlling the behavior of the library when it is shut down as
+/// a result of all tracked objects being released, or when the program
+/// terminates.
+MRS_API void MRS_CALL
+mrsSetShutdownOptions(mrsShutdownOptions options) noexcept;
+
+/// Forcefully shutdown the library and release all resources (as possible), and
+/// terminate the WebRTC threads to allow the shared module to be unloaded. This
+/// is a last-resort measure for exceptional situations like unit testing where
+/// loss of data is acceptable.
+MRS_API void MRS_CALL mrsForceShutdown() noexcept;
 
 /// Opaque enumerator type.
 struct mrsEnumerator;
@@ -53,11 +83,10 @@ using mrsLocalVideoTrackInteropHandle = void*;
 using mrsDataChannelInteropHandle = void*;
 
 /// Callback to create an interop wrapper for a data channel.
-using mrsPeerConnectionDataChannelCreateObjectCallback =
-    mrsDataChannelInteropHandle(MRS_CALL*)(
-        mrsPeerConnectionInteropHandle parent,
-        mrsDataChannelConfig config,
-        mrsDataChannelCallbacks* callbacks);
+using mrsDataChannelCreateObjectCallback = mrsDataChannelInteropHandle(
+    MRS_CALL*)(mrsPeerConnectionInteropHandle parent,
+               const mrsDataChannelConfig& config,
+               mrsDataChannelCallbacks* callbacks);
 
 //
 // Video capture enumeration
@@ -76,6 +105,8 @@ using mrsVideoCaptureDeviceEnumCompletedCallback =
 /// For each device found, invoke the mandatory |callback|.
 /// At the end of the enumeration, invoke the optional |completedCallback| if it
 /// was provided (non-null).
+/// On UWP this must *not* be called from the main UI thread, otherwise a
+/// |mrsResult::kWrongThread| error might be returned.
 MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     mrsVideoCaptureDeviceEnumCallback enumCallback,
     void* enumCallbackUserData,
@@ -97,6 +128,8 @@ using mrsVideoCaptureFormatEnumCompletedCallback =
 /// For each device found, invoke the mandatory |callback|.
 /// At the end of the enumeration, invoke the optional |completedCallback| if it
 /// was provided (non-null).
+/// On UWP this must *not* be called from the main UI thread, otherwise a
+/// |mrsResult::kWrongThread| error might be returned.
 MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
     const char* device_id,
     mrsVideoCaptureFormatEnumCallback enumCallback,
@@ -202,7 +235,7 @@ using mrsI420AVideoFrame = Microsoft::MixedReality::WebRTC::I420AVideoFrame;
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 /// The video frame is encoded in I420 triplanar format (NV12).
-using PeerConnectionI420AVideoFrameCallback =
+using mrsI420AVideoFrameCallback =
     void(MRS_CALL*)(void* user_data, const mrsI420AVideoFrame& frame);
 
 using mrsArgb32VideoFrame = Microsoft::MixedReality::WebRTC::Argb32VideoFrame;
@@ -210,7 +243,7 @@ using mrsArgb32VideoFrame = Microsoft::MixedReality::WebRTC::Argb32VideoFrame;
 /// Callback fired when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 /// The video frame is encoded in ARGB 32-bit per pixel.
-using PeerConnectionArgb32VideoFrameCallback =
+using mrsArgb32VideoFrameCallback =
     void(MRS_CALL*)(void* user_data, const mrsArgb32VideoFrame& frame);
 
 using mrsAudioFrame = Microsoft::MixedReality::WebRTC::AudioFrame;
@@ -300,7 +333,7 @@ mrsPeerConnectionCreate(PeerConnectionConfiguration config,
 
 struct mrsPeerConnectionInteropCallbacks {
   /// Construct an interop object for a DataChannel instance.
-  mrsPeerConnectionDataChannelCreateObjectCallback data_channel_create_object;
+  mrsDataChannelCreateObjectCallback data_channel_create_object{};
 };
 
 MRS_API mrsResult MRS_CALL mrsPeerConnectionRegisterInteropCallbacks(
@@ -373,14 +406,14 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
 /// from the remote peer.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterI420ARemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionI420AVideoFrameCallback callback,
+    mrsI420AVideoFrameCallback callback,
     void* user_data) noexcept;
 
 /// Register a callback fired when a video frame from a video track was received
 /// from the remote peer.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterArgb32RemoteVideoFrameCallback(
     PeerConnectionHandle peerHandle,
-    PeerConnectionArgb32VideoFrameCallback callback,
+    mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept;
 
 /// Kind of video profile. Equivalent to org::webRtc::VideoProfileKind.
@@ -417,8 +450,13 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
     PeerConnectionAudioFrameCallback callback,
     void* user_data) noexcept;
 
-/// Configuration for opening a local video capture device.
-struct VideoDeviceConfiguration {
+/// Configuration for opening a local video capture device and creating a local
+/// video track.
+struct LocalVideoTrackInitConfig {
+  /// Handle of the local video track interop wrapper, if any, which will be
+  /// associated with the native local video track object.
+  mrsLocalVideoTrackInteropHandle track_interop_handle{};
+
   /// Unique identifier of the video capture device to select, as returned by
   /// |mrsEnumVideoCaptureDevicesAsync|, or a null or empty string to select the
   /// default device.
@@ -475,7 +513,7 @@ struct VideoDeviceConfiguration {
 MRS_API mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(
     PeerConnectionHandle peerHandle,
     const char* track_name,
-    VideoDeviceConfiguration config,
+    const LocalVideoTrackInitConfig* config,
     LocalVideoTrackHandle* trackHandle) noexcept;
 
 using mrsRequestExternalI420AVideoFrameCallback =
@@ -490,18 +528,26 @@ using mrsRequestExternalArgb32VideoFrameCallback =
                          uint32_t request_id,
                          int64_t timestamp_ms);
 
+/// Configuration for creating a local video track from an external source.
+struct LocalVideoTrackFromExternalSourceInitConfig {
+  /// Handle of the local video track interop wrapper, if any, which will be
+  /// associated with the native local video track object.
+  mrsLocalVideoTrackInteropHandle track_interop_handle{};
+};
+
 /// Add a local video track from a custom video source external to the
 /// implementation. This allows feeding into WebRTC frames from any source,
 /// including generated or synthetic frames, for example for testing.
 /// The track source initially starts as capuring. Capture can be stopped with
 /// |mrsExternalVideoTrackSourceShutdown|.
-/// This returns a handle to a newly allocated object, which must be released once
-/// not used anymore with |mrsLocalVideoTrackRemoveRef()|.
+/// This returns a handle to a newly allocated object, which must be released
+/// once not used anymore with |mrsLocalVideoTrackRemoveRef()|.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
     PeerConnectionHandle peerHandle,
     const char* track_name,
     ExternalVideoTrackSourceHandle source_handle,
+    const LocalVideoTrackFromExternalSourceInitConfig* config,
     LocalVideoTrackHandle* track_handle) noexcept;
 
 /// Remove a local video track from the given peer connection and destroy it.
@@ -628,12 +674,19 @@ mrsPeerConnectionSetBitrate(PeerConnectionHandle peer_handle,
                             int start_bitrate_bps,
                             int max_bitrate_bps) noexcept;
 
+/// Parameter-less callback.
+using ActionCallback = void(MRS_CALL*)(void* user_data);
+
 /// Set a remote description received from a remote peer via the signaling
-/// service.
+/// service. Once the remote description is applied, the action callback is
+/// invoked to signal the caller it is safe to continue the negotiation, and in
+/// particular it is safe to call |CreateAnswer()|.
 MRS_API mrsResult MRS_CALL
-mrsPeerConnectionSetRemoteDescription(PeerConnectionHandle peerHandle,
-                                      const char* type,
-                                      const char* sdp) noexcept;
+mrsPeerConnectionSetRemoteDescriptionAsync(PeerConnectionHandle peerHandle,
+                                           const char* type,
+                                           const char* sdp,
+                                           ActionCallback callback,
+                                           void* user_data) noexcept;
 
 /// Close a peer connection, removing all tracks and disconnecting from the
 /// remote peer currently connected. This does not invalidate the handle nor
@@ -698,6 +751,10 @@ MRS_API mrsResult MRS_CALL mrsSdpForceCodecs(const char* message,
 /// Must be the same as PeerConnection::FrameHeightRoundMode.
 enum class FrameHeightRoundMode : int32_t { kNone = 0, kCrop = 1, kPad = 2 };
 
+/// Check if the given SDP token is valid according to the RFC 4566 standard.
+/// See https://tools.ietf.org/html/rfc4566#page-43 for details.
+MRS_API mrsBool MRS_CALL mrsSdpIsValidToken(const char* token) noexcept;
+
 /// See PeerConnection::SetFrameHeightRoundMode.
 MRS_API void MRS_CALL mrsSetFrameHeightRoundMode(FrameHeightRoundMode value);
 
@@ -719,9 +776,9 @@ MRS_API void MRS_CALL mrsMemCpyStride(void* dst,
                                       int32_t src_stride,
                                       int32_t elem_size,
                                       int32_t elem_count) noexcept;
-///
-/// Stats extraction.
-///
+//
+// Stats extraction.
+//
 
 /// Subset of RTCDataChannelStats. See
 /// https://www.w3.org/TR/webrtc-stats/#dcstats-dict*

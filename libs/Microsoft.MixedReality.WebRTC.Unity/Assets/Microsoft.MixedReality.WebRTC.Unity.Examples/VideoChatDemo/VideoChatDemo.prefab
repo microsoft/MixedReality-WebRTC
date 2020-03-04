@@ -63,8 +63,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 14
@@ -175,8 +173,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 14
@@ -274,8 +270,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 14
@@ -353,8 +347,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 14
@@ -426,18 +418,12 @@ MonoBehaviour:
   OnInitialized:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
   OnShutdown:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
   OnError:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.WebRTCErrorEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &8734329137356271696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -663,8 +649,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   m_Type: 1
   m_PreserveAspect: 0
@@ -714,8 +698,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!1 &1945669908266134
 GameObject:
   m_ObjectHideFlags: 0
@@ -782,8 +764,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
   m_Type: 1
   m_PreserveAspect: 0
@@ -843,13 +823,9 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.InputField+SubmitEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.InputField+OnChangeEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
@@ -872,13 +848,9 @@ MonoBehaviour:
   AudioStreamStarted:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   AudioStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   AutoStartCapture: 1
   PreferredAudioCodec: 
   PeerConnection: {fileID: 114452439610826054}
@@ -898,13 +870,9 @@ MonoBehaviour:
   VideoStreamStarted:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   VideoStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.VideoStreamStoppedEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   AutoStartCapture: 1
   PreferredVideoCodec: 
   EnableMixedRealityCapture: 1
@@ -934,13 +902,9 @@ MonoBehaviour:
   AudioStreamStarted:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   AudioStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   PeerConnection: {fileID: 114452439610826054}
   AutoPlayOnAdded: 1
 --- !u!114 &8285219005052795439
@@ -958,13 +922,9 @@ MonoBehaviour:
   VideoStreamStarted:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   VideoStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: Microsoft.MixedReality.WebRTC.Unity.VideoStreamStoppedEvent, Microsoft.MixedReality.WebRTC.Unity,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   PeerConnection: {fileID: 114452439610826054}
   AutoPlayOnAdded: 1
 --- !u!1001 &2981115262886062264
@@ -974,10 +934,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4483042933794200}
     m_Modifications:
-    - target: {fileID: 6213381231372758174, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+    - target: {fileID: 931005090223189025, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
-      propertyPath: m_Name
-      value: RemoteVideoPlayer
+      propertyPath: m_Text
+      value: Remote peer
       objectReference: {fileID: 0}
     - target: {fileID: 6210530807246673570, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
@@ -1034,6 +994,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6213381231372758174, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+        type: 3}
+      propertyPath: m_Name
+      value: RemoteVideoPlayer
+      objectReference: {fileID: 0}
     - target: {fileID: 6316678915622682930, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
       propertyPath: AudioSource
@@ -1044,11 +1009,6 @@ PrefabInstance:
       propertyPath: VideoSource
       value: 
       objectReference: {fileID: 8285219005052795439}
-    - target: {fileID: 931005090223189025, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
-        type: 3}
-      propertyPath: m_Text
-      value: Remote peer
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7, type: 3}
 --- !u!4 &9182611303613562394 stripped
@@ -1070,11 +1030,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4483042933794200}
     m_Modifications:
-    - target: {fileID: 6213381231372758174, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+    - target: {fileID: 931005090223189025, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
-      propertyPath: m_Name
-      value: LocalVideoPlayer
+      propertyPath: m_Text
+      value: Local peer
       objectReference: {fileID: 0}
+    - target: {fileID: 1757892016970313976, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+        type: 3}
+      propertyPath: PeerConnection
+      value: 
+      objectReference: {fileID: 114452439610826054}
     - target: {fileID: 6210530807246673570, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1130,16 +1095,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6370542260796429296, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+    - target: {fileID: 6213381231372758174, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
-      propertyPath: PeerConnection
-      value: 
-      objectReference: {fileID: 114452439610826054}
-    - target: {fileID: 1757892016970313976, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
-        type: 3}
-      propertyPath: PeerConnection
-      value: 
-      objectReference: {fileID: 114452439610826054}
+      propertyPath: m_Name
+      value: LocalVideoPlayer
+      objectReference: {fileID: 0}
     - target: {fileID: 6316678915622682930, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
       propertyPath: AudioSource
@@ -1150,11 +1110,11 @@ PrefabInstance:
       propertyPath: VideoSource
       value: 
       objectReference: {fileID: 2640554158060291103}
-    - target: {fileID: 931005090223189025, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+    - target: {fileID: 6370542260796429296, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
-      propertyPath: m_Text
-      value: Local peer
-      objectReference: {fileID: 0}
+      propertyPath: PeerConnection
+      value: 
+      objectReference: {fileID: 114452439610826054}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7, type: 3}
 --- !u!4 &8068314043701345454 stripped

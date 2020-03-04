@@ -22,15 +22,15 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             var pc2 = new PeerConnection();
             await pc1.InitializeAsync(config);
             await pc2.InitializeAsync(config);
-            pc1.LocalSdpReadytoSend += (string type, string sdp) =>
+            pc1.LocalSdpReadytoSend += async (string type, string sdp) =>
             {
-                pc2.SetRemoteDescription(type, sdp);
+                await pc2.SetRemoteDescriptionAsync(type, sdp);
                 if (type == "offer")
                     pc2.CreateAnswer();
             };
-            pc2.LocalSdpReadytoSend += (string type, string sdp) =>
+            pc2.LocalSdpReadytoSend += async (string type, string sdp) =>
             {
-                pc1.SetRemoteDescription(type, sdp);
+                await pc1.SetRemoteDescriptionAsync(type, sdp);
                 if (type == "offer")
                     pc1.CreateAnswer();
             };
@@ -107,15 +107,15 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             var pc2 = new PeerConnection();
             await pc1.InitializeAsync(config);
             await pc2.InitializeAsync(config);
-            pc1.LocalSdpReadytoSend += (string type, string sdp) =>
+            pc1.LocalSdpReadytoSend += async (string type, string sdp) =>
             {
-                pc2.SetRemoteDescription(type, sdp);
+                await pc2.SetRemoteDescriptionAsync(type, sdp);
                 if (type == "offer")
                     pc2.CreateAnswer();
             };
-            pc2.LocalSdpReadytoSend += (string type, string sdp) =>
+            pc2.LocalSdpReadytoSend += async (string type, string sdp) =>
             {
-                pc1.SetRemoteDescription(type, sdp);
+                await pc1.SetRemoteDescriptionAsync(type, sdp);
                 if (type == "offer")
                     pc1.CreateAnswer();
             };
