@@ -274,15 +274,16 @@ webrtc::RtpTransceiverDirection Transceiver::ToRtp(Direction direction) {
 Transceiver::Direction Transceiver::FromRtp(
     webrtc::RtpTransceiverDirection rtp_direction) {
   using RtpDir = webrtc::RtpTransceiverDirection;
-  static_assert((int)Direction::kSendRecv == (int)RtpDir::kSendRecv, "");
-  static_assert((int)Direction::kSendOnly == (int)RtpDir::kSendOnly, "");
-  static_assert((int)Direction::kRecvOnly == (int)RtpDir::kRecvOnly, "");
-  static_assert((int)Direction::kInactive == (int)RtpDir::kInactive, "");
   return (Direction)rtp_direction;
 }
 
 Transceiver::OptDirection Transceiver::FromRtp(
     std::optional<webrtc::RtpTransceiverDirection> rtp_direction) {
+  using RtpDir = webrtc::RtpTransceiverDirection;
+  static_assert((int)OptDirection::kSendRecv == (int)RtpDir::kSendRecv, "");
+  static_assert((int)OptDirection::kSendOnly == (int)RtpDir::kSendOnly, "");
+  static_assert((int)OptDirection::kRecvOnly == (int)RtpDir::kRecvOnly, "");
+  static_assert((int)OptDirection::kInactive == (int)RtpDir::kInactive, "");
   if (rtp_direction.has_value()) {
     return (OptDirection)FromRtp(rtp_direction.value());
   }
