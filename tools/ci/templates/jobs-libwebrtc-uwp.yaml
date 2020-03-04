@@ -134,7 +134,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: tools/ci/copyPdbsForPackaging.ps1
-      arguments: '-CorePath "external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/pdbs" -WrapperPath "external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}" -WrapperGluePath "external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}" -OutputPath $(Build.ArtifactStagingDirectory)/pdbs -BuildConfig ${{parameters.buildConfig}}'
+      arguments: '-WithUwpWrapper -CorePath "external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/pdbs" -WrapperPath "external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}" -WrapperGluePath "external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}" -OutputPath $(Build.ArtifactStagingDirectory)/pdbs -BuildConfig ${{parameters.buildConfig}}'
 
   # List content of PDB packaging folder
   - powershell: |
