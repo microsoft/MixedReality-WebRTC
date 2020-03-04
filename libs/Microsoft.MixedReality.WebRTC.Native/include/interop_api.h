@@ -404,7 +404,24 @@ enum class mrsSdpSemantic : int32_t {
 /// Configuration to intialize a peer connection object.
 struct mrsPeerConnectionConfiguration {
   /// ICE servers, encoded as a single string buffer.
-  /// See |EncodeIceServers| and |DecodeIceServers|.
+  /// The syntax for the encoded string is:
+  ///   string = blocks
+  ///   blocks = block [ "\n\n" blocks ]
+  ///   block = lines
+  ///   lines = line [ "\n" lines ]
+  ///   line = url | keyvalue
+  ///   url = <Some ICE server URL>
+  ///   keyvalue = key ":" value
+  ///   key = "username" | "password"
+  ///   value = <Some username/password value>
+  /// Example of encoded string, with formatting for clarity:
+  ///   https://stun1.l.google.com:19302\n
+  ///   \n
+  ///   https://stun2.l.google.com:19302\n
+  ///   username:my_user_name\n
+  ///   password:my_password\n
+  ///   \n
+  ///   https://stun3.l.google.com:19302
   const char* encoded_ice_servers = nullptr;
 
   /// ICE transport type for the connection.
