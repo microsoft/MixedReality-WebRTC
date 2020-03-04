@@ -9,6 +9,13 @@ param(
     [string]$BuildConfig
 )
 
+# List content of source folder
+Write-Host "Content of source folder $SourcePath"
+foreach ($f in $(Get-ChildItem -Path $SourcePath -Recurse))
+{
+    Write-Host $f.FullName
+}
+
 # Move wrapper PDB (Org.WebRtc.pdb)
 Write-Host "Moving PDB for Org.WebRtc.dll..."
 Move-Item -Path $(Join-Path $SourcePath "Org.WebRtc.pdb") -Destination $WrapperPath
