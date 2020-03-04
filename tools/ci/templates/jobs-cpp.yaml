@@ -1,5 +1,5 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See LICENSE in the project root for license information.
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
 # [TEMPLATE] Compile C++ library Microsoft.MixedReality.WebRTC.Native.dll
 
@@ -61,7 +61,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: tools/ci/copyPdbsForBuilding.ps1
-      arguments: '-BuildPlatform ${{parameters.buildPlatform}} -SourcePath $(Build.SourcesDirectory)\_pdbs -CorePath "external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/pdbs" -WrapperPath "external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}" -WrapperGluePath "external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}" -BuildConfig ${{parameters.buildConfig}}'
+      arguments: '-BuildConfig ${{parameters.buildConfig}} -BuildPlatform ${{parameters.buildPlatform}} -SourcePath "$(Build.SourcesDirectory)/_pdbs" -OutputPath "bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}"'
 
   # Use NuGet 5.2.0
   - task: NuGetToolInstaller@1
