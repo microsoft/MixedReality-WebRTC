@@ -89,6 +89,10 @@ class Transceiver : public TrackedObject {
   [[nodiscard]] bool HasSender(webrtc::RtpSenderInterface* sender) const;
   [[nodiscard]] bool HasReceiver(webrtc::RtpReceiverInterface* receiver) const;
 
+  Result SetLocalTrack(std::nullptr_t) noexcept {
+    return SetLocalTrackImpl(nullptr);
+  }
+
   Result SetLocalTrack(RefPtr<LocalAudioTrack> local_track) noexcept {
     return SetLocalTrackImpl(std::move(local_track));
   }

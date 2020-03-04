@@ -274,13 +274,6 @@ class PeerConnectionImpl : public PeerConnection,
       const mrsTransceiverInitConfig& config) noexcept override {
     return AddTransceiverImpl(mrsMediaKind::kVideo, config);
   }
-  ErrorOr<RefPtr<LocalVideoTrack>> AddLocalVideoTrack(
-      rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track,
-      mrsTransceiverInteropHandle transceiver_interop_handle,
-      mrsLocalVideoTrackInteropHandle track_interop_handle) noexcept override;
-  Result RemoveLocalVideoTrack(LocalVideoTrack& video_track) noexcept override;
-  void RemoveLocalVideoTracksFromSource(
-      ExternalVideoTrackSource& source) noexcept override;
 
   void RegisterVideoTrackAddedCallback(
       VideoTrackAddedCallback&& callback) noexcept override {
@@ -298,11 +291,6 @@ class PeerConnectionImpl : public PeerConnection,
       const mrsTransceiverInitConfig& config) noexcept override {
     return AddTransceiverImpl(mrsMediaKind::kAudio, config);
   }
-  ErrorOr<RefPtr<LocalAudioTrack>> AddLocalAudioTrack(
-      rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track,
-      mrsTransceiverInteropHandle transceiver_interop_handle,
-      mrsLocalAudioTrackInteropHandle track_interop_handle) noexcept override;
-  Result RemoveLocalAudioTrack(LocalAudioTrack& audio_track) noexcept override;
 
   void RegisterAudioTrackAddedCallback(
       AudioTrackAddedCallback&& callback) noexcept override {
@@ -410,15 +398,6 @@ class PeerConnectionImpl : public PeerConnection,
   // Internal
   //
 
-  void OnLocalTrackAddedToAudioTransceiver(Transceiver& transceiver,
-                                           LocalAudioTrack& track) override;
-  void OnLocalTrackRemovedFromAudioTransceiver(Transceiver& transceiver,
-                                               LocalAudioTrack& track) override;
-  void OnLocalTrackAddedToVideoTransceiver(Transceiver& transceiver,
-                                           LocalVideoTrack& track) override;
-  void OnLocalTrackRemovedFromVideoTransceiver(Transceiver& transceiver,
-                                               LocalVideoTrack& track) override;
-
   /// The underlying PC object from the core implementation. This is NULL
   /// after |Close()| is called.
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_;
@@ -503,14 +482,6 @@ class PeerConnectionImpl : public PeerConnection,
 
   /// Collection of all transceivers of this peer connection.
   std::vector<RefPtr<Transceiver>> transceivers_ RTC_GUARDED_BY(tracks_mutex_);
-
-  /// Collection of all local audio tracks associated with this peer connection.
-  std::vector<RefPtr<LocalAudioTrack>> local_audio_tracks_
-      RTC_GUARDED_BY(tracks_mutex_);
-
-  /// Collection of all local video tracks associated with this peer connection.
-  std::vector<RefPtr<LocalVideoTrack>> local_video_tracks_
-      RTC_GUARDED_BY(tracks_mutex_);
 
   /// Collection of all remote audio tracks associated with this peer
   /// connection.
@@ -884,126 +855,6 @@ mrsIceGatheringState IceGatheringStateFromImpl(
   return (mrsIceGatheringState)impl_state;
 }
 
-ErrorOr<RefPtr<LocalVideoTrack>> PeerConnectionImpl::AddLocalVideoTrack(
-    rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track,
-    mrsTransceiverInteropHandle transceiver_interop_handle,
-    mrsLocalVideoTrackInteropHandle track_interop_handle) noexcept {
-  if (IsClosed()) {
-    return Error(Result::kInvalidOperation, "The peer connection is closed.");
-  }
-  auto result = peer_->AddTrack(video_track, {kAudioVideoStreamId});
-  if (!result.ok()) {
-    return ErrorFromRTCError(result.MoveError());
-  }
-  rtc::scoped_refptr<webrtc::RtpSenderInterface> sender = result.MoveValue();
-  ErrorOr<RefPtr<Transceiver>> ret = GetOrCreateTransceiverForSender(
-      mrsMediaKind::kVideo, sender, transceiver_interop_handle);
-  if (!ret.ok()) {
-    peer_->RemoveTrack(sender);
-    return ret.MoveError();
-  }
-  RefPtr<Transceiver> transceiver = ret.MoveValue();
-  RefPtr<LocalVideoTrack> track = new LocalVideoTrack(
-      global_factory_, *this, std::move(transceiver), std::move(video_track),
-      std::move(sender), track_interop_handle);
-  {
-    rtc::CritScope lock(&tracks_mutex_);
-    local_video_tracks_.push_back(track);
-  }
-  return track;
-}
-
-Result PeerConnectionImpl::RemoveLocalVideoTrack(
-    LocalVideoTrack& video_track) noexcept {
-  rtc::CritScope lock(&tracks_mutex_);
-  auto it = std::find_if(local_video_tracks_.begin(), local_video_tracks_.end(),
-                         [&video_track](const RefPtr<LocalVideoTrack>& track) {
-                           return track.get() == &video_track;
-                         });
-  if (it == local_video_tracks_.end()) {
-    return Result::kInvalidParameter;
-  }
-  if (peer_) {
-    video_track.RemoveFromPeerConnection(*peer_);
-  }
-  local_video_tracks_.erase(it);
-  return Result::kSuccess;
-}
-
-void PeerConnectionImpl::RemoveLocalVideoTracksFromSource(
-    ExternalVideoTrackSource& source) noexcept {
-  if (!peer_) {
-    return;
-  }
-  // Remove all tracks which share this video track source.
-  // Currently there is no support for source sharing, so this should
-  // amount to a single track.
-  std::vector<rtc::scoped_refptr<webrtc::RtpSenderInterface>> senders =
-      peer_->GetSenders();
-  for (auto&& sender : senders) {
-    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
-        sender->track();
-    // Apparently track can be null if destroyed already
-    //< FIXME - Is this an error?
-    if (!track ||
-        (track->kind() != webrtc::MediaStreamTrackInterface::kVideoKind)) {
-      continue;
-    }
-    auto video_track = (webrtc::VideoTrackInterface*)track.get();
-    if (video_track->GetSource() ==
-        (webrtc::VideoTrackSourceInterface*)&source) {
-      peer_->RemoveTrack(sender);
-    }
-  }
-}
-
-ErrorOr<RefPtr<LocalAudioTrack>> PeerConnectionImpl::AddLocalAudioTrack(
-    rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track,
-    mrsTransceiverInteropHandle transceiver_interop_handle,
-    mrsLocalAudioTrackInteropHandle track_interop_handle) noexcept {
-  if (IsClosed()) {
-    return Microsoft::MixedReality::WebRTC::Error(
-        Result::kInvalidOperation, "The peer connection is closed.");
-  }
-  auto result = peer_->AddTrack(audio_track, {kAudioVideoStreamId});
-  if (!result.ok()) {
-    return ErrorFromRTCError(result.MoveError());
-  }
-  rtc::scoped_refptr<webrtc::RtpSenderInterface> sender = result.MoveValue();
-  ErrorOr<RefPtr<Transceiver>> ret = GetOrCreateTransceiverForSender(
-      mrsMediaKind::kAudio, sender, transceiver_interop_handle);
-  if (!ret.ok()) {
-    peer_->RemoveTrack(sender);
-    return ret.MoveError();
-  }
-  RefPtr<Transceiver> transceiver = ret.MoveValue();
-  RefPtr<LocalAudioTrack> track = new LocalAudioTrack(
-      global_factory_, *this, std::move(transceiver), std::move(audio_track),
-      std::move(sender), track_interop_handle);
-  {
-    rtc::CritScope lock(&tracks_mutex_);
-    local_audio_tracks_.push_back(track);
-  }
-  return track;
-}
-
-Result PeerConnectionImpl::RemoveLocalAudioTrack(
-    LocalAudioTrack& audio_track) noexcept {
-  rtc::CritScope lock(&tracks_mutex_);
-  auto it = std::find_if(local_audio_tracks_.begin(), local_audio_tracks_.end(),
-                         [&audio_track](const RefPtr<LocalAudioTrack>& track) {
-                           return track.get() == &audio_track;
-                         });
-  if (it == local_audio_tracks_.end()) {
-    return Result::kInvalidParameter;
-  }
-  if (peer_) {
-    audio_track.RemoveFromPeerConnection(*peer_);
-  }
-  local_audio_tracks_.erase(it);
-  return Result::kSuccess;
-}
-
 ErrorOr<std::shared_ptr<DataChannel>> PeerConnectionImpl::AddDataChannel(
     int id,
     std::string_view label,
@@ -1283,16 +1134,6 @@ void PeerConnectionImpl::Close() noexcept {
 
   {
     rtc::CritScope lock(&tracks_mutex_);
-
-    // Remove local tracks
-    while (!local_video_tracks_.empty()) {
-      RefPtr<LocalVideoTrack>& ptr = local_video_tracks_.back();
-      RemoveLocalVideoTrack(*ptr);
-    }
-    while (!local_audio_tracks_.empty()) {
-      RefPtr<LocalAudioTrack>& ptr = local_audio_tracks_.back();
-      RemoveLocalAudioTrack(*ptr);
-    }
 
     // Force-remove remote tracks. It doesn't look like the TrackRemoved
     // callback is called when Close() is used, so force it here.
@@ -1671,78 +1512,6 @@ void PeerConnectionImpl::OnLocalDescCreated(
   // will in turn invoke the |local_sdp_ready_to_send_callback_| registered if
   // any, or do nothing otherwise. The observer is a mandatory parameter.
   peer_->SetLocalDescription(observer, desc);
-}
-
-void PeerConnectionImpl::OnLocalTrackAddedToAudioTransceiver(
-    Transceiver& transceiver,
-    LocalAudioTrack& track) {
-  rtc::CritScope lock(&tracks_mutex_);
-  RTC_DCHECK(std::find_if(transceivers_.begin(), transceivers_.end(),
-                          [&transceiver](const RefPtr<Transceiver>& tr) {
-                            return (
-                                (tr.get() == &transceiver) &&
-                                (tr->GetMediaKind() == mrsMediaKind::kAudio));
-                          }) != transceivers_.end());
-  RTC_DCHECK(std::find_if(local_audio_tracks_.begin(),
-                          local_audio_tracks_.end(),
-                          [&track](const RefPtr<LocalAudioTrack>& tr) {
-                            return (tr.get() == &track);
-                          }) == local_audio_tracks_.end());
-  local_audio_tracks_.push_back(&track);
-}
-
-void PeerConnectionImpl::OnLocalTrackRemovedFromAudioTransceiver(
-    Transceiver& transceiver,
-    LocalAudioTrack& track) {
-  rtc::CritScope lock(&tracks_mutex_);
-  RTC_DCHECK(std::find_if(transceivers_.begin(), transceivers_.end(),
-                          [&transceiver](const RefPtr<Transceiver>& tr) {
-                            return (
-                                (tr.get() == &transceiver) &&
-                                (tr->GetMediaKind() == mrsMediaKind::kAudio));
-                          }) != transceivers_.end());
-  auto it = std::find_if(local_audio_tracks_.begin(), local_audio_tracks_.end(),
-                         [&track](const RefPtr<LocalAudioTrack>& tr) {
-                           return (tr.get() == &track);
-                         });
-  RTC_DCHECK(it != local_audio_tracks_.end());
-  local_audio_tracks_.erase(it);
-}
-
-void PeerConnectionImpl::OnLocalTrackAddedToVideoTransceiver(
-    Transceiver& transceiver,
-    LocalVideoTrack& track) {
-  rtc::CritScope lock(&tracks_mutex_);
-  RTC_DCHECK(std::find_if(transceivers_.begin(), transceivers_.end(),
-                          [&transceiver](const RefPtr<Transceiver>& tr) {
-                            return (
-                                (tr.get() == &transceiver) &&
-                                (tr->GetMediaKind() == mrsMediaKind::kVideo));
-                          }) != transceivers_.end());
-  RTC_DCHECK(std::find_if(local_video_tracks_.begin(),
-                          local_video_tracks_.end(),
-                          [&track](const RefPtr<LocalVideoTrack>& tr) {
-                            return (tr.get() == &track);
-                          }) == local_video_tracks_.end());
-  local_video_tracks_.push_back(&track);
-}
-
-void PeerConnectionImpl::OnLocalTrackRemovedFromVideoTransceiver(
-    Transceiver& transceiver,
-    LocalVideoTrack& track) {
-  rtc::CritScope lock(&tracks_mutex_);
-  RTC_DCHECK(std::find_if(transceivers_.begin(), transceivers_.end(),
-                          [&transceiver](const RefPtr<Transceiver>& tr) {
-                            return (
-                                (tr.get() == &transceiver) &&
-                                (tr->GetMediaKind() == mrsMediaKind::kVideo));
-                          }) != transceivers_.end());
-  auto it = std::find_if(local_video_tracks_.begin(), local_video_tracks_.end(),
-                         [&track](const RefPtr<LocalVideoTrack>& tr) {
-                           return (tr.get() == &track);
-                         });
-  RTC_DCHECK(it != local_video_tracks_.end());
-  local_video_tracks_.erase(it);
 }
 
 ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::AddTransceiverImpl(

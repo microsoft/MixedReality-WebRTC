@@ -108,6 +108,35 @@ Transceiver::Transceiver(
 Transceiver::~Transceiver() {
   // RTC_CHECK(!owner_);
 
+  // Keep the local track alive for now. This prevents it from being destroyed
+  // when detaching from it below if |local_track_| is the last reference, which
+  // would invoke its destructor while the transceiver is in an inconsistent
+  // state (in the middle of being destroyed), and would trigger some assertion
+  // in Debug build.
+  RefPtr<MediaTrack> local_track = local_track_;
+
+  // Detach the local track from this transceiver. This will clear the
+  // |local_track_| member.
+  if (local_track_) {
+    rtc::scoped_refptr<webrtc::RtpSenderInterface> rtp_sender;
+    if (IsUnifiedPlan()) {
+      rtp_sender = transceiver_->sender();
+    }
+    if (GetMediaKind() == MediaKind::kAudio) {
+      auto const track = (LocalAudioTrack*)local_track_.get();
+      track->OnRemovedFromPeerConnection(*owner_, this, rtp_sender);
+    } else {
+      RTC_DCHECK(GetMediaKind() == MediaKind::kVideo);
+      auto const track = (LocalVideoTrack*)local_track_.get();
+      track->OnRemovedFromPeerConnection(*owner_, this, rtp_sender);
+    }
+  }
+  RTC_DCHECK(!local_track_);
+
+  // Detach the remote track too. This transceiver is its sole owner, so this
+  // will destroy it.
+  remote_track_ = nullptr;
+
   // Be sure to clean-up WebRTC objects before unregistering ourself, which
   // could lead to the GlobalFactory being destroyed and the WebRTC threads
   // stopped.
@@ -181,12 +210,10 @@ Result Transceiver::SetLocalTrackImpl(RefPtr<MediaTrack> local_track) noexcept {
     if (GetMediaKind() == MediaKind::kAudio) {
       auto const track = (LocalAudioTrack*)local_track_.get();
       track->OnRemovedFromPeerConnection(*owner_, this, rtp_sender);
-      owner_->OnLocalTrackRemovedFromAudioTransceiver(*this, *track);
     } else {
       RTC_DCHECK(GetMediaKind() == MediaKind::kVideo);
       auto const track = (LocalVideoTrack*)local_track_.get();
       track->OnRemovedFromPeerConnection(*owner_, this, rtp_sender);
-      owner_->OnLocalTrackRemovedFromVideoTransceiver(*this, *track);
     }
   }
   local_track_ = std::move(local_track);
@@ -195,12 +222,10 @@ Result Transceiver::SetLocalTrackImpl(RefPtr<MediaTrack> local_track) noexcept {
     if (GetMediaKind() == MediaKind::kAudio) {
       auto const track = (LocalAudioTrack*)local_track_.get();
       track->OnAddedToPeerConnection(*owner_, this, rtp_sender);
-      owner_->OnLocalTrackAddedToAudioTransceiver(*this, *track);
     } else {
       RTC_DCHECK(GetMediaKind() == MediaKind::kVideo);
       auto const track = (LocalVideoTrack*)local_track_.get();
       track->OnAddedToPeerConnection(*owner_, this, rtp_sender);
-      owner_->OnLocalTrackAddedToVideoTransceiver(*this, *track);
     }
   }
   return Result::kSuccess;
