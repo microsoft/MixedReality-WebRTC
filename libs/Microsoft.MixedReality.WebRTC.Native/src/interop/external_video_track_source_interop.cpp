@@ -6,8 +6,9 @@
 #include "pch.h"
 
 #include "callback.h"
-#include "external_video_track_source.h"
-#include "interop/external_video_track_source_interop.h"
+#include "external_video_track_source_interop.h"
+#include "interop/global_factory.h"
+#include "media/external_video_track_source.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
@@ -40,7 +41,8 @@ mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromI420ACallback(
   }
   *source_handle_out = nullptr;
   RefPtr<ExternalVideoTrackSource> track_source =
-      detail::ExternalVideoTrackSourceCreateFromI420A(callback, user_data);
+      detail::ExternalVideoTrackSourceCreateFromI420A(
+          GlobalFactory::InstancePtr(), callback, user_data);
   if (!track_source) {
     return Result::kUnknownError;
   }
@@ -57,12 +59,20 @@ mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromArgb32Callback(
   }
   *source_handle_out = nullptr;
   RefPtr<ExternalVideoTrackSource> track_source =
-      detail::ExternalVideoTrackSourceCreateFromArgb32(callback, user_data);
+      detail::ExternalVideoTrackSourceCreateFromArgb32(
+          GlobalFactory::InstancePtr(), callback, user_data);
   if (!track_source) {
     return Result::kUnknownError;
   }
   *source_handle_out = track_source.release();
   return Result::kSuccess;
+}
+
+void MRS_CALL mrsExternalVideoTrackSourceFinishCreation(
+    ExternalVideoTrackSourceHandle source_handle) noexcept {
+  if (auto source = static_cast<ExternalVideoTrackSource*>(source_handle)) {
+    source->FinishCreation();
+  }
 }
 
 mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteI420AFrameRequest(
@@ -111,7 +121,9 @@ struct I420AInteropVideoSource : I420AExternalVideoSource {
   callback_type callback_;
 
   /// External video track source to deliver the frames to.
-  RefPtr<ExternalVideoTrackSource> track_source_;
+  /// Note that this is a "weak" pointer to avoid a circular reference to the
+  /// video track source owning it.
+  ExternalVideoTrackSource* track_source_{};
 
   I420AInteropVideoSource(mrsRequestExternalI420AVideoFrameCallback callback,
                           void* user_data)
@@ -119,7 +131,7 @@ struct I420AInteropVideoSource : I420AExternalVideoSource {
 
   Result FrameRequested(I420AVideoFrameRequest& frame_request) override {
     assert(track_source_);
-    return callback_(track_source_.get(), frame_request.request_id_,
+    return callback_(track_source_, frame_request.request_id_,
                      frame_request.timestamp_ms_);
   }
 };
@@ -133,7 +145,9 @@ struct Argb32InteropVideoSource : Argb32ExternalVideoSource {
   callback_type callback_;
 
   /// External video track source to deliver the frames to.
-  RefPtr<ExternalVideoTrackSource> track_source_;
+  /// Note that this is a "weak" pointer to avoid a circular reference to the
+  /// video track source owning it.
+  ExternalVideoTrackSource* track_source_{};
 
   Argb32InteropVideoSource(mrsRequestExternalArgb32VideoFrameCallback callback,
                            void* user_data)
@@ -141,7 +155,7 @@ struct Argb32InteropVideoSource : Argb32ExternalVideoSource {
 
   Result FrameRequested(Argb32VideoFrameRequest& frame_request) override {
     assert(track_source_);
-    return callback_(track_source_.get(), frame_request.request_id_,
+    return callback_(track_source_, frame_request.request_id_,
                      frame_request.timestamp_ms_);
   }
 };
@@ -151,6 +165,7 @@ struct Argb32InteropVideoSource : Argb32ExternalVideoSource {
 namespace Microsoft::MixedReality::WebRTC::detail {
 
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromI420A(
+    RefPtr<GlobalFactory> global_factory,
     mrsRequestExternalI420AVideoFrameCallback callback,
     void* user_data) {
   RefPtr<I420AInteropVideoSource> custom_source =
@@ -159,15 +174,17 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromI420A(
     return {};
   }
   RefPtr<ExternalVideoTrackSource> track_source =
-      ExternalVideoTrackSource::createFromI420A(custom_source);
+      ExternalVideoTrackSource::createFromI420A(std::move(global_factory),
+                                                custom_source);
   if (!track_source) {
     return {};
   }
-  custom_source->track_source_ = track_source;
+  custom_source->track_source_ = track_source.get();
   return track_source;
 }
 
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
+    RefPtr<GlobalFactory> global_factory,
     mrsRequestExternalArgb32VideoFrameCallback callback,
     void* user_data) {
   RefPtr<Argb32InteropVideoSource> custom_source =
@@ -176,11 +193,12 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
     return {};
   }
   RefPtr<ExternalVideoTrackSource> track_source =
-      ExternalVideoTrackSource::createFromArgb32(custom_source);
+      ExternalVideoTrackSource::createFromArgb32(std::move(global_factory),
+                                                 custom_source);
   if (!track_source) {
     return {};
   }
-  custom_source->track_source_ = track_source;
+  custom_source->track_source_ = track_source.get();
   return track_source;
 }
 

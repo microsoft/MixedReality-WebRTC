@@ -1,7 +1,6 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -115,8 +114,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             var tasks = new Task[20];
             for (int i = 0; i < 10; ++i)
             {
-                tasks[2*i] = OpenAsync();
-                tasks[2*i+1] = CloseAsync();
+                tasks[2 * i] = OpenAsync();
+                tasks[2 * i + 1] = CloseAsync();
             }
             Task.WaitAll(tasks);
         }
@@ -127,8 +126,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             var tasks = new Task[20];
             for (int i = 0; i < 10; ++i)
             {
-                tasks[2*i] = Task.Run(() => OpenAsync());
-                tasks[2*i+1] = Task.Run(() => CloseAsync());
+                tasks[2 * i] = Task.Run(() => OpenAsync());
+                tasks[2 * i + 1] = Task.Run(() => CloseAsync());
             }
             Task.WaitAll(tasks);
         }

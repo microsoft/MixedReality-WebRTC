@@ -7,14 +7,14 @@
 
 #include "audio_frame_observer.h"
 #include "data_channel.h"
-#include "local_video_track.h"
+#include "media/local_video_track.h"
 #include "peer_connection.h"
 #include "sdp_utils.h"
 #include "video_frame_observer.h"
 
 // Internal
 #include "interop/global_factory.h"
-#include "interop/interop_api.h"
+#include "interop_api.h"
 
 #include <functional>
 
@@ -154,15 +154,12 @@ class PeerConnectionImpl : public PeerConnection,
  public:
   mrsPeerConnectionInteropHandle hhh;
 
-  PeerConnectionImpl(mrsPeerConnectionInteropHandle interop_handle)
-      : interop_handle_(interop_handle) {
-    GlobalFactory::Instance()->AddObject(ObjectType::kPeerConnection, this);
-  }
+  PeerConnectionImpl(RefPtr<GlobalFactory> global_factory,
+                     mrsPeerConnectionInteropHandle interop_handle)
+      : PeerConnection(std::move(global_factory)),
+        interop_handle_(interop_handle) {}
 
-  ~PeerConnectionImpl() noexcept {
-    Close();
-    GlobalFactory::Instance()->RemoveObject(ObjectType::kPeerConnection, this);
-  }
+  ~PeerConnectionImpl() noexcept { Close(); }
 
   void SetPeerImpl(rtc::scoped_refptr<webrtc::PeerConnectionInterface> impl) {
     peer_ = std::move(impl);
@@ -208,8 +205,9 @@ class PeerConnectionImpl : public PeerConnection,
   bool AddIceCandidate(const char* sdp_mid,
                        const int sdp_mline_index,
                        const char* candidate) noexcept override;
-  bool SetRemoteDescription(const char* type,
-                            const char* sdp) noexcept override;
+  bool SetRemoteDescriptionAsync(const char* type,
+                                 const char* sdp,
+                                 Callback<> callback) noexcept override;
 
   void RegisterConnectedCallback(
       ConnectedCallback&& callback) noexcept override {
@@ -257,8 +255,8 @@ class PeerConnectionImpl : public PeerConnection,
   }
 
   ErrorOr<RefPtr<LocalVideoTrack>> AddLocalVideoTrack(
-      rtc::scoped_refptr<webrtc::VideoTrackInterface>
-          video_track) noexcept override;
+      rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track,
+      mrsLocalVideoTrackInteropHandle interop_handle) noexcept override;
   webrtc::RTCError RemoveLocalVideoTrack(
       LocalVideoTrack& video_track) noexcept override;
   void RemoveLocalVideoTracksFromSource(
@@ -543,7 +541,19 @@ class SessionDescObserver : public webrtc::SetSessionDescriptionObserver {
 struct SetRemoteSessionDescObserver
     : public webrtc::SetRemoteDescriptionObserverInterface {
  public:
-  void OnSetRemoteDescriptionComplete(webrtc::RTCError error) override {}
+  SetRemoteSessionDescObserver() = default;
+  template <typename Closure>
+  SetRemoteSessionDescObserver(Closure&& callback)
+      : callback_(std::forward<Closure>(callback)) {}
+  void OnSetRemoteDescriptionComplete(webrtc::RTCError error) override {
+    RTC_LOG(LS_INFO) << "Remote description set. err=" << error.message();
+    if (error.ok() && callback_) {
+      callback_();
+    }
+  }
+
+ protected:
+  std::function<void()> callback_;
 };
 
 const std::string kAudioVideoStreamId("local_av_stream");
@@ -589,15 +599,17 @@ IceGatheringState IceGatheringStateFromImpl(
 }
 
 ErrorOr<RefPtr<LocalVideoTrack>> PeerConnectionImpl::AddLocalVideoTrack(
-    rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track) noexcept {
+    rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track,
+    mrsLocalVideoTrackInteropHandle interop_handle) noexcept {
   if (IsClosed()) {
     return Microsoft::MixedReality::WebRTC::Error(
         Result::kInvalidOperation, "The peer connection is closed.");
   }
   auto result = peer_->AddTrack(video_track, {kAudioVideoStreamId});
   if (result.ok()) {
-    RefPtr<LocalVideoTrack> track = new LocalVideoTrack(
-        *this, std::move(video_track), std::move(result.MoveValue()), nullptr);
+    RefPtr<LocalVideoTrack> track =
+        new LocalVideoTrack(global_factory_, *this, std::move(video_track),
+                            std::move(result.MoveValue()), interop_handle);
     {
       rtc::CritScope lock(&tracks_mutex_);
       local_video_tracks_.push_back(track);
@@ -983,8 +995,10 @@ bool PeerConnectionImpl::IsClosed() const noexcept {
   return (peer_ == nullptr);
 }
 
-bool PeerConnectionImpl::SetRemoteDescription(const char* type,
-                                              const char* sdp) noexcept {
+bool PeerConnectionImpl::SetRemoteDescriptionAsync(
+    const char* type,
+    const char* sdp,
+    Callback<> callback) noexcept {
   if (!peer_) {
     return false;
   }
@@ -1005,7 +1019,10 @@ bool PeerConnectionImpl::SetRemoteDescription(const char* type,
   if (!session_description)
     return false;
   rtc::scoped_refptr<webrtc::SetRemoteDescriptionObserverInterface> observer =
-      new rtc::RefCountedObject<SetRemoteSessionDescObserver>();
+      new rtc::RefCountedObject<SetRemoteSessionDescObserver>([this, callback] {
+        // Fire completed callback to signal remote description was applied.
+        callback();
+      });
   peer_->SetRemoteDescription(std::move(session_description),
                               std::move(observer));
   return true;
@@ -1312,15 +1329,9 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
   SetFrameHeightRoundMode(FrameHeightRoundMode::kCrop);
 
   // Ensure the factory exists
-  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory;
-  {
-    mrsResult res = GlobalFactory::Instance()->GetOrCreate(factory);
-    if (res != Result::kSuccess) {
-      RTC_LOG(LS_ERROR) << "Failed to initialize the peer connection factory.";
-      return Error(res);
-    }
-  }
-  if (!factory.get()) {
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
+  auto pc_factory = global_factory->GetPeerConnectionFactory();
+  if (!pc_factory) {
     return Error(Result::kUnknownError);
   }
 
@@ -1337,10 +1348,10 @@ ErrorOr<RefPtr<PeerConnection>> PeerConnection::create(
   rtc_config.sdp_semantics = (config.sdp_semantic == SdpSemantic::kUnifiedPlan
                                   ? webrtc::SdpSemantics::kUnifiedPlan
                                   : webrtc::SdpSemantics::kPlanB);
-  auto peer = new PeerConnectionImpl(interop_handle);
+  auto peer = new PeerConnectionImpl(std::move(global_factory), interop_handle);
   webrtc::PeerConnectionDependencies dependencies(peer);
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> impl =
-      factory->CreatePeerConnection(rtc_config, std::move(dependencies));
+      pc_factory->CreatePeerConnection(rtc_config, std::move(dependencies));
   if (impl.get() == nullptr) {
     return Error(Result::kUnknownError);
   }
@@ -1352,5 +1363,7 @@ void PeerConnection::GetStats(webrtc::RTCStatsCollectorCallback* callback) {
   ((PeerConnectionImpl*)this)->peer_->GetStats(callback);
 }
 
+PeerConnection::PeerConnection(RefPtr<GlobalFactory> global_factory)
+    : TrackedObject(std::move(global_factory), ObjectType::kPeerConnection) {}
 
 }  // namespace Microsoft::MixedReality::WebRTC

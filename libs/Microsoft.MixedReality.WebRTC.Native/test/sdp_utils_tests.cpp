@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include "interop/interop_api.h"
+#include "interop_api.h"
 
 // Copied from webrtc\pc\webrtcsdp_unittest.cc
 static const char kSdpFullString[] =
@@ -193,4 +193,16 @@ TEST(SdpUtils, ForceCodecsShortBuffer) {
             mrsSdpForceCodecs(kSdpFullString, audio_filter, video_filter,
                               buffer, &len));
   ASSERT_EQ(sizeof(kSdpForcedAudioOpus), len);
+}
+
+TEST(SdpUtils, IsValidToken) {
+  ASSERT_EQ(mrsBool::kFalse, mrsSdpIsValidToken(nullptr));
+  ASSERT_EQ(mrsBool::kFalse, mrsSdpIsValidToken(""));
+  ASSERT_EQ(mrsBool::kFalse, mrsSdpIsValidToken(" "));
+  ASSERT_EQ(mrsBool::kTrue, mrsSdpIsValidToken("a"));
+  ASSERT_EQ(mrsBool::kFalse, mrsSdpIsValidToken("a z"));
+  for (auto c : std::string_view{"!#$%'*+-.^_`{|}~"}) {
+    const char str[2] = {c, '\0'};
+    ASSERT_EQ(mrsBool::kTrue, mrsSdpIsValidToken(str));
+  }
 }

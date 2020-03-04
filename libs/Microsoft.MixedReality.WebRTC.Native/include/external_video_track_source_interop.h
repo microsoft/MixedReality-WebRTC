@@ -3,10 +3,7 @@
 
 #pragma once
 
-#include "export.h"
-#include "external_video_track_source.h"
-#include "interop/interop_api.h"
-#include "refptr.h"
+#include "interop_api.h"
 
 extern "C" {
 
@@ -44,6 +41,14 @@ MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromArgb32Callback(
     void* user_data,
     ExternalVideoTrackSourceHandle* source_handle_out) noexcept;
 
+/// Callback from the wrapper layer indicating that the wrapper has finished
+/// creation, and it is safe to start sending frame requests to it. This needs
+/// to be called after |mrsExternalVideoTrackSourceCreateFromI420ACallback()| or
+/// |mrsExternalVideoTrackSourceCreateFromArgb32Callback()| to finish the
+/// creation of the video track source and allow it to start capturing.
+MRS_API void MRS_CALL mrsExternalVideoTrackSourceFinishCreation(
+    ExternalVideoTrackSourceHandle source_handle) noexcept;
+
 /// Complete a video frame request with a provided I420A video frame.
 MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteI420AFrameRequest(
     ExternalVideoTrackSourceHandle handle,
@@ -65,23 +70,3 @@ MRS_API void MRS_CALL mrsExternalVideoTrackSourceShutdown(
     ExternalVideoTrackSourceHandle handle) noexcept;
 
 }  // extern "C"
-
-namespace Microsoft::MixedReality::WebRTC::detail {
-
-//
-// Helpers
-//
-
-/// Create an I420A external video track source wrapping the given interop
-/// callback.
-RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromI420A(
-    mrsRequestExternalI420AVideoFrameCallback callback,
-    void* user_data);
-
-/// Create an ARGB32 external video track source wrapping the given interop
-/// callback.
-RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
-    mrsRequestExternalArgb32VideoFrameCallback callback,
-    void* user_data);
-
-}  // namespace Microsoft::MixedReality::WebRTC::detail

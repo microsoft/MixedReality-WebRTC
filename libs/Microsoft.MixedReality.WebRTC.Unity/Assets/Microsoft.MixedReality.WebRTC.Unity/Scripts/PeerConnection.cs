@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -12,11 +11,11 @@ using System.Collections.Concurrent;
 using System.Text;
 
 #if UNITY_WSA && !UNITY_EDITOR
-using Windows.UI.Core;
-using Windows.Foundation;
-using Windows.Media.Core;
-using Windows.Media.Capture;
-using Windows.ApplicationModel.Core;
+using global::Windows.UI.Core;
+using global::Windows.Foundation;
+using global::Windows.Media.Core;
+using global::Windows.Media.Capture;
+using global::Windows.ApplicationModel.Core;
 #endif
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -109,11 +108,29 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #region Behavior settings
 
         /// <summary>
-        /// Flag to initialize the peer connection on <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
+        /// Initialize the peer connection on <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
+        /// If this field is <c>false</c> then the user needs to call <see cref="InitializeAsync(CancellationToken)"/>
+        /// to manually initialize the peer connection before it can be used for any purpose.
         /// </summary>
-        [Header("Behavior settings")]
+        [Header("Behavior")]
         [Tooltip("Automatically initialize the peer connection on Start()")]
         public bool AutoInitializeOnStart = true;
+
+        /// <summary>
+        /// Automatically create a new offer whenever a renegotiation needed event is received.
+        /// </summary>
+        /// <remarks>
+        /// Note that the renegotiation needed event may be dispatched asynchronously, so it is
+        /// discourages to toggle this field ON and OFF. Instead, the user should choose an
+        /// approach (manual or automatic) and stick to it.
+        /// 
+        /// In particular, temporarily setting this to <c>false</c> during a batch of changes and
+        /// setting it back to <c>true</c> right after the last change may or may not produce an
+        /// automatic offer, depending on whether the negotiated event was dispatched while the
+        /// property was still <c>false</c> or not.
+        /// </remarks>
+        [Tooltip("Automatically create a new offer when receiving a renegotiation needed event")]
+        public bool AutoCreateOfferOnRenegotiationNeeded = true;
 
         /// <summary>
         /// Flag to log all errors to the Unity console automatically.
@@ -201,11 +218,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Underlying native peer connection wrapper.
         /// </summary>
-        /// <remarks>
-        /// Unlike the public <see cref="Peer"/> property, this is never <c>NULL</c>,
-        /// but can be an uninitialized peer.
-        /// </remarks>
-        private WebRTC.PeerConnection _nativePeer;
+        /// <seealso cref="CreateNativePeerConnection"/>
+        private WebRTC.PeerConnection _nativePeer = null;
 
         #endregion
 
@@ -232,9 +246,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Normally would be initialized by Awake(), but in case the component is disabled
             if (_nativePeer == null)
             {
-                _nativePeer = new WebRTC.PeerConnection();
-                _nativePeer.LocalSdpReadytoSend += Signaler_LocalSdpReadyToSend;
-                _nativePeer.IceCandidateReadytoSend += Signaler_IceCandidateReadytoSend;
+                CreateNativePeerConnection();
             }
 
             // if the peer is already set, we refuse to initialize again.
@@ -314,6 +326,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
                 // Close the connection and release native resources.
                 _nativePeer.Dispose();
+                _nativePeer = null;
             }
         }
 
@@ -324,9 +337,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void Awake()
         {
-            _nativePeer = new WebRTC.PeerConnection();
-            _nativePeer.LocalSdpReadytoSend += Signaler_LocalSdpReadyToSend;
-            _nativePeer.IceCandidateReadytoSend += Signaler_IceCandidateReadytoSend;
+            if (_nativePeer == null)
+            {
+                CreateNativePeerConnection();
+            }
         }
 
         /// <summary>
@@ -343,9 +357,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
             // List video capture devices to Unity console
-            GetVideoCaptureDevicesAsync().ContinueWith((prevTask) => {
+            GetVideoCaptureDevicesAsync().ContinueWith((prevTask) =>
+            {
                 var devices = prevTask.Result;
-                _mainThreadWorkQueue.Enqueue(() => {
+                _mainThreadWorkQueue.Enqueue(() =>
+                {
                     foreach (var device in devices)
                     {
                         Debug.Log($"Found video capture device '{device.name}' (id:{device.id}).");
@@ -382,9 +398,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private void OnDestroy()
         {
-            _nativePeer.IceCandidateReadytoSend -= Signaler_IceCandidateReadytoSend;
-            _nativePeer.LocalSdpReadytoSend -= Signaler_LocalSdpReadyToSend;
-            Uninitialize();
+            if (_nativePeer != null)
+            {
+                _nativePeer.IceCandidateReadytoSend -= Signaler_IceCandidateReadytoSend;
+                _nativePeer.LocalSdpReadytoSend -= Signaler_LocalSdpReadyToSend;
+                Uninitialize();
+            }
             OnError.RemoveListener(OnError_Listener);
         }
 
@@ -392,6 +411,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
 
         #region Private implementation
+
+        /// <summary>
+        /// Create the underlying native peer connection and its C# wrapper, and register
+        /// event handlers for signaling.
+        /// </summary>
+        private void CreateNativePeerConnection()
+        {
+            Debug.Assert((_nativePeer == null) || !_nativePeer.Initialized);
+            _nativePeer = new WebRTC.PeerConnection();
+            _nativePeer.LocalSdpReadytoSend += Signaler_LocalSdpReadyToSend;
+            _nativePeer.IceCandidateReadytoSend += Signaler_IceCandidateReadytoSend;
+        }
 
         /// <summary>
         /// Internal helper to ensure device access and continue initialization.
@@ -451,12 +482,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     TurnPassword = IceCredential
                 });
             }
-            return _nativePeer.InitializeAsync(config, token).ContinueWith((initTask) => {
+            return _nativePeer.InitializeAsync(config, token).ContinueWith((initTask) =>
+            {
                 token.ThrowIfCancellationRequested();
 
                 if (initTask.Exception != null)
                 {
-                    _mainThreadWorkQueue.Enqueue(() => {
+                    _mainThreadWorkQueue.Enqueue(() =>
+                    {
                         var errorMessage = new StringBuilder();
                         errorMessage.Append("WebRTC plugin initializing failed. See full log for exception details.\n");
                         Exception ex = initTask.Exception;
@@ -476,13 +509,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Callback fired on the main UI thread once the WebRTC plugin was initialized successfully.
+        /// Callback fired on the main Unity app thread once the WebRTC plugin was initialized successfully.
         /// </summary>
         private void OnPostInitialize()
         {
             Debug.Log("WebRTC plugin initialized successfully.");
 
-            _nativePeer.RenegotiationNeeded += Peer_RenegotiationNeeded;
+            if (AutoCreateOfferOnRenegotiationNeeded)
+            {
+                _nativePeer.RenegotiationNeeded += Peer_RenegotiationNeeded;
+            }
 
             // Once the peer is initialized, it becomes publicly accessible.
             // This prevent scripts from accessing it before it is initialized,
@@ -521,30 +557,30 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Signaler.SendMessageAsync(message);
         }
 
-        private void Signaler_OnMessage(Signaler.Message message)
+        private async void Signaler_OnMessage(Signaler.Message message)
         {
             switch (message.MessageType)
             {
-            case Signaler.Message.WireMessageType.Offer:
-                _nativePeer.SetRemoteDescription("offer", message.Data);
-                // If we get an offer, we immediately send an answer back
-                _nativePeer.CreateAnswer();
-                break;
+                case Signaler.Message.WireMessageType.Offer:
+                    await _nativePeer.SetRemoteDescriptionAsync("offer", message.Data);
+                    // If we get an offer, we immediately send an answer back
+                    _nativePeer.CreateAnswer();
+                    break;
 
-            case Signaler.Message.WireMessageType.Answer:
-                _nativePeer.SetRemoteDescription("answer", message.Data);
-                break;
+                case Signaler.Message.WireMessageType.Answer:
+                    _ = _nativePeer.SetRemoteDescriptionAsync("answer", message.Data);
+                    break;
 
-            case Signaler.Message.WireMessageType.Ice:
-                // TODO - This is NodeDSS-specific
-                // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
-                var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
-                _nativePeer.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
-                break;
+                case Signaler.Message.WireMessageType.Ice:
+                    // TODO - This is NodeDSS-specific
+                    // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                    var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                    // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                    _nativePeer.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                    break;
 
-            default:
-                throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
+                default:
+                    throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
             }
         }
 
@@ -552,7 +588,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             // If already connected, update the connection on the fly.
             // If not, wait for user action and don't automatically connect.
-            if (_nativePeer.IsConnected)
+            if (AutoCreateOfferOnRenegotiationNeeded && _nativePeer.IsConnected)
             {
                 _nativePeer.CreateOffer();
             }

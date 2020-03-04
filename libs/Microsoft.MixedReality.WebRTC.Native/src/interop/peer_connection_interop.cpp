@@ -6,8 +6,8 @@
 #include "pch.h"
 
 #include "interop/global_factory.h"
-#include "interop/peer_connection_interop.h"
 #include "peer_connection.h"
+#include "peer_connection_interop.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
@@ -30,10 +30,10 @@ void MRS_CALL mrsPeerConnectionRemoveRef(PeerConnectionHandle handle) noexcept {
 }
 
 void MRS_CALL mrsPeerConnectionRegisterIceGatheringStateChangedCallback(
-    PeerConnectionHandle peerHandle,
+    PeerConnectionHandle peer_handle,
     mrsPeerConnectionIceGatheringStateChangedCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterIceGatheringStateChangedCallback(
         Callback<IceGatheringState>{callback, user_data});
   }

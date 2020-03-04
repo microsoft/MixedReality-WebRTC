@@ -1,7 +1,7 @@
 #Usage
 
  - Generate an X509 certificate and key for the web socket server using the instructions below,
- - Build and run the solution file,
+ - Build and run the TestReceiveAV project
  - Open the `webrtc.html` page in a WebRTC enabled browser.
  - Click the `Start` button in the Web Browser.
  - If successful a new Window should pop-up displaying the Video stream received from the browser and the audio should be played on the default system speaker.
@@ -49,5 +49,3 @@ To get Chrome (and Edge (Chromium)) to accept the certificate there are two choi
  - More->Manage Certificates.
  - Add the certificate to BOTH the `Personal` AND `Trusted Root Certification Authorities`.
  - Close all Chrome instances and restart.
-
-

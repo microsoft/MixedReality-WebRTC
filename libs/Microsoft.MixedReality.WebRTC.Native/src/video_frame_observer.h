@@ -32,8 +32,7 @@ class ArgbBuffer : public webrtc::VideoFrameBuffer {
  public:
   // Create a new buffer with enough storage for a frame with the given
   // width and height in pixels.
-  static inline rtc::scoped_refptr<ArgbBuffer> Create(int width,
-                                                             int height) {
+  static inline rtc::scoped_refptr<ArgbBuffer> Create(int width, int height) {
     return new rtc::RefCountedObject<ArgbBuffer>(width, height, width * 4);
   }
 
@@ -114,10 +113,10 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   /// be reused by a later call so concurrent access is not supported.
   /// Before calling this method the caller needs to acquire |mutex_|, and keep
   /// it for the duration of its access.
-  MRS_API ArgbBuffer* GetArgbScratchBuffer(int width, int height);
+  ArgbBuffer* GetArgbScratchBuffer(int width, int height);
 
   // VideoSinkInterface interface
-  MRS_API void OnFrame(const webrtc::VideoFrame& frame) noexcept override;
+  void OnFrame(const webrtc::VideoFrame& frame) noexcept override;
 
  private:
   /// Registered callback for receiving I420-encoded frame.
