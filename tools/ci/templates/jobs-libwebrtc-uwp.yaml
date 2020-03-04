@@ -27,16 +27,15 @@ jobs:
     submodules: recursive
     clean: $(clean.git)
 
-  # Compute the package version
+  # Compute the PDB package variables
   - task: PowerShell@2
-    displayName: Compute package version
+    displayName: 'Compute PDB package variables'
     inputs:
       targetType: filePath
-      filePath: tools/ci/computePackageVersion.ps1
+      filePath: tools/ci/computePdbPackageVars.ps1
     env:
-      MRWEBRTCVERSION: $(MRWebRTCVersion)
-      MRWEBRTCRELEASETAG: $(MRWebRTCReleaseTag)
-      BUILDTRIPLE: $(buildTriple)
+      # Compute and write $(MRWebRTC_PdbPackageVersion) from build pipeline variables
+      WRITE_VERSION: 'true'
 
   # Map build* variables to script* ones
   - task: PowerShell@2
@@ -152,8 +151,8 @@ jobs:
       command: publish
       publishDirectory: '$(Build.ArtifactStagingDirectory)/pdbs'
       vstsFeedPublish: $(MRWebRTC_PdbFeed)
-      vstsFeedPackagePublish: $(MRWebRTC_PackageName)
+      vstsFeedPackagePublish: $(MRWebRTC_PdbPackageName)
       versionOption: custom
-      versionPublish: $(MRWebRTC_PackageVersion)
+      versionPublish: $(MRWebRTC_PdbPackageVersion)
       packagePublishDescription: 'PDBs for MixedReality-WebRTC core (webrtc.lib) $(buildTriple)'
     timeoutInMinutes: 30

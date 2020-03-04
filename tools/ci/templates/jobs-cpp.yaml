@@ -34,16 +34,15 @@ jobs:
       filePath: tools/ci/mapVariables.ps1
       arguments: '${{parameters.buildPlatform}} ${{parameters.buildArch}} ${{parameters.buildConfig}}'
 
-  # Compute the package version
+  # Compute the PDB package variables
   - task: PowerShell@2
-    displayName: Compute package version
+    displayName: 'Compute PDB package variables'
     inputs:
       targetType: filePath
-      filePath: tools/ci/computePackageVersion.ps1
+      filePath: tools/ci/computePdbPackageVars.ps1
     env:
-      MRWEBRTCVERSION: $(MRWebRTCVersion)
-      MRWEBRTCRELEASETAG: $(MRWebRTCReleaseTag)
-      BUILDTRIPLE: $(buildTriple)
+      # Read $(MRWebRTC_PdbPackageVersion) from pipeline variables
+      WRITE_VERSION: 'false'
 
   # Download the PDBs
   - task: UniversalPackages@0
@@ -51,8 +50,8 @@ jobs:
     inputs:
       command: download
       vstsFeed: $(MRWebRTC_PdbFeed)
-      vstsFeedPackage: $(MRWebRTC_PackageName)
-      vstsPackageVersion: $(MRWebRTC_PackageVersion)
+      vstsFeedPackage: $(MRWebRTC_PdbPackageName)
+      vstsPackageVersion: $(MRWebRTC_PdbPackageVersion)
       downloadDirectory: '$(Build.SourcesDirectory)\_pdbs'
 
   # Move PDBs back into their original location for the linker to find them
