@@ -12,7 +12,7 @@ namespace Microsoft::MixedReality::WebRTC {
 RemoteVideoTrack::RemoteVideoTrack(
     RefPtr<GlobalFactory> global_factory,
     PeerConnection& owner,
-    RefPtr<Transceiver> transceiver,
+    Transceiver* transceiver,
     rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
     mrsRemoteVideoTrackInteropHandle interop_handle) noexcept
@@ -21,7 +21,7 @@ RemoteVideoTrack::RemoteVideoTrack(
                  owner),
       track_(std::move(track)),
       receiver_(std::move(receiver)),
-      transceiver_(std::move(transceiver)),
+      transceiver_(transceiver),
       interop_handle_(interop_handle),
       track_name_(track_->id()) {
   RTC_CHECK(owner_);
@@ -57,14 +57,10 @@ webrtc::RtpReceiverInterface* RemoteVideoTrack::receiver() const {
   return receiver_.get();
 }
 
-Transceiver* RemoteVideoTrack::GetTransceiver() const {
-  return transceiver_.get();
-}
-
 void RemoteVideoTrack::OnTrackRemoved(PeerConnection& owner) {
   RTC_DCHECK(owner_ == &owner);
   RTC_DCHECK(receiver_ != nullptr);
-  RTC_DCHECK(transceiver_.get() != nullptr);
+  RTC_DCHECK(transceiver_ != nullptr);
   owner_ = nullptr;
   receiver_ = nullptr;
   transceiver_->OnRemoteTrackRemoved(this);

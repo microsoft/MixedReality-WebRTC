@@ -115,6 +115,10 @@ class Transceiver : public TrackedObject {
     return static_cast<LocalVideoTrack*>(local_track_.get());
   }
 
+  [[nodiscard]] MediaTrack* GetRemoteTrack() const {
+    return remote_track_.get();
+  }
+
   RefPtr<RemoteAudioTrack> GetRemoteAudioTrack() const {
     if (GetMediaKind() != MediaKind::kAudio) {
       return nullptr;
