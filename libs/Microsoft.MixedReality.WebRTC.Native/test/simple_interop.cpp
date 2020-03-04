@@ -5,6 +5,14 @@
 
 #include "simple_interop.h"
 
+namespace {
+
+void ForceTestFailure() {
+  ASSERT_TRUE(false);
+}
+
+}  // namespace
+
 void SimpleInterop::Register(mrsPeerConnectionHandle pc) noexcept {
   mrsPeerConnectionInteropCallbacks interop{};
   interop.remote_audio_track_create_object = &RemoteAudioTrackCreateStatic;
@@ -29,10 +37,9 @@ void* SimpleInterop::CreateObject(ObjectType type) noexcept {
     objects_map_.emplace(interop_handle, std::move(handle));
     return interop_handle;
   } catch (...) {
-    // Make sure the test fails
-    []() { ASSERT_TRUE(false); }();
-    return nullptr;
+    ForceTestFailure();
   }
+  return nullptr;
 }
 
 void SimpleInterop::DestroyObject(void* obj) noexcept {
@@ -47,8 +54,7 @@ void SimpleInterop::DestroyObject(void* obj) noexcept {
       objects_map_.erase(it);
     }
   } catch (...) {
-    // Make sure the test fails
-    ASSERT_TRUE(false);
+    ForceTestFailure();
   }
 }
 
@@ -64,8 +70,7 @@ bool SimpleInterop::ObjectExists(ObjectType type, void* obj) noexcept {
       return true;
     }
   } catch (...) {
-    // Make sure the test fails
-    []() { ASSERT_TRUE(false); }();
+    ForceTestFailure();
   }
   return false;
 }
