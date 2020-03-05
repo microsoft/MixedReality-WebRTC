@@ -20,8 +20,14 @@ try {
     for() {
         $line = $reader.ReadLine()
         if ($line -eq $null) { break }
+        # Check if the package is arch/config dependent.
+        # Note that this will *not* match the generic UWP package containing the generated headers,
+        # "Microsoft.MixedReality.WebRTC.Native.Core.UWP" (without '.' after 'UWP'), which should
+        # always be restored on all UWP variants independent of the arch/config.
         if ($line -match "Microsoft\.MixedReality\.WebRTC\.Native\.Core\.(Desktop|UWP|WinRT)\.")
         {
+            # Once the package is known to be config/arch-dependent, validate that this is the
+            # correct arch and config for the current build.
             if ($line -match "Microsoft\.MixedReality\.WebRTC\.Native\.Core\.(Desktop|UWP|WinRT)\.$BuildArch\.$BuildConfig")
             {
                 $linePlatform = $Matches.1 # Desktop|UWP|WinRT
@@ -42,7 +48,7 @@ try {
         }
         else
         {
-            # Copy any other line as is
+            # Copy any other line as is, including "Microsoft.MixedReality.WebRTC.Native.Core.UWP"
             $content += $line + "`n";
         }
     }
