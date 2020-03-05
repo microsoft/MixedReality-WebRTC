@@ -36,8 +36,16 @@ namespace Microsoft.MixedReality.WebRTC
 
             /// <summary>
             /// Log with <see cref="ReportLiveObjects"/> all objects still alive, to help debugging.
+            /// This is recommended to prevent deadlocks during shutdown.
             /// </summary>
-            LogLiveObjects = 1,
+            LogLiveObjects = 0x1,
+
+            /// <summary>
+            /// When forcing shutdown, either because <see cref="ForceShutdown"/> is called or
+            /// because the program terminates, and some objects are still alive, attempt
+            /// to break into the debugger. This is not available for all platforms.
+            /// </summary>
+            DebugBreakOnForceShutdown = 0x2,
 
             /// <summary>
             /// Default options.
@@ -47,6 +55,8 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Options used when shutting down the MixedReality-WebRTC library.
+        /// disposed, to shutdown the internal threads and release the global resources, and allow the
+        /// library's module to be unloaded.
         /// </summary>
         public static ShutdownOptionsFlags ShutdownOptions
         {

@@ -3,6 +3,7 @@
 
 using Microsoft.MixedReality.WebRTC.Tracing;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -209,5 +210,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         /// <param name="value"></param>
         [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsSetFrameHeightRoundMode")]
         public static unsafe extern void SetFrameHeightRoundMode(PeerConnection.FrameHeightRoundMode value);
+
+        public static string EncodeTransceiverStreamIDs(List<string> streamIDs)
+        {
+            if ((streamIDs == null) || (streamIDs.Count == 0))
+            {
+                return string.Empty;
+            }
+            return string.Join(";", streamIDs.ToArray());
+        }
     }
 }

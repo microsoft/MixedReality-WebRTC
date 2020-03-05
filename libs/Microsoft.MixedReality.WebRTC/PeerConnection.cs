@@ -281,10 +281,85 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
+    /// Settings to create a new transceiver wrapper.
+    /// </summary>
+    public class TransceiverInitSettings
+    {
+        /// <summary>
+        /// Transceiver name, for logging and debugging.
+        /// </summary>
+        public string Name;
+
+        /// <summary>
+        /// Initial value of <see cref="Transceiver.DesiredDirection"/>.
+        /// </summary>
+        public Transceiver.Direction InitialDesiredDirection = Transceiver.Direction.SendReceive;
+
+        /// <summary>
+        /// List of stream IDs to associate the transceiver with.
+        /// </summary>
+        public List<string> StreamIDs;
+    }
+
+    /// <summary>
+    /// Settings to create a new audio transceiver wrapper.
+    /// </summary>
+    public class AudioTransceiverInitSettings : TransceiverInitSettings
+    {
+
+    }
+
+    /// <summary>
+    /// Settings to create a new video transceiver wrapper.
+    /// </summary>
+    public class VideoTransceiverInitSettings : TransceiverInitSettings
+    {
+
+    }
+
+    /// <summary>
     /// The WebRTC peer connection object is the entry point to using WebRTC.
     /// </summary>
     public class PeerConnection : IDisposable
     {
+        /// <summary>
+        /// Delegate for <see cref="AudioTransceiverAdded"/> event.
+        /// </summary>
+        /// <param name="transceiver">The newly added audio transceiver.</param>
+        public delegate void AudioTransceiverAddedDelegate(AudioTransceiver transceiver);
+
+        /// <summary>
+        /// Delegate for <see cref="VideoTransceiverAdded"/> event.
+        /// </summary>
+        /// <param name="transceiver">The newly added video transceiver.</param>
+        public delegate void VideoTransceiverAddedDelegate(VideoTransceiver transceiver);
+
+        /// <summary>
+        /// Delegate for <see cref="AudioTrackAdded"/> event.
+        /// </summary>
+        /// <param name="track">The newly added audio track.</param>
+        public delegate void AudioTrackAddedDelegate(RemoteAudioTrack track);
+
+        /// <summary>
+        /// Delegate for <see cref="AudioTrackRemoved"/> event.
+        /// </summary>
+        /// <param name="transceiver">The audio transceiver the track was removed from.</param>
+        /// <param name="track">The audio track just removed.</param>
+        public delegate void AudioTrackRemovedDelegate(AudioTransceiver transceiver, RemoteAudioTrack track);
+
+        /// <summary>
+        /// Delegate for <see cref="VideoTrackAdded"/> event.
+        /// </summary>
+        /// <param name="track">The newly added video track.</param>
+        public delegate void VideoTrackAddedDelegate(RemoteVideoTrack track);
+
+        /// <summary>
+        /// Delegate for <see cref="VideoTrackRemoved"/> event.
+        /// </summary>
+        /// <param name="transceiver">The video transceiver the track was removed from.</param>
+        /// <param name="track">The video track just removed.</param>
+        public delegate void VideoTrackRemovedDelegate(VideoTransceiver transceiver, RemoteVideoTrack track);
+
         /// <summary>
         /// Delegate for <see cref="DataChannelAdded"/> event.
         /// </summary>
@@ -425,6 +500,11 @@ namespace Microsoft.MixedReality.WebRTC
 
 
         /// <summary>
+        /// A name for the peer connection, used for logging and debugging.
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
         /// Boolean property indicating whether the peer connection has been initialized.
         /// </summary>
         public bool Initialized
@@ -448,6 +528,77 @@ namespace Microsoft.MixedReality.WebRTC
         /// For ICE connection status, see the <see cref="IceStateChanged"/> event.
         /// </remarks>
         public bool IsConnected { get; private set; } = false;
+
+        /// <summary>
+        /// Collection of transceivers for the peer conneciton.
+        /// Transceivers are present in the list in order of their media line index
+        /// (<see cref="Transceiver.MlineIndex"/>). Once a transceiver is added to the
+        /// peer connection, it cannot be removed, but its tracks can be changed.
+        /// This requires some renegotiation.
+        /// </summary>
+        public List<Transceiver> Transceivers { get; } = new List<Transceiver>();
+
+        /// <summary>
+        /// Collection of audio transceivers of the peer connection.
+        /// Once a transceiver is added to the peer connection, it cannot be removed,
+        /// but its tracks can be changed. This requires some renegotiation.
+        /// </summary>
+        public IEnumerable<AudioTransceiver> AudioTransceivers
+        {
+            get
+            {
+                int num = Transceivers.Count;
+                for (int i = 0; i < num; ++i)
+                {
+                    var tr = Transceivers[i];
+                    if (tr.MediaKind == MediaKind.Audio)
+                    {
+                        yield return (AudioTransceiver)tr;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Collection of video transceivers of the peer connection.
+        /// Once a transceiver is added to the peer connection, it cannot be removed,
+        /// but its tracks can be changed. This requires some renegotiation.
+        /// </summary>
+        public IEnumerable<VideoTransceiver> VideoTransceivers
+        {
+            get
+            {
+                int num = Transceivers.Count;
+                for (int i = 0; i < num; ++i)
+                {
+                    var tr = Transceivers[i];
+                    if (tr.MediaKind == MediaKind.Video)
+                    {
+                        yield return (VideoTransceiver)tr;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Collection of local audio tracks attached to the peer connection.
+        /// </summary>
+        public List<LocalAudioTrack> LocalAudioTracks { get; } = new List<LocalAudioTrack>();
+
+        /// <summary>
+        /// Collection of local video tracks attached to the peer connection.
+        /// </summary>
+        public List<LocalVideoTrack> LocalVideoTracks { get; } = new List<LocalVideoTrack>();
+
+        /// <summary>
+        /// Collection of remote audio tracks attached to the peer connection.
+        /// </summary>
+        public List<RemoteAudioTrack> RemoteAudioTracks { get; } = new List<RemoteAudioTrack>();
+
+        /// <summary>
+        /// Collection of remote video tracks attached to the peer connection.
+        /// </summary>
+        public List<RemoteVideoTrack> RemoteVideoTracks { get; } = new List<RemoteVideoTrack>();
 
         /// <summary>
         /// Event fired when a connection is established.
@@ -500,42 +651,46 @@ namespace Microsoft.MixedReality.WebRTC
         public event Action RenegotiationNeeded;
 
         /// <summary>
-        /// Event that occurs when a remote track is added to the current connection.
-        /// </summary>
-        public event Action<TrackKind> TrackAdded;
-
-        /// <summary>
-        /// Event that occurs when a remote track is removed from the current connection.
-        /// </summary>
-        public event Action<TrackKind> TrackRemoved;
-
-        /// <summary>
-        /// Event that occurs when a video frame from a remote peer has been
-        /// received and is available for render.
-        /// </summary>
-        public event I420AVideoFrameDelegate I420ARemoteVideoFrameReady;
-
-        /// <summary>
-        /// Event that occurs when a video frame from a remote peer has been
-        /// received and is available for render.
-        /// </summary>
-        public event Argb32VideoFrameDelegate Argb32RemoteVideoFrameReady;
-
-        /// <summary>
-        /// Event that occurs when an audio frame from a local track has been
-        /// produced locally and is available for render.
+        /// Event that occurs when an audio transceiver is added to the peer connection, either
+        /// manually using <see cref="AddAudioTransceiver(AudioTransceiverInitSettings)"/>, or
+        /// automatically as a result of a new session negotiation.
         /// </summary>
         /// <remarks>
-        /// WARNING -- This is currently not implemented in the underlying WebRTC
-        /// implementation, so THIS EVENT IS NEVER FIRED.
+        /// Transceivers cannot be removed from the peer connection, so there is no
+        /// <c>AudioTransceiverRemoved</c> event.
         /// </remarks>
-        public event AudioFrameDelegate LocalAudioFrameReady;
+        public event AudioTransceiverAddedDelegate AudioTransceiverAdded;
 
         /// <summary>
-        /// Event that occurs when an audio frame from a remote peer has been
-        /// received and is available for render.
+        /// Event that occurs when a video transceiver is added to the peer connection, either
+        /// manually using <see cref="AddVideoTransceiver(VideoTransceiverInitSettings)"/>, or
+        /// automatically as a result of a new session negotiation.
         /// </summary>
-        public event AudioFrameDelegate RemoteAudioFrameReady;
+        /// <remarks>
+        /// Transceivers cannot be removed from the peer connection, so there is no
+        /// <c>VideoTransceiverRemoved</c> event.
+        /// </remarks>
+        public event VideoTransceiverAddedDelegate VideoTransceiverAdded;
+
+        /// <summary>
+        /// Event that occurs when a remote audio track is added to the current connection.
+        /// </summary>
+        public event AudioTrackAddedDelegate AudioTrackAdded;
+
+        /// <summary>
+        /// Event that occurs when a remote audio track is removed from the current connection.
+        /// </summary>
+        public event AudioTrackRemovedDelegate AudioTrackRemoved;
+
+        /// <summary>
+        /// Event that occurs when a remote video track is added to the current connection.
+        /// </summary>
+        public event VideoTrackAddedDelegate VideoTrackAdded;
+
+        /// <summary>
+        /// Event that occurs when a remote video track is removed from the current connection.
+        /// </summary>
+        public event VideoTrackRemovedDelegate VideoTrackRemoved;
 
         /// <summary>
         /// GCHandle to self for the various native callbacks.
@@ -571,6 +726,15 @@ namespace Microsoft.MixedReality.WebRTC
 
         private PeerConnectionInterop.InteropCallbacks _interopCallbacks;
         private PeerConnectionInterop.PeerCallbackArgs _peerCallbackArgs;
+
+        /// <summary>
+        /// Lock for accessing the collections of tracks:
+        /// - <see cref="LocalAudioTracks"/>
+        /// - <see cref="LocalVideoTracks"/>
+        /// - <see cref="RemoteAudioTracks"/>
+        /// - <see cref="RemoteVideoTracks"/>
+        /// </summary>
+        private object _tracksLock = new object();
 
 
         #region Initializing and shutdown
@@ -629,6 +793,12 @@ namespace Microsoft.MixedReality.WebRTC
                 _interopCallbacks = new PeerConnectionInterop.InteropCallbacks()
                 {
                     Peer = this,
+                    AudioTransceiverCreateObjectCallback = AudioTransceiverInterop.AudioTransceiverCreateObjectCallback,
+                    AudioTransceiverFinishCreateCallbak = AudioTransceiverInterop.AudioTransceiverFinishCreateCallback,
+                    VideoTransceiverCreateObjectCallback = VideoTransceiverInterop.VideoTransceiverCreateObjectCallback,
+                    VideoTransceiverFinishCreateCallbak = VideoTransceiverInterop.VideoTransceiverFinishCreateCallback,
+                    RemoteAudioTrackCreateObjectCallback = RemoteAudioTrackInterop.RemoteAudioTrackCreateObjectCallback,
+                    RemoteVideoTrackCreateObjectCallback = RemoteVideoTrackInterop.RemoteVideoTrackCreateObjectCallback,
                     DataChannelCreateObjectCallback = DataChannelInterop.DataChannelCreateObjectCallback,
                 };
                 _peerCallbackArgs = new PeerConnectionInterop.PeerCallbackArgs()
@@ -642,12 +812,10 @@ namespace Microsoft.MixedReality.WebRTC
                     IceStateChangedCallback = PeerConnectionInterop.IceStateChangedCallback,
                     IceGatheringStateChangedCallback = PeerConnectionInterop.IceGatheringStateChangedCallback,
                     RenegotiationNeededCallback = PeerConnectionInterop.RenegotiationNeededCallback,
-                    TrackAddedCallback = PeerConnectionInterop.TrackAddedCallback,
-                    TrackRemovedCallback = PeerConnectionInterop.TrackRemovedCallback,
-                    I420ARemoteVideoFrameCallback = PeerConnectionInterop.I420ARemoteVideoFrameCallback,
-                    Argb32RemoteVideoFrameCallback = PeerConnectionInterop.Argb32RemoteVideoFrameCallback,
-                    LocalAudioFrameCallback = PeerConnectionInterop.LocalAudioFrameCallback,
-                    RemoteAudioFrameCallback = PeerConnectionInterop.RemoteAudioFrameCallback
+                    AudioTrackAddedCallback = PeerConnectionInterop.AudioTrackAddedCallback,
+                    AudioTrackRemovedCallback = PeerConnectionInterop.AudioTrackRemovedCallback,
+                    VideoTrackAddedCallback = PeerConnectionInterop.VideoTrackAddedCallback,
+                    VideoTrackRemovedCallback = PeerConnectionInterop.VideoTrackRemovedCallback,
                 };
 
                 // Cache values in local variables before starting async task, to avoid any
@@ -719,6 +887,12 @@ namespace Microsoft.MixedReality.WebRTC
                         var self = GCHandle.ToIntPtr(_selfHandle);
                         var interopCallbacks = new PeerConnectionInterop.MarshaledInteropCallbacks
                         {
+                            AudioTransceiverCreateObjectCallback = _interopCallbacks.AudioTransceiverCreateObjectCallback,
+                            AudioTransceiverFinishCreateCallbak = _interopCallbacks.AudioTransceiverFinishCreateCallbak,
+                            VideoTransceiverCreateObjectCallback = _interopCallbacks.VideoTransceiverCreateObjectCallback,
+                            VideoTransceiverFinishCreateCallbak = _interopCallbacks.VideoTransceiverFinishCreateCallbak,
+                            RemoteAudioTrackCreateObjectCallback = _interopCallbacks.RemoteAudioTrackCreateObjectCallback,
+                            RemoteVideoTrackCreateObjectCallback = _interopCallbacks.RemoteVideoTrackCreateObjectCallback,
                             DataChannelCreateObjectCallback = _interopCallbacks.DataChannelCreateObjectCallback
                         };
                         PeerConnectionInterop.PeerConnection_RegisterInteropCallbacks(
@@ -735,22 +909,18 @@ namespace Microsoft.MixedReality.WebRTC
                             _nativePeerhandle, _peerCallbackArgs.IceGatheringStateChangedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterRenegotiationNeededCallback(
                             _nativePeerhandle, _peerCallbackArgs.RenegotiationNeededCallback, self);
-                        PeerConnectionInterop.PeerConnection_RegisterTrackAddedCallback(
-                            _nativePeerhandle, _peerCallbackArgs.TrackAddedCallback, self);
-                        PeerConnectionInterop.PeerConnection_RegisterTrackRemovedCallback(
-                            _nativePeerhandle, _peerCallbackArgs.TrackRemovedCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterAudioTrackAddedCallback(
+                            _nativePeerhandle, _peerCallbackArgs.AudioTrackAddedCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterAudioTrackRemovedCallback(
+                            _nativePeerhandle, _peerCallbackArgs.AudioTrackRemovedCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterVideoTrackAddedCallback(
+                            _nativePeerhandle, _peerCallbackArgs.VideoTrackAddedCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterVideoTrackRemovedCallback(
+                            _nativePeerhandle, _peerCallbackArgs.VideoTrackRemovedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterDataChannelAddedCallback(
                             _nativePeerhandle, _peerCallbackArgs.DataChannelAddedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterDataChannelRemovedCallback(
                             _nativePeerhandle, _peerCallbackArgs.DataChannelRemovedCallback, self);
-                        PeerConnectionInterop.PeerConnection_RegisterI420ARemoteVideoFrameCallback(
-                            _nativePeerhandle, _peerCallbackArgs.I420ARemoteVideoFrameCallback, self);
-                        PeerConnectionInterop.PeerConnection_RegisterArgb32RemoteVideoFrameCallback(
-                            _nativePeerhandle, _peerCallbackArgs.Argb32RemoteVideoFrameCallback, self);
-                        PeerConnectionInterop.PeerConnection_RegisterLocalAudioFrameCallback(
-                            _nativePeerhandle, _peerCallbackArgs.LocalAudioFrameCallback, self);
-                        PeerConnectionInterop.PeerConnection_RegisterRemoteAudioFrameCallback(
-                            _nativePeerhandle, _peerCallbackArgs.RemoteAudioFrameCallback, self);
                     }
                 }, token);
 
@@ -800,21 +970,17 @@ namespace Microsoft.MixedReality.WebRTC
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterRenegotiationNeededCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
-                PeerConnectionInterop.PeerConnection_RegisterTrackAddedCallback(
+                PeerConnectionInterop.PeerConnection_RegisterAudioTrackAddedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
-                PeerConnectionInterop.PeerConnection_RegisterTrackRemovedCallback(
+                PeerConnectionInterop.PeerConnection_RegisterAudioTrackRemovedCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterVideoTrackAddedCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterVideoTrackRemovedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterDataChannelAddedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterDataChannelRemovedCallback(
-                    _nativePeerhandle, null, IntPtr.Zero);
-                PeerConnectionInterop.PeerConnection_RegisterI420ARemoteVideoFrameCallback(
-                    _nativePeerhandle, null, IntPtr.Zero);
-                PeerConnectionInterop.PeerConnection_RegisterArgb32RemoteVideoFrameCallback(
-                    _nativePeerhandle, null, IntPtr.Zero);
-                PeerConnectionInterop.PeerConnection_RegisterLocalAudioFrameCallback(
-                    _nativePeerhandle, null, IntPtr.Zero);
-                PeerConnectionInterop.PeerConnection_RegisterRemoteAudioFrameCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 if (_selfHandle.IsAllocated)
                 {
@@ -836,6 +1002,61 @@ namespace Microsoft.MixedReality.WebRTC
             // but will be handled at some point anyway, even if the PeerConnection managed instance is gone.
             _nativePeerhandle.Close();
 
+            // Notify local tracks they have been removed
+            int count = LocalAudioTracks.Count;
+            while (count > 0)
+            {
+                LocalAudioTracks[count - 1].OnTrackRemoved(this);
+                --count;
+            }
+            Debug.Assert(LocalAudioTracks.Count == 0);
+            count = LocalVideoTracks.Count;
+            while (count > 0)
+            {
+                LocalVideoTracks[count - 1].OnTrackRemoved(this);
+                --count;
+            }
+            Debug.Assert(LocalVideoTracks.Count == 0);
+            count = RemoteAudioTracks.Count;
+            while (count > 0)
+            {
+                var track = RemoteAudioTracks[count - 1];
+                track.OnTrackRemoved(this);
+                track.Dispose(); // remote tracks are owned
+                --count;
+            }
+            Debug.Assert(RemoteAudioTracks.Count == 0);
+            count = RemoteVideoTracks.Count;
+            while (count > 0)
+            {
+                var track = RemoteVideoTracks[count - 1];
+                track.OnTrackRemoved(this);
+                track.Dispose(); // remote tracks are owned
+                --count;
+            }
+            Debug.Assert(RemoteVideoTracks.Count == 0);
+
+            // Dispose of owned objects
+            lock (_tracksLock)
+            {
+                foreach (var transceiver in Transceivers)
+                {
+                    if (transceiver == null)
+                    {
+                        continue;
+                    }
+                    if (transceiver.MediaKind == MediaKind.Audio)
+                    {
+                        ((AudioTransceiver)transceiver)._nativeHandle.Close();
+                    }
+                    else
+                    {
+                        ((VideoTransceiver)transceiver)._nativeHandle.Close();
+                    }
+                }
+                Transceivers.Clear();
+            }
+
             // Complete shutdown sequence and re-enable InitializeAsync()
             lock (_openCloseLock)
             {
@@ -853,212 +1074,64 @@ namespace Microsoft.MixedReality.WebRTC
         #endregion
 
 
-        #region Local audio and video tracks
+        #region Transceivers
 
         /// <summary>
-        /// Add to the current connection a video track from a local video capture device (webcam).
-        ///
-        /// The video track receives its video data from an underlying hidden source associated with
-        /// the track and producing video frames by capturing them from a capture device accessible
-        /// from the local host machine, generally a USB webcam or built-in device camera.
-        ///
-        /// The underlying video source initially starts in the capturing state, and will remain live
-        /// for as long as the track is added to the peer connection. It can be temporarily disabled
-        /// and re-enabled (see <see cref="LocalVideoTrack.Enabled"/>) while remaining added to the
-        /// peer connection. Note that disabling the track does not release the device; the source
-        /// retains exclusive access to it.
+        /// Add to the current connection a new audio transceiver.
+        /// 
+        /// A transceiver is a container for a pair of audio tracks, one local sending to the remote
+        /// peer, and one remote receiving from the remote peer. Both are optional, and the transceiver
+        /// can be in receive-only mode (no local track), in send-only mode (no remote track), or
+        /// inactive (neither local nor remote track).
+        /// 
+        /// Once a transceiver is added to the peer connection, it cannot be removed, but its tracks can be
+        /// changed (this requires some renegotiation).
         /// </summary>
-        /// <param name="settings">Video capture settings for configuring the capture device associated with
-        /// the underlying video track source.</param>
-        /// <returns>This returns a task which, upon successful completion, provides an instance of
-        /// <see cref="LocalVideoTrack"/> representing the newly added video track.</returns>
-        /// <remarks>
-        /// On UWP this requires the "webcam" capability.
-        /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
-        /// for more details.
-        ///
-        /// The video capture device may be accessed several times during the initializing process,
-        /// generally once for listing and validating the capture format, and once for actually starting
-        /// the video capture.
-        ///
-        /// Note that the capture device must support a capture format with the given constraints of profile
-        /// ID or kind, capture resolution, and framerate, otherwise the call will fail. That is, there is no
-        /// fallback mechanism selecting a closest match. Developers should use
-        /// <see cref="GetVideoCaptureFormatsAsync(string)"/> to list the supported formats ahead of calling
-        /// <see cref="AddLocalVideoTrackAsync(LocalVideoTrackSettings)"/>, and can build their own fallback
-        /// mechanism on top of this call if needed.
-        /// </remarks>
-        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
-        /// <example>
-        /// Create a video track called "MyTrack", with Mixed Reality Capture (MRC) enabled.
-        /// This assumes that the platform supports MRC. Note that if MRC is not available
-        /// the call will still succeed, but will return a track without MRC enabled.
-        /// <code>
-        /// var settings = new LocalVideoTrackSettings
-        /// {
-        ///     trackName = "MyTrack",
-        ///     enableMrc = true
-        /// };
-        /// var videoTrack = await peerConnection.AddLocalVideoTrackAsync(settings);
-        /// </code>
-        /// Create a video track from a local webcam, asking for a capture format suited for video conferencing,
-        /// and a target framerate of 30 frames per second (FPS). The implementation will select an appropriate
-        /// capture resolution. This assumes that the device supports video profiles, and has at least one capture
-        /// format supporting 30 FPS capture associated with the VideoConferencing profile. Otherwise the call
-        /// will fail.
-        /// <code>
-        /// var settings = new LocalVideoTrackSettings
-        /// {
-        ///     videoProfileKind = VideoProfileKind.VideoConferencing,
-        ///     framerate = 30.0
-        /// };
-        /// var videoTrack = await peerConnection.AddLocalVideoTrackAsync(settings);
-        /// </code>
-        /// </example>
-        public Task<LocalVideoTrack> AddLocalVideoTrackAsync(LocalVideoTrackSettings settings = default)
+        /// <param name="settings"></param>
+        /// <returns>The newly created transceiver.</returns>
+        public AudioTransceiver AddAudioTransceiver(AudioTransceiverInitSettings settings = null)
         {
             ThrowIfConnectionNotOpen();
-            return Task.Run(() =>
-            {
-                // On UWP this cannot be called from the main UI thread, so always call it from
-                // a background worker thread.
-
-                string trackName = settings?.trackName;
-                if (string.IsNullOrEmpty(trackName))
-                {
-                    trackName = Guid.NewGuid().ToString();
-                }
-
-                // Create interop wrappers
-                var trackWrapper = new LocalVideoTrack(this, trackName);
-
-                // Parse settings
-                var config = new PeerConnectionInterop.LocalVideoTrackInteropInitConfig(trackWrapper, settings);
-
-                // Create native implementation objects
-                uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrack(_nativePeerhandle, trackName, in config,
-                    out LocalVideoTrackHandle trackHandle);
-                Utils.ThrowOnErrorCode(res);
-                trackWrapper.SetHandle(trackHandle);
-                return trackWrapper;
-            });
-        }
-
-        /// <summary>
-        /// Remove from the current connection the local video track added with <see cref="AddLocalAudioTrackAsync"/>.
-        /// </summary>
-        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
-        public void RemoveLocalVideoTrack(LocalVideoTrack track)
-        {
-            ThrowIfConnectionNotOpen();
-            PeerConnectionInterop.PeerConnection_RemoveLocalVideoTrack(_nativePeerhandle, track._nativeHandle);
-            track.OnTrackRemoved(this); // LocalVideoTrack.PeerConnection = null
-        }
-
-        /// <summary>
-        /// Add a local video track backed by an external video source managed by the caller.
-        /// Unlike with <see cref="AddLocalVideoTrackAsync(LocalVideoTrackSettings)"/> which manages
-        /// a local video capture device and automatically produce frames, an external video source
-        /// provides video frames directly to WebRTC when asked to do so via the provided callback.
-        /// </summary>
-        /// <param name="trackName">Name of the new track.</param>
-        /// <param name="source">External source providing the frames for the track.</param>
-        public LocalVideoTrack AddCustomLocalVideoTrack(string trackName, ExternalVideoTrackSource source)
-        {
-            ThrowIfConnectionNotOpen();
-
-            if (string.IsNullOrEmpty(trackName))
-            {
-                trackName = Guid.NewGuid().ToString();
-            }
-
-            // Create interop wrappers
-            var trackWrapper = new LocalVideoTrack(this, trackName, source);
-
-            // Parse settings
-            var config = new PeerConnectionInterop.LocalVideoTrackFromExternalSourceInteropInitConfig(trackWrapper, source);
-
-            // Create native implementation objects
-            uint res = PeerConnectionInterop.PeerConnection_AddLocalVideoTrackFromExternalSource(_nativePeerhandle, trackName,
-                source._nativeHandle, in config, out LocalVideoTrackHandle trackHandle);
+            settings = settings ?? new AudioTransceiverInitSettings();
+            int mlineIndex = Transceivers.Count; //< TODO: retrieve from interop for robustness?
+            var transceiver = new AudioTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
+            var config = new AudioTransceiverInterop.InitConfig(transceiver, settings);
+            Debug.Assert(transceiver.DesiredDirection == config.desiredDirection);
+            uint res = PeerConnectionInterop.PeerConnection_AddAudioTransceiver(_nativePeerhandle, in config,
+                out AudioTransceiverHandle transceiverHandle);
             Utils.ThrowOnErrorCode(res);
-            trackWrapper.SetHandle(trackHandle);
-            source.OnTracksAddedToSource(this);
-            return trackWrapper;
+            transceiver.SetHandle(transceiverHandle);
+            OnTransceiverAdded(transceiver);
+            return transceiver;
         }
 
         /// <summary>
-        /// Add to the current connection an audio track from a local audio capture device (microphone).
+        /// Add to the current connection a new video transceiver.
+        /// 
+        /// A transceiver is a container for a pair of video tracks, one local sending to the remote
+        /// peer, and one remote receiving from the remote peer. Both are optional, and the transceiver
+        /// can be in receive-only mode (no local track), in send-only mode (no remote track), or
+        /// inactive (neither local nor remote track).
+        /// 
+        /// Once a transceiver is added to the peer connection, it cannot be removed, but its tracks can be
+        /// changed (this requires some renegotiation).
         /// </summary>
-        /// <returns>Asynchronous task completed once the device is capturing and the track is added.</returns>
-        /// <remarks>
-        /// On UWP this requires the "microphone" capability.
-        /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
-        /// for more details.
-        /// </remarks>
-        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
-        public Task AddLocalAudioTrackAsync()
+        /// <param name="settings"></param>
+        /// <returns>The newly created transceiver.</returns>
+        public VideoTransceiver AddVideoTransceiver(VideoTransceiverInitSettings settings = null)
         {
             ThrowIfConnectionNotOpen();
-            return Task.Run(() =>
-            {
-                // On UWP this cannot be called from the main UI thread, so always call it from
-                // a background worker thread.
-                if (PeerConnectionInterop.PeerConnection_AddLocalAudioTrack(_nativePeerhandle) != Utils.MRS_SUCCESS)
-                {
-                    throw new Exception();
-                }
-            });
-        }
-
-        /// <summary>
-        /// Remove all the local video tracks associated with the given video track source.
-        /// </summary>
-        /// <param name="source">The video track source.</param>
-        /// <remarks>
-        /// Currently there is a 1:1 mapping between tracks and sources (source sharing is not available),
-        /// therefore this is equivalent to <see cref="RemoveLocalVideoTrack(LocalVideoTrack)"/>.
-        /// </remarks>
-        public void RemoveLocalVideoTracksFromSource(ExternalVideoTrackSource source)
-        {
-            ThrowIfConnectionNotOpen();
-            PeerConnectionInterop.PeerConnection_RemoveLocalVideoTracksFromSource(_nativePeerhandle, source._nativeHandle);
-            source.OnTracksRemovedFromSource(this);
-        }
-
-        /// <summary>
-        /// Enable or disable the local audio track associated with this peer connection.
-        /// Disable audio tracks are still active, but are silent.
-        /// </summary>
-        /// <param name="enabled"><c>true</c> to enable the track, or <c>false</c> to disable it</param>
-        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
-        public void SetLocalAudioTrackEnabled(bool enabled = true)
-        {
-            ThrowIfConnectionNotOpen();
-            uint res = PeerConnectionInterop.PeerConnection_SetLocalAudioTrackEnabled(_nativePeerhandle, enabled ? -1 : 0);
+            settings = settings ?? new VideoTransceiverInitSettings();
+            int mlineIndex = Transceivers.Count; //< TODO: retrieve from interop for robustness?
+            var transceiver = new VideoTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
+            var config = new VideoTransceiverInterop.InitConfig(transceiver, settings);
+            Debug.Assert(transceiver.DesiredDirection == config.desiredDirection);
+            uint res = PeerConnectionInterop.PeerConnection_AddVideoTransceiver(_nativePeerhandle, in config,
+                out VideoTransceiverHandle transceiverHandle);
             Utils.ThrowOnErrorCode(res);
-        }
-
-        /// <summary>
-        /// Check if the local audio track associated with this peer connection is enabled.
-        /// Disable audio tracks are still active, but are silent.
-        /// </summary>
-        /// <returns><c>true</c> if the track is enabled, or <c>false</c> otherwise</returns>
-        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
-        public bool IsLocalAudioTrackEnabled()
-        {
-            ThrowIfConnectionNotOpen();
-            return (PeerConnectionInterop.PeerConnection_IsLocalAudioTrackEnabled(_nativePeerhandle) != 0);
-        }
-
-        /// <summary>
-        /// Remove from the current connection the local audio track added with <see cref="AddLocalAudioTrackAsync"/>.
-        /// </summary>
-        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
-        public void RemoveLocalAudioTrack()
-        {
-            ThrowIfConnectionNotOpen();
-            PeerConnectionInterop.PeerConnection_RemoveLocalAudioTrack(_nativePeerhandle);
+            transceiver.SetHandle(transceiverHandle);
+            OnTransceiverAdded(transceiver);
+            return transceiver;
         }
 
         #endregion
@@ -1234,6 +1307,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// Create an SDP answer message to a previously-received offer, to accept a connection.
         /// Once the message is ready to be sent, the <see cref="LocalSdpReadytoSend"/> event is fired
         /// to allow the user to send that message to the remote peer via its selected signaling solution.
+        /// Note that this cannot be called before <see cref="SetRemoteDescriptionAsync(string, string)"/>
+        /// successfully completed and applied the remote offer.
         /// </summary>
         /// <returns><c>true</c> if the answer creation task was successfully submitted.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
@@ -1681,9 +1756,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <returns>The list of available video capture devices.</returns>
         /// <remarks>
-        /// Assign one of the returned <see cref="VideoCaptureDevice"/> to the
-        /// <see cref="LocalVideoTrackSettings.videoDevice"/> field to force a local video
-        /// track to use that device when creating it with <see cref="AddLocalVideoTrackAsync(LocalVideoTrackSettings)"/>.
+        /// Assign one of the returned <see cref="VideoCaptureDevice"/> to the <see cref="LocalVideoTrackSettings.videoDevice"/>
+        /// field to force a local video track to use that device when creating it with
+        /// <see cref="LocalVideoTrack.CreateFromDeviceAsync(LocalVideoTrackSettings)"/>.
         /// </remarks>
         public static Task<List<VideoCaptureDevice>> GetVideoCaptureDevicesAsync()
         {
@@ -1947,40 +2022,224 @@ namespace Microsoft.MixedReality.WebRTC
             RenegotiationNeeded?.Invoke();
         }
 
-        internal void OnTrackAdded(TrackKind trackKind)
+        /// <summary>
+        /// Insert the given transceiver into the <see cref="Transceivers"/> list at the index
+        /// corresponding to its <see cref="Transceiver.MlineIndex"/>.
+        /// </summary>
+        /// <param name="transceiver">Transceiver object to insert.</param>
+        internal void InsertTransceiverNoLock(Transceiver transceiver)
         {
-            MainEventSource.Log.TrackAdded(trackKind);
-            TrackAdded?.Invoke(trackKind);
+            int mlineIndex = transceiver.MlineIndex;
+            if (mlineIndex >= Transceivers.Count)
+            {
+                while (mlineIndex >= Transceivers.Count + 1)
+                {
+                    Transceivers.Add(null);
+                }
+                Transceivers.Add(transceiver);
+            }
+            else
+            {
+                Debug.Assert(Transceivers[mlineIndex] == null);
+                Transceivers[mlineIndex] = transceiver;
+            }
         }
 
-        internal void OnTrackRemoved(TrackKind trackKind)
+        /// <summary>
+        /// Callback on transceiver created for the peer connection, irrelevant of whether
+        /// it has tracks or not. This is called both when created from the managed side or
+        /// from the native side.
+        /// </summary>
+        /// <param name="tr">The newly created transceiver which has this peer connection as owner</param>
+        internal void OnTransceiverAdded(AudioTransceiver tr)
         {
-            MainEventSource.Log.TrackRemoved(trackKind);
-            TrackRemoved?.Invoke(trackKind);
+            lock (_tracksLock)
+            {
+                InsertTransceiverNoLock(tr);
+            }
+            AudioTransceiverAdded?.Invoke(tr);
         }
 
-        internal void OnI420ARemoteVideoFrameReady(I420AVideoFrame frame)
+        /// <summary>
+        /// Callback on transceiver created for the peer connection, irrelevant of whether
+        /// it has tracks or not. This is called both when created from the managed side or
+        /// from the native side.
+        /// </summary>
+        /// <param name="tr">The newly created transceiver which has this peer connection as owner</param>
+        internal void OnTransceiverAdded(VideoTransceiver tr)
         {
-            MainEventSource.Log.I420ARemoteVideoFrameReady(frame.width, frame.height);
-            I420ARemoteVideoFrameReady?.Invoke(frame);
+            lock (_tracksLock)
+            {
+                InsertTransceiverNoLock(tr);
+            }
+            VideoTransceiverAdded?.Invoke(tr);
         }
 
-        internal void OnArgb32RemoteVideoFrameReady(Argb32VideoFrame frame)
+        internal void OnAudioTrackAdded(RemoteAudioTrack track, AudioTransceiver transceiver)
         {
-            MainEventSource.Log.Argb32RemoteVideoFrameReady(frame.width, frame.height);
-            Argb32RemoteVideoFrameReady?.Invoke(frame);
+            MainEventSource.Log.AudioTrackAdded(track.Name);
+            lock (_tracksLock)
+            {
+                if (!Transceivers.Contains(transceiver))
+                {
+                    InsertTransceiverNoLock(transceiver);
+                }
+            }
+            track.OnTrackAddedToTransceiver(transceiver);
+            AudioTrackAdded?.Invoke(track);
         }
 
-        internal void OnLocalAudioFrameReady(AudioFrame frame)
+        internal void OnAudioTrackRemoved(RemoteAudioTrack track)
         {
-            MainEventSource.Log.LocalAudioFrameReady(frame.bitsPerSample, frame.channelCount, frame.sampleCount);
-            LocalAudioFrameReady?.Invoke(frame);
+            MainEventSource.Log.AudioTrackRemoved(track.Name);
+            AudioTransceiver transceiver = track.Transceiver; // cache before removed
+            track.OnTrackRemoved(this);
+            AudioTrackRemoved?.Invoke(transceiver, track);
+
+            // PeerConnection is owning the remote track, and all internal states have been
+            // updated and events fired, so dispose of the track now.
+            track.Dispose();
         }
 
-        internal void OnRemoteAudioFrameReady(AudioFrame frame)
+        /// <summary>
+        /// Callback invoked when a transceiver starts receiving, and a remote video track is
+        /// created as a result to receive its video data.
+        /// </summary>
+        /// <param name="track">The newly created remote video track.</param>
+        /// <param name="transceiver">The video transceiver now receiving from the remote peer.</param>
+        internal void OnVideoTrackAdded(RemoteVideoTrack track, VideoTransceiver transceiver)
         {
-            MainEventSource.Log.RemoteAudioFrameReady(frame.bitsPerSample, frame.channelCount, frame.sampleCount);
-            RemoteAudioFrameReady?.Invoke(frame);
+            MainEventSource.Log.VideoTrackAdded(track.Name);
+            lock (_tracksLock)
+            {
+                if (!Transceivers.Contains(transceiver))
+                {
+                    InsertTransceiverNoLock(transceiver);
+                }
+            }
+            track.OnTrackAddedToTransceiver(transceiver);
+            VideoTrackAdded?.Invoke(track);
+        }
+
+        /// <summary>
+        /// Callback invoked when a transceiver stops receiving, and a remote video track is
+        /// removed from it as a result.
+        /// </summary>
+        /// <param name="track">The remote video track removed from the video transceiver.</param>
+        internal void OnVideoTrackRemoved(RemoteVideoTrack track)
+        {
+            MainEventSource.Log.VideoTrackRemoved(track.Name);
+            VideoTransceiver transceiver = track.Transceiver; // cache before removed
+            track.OnTrackRemoved(this);
+            VideoTrackRemoved?.Invoke(transceiver, track);
+
+            // PeerConnection is owning the remote track, and all internal states have been
+            // updated and events fired, so dispose of the track now.
+            track.Dispose();
+        }
+
+        /// <summary>
+        /// Callback invoked when a transceiver starts receiving, and a remote audio track is
+        /// created as a result to receive its audio data.
+        /// </summary>
+        /// <param name="track">The newly created remote audio track.</param>
+        internal void OnLocalTrackAdded(LocalAudioTrack track)
+        {
+            lock (_tracksLock)
+            {
+                Debug.Assert(!LocalAudioTracks.Contains(track));
+                Debug.Assert(track.Transceiver != null);
+                Debug.Assert(Transceivers.Contains(track.Transceiver));
+                LocalAudioTracks.Add(track);
+            }
+        }
+
+        /// <summary>
+        /// Callback invoked when a transceiver stops receiving, and a remote audio track is
+        /// removed from it as a result.
+        /// </summary>
+        /// <param name="track">The remote video track removed from the video transceiver.</param>
+        internal void OnLocalTrackRemoved(LocalAudioTrack track)
+        {
+            lock (_tracksLock)
+            {
+                Debug.Assert(LocalAudioTracks.Contains(track));
+                Debug.Assert(track.Transceiver != null);
+                Debug.Assert(Transceivers.Contains(track.Transceiver));
+                LocalAudioTracks.Remove(track);
+            }
+        }
+
+        internal void OnLocalTrackAdded(LocalVideoTrack track)
+        {
+            lock (_tracksLock)
+            {
+                Debug.Assert(!LocalVideoTracks.Contains(track));
+                Debug.Assert(track.Transceiver != null);
+                Debug.Assert(Transceivers.Contains(track.Transceiver));
+                LocalVideoTracks.Add(track);
+            }
+        }
+
+        internal void OnLocalTrackRemoved(LocalVideoTrack track)
+        {
+            lock (_tracksLock)
+            {
+                Debug.Assert(LocalVideoTracks.Contains(track));
+                Debug.Assert(track.Transceiver != null);
+                Debug.Assert(Transceivers.Contains(track.Transceiver));
+                LocalVideoTracks.Remove(track);
+            }
+        }
+
+        internal void OnRemoteTrackAdded(RemoteAudioTrack track)
+        {
+            lock (_tracksLock)
+            {
+                Debug.Assert(!RemoteAudioTracks.Contains(track));
+                Debug.Assert(track.Transceiver != null);
+                Debug.Assert(Transceivers.Contains(track.Transceiver));
+                RemoteAudioTracks.Add(track);
+            }
+        }
+
+        internal void OnRemoteTrackRemoved(RemoteAudioTrack track)
+        {
+            lock (_tracksLock)
+            {
+                Debug.Assert(RemoteAudioTracks.Contains(track));
+                Debug.Assert(track.Transceiver != null);
+                Debug.Assert(Transceivers.Contains(track.Transceiver));
+                RemoteAudioTracks.Remove(track);
+            }
+        }
+
+        internal void OnRemoteTrackAdded(RemoteVideoTrack track)
+        {
+            lock (_tracksLock)
+            {
+                Debug.Assert(!RemoteVideoTracks.Contains(track));
+                Debug.Assert(track.Transceiver != null);
+                Debug.Assert(Transceivers.Contains(track.Transceiver));
+                RemoteVideoTracks.Add(track);
+            }
+        }
+
+        internal void OnRemoteTrackRemoved(RemoteVideoTrack track)
+        {
+            lock (_tracksLock)
+            {
+                Debug.Assert(RemoteVideoTracks.Contains(track));
+                Debug.Assert(track.Transceiver != null);
+                Debug.Assert(Transceivers.Contains(track.Transceiver));
+                RemoteVideoTracks.Remove(track);
+            }
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"(PeerConnection)\"{Name}\"";
         }
     }
 }
