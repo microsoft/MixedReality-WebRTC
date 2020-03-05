@@ -55,3 +55,6 @@ Write-Output $content | Set-Content -Path $OutputFile -Encoding UTF8
 Write-Host "== $OutputFile ======================================="
 Get-Content -Encoding UTF8 -Path "$OutputFile"
 Write-Host "=========================================================="
+
+# Write the filename of the new packages.config file to $(PackagesConfigFile) for later use
+Write-Host "##vso[task.setvariable variable=PackagesConfigFile]$OutputFile"
