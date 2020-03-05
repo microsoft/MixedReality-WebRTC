@@ -159,23 +159,12 @@ namespace Microsoft.MixedReality.WebRTC
     /// Video track sending to the remote peer video frames originating from
     /// a local track source.
     /// </summary>
-    public class LocalVideoTrack : IDisposable
+    public class LocalVideoTrack : MediaTrack, IDisposable
     {
-        /// <summary>
-        /// Peer connection this video track is added to, if any.
-        /// This is <c>null</c> after the track has been removed from the peer connection.
-        /// </summary>
-        public PeerConnection PeerConnection { get; private set; }
-
         /// <summary>
         /// Video transceiver this track is part of.
         /// </summary>
         public VideoTransceiver Transceiver { get; private set; }
-
-        /// <summary>
-        /// Track name as specified during creation. This property is immutable.
-        /// </summary>
-        public string Name { get; }
 
         /// <summary>
         /// External source for this video track, or <c>null</c> if the source is some
@@ -358,11 +347,9 @@ namespace Microsoft.MixedReality.WebRTC
 
         // Constructor for interop-based creation; SetHandle() will be called later.
         // Constructor for standalone track not associated to a peer connection.
-        internal LocalVideoTrack(string trackName, ExternalVideoTrackSource source = null)
+        internal LocalVideoTrack(string trackName, ExternalVideoTrackSource source = null) : base(null, trackName)
         {
-            PeerConnection = null;
             Transceiver = null;
-            Name = trackName;
             Source = source;
             source?.OnTrackAddedToSource(this);
         }
@@ -370,12 +357,10 @@ namespace Microsoft.MixedReality.WebRTC
         // Constructor for interop-based creation; SetHandle() will be called later
         // Constructor for a track associated with a peer connection.
         internal LocalVideoTrack(PeerConnection peer,
-            VideoTransceiver transceiver, string trackName, ExternalVideoTrackSource source = null)
+            VideoTransceiver transceiver, string trackName, ExternalVideoTrackSource source = null) : base(peer, trackName)
         {
-            PeerConnection = peer;
             Transceiver = transceiver;
             transceiver.OnLocalTrackAdded(this);
-            Name = trackName;
             Source = source;
             source?.OnTrackAddedToSource(this);
         }

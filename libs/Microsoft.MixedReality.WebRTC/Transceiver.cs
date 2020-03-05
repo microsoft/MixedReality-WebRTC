@@ -1,22 +1,29 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+using System.Diagnostics;
+using Microsoft.MixedReality.WebRTC.Interop;
+
 namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
     /// Type of media track or media transceiver.
     /// </summary>
-    public enum MediaKind
+    /// <remarks>
+    /// This is the projection of <c>mrsMediaKind</c> from the interop API.
+    /// </remarks>
+    public enum MediaKind : uint
     {
         /// <summary>
         /// Audio data.
         /// </summary>
-        Audio,
+        Audio = 0,
 
         /// <summary>
         /// Video data.
         /// </summary>
-        Video
+        Video = 1
     }
 
     /// <summary>
@@ -114,19 +121,20 @@ namespace Microsoft.MixedReality.WebRTC
         public Direction? NegotiatedDirection { get; protected set; } = null;
 
         /// <summary>
-        /// Change the media flowing direction of the transceiver.
-        /// This triggers a renegotiation needed event to synchronize with the remote peer.
-        /// </summary>
-        /// <param name="newDirection">The new flowing direction.</param>
-        /// <seealso cref="DesiredDirection"/>
-        /// <seealso cref="NegotiatedDirection"/>
-        public abstract void SetDirection(Direction newDirection);
-
-        /// <summary>
         /// Backing field for <see cref="DesiredDirection"/>.
         /// Default is Send+Receive, as it is in implementation.
         /// </summary>
         protected Direction _desiredDirection = Direction.SendReceive;
+
+        /// <summary>
+        /// Handle to the native Transceiver object.
+        /// </summary>
+        /// <remarks>
+        /// In native land this is a <code>Microsoft::MixedReality::WebRTC::TransceiverHandle</code>.
+        /// </remarks>
+        internal TransceiverHandle _nativeHandle = new TransceiverHandle();
+
+        private IntPtr _argsRef = IntPtr.Zero;
 
         /// <summary>
         /// Create a new transceiver associated with a given peer connection.
@@ -143,12 +151,83 @@ namespace Microsoft.MixedReality.WebRTC
             Name = name;
         }
 
+        internal void SetHandle(TransceiverHandle handle)
+        {
+            Debug.Assert(!handle.IsClosed);
+            // Either first-time assign or no-op (assign same value again)
+            Debug.Assert(_nativeHandle.IsInvalid || (_nativeHandle == handle));
+            if (_nativeHandle != handle)
+            {
+                _nativeHandle = handle;
+                TransceiverInterop.RegisterCallbacks(this, out _argsRef);
+            }
+        }
+
+        /// <summary>
+        /// Change the media flowing direction of the transceiver.
+        /// This triggers a renegotiation needed event to synchronize with the remote peer.
+        /// </summary>
+        /// <param name="newDirection">The new flowing direction.</param>
+        /// <seealso cref="DesiredDirection"/>
+        /// <seealso cref="NegotiatedDirection"/>
+        public void SetDirection(Direction newDirection)
+        {
+            if (newDirection == _desiredDirection)
+            {
+                return;
+            }
+            var res = TransceiverInterop.Transceiver_SetDirection(_nativeHandle, newDirection);
+            Utils.ThrowOnErrorCode(res);
+            _desiredDirection = newDirection;
+        }
+
+        /// <summary>
+        /// Callback on local track muted due to transceiver direction change.
+        /// </summary>
+        /// <param name="muted"><c>true</c> if the track is muted, or <c>false</c> otherwise.</param>
+        protected abstract void OnLocalTrackMuteChanged(bool muted);
+
+        /// <summary>
+        /// Callback on remote track muted due to transceiver direction change.
+        /// </summary>
+        /// <param name="muted"><c>true</c> if the track is muted, or <c>false</c> otherwise.</param>
+        protected abstract void OnRemoteTrackMuteChanged(bool muted);
+
+        /// <summary>
+        /// Callback on internal implementation state changed to synchronize the cached state of this wrapper.
+        /// </summary>
+        /// <param name="negotiatedDirection">Current negotiated direction of the transceiver</param>
+        /// <param name="desiredDirection">Current desired direction of the transceiver</param>
+        internal void OnStateUpdated(Direction? negotiatedDirection, Direction desiredDirection)
+        {
+            _desiredDirection = desiredDirection;
+
+            if (negotiatedDirection != NegotiatedDirection)
+            {
+                bool hadSendBefore = HasSend(NegotiatedDirection);
+                bool hasSendNow = HasSend(negotiatedDirection);
+                bool hadRecvBefore = HasRecv(NegotiatedDirection);
+                bool hasRecvNow = HasRecv(negotiatedDirection);
+
+                NegotiatedDirection = negotiatedDirection;
+
+                if (hadSendBefore != hasSendNow)
+                {
+                    OnLocalTrackMuteChanged(!hasSendNow);
+                }
+                if (hadRecvBefore != hasRecvNow)
+                {
+                    OnRemoteTrackMuteChanged(!hasRecvNow);
+                }
+            }
+        }
+
         /// <summary>
         /// Check whether the given direction includes sending.
         /// </summary>
         /// <param name="dir">The direction to check.</param>
         /// <returns><c>true</c> if direction is <see cref="Direction.SendOnly"/> or <see cref="Direction.SendReceive"/>.</returns>
-        protected static bool HasSend(Direction dir)
+        public static bool HasSend(Direction dir)
         {
             return (dir == Direction.SendOnly) || (dir == Direction.SendReceive);
         }
@@ -158,7 +237,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="dir">The direction to check.</param>
         /// <returns><c>true</c> if direction is <see cref="Direction.ReceiveOnly"/> or <see cref="Direction.SendReceive"/>.</returns>
-        protected static bool HasRecv(Direction dir)
+        public static bool HasRecv(Direction dir)
         {
             return (dir == Direction.ReceiveOnly) || (dir == Direction.SendReceive);
         }
@@ -168,7 +247,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="dir">The direction to check.</param>
         /// <returns><c>true</c> if direction is <see cref="Direction.SendOnly"/> or <see cref="Direction.SendReceive"/>.</returns>
-        protected static bool HasSend(Direction? dir)
+        public static bool HasSend(Direction? dir)
         {
             return dir.HasValue && ((dir == Direction.SendOnly) || (dir == Direction.SendReceive));
         }
@@ -178,7 +257,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="dir">The direction to check.</param>
         /// <returns><c>true</c> if direction is <see cref="Direction.ReceiveOnly"/> or <see cref="Direction.SendReceive"/>.</returns>
-        protected static bool HasRecv(Direction? dir)
+        public static bool HasRecv(Direction? dir)
         {
             return dir.HasValue && ((dir == Direction.ReceiveOnly) || (dir == Direction.SendReceive));
         }

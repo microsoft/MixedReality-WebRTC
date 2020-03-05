@@ -302,37 +302,15 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
-    /// Settings to create a new audio transceiver wrapper.
-    /// </summary>
-    public class AudioTransceiverInitSettings : TransceiverInitSettings
-    {
-
-    }
-
-    /// <summary>
-    /// Settings to create a new video transceiver wrapper.
-    /// </summary>
-    public class VideoTransceiverInitSettings : TransceiverInitSettings
-    {
-
-    }
-
-    /// <summary>
     /// The WebRTC peer connection object is the entry point to using WebRTC.
     /// </summary>
     public class PeerConnection : IDisposable
     {
         /// <summary>
-        /// Delegate for <see cref="AudioTransceiverAdded"/> event.
+        /// Delegate for <see cref="TransceiverAdded"/> event.
         /// </summary>
-        /// <param name="transceiver">The newly added audio transceiver.</param>
-        public delegate void AudioTransceiverAddedDelegate(AudioTransceiver transceiver);
-
-        /// <summary>
-        /// Delegate for <see cref="VideoTransceiverAdded"/> event.
-        /// </summary>
-        /// <param name="transceiver">The newly added video transceiver.</param>
-        public delegate void VideoTransceiverAddedDelegate(VideoTransceiver transceiver);
+        /// <param name="transceiver">The newly added transceiver.</param>
+        public delegate void TransceiverAddedDelegate(Transceiver transceiver);
 
         /// <summary>
         /// Delegate for <see cref="AudioTrackAdded"/> event.
@@ -651,26 +629,15 @@ namespace Microsoft.MixedReality.WebRTC
         public event Action RenegotiationNeeded;
 
         /// <summary>
-        /// Event that occurs when an audio transceiver is added to the peer connection, either
-        /// manually using <see cref="AddAudioTransceiver(AudioTransceiverInitSettings)"/>, or
+        /// Event that occurs when a transceiver is added to the peer connection, either
+        /// manually using <see cref="AddTransceiver(MediaKind, TransceiverInitSettings)"/>, or
         /// automatically as a result of a new session negotiation.
         /// </summary>
         /// <remarks>
         /// Transceivers cannot be removed from the peer connection, so there is no
-        /// <c>AudioTransceiverRemoved</c> event.
+        /// <c>TransceiverRemoved</c> event.
         /// </remarks>
-        public event AudioTransceiverAddedDelegate AudioTransceiverAdded;
-
-        /// <summary>
-        /// Event that occurs when a video transceiver is added to the peer connection, either
-        /// manually using <see cref="AddVideoTransceiver(VideoTransceiverInitSettings)"/>, or
-        /// automatically as a result of a new session negotiation.
-        /// </summary>
-        /// <remarks>
-        /// Transceivers cannot be removed from the peer connection, so there is no
-        /// <c>VideoTransceiverRemoved</c> event.
-        /// </remarks>
-        public event VideoTransceiverAddedDelegate VideoTransceiverAdded;
+        public event TransceiverAddedDelegate TransceiverAdded;
 
         /// <summary>
         /// Event that occurs when a remote audio track is added to the current connection.
@@ -793,10 +760,8 @@ namespace Microsoft.MixedReality.WebRTC
                 _interopCallbacks = new PeerConnectionInterop.InteropCallbacks()
                 {
                     Peer = this,
-                    AudioTransceiverCreateObjectCallback = AudioTransceiverInterop.AudioTransceiverCreateObjectCallback,
-                    AudioTransceiverFinishCreateCallbak = AudioTransceiverInterop.AudioTransceiverFinishCreateCallback,
-                    VideoTransceiverCreateObjectCallback = VideoTransceiverInterop.VideoTransceiverCreateObjectCallback,
-                    VideoTransceiverFinishCreateCallbak = VideoTransceiverInterop.VideoTransceiverFinishCreateCallback,
+                    TransceiverCreateObjectCallback = TransceiverInterop.TransceiverCreateObjectCallback,
+                    TransceiverFinishCreateCallbak = TransceiverInterop.TransceiverFinishCreateCallback,
                     RemoteAudioTrackCreateObjectCallback = RemoteAudioTrackInterop.RemoteAudioTrackCreateObjectCallback,
                     RemoteVideoTrackCreateObjectCallback = RemoteVideoTrackInterop.RemoteVideoTrackCreateObjectCallback,
                     DataChannelCreateObjectCallback = DataChannelInterop.DataChannelCreateObjectCallback,
@@ -887,10 +852,8 @@ namespace Microsoft.MixedReality.WebRTC
                         var self = GCHandle.ToIntPtr(_selfHandle);
                         var interopCallbacks = new PeerConnectionInterop.MarshaledInteropCallbacks
                         {
-                            AudioTransceiverCreateObjectCallback = _interopCallbacks.AudioTransceiverCreateObjectCallback,
-                            AudioTransceiverFinishCreateCallbak = _interopCallbacks.AudioTransceiverFinishCreateCallbak,
-                            VideoTransceiverCreateObjectCallback = _interopCallbacks.VideoTransceiverCreateObjectCallback,
-                            VideoTransceiverFinishCreateCallbak = _interopCallbacks.VideoTransceiverFinishCreateCallbak,
+                            TransceiverCreateObjectCallback = _interopCallbacks.TransceiverCreateObjectCallback,
+                            TransceiverFinishCreateCallbak = _interopCallbacks.TransceiverFinishCreateCallbak,
                             RemoteAudioTrackCreateObjectCallback = _interopCallbacks.RemoteAudioTrackCreateObjectCallback,
                             RemoteVideoTrackCreateObjectCallback = _interopCallbacks.RemoteVideoTrackCreateObjectCallback,
                             DataChannelCreateObjectCallback = _interopCallbacks.DataChannelCreateObjectCallback
@@ -1089,20 +1052,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="settings"></param>
         /// <returns>The newly created transceiver.</returns>
-        public AudioTransceiver AddAudioTransceiver(AudioTransceiverInitSettings settings = null)
+        public AudioTransceiver AddAudioTransceiver(TransceiverInitSettings settings = null)
         {
-            ThrowIfConnectionNotOpen();
-            settings = settings ?? new AudioTransceiverInitSettings();
-            int mlineIndex = Transceivers.Count; //< TODO: retrieve from interop for robustness?
-            var transceiver = new AudioTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
-            var config = new AudioTransceiverInterop.InitConfig(transceiver, settings);
-            Debug.Assert(transceiver.DesiredDirection == config.desiredDirection);
-            uint res = PeerConnectionInterop.PeerConnection_AddAudioTransceiver(_nativePeerhandle, in config,
-                out AudioTransceiverHandle transceiverHandle);
-            Utils.ThrowOnErrorCode(res);
-            transceiver.SetHandle(transceiverHandle);
-            OnTransceiverAdded(transceiver);
-            return transceiver;
+            return AddTransceiver(MediaKind.Audio, settings) as AudioTransceiver;
         }
 
         /// <summary>
@@ -1118,16 +1070,43 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="settings"></param>
         /// <returns>The newly created transceiver.</returns>
-        public VideoTransceiver AddVideoTransceiver(VideoTransceiverInitSettings settings = null)
+        public VideoTransceiver AddVideoTransceiver(TransceiverInitSettings settings = null)
+        {
+            return AddTransceiver(MediaKind.Video, settings) as VideoTransceiver;
+        }
+
+        /// <summary>
+        /// Add to the current connection a new media transceiver.
+        /// 
+        /// A transceiver is a container for a pair of media tracks, one local sending to the remote
+        /// peer, and one remote receiving from the remote peer. Both are optional, and the transceiver
+        /// can be in receive-only mode (no local track), in send-only mode (no remote track), or
+        /// inactive (neither local nor remote track).
+        /// 
+        /// Once a transceiver is added to the peer connection, it cannot be removed, but its tracks can be
+        /// changed (this requires some renegotiation).
+        /// </summary>
+        /// <param name="mediaKind">Kind of media the transeiver is transporting.</param>
+        /// <param name="settings">Settings to initialize the new transceiver.</param>
+        /// <returns>The newly created transceiver.</returns>
+        public Transceiver AddTransceiver(MediaKind mediaKind, TransceiverInitSettings settings = null)
         {
             ThrowIfConnectionNotOpen();
-            settings = settings ?? new VideoTransceiverInitSettings();
+            settings = settings ?? new TransceiverInitSettings();
             int mlineIndex = Transceivers.Count; //< TODO: retrieve from interop for robustness?
-            var transceiver = new VideoTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
-            var config = new VideoTransceiverInterop.InitConfig(transceiver, settings);
+            Transceiver transceiver;
+            if (mediaKind == MediaKind.Audio)
+            {
+                transceiver = new AudioTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
+            }
+            else
+            {
+                transceiver = new VideoTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
+            }
+            TransceiverInterop.InitConfig config = new TransceiverInterop.InitConfig(transceiver, settings);
             Debug.Assert(transceiver.DesiredDirection == config.desiredDirection);
-            uint res = PeerConnectionInterop.PeerConnection_AddVideoTransceiver(_nativePeerhandle, in config,
-                out VideoTransceiverHandle transceiverHandle);
+            uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, in config,
+                out TransceiverHandle transceiverHandle);
             Utils.ThrowOnErrorCode(res);
             transceiver.SetHandle(transceiverHandle);
             OnTransceiverAdded(transceiver);
@@ -2051,28 +2030,13 @@ namespace Microsoft.MixedReality.WebRTC
         /// from the native side.
         /// </summary>
         /// <param name="tr">The newly created transceiver which has this peer connection as owner</param>
-        internal void OnTransceiverAdded(AudioTransceiver tr)
+        internal void OnTransceiverAdded(Transceiver tr)
         {
             lock (_tracksLock)
             {
                 InsertTransceiverNoLock(tr);
             }
-            AudioTransceiverAdded?.Invoke(tr);
-        }
-
-        /// <summary>
-        /// Callback on transceiver created for the peer connection, irrelevant of whether
-        /// it has tracks or not. This is called both when created from the managed side or
-        /// from the native side.
-        /// </summary>
-        /// <param name="tr">The newly created transceiver which has this peer connection as owner</param>
-        internal void OnTransceiverAdded(VideoTransceiver tr)
-        {
-            lock (_tracksLock)
-            {
-                InsertTransceiverNoLock(tr);
-            }
-            VideoTransceiverAdded?.Invoke(tr);
+            TransceiverAdded?.Invoke(tr);
         }
 
         internal void OnAudioTrackAdded(RemoteAudioTrack track, AudioTransceiver transceiver)

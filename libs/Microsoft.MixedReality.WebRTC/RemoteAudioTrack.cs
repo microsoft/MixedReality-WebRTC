@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Microsoft.MixedReality.WebRTC.Interop;
 using Microsoft.MixedReality.WebRTC.Tracing;
 
@@ -12,24 +11,12 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Audio track receiving audio frames from the remote peer.
     /// </summary>
-    public class RemoteAudioTrack
+    public class RemoteAudioTrack : MediaTrack
     {
-        /// <summary>
-        /// Peer connection this audio track is added to, if any.
-        /// This is <c>null</c> after the track has been removed from the peer connection.
-        /// </summary>
-        public PeerConnection PeerConnection { get; private set; }
-
         /// <summary>
         /// Audio transceiver this track is part of.
         /// </summary>
         public AudioTransceiver Transceiver { get; private set; }
-
-        /// <summary>
-        /// Track name as specified during creation. This property is immutable.
-        /// For remote audio track the property is specified by the remote peer.
-        /// </summary>
-        public string Name { get; }
 
         /// <summary>
         /// Enabled status of the track. If enabled, receives audio frames from the remote peer as
@@ -73,10 +60,8 @@ namespace Microsoft.MixedReality.WebRTC
         private RemoteAudioTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
         // Constructor for interop-based creation; SetHandle() will be called later
-        internal RemoteAudioTrack(PeerConnection peer, string trackName)
+        internal RemoteAudioTrack(PeerConnection peer, string trackName) : base(peer, trackName)
         {
-            PeerConnection = peer;
-            Name = trackName;
         }
 
         internal void SetHandle(RemoteAudioTrackHandle handle)

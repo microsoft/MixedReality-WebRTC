@@ -136,10 +136,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public class InteropCallbacks
         {
             public PeerConnection Peer;
-            public AudioTransceiverInterop.CreateObjectDelegate AudioTransceiverCreateObjectCallback;
-            public AudioTransceiverInterop.FinishCreateDelegate AudioTransceiverFinishCreateCallbak;
-            public VideoTransceiverInterop.CreateObjectDelegate VideoTransceiverCreateObjectCallback;
-            public VideoTransceiverInterop.FinishCreateDelegate VideoTransceiverFinishCreateCallbak;
+            public TransceiverInterop.CreateObjectDelegate TransceiverCreateObjectCallback;
+            public TransceiverInterop.FinishCreateDelegate TransceiverFinishCreateCallbak;
             public RemoteAudioTrackInterop.CreateObjectDelegate RemoteAudioTrackCreateObjectCallback;
             public RemoteVideoTrackInterop.CreateObjectDelegate RemoteVideoTrackCreateObjectCallback;
             public DataChannelInterop.CreateObjectDelegate DataChannelCreateObjectCallback;
@@ -236,7 +234,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void AudioTrackAddedCallback(IntPtr peer, IntPtr audioTrack, IntPtr audioTrackHandle,
             IntPtr audioTransceiver, IntPtr audioTransceiverHandle)
         {
-            AudioTransceiverInterop.AudioTransceiver_RemoveRef(audioTransceiverHandle); // unused
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
             var audioTrackWrapper = Utils.ToWrapper<RemoteAudioTrack>(audioTrack);
             var audioTransceiverWrapper = Utils.ToWrapper<AudioTransceiver>(audioTransceiver);
@@ -260,7 +257,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void VideoTrackAddedCallback(IntPtr peer, IntPtr videoTrack, IntPtr videoTrackHandle,
             IntPtr videoTransceiver, IntPtr videoTransceiverHandle)
         {
-            VideoTransceiverInterop.VideoTransceiver_RemoveRef(videoTransceiverHandle); // unused
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
             var videoTrackWrapper = Utils.ToWrapper<RemoteVideoTrack>(videoTrack);
             var videoTransceiverWrapper = Utils.ToWrapper<VideoTransceiver>(videoTransceiver);
@@ -350,10 +346,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         internal struct MarshaledInteropCallbacks
         {
-            public AudioTransceiverInterop.CreateObjectDelegate AudioTransceiverCreateObjectCallback;
-            public AudioTransceiverInterop.FinishCreateDelegate AudioTransceiverFinishCreateCallbak;
-            public VideoTransceiverInterop.CreateObjectDelegate VideoTransceiverCreateObjectCallback;
-            public VideoTransceiverInterop.FinishCreateDelegate VideoTransceiverFinishCreateCallbak;
+            public TransceiverInterop.CreateObjectDelegate TransceiverCreateObjectCallback;
+            public TransceiverInterop.FinishCreateDelegate TransceiverFinishCreateCallbak;
             public RemoteAudioTrackInterop.CreateObjectDelegate RemoteAudioTrackCreateObjectCallback;
             public RemoteVideoTrackInterop.CreateObjectDelegate RemoteVideoTrackCreateObjectCallback;
             public DataChannelInterop.CreateObjectDelegate DataChannelCreateObjectCallback;
@@ -694,14 +688,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             PeerConnectionDataChannelRemovedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsPeerConnectionAddAudioTransceiver")]
-        public static extern uint PeerConnection_AddAudioTransceiver(PeerConnectionHandle peerHandle,
-            in AudioTransceiverInterop.InitConfig config, out AudioTransceiverHandle transceiverHandle);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsPeerConnectionAddVideoTransceiver")]
-        public static extern uint PeerConnection_AddVideoTransceiver(PeerConnectionHandle peerHandle,
-            in VideoTransceiverInterop.InitConfig config, out VideoTransceiverHandle transceiverHandle);
+            EntryPoint = "mrsPeerConnectionAddTransceiver")]
+        public static extern uint PeerConnection_AddTransceiver(PeerConnectionHandle peerHandle,
+            in TransceiverInterop.InitConfig config, out TransceiverHandle transceiverHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddDataChannel")]

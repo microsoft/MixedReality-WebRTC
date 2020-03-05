@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Microsoft.MixedReality.WebRTC.Interop;
 using Microsoft.MixedReality.WebRTC.Tracing;
 
@@ -12,24 +11,12 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Video track receiving video frames from the remote peer.
     /// </summary>
-    public class RemoteVideoTrack
+    public class RemoteVideoTrack : MediaTrack
     {
-        /// <summary>
-        /// Peer connection this video track is added to, if any.
-        /// This is <c>null</c> after the track has been removed from the peer connection.
-        /// </summary>
-        public PeerConnection PeerConnection { get; private set; }
-
         /// <summary>
         /// Video transceiver this track is part of.
         /// </summary>
         public VideoTransceiver Transceiver { get; private set; }
-
-        /// <summary>
-        /// Track name as specified during creation. This property is immutable.
-        /// For remote video track the property is specified by the remote peer.
-        /// </summary>
-        public string Name { get; }
 
         /// <summary>
         /// Enabled status of the track. If enabled, receives video frames from the remote peer as
@@ -78,10 +65,8 @@ namespace Microsoft.MixedReality.WebRTC
         private RemoteVideoTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
         // Constructor for interop-based creation; SetHandle() will be called later
-        internal RemoteVideoTrack(PeerConnection peer, string trackName)
+        internal RemoteVideoTrack(PeerConnection peer, string trackName) : base(peer, trackName)
         {
-            PeerConnection = peer;
-            Name = trackName;
         }
 
         internal void SetHandle(RemoteVideoTrackHandle handle)
