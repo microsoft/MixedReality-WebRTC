@@ -55,7 +55,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
     internal class LocalVideoTrackInterop
     {
-        #region Native callbacks
+        #region Unmanaged delegates
+
+        // Note - none of those method arguments can be SafeHandle; use IntPtr instead.
 
         // The callbacks below ideally would use 'in', but that generates an error with .NET Native:
         // "error : ILT0021: Could not resolve method 'EETypeRva:0x--------'".
@@ -80,6 +82,17 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsLocalVideoTrackRemoveRef")]
         public static unsafe extern void LocalVideoTrack_RemoveRef(IntPtr handle);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsLocalVideoTrackCreateFromDevice")]
+        public static unsafe extern uint LocalVideoTrack_CreateFromDevice(in PeerConnectionInterop.LocalVideoTrackInteropInitConfig config,
+            string trackName, out LocalVideoTrackHandle trackHandle);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsLocalVideoTrackCreateFromExternalSource")]
+        public static unsafe extern uint LocalVideoTrack_CreateFromExternalSource(ExternalVideoTrackSourceHandle sourceHandle,
+            in PeerConnectionInterop.LocalVideoTrackFromExternalSourceInteropInitConfig config, string trackName,
+            out LocalVideoTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsLocalVideoTrackRegisterI420AFrameCallback")]
