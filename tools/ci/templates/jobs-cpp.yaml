@@ -24,8 +24,7 @@ jobs:
     value: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
   # Only assign this if not restoring PDBs. If restoring, this is computed by generateCppPackagesConfig.ps1 below.
   - ${{ if eq(variables['MRWebRTC_RestorePDBs'], 'false') }}
-    - name: PackagesConfigFile
-    - value: '$(Build.SourcesDirectory)/libs/Microsoft.MixedReality.WebRTC.Native/src/${{parameters.buildPlatform}}/packages.config'
+      PackagesConfigFile: '$(Build.SourcesDirectory)/libs/Microsoft.MixedReality.WebRTC.Native/src/${{parameters.buildPlatform}}/packages.config'
   steps:
   - checkout: self
     submodules: recursive
