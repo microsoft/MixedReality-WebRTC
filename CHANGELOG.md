@@ -3,6 +3,15 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2020-03-05
+
+f773f405102f7e90f049f371e2fe3964e3884b1e
+
+### Fixed
+
+- (f616909) Integrate an upstream fix to control the quality of the H.264 encoder. The QPmax parameter, which is related to the maximum quantization and therefore to the encoded image quality, can be provided by the user to WebRTC. Previously, requests on this parameter were ignored by the H.264 encoder implementation. This change ensures requests to set this parameter are forwarded from WebRTC to the encoder.
+- (f773f40) Previously the interop DLL `Microsoft.MixedReality.WebRTC.Native.dll` when compiled was not linked against the PDBs generated during the compiling of the underlying implementation `webrtc.lib`, even in Debug config. This change ensures those PDBs are now available during linking, making available the debug symbols for `webrtc.lib` in order to provide a better debugging experience.
+
 ## [1.0.2] - 2019-12-04
 
 8c958f9723bcf382cbc495d0828e88d9ff3aed42
