@@ -29,23 +29,12 @@ namespace Microsoft.MixedReality.WebRTC
     /// Audio track sending to the remote peer audio frames originating from
     /// a local track source (local microphone or other audio recording device).
     /// </summary>
-    public class LocalAudioTrack : IDisposable
+    public class LocalAudioTrack : MediaTrack, IDisposable
     {
-        /// <summary>
-        /// Peer connection this audio track is added to, if any.
-        /// This is <c>null</c> after the track has been removed from the peer connection.
-        /// </summary>
-        public PeerConnection PeerConnection { get; private set; }
-
         /// <summary>
         /// Audio transceiver this track is part of.
         /// </summary>
         public AudioTransceiver Transceiver { get; private set; }
-
-        /// <summary>
-        /// Track name as specified during creation. This property is immutable.
-        /// </summary>
-        public string Name { get; }
 
         /// <summary>
         /// Enabled status of the track. If enabled, send local audio frames to the remote peer as
@@ -134,21 +123,17 @@ namespace Microsoft.MixedReality.WebRTC
 
         // Constructor for interop-based creation; SetHandle() will be called later.
         // Constructor for standalone track not associated to a peer connection.
-        internal LocalAudioTrack(string trackName)
+        internal LocalAudioTrack(string trackName) : base(null, trackName)
         {
-            PeerConnection = null;
             Transceiver = null;
-            Name = trackName;
         }
 
         // Constructor for interop-based creation; SetHandle() will be called later.
         // Constructor for a track associated with a peer connection.
-        internal LocalAudioTrack(PeerConnection peer, AudioTransceiver transceiver, string trackName)
+        internal LocalAudioTrack(PeerConnection peer, AudioTransceiver transceiver, string trackName) : base(peer, trackName)
         {
-            PeerConnection = peer;
             Transceiver = transceiver;
             transceiver.OnLocalTrackAdded(this);
-            Name = trackName;
         }
 
         internal void SetHandle(LocalAudioTrackHandle handle)

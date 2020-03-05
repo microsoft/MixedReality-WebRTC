@@ -31,57 +31,15 @@ namespace Microsoft.MixedReality.WebRTC
         /// Remote audio track associated with the transceiver and receiving some audio from the remote peer.
         /// This may be <c>null</c> if the transceiver is currently only sending, or is inactive.
         /// </summary>
-        public RemoteAudioTrack RemoteTrack
-        {
-            get { return _remoteTrack; }
-            set { SetRemoteTrack(value); }
-        }
-
-        /// <summary>
-        /// Handle to the native AudioTransceiver object.
-        /// </summary>
-        /// <remarks>
-        /// In native land this is a <code>Microsoft::MixedReality::WebRTC::AudioTransceiverHandle</code>.
-        /// </remarks>
-        internal AudioTransceiverHandle _nativeHandle = new AudioTransceiverHandle();
+        public RemoteAudioTrack RemoteTrack { get; private set; } = null;
 
         private LocalAudioTrack _localTrack = null;
-        private RemoteAudioTrack _remoteTrack = null;
-        private IntPtr _argsRef = IntPtr.Zero;
 
         // Constructor for interop-based creation; SetHandle() will be called later
         internal AudioTransceiver(PeerConnection peerConnection, int mlineIndex, string name, Direction initialDesiredDirection)
             : base(MediaKind.Audio, peerConnection, mlineIndex, name)
         {
             _desiredDirection = initialDesiredDirection;
-        }
-
-        internal void SetHandle(AudioTransceiverHandle handle)
-        {
-            Debug.Assert(!handle.IsClosed);
-            // Either first-time assign or no-op (assign same value again)
-            Debug.Assert(_nativeHandle.IsInvalid || (_nativeHandle == handle));
-            if (_nativeHandle != handle)
-            {
-                _nativeHandle = handle;
-                AudioTransceiverInterop.RegisterCallbacks(this, out _argsRef);
-            }
-        }
-
-        /// <summary>
-        /// Change the media flowing direction of the transceiver.
-        /// This triggers a renegotiation needed event to synchronize with the remote peer.
-        /// </summary>
-        /// <param name="newDirection">The new flowing direction.</param>
-        public override void SetDirection(Direction newDirection)
-        {
-            if (newDirection == _desiredDirection)
-            {
-                return;
-            }
-            var res = AudioTransceiverInterop.AudioTransceiver_SetDirection(_nativeHandle, newDirection);
-            Utils.ThrowOnErrorCode(res);
-            _desiredDirection = newDirection;
         }
 
         /// <summary>
@@ -102,13 +60,13 @@ namespace Microsoft.MixedReality.WebRTC
                 {
                     throw new InvalidOperationException($"Cannot set track {track} of peer connection {track.PeerConnection} on audio transceiver {this} of different peer connection {PeerConnection}.");
                 }
-                var res = AudioTransceiverInterop.AudioTransceiver_SetLocalTrack(_nativeHandle, track._nativeHandle);
+                var res = TransceiverInterop.Transceiver_SetLocalAudioTrack(_nativeHandle, track._nativeHandle);
                 Utils.ThrowOnErrorCode(res);
             }
             else
             {
                 // Note: Cannot pass null for SafeHandle parameter value (ArgumentNullException)
-                var res = AudioTransceiverInterop.AudioTransceiver_SetLocalTrack(_nativeHandle, new LocalAudioTrackHandle());
+                var res = TransceiverInterop.Transceiver_SetLocalAudioTrack(_nativeHandle, new LocalAudioTrackHandle());
                 Utils.ThrowOnErrorCode(res);
             }
 
@@ -131,37 +89,18 @@ namespace Microsoft.MixedReality.WebRTC
                 Debug.Assert(_localTrack.Transceiver == this);
                 Debug.Assert(_localTrack.Transceiver.LocalTrack == _localTrack);
             }
-
-            //// Update direction
-            //switch (_desiredDirection)
-            //{
-            //case Direction.Inactive:
-            //case Direction.ReceiveOnly:
-            //    if (_localTrack != null)
-            //    {
-            //            // Add send bit
-            //            _desiredDirection |= Direction.SendOnly;
-            //    }
-            //    break;
-            //case Direction.SendOnly:
-            //case Direction.SendReceive:
-            //    if (_localTrack == null)
-            //    {
-            //            // Remove send bit
-            //            _desiredDirection &= Direction.ReceiveOnly;
-            //    }
-            //    break;
-            //}
         }
 
-        /// <summary>
-        /// Change the remote audio track receiving data from the remote peer.
-        /// This detach the previous remote audio track if any, and attach the new one instead.
-        /// </summary>
-        /// <param name="track">The new remote audio track receiving data from the remote peer.</param>
-        public void SetRemoteTrack(RemoteAudioTrack track)
+        /// <inheritdoc/>
+        protected override void OnLocalTrackMuteChanged(bool muted)
         {
-            throw new NotImplementedException(); //< TODO
+            LocalTrack?.OnMute(muted);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnRemoteTrackMuteChanged(bool muted)
+        {
+            RemoteTrack?.OnMute(muted);
         }
 
         internal void OnLocalTrackAdded(LocalAudioTrack track)
@@ -180,41 +119,16 @@ namespace Microsoft.MixedReality.WebRTC
 
         internal void OnRemoteTrackAdded(RemoteAudioTrack track)
         {
-            Debug.Assert(_remoteTrack == null);
-            _remoteTrack = track;
+            Debug.Assert(RemoteTrack == null);
+            RemoteTrack = track;
             PeerConnection.OnRemoteTrackAdded(track);
         }
 
         internal void OnRemoteTrackRemoved(RemoteAudioTrack track)
         {
-            Debug.Assert(_remoteTrack == track);
-            _remoteTrack = null;
+            Debug.Assert(RemoteTrack == track);
+            RemoteTrack = null;
             PeerConnection.OnRemoteTrackRemoved(track);
-        }
-
-        internal void OnStateUpdated(Direction? negotiatedDirection, Direction desiredDirection)
-        {
-            // Desync generally happens only on first update
-            _desiredDirection = desiredDirection;
-
-            if (negotiatedDirection != NegotiatedDirection)
-            {
-                bool hadSendBefore = HasSend(NegotiatedDirection);
-                bool hasSendNow = HasSend(negotiatedDirection);
-                bool hadRecvBefore = HasRecv(NegotiatedDirection);
-                bool hasRecvNow = HasRecv(negotiatedDirection);
-
-                NegotiatedDirection = negotiatedDirection;
-
-                if (hadSendBefore != hasSendNow)
-                {
-                    LocalTrack?.OnMute(!hasSendNow);
-                }
-                if (hadRecvBefore != hasRecvNow)
-                {
-                    RemoteTrack?.OnMute(!hasRecvNow);
-                }
-            }
         }
 
         /// <inheritdoc/>
