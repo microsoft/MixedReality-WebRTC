@@ -22,9 +22,9 @@ jobs:
   - group: MixedReality-WebRTC-ArtifactConfig
   - name: buildTriple
     value: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
-  # Only assign this if not restoring PDBs. If restoring, this is computed by generateCppPackagesConfig.ps1 below.
-  - ${{ if eq(variables['MRWebRTC_RestorePDBs'], 'false') }}
-      PackagesConfigFile: '$(Build.SourcesDirectory)/libs/Microsoft.MixedReality.WebRTC.Native/src/${{parameters.buildPlatform}}/packages.config'
+  # This is overwritten later if restoring PDBs
+  - name: PackagesConfigFile
+    value: '$(Build.SourcesDirectory)/libs/Microsoft.MixedReality.WebRTC.Native/src/${{parameters.buildPlatform}}/packages.config'
   steps:
   - checkout: self
     submodules: recursive
