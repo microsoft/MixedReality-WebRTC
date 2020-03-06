@@ -614,15 +614,20 @@ enum class mrsMediaKind : uint32_t { kAudio = 0, kVideo = 1 };
 
 /// Configuration for creating a new transceiver.
 struct mrsTransceiverInitConfig {
-  /// Name of the transceiver. This must be a valid SDP token; see
-  /// |mrsSdpIsValidToken()|.
+  /// Optional name of the transceiver. This must be a valid SDP token; see
+  /// |mrsSdpIsValidToken()|. If no name is provided (empty or null string),
+  /// then the implementation will generate a random one.
   const char* name = nullptr;
+
+  /// Kind of media the transceiver transports.
+  mrsMediaKind media_kind{};
 
   /// Initial desired direction of the transceiver media when created.
   mrsTransceiverDirection desired_direction =
       mrsTransceiverDirection::kSendRecv;
 
-  /// Semi-colon separated list of stream IDs associated with the transceiver.
+  /// Optional semi-colon separated list of stream IDs associated with the
+  /// transceiver, or null/empty string for none.
   const char* stream_ids = nullptr;
 
   /// Handle of the transceiver interop wrapper, if any, which will be
@@ -646,11 +651,13 @@ using mrsRequestExternalArgb32VideoFrameCallback =
 /// implementation initiates the creating, generally as a result of applying a
 /// remote description.
 struct mrsTransceiverWrapperInitConfig {
-  /// Transceiver name. This is always a valid SDP token.
+  /// Optional name of the transceiver. This must be a valid SDP token; see
+  /// |mrsSdpIsValidToken()|. If no name is provided (empty or null string),
+  /// then the implementation will generate a random one.
   const char* name{nullptr};
 
-  /// Media kind the transceiver is transporting.
-  mrsMediaKind media_kind{mrsMediaKind::kAudio};
+  /// Kind of media the transceiver transports.
+  mrsMediaKind media_kind{};
 
   /// Zero-based media line index for the transceiver. In Unified Plan, this is
   /// the index of the m= line in the SDP offer/answer as determined when adding

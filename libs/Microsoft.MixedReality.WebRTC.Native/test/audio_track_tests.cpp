@@ -138,9 +138,10 @@ TEST_P(AudioTrackTests, Simple) {
   mrsTransceiverHandle audio_transceiver1{};
   mrsTransceiverInitConfig transceiver_config{};
   transceiver_config.name = "transceiver1";
+  transceiver_config.media_kind = mrsMediaKind::kAudio;
   ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionAddAudioTransceiver(
-                pair.pc1(), &transceiver_config, &audio_transceiver1));
+            mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                            &audio_transceiver1));
   ASSERT_NE(nullptr, audio_transceiver1);
 
   // Create the local audio track #1
@@ -297,9 +298,10 @@ TEST_P(AudioTrackTests, Muted) {
   mrsTransceiverHandle audio_transceiver1{};
   mrsTransceiverInitConfig transceiver_config{};
   transceiver_config.name = "transceiver1";
+  transceiver_config.media_kind = mrsMediaKind::kAudio;
   ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionAddAudioTransceiver(
-                pair.pc1(), &transceiver_config, &audio_transceiver1));
+            mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                            &audio_transceiver1));
   ASSERT_NE(nullptr, audio_transceiver1);
 
   // Create the local audio track #1

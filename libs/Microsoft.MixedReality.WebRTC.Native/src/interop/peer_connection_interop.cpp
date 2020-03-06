@@ -42,45 +42,22 @@ void MRS_CALL mrsPeerConnectionRegisterIceGatheringStateChangedCallback(
 }
 
 mrsResult MRS_CALL
-mrsPeerConnectionAddAudioTransceiver(mrsPeerConnectionHandle peer_handle,
-                                     const mrsTransceiverInitConfig* config,
-                                     mrsTransceiverHandle* handle) noexcept {
+mrsPeerConnectionAddTransceiver(mrsPeerConnectionHandle peer_handle,
+                                const mrsTransceiverInitConfig* config,
+                                mrsTransceiverHandle* handle) noexcept {
   if (!handle || !config) {
     return Result::kInvalidParameter;
   }
   *handle = nullptr;
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
-    ErrorOr<RefPtr<Transceiver>> audio_transceiver =
-        peer->AddAudioTransceiver(*config);
-    if (audio_transceiver.ok()) {
-      auto transceiver = audio_transceiver.MoveValue();
+    ErrorOr<RefPtr<Transceiver>> result = peer->AddTransceiver(*config);
+    if (result.ok()) {
+      auto transceiver = result.MoveValue();
       *handle = transceiver->asHandle();
       transceiver.release();  // handles now implicitly owns a reference
       return Result::kSuccess;
     }
-    return audio_transceiver.error().result();
-  }
-  return Result::kInvalidNativeHandle;
-}
-
-mrsResult MRS_CALL
-mrsPeerConnectionAddVideoTransceiver(mrsPeerConnectionHandle peer_handle,
-                                     const mrsTransceiverInitConfig* config,
-                                     mrsTransceiverHandle* handle) noexcept {
-  if (!handle || !config) {
-    return Result::kInvalidParameter;
-  }
-  *handle = nullptr;
-  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
-    ErrorOr<RefPtr<Transceiver>> video_transceiver =
-        peer->AddVideoTransceiver(*config);
-    if (video_transceiver.ok()) {
-      auto transceiver = video_transceiver.MoveValue();
-      *handle = transceiver->asHandle();
-      transceiver.release();  // handles now implicitly owns a reference
-      return Result::kSuccess;
-    }
-    return video_transceiver.error().result();
+    return result.error().result();
   }
   return Result::kInvalidNativeHandle;
 }

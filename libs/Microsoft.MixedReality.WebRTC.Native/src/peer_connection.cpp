@@ -270,10 +270,8 @@ class PeerConnectionImpl : public PeerConnection,
   void Close() noexcept override;
   bool IsClosed() const noexcept override;
 
-  ErrorOr<RefPtr<Transceiver>> AddVideoTransceiver(
-      const mrsTransceiverInitConfig& config) noexcept override {
-    return AddTransceiverImpl(mrsMediaKind::kVideo, config);
-  }
+  ErrorOr<RefPtr<Transceiver>> AddTransceiver(
+      const mrsTransceiverInitConfig& config) noexcept override;
 
   void RegisterVideoTrackAddedCallback(
       VideoTrackAddedCallback&& callback) noexcept override {
@@ -285,11 +283,6 @@ class PeerConnectionImpl : public PeerConnection,
       VideoTrackRemovedCallback&& callback) noexcept override {
     auto lock = std::scoped_lock{media_track_callback_mutex_};
     video_track_removed_callback_ = std::move(callback);
-  }
-
-  ErrorOr<RefPtr<Transceiver>> AddAudioTransceiver(
-      const mrsTransceiverInitConfig& config) noexcept override {
-    return AddTransceiverImpl(mrsMediaKind::kAudio, config);
   }
 
   void RegisterAudioTrackAddedCallback(
@@ -526,10 +519,6 @@ class PeerConnectionImpl : public PeerConnection,
             webrtc::SdpSemantics::kUnifiedPlan);
   }
 
-  ErrorOr<RefPtr<Transceiver>> AddTransceiverImpl(
-      mrsMediaKind media_kind,
-      const mrsTransceiverInitConfig& config) noexcept;
-
   /// Insert a new transceiver wrapper at the given media line index.
   Error InsertTransceiverAtMlineIndex(int mline_index,
                                       RefPtr<Transceiver> transceiver);
@@ -637,6 +626,8 @@ class PeerConnectionImpl : public PeerConnection,
     // this callback is fired before the one at the end of the remote
     // description being applied, the transceiver wrappers for the newly added
     // RTP transceivers have not been created yet, so create them here.
+    // Note that the returned transceiver is always added to |transceivers_| and
+    // therefore kept alive by the peer connection.
     auto ret =
         GetOrCreateTransceiverForNewRemoteTrack(Media::kMediaKind, receiver);
     if (!ret.ok()) {
@@ -1170,6 +1161,80 @@ bool PeerConnectionImpl::IsClosed() const noexcept {
   return (peer_ == nullptr);
 }
 
+ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::AddTransceiver(
+    const mrsTransceiverInitConfig& config) noexcept {
+  if (IsClosed()) {
+    return Error(Result::kInvalidOperation, "The peer connection is closed.");
+  }
+
+  std::string name;
+  if (!IsStringNullOrEmpty(config.name)) {
+    name = config.name;
+  } else {
+    name = rtc::CreateRandomUuid();
+  }
+  if (!SdpIsValidToken(name)) {
+    rtc::StringBuilder str("Invalid transceiver name: ");
+    str << name;
+    return Error(Result::kInvalidParameter, str.Release());
+  }
+
+  RefPtr<Transceiver> wrapper;
+  int mline_index = -1;
+  switch (peer_->GetConfiguration().sdp_semantics) {
+    case webrtc::SdpSemantics::kPlanB: {
+      // Plan B doesn't have transceivers; just create a wrapper.
+      mline_index = (int)transceivers_.size();  // append
+      wrapper = Transceiver::CreateForPlanB(global_factory_, config.media_kind,
+                                            *this, mline_index, std::move(name),
+                                            config.desired_direction,
+                                            config.transceiver_interop_handle);
+      // Manually invoke the renegotiation needed event for parity with Unified
+      // Plan, like the internal implementation would do.
+      OnRenegotiationNeeded();
+    } break;
+    case webrtc::SdpSemantics::kUnifiedPlan: {
+      // Create the low-level implementation object
+      webrtc::RtpTransceiverInit init{};
+      init.direction = Transceiver::ToRtp(config.desired_direction);
+      init.stream_ids = Transceiver::DecodeStreamIDs(config.stream_ids);
+      if (!name.empty()) {
+        // Prepend transceiver name as first stream ID for track pairing
+        init.stream_ids.insert(init.stream_ids.begin(), name);
+      }
+      const cricket::MediaType rtc_media_type =
+          MediaKindToRtc(config.media_kind);
+      webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+          ret = peer_->AddTransceiver(rtc_media_type, init);
+      if (!ret.ok()) {
+        return ErrorFromRTCError(ret.MoveError());
+      }
+      rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl(ret.MoveValue());
+
+      // Find the mline index from the position inside the transceiver list
+      {
+        auto transceivers = peer_->GetTransceivers();
+        auto it_tr =
+            std::find_if(transceivers.begin(), transceivers.end(),
+                         [&impl](auto const& tr) { return (tr == impl); });
+        RTC_DCHECK(it_tr != transceivers.end());
+        mline_index = (int)std::distance(transceivers.begin(), it_tr);
+      }
+
+      // Create the transceiver wrapper
+      wrapper = Transceiver::CreateForUnifiedPlan(
+          global_factory_, config.media_kind, *this, mline_index,
+          std::move(name), std::move(impl), config.desired_direction,
+          config.transceiver_interop_handle);
+    } break;
+    default:
+      return Error(Result::kUnknownError, "Unknown SDP semantic.");
+  }
+  RTC_DCHECK(wrapper);
+  InsertTransceiverAtMlineIndex(mline_index, wrapper);
+  return wrapper;
+}
+
 bool PeerConnectionImpl::SetRemoteDescriptionAsync(
     const char* type,
     const char* sdp,
@@ -1491,79 +1556,6 @@ void PeerConnectionImpl::OnLocalDescCreated(
   // will in turn invoke the |local_sdp_ready_to_send_callback_| registered if
   // any, or do nothing otherwise. The observer is a mandatory parameter.
   peer_->SetLocalDescription(observer, desc);
-}
-
-ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::AddTransceiverImpl(
-    mrsMediaKind media_kind,
-    const mrsTransceiverInitConfig& config) noexcept {
-  if (IsClosed()) {
-    return Error(Result::kInvalidOperation, "The peer connection is closed.");
-  }
-
-  std::string name;
-  if (!IsStringNullOrEmpty(config.name)) {
-    name = config.name;
-  } else {
-    name = rtc::CreateRandomUuid();
-  }
-  if (!SdpIsValidToken(name)) {
-    rtc::StringBuilder str("Invalid transceiver name: ");
-    str << name;
-    return Error(Result::kInvalidParameter, str.Release());
-  }
-
-  RefPtr<Transceiver> wrapper;
-  int mline_index = -1;
-  switch (peer_->GetConfiguration().sdp_semantics) {
-    case webrtc::SdpSemantics::kPlanB: {
-      // Plan B doesn't have transceivers; just create a wrapper.
-      mline_index = (int)transceivers_.size();  // append
-      wrapper = Transceiver::CreateForPlanB(
-          global_factory_, media_kind, *this, mline_index, std::move(name),
-          config.desired_direction, config.transceiver_interop_handle);
-      // Manually invoke the renegotiation needed event for parity with Unified
-      // Plan, like the internal implementation would do.
-      OnRenegotiationNeeded();
-    } break;
-    case webrtc::SdpSemantics::kUnifiedPlan: {
-      // Create the low-level implementation object
-      webrtc::RtpTransceiverInit init{};
-      init.direction = Transceiver::ToRtp(config.desired_direction);
-      init.stream_ids = Transceiver::DecodeStreamIDs(config.stream_ids);
-      if (!name.empty()) {
-        // Prepend transceiver name as first stream ID for track pairing
-        init.stream_ids.insert(init.stream_ids.begin(), name);
-      }
-      const cricket::MediaType rtc_media_type = MediaKindToRtc(media_kind);
-      webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
-          ret = peer_->AddTransceiver(rtc_media_type, init);
-      if (!ret.ok()) {
-        return ErrorFromRTCError(ret.MoveError());
-      }
-      rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl(ret.MoveValue());
-
-      // Find the mline index from the position inside the transceiver list
-      {
-        auto transceivers = peer_->GetTransceivers();
-        auto it_tr =
-            std::find_if(transceivers.begin(), transceivers.end(),
-                         [&impl](auto const& tr) { return (tr == impl); });
-        RTC_DCHECK(it_tr != transceivers.end());
-        mline_index = (int)std::distance(transceivers.begin(), it_tr);
-      }
-
-      // Create the transceiver wrapper
-      wrapper = Transceiver::CreateForUnifiedPlan(
-          global_factory_, media_kind, *this, mline_index, std::move(name),
-          std::move(impl), config.desired_direction,
-          config.transceiver_interop_handle);
-    } break;
-    default:
-      return Error(Result::kUnknownError, "Unknown SDP semantic.");
-  }
-  RTC_DCHECK(wrapper);
-  InsertTransceiverAtMlineIndex(mline_index, wrapper);
-  return wrapper;
 }
 
 Error PeerConnectionImpl::InsertTransceiverAtMlineIndex(

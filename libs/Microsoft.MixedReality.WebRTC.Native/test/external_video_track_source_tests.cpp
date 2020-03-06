@@ -178,11 +178,12 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
   // Create the video transceiver #1
   mrsTransceiverHandle transceiver_handle1{};
   {
-    mrsTransceiverInitConfig config{};
-    config.name = "transceiver_1";
+    mrsTransceiverInitConfig transceiver_config{};
+    transceiver_config.name = "transceiver_1";
+    transceiver_config.media_kind = mrsMediaKind::kVideo;
     ASSERT_EQ(mrsResult::kSuccess,
-              mrsPeerConnectionAddVideoTransceiver(pair.pc1(), &config,
-                                                   &transceiver_handle1));
+              mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                              &transceiver_handle1));
     ASSERT_NE(nullptr, transceiver_handle1);
   }
 
