@@ -302,6 +302,130 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
+    /// Wrapper for an event possibly delayed.
+    /// </summary>
+    public class DelayedEvent
+    {
+        /// <summary>
+        /// The event handler.
+        /// </summary>
+        public Action Event;
+
+        /// <summary>
+        /// Begin suspending <see cref="Event"/>. This must be matched with a call
+        /// to <see cref="EndSuspend"/>. During this time, calling <see cref="Invoke"/>
+        /// does not invoke the event but instead queue it for later invoking by
+        /// <see cref="EndSuspend"/>.
+        /// </summary>
+        public void BeginSuspend()
+        {
+            lock (_lock)
+            {
+                ++_suspendCount;
+            }
+        }
+
+        /// <summary>
+        /// End suspending <see cref="Event"/> and invoke it if any call to <see cref="Invoke"/>
+        /// was made since the first <see cref="BeginSuspend"/> call.
+        /// </summary>
+        public void EndSuspend()
+        {
+            Action cb = null;
+            lock (_lock)
+            {
+                Debug.Assert(_suspendCount > 0);
+                --_suspendCount;
+                if (_eventPending && (_suspendCount == 0))
+                {
+                    cb = Event;
+                    _eventPending = false;
+                }
+            }
+            cb?.Invoke();
+        }
+
+        /// <summary>
+        /// Try to invoke <see cref="Event"/>, either immediately if not suspended, or later
+        /// when the last <see cref="EndSuspend"/> call stops suspending it.
+        /// </summary>
+        /// <param name="async">If the event is not suspended, and therefore is invoked immediately,
+        /// then invoke it asynchronously from a worker thread.</param>
+        public void Invoke(bool async = false)
+        {
+            Action cb = null;
+            lock (_lock)
+            {
+                Debug.Assert(_suspendCount >= 0);
+                if (_suspendCount > 0)
+                {
+                    _eventPending = true;
+                }
+                else
+                {
+                    cb = Event;
+                }
+            }
+            if (cb != null)
+            {
+                if (async)
+                {
+                    Task.Run(() => cb.Invoke());
+                }
+                else
+                {
+                    cb.Invoke();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Try to invoke <see cref="Event"/> asynchronously.
+        /// This is equivalent to <code>Invoke(async: true)</code>.
+        /// </summary>
+        public void InvokeAsync() => Invoke(async: true);
+
+        /// <summary>
+        /// Lock for renegotiation event suspending variables:
+        /// - <see cref="_suspendCount"/>
+        /// - <see cref="_eventPending"/>
+        /// </summary>
+        private object _lock = new object();
+
+        /// <summary>
+        /// Number of concurrent calls currently suspending the event.
+        /// When this value reaches zero, the thread which decremented it checks the value of
+        /// <see cref="_eventPending"/> and if <c>true</c> then invoke the event.
+        /// </summary>
+        /// <remarks>This is protected by <see cref="_lock"/>.</remarks>
+        private int _suspendCount = 0;
+
+        /// <summary>
+        /// Was any event internally raised while the public event was suspended (that is, <see cref="_suspendCount"/>
+        /// was non-zero)? This is set by <see cref="Invoke"/> and cleared by any thread actually invoking the event after
+        /// decrementing <see cref="_suspendCount"/> to zero.
+        /// </summary>
+        /// <remarks>This is protected by <see cref="_lock"/>.</remarks>
+        private bool _eventPending = false;
+    }
+
+    public class ScopedDelayedEvent : IDisposable
+    {
+        public ScopedDelayedEvent(DelayedEvent ev)
+        {
+            _ev = ev;
+            _ev.BeginSuspend();
+        }
+
+        public void Dispose()
+        {
+            _ev.EndSuspend();
+        }
+
+        private DelayedEvent _ev;
+    }
+
+    /// <summary>
     /// The WebRTC peer connection object is the entry point to using WebRTC.
     /// </summary>
     public class PeerConnection : IDisposable
@@ -626,7 +750,11 @@ namespace Microsoft.MixedReality.WebRTC
         /// and the user should call <see cref="CreateOffer"/> to actually
         /// start a renegotiation.
         /// </summary>
-        public event Action RenegotiationNeeded;
+        public event Action RenegotiationNeeded
+        {
+            add => _renegotiationNeededEvent.Event += value;
+            remove => _renegotiationNeededEvent.Event -= value;
+        }
 
         /// <summary>
         /// Event that occurs when a transceiver is added to the peer connection, either
@@ -695,7 +823,8 @@ namespace Microsoft.MixedReality.WebRTC
         private PeerConnectionInterop.PeerCallbackArgs _peerCallbackArgs;
 
         /// <summary>
-        /// Lock for accessing the collections of tracks:
+        /// Lock for accessing the collections of tracks and transceivers:
+        /// - <see cref="Transceivers"/>
         /// - <see cref="LocalAudioTracks"/>
         /// - <see cref="LocalVideoTracks"/>
         /// - <see cref="RemoteAudioTracks"/>
@@ -703,6 +832,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private object _tracksLock = new object();
 
+        /// <summary>
+        /// Implementation of <see cref="RenegotiationNeeded"/> adding the capability to delay the event.
+        /// This allows <see cref="AddTransceiver(MediaKind, TransceiverInitSettings)"/> to wait until the
+        /// newly created transceiver wrapper is fully instantiated to dispatch the event.
+        /// </summary>
+        private DelayedEvent _renegotiationNeededEvent = new DelayedEvent();
 
         #region Initializing and shutdown
 
@@ -1004,18 +1139,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 foreach (var transceiver in Transceivers)
                 {
-                    if (transceiver == null)
-                    {
-                        continue;
-                    }
-                    if (transceiver.MediaKind == MediaKind.Audio)
-                    {
-                        ((AudioTransceiver)transceiver)._nativeHandle.Close();
-                    }
-                    else
-                    {
-                        ((VideoTransceiver)transceiver)._nativeHandle.Close();
-                    }
+                    transceiver?._nativeHandle.Close();
                 }
                 Transceivers.Clear();
             }
@@ -1092,25 +1216,32 @@ namespace Microsoft.MixedReality.WebRTC
         public Transceiver AddTransceiver(MediaKind mediaKind, TransceiverInitSettings settings = null)
         {
             ThrowIfConnectionNotOpen();
-            settings = settings ?? new TransceiverInitSettings();
-            int mlineIndex = Transceivers.Count; //< TODO: retrieve from interop for robustness?
-            Transceiver transceiver;
-            if (mediaKind == MediaKind.Audio)
+
+            // Suspend RenegotiationNeeded event while creating the transceiver, to avoid firing an event
+            // while the transceiver is in an intermediate state.
+            using (var renegotiationNeeded = new ScopedDelayedEvent(_renegotiationNeededEvent))
             {
-                transceiver = new AudioTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
+                // Create the transceiver implementation and its wrapper
+                settings = settings ?? new TransceiverInitSettings();
+                int mlineIndex = Transceivers.Count; //< TODO: retrieve from interop for robustness?
+                Transceiver transceiver;
+                if (mediaKind == MediaKind.Audio)
+                {
+                    transceiver = new AudioTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
+                }
+                else
+                {
+                    transceiver = new VideoTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
+                }
+                TransceiverInterop.InitConfig config = new TransceiverInterop.InitConfig(transceiver, settings);
+                Debug.Assert(transceiver.DesiredDirection == config.desiredDirection);
+                uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, in config,
+                    out TransceiverHandle transceiverHandle);
+                Utils.ThrowOnErrorCode(res);
+                transceiver.SetHandle(transceiverHandle);
+                OnTransceiverAdded(transceiver);
+                return transceiver;
             }
-            else
-            {
-                transceiver = new VideoTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
-            }
-            TransceiverInterop.InitConfig config = new TransceiverInterop.InitConfig(transceiver, settings);
-            Debug.Assert(transceiver.DesiredDirection == config.desiredDirection);
-            uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, in config,
-                out TransceiverHandle transceiverHandle);
-            Utils.ThrowOnErrorCode(res);
-            transceiver.SetHandle(transceiverHandle);
-            OnTransceiverAdded(transceiver);
-            return transceiver;
         }
 
         #endregion
@@ -1998,7 +2129,13 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnRenegotiationNeeded()
         {
             MainEventSource.Log.RenegotiationNeeded();
-            RenegotiationNeeded?.Invoke();
+            // Check if the RenegotiationNeeded event is temporarily suspended. This happens while
+            // creating a new Transceiver, until the wrapper has finished syncing.
+            // The current callback is invoked from the signaling thread by the WebRTC implementation.
+            // It should free the thread ASAP and not re-enter it with another API call. Since
+            // typically users will call CreateOffer() in response to this event, defer the event
+            // handling to a .NET worker thread instead and return immediately to the WebRTC signaling one.
+            _renegotiationNeededEvent.InvokeAsync();
         }
 
         /// <summary>
