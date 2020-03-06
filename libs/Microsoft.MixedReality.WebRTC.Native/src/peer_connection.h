@@ -209,11 +209,16 @@ class PeerConnection : public TrackedObject {
   virtual bool IsClosed() const noexcept = 0;
 
   //
-  // Video
+  // Transceivers
   //
 
-  virtual ErrorOr<RefPtr<Transceiver>> AddVideoTransceiver(
+  /// Add a new audio or video transceiver to the peer connection.
+  virtual ErrorOr<RefPtr<Transceiver>> AddTransceiver(
       const mrsTransceiverInitConfig& config) noexcept = 0;
+
+  //
+  // Video
+  //
 
   /// Callback invoked when a remote video track is added to the peer
   /// connection.
@@ -272,10 +277,6 @@ class PeerConnection : public TrackedObject {
   //
   // Audio
   //
-
-  virtual ErrorOr<RefPtr<Transceiver>> AddAudioTransceiver(
-      const mrsTransceiverInitConfig& config) noexcept = 0;
-
 
   /// Callback invoked when a remote audio track is added to the peer
   /// connection.

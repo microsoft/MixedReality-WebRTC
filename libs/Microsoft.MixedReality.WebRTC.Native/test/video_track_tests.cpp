@@ -93,10 +93,12 @@ TEST_P(VideoTrackTests, Simple) {
   mrsTransceiverHandle transceiver_handle1{};
   {
     renegotiation_needed1_ev.Reset();
-    mrsTransceiverInitConfig config{};
-    config.name = "transceiver_1";
-    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddVideoTransceiver(
-                                    pair.pc1(), &config, &transceiver_handle1));
+    mrsTransceiverInitConfig transceiver_config{};
+    transceiver_config.name = "video_transceiver_1";
+    transceiver_config.media_kind = mrsMediaKind::kVideo;
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                              &transceiver_handle1));
     ASSERT_NE(nullptr, transceiver_handle1);
     ASSERT_TRUE(renegotiation_needed1_ev.WaitFor(1s));
     renegotiation_needed1_ev.Reset();
@@ -237,10 +239,12 @@ TEST_P(VideoTrackTests, Muted) {
   // Create the video transceiver #1
   mrsTransceiverHandle transceiver_handle1{};
   {
-    mrsTransceiverInitConfig config{};
-    config.name = "transceiver_1";
-    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddVideoTransceiver(
-                                    pair.pc1(), &config, &transceiver_handle1));
+    mrsTransceiverInitConfig transceiver_config{};
+    transceiver_config.name = "video_transceiver_1";
+    transceiver_config.media_kind = mrsMediaKind::kVideo;
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                              &transceiver_handle1));
     ASSERT_NE(nullptr, transceiver_handle1);
   }
 
@@ -412,13 +416,14 @@ TEST_P(VideoTrackTests, Multi) {
   for (auto&& track : tracks) {
     std::stringstream strstr;
     std::string str;
-    mrsTransceiverInitConfig tranceiver_config{};
+    mrsTransceiverInitConfig transceiver_config{};
     strstr << "transceiver_1_" << idx;
     str = strstr.str();  // keep alive
-    tranceiver_config.name = str.c_str();
-    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddVideoTransceiver(
-                                    pair.pc1(), &tranceiver_config,
-                                    &track.local_transceiver_handle));
+    transceiver_config.name = str.c_str();
+    transceiver_config.media_kind = mrsMediaKind::kVideo;
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                              &track.local_transceiver_handle));
     ASSERT_NE(nullptr, track.local_transceiver_handle);
     strstr.clear();
     strstr << "track_1_" << idx;
@@ -529,10 +534,12 @@ TEST_P(VideoTrackTests, ExternalI420) {
   // Create the video transceiver #1
   mrsTransceiverHandle transceiver_handle1{};
   {
-    mrsTransceiverInitConfig config{};
-    config.name = "transceiver_1";
-    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddVideoTransceiver(
-                                    pair.pc1(), &config, &transceiver_handle1));
+    mrsTransceiverInitConfig transceiver_config{};
+    transceiver_config.name = "video_transceiver_1";
+    transceiver_config.media_kind = mrsMediaKind::kVideo;
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                              &transceiver_handle1));
     ASSERT_NE(nullptr, transceiver_handle1);
   }
 

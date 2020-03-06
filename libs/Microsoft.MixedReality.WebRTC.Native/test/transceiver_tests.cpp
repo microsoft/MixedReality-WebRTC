@@ -84,13 +84,6 @@ struct MediaTrait<AudioTest> {
     }
   }
 
-  static mrsResult AddTransceiver(mrsPeerConnectionHandle peer_handle,
-                                  const mrsTransceiverInitConfig& config,
-                                  mrsTransceiverHandle* handle_out) {
-    return mrsPeerConnectionAddAudioTransceiver(peer_handle, &config,
-                                                handle_out);
-  }
-
   static void CheckTransceiverTracksAreNull(mrsTransceiverHandle handle) {
     mrsLocalAudioTrackHandle local_handle{};
     ASSERT_EQ(Result::kSuccess,
@@ -129,13 +122,6 @@ struct MediaTrait<VideoTest> {
       ASSERT_EQ(Result::kSuccess,
                 mrsPeerConnectionRegisterInteropCallbacks(h, &interop));
     }
-  }
-
-  static mrsResult AddTransceiver(mrsPeerConnectionHandle peer_handle,
-                                  const mrsTransceiverInitConfig& config,
-                                  mrsTransceiverHandle* handle_out) {
-    return mrsPeerConnectionAddVideoTransceiver(peer_handle, &config,
-                                                handle_out);
   }
 
   static void CheckTransceiverTracksAreNull(mrsTransceiverHandle handle) {
@@ -203,13 +189,14 @@ void Test_SetLocalTrack(mrsSdpSemantic sdp_semantic,
   {
     mrsTransceiverInitConfig transceiver_config{};
     transceiver_config.name = "video_transceiver_1";
+    transceiver_config.media_kind = mrsMediaKind::kVideo;
     transceiver_config.transceiver_interop_handle =
         kFakeInteropTransceiverHandle;
     transceiver_config.desired_direction = created_dir1;
     renegotiation_needed1_ev.Reset();
     ASSERT_EQ(Result::kSuccess,
-              mrsPeerConnectionAddVideoTransceiver(
-                  pair.pc1(), &transceiver_config, &transceiver_handle1));
+              mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                              &transceiver_handle1));
     ASSERT_NE(nullptr, transceiver_handle1);
     ASSERT_TRUE(renegotiation_needed1_ev.IsSignaled());
     renegotiation_needed1_ev.Reset();
@@ -384,9 +371,10 @@ TYPED_TEST_P(TransceiverTests, InvalidName) {
   mrsTransceiverHandle transceiver_handle1{};
   mrsTransceiverInitConfig transceiver_config{};
   transceiver_config.name = "invalid name with space";
+  transceiver_config.media_kind = TypeParam::kMediaKind;
   ASSERT_EQ(Result::kInvalidParameter,
-            Media::AddTransceiver(pair.pc1(), transceiver_config,
-                                  &transceiver_handle1));
+            mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                            &transceiver_handle1));
   ASSERT_EQ(nullptr, transceiver_handle1);
 }
 
@@ -419,12 +407,13 @@ TYPED_TEST_P(TransceiverTests, SetDirection) {
     transceiver_config.name =
         (TypeParam::kMediaKind == mrsMediaKind::kAudio ? "audio_transceiver_1"
                                                        : "video_transceiver_1");
+    transceiver_config.media_kind = TypeParam::kMediaKind;
     transceiver_config.transceiver_interop_handle =
         kFakeInteropTransceiverHandle;
     renegotiation_needed1_ev.Reset();
     ASSERT_EQ(Result::kSuccess,
-              Media::AddTransceiver(pair.pc1(), transceiver_config,
-                                    &transceiver_handle1));
+              mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                              &transceiver_handle1));
     ASSERT_NE(nullptr, transceiver_handle1);
     ASSERT_TRUE(renegotiation_needed1_ev.IsSignaled());
     renegotiation_needed1_ev.Reset();
