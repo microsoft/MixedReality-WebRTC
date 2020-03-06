@@ -33,6 +33,4 @@
 
 * `./webrtc-native/build/outputs/aar/Microsoft.MixedReality.WebRTC.Native.aar`
 
-### Next Steps
-
-Run `./copy.sh` to copy the build artifacts to the Unity sample project.
+> Note: This file is automatically copied to the Unity sample project upon successful build.
