@@ -409,20 +409,33 @@ namespace Microsoft.MixedReality.WebRTC
         private bool _eventPending = false;
     }
 
+    /// <summary>
+    /// RAII helper to start/stop a delay block for a <see cref="DelayedEvent"/>.
+    /// </summary>
     public class ScopedDelayedEvent : IDisposable
     {
+        /// <summary>
+        /// Initialize a scoped delay for the specified <see cref="DelayedEvent"/>.
+        /// This will call <see cref="DelayedEvent.BeginSuspend"/> immediately, and will call
+        /// <see cref="DelayedEvent.EndSuspend"/> once disposed.
+        /// </summary>
+        /// <param name="ev"></param>
         public ScopedDelayedEvent(DelayedEvent ev)
         {
-            _ev = ev;
-            _ev.BeginSuspend();
+            _delayedEvent = ev;
+            _delayedEvent.BeginSuspend();
         }
 
+        /// <summary>
+        /// Dispose of the helper and call <see cref="DelayedEvent.BeginSuspend"/> on
+        /// <see cref="_delayedEvent"/>.
+        /// </summary>
         public void Dispose()
         {
-            _ev.EndSuspend();
+            _delayedEvent.EndSuspend();
         }
 
-        private DelayedEvent _ev;
+        private DelayedEvent _delayedEvent;
     }
 
     /// <summary>
