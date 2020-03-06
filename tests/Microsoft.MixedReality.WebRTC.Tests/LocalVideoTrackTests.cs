@@ -9,9 +9,12 @@ using NUnit.Framework.Internal;
 
 namespace Microsoft.MixedReality.WebRTC.Tests
 {
-    [TestFixture]
+    [TestFixture(SdpSemantic.PlanB)]
+    [TestFixture(SdpSemantic.UnifiedPlan)]
     internal class LocalVideoTrackTests
     {
+        readonly SdpSemantic sdpSemantic_;
+
         PeerConnection pc1_ = null;
         PeerConnection pc2_ = null;
         bool exchangePending_ = false;
@@ -35,6 +38,11 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         bool suspendOffer1_ = false;
         bool suspendOffer2_ = false;
 
+        public LocalVideoTrackTests(SdpSemantic sdpSemantic)
+        {
+            sdpSemantic_ = sdpSemantic;
+        }
+
         [SetUp]
         public void SetupConnection()
         {
@@ -42,6 +50,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Create the 2 peers
             var config = new PeerConnectionConfiguration();
+            config.SdpSemantic = sdpSemantic_;
             pc1_ = new PeerConnection();
             pc2_ = new PeerConnection();
             pc1_.InitializeAsync(config).Wait(); // cannot use async/await in OneTimeSetUp
