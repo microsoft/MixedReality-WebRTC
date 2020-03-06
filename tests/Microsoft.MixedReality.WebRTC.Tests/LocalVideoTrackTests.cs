@@ -14,6 +14,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
     {
         PeerConnection pc1_ = null;
         PeerConnection pc2_ = null;
+        bool exchangePending_ = false;
+        ManualResetEventSlim exchangeCompleted_ = null;
         ManualResetEventSlim connectedEvent1_ = null;
         ManualResetEventSlim connectedEvent2_ = null;
         ManualResetEventSlim remoteDescAppliedEvent1_ = null;
@@ -36,12 +38,17 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         [SetUp]
         public void SetupConnection()
         {
+            Assert.AreEqual(0, Library.ReportLiveObjects());
+
             // Create the 2 peers
             var config = new PeerConnectionConfiguration();
             pc1_ = new PeerConnection();
             pc2_ = new PeerConnection();
             pc1_.InitializeAsync(config).Wait(); // cannot use async/await in OneTimeSetUp
             pc2_.InitializeAsync(config).Wait();
+
+            exchangePending_ = false;
+            exchangeCompleted_ = new ManualResetEventSlim(false);
 
             // Allocate callback events
             connectedEvent1_ = new ManualResetEventSlim(false);
@@ -107,6 +114,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             pc1_.VideoTrackRemoved -= OnVideoTrackRemoved1;
             pc2_.VideoTrackRemoved -= OnVideoTrackRemoved2;
 
+            Assert.IsFalse(exchangePending_);
+            exchangeCompleted_.Dispose();
+            exchangeCompleted_ = null;
+
             // Clean-up callback events
             audioTrackAddedEvent1_.Dispose();
             audioTrackAddedEvent1_ = null;
@@ -148,6 +159,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             pc2_.Close();
             pc2_.Dispose();
             pc2_ = null;
+
+            Assert.AreEqual(0, Library.ReportLiveObjects());
         }
 
         private void OnConnected1()
@@ -162,21 +175,33 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
         private async void OnLocalSdpReady1(string type, string sdp)
         {
+            Assert.IsTrue(exchangePending_);
             await pc2_.SetRemoteDescriptionAsync(type, sdp);
             remoteDescAppliedEvent2_.Set();
             if (type == "offer")
             {
                 pc2_.CreateAnswer();
             }
+            else
+            {
+                exchangePending_ = false;
+                exchangeCompleted_.Set();
+            }
         }
 
         private async void OnLocalSdpReady2(string type, string sdp)
         {
+            Assert.IsTrue(exchangePending_);
             await pc1_.SetRemoteDescriptionAsync(type, sdp);
             remoteDescAppliedEvent1_.Set();
             if (type == "offer")
             {
                 pc1_.CreateAnswer();
+            }
+            else
+            {
+                exchangePending_ = false;
+                exchangeCompleted_.Set();
             }
         }
 
@@ -195,7 +220,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             renegotiationEvent1_.Set();
             if (pc1_.IsConnected && !suspendOffer1_)
             {
-                pc1_.CreateOffer();
+                StartOfferWith(pc1_);
             }
         }
 
@@ -204,7 +229,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             renegotiationEvent2_.Set();
             if (pc2_.IsConnected && !suspendOffer2_)
             {
-                pc2_.CreateOffer();
+                StartOfferWith(pc2_);
             }
         }
 
@@ -264,12 +289,44 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             }
         }
 
-        private void WaitForSdpExchangeCompleted()
+        /// <summary>
+        /// Start an SDP exchange by sending an offer from the given peer.
+        /// </summary>
+        /// <param name="offeringPeer">The peer to call <see cref="PeerConnection.CreateOffer"/> on.</param>
+        private void StartOfferWith(PeerConnection offeringPeer)
         {
-            Assert.True(connectedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            Assert.True(connectedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+            Assert.IsFalse(exchangePending_);
+            exchangePending_ = true;
+            exchangeCompleted_.Reset();
             connectedEvent1_.Reset();
             connectedEvent2_.Reset();
+            Assert.IsTrue(offeringPeer.CreateOffer());
+        }
+
+        /// <summary>
+        /// Wait until transports are writable. This is not the end of the SDP
+        /// exchange, but transceivers are starting to send/receive. The offer
+        /// was accepted, but the offering peer has yet to receive and apply an
+        /// SDP answer though.
+        /// </summary>
+        private void WaitForTransportsWritable()
+        {
+            Assert.IsTrue(exchangePending_);
+            Assert.IsTrue(connectedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+            Assert.IsTrue(connectedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+            connectedEvent1_.Reset();
+            connectedEvent2_.Reset();
+        }
+
+        /// <summary>
+        /// Wait until the SDP exchange finally completed and the answer has been
+        /// applied back on the offering peer.
+        /// </summary>
+        private void WaitForSdpExchangeCompleted()
+        {
+            Assert.IsTrue(exchangeCompleted_.Wait(TimeSpan.FromSeconds(60.0)));
+            Assert.IsFalse(exchangePending_);
+            exchangeCompleted_.Reset();
         }
 
         private unsafe void CustomI420AFrameCallback(in FrameRequest request)
@@ -388,14 +445,17 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count);
 
             // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
+            StartOfferWith(pc1_);
+            WaitForTransportsWritable();
             Assert.True(pc1_.IsConnected);
             Assert.True(pc2_.IsConnected);
 
             // Now remote peer #2 has a 1 remote track
             Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
             Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count);
+
+            // Wait until the SDP exchange is completed
+            WaitForSdpExchangeCompleted();
 
             // Remove the track from #1
             renegotiationEvent1_.Reset();
@@ -424,10 +484,6 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             // Wait for renegotiate to complete
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
             WaitForSdpExchangeCompleted();
-
-            // Wait for remote description to be applied to peers, so that their transceivers
-            // and tracks are updated. This also ensures the SDP exchange terminates before the
-            // end of the test.
             Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
             Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
 
@@ -440,12 +496,13 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         public async Task AfterConnect()
         {
             // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
+            StartOfferWith(pc1_);
+            WaitForTransportsWritable();
             Assert.True(pc1_.IsConnected);
             Assert.True(pc2_.IsConnected);
 
             // Wait for all transceivers to be updated on both peers
+            WaitForSdpExchangeCompleted();
             Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(20.0)));
             Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(20.0)));
             remoteDescAppliedEvent1_.Reset();
@@ -474,10 +531,6 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
             WaitForSdpExchangeCompleted();
 
-            // Wait for transceivers on #2 to be fully updated. In this example since videoTrackAddedEvent2_
-            // was invoked already, and there is a single transceiver, this is not strictly necessary.
-            Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
-
             // Now remote peer #2 has a 1 remote track (which is inactive).
             // Note that tracks are updated before transceivers here. This might be unintuitive, so we might
             // want to revisit this later.
@@ -486,7 +539,6 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Transceiver has been updated to Send+Receive (default desired direction when added), but
             // since peer #2 doesn't intend to send, the actually negotiated direction on #1 is Send only.
-            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
             Assert.AreEqual(Transceiver.Direction.SendReceive, transceiver1.DesiredDirection);
             Assert.AreEqual(Transceiver.Direction.SendOnly, transceiver1.NegotiatedDirection);
 
@@ -548,12 +600,6 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
             WaitForSdpExchangeCompleted();
 
-            // Wait for remote description to be applied to peers, so that their transceivers
-            // and tracks are updated. This also ensures the SDP exchange terminates before the
-            // end of the test.
-            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
-
             // Now the remote track got removed from #2
             Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
             Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count);
@@ -566,12 +612,11 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         public void SimpleExternalI420A()
         {
             // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
+            StartOfferWith(pc1_);
+            WaitForTransportsWritable();
             Assert.True(pc1_.IsConnected);
             Assert.True(pc2_.IsConnected);
-            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+            WaitForSdpExchangeCompleted();
 
             // No track yet
             Assert.AreEqual(0, pc1_.LocalVideoTracks.Count);
@@ -643,12 +688,11 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         public void SimpleExternalArgb32()
         {
             // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
+            StartOfferWith(pc1_);
+            WaitForTransportsWritable();
             Assert.True(pc1_.IsConnected);
             Assert.True(pc2_.IsConnected);
-            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+            WaitForSdpExchangeCompleted();
 
             // No track yet
             Assert.AreEqual(0, pc1_.LocalVideoTracks.Count);
@@ -723,10 +767,11 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             suspendOffer1_ = true;
 
             // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
+            StartOfferWith(pc1_);
+            WaitForTransportsWritable();
             Assert.True(pc1_.IsConnected);
             Assert.True(pc2_.IsConnected);
+            WaitForSdpExchangeCompleted();
 
             // No track yet
             Assert.AreEqual(0, pc1_.LocalVideoTracks.Count);
@@ -768,7 +813,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
 
             // Renegotiate
-            pc1_.CreateOffer();
+            StartOfferWith(pc1_);
 
             // Confirm remote track was added on #2
             Assert.True(videoTrackAddedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
@@ -812,12 +857,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Renegotiate manually the batch of changes
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            pc1_.CreateOffer();
+            StartOfferWith(pc1_);
 
             // Wait everything to be ready
             WaitForSdpExchangeCompleted();
-            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
 
             // Confirm remote tracks were removed from #2 as part of removing all transceivers
             Assert.True(videoTrackRemovedEvent2_.IsSet);
