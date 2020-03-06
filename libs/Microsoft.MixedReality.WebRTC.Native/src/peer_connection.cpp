@@ -653,7 +653,9 @@ class PeerConnectionImpl : public PeerConnection,
       auto lock = std::scoped_lock{media_track_callback_mutex_};
       // Read the function pointer inside the lock to avoid race condition
       if (auto cb = *track_added_cb) {
-        mrsTransceiverHandle tranceiver_handle = transceiver.release();
+        // The transceiver is already created, just use a view handle
+        mrsTransceiverHandle tranceiver_handle = transceiver->asHandle();
+        // The remote track is a new object, return a ref owning handle
         typename Media::RemoteMediaTrackHandleT media_handle =
             remote_media_track.release();
         cb(interop_handle, media_handle, transceiver_interop_handle,
