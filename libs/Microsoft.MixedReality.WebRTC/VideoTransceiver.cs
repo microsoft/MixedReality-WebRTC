@@ -10,11 +10,6 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Transceiver for video tracks.
     /// </summary>
-    /// <remarks>
-    /// Note that unlike most other objects in this library, transceivers are not disposable,
-    /// and are always alive after being added to a peer connection until that peer connection
-    /// is disposed of. See <see cref="Transceiver"/> for details.
-    /// </remarks>
     public class VideoTransceiver : Transceiver
     {
         /// <summary>
@@ -29,26 +24,36 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Remote video track associated with the transceiver and receiving some video from the remote peer.
-        /// This may be <c>null</c> if the transceiver is currently only sending, or is inactive.
+        /// This property is updated when the transceiver negotiates a new media direction. If the new direction
+        /// allows receiving some video, a new <see cref="RemoteVideoTrack"/> is created and assigned to the
+        /// property. Otherwise the property is cleared to <c>null</c>.
         /// </summary>
         public RemoteVideoTrack RemoteTrack { get; private set; } = null;
 
+        /// <summary>
+        /// Backing field for <see cref="LocalTrack"/>.
+        /// </summary>
         private LocalVideoTrack _localTrack = null;
 
         // Constructor for interop-based creation; SetHandle() will be called later
         internal VideoTransceiver(PeerConnection peerConnection, int mlineIndex, string name, Direction initialDesiredDirection)
-            : base(MediaKind.Video, peerConnection, mlineIndex, name)
+            : base(MediaKind.Video, peerConnection, mlineIndex, name, initialDesiredDirection)
         {
-            _desiredDirection = initialDesiredDirection;
         }
 
         /// <summary>
         /// Change the local video track sending data to the remote peer.
-        /// This detach the previous local video track if any, and attach the new one instead.
+        /// 
+        /// This detaches the previous local video track if any, and attaches the new one instead.
+        /// Note that the transceiver will only send some video data to the remote peer if its
+        /// negotiated direction includes sending some data and it has an attached local track to
+        /// produce this data.
+        /// 
         /// This change is transparent to the session, and does not trigger any renegotiation.
         /// </summary>
-        /// <param name="track">The new local video track sending data to the remote peer.
-        /// Passing <c>null</c> is allowed, and will mute the track, but keep it active.</param>
+        /// <param name="track">The new local video track attached to the transceiver, and used to
+        /// produce video data to send to the remote peer if the transceiver is sending.
+        /// Passing <c>null</c> is allowed, and will detach the current track if any.</param>
         public void SetLocalTrack(LocalVideoTrack track)
         {
             if (track == _localTrack)
