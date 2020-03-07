@@ -35,17 +35,15 @@ namespace Microsoft.MixedReality.WebRTC
     /// local track is used as the source of the media. Conversely, when receiving some media, that media is
     /// delivered to the remote media track of the transceiver. As a convenience, both tracks can be null to
     /// avoid sending or ignore the received media, although this does not influence the media flow direction.
+    /// 
+    /// Transceivers are owned by the peer connection which creates them, and cannot be destroyed nor removed
+    /// from the peer connection.
     /// </summary>
     /// <remarks>
     /// This object corresponds roughly to the same-named notion in the WebRTC standard when using the
     /// Unified Plan SDP semantic.
     /// For Plan B, where RTP transceivers are not available, this wrapper tries to emulate the Unified Plan
     /// transceiver concept, and is therefore providing an abstraction over the WebRTC concept of transceivers.
-    /// 
-    /// Note that this object is not disposable because the lifetime of the native transceiver is tied to the
-    /// lifetime of the peer connection (cannot be removed), and therefore the two collections
-    /// <see cref="PeerConnection.AudioTransceivers"/> and <see cref="PeerConnection.VideoTransceivers"/> own
-    /// their objects and should continue to contain the list of wrappers for the native transceivers.
     /// </remarks>
     /// <seealso cref="AudioTransceiver"/>
     /// <seealso cref="VideoTransceiver"/>
@@ -100,9 +98,9 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Transceiver direction desired by the user.
-        /// If a negotiation is pending, then this is the next direction that will be negotiated when
+        /// Once changed by the user, this value is the next direction that will be negotiated when
         /// calling <see cref="PeerConnection.CreateOffer"/> or <see cref="PeerConnection.CreateAnswer"/>.
-        /// Otherwise this is equal to <see cref="NegotiatedDirection"/>.
+        /// After the negotiation is completed, this is equal to <see cref="NegotiatedDirection"/>.
         /// </summary>
         /// <seealso cref="SetDirection(Direction)"/>
         public Direction DesiredDirection
@@ -122,9 +120,8 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Backing field for <see cref="DesiredDirection"/>.
-        /// Default is Send+Receive, as it is in implementation.
         /// </summary>
-        protected Direction _desiredDirection = Direction.SendReceive;
+        protected Direction _desiredDirection;
 
         /// <summary>
         /// Handle to the native Transceiver object.
@@ -143,12 +140,13 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="peerConnection">The peer connection owning this transceiver.</param>
         /// <param name="mlineIndex">The transceiver media line index in SDP.</param>
         /// <param name="name">The transceiver name.</param>
-        protected Transceiver(MediaKind mediaKind, PeerConnection peerConnection, int mlineIndex, string name)
+        protected Transceiver(MediaKind mediaKind, PeerConnection peerConnection, int mlineIndex, string name, Direction initialDesiredDirection)
         {
             MediaKind = mediaKind;
             PeerConnection = peerConnection;
             MlineIndex = mlineIndex;
             Name = name;
+            _desiredDirection = initialDesiredDirection;
         }
 
         internal void SetHandle(TransceiverHandle handle)
