@@ -106,6 +106,13 @@ TEST_P(AudioTrackTests, Simple) {
           mrsTransceiverHandle transceiver_handle) {
         audio_track2 = track_handle;
         audio_transceiver2 = transceiver_handle;
+        // Test user data here
+        {
+          ASSERT_EQ(nullptr, mrsRemoteAudioTrackGetUserData(audio_track2));
+          mrsRemoteAudioTrackSetUserData(audio_track2, audio_transceiver2);
+          ASSERT_EQ(audio_transceiver2,
+                    mrsRemoteAudioTrackGetUserData(audio_track2));
+        }
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterAudioTrackAddedCallback(pair.pc2(),
