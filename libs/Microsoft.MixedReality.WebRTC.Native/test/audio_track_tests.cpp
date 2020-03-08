@@ -235,7 +235,6 @@ TEST_P(AudioTrackTests, Simple) {
 
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);
-  mrsRemoteAudioTrackRemoveRef(audio_track2);
   mrsLocalAudioTrackRemoveRef(audio_track1);
 }
 
@@ -372,7 +371,6 @@ TEST_P(AudioTrackTests, Muted) {
 
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);
-  mrsRemoteAudioTrackRemoveRef(audio_track2);
   mrsLocalAudioTrackRemoveRef(audio_track1);
 }
 

@@ -10,26 +10,6 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL
-mrsRemoteVideoTrackAddRef(mrsRemoteVideoTrackHandle handle) noexcept {
-  if (auto track = static_cast<RemoteVideoTrack*>(handle)) {
-    track->AddRef();
-  } else {
-    RTC_LOG(LS_WARNING)
-        << "Trying to add reference to NULL RemoteVideoTrack object.";
-  }
-}
-
-void MRS_CALL
-mrsRemoteVideoTrackRemoveRef(mrsRemoteVideoTrackHandle handle) noexcept {
-  if (auto track = static_cast<RemoteVideoTrack*>(handle)) {
-    track->RemoveRef();
-  } else {
-    RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
-                           "RemoteVideoTrack object.";
-  }
-}
-
 void MRS_CALL mrsRemoteVideoTrackRegisterI420AFrameCallback(
     mrsRemoteVideoTrackHandle trackHandle,
     mrsI420AVideoFrameCallback callback,

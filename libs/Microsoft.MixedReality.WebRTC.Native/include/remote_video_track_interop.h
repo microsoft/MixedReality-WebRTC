@@ -8,18 +8,6 @@
 
 extern "C" {
 
-//
-// Wrapper
-//
-
-/// Add a reference to the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsRemoteVideoTrackAddRef(mrsRemoteVideoTrackHandle handle) noexcept;
-
-/// Remove a reference from the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsRemoteVideoTrackRemoveRef(mrsRemoteVideoTrackHandle handle) noexcept;
-
 /// Register a custom callback to be called when the remote video track received
 /// a frame. The received frames is passed to the registered callback in I420
 /// encoding.

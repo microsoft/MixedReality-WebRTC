@@ -160,8 +160,12 @@ class Transceiver : public TrackedObject {
 
   /// Get a handle to the tranceiver. This is not virtual on purpose, as the API
   /// doesn't differentiate between audio and video transceivers, so any handle
-  /// would be cast back to a base class |Transceiver| pointer.
-  mrsTransceiverHandle asHandle() const { return (mrsTransceiverHandle)this; }
+  /// would be cast back to a base class |Transceiver| pointer. This handle is
+  /// valid until the transceiver is removed from the peer connection and
+  /// destroyed, which happens during |PeerConnection::Close()|.
+  [[nodiscard]] constexpr mrsTransceiverHandle GetHandle() const noexcept {
+    return (mrsTransceiverHandle)this;
+  }
 
   [[nodiscard]] rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl()
       const;

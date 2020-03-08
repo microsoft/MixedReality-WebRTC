@@ -216,7 +216,6 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
   // Clean-up
   mrsRemoteVideoTrackRegisterArgb32FrameCallback(track_handle2, nullptr,
                                                  nullptr);
-  mrsRemoteVideoTrackRemoveRef(track_handle2);
   mrsLocalVideoTrackRemoveRef(track_handle1);
   mrsExternalVideoTrackSourceShutdown(source_handle1);
   mrsExternalVideoTrackSourceRemoveRef(source_handle1);
