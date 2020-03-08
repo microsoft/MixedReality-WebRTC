@@ -57,6 +57,13 @@ class RemoteVideoTrack : public VideoFrameObserver, public MediaTrack {
   // Advanced use
   //
 
+  /// Get a handle to the remote video track. This handle is valid until the
+  /// remote track is removed from the peer connection and destroyed, which is
+  /// signaled by the |TrackRemoved| event on the peer connection.
+  [[nodiscard]] constexpr mrsRemoteVideoTrackHandle GetHandle() const noexcept {
+    return (mrsRemoteVideoTrackHandle)this;
+  }
+
   [[nodiscard]] webrtc::VideoTrackInterface* impl() const;
   [[nodiscard]] webrtc::RtpReceiverInterface* receiver() const;
 

@@ -174,7 +174,6 @@ TEST_P(VideoTrackTests, Simple) {
   // Clean-up
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
-  mrsRemoteVideoTrackRemoveRef(track_handle2);
   mrsLocalVideoTrackRemoveRef(track_handle1);
 }
 
@@ -271,7 +270,6 @@ TEST_P(VideoTrackTests, Muted) {
   // Clean-up
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
-  mrsRemoteVideoTrackRemoveRef(track_handle2);
   mrsLocalVideoTrackRemoveRef(track_handle1);
 }
 
@@ -445,7 +443,6 @@ TEST_P(VideoTrackTests, Multi) {
   for (auto&& track : tracks) {
     mrsRemoteVideoTrackRegisterI420AFrameCallback(track.remote_handle, nullptr,
                                                   nullptr);
-    mrsRemoteVideoTrackRemoveRef(track.remote_handle);
     mrsLocalVideoTrackRemoveRef(track.local_handle);
   }
   mrsExternalVideoTrackSourceRemoveRef(source_handle1);
@@ -548,7 +545,6 @@ TEST_P(VideoTrackTests, ExternalI420) {
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
   mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsRemoteVideoTrackRemoveRef(track_handle2);
   mrsExternalVideoTrackSourceShutdown(source_handle1);
   mrsExternalVideoTrackSourceRemoveRef(source_handle1);
 }

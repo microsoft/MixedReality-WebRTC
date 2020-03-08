@@ -11,26 +11,6 @@
 using namespace Microsoft::MixedReality::WebRTC;
 
 void MRS_CALL
-mrsRemoteAudioTrackAddRef(mrsRemoteAudioTrackHandle handle) noexcept {
-  if (auto track = static_cast<RemoteAudioTrack*>(handle)) {
-    track->AddRef();
-  } else {
-    RTC_LOG(LS_WARNING)
-        << "Trying to add reference to NULL RemoteAudioTrack object.";
-  }
-}
-
-void MRS_CALL
-mrsRemoteAudioTrackRemoveRef(mrsRemoteAudioTrackHandle handle) noexcept {
-  if (auto track = static_cast<RemoteAudioTrack*>(handle)) {
-    track->RemoveRef();
-  } else {
-    RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
-                           "RemoteAudioTrack object.";
-  }
-}
-
-void MRS_CALL
 mrsRemoteAudioTrackRegisterFrameCallback(mrsRemoteAudioTrackHandle trackHandle,
                                          mrsAudioFrameCallback callback,
                                          void* user_data) noexcept {

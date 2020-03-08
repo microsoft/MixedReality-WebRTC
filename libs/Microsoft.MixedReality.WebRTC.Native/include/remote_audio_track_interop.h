@@ -9,18 +9,6 @@
 
 extern "C" {
 
-//
-// Wrapper
-//
-
-/// Add a reference to the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsRemoteAudioTrackAddRef(mrsRemoteAudioTrackHandle handle) noexcept;
-
-/// Remove a reference from the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsRemoteAudioTrackRemoveRef(mrsRemoteAudioTrackHandle handle) noexcept;
-
 /// Register a custom callback to be called when the local audio track received
 /// a frame.
 MRS_API void MRS_CALL

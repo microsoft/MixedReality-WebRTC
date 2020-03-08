@@ -275,7 +275,7 @@ class PeerConnectionImpl : public PeerConnection,
     transceiver_added_callback_ = std::move(callback);
   }
 
-  ErrorOr<RefPtr<Transceiver>> AddTransceiver(
+  ErrorOr<Transceiver*> AddTransceiver(
       const mrsTransceiverInitConfig& config) noexcept override;
 
   void RegisterVideoTrackAddedCallback(
@@ -516,7 +516,9 @@ class PeerConnectionImpl : public PeerConnection,
             webrtc::SdpSemantics::kUnifiedPlan);
   }
 
-  /// Insert a new transceiver wrapper at the given media line index.
+  /// Insert a new transceiver wrapper at the given media line index into
+  /// |transceivers_|. This will keep the transceiver alive until it is
+  /// destroyed by |Close()|.
   Error InsertTransceiverAtMlineIndex(int mline_index,
                                       RefPtr<Transceiver> transceiver);
 
@@ -528,7 +530,7 @@ class PeerConnectionImpl : public PeerConnection,
   /// tracks, so will only create new transceiver wrappers for some of the new
   /// RTP transceivers. The callback on remote description applied will use
   /// |GetOrCreateTransceiverWrapper()| to create the other ones.
-  ErrorOr<RefPtr<Transceiver>> GetOrCreateTransceiverForNewRemoteTrack(
+  ErrorOr<Transceiver*> GetOrCreateTransceiverForNewRemoteTrack(
       mrsMediaKind media_kind,
       webrtc::RtpReceiverInterface* receiver);
 
@@ -538,8 +540,10 @@ class PeerConnectionImpl : public PeerConnection,
   void SynchronizeTransceiversUnifiedPlan(bool remote);
 
   /// Create a new |Transceiver| instance for an exist RTP transceiver not
-  /// associated with any.
-  ErrorOr<RefPtr<Transceiver>> CreateTransceiverUnifiedPlan(
+  /// associated with any. This automatically inserts the transceiver into the
+  /// peer connection, and return a raw pointer to it valid until the peer
+  /// connection is closed.
+  ErrorOr<Transceiver*> CreateTransceiverUnifiedPlan(
       mrsMediaKind media_kind,
       int mline_index,
       std::string name,
@@ -608,14 +612,14 @@ class PeerConnectionImpl : public PeerConnection,
     if (!ret.ok()) {
       return;
     }
-    RefPtr<Transceiver> transceiver = ret.MoveValue();
+    Transceiver* const transceiver = ret.value();
 
     // Create the native object. Note that the transceiver passed as argument
     // will acquire a reference and keep it alive.
-    RefPtr<typename Media::RemoteMediaTrackT> remote_media_track =
-        new typename Media::RemoteMediaTrackT(
-            global_factory_, *this, transceiver.get(), std::move(media_track),
-            std::move(receiver));
+    RefPtr<typename Media::RemoteMediaTrackT> remote_media_track = new
+        typename Media::RemoteMediaTrackT(global_factory_, *this, transceiver,
+                                          std::move(media_track),
+                                          std::move(receiver));
 
     // Invoke the TrackAdded callback, which will set the native handle on the
     // interop wrapper (if created above)
@@ -624,12 +628,7 @@ class PeerConnectionImpl : public PeerConnection,
       // Read the function pointer inside the lock to avoid race condition
       auto cb = *track_added_cb;
       if (cb) {
-        // The transceiver is already created, just use a view handle
-        mrsTransceiverHandle tranceiver_handle = transceiver->asHandle();
-        // The remote track is a new object, return a ref owning handle
-        typename Media::RemoteMediaTrackHandleT media_handle =
-            remote_media_track.release();
-        cb(media_handle, tranceiver_handle);
+        cb(remote_media_track->GetHandle(), transceiver->GetHandle());
       }
     }
   }
@@ -1065,8 +1064,14 @@ void PeerConnectionImpl::Close() noexcept {
     return;
   }
 
+  // Keep a reference to the implementation while shutting down, but clear the
+  // visible value in |peer_| to ensure |IsClosed()| returns false. This
+  // prevents other methods from being able to create new objects like
+  // transceivers.
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc(std::move(peer_));
+
   // Close the connection
-  peer_->Close();
+  pc->Close();
 
   {
     rtc::CritScope lock(&transceivers_mutex_);
@@ -1096,11 +1101,8 @@ void PeerConnectionImpl::Close() noexcept {
       }
     }
 
-    // Clear transceivers
-    //< TODO - This is done inside the lock, but the lock is released before
-    // peer_ is cleared, so before the connection is actually closed, which
-    // doesn't prevent add(Audio|Video)Transceiver from being called again in
-    // parallel...
+    // Clear and destroy transceivers (unless some implementation somewhere has
+    // a reference, which should not happen).
     transceivers_.clear();
   }
 
@@ -1112,15 +1114,15 @@ void PeerConnectionImpl::Close() noexcept {
   // get proxied to the WebRTC signaling thread, so needs to occur before the
   // global factory shuts down and terminates the threads, which potentially
   // happens just after this call when called from the destructor if this is the
-  // last object alive. This is also used as a marker for |IsClosed()|.
-  peer_ = nullptr;
+  // last object alive.
+  pc = nullptr;
 }
 
 bool PeerConnectionImpl::IsClosed() const noexcept {
   return (peer_ == nullptr);
 }
 
-ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::AddTransceiver(
+ErrorOr<Transceiver*> PeerConnectionImpl::AddTransceiver(
     const mrsTransceiverInitConfig& config) noexcept {
   if (IsClosed()) {
     return Error(Result::kInvalidOperation, "The peer connection is closed.");
@@ -1138,15 +1140,15 @@ ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::AddTransceiver(
     return Error(Result::kInvalidParameter, str.Release());
   }
 
-  RefPtr<Transceiver> wrapper;
+  RefPtr<Transceiver> transceiver;
   int mline_index = -1;
   switch (peer_->GetConfiguration().sdp_semantics) {
     case webrtc::SdpSemantics::kPlanB: {
       // Plan B doesn't have transceivers; just create a wrapper.
       mline_index = (int)transceivers_.size();  // append
-      wrapper = Transceiver::CreateForPlanB(global_factory_, config.media_kind,
-                                            *this, mline_index, std::move(name),
-                                            config.desired_direction);
+      transceiver = Transceiver::CreateForPlanB(
+          global_factory_, config.media_kind, *this, mline_index,
+          std::move(name), config.desired_direction);
       // Manually invoke the renegotiation needed event for parity with Unified
       // Plan, like the internal implementation would do.
       OnRenegotiationNeeded();
@@ -1180,16 +1182,17 @@ ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::AddTransceiver(
       }
 
       // Create the transceiver wrapper
-      wrapper = Transceiver::CreateForUnifiedPlan(
+      transceiver = Transceiver::CreateForUnifiedPlan(
           global_factory_, config.media_kind, *this, mline_index,
           std::move(name), std::move(impl), config.desired_direction);
     } break;
     default:
       return Error(Result::kUnknownError, "Unknown SDP semantic.");
   }
-  RTC_DCHECK(wrapper);
-  InsertTransceiverAtMlineIndex(mline_index, wrapper);
-  return wrapper;
+  RTC_DCHECK(transceiver);
+  Transceiver* tr_view = transceiver.get();
+  InsertTransceiverAtMlineIndex(mline_index, std::move(transceiver));
+  return tr_view;
 }
 
 bool PeerConnectionImpl::SetRemoteDescriptionAsync(
@@ -1526,7 +1529,7 @@ Error PeerConnectionImpl::InsertTransceiverAtMlineIndex(
   return Error(Result::kSuccess);
 }
 
-ErrorOr<RefPtr<Transceiver>>
+ErrorOr<Transceiver*>
 PeerConnectionImpl::GetOrCreateTransceiverForNewRemoteTrack(
     mrsMediaKind media_kind,
     webrtc::RtpReceiverInterface* receiver) {
@@ -1541,7 +1544,7 @@ PeerConnectionImpl::GetOrCreateTransceiverForNewRemoteTrack(
                               });
     if (it_tr != transceivers_.end()) {
       RTC_DCHECK(media_kind == (*it_tr)->GetMediaKind());
-      RefPtr<Transceiver> transceiver = static_cast<Transceiver*>(it_tr->get());
+      Transceiver* transceiver = static_cast<Transceiver*>(it_tr->get());
       return transceiver;
     }
   }
@@ -1590,22 +1593,23 @@ PeerConnectionImpl::GetOrCreateTransceiverForNewRemoteTrack(
         global_factory_, media_kind, *this, mline_index, std::move(name),
         config.desired_direction);
     transceiver->SetReceiverPlanB(receiver);
+    Transceiver* tr_view = transceiver.get();
     {
       // Insert the transceiver in the peer connection's collection. The peer
       // connection will add a reference to it and keep it alive.
-      auto err = InsertTransceiverAtMlineIndex(mline_index, transceiver);
+      auto err =
+          InsertTransceiverAtMlineIndex(mline_index, std::move(transceiver));
       if (!err.ok()) {
-        //< FIXME - wrapper leak
         return err;
       }
     }
 
     // Invoke the TransceiverAdded callback
     if (auto cb = transceiver_added_callback_) {
-      cb(transceiver.get());
+      cb(tr_view);
     }
 
-    return transceiver;
+    return tr_view;
   }
 }
 
@@ -1629,7 +1633,7 @@ void PeerConnectionImpl::SynchronizeTransceiversUnifiedPlan(bool remote) {
       // remote description, then the transceiver name is extracted
       // from the receiver.
       std::string name = ExtractTransceiverNameFromReceiver(tr->receiver());
-      ErrorOr<RefPtr<Transceiver>> err = CreateTransceiverUnifiedPlan(
+      ErrorOr<Transceiver*> err = CreateTransceiverUnifiedPlan(
           MediaKindFromRtc(tr->media_type()), mline_index, std::move(name), tr);
       if (!err.ok()) {
         RTC_LOG(LS_ERROR) << "Failed to create a Transceiver object to "
@@ -1643,7 +1647,7 @@ void PeerConnectionImpl::SynchronizeTransceiversUnifiedPlan(bool remote) {
   }
 }
 
-ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::CreateTransceiverUnifiedPlan(
+ErrorOr<Transceiver*> PeerConnectionImpl::CreateTransceiverUnifiedPlan(
     mrsMediaKind media_kind,
     int mline_index,
     std::string name,
@@ -1653,14 +1657,15 @@ ErrorOr<RefPtr<Transceiver>> PeerConnectionImpl::CreateTransceiverUnifiedPlan(
   RefPtr<Transceiver> transceiver = Transceiver::CreateForUnifiedPlan(
       global_factory_, media_kind, *this, mline_index, std::move(name),
       std::move(rtp_transceiver), desired_direction);
-  auto err = InsertTransceiverAtMlineIndex(mline_index, transceiver);
+  Transceiver* tr_view = transceiver.get();
+  auto err = InsertTransceiverAtMlineIndex(mline_index, std::move(transceiver));
   if (!err.ok()) {
     return err;
   }
   if (auto cb = transceiver_added_callback_) {
-    cb(transceiver.get());
+    cb(tr_view);
   }
-  return transceiver;
+  return tr_view;
 }
 
 std::string PeerConnectionImpl::ExtractTransceiverNameFromSender(

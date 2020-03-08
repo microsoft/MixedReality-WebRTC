@@ -50,10 +50,9 @@ mrsPeerConnectionAddTransceiver(mrsPeerConnectionHandle peer_handle,
   }
   *handle = nullptr;
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
-    ErrorOr<RefPtr<Transceiver>> result = peer->AddTransceiver(*config);
+    ErrorOr<Transceiver*> result = peer->AddTransceiver(*config);
     if (result.ok()) {
-      auto transceiver = result.MoveValue();
-      *handle = transceiver->asHandle();
+      *handle = result.value()->GetHandle();
       return Result::kSuccess;
     }
     return result.error().result();

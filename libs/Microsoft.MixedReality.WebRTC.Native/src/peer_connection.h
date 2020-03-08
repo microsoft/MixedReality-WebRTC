@@ -221,7 +221,9 @@ class PeerConnection : public TrackedObject {
       TransceiverAddedCallback&& callback) noexcept = 0;
 
   /// Add a new audio or video transceiver to the peer connection.
-  virtual ErrorOr<RefPtr<Transceiver>> AddTransceiver(
+  /// The transceiver is owned by the peer connection until it is closed with
+  /// |Close()|, and the pointer is valid until that time.
+  virtual ErrorOr<Transceiver*> AddTransceiver(
       const mrsTransceiverInitConfig& config) noexcept = 0;
 
   //
