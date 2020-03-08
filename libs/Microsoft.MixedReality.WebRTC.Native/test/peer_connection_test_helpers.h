@@ -146,23 +146,17 @@ class PCRaii {
   /// connection from being established.
   PCRaii() {
     mrsPeerConnectionConfiguration config{};
-    mrsPeerConnectionInteropHandle interop_handle = (void*)0x1;
-    create(config, interop_handle);
+    create(config);
   }
   /// Create a peer connection with a specific configuration.
-  PCRaii(const mrsPeerConnectionConfiguration& config,
-         mrsPeerConnectionInteropHandle interop_handle = (void*)0x1) {
-    create(config, interop_handle);
-  }
+  PCRaii(const mrsPeerConnectionConfiguration& config) { create(config); }
   ~PCRaii() { mrsPeerConnectionRemoveRef(handle_); }
   mrsPeerConnectionHandle handle() const { return handle_; }
 
  protected:
   mrsPeerConnectionHandle handle_{};
-  void create(const mrsPeerConnectionConfiguration& config,
-              mrsPeerConnectionInteropHandle interop_handle) {
-    ASSERT_EQ(mrsResult::kSuccess,
-              mrsPeerConnectionCreate(&config, interop_handle, &handle_));
+  void create(const mrsPeerConnectionConfiguration& config) {
+    ASSERT_EQ(mrsResult::kSuccess, mrsPeerConnectionCreate(&config, &handle_));
     ASSERT_NE(nullptr, handle_);
   }
 };
@@ -237,17 +231,6 @@ class LocalPeerPairRaii {
   LocalPeerPairRaii(const mrsPeerConnectionConfiguration& config)
       : pc1_(config),
         pc2_(config),
-        sdp1_cb_(pc1()),
-        sdp2_cb_(pc2()),
-        ice1_cb_(pc1()),
-        ice2_cb_(pc2()) {
-    setup();
-  }
-  LocalPeerPairRaii(const mrsPeerConnectionConfiguration& config,
-                    mrsPeerConnectionInteropHandle h1,
-                    mrsPeerConnectionInteropHandle h2)
-      : pc1_(config, h1),
-        pc2_(config, h2),
         sdp1_cb_(pc1()),
         sdp2_cb_(pc2()),
         ice1_cb_(pc1()),

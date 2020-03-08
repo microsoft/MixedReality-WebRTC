@@ -33,10 +33,9 @@ RefPtr<Transceiver> Transceiver::CreateForPlanB(
     PeerConnection& owner,
     int mline_index,
     std::string name,
-    Direction desired_direction,
-    mrsTransceiverHandle interop_handle) noexcept {
+    Direction desired_direction) noexcept {
   return new Transceiver(std::move(global_factory), kind, owner, mline_index,
-                         std::move(name), desired_direction, interop_handle);
+                         std::move(name), desired_direction);
 }
 
 RefPtr<Transceiver> Transceiver::CreateForUnifiedPlan(
@@ -46,11 +45,10 @@ RefPtr<Transceiver> Transceiver::CreateForUnifiedPlan(
     int mline_index,
     std::string name,
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
-    Direction desired_direction,
-    mrsTransceiverHandle interop_handle) noexcept {
+    Direction desired_direction) noexcept {
   return new Transceiver(std::move(global_factory), kind, owner, mline_index,
                          std::move(name), std::move(transceiver),
-                         desired_direction, interop_handle);
+                         desired_direction);
 }
 
 Transceiver::Transceiver(RefPtr<GlobalFactory> global_factory,
@@ -58,8 +56,7 @@ Transceiver::Transceiver(RefPtr<GlobalFactory> global_factory,
                          PeerConnection& owner,
                          int mline_index,
                          std::string name,
-                         Direction desired_direction,
-                         mrsTransceiverHandle interop_handle) noexcept
+                         Direction desired_direction) noexcept
     : TrackedObject(std::move(global_factory),
                     kind == MediaKind::kAudio ? ObjectType::kAudioTransceiver
                                               : ObjectType::kVideoTransceiver),
@@ -68,8 +65,7 @@ Transceiver::Transceiver(RefPtr<GlobalFactory> global_factory,
       mline_index_(mline_index),
       name_(std::move(name)),
       desired_direction_(desired_direction),
-      plan_b_(new PlanBEmulation),
-      interop_handle_(interop_handle) {
+      plan_b_(new PlanBEmulation) {
   RTC_CHECK(owner_);
   //< TODO
   // RTC_CHECK(owner.sdp_semantic == webrtc::SdpSemantics::kPlanB);
@@ -82,8 +78,7 @@ Transceiver::Transceiver(
     int mline_index,
     std::string name,
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
-    Direction desired_direction,
-    mrsTransceiverHandle interop_handle) noexcept
+    Direction desired_direction) noexcept
     : TrackedObject(std::move(global_factory),
                     kind == MediaKind::kAudio ? ObjectType::kAudioTransceiver
                                               : ObjectType::kVideoTransceiver),
@@ -92,8 +87,7 @@ Transceiver::Transceiver(
       mline_index_(mline_index),
       name_(std::move(name)),
       desired_direction_(desired_direction),
-      transceiver_(std::move(transceiver)),
-      interop_handle_(interop_handle) {
+      transceiver_(std::move(transceiver)) {
   RTC_CHECK(owner_);
   RTC_DCHECK(transceiver_);
   RTC_DCHECK(

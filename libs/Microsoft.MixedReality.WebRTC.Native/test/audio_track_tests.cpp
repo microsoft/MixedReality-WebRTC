@@ -22,23 +22,9 @@ class AudioTrackTests : public TestUtils::TestBase,
 
 namespace {
 
-const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
-    (void*)0x1;
-const mrsRemoteAudioTrackInteropHandle kFakeInteropRemoteAudioTrackHandle =
-    (void*)0x2;
-
-mrsRemoteAudioTrackInteropHandle MRS_CALL FakeIterop_RemoteAudioTrackCreate(
-    mrsPeerConnectionInteropHandle /*parent*/,
-    const mrsRemoteAudioTrackConfig& /*config*/) noexcept {
-  return kFakeInteropRemoteAudioTrackHandle;
-}
-
 // PeerConnectionAudioTrackAddedCallback
 using AudioTrackAddedCallback =
-    InteropCallback<mrsRemoteVideoTrackInteropHandle,
-                    mrsRemoteAudioTrackHandle,
-                    mrsTransceiverInteropHandle,
-                    mrsTransceiverHandle>;
+    InteropCallback<mrsRemoteAudioTrackHandle, mrsTransceiverHandle>;
 
 // PeerConnectionAudioFrameCallback
 using AudioFrameCallback = InteropCallback<const AudioFrame&>;
@@ -109,13 +95,6 @@ TEST_P(AudioTrackTests, Simple) {
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
 
-  // In order to allow creating interop wrappers from native code, register the
-  // necessary interop callbacks.
-  mrsPeerConnectionInteropCallbacks interop{};
-  interop.remote_audio_track_create_object = &FakeIterop_RemoteAudioTrackCreate;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionRegisterInteropCallbacks(pair.pc2(), &interop));
-
   // Grab the handle of the remote track from the remote peer (#2) via the
   // AudioTrackAdded callback.
   mrsTransceiverHandle audio_transceiver2{};
@@ -123,9 +102,7 @@ TEST_P(AudioTrackTests, Simple) {
   Event track_added2_ev;
   AudioTrackAddedCallback track_added2_cb =
       [&audio_track2, &audio_transceiver2, &track_added2_ev](
-          mrsRemoteVideoTrackInteropHandle /*interop_handle*/,
           mrsRemoteAudioTrackHandle track_handle,
-          mrsTransceiverInteropHandle /*interop_handle*/,
           mrsTransceiverHandle transceiver_handle) {
         audio_track2 = track_handle;
         audio_transceiver2 = transceiver_handle;
@@ -259,22 +236,13 @@ TEST_P(AudioTrackTests, Simple) {
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);
   mrsRemoteAudioTrackRemoveRef(audio_track2);
-  mrsTransceiverRemoveRef(audio_transceiver2);
   mrsLocalAudioTrackRemoveRef(audio_track1);
-  mrsTransceiverRemoveRef(audio_transceiver1);
 }
 
 TEST_P(AudioTrackTests, Muted) {
   mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
-
-  // In order to allow creating interop wrappers from native code, register the
-  // necessary interop callbacks.
-  mrsPeerConnectionInteropCallbacks interop{};
-  interop.remote_audio_track_create_object = &FakeIterop_RemoteAudioTrackCreate;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionRegisterInteropCallbacks(pair.pc2(), &interop));
 
   // Grab the handle of the remote track from the remote peer (#2) via the
   // AudioTrackAdded callback.
@@ -283,9 +251,7 @@ TEST_P(AudioTrackTests, Muted) {
   Event track_added2_ev;
   AudioTrackAddedCallback track_added2_cb =
       [&audio_track2, &audio_transceiver2, &track_added2_ev](
-          mrsRemoteVideoTrackInteropHandle /*interop_handle*/,
           mrsRemoteAudioTrackHandle track_handle,
-          mrsTransceiverInteropHandle /*interop_handle*/,
           mrsTransceiverHandle transceiver_handle) {
         audio_track2 = track_handle;
         audio_transceiver2 = transceiver_handle;
@@ -407,9 +373,7 @@ TEST_P(AudioTrackTests, Muted) {
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);
   mrsRemoteAudioTrackRemoveRef(audio_track2);
-  mrsTransceiverRemoveRef(audio_transceiver2);
   mrsLocalAudioTrackRemoveRef(audio_track1);
-  mrsTransceiverRemoveRef(audio_transceiver1);
 }
 
 #endif  // MRSW_EXCLUDE_DEVICE_TESTS

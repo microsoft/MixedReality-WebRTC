@@ -64,9 +64,9 @@ class DataChannel : public webrtc::DataChannelObserver {
   /// Callback fired when the data channel state changed.
   using StateCallback = Callback</*DataChannelState*/ int, int>;
 
-  DataChannel(PeerConnection* owner,
-              rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel,
-              mrsDataChannelInteropHandle interop_handle = nullptr) noexcept;
+  DataChannel(
+      PeerConnection* owner,
+      rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) noexcept;
 
   /// Remove the data channel from its parent PeerConnection and close it.
   ~DataChannel() override;
@@ -94,10 +94,6 @@ class DataChannel : public webrtc::DataChannelObserver {
 
   [[nodiscard]] webrtc::DataChannelInterface* impl() const {
     return data_channel_.get();
-  }
-
-  mrsDataChannelInteropHandle GetInteropHandle() const noexcept {
-    return interop_handle_;
   }
 
   /// This is invoked automatically by PeerConnection::RemoveDataChannel().
@@ -129,8 +125,8 @@ class DataChannel : public webrtc::DataChannelObserver {
   StateCallback state_callback_ RTC_GUARDED_BY(mutex_);
   std::mutex mutex_;
 
-  /// Optional interop handle, if associated with an interop wrapper.
-  mrsDataChannelInteropHandle interop_handle_{};
+  /// Opaque user data.
+  void* user_data{nullptr};
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

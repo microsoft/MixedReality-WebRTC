@@ -40,8 +40,7 @@ class Transceiver : public TrackedObject {
       PeerConnection& owner,
       int mline_index,
       std::string name,
-      Direction desired_direction,
-      mrsTransceiverHandle interop_handle) noexcept;
+      Direction desired_direction) noexcept;
 
   /// Construct a Unified Plan transceiver wrapper referencing an actual WebRTC
   /// transceiver implementation object as defined in Unified Plan.
@@ -52,8 +51,7 @@ class Transceiver : public TrackedObject {
       int mline_index,
       std::string name,
       rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
-      Direction desired_direction,
-      mrsTransceiverHandle interop_handle) noexcept;
+      Direction desired_direction) noexcept;
 
   ~Transceiver() override;
 
@@ -168,11 +166,6 @@ class Transceiver : public TrackedObject {
   [[nodiscard]] rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl()
       const;
 
-  [[nodiscard]] constexpr mrsTransceiverInteropHandle GetInteropHandle() const
-      noexcept {
-    return interop_handle_;
-  }
-
   /// Synchronize the RTP sender with the desired direction when using Plan B.
   /// |needed| indicate whether an RTP sender is needed or not. |peer| is passed
   /// as argument for convenience, as |owner_| cannot access it. |media_kind| is
@@ -227,8 +220,7 @@ class Transceiver : public TrackedObject {
               PeerConnection& owner,
               int mline_index,
               std::string name,
-              Direction desired_direction,
-              mrsTransceiverHandle interop_handle) noexcept;
+              Direction desired_direction) noexcept;
 
   /// Construct a Unified Plan transceiver wrapper referencing an actual WebRTC
   /// transceiver implementation object as defined in Unified Plan.
@@ -238,8 +230,7 @@ class Transceiver : public TrackedObject {
               int mline_index,
               std::string name,
               rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
-              Direction desired_direction,
-              mrsTransceiverHandle interop_handle) noexcept;
+              Direction desired_direction) noexcept;
 
   Result SetLocalTrackImpl(RefPtr<MediaTrack> local_track) noexcept;
   Result SetRemoteTrackImpl(RefPtr<MediaTrack> remote_track) noexcept;
@@ -297,9 +288,6 @@ class Transceiver : public TrackedObject {
   StateUpdatedCallback state_updated_callback_ RTC_GUARDED_BY(cb_mutex_);
 
   std::mutex cb_mutex_;
-
-  /// Optional interop handle, if associated with an interop wrapper.
-  mrsTransceiverInteropHandle interop_handle_{};
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

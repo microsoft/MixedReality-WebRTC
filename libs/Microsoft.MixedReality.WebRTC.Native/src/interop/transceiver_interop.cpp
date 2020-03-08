@@ -14,24 +14,6 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL mrsTransceiverAddRef(mrsTransceiverHandle handle) noexcept {
-  if (auto transceiver = static_cast<Transceiver*>(handle)) {
-    transceiver->AddRef();
-  } else {
-    RTC_LOG(LS_WARNING)
-        << "Trying to add reference to NULL Transceiver object.";
-  }
-}
-
-void MRS_CALL mrsTransceiverRemoveRef(mrsTransceiverHandle handle) noexcept {
-  if (auto transceiver = static_cast<Transceiver*>(handle)) {
-    transceiver->RemoveRef();
-  } else {
-    RTC_LOG(LS_WARNING)
-        << "Trying to remove reference from NULL Transceiver object.";
-  }
-}
-
 void MRS_CALL mrsTransceiverRegisterStateUpdatedCallback(
     mrsTransceiverHandle handle,
     mrsTransceiverStateUpdatedCallback callback,

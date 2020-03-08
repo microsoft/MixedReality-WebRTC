@@ -54,11 +54,6 @@ namespace {
 template <typename T>
 class TransceiverTests : public TestUtils::TestBase {};
 
-const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
-    (void*)0x1;
-
-const mrsTransceiverInteropHandle kFakeInteropTransceiverHandle = (void*)0x2;
-
 /// Media kind trait for audio vs. video tests.
 template <typename MEDIA_KIND>
 struct MediaTrait;
@@ -66,24 +61,6 @@ struct MediaTrait;
 /// Specialization for audio tests.
 template <>
 struct MediaTrait<AudioTest> {
-  constexpr static const mrsRemoteAudioTrackInteropHandle
-      kFakeInteropRemoteTrackHandle = (void*)0x2;
-
-  static mrsRemoteAudioTrackInteropHandle MRS_CALL FakeIterop_RemoteTrackCreate(
-      mrsPeerConnectionInteropHandle /*parent*/,
-      const mrsRemoteAudioTrackConfig& /*config*/) noexcept {
-    return kFakeInteropRemoteTrackHandle;
-  }
-
-  static void SetupFakeInterop(std::vector<mrsPeerConnectionHandle>& handles) {
-    mrsPeerConnectionInteropCallbacks interop{};
-    interop.remote_audio_track_create_object = &FakeIterop_RemoteTrackCreate;
-    for (auto&& h : handles) {
-      ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionRegisterInteropCallbacks(h, &interop));
-    }
-  }
-
   static void CheckTransceiverTracksAreNull(mrsTransceiverHandle handle) {
     mrsLocalAudioTrackHandle local_handle{};
     ASSERT_EQ(Result::kSuccess,
@@ -106,24 +83,6 @@ struct MediaTrait<AudioTest> {
 /// Specialization for video tests.
 template <>
 struct MediaTrait<VideoTest> {
-  constexpr static const mrsRemoteVideoTrackInteropHandle
-      kFakeInteropRemoteTrackHandle = (void*)0x2;
-
-  static mrsRemoteVideoTrackInteropHandle MRS_CALL FakeIterop_RemoteTrackCreate(
-      mrsPeerConnectionInteropHandle /*parent*/,
-      const mrsRemoteVideoTrackConfig& /*config*/) noexcept {
-    return kFakeInteropRemoteTrackHandle;
-  }
-
-  static void SetupFakeInterop(std::vector<mrsPeerConnectionHandle>& handles) {
-    mrsPeerConnectionInteropCallbacks interop{};
-    interop.remote_video_track_create_object = &FakeIterop_RemoteTrackCreate;
-    for (auto&& h : handles) {
-      ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionRegisterInteropCallbacks(h, &interop));
-    }
-  }
-
   static void CheckTransceiverTracksAreNull(mrsTransceiverHandle handle) {
     mrsLocalVideoTrackHandle local_handle{};
     ASSERT_EQ(Result::kSuccess,
@@ -143,20 +102,6 @@ struct MediaTrait<VideoTest> {
   }
 };
 
-/// Helper to install a fake interop layer above the native API and pretend to
-/// create fake wrapper objects.
-template <typename MEDIA_KIND>
-struct FakeInteropRaii {
-  FakeInteropRaii(std::initializer_list<mrsPeerConnectionHandle> handles)
-      : handles_(handles) {
-    setup();
-  }
-  ~FakeInteropRaii() { cleanup(); }
-  void setup() { MediaTrait<MEDIA_KIND>::SetupFakeInterop(handles_); }
-  void cleanup() {}
-  std::vector<mrsPeerConnectionHandle> handles_;
-};
-
 /// Test that SetLocalTrack() on a transceiver does not change its desired or
 /// negotiated directions. This is currently only available for video, because
 /// there is no external tracks for audio.
@@ -166,7 +111,6 @@ void Test_SetLocalTrack(mrsSdpSemantic sdp_semantic,
   mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = sdp_semantic;
   LocalPeerPairRaii pair(pc_config);
-  FakeInteropRaii<VideoTest> interop({pair.pc1(), pair.pc2()});
 
   // Register event for renegotiation needed
   Event renegotiation_needed1_ev;
@@ -190,8 +134,6 @@ void Test_SetLocalTrack(mrsSdpSemantic sdp_semantic,
     mrsTransceiverInitConfig transceiver_config{};
     transceiver_config.name = "video_transceiver_1";
     transceiver_config.media_kind = mrsMediaKind::kVideo;
-    transceiver_config.transceiver_interop_handle =
-        kFakeInteropTransceiverHandle;
     transceiver_config.desired_direction = created_dir1;
     renegotiation_needed1_ev.Reset();
     ASSERT_EQ(Result::kSuccess,
@@ -286,10 +228,10 @@ void Test_SetLocalTrack(mrsSdpSemantic sdp_semantic,
   mrsLocalVideoTrackHandle track_handle1{};
   {
     mrsLocalVideoTrackFromExternalSourceInitConfig config{};
-    ASSERT_EQ(
-        mrsResult::kSuccess,
-        mrsLocalVideoTrackCreateFromExternalSource(
-            source_handle1, &config, "simulated_video_track1", &track_handle1));
+    config.source_handle = source_handle1;
+    config.track_name = "simulated_video_track1";
+    ASSERT_EQ(mrsResult::kSuccess, mrsLocalVideoTrackCreateFromExternalSource(
+                                       &config, &track_handle1));
     ASSERT_NE(nullptr, track_handle1);
     ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle1));
   }
@@ -354,9 +296,6 @@ void Test_SetLocalTrack(mrsSdpSemantic sdp_semantic,
 
   // Wait until the SDP session exchange completed before cleaning-up
   ASSERT_TRUE(pair.WaitExchangeCompletedFor(10s));
-
-  // Clean-up
-  mrsTransceiverRemoveRef(transceiver_handle1);
 }
 
 }  // namespace
@@ -384,7 +323,6 @@ TYPED_TEST_P(TransceiverTests, SetDirection) {
   mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = TypeParam::kSdpSemantic;
   LocalPeerPairRaii pair(pc_config);
-  FakeInteropRaii<TypeParam::MediaType> interop({pair.pc1(), pair.pc2()});
 
   // Register event for renegotiation needed
   Event renegotiation_needed1_ev;
@@ -408,8 +346,6 @@ TYPED_TEST_P(TransceiverTests, SetDirection) {
         (TypeParam::kMediaKind == mrsMediaKind::kAudio ? "audio_transceiver_1"
                                                        : "video_transceiver_1");
     transceiver_config.media_kind = TypeParam::kMediaKind;
-    transceiver_config.transceiver_interop_handle =
-        kFakeInteropTransceiverHandle;
     renegotiation_needed1_ev.Reset();
     ASSERT_EQ(Result::kSuccess,
               mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
@@ -514,9 +450,6 @@ TYPED_TEST_P(TransceiverTests, SetDirection) {
     ASSERT_EQ(mrsTransceiverOptDirection::kInactive, dir_negotiated1);
     ASSERT_EQ(mrsTransceiverDirection::kRecvOnly, dir_desired1);
   }
-
-  // Clean-up
-  mrsTransceiverRemoveRef(transceiver_handle1);
 }
 
 TYPED_TEST_P(TransceiverTests, SetDirection_InvalidHandle) {

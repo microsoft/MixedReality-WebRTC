@@ -558,154 +558,135 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 }
 mrsResult MRS_CALL
 mrsPeerConnectionCreate(const mrsPeerConnectionConfiguration* config,
-                        mrsPeerConnectionInteropHandle interop_handle,
-                        mrsPeerConnectionHandle* peerHandleOut) noexcept {
-  if (!peerHandleOut || !interop_handle) {
+                        mrsPeerConnectionHandle* peer_handle_out) noexcept {
+  if (!peer_handle_out) {
     return Result::kInvalidParameter;
   }
-  *peerHandleOut = nullptr;
+  *peer_handle_out = nullptr;
 
   // Create the new peer connection
-  auto result = PeerConnection::create(*config, interop_handle);
+  auto result = PeerConnection::create(*config);
   if (!result.ok()) {
     return result.error().result();
   }
-  *peerHandleOut = (mrsPeerConnectionHandle)result.value().release();
+  *peer_handle_out = (mrsPeerConnectionHandle)result.value().release();
   return Result::kSuccess;
 }
 
-mrsResult MRS_CALL mrsPeerConnectionRegisterInteropCallbacks(
-    mrsPeerConnectionHandle peerHandle,
-    mrsPeerConnectionInteropCallbacks* callbacks) noexcept {
-  if (!callbacks) {
-    return Result::kInvalidParameter;
-  }
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    return peer->RegisterInteropCallbacks(*callbacks);
-  }
-  return Result::kInvalidNativeHandle;
-}
-
 void MRS_CALL mrsPeerConnectionRegisterConnectedCallback(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionConnectedCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterConnectedCallback(Callback<>{callback, user_data});
   }
 }
 
 void MRS_CALL mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionLocalSdpReadytoSendCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterLocalSdpReadytoSendCallback(
         Callback<const char*, const char*>{callback, user_data});
   }
 }
 
 void MRS_CALL mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionIceCandidateReadytoSendCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterIceCandidateReadytoSendCallback(
         Callback<const char*, int, const char*>{callback, user_data});
   }
 }
 
 void MRS_CALL mrsPeerConnectionRegisterIceStateChangedCallback(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionIceStateChangedCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterIceStateChangedCallback(
         Callback<mrsIceConnectionState>{callback, user_data});
   }
 }
 
 void MRS_CALL mrsPeerConnectionRegisterRenegotiationNeededCallback(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionRenegotiationNeededCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterRenegotiationNeededCallback(Callback<>{callback, user_data});
   }
 }
 
 void MRS_CALL mrsPeerConnectionRegisterAudioTrackAddedCallback(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionAudioTrackAddedCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterAudioTrackAddedCallback(
-        Callback<mrsRemoteAudioTrackInteropHandle, mrsRemoteAudioTrackHandle,
-                 mrsTransceiverInteropHandle, mrsTransceiverHandle>{
-            callback, user_data});
+        Callback<mrsRemoteAudioTrackHandle, mrsTransceiverHandle>{callback,
+                                                                  user_data});
   }
 }
 
 void MRS_CALL mrsPeerConnectionRegisterAudioTrackRemovedCallback(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionAudioTrackRemovedCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterAudioTrackRemovedCallback(
-        Callback<mrsRemoteAudioTrackInteropHandle, mrsRemoteAudioTrackHandle,
-                 mrsTransceiverInteropHandle, mrsTransceiverHandle>{
-            callback, user_data});
+        Callback<mrsRemoteAudioTrackHandle, mrsTransceiverHandle>{callback,
+                                                                  user_data});
   }
 }
 
 void MRS_CALL mrsPeerConnectionRegisterVideoTrackAddedCallback(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionVideoTrackAddedCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterVideoTrackAddedCallback(
-        Callback<mrsRemoteVideoTrackInteropHandle, mrsRemoteVideoTrackHandle,
-                 mrsTransceiverInteropHandle, mrsTransceiverHandle>{
-            callback, user_data});
+        Callback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>{callback,
+                                                                  user_data});
   }
 }
 
 void MRS_CALL mrsPeerConnectionRegisterVideoTrackRemovedCallback(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionVideoTrackRemovedCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterVideoTrackRemovedCallback(
-        Callback<mrsRemoteVideoTrackInteropHandle, mrsRemoteVideoTrackHandle,
-                 mrsTransceiverInteropHandle, mrsTransceiverHandle>{
-            callback, user_data});
+        Callback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>{callback,
+                                                                  user_data});
   }
 }
 
 void MRS_CALL mrsPeerConnectionRegisterDataChannelAddedCallback(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionDataChannelAddedCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterDataChannelAddedCallback(
-        Callback<mrsDataChannelInteropHandle, mrsDataChannelHandle>{callback,
-                                                                    user_data});
+        Callback<mrsDataChannelHandle>{callback, user_data});
   }
 }
 
 void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionDataChannelRemovedCallback callback,
     void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterDataChannelRemovedCallback(
-        Callback<mrsDataChannelInteropHandle, mrsDataChannelHandle>{callback,
-                                                                    user_data});
+        Callback<mrsDataChannelHandle>{callback, user_data});
   }
 }
 
 mrsResult MRS_CALL mrsLocalAudioTrackCreateFromDevice(
-    const mrsLocalAudioTrackInitConfig* config,
+    const mrsLocalAudioTrackInitConfig* /*config*/,
     const char* track_name,
     mrsLocalAudioTrackHandle* track_handle_out) noexcept {
   if (IsStringNullOrEmpty(track_name)) {
@@ -742,8 +723,7 @@ mrsResult MRS_CALL mrsLocalAudioTrackCreateFromDevice(
 
   // Create the audio track wrapper
   RefPtr<LocalAudioTrack> track =
-      new LocalAudioTrack(std::move(global_factory), std::move(audio_track),
-                          config->track_interop_handle);
+      new LocalAudioTrack(std::move(global_factory), std::move(audio_track));
   *track_handle_out = track.release();
   return Result::kSuccess;
 }
@@ -820,26 +800,24 @@ mrsResult MRS_CALL mrsLocalVideoTrackCreateFromDevice(
 
   // Create the video track wrapper
   RefPtr<LocalVideoTrack> track =
-      new LocalVideoTrack(std::move(global_factory), std::move(video_track),
-                          config->track_interop_handle);
+      new LocalVideoTrack(std::move(global_factory), std::move(video_track));
   *track_handle_out = track.release();
   return Result::kSuccess;
 }
 
 mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
-    mrsPeerConnectionHandle peerHandle,
-    mrsDataChannelInteropHandle dataChannelInteropHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsDataChannelConfig config,
     mrsDataChannelCallbacks callbacks,
-    mrsDataChannelHandle* dataChannelHandleOut) noexcept
+    mrsDataChannelHandle* data_channel_handle_out) noexcept
 
 {
-  if (!dataChannelHandleOut || !dataChannelInteropHandle) {
+  if (!data_channel_handle_out) {
     return Result::kInvalidParameter;
   }
-  *dataChannelHandleOut = nullptr;
+  *data_channel_handle_out = nullptr;
 
-  auto peer = static_cast<PeerConnection*>(peerHandle);
+  auto peer = static_cast<PeerConnection*>(peer_handle);
   if (!peer) {
     return Result::kInvalidNativeHandle;
   }
@@ -847,8 +825,8 @@ mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
   const bool ordered = (config.flags & mrsDataChannelConfigFlags::kOrdered);
   const bool reliable = (config.flags & mrsDataChannelConfigFlags::kReliable);
   const std::string_view label = (config.label ? config.label : "");
-  ErrorOr<std::shared_ptr<DataChannel>> data_channel = peer->AddDataChannel(
-      config.id, label, ordered, reliable, dataChannelInteropHandle);
+  ErrorOr<std::shared_ptr<DataChannel>> data_channel =
+      peer->AddDataChannel(config.id, label, ordered, reliable);
   if (data_channel.ok()) {
     data_channel.value()->SetMessageCallback(DataChannel::MessageCallback{
         callbacks.message_callback, callbacks.message_user_data});
@@ -856,16 +834,16 @@ mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
         callbacks.buffering_callback, callbacks.buffering_user_data});
     data_channel.value()->SetStateCallback(DataChannel::StateCallback{
         callbacks.state_callback, callbacks.state_user_data});
-    *dataChannelHandleOut = data_channel.value().operator->();
+    *data_channel_handle_out = data_channel.value().operator->();
     return Result::kSuccess;
   }
   return data_channel.error().result();
 }
 
 mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsDataChannelHandle dataChannelHandle) noexcept {
-  auto peer = static_cast<PeerConnection*>(peerHandle);
+  auto peer = static_cast<PeerConnection*>(peer_handle);
   if (!peer) {
     return Result::kInvalidNativeHandle;
   }
@@ -890,11 +868,11 @@ mrsDataChannelSendMessage(mrsDataChannelHandle dataChannelHandle,
 }
 
 mrsResult MRS_CALL
-mrsPeerConnectionAddIceCandidate(mrsPeerConnectionHandle peerHandle,
+mrsPeerConnectionAddIceCandidate(mrsPeerConnectionHandle peer_handle,
                                  const char* sdp,
                                  const int sdp_mline_index,
                                  const char* sdp_mid) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     return (peer->AddIceCandidate(sdp, sdp_mline_index, sdp_mid)
                 ? Result::kSuccess
                 : Result::kUnknownError);
@@ -903,16 +881,16 @@ mrsPeerConnectionAddIceCandidate(mrsPeerConnectionHandle peerHandle,
 }
 
 mrsResult MRS_CALL
-mrsPeerConnectionCreateOffer(mrsPeerConnectionHandle peerHandle) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+mrsPeerConnectionCreateOffer(mrsPeerConnectionHandle peer_handle) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     return (peer->CreateOffer() ? Result::kSuccess : Result::kUnknownError);
   }
   return Result::kInvalidNativeHandle;
 }
 
 mrsResult MRS_CALL
-mrsPeerConnectionCreateAnswer(mrsPeerConnectionHandle peerHandle) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+mrsPeerConnectionCreateAnswer(mrsPeerConnectionHandle peer_handle) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     return (peer->CreateAnswer() ? Result::kSuccess : Result::kUnknownError);
   }
   return Result::kInvalidNativeHandle;
@@ -940,12 +918,12 @@ mrsPeerConnectionSetBitrate(mrsPeerConnectionHandle peer_handle,
 }
 
 mrsResult MRS_CALL
-mrsPeerConnectionSetRemoteDescriptionAsync(mrsPeerConnectionHandle peerHandle,
+mrsPeerConnectionSetRemoteDescriptionAsync(mrsPeerConnectionHandle peer_handle,
                                            const char* type,
                                            const char* sdp,
                                            ActionCallback callback,
                                            void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     return (peer->SetRemoteDescriptionAsync(type, sdp,
                                             Callback<>{callback, user_data})
                 ? Result::kSuccess
@@ -955,8 +933,8 @@ mrsPeerConnectionSetRemoteDescriptionAsync(mrsPeerConnectionHandle peerHandle,
 }
 
 mrsResult MRS_CALL
-mrsPeerConnectionClose(mrsPeerConnectionHandle peerHandle) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+mrsPeerConnectionClose(mrsPeerConnectionHandle peer_handle) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->Close();
     return Result::kSuccess;
   }
@@ -1056,10 +1034,10 @@ T& FindOrInsert(std::vector<std::pair<std::string, T>>& vec,
 }  // namespace
 
 mrsResult MRS_CALL mrsPeerConnectionGetSimpleStats(
-    mrsPeerConnectionHandle peerHandle,
+    mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionGetSimpleStatsCallback callback,
     void* user_data) {
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     struct Collector : webrtc::RTCStatsCollectorCallback {
       Collector(mrsPeerConnectionGetSimpleStatsCallback callback,
                 void* user_data)

@@ -20,26 +20,9 @@ namespace {
 class VideoTrackTests : public TestUtils::TestBase,
                         public testing::WithParamInterface<mrsSdpSemantic> {};
 
-const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
-    (void*)0x1;
-
-const mrsRemoteVideoTrackInteropHandle kFakeInteropRemoteVideoTrackHandle =
-    (void*)0x2;
-
-/// Fake interop callback always returning the same fake remote video track
-/// interop handle, for tests which do not care about it.
-mrsRemoteVideoTrackInteropHandle MRS_CALL FakeIterop_RemoteVideoTrackCreate(
-    mrsPeerConnectionInteropHandle /*parent*/,
-    const mrsRemoteVideoTrackConfig& /*config*/) noexcept {
-  return kFakeInteropRemoteVideoTrackHandle;
-}
-
 // PeerConnectionVideoTrackAddedCallback
 using VideoTrackAddedCallback =
-    InteropCallback<mrsRemoteVideoTrackInteropHandle,
-                    mrsRemoteVideoTrackHandle,
-                    mrsTransceiverInteropHandle,
-                    mrsTransceiverHandle>;
+    InteropCallback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>;
 
 // PeerConnectionI420VideoFrameCallback
 using I420VideoFrameCallback = InteropCallback<const I420AVideoFrame&>;
@@ -56,13 +39,6 @@ TEST_P(VideoTrackTests, Simple) {
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
 
-  // In order to allow creating interop wrappers from native code, register the
-  // necessary interop callbacks.
-  mrsPeerConnectionInteropCallbacks interop{};
-  interop.remote_video_track_create_object = &FakeIterop_RemoteVideoTrackCreate;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionRegisterInteropCallbacks(pair.pc2(), &interop));
-
   // Register event for renegotiation needed
   Event renegotiation_needed1_ev;
   InteropCallback renegotiation_needed1_cb = [&renegotiation_needed1_ev]() {
@@ -78,12 +54,10 @@ TEST_P(VideoTrackTests, Simple) {
   Event track_added2_ev;
   VideoTrackAddedCallback track_added2_cb =
       [&track_handle2, &transceiver_handle2, &track_added2_ev](
-          mrsRemoteVideoTrackInteropHandle /*interop_handle*/,
-          mrsRemoteVideoTrackHandle track_native_handle,
-          mrsTransceiverInteropHandle /*interop_handle*/,
-          mrsTransceiverHandle transceiver_native_handle) {
-        track_handle2 = track_native_handle;
-        transceiver_handle2 = transceiver_native_handle;
+          mrsRemoteVideoTrackHandle track_handle,
+          mrsTransceiverHandle transceiver_handle) {
+        track_handle2 = track_handle;
+        transceiver_handle2 = transceiver_handle;
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterVideoTrackAddedCallback(pair.pc2(),
@@ -201,22 +175,13 @@ TEST_P(VideoTrackTests, Simple) {
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
   mrsRemoteVideoTrackRemoveRef(track_handle2);
-  mrsTransceiverRemoveRef(transceiver_handle2);
   mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsTransceiverRemoveRef(transceiver_handle1);
 }
 
 TEST_P(VideoTrackTests, Muted) {
   mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
-
-  // In order to allow creating interop wrappers from native code, register the
-  // necessary interop callbacks.
-  mrsPeerConnectionInteropCallbacks interop{};
-  interop.remote_video_track_create_object = &FakeIterop_RemoteVideoTrackCreate;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionRegisterInteropCallbacks(pair.pc2(), &interop));
 
   // Grab the handle of the remote track from the remote peer (#2) via the
   // VideoTrackAdded callback.
@@ -225,12 +190,10 @@ TEST_P(VideoTrackTests, Muted) {
   Event track_added2_ev;
   VideoTrackAddedCallback track_added2_cb =
       [&track_handle2, &transceiver_handle2, &track_added2_ev](
-          mrsRemoteVideoTrackInteropHandle /*interop_handle*/,
-          mrsRemoteVideoTrackHandle track_native_handle,
-          mrsTransceiverInteropHandle /*interop_handle*/,
-          mrsTransceiverHandle transceiver_native_handle) {
-        track_handle2 = track_native_handle;
-        transceiver_handle2 = transceiver_native_handle;
+          mrsRemoteVideoTrackHandle track_handle,
+          mrsTransceiverHandle transceiver_handle) {
+        track_handle2 = track_handle;
+        transceiver_handle2 = transceiver_handle;
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterVideoTrackAddedCallback(pair.pc2(),
@@ -309,9 +272,7 @@ TEST_P(VideoTrackTests, Muted) {
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
   mrsRemoteVideoTrackRemoveRef(track_handle2);
-  mrsTransceiverRemoveRef(transceiver_handle2);
   mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsTransceiverRemoveRef(transceiver_handle1);
 }
 
 void MRS_CALL enumDeviceCallback(const char* id,
@@ -357,14 +318,14 @@ TEST_P(VideoTrackTests, Multi) {
   SimpleInterop simple_interop1;
   SimpleInterop simple_interop2;
 
-  mrsPeerConnectionInteropHandle h1 =
-      simple_interop1.CreateObject(ObjectType::kPeerConnection);
-  mrsPeerConnectionInteropHandle h2 =
-      simple_interop2.CreateObject(ObjectType::kPeerConnection);
-
   mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
-  LocalPeerPairRaii pair(pc_config, h1, h2);
+  LocalPeerPairRaii pair(pc_config);
+
+  // void* h1 = simple_interop1.CreateObject(ObjectType::kPeerConnection);
+  // void* h2 = simple_interop2.CreateObject(ObjectType::kPeerConnection);
+  // mrsPeerConnectionSetUserData(pair.pc1(), h1);
+  // mrsPeerConnectionSetUserData(pair.pc1(), h1);
 
   constexpr const int kNumTracks = 5;
   struct TestTrack {
@@ -378,20 +339,13 @@ TEST_P(VideoTrackTests, Multi) {
   };
   TestTrack tracks[kNumTracks];
 
-  // In order to allow creating interop wrappers from native code, register the
-  // necessary interop callbacks.
-  simple_interop1.Register(pair.pc1());
-  simple_interop2.Register(pair.pc2());
-
   // Grab the handle of the remote track from the remote peer (#2) via the
   // VideoTrackAdded callback.
   Semaphore track_added2_sem;
   std::atomic_int32_t track_id{0};
   VideoTrackAddedCallback track_added2_cb =
       [&track_added2_sem, &track_id, &tracks, kNumTracks](
-          mrsRemoteVideoTrackInteropHandle /*interop_handle*/,
           mrsRemoteVideoTrackHandle track_handle,
-          mrsTransceiverInteropHandle /*interop_handle*/,
           mrsTransceiverHandle transceiver_handle) {
         int id = track_id.fetch_add(1);
         ASSERT_LT(id, kNumTracks);
@@ -412,6 +366,7 @@ TEST_P(VideoTrackTests, Multi) {
 
   // Create local video tracks on the local peer (#1)
   mrsLocalVideoTrackFromExternalSourceInitConfig track_config{};
+  track_config.source_handle = source_handle1;
   int idx = 0;
   for (auto&& track : tracks) {
     std::stringstream strstr;
@@ -428,9 +383,9 @@ TEST_P(VideoTrackTests, Multi) {
     strstr.clear();
     strstr << "track_1_" << idx;
     str = strstr.str();  // keep alive
+    track_config.track_name = str.c_str();
     ASSERT_EQ(Result::kSuccess, mrsLocalVideoTrackCreateFromExternalSource(
-                                    source_handle1, &track_config, str.c_str(),
-                                    &track.local_handle));
+                                    &track_config, &track.local_handle));
     ASSERT_NE(nullptr, track.local_handle);
     ASSERT_EQ(Result::kSuccess,
               mrsTransceiverSetLocalVideoTrack(track.local_transceiver_handle,
@@ -491,27 +446,15 @@ TEST_P(VideoTrackTests, Multi) {
     mrsRemoteVideoTrackRegisterI420AFrameCallback(track.remote_handle, nullptr,
                                                   nullptr);
     mrsRemoteVideoTrackRemoveRef(track.remote_handle);
-    mrsTransceiverRemoveRef(track.remote_transceiver_handle);
     mrsLocalVideoTrackRemoveRef(track.local_handle);
-    mrsTransceiverRemoveRef(track.local_transceiver_handle);
   }
   mrsExternalVideoTrackSourceRemoveRef(source_handle1);
-
-  simple_interop1.Unregister(pair.pc1());
-  simple_interop2.Unregister(pair.pc2());
 }
 
 TEST_P(VideoTrackTests, ExternalI420) {
   mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
-
-  // In order to allow creating interop wrappers from native code, register the
-  // necessary interop callbacks.
-  mrsPeerConnectionInteropCallbacks interop{};
-  interop.remote_video_track_create_object = &FakeIterop_RemoteVideoTrackCreate;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionRegisterInteropCallbacks(pair.pc2(), &interop));
 
   // Grab the handle of the remote track from the remote peer (#2) via the
   // VideoTrackAdded callback.
@@ -520,12 +463,10 @@ TEST_P(VideoTrackTests, ExternalI420) {
   Event track_added2_ev;
   VideoTrackAddedCallback track_added2_cb =
       [&track_handle2, &transceiver_handle2, &track_added2_ev](
-          mrsRemoteVideoTrackInteropHandle /*interop_handle*/,
-          mrsRemoteVideoTrackHandle track_native_handle,
-          mrsTransceiverInteropHandle /*interop_handle*/,
-          mrsTransceiverHandle transceiver_native_handle) {
-        track_handle2 = track_native_handle;
-        transceiver_handle2 = transceiver_native_handle;
+          mrsRemoteVideoTrackHandle track_handle,
+          mrsTransceiverHandle transceiver_handle) {
+        track_handle2 = track_handle;
+        transceiver_handle2 = transceiver_handle;
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterVideoTrackAddedCallback(pair.pc2(),
@@ -555,10 +496,10 @@ TEST_P(VideoTrackTests, ExternalI420) {
   mrsLocalVideoTrackHandle track_handle1{};
   {
     mrsLocalVideoTrackFromExternalSourceInitConfig config{};
-    ASSERT_EQ(
-        mrsResult::kSuccess,
-        mrsLocalVideoTrackCreateFromExternalSource(
-            source_handle1, &config, "simulated_video_track", &track_handle1));
+    config.source_handle = source_handle1;
+    config.track_name = "simulated_video_track";
+    ASSERT_EQ(mrsResult::kSuccess, mrsLocalVideoTrackCreateFromExternalSource(
+                                       &config, &track_handle1));
     ASSERT_NE(nullptr, track_handle1);
     ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle1));
   }
@@ -607,9 +548,7 @@ TEST_P(VideoTrackTests, ExternalI420) {
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
   mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsTransceiverRemoveRef(transceiver_handle1);
   mrsRemoteVideoTrackRemoveRef(track_handle2);
-  mrsTransceiverRemoveRef(transceiver_handle2);
   mrsExternalVideoTrackSourceShutdown(source_handle1);
   mrsExternalVideoTrackSourceRemoveRef(source_handle1);
 }

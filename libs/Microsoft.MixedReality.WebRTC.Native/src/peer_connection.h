@@ -71,8 +71,7 @@ class PeerConnection : public TrackedObject {
   /// Create a new PeerConnection based on the given |config|.
   /// This serves as the constructor for PeerConnection.
   static ErrorOr<RefPtr<PeerConnection>> create(
-      const mrsPeerConnectionConfiguration& config,
-      mrsPeerConnectionInteropHandle interop_handle);
+      const mrsPeerConnectionConfiguration& config);
 
   /// Set the name of the peer connection. This is a friendly name opaque to the
   /// implementation, used mainly for debugging and logging.
@@ -212,6 +211,15 @@ class PeerConnection : public TrackedObject {
   // Transceivers
   //
 
+  /// Callback invoked when a transceiver is added to the peer connection.
+  using TransceiverAddedCallback = Callback<mrsTransceiverHandle>;
+
+  /// Register a custom TransceiverAddedCallback invoked when a transceiver is
+  /// is added to the peer connection. Only one callback can be registered at a
+  /// time.
+  virtual void RegisterTransceiverAddedCallback(
+      TransceiverAddedCallback&& callback) noexcept = 0;
+
   /// Add a new audio or video transceiver to the peer connection.
   virtual ErrorOr<RefPtr<Transceiver>> AddTransceiver(
       const mrsTransceiverInitConfig& config) noexcept = 0;
@@ -222,10 +230,8 @@ class PeerConnection : public TrackedObject {
 
   /// Callback invoked when a remote video track is added to the peer
   /// connection.
-  using VideoTrackAddedCallback = Callback<mrsRemoteVideoTrackInteropHandle,
-                                           mrsRemoteVideoTrackHandle,
-                                           mrsTransceiverInteropHandle,
-                                           mrsTransceiverHandle>;
+  using VideoTrackAddedCallback =
+      Callback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>;
 
   /// Register a custom |VideoTrackAddedCallback| invoked when a remote video
   /// track is added to the peer connection. Only one callback can be registered
@@ -235,10 +241,8 @@ class PeerConnection : public TrackedObject {
 
   /// Callback invoked when a remote video track is removed from the peer
   /// connection.
-  using VideoTrackRemovedCallback = Callback<mrsRemoteVideoTrackInteropHandle,
-                                             mrsRemoteVideoTrackHandle,
-                                             mrsTransceiverInteropHandle,
-                                             mrsTransceiverHandle>;
+  using VideoTrackRemovedCallback =
+      Callback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>;
 
   /// Register a custom |VideoTrackRemovedCallback| invoked when a remote video
   /// track is removed from the peer connection. Only one callback can be
@@ -280,10 +284,8 @@ class PeerConnection : public TrackedObject {
 
   /// Callback invoked when a remote audio track is added to the peer
   /// connection.
-  using AudioTrackAddedCallback = Callback<mrsRemoteAudioTrackInteropHandle,
-                                           mrsRemoteAudioTrackHandle,
-                                           mrsTransceiverInteropHandle,
-                                           mrsTransceiverHandle>;
+  using AudioTrackAddedCallback =
+      Callback<mrsRemoteAudioTrackHandle, mrsTransceiverHandle>;
 
   /// Register a custom AudioTrackAddedCallback invoked when a remote audio
   /// track is is added to the peer connection. Only one callback can be
@@ -293,10 +295,8 @@ class PeerConnection : public TrackedObject {
 
   /// Callback invoked when a remote audio track is removed from the peer
   /// connection.
-  using AudioTrackRemovedCallback = Callback<mrsRemoteAudioTrackInteropHandle,
-                                             mrsRemoteAudioTrackHandle,
-                                             mrsTransceiverInteropHandle,
-                                             mrsTransceiverHandle>;
+  using AudioTrackRemovedCallback =
+      Callback<mrsRemoteAudioTrackHandle, mrsTransceiverHandle>;
 
   /// Register a custom AudioTrackRemovedCallback invoked when a remote audio
   /// track is removed from the peer connection. Only one callback can be
@@ -310,13 +310,11 @@ class PeerConnection : public TrackedObject {
 
   /// Callback invoked when a new data channel is received from the remote peer
   /// and added locally.
-  using DataChannelAddedCallback =
-      Callback<mrsDataChannelInteropHandle, mrsDataChannelHandle>;
+  using DataChannelAddedCallback = Callback<mrsDataChannelHandle>;
 
   /// Callback invoked when a data channel is removed from the remote peer and
   /// removed locally.
-  using DataChannelRemovedCallback =
-      Callback<mrsDataChannelInteropHandle, mrsDataChannelHandle>;
+  using DataChannelRemovedCallback = Callback<mrsDataChannelHandle>;
 
   /// Register a custom callback invoked when a new data channel is received
   /// from the remote peer and added locally. Only one callback can be
@@ -336,8 +334,7 @@ class PeerConnection : public TrackedObject {
       int id,
       std::string_view label,
       bool ordered,
-      bool reliable,
-      mrsDataChannelInteropHandle dataChannelInteropHandle) noexcept = 0;
+      bool reliable) noexcept = 0;
 
   /// Close a given data channel and remove it from the peer connection.
   /// This invokes the DataChannelRemoved callback.
@@ -354,16 +351,6 @@ class PeerConnection : public TrackedObject {
 
   /// Internal use.
   void GetStats(webrtc::RTCStatsCollectorCallback* callback);
-
-  //
-  // Advanced use
-  //
-
-  /// Register some interop callbacks to allow the native implementation to
-  /// interact with the interop layer. This is called automatically; do not call
-  /// manually.
-  virtual mrsResult RegisterInteropCallbacks(
-      const mrsPeerConnectionInteropCallbacks& callbacks) noexcept = 0;
 
  protected:
   PeerConnection(RefPtr<GlobalFactory> global_factory);

@@ -11,11 +11,9 @@ namespace Microsoft::MixedReality::WebRTC {
 
 LocalAudioTrack::LocalAudioTrack(
     RefPtr<GlobalFactory> global_factory,
-    rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
-    mrsLocalAudioTrackInteropHandle interop_handle) noexcept
+    rtc::scoped_refptr<webrtc::AudioTrackInterface> track) noexcept
     : MediaTrack(std::move(global_factory), ObjectType::kLocalAudioTrack),
       track_(std::move(track)),
-      interop_handle_(interop_handle),
       track_name_(track_->id()) {
   RTC_CHECK(track_);
   kind_ = mrsTrackKind::kAudioTrack;
@@ -27,15 +25,13 @@ LocalAudioTrack::LocalAudioTrack(
     PeerConnection& owner,
     Transceiver* transceiver,
     rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
-    rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
-    mrsLocalAudioTrackInteropHandle interop_handle) noexcept
+    rtc::scoped_refptr<webrtc::RtpSenderInterface> sender) noexcept
     : MediaTrack(std::move(global_factory),
                  ObjectType::kLocalAudioTrack,
                  owner),
       track_(std::move(track)),
       sender_(std::move(sender)),
       transceiver_(transceiver),
-      interop_handle_(interop_handle),
       track_name_(track_->id()) {
   RTC_CHECK(owner_);
   RTC_CHECK(transceiver_);

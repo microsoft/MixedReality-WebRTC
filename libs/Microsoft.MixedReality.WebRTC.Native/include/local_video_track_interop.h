@@ -10,10 +10,6 @@ extern "C" {
 /// Configuration for opening a local video capture device and creating a local
 /// video track.
 struct mrsLocalVideoTrackInitConfig {
-  /// Handle of the local video track interop wrapper, if any, which will be
-  /// associated with the native local video track object.
-  mrsLocalVideoTrackInteropHandle track_interop_handle{};
-
   /// Unique identifier of the video capture device to select, as returned by
   /// |mrsEnumVideoCaptureDevicesAsync|, or a null or empty string to select the
   /// default device.
@@ -61,9 +57,8 @@ struct mrsLocalVideoTrackInitConfig {
 
 /// Configuration for creating a local video track from an external source.
 struct mrsLocalVideoTrackFromExternalSourceInitConfig {
-  /// Handle of the local video track interop wrapper, if any, which will be
-  /// associated with the native local video track object.
-  mrsLocalVideoTrackInteropHandle track_interop_handle{};
+  mrsExternalVideoTrackSourceHandle source_handle;
+  const char* track_name;
 };
 
 /// Add a reference to the native object associated with the given handle.
@@ -84,9 +79,7 @@ MRS_API mrsResult MRS_CALL mrsLocalVideoTrackCreateFromDevice(
 
 /// Create a new local video track by using an existing external video source.
 MRS_API mrsResult MRS_CALL mrsLocalVideoTrackCreateFromExternalSource(
-    mrsExternalVideoTrackSourceHandle source_handle,
     const mrsLocalVideoTrackFromExternalSourceInitConfig* config,
-    const char* track_name,
     mrsLocalVideoTrackHandle* track_handle_out) noexcept;
 
 /// Register a custom callback to be called when the local video track captured

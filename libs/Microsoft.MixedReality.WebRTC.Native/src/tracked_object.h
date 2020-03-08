@@ -48,9 +48,18 @@ class TrackedObject : public RefCountedBase {
   /// limitation.
   virtual std::string GetName() const = 0;
 
+  [[nodiscard]] constexpr void* GetUserData() const noexcept {
+    return user_data_;
+  }
+
+  constexpr void SetUserData(void* user_data) noexcept {
+    user_data_ = user_data;
+  }
+
  protected:
   RefPtr<GlobalFactory> global_factory_;
   const ObjectType object_type_;
+  void* user_data_{nullptr};
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC
