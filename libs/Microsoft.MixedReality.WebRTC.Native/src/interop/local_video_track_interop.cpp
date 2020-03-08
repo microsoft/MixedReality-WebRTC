@@ -36,24 +36,22 @@ mrsLocalVideoTrackRemoveRef(mrsLocalVideoTrackHandle handle) noexcept {
 // mrsLocalVideoTrackCreateFromDevice -> interop_api.cpp
 
 mrsResult MRS_CALL mrsLocalVideoTrackCreateFromExternalSource(
-    mrsExternalVideoTrackSourceHandle source_handle,
     const mrsLocalVideoTrackFromExternalSourceInitConfig* config,
-    const char* track_name,
     mrsLocalVideoTrackHandle* track_handle_out) noexcept {
-  if (!track_handle_out) {
+  if (!config || !track_handle_out || !config->source_handle) {
     return Result::kInvalidParameter;
   }
   *track_handle_out = nullptr;
 
   auto track_source =
-      static_cast<detail::ExternalVideoTrackSourceImpl*>(source_handle);
+      static_cast<detail::ExternalVideoTrackSourceImpl*>(config->source_handle);
   if (!track_source) {
     return Result::kInvalidNativeHandle;
   }
 
   std::string track_name_str;
-  if (!IsStringNullOrEmpty(track_name)) {
-    track_name_str = track_name;
+  if (!IsStringNullOrEmpty(config->track_name)) {
+    track_name_str = config->track_name;
   } else {
     track_name_str = "external_track";
   }
@@ -75,8 +73,7 @@ mrsResult MRS_CALL mrsLocalVideoTrackCreateFromExternalSource(
 
   // Create the video track wrapper
   RefPtr<LocalVideoTrack> track =
-      new LocalVideoTrack(std::move(global_factory), std::move(video_track),
-                          config->track_interop_handle);
+      new LocalVideoTrack(std::move(global_factory), std::move(video_track));
   *track_handle_out = track.release();
   return Result::kSuccess;
 }

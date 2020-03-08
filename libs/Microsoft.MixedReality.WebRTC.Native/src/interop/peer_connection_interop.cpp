@@ -54,7 +54,6 @@ mrsPeerConnectionAddTransceiver(mrsPeerConnectionHandle peer_handle,
     if (result.ok()) {
       auto transceiver = result.MoveValue();
       *handle = transceiver->asHandle();
-      transceiver.release();  // handles now implicitly owns a reference
       return Result::kSuccess;
     }
     return result.error().result();

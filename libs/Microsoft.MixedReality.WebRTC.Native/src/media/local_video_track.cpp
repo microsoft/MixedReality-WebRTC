@@ -11,11 +11,9 @@ namespace Microsoft::MixedReality::WebRTC {
 
 LocalVideoTrack::LocalVideoTrack(
     RefPtr<GlobalFactory> global_factory,
-    rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
-    mrsLocalVideoTrackInteropHandle interop_handle) noexcept
+    rtc::scoped_refptr<webrtc::VideoTrackInterface> track) noexcept
     : MediaTrack(std::move(global_factory), ObjectType::kLocalVideoTrack),
       track_(std::move(track)),
-      interop_handle_(interop_handle),
       track_name_(track_->id()) {
   RTC_CHECK(track_);
   kind_ = mrsTrackKind::kVideoTrack;
@@ -29,15 +27,13 @@ LocalVideoTrack::LocalVideoTrack(
     PeerConnection& owner,
     Transceiver* transceiver,
     rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
-    rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
-    mrsLocalVideoTrackInteropHandle interop_handle) noexcept
+    rtc::scoped_refptr<webrtc::RtpSenderInterface> sender) noexcept
     : MediaTrack(std::move(global_factory),
                  ObjectType::kLocalVideoTrack,
                  owner),
       track_(std::move(track)),
       sender_(std::move(sender)),
       transceiver_(transceiver),
-      interop_handle_(interop_handle),
       track_name_(track_->id()) {
   RTC_CHECK(owner_);
   RTC_CHECK(transceiver_);

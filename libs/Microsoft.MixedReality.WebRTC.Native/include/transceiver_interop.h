@@ -14,14 +14,6 @@ using mrsTransceiverStateUpdatedCallback =
                     mrsTransceiverOptDirection negotiated_direction,
                     mrsTransceiverDirection desired_direction);
 
-/// Add a reference to the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsTransceiverAddRef(mrsTransceiverHandle handle) noexcept;
-
-/// Remove a reference from the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsTransceiverRemoveRef(mrsTransceiverHandle handle) noexcept;
-
 MRS_API void MRS_CALL mrsTransceiverRegisterStateUpdatedCallback(
     mrsTransceiverHandle handle,
     mrsTransceiverStateUpdatedCallback callback,

@@ -23,34 +23,9 @@ class SimpleInterop {
     uint32_t id_;
   };
 
-  void Register(mrsPeerConnectionHandle pc) noexcept;
-  void Unregister(mrsPeerConnectionHandle pc) noexcept;
-
   void* CreateObject(ObjectType type) noexcept;
   void DestroyObject(void* obj) noexcept;
   bool ObjectExists(ObjectType type, void* obj) noexcept;
-
-  mrsRemoteAudioTrackInteropHandle RemoteAudioTrackCreate(
-      mrsPeerConnectionInteropHandle parent,
-      const mrsRemoteAudioTrackConfig& config) noexcept;
-  mrsRemoteVideoTrackInteropHandle RemoteVideoTrackCreate(
-      mrsPeerConnectionInteropHandle parent,
-      const mrsRemoteVideoTrackConfig& config) noexcept;
-  mrsDataChannelInteropHandle DataChannelCreate(
-      mrsPeerConnectionInteropHandle parent,
-      const mrsDataChannelConfig& config,
-      mrsDataChannelCallbacks* callbacks) noexcept;
-
-  static mrsRemoteAudioTrackInteropHandle MRS_CALL RemoteAudioTrackCreateStatic(
-      mrsPeerConnectionInteropHandle parent,
-      const mrsRemoteAudioTrackConfig& config) noexcept;
-  static mrsRemoteVideoTrackInteropHandle MRS_CALL RemoteVideoTrackCreateStatic(
-      mrsPeerConnectionInteropHandle parent,
-      const mrsRemoteVideoTrackConfig& config) noexcept;
-  static mrsDataChannelInteropHandle MRS_CALL
-  DataChannelCreateStatic(mrsPeerConnectionInteropHandle parent,
-                          const mrsDataChannelConfig& config,
-                          mrsDataChannelCallbacks* callbacks) noexcept;
 
   std::mutex objects_map_mutex_;
   std::unordered_map<void*, std::unique_ptr<Handle>> objects_map_;

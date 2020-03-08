@@ -14,15 +14,13 @@ RemoteVideoTrack::RemoteVideoTrack(
     PeerConnection& owner,
     Transceiver* transceiver,
     rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
-    rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
-    mrsRemoteVideoTrackInteropHandle interop_handle) noexcept
+    rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) noexcept
     : MediaTrack(std::move(global_factory),
                  ObjectType::kRemoteVideoTrack,
                  owner),
       track_(std::move(track)),
       receiver_(std::move(receiver)),
       transceiver_(transceiver),
-      interop_handle_(interop_handle),
       track_name_(track_->id()) {
   RTC_CHECK(owner_);
   RTC_CHECK(track_);

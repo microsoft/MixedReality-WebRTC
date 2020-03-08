@@ -33,12 +33,12 @@ class Transceiver;
 /// connection. The local peer only has limited control over the track.
 class RemoteVideoTrack : public VideoFrameObserver, public MediaTrack {
  public:
-  RemoteVideoTrack(RefPtr<GlobalFactory> global_factory,
-                   PeerConnection& owner,
-                   Transceiver* transceiver,
-                   rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
-                   rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
-                   mrsRemoteVideoTrackInteropHandle interop_handle) noexcept;
+  RemoteVideoTrack(
+      RefPtr<GlobalFactory> global_factory,
+      PeerConnection& owner,
+      Transceiver* transceiver,
+      rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
+      rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) noexcept;
   ~RemoteVideoTrack() override;
 
   /// Get the name of the remote video track.
@@ -69,11 +69,6 @@ class RemoteVideoTrack : public VideoFrameObserver, public MediaTrack {
     return impl();
   }
 
-  [[nodiscard]] mrsRemoteVideoTrackInteropHandle GetInteropHandle() const
-      noexcept {
-    return interop_handle_;
-  }
-
   // Automatically called - do not use.
   void OnTrackRemoved(PeerConnection& owner);
 
@@ -89,9 +84,6 @@ class RemoteVideoTrack : public VideoFrameObserver, public MediaTrack {
   /// Note that unlike local tracks, this is never NULL since the remote track
   /// gets destroyed when detached from the transceiver.
   Transceiver* transceiver_{nullptr};
-
-  /// Optional interop handle, if associated with an interop wrapper.
-  mrsRemoteVideoTrackInteropHandle interop_handle_{};
 
   /// Cached track name, to avoid dispatching on signaling thread.
   const std::string track_name_;

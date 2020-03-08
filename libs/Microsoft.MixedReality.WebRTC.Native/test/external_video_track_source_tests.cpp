@@ -118,10 +118,7 @@ void ValidateQuadTestFrame(const void* data,
 
 // PeerConnectionVideoTrackAddedCallback
 using VideoTrackAddedCallback =
-    InteropCallback<mrsRemoteVideoTrackInteropHandle,
-                    mrsRemoteVideoTrackHandle,
-                    mrsTransceiverInteropHandle,
-                    mrsTransceiverHandle>;
+    InteropCallback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>;
 
 // mrsArgb32VideoFrameCallback
 using Argb32VideoFrameCallback = InteropCallback<const mrsArgb32VideoFrame&>;
@@ -145,9 +142,7 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
   Event track_added2_ev;
   VideoTrackAddedCallback track_added2_cb =
       [&track_handle2, &transceiver_handle2, &track_added2_ev](
-          mrsRemoteVideoTrackInteropHandle /*interop_handle*/,
           mrsRemoteVideoTrackHandle track_handle,
-          mrsTransceiverInteropHandle /*interop_handle*/,
           mrsTransceiverHandle transceiver_handle) {
         track_handle2 = track_handle;
         transceiver_handle2 = transceiver_handle;
@@ -168,9 +163,10 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
   mrsLocalVideoTrackHandle track_handle1{};
   {
     mrsLocalVideoTrackFromExternalSourceInitConfig source_config{};
-    ASSERT_EQ(mrsResult::kSuccess,
-              mrsLocalVideoTrackCreateFromExternalSource(
-                  source_handle1, &source_config, "gen_track", &track_handle1));
+    source_config.source_handle = source_handle1;
+    source_config.track_name = "gen_track";
+    ASSERT_EQ(mrsResult::kSuccess, mrsLocalVideoTrackCreateFromExternalSource(
+                                       &source_config, &track_handle1));
     ASSERT_NE(nullptr, track_handle1);
     ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle1));
   }
@@ -221,9 +217,7 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
   mrsRemoteVideoTrackRegisterArgb32FrameCallback(track_handle2, nullptr,
                                                  nullptr);
   mrsRemoteVideoTrackRemoveRef(track_handle2);
-  mrsTransceiverRemoveRef(transceiver_handle2);
   mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsTransceiverRemoveRef(transceiver_handle1);
   mrsExternalVideoTrackSourceShutdown(source_handle1);
   mrsExternalVideoTrackSourceRemoveRef(source_handle1);
 }

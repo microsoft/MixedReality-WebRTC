@@ -40,17 +40,17 @@ class Transceiver;
 class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
  public:
   /// Constructor for a track not added to any peer connection.
-  LocalAudioTrack(RefPtr<GlobalFactory> global_factory,
-                  rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
-                  mrsLocalAudioTrackInteropHandle interop_handle) noexcept;
+  LocalAudioTrack(
+      RefPtr<GlobalFactory> global_factory,
+      rtc::scoped_refptr<webrtc::AudioTrackInterface> track) noexcept;
 
   /// Constructor for a track added to a peer connection.
-  LocalAudioTrack(RefPtr<GlobalFactory> global_factory,
-                  PeerConnection& owner,
-                  Transceiver* transceiver,
-                  rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
-                  rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
-                  mrsLocalAudioTrackInteropHandle interop_handle) noexcept;
+  LocalAudioTrack(
+      RefPtr<GlobalFactory> global_factory,
+      PeerConnection& owner,
+      Transceiver* transceiver,
+      rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
+      rtc::scoped_refptr<webrtc::RtpSenderInterface> sender) noexcept;
 
   ~LocalAudioTrack() override;
 
@@ -82,11 +82,6 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
     return impl();
   }
 
-  [[nodiscard]] mrsLocalAudioTrackInteropHandle GetInteropHandle() const
-      noexcept {
-    return interop_handle_;
-  }
-
   /// Internal callback on added to a peer connection to update the internal
   /// state of the object.
   void OnAddedToPeerConnection(
@@ -113,9 +108,6 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// Weak back-pointer to the Transceiver this track is associated with, if
   /// any. This avoids a circular reference with the transceiver itself.
   Transceiver* transceiver_{nullptr};
-
-  /// Optional interop handle, if associated with an interop wrapper.
-  mrsLocalAudioTrackInteropHandle interop_handle_{};
 
   /// Cached track name, to avoid dispatching on signaling thread.
   const std::string track_name_;
