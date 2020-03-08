@@ -474,6 +474,23 @@ TYPED_TEST_P(TransceiverTests, SetLocalTrack_InvalidHandle) {
   MediaTrait<TypeParam::MediaType>::Test_SetLocalTrack_InvalidHandle();
 }
 
+TYPED_TEST_P(TransceiverTests, UserData) {
+  using Media = MediaTrait<TypeParam::MediaType>;
+  mrsPeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = TypeParam::kSdpSemantic;
+  LocalPeerPairRaii pair(pc_config);
+  mrsTransceiverHandle transceiver_handle1{};
+  mrsTransceiverInitConfig transceiver_config{};
+  transceiver_config.media_kind = TypeParam::kMediaKind;
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                            &transceiver_handle1));
+  ASSERT_NE(nullptr, transceiver_handle1);
+  ASSERT_EQ(nullptr, mrsTransceiverGetUserData(transceiver_handle1));
+  mrsTransceiverSetUserData(transceiver_handle1, this);
+  ASSERT_EQ(this, mrsTransceiverGetUserData(transceiver_handle1));
+}
+
 // Note: All tests must be listed in this macro
 REGISTER_TYPED_TEST_CASE_P(TransceiverTests,
                            InvalidName,
@@ -481,7 +498,8 @@ REGISTER_TYPED_TEST_CASE_P(TransceiverTests,
                            SetDirection_InvalidHandle,
                            SetLocalTrack_InvalidHandle,
                            SetLocalTrackSendRecv,
-                           SetLocalTrackRecvOnly);
+                           SetLocalTrackRecvOnly,
+                           UserData);
 
 using TestTypes = ::testing::Types<TestParams<AudioTest, SdpPlanB>,
                                    TestParams<AudioTest, SdpUnifiedPlan>,

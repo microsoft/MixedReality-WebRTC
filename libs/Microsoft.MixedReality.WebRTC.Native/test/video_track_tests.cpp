@@ -312,6 +312,8 @@ TEST_F(VideoTrackTests, DeviceIdInvalid) {
   ASSERT_EQ(nullptr, track_handle);
 }
 
+#endif  // MRSW_EXCLUDE_DEVICE_TESTS
+
 TEST_P(VideoTrackTests, Multi) {
   SimpleInterop simple_interop1;
   SimpleInterop simple_interop2;
@@ -464,6 +466,13 @@ TEST_P(VideoTrackTests, ExternalI420) {
           mrsTransceiverHandle transceiver_handle) {
         track_handle2 = track_handle;
         transceiver_handle2 = transceiver_handle;
+        // Test user data here
+        {
+          ASSERT_EQ(nullptr, mrsRemoteVideoTrackGetUserData(track_handle2));
+          mrsRemoteVideoTrackSetUserData(track_handle2, transceiver_handle2);
+          ASSERT_EQ(transceiver_handle2,
+                    mrsRemoteVideoTrackGetUserData(track_handle2));
+        }
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterVideoTrackAddedCallback(pair.pc2(),
@@ -548,5 +557,3 @@ TEST_P(VideoTrackTests, ExternalI420) {
   mrsExternalVideoTrackSourceShutdown(source_handle1);
   mrsExternalVideoTrackSourceRemoveRef(source_handle1);
 }
-
-#endif  // MRSW_EXCLUDE_DEVICE_TESTS

@@ -14,6 +14,21 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
+MRS_API void MRS_CALL mrsTransceiverSetUserData(mrsTransceiverHandle handle,
+                                                void* user_data) noexcept {
+  if (auto transceiver = static_cast<Transceiver*>(handle)) {
+    transceiver->SetUserData(user_data);
+  }
+}
+
+MRS_API void* MRS_CALL
+mrsTransceiverGetUserData(mrsTransceiverHandle handle) noexcept {
+  if (auto transceiver = static_cast<Transceiver*>(handle)) {
+    return transceiver->GetUserData();
+  }
+  return nullptr;
+}
+
 void MRS_CALL mrsTransceiverRegisterStateUpdatedCallback(
     mrsTransceiverHandle handle,
     mrsTransceiverStateUpdatedCallback callback,
