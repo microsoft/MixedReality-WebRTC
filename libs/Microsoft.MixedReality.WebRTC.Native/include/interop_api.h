@@ -620,7 +620,7 @@ struct mrsTransceiverInitConfig {
   const char* name = nullptr;
 
   /// Kind of media the transceiver transports.
-  mrsMediaKind media_kind{};
+  mrsMediaKind media_kind{-1};  // defaults to invalid value to catch errors
 
   /// Initial desired direction of the transceiver media when created.
   mrsTransceiverDirection desired_direction =
