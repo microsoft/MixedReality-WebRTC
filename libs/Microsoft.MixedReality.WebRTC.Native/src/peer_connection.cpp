@@ -172,6 +172,10 @@ cricket::MediaType MediaKindToRtc(mrsMediaKind media_kind) {
     default:
       RTC_LOG(LS_ERROR) << "Unknown media kind, expected audio or video.";
       RTC_NOTREACHED();
+      // Silence error about uninitialized variable when assigning the result of
+      // this function, and return some visibly invalid value (mrsMediaKind is
+      // audio or video only).
+      return cricket::MediaType::MEDIA_TYPE_DATA;
   }
 }
 
@@ -573,8 +577,21 @@ class PeerConnectionImpl : public PeerConnection,
     using RemoteMediaTrackT = RemoteAudioTrack;
     using RemoteMediaTrackHandleT = mrsRemoteAudioTrackHandle;
     using RemoteMediaTrackConfigT = mrsRemoteAudioTrackConfig;
-    using MediaTrackCallbackT =
+    using MediaTrackAddedCallbackT =
+        Callback<const mrsRemoteAudioTrackAddedInfo*>;
+    using MediaTrackRemovedCallbackT =
         Callback<mrsRemoteAudioTrackHandle, mrsTransceiverHandle>;
+    static void ExecTrackAdded(
+        mrsRemoteAudioTrackHandle track_handle,
+        mrsTransceiverHandle transceiver_handle,
+        const char* track_name,
+        const MediaTrackAddedCallbackT& callback) noexcept {
+      mrsRemoteAudioTrackAddedInfo info{};
+      info.track_handle = track_handle;
+      info.audio_transceiver_handle = transceiver_handle;
+      info.track_name = track_name;
+      callback(&info);
+    }
   };
 
   template <>
@@ -584,8 +601,21 @@ class PeerConnectionImpl : public PeerConnection,
     using RemoteMediaTrackT = RemoteVideoTrack;
     using RemoteMediaTrackHandleT = mrsRemoteVideoTrackHandle;
     using RemoteMediaTrackConfigT = mrsRemoteVideoTrackConfig;
-    using MediaTrackCallbackT =
+    using MediaTrackAddedCallbackT =
+        Callback<const mrsRemoteVideoTrackAddedInfo*>;
+    using MediaTrackRemovedCallbackT =
         Callback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>;
+    static void ExecTrackAdded(
+        mrsRemoteVideoTrackHandle track_handle,
+        mrsTransceiverHandle transceiver_handle,
+        const char* track_name,
+        const MediaTrackAddedCallbackT& callback) noexcept {
+      mrsRemoteVideoTrackAddedInfo info{};
+      info.track_handle = track_handle;
+      info.audio_transceiver_handle = transceiver_handle;
+      info.track_name = track_name;
+      callback(&info);
+    }
   };
 
   /// Create a new remote media (audio or video) track wrapper for an existing
@@ -595,7 +625,8 @@ class PeerConnectionImpl : public PeerConnection,
   void AddRemoteMediaTrack(
       rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
       webrtc::RtpReceiverInterface* receiver,
-      typename MediaTrait<MEDIA_KIND>::MediaTrackCallbackT* track_added_cb) {
+      typename MediaTrait<MEDIA_KIND>::MediaTrackAddedCallbackT*
+          track_added_cb) {
     using Media = MediaTrait<MEDIA_KIND>;
 
     rtc::scoped_refptr<typename Media::RtcMediaTrackInterfaceT> media_track(
@@ -628,7 +659,8 @@ class PeerConnectionImpl : public PeerConnection,
       // Read the function pointer inside the lock to avoid race condition
       auto cb = *track_added_cb;
       if (cb) {
-        cb(remote_media_track->GetHandle(), transceiver->GetHandle());
+        Media::ExecTrackAdded(remote_media_track.get(), transceiver,
+                              remote_media_track->GetName().c_str(), cb);
       }
     }
   }
@@ -639,7 +671,8 @@ class PeerConnectionImpl : public PeerConnection,
   template <mrsMediaKind MEDIA_KIND>
   void RemoveRemoteMediaTrack(
       webrtc::RtpReceiverInterface* receiver,
-      typename MediaTrait<MEDIA_KIND>::MediaTrackCallbackT* track_removed_cb) {
+      typename MediaTrait<MEDIA_KIND>::MediaTrackRemovedCallbackT*
+          track_removed_cb) {
     using Media = MediaTrait<MEDIA_KIND>;
 
     rtc::CritScope tracks_lock(&transceivers_mutex_);

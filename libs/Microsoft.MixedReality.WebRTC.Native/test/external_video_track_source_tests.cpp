@@ -118,7 +118,7 @@ void ValidateQuadTestFrame(const void* data,
 
 // PeerConnectionVideoTrackAddedCallback
 using VideoTrackAddedCallback =
-    InteropCallback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>;
+    InteropCallback<const mrsRemoteVideoTrackAddedInfo*>;
 
 // mrsArgb32VideoFrameCallback
 using Argb32VideoFrameCallback = InteropCallback<const mrsArgb32VideoFrame&>;
@@ -141,11 +141,10 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
   mrsTransceiverHandle transceiver_handle2{};
   Event track_added2_ev;
   VideoTrackAddedCallback track_added2_cb =
-      [&track_handle2, &transceiver_handle2, &track_added2_ev](
-          mrsRemoteVideoTrackHandle track_handle,
-          mrsTransceiverHandle transceiver_handle) {
-        track_handle2 = track_handle;
-        transceiver_handle2 = transceiver_handle;
+      [&track_handle2, &transceiver_handle2,
+       &track_added2_ev](const mrsRemoteVideoTrackAddedInfo* info) {
+        track_handle2 = info->track_handle;
+        transceiver_handle2 = info->audio_transceiver_handle;
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterVideoTrackAddedCallback(pair.pc2(),
