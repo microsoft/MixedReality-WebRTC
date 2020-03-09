@@ -22,7 +22,7 @@ class VideoTrackTests : public TestUtils::TestBase,
 
 // PeerConnectionVideoTrackAddedCallback
 using VideoTrackAddedCallback =
-    InteropCallback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>;
+    InteropCallback<const mrsRemoteVideoTrackAddedInfo*>;
 
 // PeerConnectionI420VideoFrameCallback
 using I420VideoFrameCallback = InteropCallback<const I420AVideoFrame&>;
@@ -53,11 +53,10 @@ TEST_P(VideoTrackTests, Simple) {
   mrsTransceiverHandle transceiver_handle2{};
   Event track_added2_ev;
   VideoTrackAddedCallback track_added2_cb =
-      [&track_handle2, &transceiver_handle2, &track_added2_ev](
-          mrsRemoteVideoTrackHandle track_handle,
-          mrsTransceiverHandle transceiver_handle) {
-        track_handle2 = track_handle;
-        transceiver_handle2 = transceiver_handle;
+      [&track_handle2, &transceiver_handle2,
+       &track_added2_ev](const mrsRemoteVideoTrackAddedInfo* info) {
+        track_handle2 = info->track_handle;
+        transceiver_handle2 = info->audio_transceiver_handle;
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterVideoTrackAddedCallback(pair.pc2(),
@@ -188,11 +187,10 @@ TEST_P(VideoTrackTests, Muted) {
   mrsTransceiverHandle transceiver_handle2{};
   Event track_added2_ev;
   VideoTrackAddedCallback track_added2_cb =
-      [&track_handle2, &transceiver_handle2, &track_added2_ev](
-          mrsRemoteVideoTrackHandle track_handle,
-          mrsTransceiverHandle transceiver_handle) {
-        track_handle2 = track_handle;
-        transceiver_handle2 = transceiver_handle;
+      [&track_handle2, &transceiver_handle2,
+       &track_added2_ev](const mrsRemoteVideoTrackAddedInfo* info) {
+        track_handle2 = info->track_handle;
+        transceiver_handle2 = info->audio_transceiver_handle;
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterVideoTrackAddedCallback(pair.pc2(),
@@ -344,13 +342,12 @@ TEST_P(VideoTrackTests, Multi) {
   Semaphore track_added2_sem;
   std::atomic_int32_t track_id{0};
   VideoTrackAddedCallback track_added2_cb =
-      [&track_added2_sem, &track_id, &tracks, kNumTracks](
-          mrsRemoteVideoTrackHandle track_handle,
-          mrsTransceiverHandle transceiver_handle) {
+      [&track_added2_sem, &track_id, &tracks,
+       kNumTracks](const mrsRemoteVideoTrackAddedInfo* info) {
         int id = track_id.fetch_add(1);
         ASSERT_LT(id, kNumTracks);
-        tracks[id].remote_handle = track_handle;
-        tracks[id].remote_transceiver_handle = transceiver_handle;
+        tracks[id].remote_handle = info->track_handle;
+        tracks[id].remote_transceiver_handle = info->audio_transceiver_handle;
         track_added2_sem.Release();
       };
   mrsPeerConnectionRegisterVideoTrackAddedCallback(pair.pc2(),
@@ -461,11 +458,10 @@ TEST_P(VideoTrackTests, ExternalI420) {
   mrsTransceiverHandle transceiver_handle2{};
   Event track_added2_ev;
   VideoTrackAddedCallback track_added2_cb =
-      [&track_handle2, &transceiver_handle2, &track_added2_ev](
-          mrsRemoteVideoTrackHandle track_handle,
-          mrsTransceiverHandle transceiver_handle) {
-        track_handle2 = track_handle;
-        transceiver_handle2 = transceiver_handle;
+      [&track_handle2, &transceiver_handle2,
+       &track_added2_ev](const mrsRemoteVideoTrackAddedInfo* info) {
+        track_handle2 = info->track_handle;
+        transceiver_handle2 = info->audio_transceiver_handle;
         // Test user data here
         {
           ASSERT_EQ(nullptr, mrsRemoteVideoTrackGetUserData(track_handle2));

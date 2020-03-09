@@ -212,15 +212,39 @@ enum class mrsTrackKind : uint32_t {
   kDataTrack = 3,
 };
 
+/// Information about a newly added remote audio track provided to the audio
+/// track added callback.
+struct mrsRemoteAudioTrackAddedInfo {
+  /// Handle of the newly-created remote audio track.
+  mrsRemoteAudioTrackHandle track_handle;
+
+  /// Handle of the audio transeiver the track was added to.
+  mrsTransceiverHandle audio_transceiver_handle;
+
+  /// Name of the newly-added remote audio track.
+  const char* track_name;
+};
+
+/// Information about a newly added remote video track provided to the video
+/// track added callback.
+struct mrsRemoteVideoTrackAddedInfo {
+  /// Handle of the newly-created remote video track.
+  mrsRemoteVideoTrackHandle track_handle;
+
+  /// Handle of the video transeiver the track was added to.
+  mrsTransceiverHandle audio_transceiver_handle;
+
+  /// Name of the newly-added remote video track.
+  const char* track_name;
+};
+
 /// Callback fired when a remote audio track is added to a connection.
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsLocalAudioTrackRemoveRef()| and
 /// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
 using mrsPeerConnectionAudioTrackAddedCallback =
-    void(MRS_CALL*)(void* user_data,
-                    mrsRemoteAudioTrackHandle audio_track,
-                    mrsTransceiverHandle transceiver);
+    void(MRS_CALL*)(void* user_data, const mrsRemoteAudioTrackAddedInfo* info);
 
 /// Callback fired when a remote audio track is removed from a connection.
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
@@ -238,9 +262,7 @@ using mrsPeerConnectionAudioTrackRemovedCallback =
 /// released with |mrsLocalVideoTrackRemoveRef()| and
 /// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
 using mrsPeerConnectionVideoTrackAddedCallback =
-    void(MRS_CALL*)(void* user_data,
-                    mrsRemoteVideoTrackHandle video_track,
-                    mrsTransceiverHandle transceiver);
+    void(MRS_CALL*)(void* user_data, const mrsRemoteVideoTrackAddedInfo* info);
 
 /// Callback fired when a remote video track is removed from a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the

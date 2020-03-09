@@ -627,8 +627,7 @@ void MRS_CALL mrsPeerConnectionRegisterAudioTrackAddedCallback(
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterAudioTrackAddedCallback(
-        Callback<mrsRemoteAudioTrackHandle, mrsTransceiverHandle>{callback,
-                                                                  user_data});
+        Callback<const mrsRemoteAudioTrackAddedInfo*>{callback, user_data});
   }
 }
 
@@ -649,8 +648,7 @@ void MRS_CALL mrsPeerConnectionRegisterVideoTrackAddedCallback(
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterVideoTrackAddedCallback(
-        Callback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>{callback,
-                                                                  user_data});
+        Callback<const mrsRemoteVideoTrackAddedInfo*>{callback, user_data});
   }
 }
 

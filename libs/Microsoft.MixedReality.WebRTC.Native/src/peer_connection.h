@@ -232,8 +232,7 @@ class PeerConnection : public TrackedObject {
 
   /// Callback invoked when a remote video track is added to the peer
   /// connection.
-  using VideoTrackAddedCallback =
-      Callback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>;
+  using VideoTrackAddedCallback = Callback<const mrsRemoteVideoTrackAddedInfo*>;
 
   /// Register a custom |VideoTrackAddedCallback| invoked when a remote video
   /// track is added to the peer connection. Only one callback can be registered
@@ -286,8 +285,7 @@ class PeerConnection : public TrackedObject {
 
   /// Callback invoked when a remote audio track is added to the peer
   /// connection.
-  using AudioTrackAddedCallback =
-      Callback<mrsRemoteAudioTrackHandle, mrsTransceiverHandle>;
+  using AudioTrackAddedCallback = Callback<const mrsRemoteAudioTrackAddedInfo*>;
 
   /// Register a custom AudioTrackAddedCallback invoked when a remote audio
   /// track is is added to the peer connection. Only one callback can be

@@ -24,7 +24,7 @@ namespace {
 
 // PeerConnectionAudioTrackAddedCallback
 using AudioTrackAddedCallback =
-    InteropCallback<mrsRemoteAudioTrackHandle, mrsTransceiverHandle>;
+    InteropCallback<const mrsRemoteAudioTrackAddedInfo*>;
 
 // PeerConnectionAudioFrameCallback
 using AudioFrameCallback = InteropCallback<const AudioFrame&>;
@@ -101,11 +101,10 @@ TEST_P(AudioTrackTests, Simple) {
   mrsRemoteAudioTrackHandle audio_track2{};
   Event track_added2_ev;
   AudioTrackAddedCallback track_added2_cb =
-      [&audio_track2, &audio_transceiver2, &track_added2_ev](
-          mrsRemoteAudioTrackHandle track_handle,
-          mrsTransceiverHandle transceiver_handle) {
-        audio_track2 = track_handle;
-        audio_transceiver2 = transceiver_handle;
+      [&audio_track2, &audio_transceiver2,
+       &track_added2_ev](const mrsRemoteAudioTrackAddedInfo* info) {
+        audio_track2 = info->track_handle;
+        audio_transceiver2 = info->audio_transceiver_handle;
         // Test user data here
         {
           ASSERT_EQ(nullptr, mrsRemoteAudioTrackGetUserData(audio_track2));
@@ -256,11 +255,10 @@ TEST_P(AudioTrackTests, Muted) {
   mrsRemoteAudioTrackHandle audio_track2{};
   Event track_added2_ev;
   AudioTrackAddedCallback track_added2_cb =
-      [&audio_track2, &audio_transceiver2, &track_added2_ev](
-          mrsRemoteAudioTrackHandle track_handle,
-          mrsTransceiverHandle transceiver_handle) {
-        audio_track2 = track_handle;
-        audio_transceiver2 = transceiver_handle;
+      [&audio_track2, &audio_transceiver2,
+       &track_added2_ev](const mrsRemoteAudioTrackAddedInfo* info) {
+        audio_track2 = info->track_handle;
+        audio_transceiver2 = info->audio_transceiver_handle;
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterAudioTrackAddedCallback(pair.pc2(),
