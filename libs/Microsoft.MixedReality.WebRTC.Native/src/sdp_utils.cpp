@@ -64,6 +64,22 @@ bool TryExtractSuffix(const std::string& str,
 
 namespace Microsoft::MixedReality::WebRTC {
 
+bool SdpIsValidToken(std::string_view token) noexcept {
+  if (token.empty()) {
+    return false;
+  }
+  for (auto c : token) {
+    // [A-Za-z0-9] and [!#$%&'*+-.^_`{|}~]
+    if ((c == '!') || (c >= '#' && c <= '\'') || (c == '*') || (c == '+') ||
+        (c == '-') || (c == '.') || (c >= '0' && c <= '9') ||
+        (c >= 'A' && c <= 'Z') || (c >= '^' && c <= '~')) {
+      continue;
+    }
+    return false;
+  }
+  return true;
+}
+
 void SdpParseCodecParameters(const std::string& param_string,
                              std::map<std::string, std::string>& params) {
   std::vector<std::string> key_values;

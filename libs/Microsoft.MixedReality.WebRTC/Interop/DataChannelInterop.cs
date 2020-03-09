@@ -15,13 +15,17 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             EntryPoint = "mrsDataChannelSendMessage")]
         public static extern uint DataChannel_SendMessage(IntPtr dataChannelHandle, byte[] data, ulong size);
 
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsDataChannelSendMessage")]
+        public static extern uint DataChannel_SendMessage(IntPtr dataChannelHandle, IntPtr data, ulong size);
+
         #endregion
 
 
         #region Marshaling data structures
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        public struct CreateConfig
+        public ref struct CreateConfig
         {
             public int id;
             public string label;
@@ -29,7 +33,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        public struct Callbacks
+        public ref struct Callbacks
         {
             public MessageCallback messageCallback;
             public IntPtr messageUserData;
@@ -45,7 +49,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         #region Native callbacks
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate IntPtr CreateObjectCallback(IntPtr peer, CreateConfig config,
+        public delegate IntPtr CreateObjectDelegate(IntPtr peer, CreateConfig config,
             out Callbacks callbacks);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
@@ -71,14 +75,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public StateCallback StateCallback;
         }
 
-        [MonoPInvokeCallback(typeof(CreateObjectCallback))]
+        [MonoPInvokeCallback(typeof(CreateObjectDelegate))]
         public static IntPtr DataChannelCreateObjectCallback(IntPtr peer, CreateConfig config,
             out Callbacks callbacks)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
             var dataChannelWrapper = CreateWrapper(peerWrapper, config, out callbacks);
-            var handle = GCHandle.Alloc(dataChannelWrapper, GCHandleType.Normal);
-            return GCHandle.ToIntPtr(handle);
+            return Utils.MakeWrapperRef(dataChannelWrapper);
         }
 
         [MonoPInvokeCallback(typeof(MessageCallback))]

@@ -5,8 +5,8 @@
 // line, to prevent clang-format from reordering it with other headers.
 #include "pch.h"
 
-#include "interop/local_video_track_interop.h"
-#include "local_video_track.h"
+#include "local_video_track_interop.h"
+#include "media/local_video_track.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
@@ -31,7 +31,7 @@ mrsLocalVideoTrackRemoveRef(LocalVideoTrackHandle handle) noexcept {
 
 void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
     LocalVideoTrackHandle trackHandle,
-    PeerConnectionI420AVideoFrameCallback callback,
+    mrsI420AVideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(trackHandle)) {
     track->SetCallback(I420AFrameReadyCallback{callback, user_data});
@@ -40,7 +40,7 @@ void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
 
 void MRS_CALL mrsLocalVideoTrackRegisterArgb32FrameCallback(
     LocalVideoTrackHandle trackHandle,
-    PeerConnectionArgb32VideoFrameCallback callback,
+    mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(trackHandle)) {
     track->SetCallback(Argb32FrameReadyCallback{callback, user_data});

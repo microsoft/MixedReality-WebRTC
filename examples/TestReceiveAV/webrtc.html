@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+
+    <script type="text/javascript">
+
+        const url = "wss://localhost:8081/"
+        var pc;
+        var ws;
+
+        async function start() {
+
+            closePeer();
+
+            const remoteVideo = document.querySelector('#videoCtl');
+
+            const mediaConstraints = {
+                'video': true,
+                'audio': true
+            }
+
+            const localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+            remoteVideo.srcObject = localStream;
+
+            pc = new RTCPeerConnection(null);
+
+            localStream.getTracks().forEach(track => {
+                console.log('add local track ' + track.kind + ' to peer connection.');
+                console.log(track);
+                pc.addTrack(track, localStream);
+            });
+
+            pc.addEventListener("icegatheringstatechange", (ev) => {
+                console.log('icegatheringstatechange state: ' + ev.target.iceGatheringState);
+                console.log(ev);                
+            }, false);
+
+            pc.addEventListener("icecandidate", (ev) => {
+                if (ev.candidate != null) {
+                    console.log(ev.candidate);
+                    ws.send(JSON.stringify({
+                        'type': 'ice',
+                        'candidate': ev.candidate.candidate,
+                        'sdpMLineindex': ev.candidate.sdpMLineIndex,
+                        'sdpMid': ev.candidate.sdpMid
+                    }));
+                }
+            }, false);
+
+            ws = new WebSocket(url, []);
+
+            ws.onmessage = async function (evt) {
+                console.log("websocket recv: " + evt.data);
+                let obj = JSON.parse(evt.data);
+                if (obj['type'] == 'ice') {
+                    console.log("remote ice candidate: " + obj['candidate']);
+                    pc.addIceCandidate({ candidate: obj['candidate'], sdpMid: obj['sdpMid'], sdpMLineIndex:obj['sdpMLineIndex'] });
+                }
+                else {
+                    console.log("answer sdp: " + obj['answer']);
+                    await pc.setRemoteDescription(new RTCSessionDescription({ type: "answer", sdp: obj['answer'] }))
+                }
+            };
+
+            ws.onopen = async function () {
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                ws.send(JSON.stringify({ 'type': 'sdp', 'offer': offer.sdp }));
+            };
+        };
+
+        function closePeer() {
+            console.log("close peer");
+            if (pc != null) {
+                pc.close();
+            }
+        };
+
+    </script>
+</head>
+<body>
+
+    <video controls autoplay="autoplay" id="videoCtl" width="640" height="480"></video>
+
+    <div>
+        <button type="button" class="btn btn-success" onclick="start();">Start</button>
+        <button type="button" class="btn btn-success" onclick="closePeer();">Close</button>
+    </div>
+
+</body>

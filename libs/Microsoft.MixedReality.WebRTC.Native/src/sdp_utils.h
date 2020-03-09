@@ -10,6 +10,11 @@
 
 namespace Microsoft::MixedReality::WebRTC {
 
+/// Check if the given SDP token is valid according to the RFC 4566 standard.
+/// See https://tools.ietf.org/html/rfc4566#page-43 for details.
+/// This is used to validate e.g. track, transceiver, or stream IDs.
+bool SdpIsValidToken(std::string_view token) noexcept;
+
 /// Parse a list of semicolon-separated pairs of "key=value" arguments into a
 /// map of (key, value) pairs.
 void SdpParseCodecParameters(const std::string& param_string,

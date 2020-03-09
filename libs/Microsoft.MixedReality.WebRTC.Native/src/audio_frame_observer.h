@@ -7,8 +7,8 @@
 
 #include "api/mediastreaminterface.h"
 
-#include "callback.h"
 #include "audio_frame.h"
+#include "callback.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 

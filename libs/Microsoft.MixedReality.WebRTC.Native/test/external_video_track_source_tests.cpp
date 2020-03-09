@@ -4,11 +4,19 @@
 #include "pch.h"
 
 #include "data_channel.h"
-#include "interop/external_video_track_source_interop.h"
-#include "interop/interop_api.h"
-#include "interop/local_video_track_interop.h"
+#include "external_video_track_source_interop.h"
+#include "interop_api.h"
+#include "local_video_track_interop.h"
+
+#include "test_utils.h"
 
 #include "libyuv.h"
+
+namespace {
+
+class ExternalVideoTrackSourceTests : public TestUtils::TestBase {};
+
+}  // namespace
 
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 
@@ -104,12 +112,12 @@ void ValidateQuadTestFrame(const void* data,
   ASSERT_LE(std::fabs(err), 768.0);  // +/-1 per component over 256 pixels
 }
 
-// PeerConnectionArgb32VideoFrameCallback
+// mrsArgb32VideoFrameCallback
 using Argb32VideoFrameCallback = InteropCallback<const mrsArgb32VideoFrame&>;
 
 }  // namespace
 
-TEST(ExternalVideoTrackSource, Simple) {
+TEST_F(ExternalVideoTrackSourceTests, Simple) {
   LocalPeerPairRaii pair;
 
   ExternalVideoTrackSourceHandle source_handle = nullptr;
@@ -117,11 +125,14 @@ TEST(ExternalVideoTrackSource, Simple) {
             mrsExternalVideoTrackSourceCreateFromArgb32Callback(
                 &GenerateQuadTestFrame, nullptr, &source_handle));
   ASSERT_NE(nullptr, source_handle);
+  mrsExternalVideoTrackSourceFinishCreation(source_handle);
 
   LocalVideoTrackHandle track_handle = nullptr;
+  LocalVideoTrackFromExternalSourceInitConfig source_config{};
   ASSERT_EQ(mrsResult::kSuccess,
             mrsPeerConnectionAddLocalVideoTrackFromExternalSource(
-                pair.pc1(), "gen_track", source_handle, &track_handle));
+                pair.pc1(), "gen_track", source_handle, &source_config,
+                &track_handle));
   ASSERT_NE(nullptr, track_handle);
   ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle));
 

@@ -57,20 +57,16 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     {
         #region Unmanaged delegates
 
-        // Note: Unity IL2CPP doesn't support reverse-P/Invoke of SafeHandle
+        // Note - Those methods cannot use SafeHandle with reverse P/Invoke; use IntPtr instead.
+
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public unsafe delegate void RequestExternalI420AVideoFrameCallback(IntPtr userData,
             /*ExternalVideoTrackSourceHandle*/IntPtr sourceHandle, uint requestId, long timestampMs);
 
-        // Note: Unity IL2CPP doesn't support reverse-P/Invoke of SafeHandle
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public unsafe delegate void RequestExternalArgb32VideoFrameCallback(IntPtr userData,
             /*ExternalVideoTrackSourceHandle*/IntPtr sourceHandle, uint requestId, long timestampMs);
 
-        #endregion
-
-
-        // Note: Unity IL2CPP doesn't support reverse-P/Invoke of SafeHandle
         [MonoPInvokeCallback(typeof(RequestExternalI420AVideoFrameCallback))]
         public static void RequestI420AVideoFrameFromExternalSourceCallback(IntPtr userData,
             /*ExternalVideoTrackSourceHandle*/IntPtr sourceHandle, uint requestId, long timestampMs)
@@ -85,7 +81,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             args.FrameRequestCallback.Invoke(in request);
         }
 
-        // Note: Unity IL2CPP doesn't support reverse-P/Invoke of SafeHandle
         [MonoPInvokeCallback(typeof(RequestExternalArgb32VideoFrameCallback))]
         public static void RequestArgb32VideoFrameFromExternalSourceCallback(IntPtr userData,
             /*ExternalVideoTrackSourceHandle*/IntPtr sourceHandle, uint requestId, long timestampMs)
@@ -99,6 +94,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             };
             args.FrameRequestCallback.Invoke(in request);
         }
+
+        #endregion
 
 
         public class VideoFrameRequestCallbackArgs
@@ -131,6 +128,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             EntryPoint = "mrsExternalVideoTrackSourceCreateFromArgb32Callback")]
         public static unsafe extern uint ExternalVideoTrackSource_CreateFromArgb32Callback(
             RequestExternalArgb32VideoFrameCallback callback, IntPtr userData, out ExternalVideoTrackSourceHandle sourceHandle);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsExternalVideoTrackSourceFinishCreation")]
+        public static unsafe extern uint ExternalVideoTrackSource_FinishCreation(ExternalVideoTrackSourceHandle sourceHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsExternalVideoTrackSourceAddRef")]
@@ -185,9 +186,12 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 // Create the external video track source
                 uint res = ExternalVideoTrackSource_CreateFromI420ACallback(args.TrampolineCallback, argsRef,
                     out ExternalVideoTrackSourceHandle sourceHandle);
-                    Utils.ThrowOnErrorCode(res);
-                source.OnCreated(sourceHandle);
-
+                Utils.ThrowOnErrorCode(res);
+                source.SetHandle(sourceHandle);
+                // Once the handle of the native object is set on the wrapper, notify the implementation to finish
+                // the creation, which will make the source start capturing and emit frame requests, which can be
+                // handled now that the native handle is known.
+                ExternalVideoTrackSource_FinishCreation(sourceHandle);
                 return source;
             }
             catch (Exception e)
@@ -223,8 +227,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 uint res = ExternalVideoTrackSource_CreateFromArgb32Callback(args.TrampolineCallback, argsRef,
                     out ExternalVideoTrackSourceHandle sourceHandle);
                 Utils.ThrowOnErrorCode(res);
-                source.OnCreated(sourceHandle);
-
+                source.SetHandle(sourceHandle);
+                // Once the handle of the native object is set on the wrapper, notify the implementation to finish
+                // the creation, which will make the source start capturing and emit frame requests, which can be
+                // handled now that the native handle is known.
+                ExternalVideoTrackSource_FinishCreation(sourceHandle);
                 return source;
             }
             catch (Exception e)
