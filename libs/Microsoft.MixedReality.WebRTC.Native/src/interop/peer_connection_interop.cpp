@@ -31,6 +31,16 @@ mrsPeerConnectionRemoveRef(mrsPeerConnectionHandle handle) noexcept {
   }
 }
 
+void MRS_CALL mrsPeerConnectionRegisterTransceiverAddedCallback(
+    mrsPeerConnectionHandle peer_handle,
+    mrsPeerConnectionTransceiverAddedCallback callback,
+    void* user_data) noexcept {
+  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
+    peer->RegisterTransceiverAddedCallback(
+        Callback<const mrsTransceiverAddedInfo*>{callback, user_data});
+  }
+}
+
 void MRS_CALL mrsPeerConnectionRegisterIceGatheringStateChangedCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionIceGatheringStateChangedCallback callback,
