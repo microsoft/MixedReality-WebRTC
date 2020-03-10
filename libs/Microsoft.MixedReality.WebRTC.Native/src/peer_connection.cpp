@@ -1216,15 +1216,30 @@ ErrorOr<Transceiver*> PeerConnectionImpl::AddTransceiver(
 
       // Create the transceiver wrapper
       transceiver = Transceiver::CreateForUnifiedPlan(
-          global_factory_, config.media_kind, *this, mline_index,
-          std::move(name), std::move(impl), config.desired_direction);
+          global_factory_, config.media_kind, *this, mline_index, name,
+          std::move(impl), config.desired_direction);
     } break;
     default:
       return Error(Result::kUnknownError, "Unknown SDP semantic.");
   }
   RTC_DCHECK(transceiver);
   Transceiver* tr_view = transceiver.get();
-  InsertTransceiverAtMlineIndex(mline_index, std::move(transceiver));
+  InsertTransceiverAtMlineIndex(mline_index, transceiver);
+
+  // Invoke the TransceiverAdded callback
+  {
+    auto lock = std::scoped_lock{callbacks_mutex_};
+    if (auto cb = transceiver_added_callback_) {
+      mrsTransceiverAddedInfo info{};
+      info.transceiver_handle = transceiver.get();
+      info.transceiver_name = name.c_str();
+      info.media_kind = config.media_kind;
+      info.mline_index = mline_index;
+      info.desired_direction = config.desired_direction;
+      cb(&info);
+    }
+  }
+
   return tr_view;
 }
 
@@ -1623,26 +1638,33 @@ PeerConnectionImpl::GetOrCreateTransceiverForNewRemoteTrack(
     mrsTransceiverInitConfig config{};
     config.desired_direction = Transceiver::Direction::kRecvOnly;
     RefPtr<Transceiver> transceiver = Transceiver::CreateForPlanB(
-        global_factory_, media_kind, *this, mline_index, std::move(name),
+        global_factory_, media_kind, *this, mline_index, name,
         config.desired_direction);
     transceiver->SetReceiverPlanB(receiver);
-    Transceiver* tr_view = transceiver.get();
     {
       // Insert the transceiver in the peer connection's collection. The peer
       // connection will add a reference to it and keep it alive.
-      auto err =
-          InsertTransceiverAtMlineIndex(mline_index, std::move(transceiver));
+      auto err = InsertTransceiverAtMlineIndex(mline_index, transceiver);
       if (!err.ok()) {
         return err;
       }
     }
 
     // Invoke the TransceiverAdded callback
-    if (auto cb = transceiver_added_callback_) {
-      cb(tr_view);
+    {
+      auto lock = std::scoped_lock{callbacks_mutex_};
+      if (auto cb = transceiver_added_callback_) {
+        mrsTransceiverAddedInfo info{};
+        info.transceiver_handle = transceiver.get();
+        info.transceiver_name = name.c_str();
+        info.media_kind = media_kind;
+        info.mline_index = mline_index;
+        info.desired_direction = config.desired_direction;
+        cb(&info);
+      }
     }
 
-    return tr_view;
+    return transceiver.get();
   }
 }
 
@@ -1690,15 +1712,23 @@ ErrorOr<Transceiver*> PeerConnectionImpl::CreateTransceiverUnifiedPlan(
   RefPtr<Transceiver> transceiver = Transceiver::CreateForUnifiedPlan(
       global_factory_, media_kind, *this, mline_index, std::move(name),
       std::move(rtp_transceiver), desired_direction);
-  Transceiver* tr_view = transceiver.get();
-  auto err = InsertTransceiverAtMlineIndex(mline_index, std::move(transceiver));
+  auto err = InsertTransceiverAtMlineIndex(mline_index, transceiver);
   if (!err.ok()) {
     return err;
   }
-  if (auto cb = transceiver_added_callback_) {
-    cb(tr_view);
+  {
+    auto lock = std::scoped_lock{callbacks_mutex_};
+    if (auto cb = transceiver_added_callback_) {
+      mrsTransceiverAddedInfo info{};
+      info.transceiver_handle = transceiver.get();
+      info.transceiver_name = name.c_str();
+      info.media_kind = media_kind;
+      info.mline_index = mline_index;
+      info.desired_direction = desired_direction;
+      cb(&info);
+    }
   }
-  return tr_view;
+  return transceiver.get();
 }
 
 std::string PeerConnectionImpl::ExtractTransceiverNameFromSender(

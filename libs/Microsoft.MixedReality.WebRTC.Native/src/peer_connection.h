@@ -212,7 +212,7 @@ class PeerConnection : public TrackedObject {
   //
 
   /// Callback invoked when a transceiver is added to the peer connection.
-  using TransceiverAddedCallback = Callback<mrsTransceiverHandle>;
+  using TransceiverAddedCallback = Callback<const mrsTransceiverAddedInfo*>;
 
   /// Register a custom TransceiverAddedCallback invoked when a transceiver is
   /// is added to the peer connection. Only one callback can be registered at a
