@@ -557,7 +557,7 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
   return Result::kSuccess;
 }
 mrsResult MRS_CALL
-mrsPeerConnectionCreate(mrsPeerConnectionConfiguration config,
+mrsPeerConnectionCreate(const mrsPeerConnectionConfiguration* config,
                         mrsPeerConnectionInteropHandle interop_handle,
                         mrsPeerConnectionHandle* peerHandleOut) noexcept {
   if (!peerHandleOut || !interop_handle) {
@@ -566,7 +566,7 @@ mrsPeerConnectionCreate(mrsPeerConnectionConfiguration config,
   *peerHandleOut = nullptr;
 
   // Create the new peer connection
-  auto result = PeerConnection::create(config, interop_handle);
+  auto result = PeerConnection::create(*config, interop_handle);
   if (!result.ok()) {
     return result.error().result();
   }

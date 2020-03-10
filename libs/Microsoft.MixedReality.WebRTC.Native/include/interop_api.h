@@ -443,7 +443,7 @@ struct mrsPeerConnectionConfiguration {
 /// |mrsPeerConnectionRemoveRef|. When the last reference is removed, the native
 /// object is destroyed.
 MRS_API mrsResult MRS_CALL
-mrsPeerConnectionCreate(mrsPeerConnectionConfiguration config,
+mrsPeerConnectionCreate(const mrsPeerConnectionConfiguration* config,
                         mrsPeerConnectionInteropHandle interop_handle,
                         mrsPeerConnectionHandle* peerHandleOut) noexcept;
 

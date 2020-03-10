@@ -162,7 +162,7 @@ class PCRaii {
   void create(const mrsPeerConnectionConfiguration& config,
               mrsPeerConnectionInteropHandle interop_handle) {
     ASSERT_EQ(mrsResult::kSuccess,
-              mrsPeerConnectionCreate(config, interop_handle, &handle_));
+              mrsPeerConnectionCreate(&config, interop_handle, &handle_));
     ASSERT_NE(nullptr, handle_);
   }
 };
