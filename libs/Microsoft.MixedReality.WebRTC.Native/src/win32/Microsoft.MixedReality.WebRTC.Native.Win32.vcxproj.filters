@@ -76,6 +76,9 @@
     <ClCompile Include="..\audio_frame_observer.cpp">
       <Filter>src\media</Filter>
     </ClCompile>
+    <ClCompile Include="..\interop\data_channel_interop.cpp">
+      <Filter>src\interop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\media\external_video_track_source.h">
@@ -181,6 +184,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\export.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\data_channel_interop.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

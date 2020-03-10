@@ -8,6 +8,7 @@
 #include "data_channel.h"
 #include "media/transceiver.h"
 #include "mrs_errors.h"
+#include "peer_connection_interop.h"
 #include "refptr.h"
 #include "tracked_object.h"
 #include "video_frame_observer.h"
@@ -310,7 +311,7 @@ class PeerConnection : public TrackedObject {
 
   /// Callback invoked when a new data channel is received from the remote peer
   /// and added locally.
-  using DataChannelAddedCallback = Callback<mrsDataChannelHandle>;
+  using DataChannelAddedCallback = Callback<const mrsDataChannelAddedInfo*>;
 
   /// Callback invoked when a data channel is removed from the remote peer and
   /// removed locally.

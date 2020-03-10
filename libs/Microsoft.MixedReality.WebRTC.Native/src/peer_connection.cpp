@@ -407,7 +407,7 @@ class PeerConnectionImpl : public PeerConnection,
 
   /// User callback invoked when the peer connection received a data channel
   /// remove message from the remote peer and removed it locally.
-  DataChannelAddedCallback data_channel_removed_callback_
+  DataChannelRemovedCallback data_channel_removed_callback_
       RTC_GUARDED_BY(data_channel_removed_callback_mutex_);
 
   /// User callback invoked when a transceiver is added to the peer connection,
@@ -982,8 +982,13 @@ void PeerConnectionImpl::OnDataChannelAdded(
     auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
     auto added_cb = data_channel_added_callback_;
     if (added_cb) {
-      mrsDataChannelHandle data_native_handle = (void*)&data_channel;
-      added_cb(data_native_handle);
+      mrsDataChannelAddedInfo info{};
+      info.handle = (void*)&data_channel;
+      info.id = data_channel.id();
+      info.flags = data_channel.flags();
+      str label_str = data_channel.label();  // keep alive
+      info.label = label_str.c_str();
+      added_cb(&info);
     }
   }
 }
@@ -1384,21 +1389,17 @@ void PeerConnectionImpl::OnDataChannel(
     }
   }
 
-  //// Register the interop callbacks
-  // data_channel->SetMessageCallback(DataChannel::MessageCallback{
-  //    callbacks.message_callback, callbacks.message_user_data});
-  // data_channel->SetBufferingCallback(DataChannel::BufferingCallback{
-  //    callbacks.buffering_callback, callbacks.buffering_user_data});
-  // data_channel->SetStateCallback(DataChannel::StateCallback{
-  //    callbacks.state_callback, callbacks.state_user_data});
-
   // Invoke the DataChannelAdded callback
   {
     auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
     auto added_cb = data_channel_added_callback_;
     if (added_cb) {
-      const mrsDataChannelHandle data_native_handle = data_channel.get();
-      added_cb(data_native_handle);
+      mrsDataChannelAddedInfo info{};
+      info.handle = data_channel.get();
+      info.id = config.id;
+      info.flags = config.flags;
+      info.label = config.label;
+      added_cb(&info);
     }
   }
 }

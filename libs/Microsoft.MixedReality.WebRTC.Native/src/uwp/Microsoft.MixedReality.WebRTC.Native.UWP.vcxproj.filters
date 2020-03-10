@@ -183,6 +183,9 @@
     <ClInclude Include="..\utils.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\data_channel_interop.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />
