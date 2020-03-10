@@ -730,6 +730,9 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     mrsDataChannelCallbacks callbacks,
     mrsDataChannelHandle* dataChannelHandleOut) noexcept;
 
+/// Remove an existing data channel from a peer connection and destroy it. If
+/// the channel was an in-band data channel, then the change triggers a
+/// renegotiation needed event.
 MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
     mrsPeerConnectionHandle peerHandle,
     mrsDataChannelHandle dataChannelHandle) noexcept;
@@ -739,7 +742,13 @@ mrsDataChannelSendMessage(mrsDataChannelHandle dataChannelHandle,
                           const void* data,
                           uint64_t size) noexcept;
 
-/// Add a new ICE candidate received from a signaling service.
+/// Add a new ICE candidate received from a signaling service. This function
+/// must be called by the user each time an ICE candidate was received from the
+/// remote peer, to inform the WebRTC implementation of that candidate.
+///
+/// The candidate is defined by its "mid" attribute |sdp_mid| and the media line
+/// index it is associated with |sdp_mline_index|. The raw SDP candidate content
+/// is passed in |candidate|.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionAddIceCandidate(mrsPeerConnectionHandle peerHandle,
                                  const char* sdp_mid,
@@ -748,15 +757,23 @@ mrsPeerConnectionAddIceCandidate(mrsPeerConnectionHandle peerHandle,
 
 /// Create a new JSEP offer to try to establish a connection with a remote peer.
 /// This will generate a local offer message, then fire the
-/// "LocalSdpReadytoSendCallback" callback, which should send this message via
-/// the signaling service to a remote peer.
+/// |LocalSdpReadytoSendCallback| callback, which should send to the remote peer
+/// this message via the signaling service the user implemented.
+///
+/// Creating an offer is only possible if there is no exchange pending.
+/// Therefore the user must wait for a previous exchange to complete in order to
+/// be able to initiate a new offer.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionCreateOffer(mrsPeerConnectionHandle peerHandle) noexcept;
 
 /// Create a new JSEP answer to a received offer to try to establish a
 /// connection with a remote peer. This will generate a local answer message,
-/// then fire the "LocalSdpReadytoSendCallback" callback, which should send this
-/// message via the signaling service to a remote peer.
+/// then fire the |LocalSdpReadytoSendCallback| callback, which should send to
+/// the remote peer this message via the signaling service the user implemented.
+///
+/// Creating an answer is only possible if the local peer already applied a
+/// remote offer via |mrsPeerConnectionSetRemoteDescriptionAsync| and the async
+/// callback completed successfully.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionCreateAnswer(mrsPeerConnectionHandle peerHandle) noexcept;
 
@@ -779,9 +796,9 @@ mrsPeerConnectionSetBitrate(mrsPeerConnectionHandle peer_handle,
 using ActionCallback = void(MRS_CALL*)(void* user_data);
 
 /// Set a remote description received from a remote peer via the signaling
-/// service. Once the remote description is applied, the action callback is
-/// invoked to signal the caller it is safe to continue the negotiation, and in
-/// particular it is safe to call |CreateAnswer()|.
+/// solution implemented by the user. Once the remote description is applied,
+/// the action callback is invoked to signal the caller it is safe to continue
+/// the negotiation, and in particular it is safe to call |CreateAnswer()|.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionSetRemoteDescriptionAsync(mrsPeerConnectionHandle peerHandle,
                                            const char* type,
@@ -792,7 +809,7 @@ mrsPeerConnectionSetRemoteDescriptionAsync(mrsPeerConnectionHandle peerHandle,
 /// Close a peer connection, removing all tracks and disconnecting from the
 /// remote peer currently connected. This does not invalidate the handle nor
 /// destroy the native peer connection object, but leaves it in a state where it
-/// can only be destroyed.
+/// can only be destroyed by calling |mrsPeerConnectionRemoveRef()|.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionClose(mrsPeerConnectionHandle peerHandle) noexcept;
 
