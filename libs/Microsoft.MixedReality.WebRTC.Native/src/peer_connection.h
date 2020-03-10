@@ -350,8 +350,9 @@ class PeerConnection : public TrackedObject {
   /// automatically by non-negotiated data channels; do not call manually.
   virtual void OnDataChannelAdded(const DataChannel& data_channel) noexcept = 0;
 
-  /// Internal use.
+  // Internal use.
   void GetStats(webrtc::RTCStatsCollectorCallback* callback);
+  void InvokeRenegotiationNeeded();
 
  protected:
   PeerConnection(RefPtr<GlobalFactory> global_factory);

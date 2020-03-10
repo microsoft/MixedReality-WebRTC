@@ -149,15 +149,19 @@ Transceiver::~Transceiver() {
 }
 
 Result Transceiver::SetDirection(Direction new_direction) noexcept {
-  if (transceiver_) {  // Unified Plan
-    if (new_direction == desired_direction_) {
-      return Result::kSuccess;
-    }
-    transceiver_->SetDirection(ToRtp(new_direction));
-  } else {  // Plan B
-    // nothing to do yet
+  if (new_direction == desired_direction_) {
+    return Result::kSuccess;
   }
   desired_direction_ = new_direction;
+  if (transceiver_) {  // Unified Plan
+    // Change the RTP transceiver direction; this will trigger a
+    // |RenegotiationNeeded| event.
+    transceiver_->SetDirection(ToRtp(new_direction));
+  } else {  // Plan B
+    RTC_DCHECK(plan_b_);
+    // Force a manual |RenegotiationNeeded| event for parity with Unified Plan.
+    owner_->InvokeRenegotiationNeeded();
+  }
   FireStateUpdatedEvent(mrsTransceiverStateUpdatedReason::kSetDirection);
   return Result::kSuccess;
 }

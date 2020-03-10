@@ -1874,6 +1874,10 @@ void PeerConnection::GetStats(webrtc::RTCStatsCollectorCallback* callback) {
   ((PeerConnectionImpl*)this)->peer_->GetStats(callback);
 }
 
+void PeerConnection::InvokeRenegotiationNeeded() {
+  ((PeerConnectionImpl*)this)->OnRenegotiationNeeded();
+}
+
 PeerConnection::PeerConnection(RefPtr<GlobalFactory> global_factory)
     : TrackedObject(std::move(global_factory), ObjectType::kPeerConnection) {}
 
