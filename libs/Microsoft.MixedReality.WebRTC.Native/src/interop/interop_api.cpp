@@ -8,6 +8,7 @@
 #include "api/stats/rtcstats_objects.h"
 
 #include "data_channel.h"
+#include "data_channel_interop.h"
 #include "external_video_track_source_interop.h"
 #include "interop/global_factory.h"
 #include "interop_api.h"
@@ -669,7 +670,7 @@ void MRS_CALL mrsPeerConnectionRegisterDataChannelAddedCallback(
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterDataChannelAddedCallback(
-        Callback<mrsDataChannelHandle>{callback, user_data});
+        Callback<const mrsDataChannelAddedInfo*>{callback, user_data});
   }
 }
 
@@ -805,64 +806,42 @@ mrsResult MRS_CALL mrsLocalVideoTrackCreateFromDevice(
 
 mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     mrsPeerConnectionHandle peer_handle,
-    mrsDataChannelConfig config,
-    mrsDataChannelCallbacks callbacks,
+    const mrsDataChannelConfig* config,
     mrsDataChannelHandle* data_channel_handle_out) noexcept
 
 {
-  if (!data_channel_handle_out) {
+  if (!data_channel_handle_out || !config) {
     return Result::kInvalidParameter;
   }
   *data_channel_handle_out = nullptr;
-
   auto peer = static_cast<PeerConnection*>(peer_handle);
   if (!peer) {
     return Result::kInvalidNativeHandle;
   }
-
-  const bool ordered = (config.flags & mrsDataChannelConfigFlags::kOrdered);
-  const bool reliable = (config.flags & mrsDataChannelConfigFlags::kReliable);
-  const std::string_view label = (config.label ? config.label : "");
+  const bool ordered = (config->flags & mrsDataChannelConfigFlags::kOrdered);
+  const bool reliable = (config->flags & mrsDataChannelConfigFlags::kReliable);
+  const std::string_view label = (config->label ? config->label : "");
   ErrorOr<std::shared_ptr<DataChannel>> data_channel =
-      peer->AddDataChannel(config.id, label, ordered, reliable);
+      peer->AddDataChannel(config->id, label, ordered, reliable);
   if (data_channel.ok()) {
-    data_channel.value()->SetMessageCallback(DataChannel::MessageCallback{
-        callbacks.message_callback, callbacks.message_user_data});
-    data_channel.value()->SetBufferingCallback(DataChannel::BufferingCallback{
-        callbacks.buffering_callback, callbacks.buffering_user_data});
-    data_channel.value()->SetStateCallback(DataChannel::StateCallback{
-        callbacks.state_callback, callbacks.state_user_data});
     *data_channel_handle_out = data_channel.value().operator->();
-    return Result::kSuccess;
   }
   return data_channel.error().result();
 }
 
 mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
     mrsPeerConnectionHandle peer_handle,
-    mrsDataChannelHandle dataChannelHandle) noexcept {
+    mrsDataChannelHandle data_channel_handle) noexcept {
   auto peer = static_cast<PeerConnection*>(peer_handle);
   if (!peer) {
     return Result::kInvalidNativeHandle;
   }
-  auto data_channel = static_cast<DataChannel*>(dataChannelHandle);
+  auto data_channel = static_cast<DataChannel*>(data_channel_handle);
   if (!data_channel) {
     return Result::kInvalidNativeHandle;
   }
   peer->RemoveDataChannel(*data_channel);
   return Result::kSuccess;
-}
-
-mrsResult MRS_CALL
-mrsDataChannelSendMessage(mrsDataChannelHandle dataChannelHandle,
-                          const void* data,
-                          uint64_t size) noexcept {
-  auto data_channel = static_cast<DataChannel*>(dataChannelHandle);
-  if (!data_channel) {
-    return Result::kInvalidNativeHandle;
-  }
-  return (data_channel->Send(data, (size_t)size) ? Result::kSuccess
-                                                 : Result::kUnknownError);
 }
 
 mrsResult MRS_CALL

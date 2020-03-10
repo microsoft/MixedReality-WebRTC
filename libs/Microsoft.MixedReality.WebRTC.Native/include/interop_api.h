@@ -274,10 +274,34 @@ using mrsPeerConnectionVideoTrackRemovedCallback =
                     mrsRemoteVideoTrackHandle video_track,
                     mrsTransceiverHandle transceiver);
 
+enum class mrsDataChannelConfigFlags : uint32_t {
+  kNone = 0,
+  kOrdered = 0x1,
+  kReliable = 0x2,
+};
+
+inline mrsDataChannelConfigFlags operator|(
+    mrsDataChannelConfigFlags a,
+    mrsDataChannelConfigFlags b) noexcept {
+  return (mrsDataChannelConfigFlags)((uint32_t)a | (uint32_t)b);
+}
+
+inline uint32_t operator&(mrsDataChannelConfigFlags a,
+                          mrsDataChannelConfigFlags b) noexcept {
+  return ((uint32_t)a | (uint32_t)b);
+}
+
+struct mrsDataChannelAddedInfo {
+  mrsDataChannelHandle handle{nullptr};
+  int id{0};
+  mrsDataChannelConfigFlags flags{};
+  const char* label{nullptr};
+};
+
 /// Callback fired when a data channel is added to the peer connection after
 /// being negotiated with the remote peer.
 using mrsPeerConnectionDataChannelAddedCallback =
-    void(MRS_CALL*)(void* user_data, mrsDataChannelHandle data_channel);
+    void(MRS_CALL*)(void* user_data, const mrsDataChannelAddedInfo* info);
 
 /// Callback fired when a data channel is remoted from the peer connection.
 using mrsPeerConnectionDataChannelRemovedCallback =
@@ -305,26 +329,6 @@ using mrsAudioFrame = Microsoft::MixedReality::WebRTC::AudioFrame;
 /// available to be consumed by the caller, usually for local output.
 using mrsAudioFrameCallback = void(MRS_CALL*)(void* user_data,
                                               const mrsAudioFrame& frame);
-
-/// Callback fired when a message is received on a data channel.
-using mrsDataChannelMessageCallback = void(MRS_CALL*)(void* user_data,
-                                                      const void* data,
-                                                      const uint64_t size);
-
-/// Callback fired when a data channel buffering changes.
-/// The |previous| and |current| values are the old and new sizes in byte of the
-/// buffering buffer. The |limit| is the capacity of the buffer.
-/// Note that when the buffer is full, any attempt to send data will result is
-/// an abrupt closing of the data channel. So monitoring this state is critical.
-using mrsDataChannelBufferingCallback = void(MRS_CALL*)(void* user_data,
-                                                        const uint64_t previous,
-                                                        const uint64_t current,
-                                                        const uint64_t limit);
-
-/// Callback fired when the state of a data channel changed.
-using mrsDataChannelStateCallback = void(MRS_CALL*)(void* user_data,
-                                                    int32_t state,
-                                                    int32_t id);
 
 /// ICE transport type. See webrtc::PeerConnectionInterface::IceTransportsType.
 /// Currently values are aligned, but kept as a separate structure to allow
@@ -605,50 +609,31 @@ struct mrsRemoteVideoTrackConfig {
   const char* track_name{};
 };
 
-enum class mrsDataChannelConfigFlags : uint32_t {
-  kOrdered = 0x1,
-  kReliable = 0x2,
-};
-
-inline mrsDataChannelConfigFlags operator|(
-    mrsDataChannelConfigFlags a,
-    mrsDataChannelConfigFlags b) noexcept {
-  return (mrsDataChannelConfigFlags)((uint32_t)a | (uint32_t)b);
-}
-
-inline uint32_t operator&(mrsDataChannelConfigFlags a,
-                          mrsDataChannelConfigFlags b) noexcept {
-  return ((uint32_t)a | (uint32_t)b);
-}
-
 struct mrsDataChannelConfig {
-  int32_t id = -1;      // -1 for auto; >=0 for negotiated
-  const char* label{};  // optional; can be null or empty string
+  int32_t id = -1;  // -1 for auto; >=0 for negotiated
   mrsDataChannelConfigFlags flags{};
+  const char* label{};  // optional; can be null or empty string
 };
 
-struct mrsDataChannelCallbacks {
-  mrsDataChannelMessageCallback message_callback{};
-  void* message_user_data{};
-  mrsDataChannelBufferingCallback buffering_callback{};
-  void* buffering_user_data{};
-  mrsDataChannelStateCallback state_callback{};
-  void* state_user_data{};
-};
-
-/// Add a new data channel.
-/// This function has two distinct uses:
-/// - If id < 0, then it adds a new in-band data channel with an ID that will be
-/// selected by the WebRTC implementation itself, and will be available later.
-/// In that case the channel is announced to the remote peer for it to create a
-/// channel with the same ID.
-/// - If id >= 0, then it adds a new out-of-band negotiated channel with the
-/// given ID, and it is the responsibility of the app to create a channel with
-/// the same ID on the remote peer to be able to use the channel.
+/// Add a new data channel to a peer connection.
+///
+/// The initial configuration of the data channel is provided by |config|, and
+/// is mandatory. The caller can optionally provide a set of callbacks to
+/// register with the data channel via the |callbacks| optional argument. The
+/// function returns in |data_channel_handle_out| the handle to the
+/// newly-created data channel after it was added to the peer connection.
+///
+/// The type of data channel created depends on the |config.id| value:
+/// - If |config.id| < 0, then it adds a new in-band data channel with an ID
+/// that will be selected by the WebRTC implementation itself, and will be
+/// available later. In that case the channel is announced to the remote peer
+/// for it to create a channel with the same ID. This requires a renegotiation.
+/// - If |config.id| >= 0, then it adds a new out-of-band negotiated channel
+/// with the given ID, and it is the responsibility of the app to create a
+/// channel with the same ID on the remote peer to be able to use the channel.
 MRS_API mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
     mrsPeerConnectionHandle peer_handle,
-    mrsDataChannelConfig config,
-    mrsDataChannelCallbacks callbacks,
+    const mrsDataChannelConfig* config,
     mrsDataChannelHandle* data_channel_handle_out) noexcept;
 
 /// Remove an existing data channel from a peer connection and destroy it. If
@@ -657,11 +642,6 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
 MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
     mrsPeerConnectionHandle peer_handle,
     mrsDataChannelHandle data_channel_handle) noexcept;
-
-MRS_API mrsResult MRS_CALL
-mrsDataChannelSendMessage(mrsDataChannelHandle data_channel_handle,
-                          const void* data,
-                          uint64_t size) noexcept;
 
 /// Add a new ICE candidate received from a signaling service. This function
 /// must be called by the user each time an ICE candidate was received from the

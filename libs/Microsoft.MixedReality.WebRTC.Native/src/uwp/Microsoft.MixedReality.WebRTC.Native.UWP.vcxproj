@@ -118,6 +118,7 @@
   <ItemGroup>
     <ClInclude Include="../pch.h" />
     <ClInclude Include="..\..\include\audio_frame.h" />
+    <ClInclude Include="..\..\include\data_channel_interop.h" />
     <ClInclude Include="..\..\include\export.h" />
     <ClInclude Include="..\..\include\external_video_track_source_interop.h" />
     <ClInclude Include="..\..\include\interop_api.h" />

@@ -71,8 +71,27 @@ class DataChannel : public webrtc::DataChannelObserver {
   /// Remove the data channel from its parent PeerConnection and close it.
   ~DataChannel() override;
 
+  [[nodiscard]] constexpr void* GetUserData() const noexcept {
+    return user_data_;
+  }
+
+  constexpr void SetUserData(void* user_data) noexcept {
+    user_data_ = user_data;
+  }
+
   /// Get the unique channel identifier.
   [[nodiscard]] int id() const { return data_channel_->id(); }
+
+  [[nodiscard]] mrsDataChannelConfigFlags flags() const noexcept {
+    mrsDataChannelConfigFlags flags{0};
+    if (data_channel_->ordered()) {
+      flags = flags | mrsDataChannelConfigFlags::kOrdered;
+    }
+    if (data_channel_->reliable()) {
+      flags = flags | mrsDataChannelConfigFlags::kReliable;
+    }
+    return flags;
+  }
 
   /// Get the friendly channel name.
   [[nodiscard]] str label() const;
@@ -126,7 +145,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   std::mutex mutex_;
 
   /// Opaque user data.
-  void* user_data{nullptr};
+  void* user_data_{nullptr};
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC
