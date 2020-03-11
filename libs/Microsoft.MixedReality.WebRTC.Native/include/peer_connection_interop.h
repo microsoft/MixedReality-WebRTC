@@ -35,6 +35,10 @@ struct mrsTransceiverAddedInfo {
   /// Media line index of the transceiver in the peer connection.
   int mline_index{-1};
 
+  /// Encoded stream IDs; a semi-colon separated list of media stream IDs
+  /// associated with the transceiver.
+  const char* encoded_stream_ids_{nullptr};
+
   /// Initial value of the desired transceiver direction.
   mrsTransceiverDirection desired_direction{mrsTransceiverDirection::kInactive};
 };

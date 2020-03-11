@@ -33,9 +33,11 @@ RefPtr<Transceiver> Transceiver::CreateForPlanB(
     PeerConnection& owner,
     int mline_index,
     std::string name,
+    std::vector<std::string> stream_ids,
     Direction desired_direction) noexcept {
   return new Transceiver(std::move(global_factory), kind, owner, mline_index,
-                         std::move(name), desired_direction);
+                         std::move(name), std::move(stream_ids),
+                         desired_direction);
 }
 
 RefPtr<Transceiver> Transceiver::CreateForUnifiedPlan(
@@ -44,11 +46,12 @@ RefPtr<Transceiver> Transceiver::CreateForUnifiedPlan(
     PeerConnection& owner,
     int mline_index,
     std::string name,
+    std::vector<std::string> stream_ids,
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
     Direction desired_direction) noexcept {
   return new Transceiver(std::move(global_factory), kind, owner, mline_index,
-                         std::move(name), std::move(transceiver),
-                         desired_direction);
+                         std::move(name), std::move(stream_ids),
+                         std::move(transceiver), desired_direction);
 }
 
 Transceiver::Transceiver(RefPtr<GlobalFactory> global_factory,
@@ -56,6 +59,7 @@ Transceiver::Transceiver(RefPtr<GlobalFactory> global_factory,
                          PeerConnection& owner,
                          int mline_index,
                          std::string name,
+                         std::vector<std::string> stream_ids,
                          Direction desired_direction) noexcept
     : TrackedObject(std::move(global_factory),
                     kind == MediaKind::kAudio ? ObjectType::kAudioTransceiver
@@ -64,6 +68,7 @@ Transceiver::Transceiver(RefPtr<GlobalFactory> global_factory,
       kind_(kind),
       mline_index_(mline_index),
       name_(std::move(name)),
+      stream_ids_(std::move(stream_ids)),
       desired_direction_(desired_direction),
       plan_b_(new PlanBEmulation) {
   RTC_CHECK(owner_);
@@ -77,6 +82,7 @@ Transceiver::Transceiver(
     PeerConnection& owner,
     int mline_index,
     std::string name,
+    std::vector<std::string> stream_ids,
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver,
     Direction desired_direction) noexcept
     : TrackedObject(std::move(global_factory),
@@ -86,6 +92,7 @@ Transceiver::Transceiver(
       kind_(kind),
       mline_index_(mline_index),
       name_(std::move(name)),
+      stream_ids_(std::move(stream_ids)),
       desired_direction_(desired_direction),
       transceiver_(std::move(transceiver)) {
   RTC_CHECK(owner_);
@@ -355,6 +362,56 @@ std::string Transceiver::EncodeStreamIDs(
     return {};
   }
   return rtc::join(stream_ids, ';');
+}
+
+std::string Transceiver::BuildEncodedStreamIDForPlanB(int mline_index) const {
+  std::vector<std::string> items;
+  items.reserve(1 + stream_ids_.size());
+
+  // First item is "mrsw#<mline_index>"
+  {
+    rtc::StringBuilder builder;
+    builder << "mrsw#" << mline_index;
+    items.push_back(builder.str());
+  }
+
+  // Other items are the stream IDs
+  for (auto&& id : stream_ids_) {
+    items.push_back(id);
+  }
+
+  return rtc::join(items, ';');
+}
+
+bool Transceiver::DecodedStreamIDForPlanB(
+    const std::string& encoded_string,
+    int& mline_index_out,
+    std::string& name,
+    std::vector<std::string>& stream_ids_out) {
+  if (encoded_string.empty()) {
+    mline_index_out = -1;
+    stream_ids_out.clear();
+    return false;
+  }
+  rtc::split(encoded_string, ';', &stream_ids_out);
+  // Use encoded mline index as transceiver name
+  name = std::move(stream_ids_out[0]);
+  stream_ids_out.erase(stream_ids_out.begin());
+  if ((name.size() < 6) || (strncmp(name.c_str(), "mrsw#", 5) != 0)) {
+    RTC_LOG(LS_ERROR) << "RTP receiver stream ID does not start with the magic "
+                         "prefix 'mrsw#' for automatic Plan B track pairing.";
+    return false;
+  }
+  mline_index_out = (int)strtol(name.c_str() + 5, nullptr, 10);
+  if (mline_index_out < 0) {
+    RTC_LOG(LS_ERROR)
+        << "Invalid RTP receiver stream ID " << name.c_str()
+        << " does not resolve to a valid media line index (got "
+        << mline_index_out
+        << ", expected positive integer for automatic Plan B track pairing).";
+    return false;
+  }
+  return true;
 }
 
 void Transceiver::SyncSenderPlanB(bool needed,
