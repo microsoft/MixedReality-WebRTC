@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Runtime.InteropServices;
+using System.Diagnostics;
 using Microsoft.MixedReality.WebRTC.Interop;
 using Microsoft.MixedReality.WebRTC.Tracing;
 
@@ -97,13 +97,13 @@ namespace Microsoft.MixedReality.WebRTC
         public ChannelState State { get; private set; }
 
         /// <summary>
-        /// Event fired when the data channel state changes, as reported by <see cref="State"/>.
+        /// Event invoked when the data channel state changes, as reported by <see cref="State"/>.
         /// </summary>
         /// <seealso cref="State"/>
         public event Action StateChanged;
 
         /// <summary>
-        /// Event fired when the data channel buffering changes. Monitor this to ensure calls to
+        /// Event invoked when the data channel buffering changes. Monitor this to ensure calls to
         /// <see cref="SendMessage(byte[])"/> do not fail. Internally the data channel contains
         /// a buffer of messages to send that could not be sent immediately, for example due to
         /// congestion control. Once this buffer is full, any further call to <see cref="SendMessage(byte[])"/>
@@ -122,17 +122,21 @@ namespace Microsoft.MixedReality.WebRTC
         /// GC handle keeping the internal delegates alive while they are registered
         /// as callbacks with the native code.
         /// </summary>
-        private GCHandle _handle;
+        private IntPtr _argsRef;
 
         /// <summary>
-        /// Handle to the native object this wrapper is associated with.
+        /// Handle to the native DataChannel object.
         /// </summary>
-        internal IntPtr _interopHandle = IntPtr.Zero;
+        /// <remarks>
+        /// In native land this is a <code>mrsDataChannelHandle</code>.
+        /// </remarks>
+        internal IntPtr _nativeHandle = IntPtr.Zero;
 
-        internal DataChannel(PeerConnection peer, GCHandle handle,
-            int id, string label, bool ordered, bool reliable)
+        internal DataChannel(IntPtr nativeHandle, PeerConnection peer, IntPtr argsRef, int id, string label, bool ordered, bool reliable)
         {
-            _handle = handle;
+            Debug.Assert(nativeHandle != IntPtr.Zero);
+            _nativeHandle = nativeHandle;
+            _argsRef = argsRef;
             PeerConnection = peer;
             ID = id;
             Label = label;
@@ -156,10 +160,11 @@ namespace Microsoft.MixedReality.WebRTC
         public void Dispose()
         {
             State = ChannelState.Closing;
-            PeerConnection.RemoveDataChannel(_interopHandle);
-            _interopHandle = IntPtr.Zero;
+            PeerConnection.RemoveDataChannel(_nativeHandle);
+            _nativeHandle = IntPtr.Zero;
             State = ChannelState.Closed;
-            _handle.Free();
+            Utils.ReleaseWrapperRef(_argsRef);
+            _argsRef = IntPtr.Zero;
             GC.SuppressFinalize(this);
         }
 
@@ -169,15 +174,21 @@ namespace Microsoft.MixedReality.WebRTC
         /// The internal buffering is monitored via the <see cref="BufferingChanged"/> event.
         /// </summary>
         /// <param name="message">The message to send to the remote peer.</param>
-        /// <exception xref="InvalidOperationException">The native data channel is not initialized.</exception>
-        /// <exception xref="Exception">The internal buffer is full.</exception>
+        /// <exception xref="System.InvalidOperationException">The native data channel is not initialized.</exception>
+        /// <exception xref="System.Exception">The internal buffer is full.</exception>
+        /// <exception cref="DataChannelNotOpenException">The data channel is not open yet.</exception>
         /// <seealso cref="PeerConnection.InitializeAsync"/>
         /// <seealso cref="PeerConnection.Initialized"/>
         /// <seealso cref="BufferingChanged"/>
         public void SendMessage(byte[] message)
         {
             MainEventSource.Log.DataChannelSendMessage(ID, message.Length);
-            uint res = DataChannelInterop.DataChannel_SendMessage(_interopHandle, message, (ulong)message.LongLength);
+            // Check channel state before doing a P/Invoke call which would anyway fail
+            if (State != ChannelState.Open)
+            {
+                throw new DataChannelNotOpenException();
+            }
+            uint res = DataChannelInterop.DataChannel_SendMessage(_nativeHandle, message, (ulong)message.LongLength);
             Utils.ThrowOnErrorCode(res);
         }
 

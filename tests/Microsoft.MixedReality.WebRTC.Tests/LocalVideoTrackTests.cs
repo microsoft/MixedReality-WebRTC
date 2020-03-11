@@ -601,12 +601,18 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Change the transceiver direction to stop receiving. This requires a renegotiation
             // to take effect, so nothing changes for now.
+            // Note: In Plan B, a renegotiation needed event is manually forced for parity with
+            // Unified Plan. However setting the transceiver to inactive removes the remote peer's
+            // remote track, which causes another renegotiation needed event. So we suspend the
+            // automatic offer to trigger it manually.
+            suspendOffer1_ = true;
             remoteDescAppliedEvent1_.Reset();
             remoteDescAppliedEvent2_.Reset();
             transceiver1.DesiredDirection = Transceiver.Direction.Inactive;
+            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
 
             // Wait for renegotiate to complete
-            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+            StartOfferWith(pc1_);
             WaitForSdpExchangeCompleted();
 
             // Now the remote track got removed from #2

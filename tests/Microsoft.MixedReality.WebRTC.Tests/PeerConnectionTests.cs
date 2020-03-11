@@ -17,12 +17,17 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             var pc1 = new PeerConnection();
             var pc2 = new PeerConnection();
 
+            var evExchangeCompleted = new ManualResetEventSlim(initialState: false);
             pc1.LocalSdpReadytoSend += async (string type, string sdp) =>
             {
                 await pc2.SetRemoteDescriptionAsync(type, sdp);
                 if (type == "offer")
                 {
                     pc2.CreateAnswer();
+                }
+                else
+                {
+                    evExchangeCompleted.Set();
                 }
             };
             pc2.LocalSdpReadytoSend += async (string type, string sdp) =>
@@ -31,6 +36,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 if (type == "offer")
                 {
                     pc1.CreateAnswer();
+                }
+                else
+                {
+                    evExchangeCompleted.Set();
                 }
             };
 
@@ -40,8 +49,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             var ev1 = new ManualResetEventSlim(initialState: false);
             pc1.Connected += () => ev1.Set();
+            evExchangeCompleted.Reset();
             pc1.CreateOffer();
             ev1.Wait(millisecondsTimeout: 5000);
+            evExchangeCompleted.Wait(millisecondsTimeout: 5000);
 
             pc1.Close();
             pc2.Close();
@@ -49,12 +60,17 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
         protected async Task MakeICECall(PeerConnection pc1, PeerConnection pc2)
         {
+            var evExchangeCompleted = new ManualResetEventSlim(initialState: false);
             pc1.LocalSdpReadytoSend += async (string type, string sdp) =>
             {
                 await pc2.SetRemoteDescriptionAsync(type, sdp);
                 if (type == "offer")
                 {
                     pc2.CreateAnswer();
+                }
+                else
+                {
+                    evExchangeCompleted.Set();
                 }
             };
             pc2.LocalSdpReadytoSend += async (string type, string sdp) =>
@@ -63,6 +79,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 if (type == "offer")
                 {
                     pc1.CreateAnswer();
+                }
+                else
+                {
+                    evExchangeCompleted.Set();
                 }
             };
             pc1.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, string sdpMid) =>
@@ -82,9 +102,11 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             var ev2 = new ManualResetEventSlim(initialState: false);
             pc1.Connected += () => ev1.Set();
             pc2.Connected += () => ev2.Set();
+            evExchangeCompleted.Reset();
             pc1.CreateOffer();
             ev1.Wait(millisecondsTimeout: 5000);
             ev2.Wait(millisecondsTimeout: 5000);
+            evExchangeCompleted.Wait(millisecondsTimeout: 5000);
         }
 
         [Test]

@@ -51,7 +51,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>
         /// In native land this is a <code>Microsoft::MixedReality::WebRTC::RemoteVideoTrackHandle</code>.
         /// </remarks>
-        internal RemoteVideoTrackHandle _nativeHandle = new RemoteVideoTrackHandle();
+        internal IntPtr _nativeHandle = IntPtr.Zero;
 
         /// <summary>
         /// Handle to self for interop callbacks. This adds a reference to the current object, preventing
@@ -65,20 +65,10 @@ namespace Microsoft.MixedReality.WebRTC
         private RemoteVideoTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
         // Constructor for interop-based creation; SetHandle() will be called later
-        internal RemoteVideoTrack(PeerConnection peer, string trackName) : base(peer, trackName)
+        internal RemoteVideoTrack(IntPtr handle, PeerConnection peer, string trackName) : base(peer, trackName)
         {
-        }
-
-        internal void SetHandle(RemoteVideoTrackHandle handle)
-        {
-            Debug.Assert(!handle.IsClosed);
-            // Either first-time assign or no-op (assign same value again)
-            Debug.Assert(_nativeHandle.IsInvalid || (_nativeHandle == handle));
-            if (_nativeHandle != handle)
-            {
-                _nativeHandle = handle;
-                RegisterInteropCallbacks();
-            }
+            _nativeHandle = handle;
+            RegisterInteropCallbacks();
         }
 
         private void RegisterInteropCallbacks()
@@ -111,22 +101,18 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Dispose of the native track. Invoked by its owner (<see cref="PeerConnection"/>).
         /// </summary>
-        internal void Dispose()
+        internal void OnDestroyed()
         {
-            if (_nativeHandle.IsClosed)
+            if (_nativeHandle == IntPtr.Zero)
             {
                 return;
             }
 
-            // Remove the track from the peer connection, if any
-            //Transceiver?.SetRemoteTrack(null);
             Debug.Assert(PeerConnection == null); // see OnTrackRemoved
 
             UnregisterInteropCallbacks();
 
-            // Destroy the native object. This may be delayed if a P/Invoke callback is underway,
-            // but will be handled at some point anyway, even if the managed instance is gone.
-            _nativeHandle.Dispose();
+            _nativeHandle = IntPtr.Zero;
         }
 
         internal void OnI420AFrameReady(I420AVideoFrame frame)
@@ -144,20 +130,43 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnTrackAddedToTransceiver(VideoTransceiver transceiver)
         {
             Debug.Assert(PeerConnection == transceiver.PeerConnection);
-            Debug.Assert(!_nativeHandle.IsClosed);
+            Debug.Assert(_nativeHandle != IntPtr.Zero);
             Debug.Assert(Transceiver == null);
             Debug.Assert(transceiver != null);
             Transceiver = transceiver;
             transceiver.OnRemoteTrackAdded(this);
         }
 
+        /// <summary>
+        /// Internal callback invoked when the track is removed from a peer connection,
+        /// either because the peer connection was closed or because it was detached from
+        /// the transceiver it was attached to.
+        /// </summary>
+        /// <param name="previousConnection">The peer connection the track was previously attached to.</param>
+        /// <remarks><see cref="_nativeHandle"/> is non-<c>null</c> but the native object may have been
+        /// destroyed already, so the handle should not be used.</remarks>
         internal void OnTrackRemoved(PeerConnection previousConnection)
         {
             Debug.Assert(PeerConnection == previousConnection);
-            Debug.Assert(!_nativeHandle.IsClosed);
+            Debug.Assert(_nativeHandle != IntPtr.Zero);
             PeerConnection = null;
             Transceiver.OnRemoteTrackRemoved(this);
             Transceiver = null;
+        }
+
+        /// <summary>
+        /// Internal callback invoked by the owner (<see cref="PeerConnection"/>) after the track
+        /// has been removed as a result of the peer connection being closed.
+        /// In this case, unlike <see cref="OnDestroyed"/>, the <see cref="_nativeHandle"/> has been
+        /// invalidated, so should not be used to access the native object, which was destroyed. This
+        /// is because the peer connection callbacks are unregistered before closing the peer connection,
+        /// so there is no notification about the track being removed as part of the closing.
+        /// </summary>
+        internal void OnConnectionClosed()
+        {
+            Debug.Assert(PeerConnection == null); // see OnTrackRemoved
+            // No need (and can't) unregister callbacks, the native object is already destroyed
+            _nativeHandle = IntPtr.Zero;
         }
 
         internal void OnMute(bool muted)

@@ -7,135 +7,60 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.MixedReality.WebRTC.Interop
 {
-    /// <summary>
-    /// Handle to a native transceiver object.
-    /// </summary>
-    public sealed class TransceiverHandle : SafeHandle
-    {
-        /// <summary>
-        /// Check if the current handle is invalid, which means it is not referencing
-        /// an actual native object. Note that a valid handle only means that the internal
-        /// handle references a native object, but does not guarantee that the native
-        /// object is still accessible. It is only safe to access the native object if
-        /// the handle is not closed, which implies it being valid.
-        /// </summary>
-        public override bool IsInvalid
-        {
-            get
-            {
-                return (handle == IntPtr.Zero);
-            }
-        }
-
-        /// <summary>
-        /// Default constructor for an invalid handle.
-        /// </summary>
-        public TransceiverHandle() : base(IntPtr.Zero, ownsHandle: true)
-        {
-        }
-
-        /// <summary>
-        /// Constructor for a valid handle referencing the given native object.
-        /// </summary>
-        /// <param name="handle">The valid internal handle to the native object.</param>
-        public TransceiverHandle(IntPtr handle) : base(IntPtr.Zero, ownsHandle: true)
-        {
-            SetHandle(handle);
-        }
-
-        /// <summary>
-        /// Release the native object while the handle is being closed.
-        /// </summary>
-        /// <returns>Return <c>true</c> if the native object was successfully released.</returns>
-        protected override bool ReleaseHandle()
-        {
-            TransceiverInterop.Transceiver_RemoveRef(handle);
-            return true;
-        }
-    }
-
     internal class TransceiverInterop
     {
         #region Native functions
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsTransceiverAddRef")]
-        public static unsafe extern void Transceiver_AddRef(TransceiverHandle handle);
+            EntryPoint = "mrsTransceiverSetUserData")]
+        public static unsafe extern void Transceiver_SetUserData(IntPtr handle, IntPtr userData);
 
-        // Note - This is used during SafeHandle.ReleaseHandle(), so cannot use TransceiverHandle
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsTransceiverRemoveRef")]
-        public static unsafe extern void Transceiver_RemoveRef(IntPtr handle);
+            EntryPoint = "mrsTransceiverGetUserData")]
+        public static unsafe extern IntPtr Transceiver_GetUserData(IntPtr handle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsTransceiverRegisterStateUpdatedCallback")]
-        public static unsafe extern uint Transceiver_RegisterStateUpdatedCallback(TransceiverHandle handle,
+        public static unsafe extern uint Transceiver_RegisterStateUpdatedCallback(IntPtr handle,
             StateUpdatedDelegate callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsTransceiverSetDirection")]
-        public static unsafe extern uint Transceiver_SetDirection(TransceiverHandle handle,
+        public static unsafe extern uint Transceiver_SetDirection(IntPtr handle,
             Transceiver.Direction newDirection);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsTransceiverSetLocalAudioTrack")]
-        public static unsafe extern uint Transceiver_SetLocalAudioTrack(TransceiverHandle handle,
+        public static unsafe extern uint Transceiver_SetLocalAudioTrack(IntPtr handle,
             LocalAudioTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsTransceiverSetLocalVideoTrack")]
-        public static unsafe extern uint Transceiver_SetLocalVideoTrack(TransceiverHandle handle,
+        public static unsafe extern uint Transceiver_SetLocalVideoTrack(IntPtr handle,
             LocalVideoTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsTransceiverGetLocalAudioTrack")]
-        public static unsafe extern uint Transceiver_GetLocalAudioTrack(TransceiverHandle handle,
+        public static unsafe extern uint Transceiver_GetLocalAudioTrack(IntPtr handle,
             out LocalAudioTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsTransceiverGetLocalVideoTrack")]
-        public static unsafe extern uint Transceiver_GetLocalVideoTrack(TransceiverHandle handle,
+        public static unsafe extern uint Transceiver_GetLocalVideoTrack(IntPtr handle,
             out LocalVideoTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsTransceiverGetRemoteAudioTrack")]
-        public static unsafe extern uint Transceiver_GetRemoteAudioTrack(TransceiverHandle handle,
-            out RemoteAudioTrackHandle trackHandle);
+        public static unsafe extern uint Transceiver_GetRemoteAudioTrack(IntPtr handle, out IntPtr trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsTransceiverGetRemoteVideoTrack")]
-        public static unsafe extern uint Transceiver_GetRemoteVideoTrack(TransceiverHandle handle,
-            out RemoteVideoTrackHandle trackHandle);
+        public static unsafe extern uint Transceiver_GetRemoteVideoTrack(IntPtr handle, out IntPtr trackHandle);
 
         #endregion
 
 
         #region Marshaling data structures
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        public ref struct CreateConfig
-        {
-            /// <summary>
-            /// Transceiver name.
-            /// </summary>
-            [MarshalAs(UnmanagedType.LPStr)]
-            public string Name;
-
-            /// <summary>
-            /// Kind of media the transceiver transports.
-            /// </summary>
-            public MediaKind MediaKind;
-
-            /// <summary>
-            /// Media line index of the transceiver.
-            /// </summary>
-            public int MlineIndex;
-
-            /// <summary>
-            /// Initial desired direction of the transceiver on creation.
-            /// </summary>
-            public Transceiver.Direction DesiredDirection;
-        }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         internal ref struct InitConfig
@@ -162,16 +87,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             [MarshalAs(UnmanagedType.LPStr)]
             public string encodedStreamIds;
 
-            /// <summary>
-            /// Handle to the video transceiver wrapper.
-            /// </summary>
-            public IntPtr transceiverHandle;
-
-            public InitConfig(Transceiver transceiver, TransceiverInitSettings settings)
+            public InitConfig(MediaKind mediaKind, TransceiverInitSettings settings)
             {
                 name = settings?.Name;
-                mediaKind = transceiver.MediaKind;
-                transceiverHandle = Utils.MakeWrapperRef(transceiver);
+                this.mediaKind = mediaKind;
                 desiredDirection = (settings != null ? settings.InitialDesiredDirection : new TransceiverInitSettings().InitialDesiredDirection);
                 encodedStreamIds = Utils.EncodeTransceiverStreamIDs(settings?.StreamIDs);
             }
@@ -201,30 +120,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static readonly StateUpdatedDelegate StateUpdatedCallback = TransceiverStateUpdatedCallback;
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate IntPtr CreateObjectDelegate(IntPtr peer, in CreateConfig config);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void FinishCreateDelegate(IntPtr transceiver, IntPtr interopHandle);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void StateUpdatedDelegate(IntPtr transceiver, StateUpdatedReason reason,
             OptDirection negotiatedDirection, Transceiver.Direction desiredDirection);
-
-        [MonoPInvokeCallback(typeof(CreateObjectDelegate))]
-        public static IntPtr TransceiverCreateObjectCallback(IntPtr peer, in CreateConfig config)
-        {
-            var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
-            var videoTranceiverWrapper = CreateWrapper(peerWrapper, in config);
-            return Utils.MakeWrapperRef(videoTranceiverWrapper);
-        }
-
-        [MonoPInvokeCallback(typeof(FinishCreateDelegate))]
-        public static void TransceiverFinishCreateCallback(IntPtr transceiver, IntPtr interopHandle)
-        {
-            var transceiverWrapper = Utils.ToWrapper<Transceiver>(transceiver);
-            transceiverWrapper.SetHandle(new TransceiverHandle(interopHandle));
-            transceiverWrapper.PeerConnection.OnTransceiverAdded(transceiverWrapper);
-        }
 
         [MonoPInvokeCallback(typeof(StateUpdatedDelegate))]
         private static void TransceiverStateUpdatedCallback(IntPtr transceiver, StateUpdatedReason reason,
@@ -240,17 +137,25 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         #region Utilities
 
-        public static Transceiver CreateWrapper(PeerConnection parent, in CreateConfig config)
+        public static Transceiver CreateWrapper(PeerConnection parent, in PeerConnectionInterop.TransceiverAddedInfo info)
         {
-            if (config.MediaKind == MediaKind.Audio)
+            // Create a new wrapper
+            Transceiver wrapper;
+            if (info.mediaKind == MediaKind.Audio)
             {
-                return new AudioTransceiver(parent, config.MlineIndex, config.Name, config.DesiredDirection);
+                wrapper = new AudioTransceiver(info.transceiverHandle, parent, info.mlineIndex, info.name, info.desiredDirection);
             }
             else
             {
-                Debug.Assert(config.MediaKind == MediaKind.Video);
-                return new VideoTransceiver(parent, config.MlineIndex, config.Name, config.DesiredDirection);
+                Debug.Assert(info.mediaKind == MediaKind.Video);
+                wrapper = new VideoTransceiver(info.transceiverHandle, parent, info.mlineIndex, info.name, info.desiredDirection);
             }
+
+            // Assign a reference to it inside the UserData of the native object so it can be retrieved whenever needed
+            IntPtr wrapperRef = Utils.MakeWrapperRef(wrapper);
+            Transceiver_SetUserData(info.transceiverHandle, wrapperRef);
+
+            return wrapper;
         }
 
         public static void RegisterCallbacks(Transceiver transceiver, out IntPtr argsRef)
@@ -259,7 +164,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             Transceiver_RegisterStateUpdatedCallback(transceiver._nativeHandle, StateUpdatedCallback, argsRef);
         }
 
-        public static void UnregisterCallbacks(TransceiverHandle handle, IntPtr argsRef)
+        public static void UnregisterCallbacks(IntPtr handle, IntPtr argsRef)
         {
             Utils.ReleaseWrapperRef(argsRef);
             Transceiver_RegisterStateUpdatedCallback(handle, null, IntPtr.Zero);
