@@ -35,9 +35,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private LocalAudioTrack _localTrack = null;
 
-        // Constructor for interop-based creation; SetHandle() will be called later
-        internal AudioTransceiver(PeerConnection peerConnection, int mlineIndex, string name, Direction initialDesiredDirection)
-            : base(MediaKind.Audio, peerConnection, mlineIndex, name, initialDesiredDirection)
+        internal AudioTransceiver(IntPtr handle, PeerConnection peerConnection, int mlineIndex, string name, Direction initialDesiredDirection)
+            : base(handle, MediaKind.Audio, peerConnection, mlineIndex, name, initialDesiredDirection)
         {
         }
 
@@ -141,7 +140,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"(VideoTransceiver)\"{Name}\"";
+            return $"(AudioTransceiver)\"{Name}\"";
         }
     }
 }

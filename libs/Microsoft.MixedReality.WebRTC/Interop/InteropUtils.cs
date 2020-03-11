@@ -61,16 +61,16 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
         internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
 
-        public static IntPtr MakeWrapperRef(object obj)
+        public static IntPtr MakeWrapperRef(object wrapper)
         {
-            var handle = GCHandle.Alloc(obj, GCHandleType.Normal);
-            var arg = GCHandle.ToIntPtr(handle);
-            return arg;
+            var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
+            var wrapperRef = GCHandle.ToIntPtr(handle);
+            return wrapperRef;
         }
 
-        public static T ToWrapper<T>(IntPtr peer) where T : class
+        public static T ToWrapper<T>(IntPtr wrapperRef) where T : class
         {
-            var handle = GCHandle.FromIntPtr(peer);
+            var handle = GCHandle.FromIntPtr(wrapperRef);
             var wrapper = (handle.Target as T);
             return wrapper;
         }

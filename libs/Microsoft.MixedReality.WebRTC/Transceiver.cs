@@ -127,38 +127,31 @@ namespace Microsoft.MixedReality.WebRTC
         /// Handle to the native Transceiver object.
         /// </summary>
         /// <remarks>
-        /// In native land this is a <code>Microsoft::MixedReality::WebRTC::TransceiverHandle</code>.
+        /// In native land this is a <code>mrsTransceiverHandle</code>.
         /// </remarks>
-        internal TransceiverHandle _nativeHandle = new TransceiverHandle();
+        internal IntPtr _nativeHandle = IntPtr.Zero;
 
         private IntPtr _argsRef = IntPtr.Zero;
 
         /// <summary>
         /// Create a new transceiver associated with a given peer connection.
         /// </summary>
+        /// <param name="handle">Handle to the native transceiver object.</param>
         /// <param name="mediaKind">The media kind of the transceiver and its tracks.</param>
         /// <param name="peerConnection">The peer connection owning this transceiver.</param>
         /// <param name="mlineIndex">The transceiver media line index in SDP.</param>
         /// <param name="name">The transceiver name.</param>
-        protected Transceiver(MediaKind mediaKind, PeerConnection peerConnection, int mlineIndex, string name, Direction initialDesiredDirection)
+        /// <param name="initialDesiredDirection">Initial value to initialize <see cref="DesiredDirection"/> with.</param>
+        protected Transceiver(IntPtr handle, MediaKind mediaKind, PeerConnection peerConnection, int mlineIndex, string name, Direction initialDesiredDirection)
         {
+            Debug.Assert(handle != IntPtr.Zero);
+            _nativeHandle = handle;
             MediaKind = mediaKind;
             PeerConnection = peerConnection;
             MlineIndex = mlineIndex;
             Name = name;
             _desiredDirection = initialDesiredDirection;
-        }
-
-        internal void SetHandle(TransceiverHandle handle)
-        {
-            Debug.Assert(!handle.IsClosed);
-            // Either first-time assign or no-op (assign same value again)
-            Debug.Assert(_nativeHandle.IsInvalid || (_nativeHandle == handle));
-            if (_nativeHandle != handle)
-            {
-                _nativeHandle = handle;
-                TransceiverInterop.RegisterCallbacks(this, out _argsRef);
-            }
+            TransceiverInterop.RegisterCallbacks(this, out _argsRef);
         }
 
         /// <summary>
@@ -177,6 +170,19 @@ namespace Microsoft.MixedReality.WebRTC
             var res = TransceiverInterop.Transceiver_SetDirection(_nativeHandle, newDirection);
             Utils.ThrowOnErrorCode(res);
             _desiredDirection = newDirection;
+        }
+
+        /// <summary>
+        /// Clean-up callback invoked by the peer connection when the transceiver is removed
+        /// from it and destroyed.
+        /// </summary>
+        internal void OnDestroyed()
+        {
+            Debug.Assert(_nativeHandle != IntPtr.Zero);
+            _nativeHandle = IntPtr.Zero;
+            // No need (and can't) unregister callbacks, the native transceiver is already destroyed
+            Utils.ReleaseWrapperRef(_argsRef);
+            _argsRef = IntPtr.Zero;
         }
 
         /// <summary>

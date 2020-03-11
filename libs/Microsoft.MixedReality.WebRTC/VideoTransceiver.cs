@@ -35,9 +35,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private LocalVideoTrack _localTrack = null;
 
-        // Constructor for interop-based creation; SetHandle() will be called later
-        internal VideoTransceiver(PeerConnection peerConnection, int mlineIndex, string name, Direction initialDesiredDirection)
-            : base(MediaKind.Video, peerConnection, mlineIndex, name, initialDesiredDirection)
+        internal VideoTransceiver(IntPtr handle, PeerConnection peerConnection, int mlineIndex, string name, Direction initialDesiredDirection)
+            : base(handle, MediaKind.Video, peerConnection, mlineIndex, name, initialDesiredDirection)
         {
         }
 

@@ -2,46 +2,62 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace Microsoft.MixedReality.WebRTC.Tests
 {
-    [TestFixture]
-    internal class VideoTransceiverTests
+    internal class PeerConnectionTestBase
     {
-        PeerConnection pc1_ = null;
-        PeerConnection pc2_ = null;
-        ManualResetEventSlim connectedEvent1_ = null;
-        ManualResetEventSlim connectedEvent2_ = null;
-        ManualResetEventSlim remoteDescAppliedEvent1_ = null;
-        ManualResetEventSlim remoteDescAppliedEvent2_ = null;
-        ManualResetEventSlim renegotiationEvent1_ = null;
-        ManualResetEventSlim renegotiationEvent2_ = null;
-        ManualResetEventSlim audioTrackAddedEvent1_ = null;
-        ManualResetEventSlim audioTrackAddedEvent2_ = null;
-        ManualResetEventSlim audioTrackRemovedEvent1_ = null;
-        ManualResetEventSlim audioTrackRemovedEvent2_ = null;
-        ManualResetEventSlim videoTrackAddedEvent1_ = null;
-        ManualResetEventSlim videoTrackAddedEvent2_ = null;
-        ManualResetEventSlim videoTrackRemovedEvent1_ = null;
-        ManualResetEventSlim videoTrackRemovedEvent2_ = null;
-        ManualResetEventSlim iceConnectedEvent1_ = null;
-        ManualResetEventSlim iceConnectedEvent2_ = null;
-        bool suspendOffer1_ = false;
-        bool suspendOffer2_ = false;
+        protected readonly SdpSemantic sdpSemantic_;
+
+        protected PeerConnection pc1_ = null;
+        protected PeerConnection pc2_ = null;
+        protected bool exchangePending_ = false;
+        protected ManualResetEventSlim exchangeCompleted_ = null;
+        protected ManualResetEventSlim connectedEvent1_ = null;
+        protected ManualResetEventSlim connectedEvent2_ = null;
+        protected ManualResetEventSlim remoteDescAppliedEvent1_ = null;
+        protected ManualResetEventSlim remoteDescAppliedEvent2_ = null;
+        protected ManualResetEventSlim renegotiationEvent1_ = null;
+        protected ManualResetEventSlim renegotiationEvent2_ = null;
+        protected ManualResetEventSlim dataChannelAddedEvent1_ = null;
+        protected ManualResetEventSlim dataChannelAddedEvent2_ = null;
+        protected ManualResetEventSlim dataChannelRemovedEvent1_ = null;
+        protected ManualResetEventSlim dataChannelRemovedEvent2_ = null;
+        protected ManualResetEventSlim audioTrackAddedEvent1_ = null;
+        protected ManualResetEventSlim audioTrackAddedEvent2_ = null;
+        protected ManualResetEventSlim audioTrackRemovedEvent1_ = null;
+        protected ManualResetEventSlim audioTrackRemovedEvent2_ = null;
+        protected ManualResetEventSlim videoTrackAddedEvent1_ = null;
+        protected ManualResetEventSlim videoTrackAddedEvent2_ = null;
+        protected ManualResetEventSlim videoTrackRemovedEvent1_ = null;
+        protected ManualResetEventSlim videoTrackRemovedEvent2_ = null;
+        protected ManualResetEventSlim iceConnectedEvent1_ = null;
+        protected ManualResetEventSlim iceConnectedEvent2_ = null;
+        protected bool suspendOffer1_ = false;
+        protected bool suspendOffer2_ = false;
+
+        public PeerConnectionTestBase(SdpSemantic sdpSemantic)
+        {
+            sdpSemantic_ = sdpSemantic;
+        }
 
         [SetUp]
         public void SetupConnection()
         {
+            Assert.AreEqual(0, Library.ReportLiveObjects());
+
             // Create the 2 peers
             var config = new PeerConnectionConfiguration();
+            config.SdpSemantic = sdpSemantic_;
             pc1_ = new PeerConnection();
             pc2_ = new PeerConnection();
             pc1_.InitializeAsync(config).Wait(); // cannot use async/await in OneTimeSetUp
             pc2_.InitializeAsync(config).Wait();
+
+            exchangePending_ = false;
+            exchangeCompleted_ = new ManualResetEventSlim(false);
 
             // Allocate callback events
             connectedEvent1_ = new ManualResetEventSlim(false);
@@ -52,6 +68,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             iceConnectedEvent2_ = new ManualResetEventSlim(false);
             renegotiationEvent1_ = new ManualResetEventSlim(false);
             renegotiationEvent2_ = new ManualResetEventSlim(false);
+            dataChannelAddedEvent1_ = new ManualResetEventSlim(false);
+            dataChannelAddedEvent2_ = new ManualResetEventSlim(false);
+            dataChannelRemovedEvent1_ = new ManualResetEventSlim(false);
+            dataChannelRemovedEvent2_ = new ManualResetEventSlim(false);
             audioTrackAddedEvent1_ = new ManualResetEventSlim(false);
             audioTrackAddedEvent2_ = new ManualResetEventSlim(false);
             audioTrackRemovedEvent1_ = new ManualResetEventSlim(false);
@@ -72,6 +92,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             pc2_.IceStateChanged += OnIceStateChanged2;
             pc1_.RenegotiationNeeded += OnRenegotiationNeeded1;
             pc2_.RenegotiationNeeded += OnRenegotiationNeeded2;
+            pc1_.DataChannelAdded += OnDataChannelAdded1;
+            pc2_.DataChannelAdded += OnDataChannelAdded2;
+            pc1_.DataChannelRemoved += OnDataChannelRemoved1;
+            pc2_.DataChannelRemoved += OnDataChannelRemoved2;
             pc1_.AudioTrackAdded += OnAudioTrackAdded1;
             pc2_.AudioTrackAdded += OnAudioTrackAdded2;
             pc1_.AudioTrackRemoved += OnAudioTrackRemoved1;
@@ -80,6 +104,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             pc2_.VideoTrackAdded += OnVideoTrackAdded2;
             pc1_.VideoTrackRemoved += OnVideoTrackRemoved1;
             pc2_.VideoTrackRemoved += OnVideoTrackRemoved2;
+
+            // Enable automatic renegotiation
+            suspendOffer1_ = false;
+            suspendOffer2_ = false;
         }
 
         [TearDown]
@@ -94,6 +122,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             pc2_.IceStateChanged -= OnIceStateChanged2;
             pc1_.RenegotiationNeeded -= OnRenegotiationNeeded1;
             pc2_.RenegotiationNeeded -= OnRenegotiationNeeded2;
+            pc1_.DataChannelAdded -= OnDataChannelAdded1;
+            pc2_.DataChannelAdded -= OnDataChannelAdded2;
+            pc1_.DataChannelRemoved -= OnDataChannelRemoved1;
+            pc2_.DataChannelRemoved -= OnDataChannelRemoved2;
             pc1_.AudioTrackAdded -= OnAudioTrackAdded1;
             pc2_.AudioTrackAdded -= OnAudioTrackAdded2;
             pc1_.AudioTrackRemoved -= OnAudioTrackRemoved1;
@@ -103,7 +135,15 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             pc1_.VideoTrackRemoved -= OnVideoTrackRemoved1;
             pc2_.VideoTrackRemoved -= OnVideoTrackRemoved2;
 
+            Assert.IsFalse(exchangePending_);
+            exchangeCompleted_.Dispose();
+            exchangeCompleted_ = null;
+
             // Clean-up callback events
+            dataChannelAddedEvent1_.Dispose();
+            dataChannelAddedEvent1_ = null;
+            dataChannelRemovedEvent1_.Dispose();
+            dataChannelRemovedEvent1_ = null;
             audioTrackAddedEvent1_.Dispose();
             audioTrackAddedEvent1_ = null;
             audioTrackRemovedEvent1_.Dispose();
@@ -144,6 +184,48 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             pc2_.Close();
             pc2_.Dispose();
             pc2_ = null;
+
+            Assert.AreEqual(0, Library.ReportLiveObjects());
+        }
+
+        /// <summary>
+        /// Start an SDP exchange by sending an offer from the given peer.
+        /// </summary>
+        /// <param name="offeringPeer">The peer to call <see cref="PeerConnection.CreateOffer"/> on.</param>
+        protected void StartOfferWith(PeerConnection offeringPeer)
+        {
+            Assert.IsFalse(exchangePending_);
+            exchangePending_ = true;
+            exchangeCompleted_.Reset();
+            connectedEvent1_.Reset();
+            connectedEvent2_.Reset();
+            Assert.IsTrue(offeringPeer.CreateOffer());
+        }
+
+        /// <summary>
+        /// Wait until transports are writable. This is not the end of the SDP
+        /// exchange, but transceivers are starting to send/receive. The offer
+        /// was accepted, but the offering peer has yet to receive and apply an
+        /// SDP answer though.
+        /// </summary>
+        protected void WaitForTransportsWritable()
+        {
+            Assert.IsTrue(exchangePending_);
+            Assert.IsTrue(connectedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+            Assert.IsTrue(connectedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+            connectedEvent1_.Reset();
+            connectedEvent2_.Reset();
+        }
+
+        /// <summary>
+        /// Wait until the SDP exchange finally completed and the answer has been
+        /// applied back on the offering peer.
+        /// </summary>
+        protected void WaitForSdpExchangeCompleted()
+        {
+            Assert.IsTrue(exchangeCompleted_.Wait(TimeSpan.FromSeconds(60.0)));
+            Assert.IsFalse(exchangePending_);
+            exchangeCompleted_.Reset();
         }
 
         private void OnConnected1()
@@ -158,21 +240,33 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
         private async void OnLocalSdpReady1(string type, string sdp)
         {
+            Assert.IsTrue(exchangePending_);
             await pc2_.SetRemoteDescriptionAsync(type, sdp);
             remoteDescAppliedEvent2_.Set();
             if (type == "offer")
             {
                 pc2_.CreateAnswer();
             }
+            else
+            {
+                exchangePending_ = false;
+                exchangeCompleted_.Set();
+            }
         }
 
         private async void OnLocalSdpReady2(string type, string sdp)
         {
+            Assert.IsTrue(exchangePending_);
             await pc1_.SetRemoteDescriptionAsync(type, sdp);
             remoteDescAppliedEvent1_.Set();
             if (type == "offer")
             {
                 pc1_.CreateAnswer();
+            }
+            else
+            {
+                exchangePending_ = false;
+                exchangeCompleted_.Set();
             }
         }
 
@@ -191,7 +285,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             renegotiationEvent1_.Set();
             if (pc1_.IsConnected && !suspendOffer1_)
             {
-                pc1_.CreateOffer();
+                StartOfferWith(pc1_);
             }
         }
 
@@ -200,7 +294,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             renegotiationEvent2_.Set();
             if (pc2_.IsConnected && !suspendOffer2_)
             {
-                pc2_.CreateOffer();
+                StartOfferWith(pc2_);
             }
         }
 
@@ -260,154 +354,24 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             }
         }
 
-        private void WaitForSdpExchangeCompleted()
+        private void OnDataChannelAdded1(DataChannel channel)
         {
-            Assert.True(connectedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            Assert.True(connectedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
-            connectedEvent1_.Reset();
-            connectedEvent2_.Reset();
+            dataChannelAddedEvent1_.Set();
         }
 
-        [Test]
-        public void SetDirection()
+        private void OnDataChannelAdded2(DataChannel channel)
         {
-            // This test use manual offers
-            suspendOffer1_ = true;
-
-            // Create video transceiver on #1. This triggers a renegotiation needed event.
-            var transceiver_settings = new TransceiverInitSettings
-            {
-                Name = "transceiver1",
-            };
-            var transceiver1 = pc1_.AddVideoTransceiver(transceiver_settings);
-            Assert.NotNull(transceiver1);
-            Assert.AreEqual(transceiver1.DesiredDirection, Transceiver.Direction.SendReceive); // from implementation
-            Assert.AreEqual(transceiver1.NegotiatedDirection, null);
-            Assert.AreEqual(pc1_, transceiver1.PeerConnection);
-            Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1));
-            Assert.IsNull(transceiver1.LocalTrack);
-            Assert.IsNull(transceiver1.RemoteTrack);
-
-            // Wait for local SDP re-negotiation event on #1.
-            // This will not create an offer, since we're not connected yet.
-            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            renegotiationEvent1_.Reset();
-
-            // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
-            Assert.True(pc1_.IsConnected);
-            Assert.True(pc2_.IsConnected);
-
-            // Wait for transceiver to finish updating before changing its direction
-            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(10.0)));
-            remoteDescAppliedEvent1_.Reset();
-
-            // Note: use manual list instead of Enum.GetValues() to control order, and not
-            // get Inactive first (which is the current value, so wouldn't make any change).
-            var desired = new List<Transceiver.Direction> {
-                Transceiver.Direction.SendOnly, Transceiver.Direction.SendReceive,
-                Transceiver.Direction.ReceiveOnly, Transceiver.Direction.Inactive };
-            var negotiated = new List<Transceiver.Direction> {
-                Transceiver.Direction.SendOnly, Transceiver.Direction.SendOnly,
-                Transceiver.Direction.Inactive, Transceiver.Direction.Inactive };
-            for (int i = 0; i < desired.Count; ++i)
-            {
-                var direction = desired[i];
-
-                // Change flow direction
-                renegotiationEvent1_.Reset();
-                transceiver1.SetDirection(direction);
-                Assert.AreEqual(transceiver1.DesiredDirection, direction);
-
-                // Wait for local SDP re-negotiation event on #1.
-                Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(10.0)));
-                renegotiationEvent1_.Reset();
-
-                // Renegotiate
-                remoteDescAppliedEvent1_.Reset();
-                Assert.True(pc1_.CreateOffer());
-                WaitForSdpExchangeCompleted();
-                Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(10.0)));
-                remoteDescAppliedEvent1_.Reset();
-
-                // Observe the new negotiated direction
-                Assert.AreEqual(transceiver1.DesiredDirection, direction);
-                Assert.AreEqual(transceiver1.NegotiatedDirection, negotiated[i]);
-            }
+            dataChannelAddedEvent2_.Set();
         }
 
-        [Test(Description = "Check that the transceiver name is correctly broadcast to the remote peer when the remote transceiver is automatically created.")]
-        public void PairingNameAuto()
+        private void OnDataChannelRemoved1(DataChannel channel)
         {
-            // This test use manual offers
-            suspendOffer1_ = true;
-
-            // Create video transceiver on #1. This triggers a renegotiation needed event.
-            string pairingName = "video_feed";
-            var initSettings = new TransceiverInitSettings
-            {
-                Name = pairingName,
-                InitialDesiredDirection = Transceiver.Direction.SendOnly,
-                StreamIDs = new List<string> { "id1", "id2" } // dummy
-            };
-            var transceiver1 = pc1_.AddVideoTransceiver(initSettings);
-            Assert.NotNull(transceiver1);
-            Assert.AreEqual(pairingName, transceiver1.Name);
-            Assert.AreEqual(transceiver1.DesiredDirection, Transceiver.Direction.SendOnly);
-            Assert.AreEqual(transceiver1.NegotiatedDirection, null);
-            Assert.AreEqual(pc1_, transceiver1.PeerConnection);
-            Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1));
-            Assert.IsNull(transceiver1.LocalTrack);
-            Assert.IsNull(transceiver1.RemoteTrack);
-
-            // Wait for local SDP re-negotiation event on #1.
-            // This will not create an offer, since we're not connected yet.
-            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            renegotiationEvent1_.Reset();
-
-            // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
-            Assert.True(pc1_.IsConnected);
-            Assert.True(pc2_.IsConnected);
-
-            // Wait for transceiver to finish updating before changing its direction
-            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(10.0)));
-            remoteDescAppliedEvent1_.Reset();
-
-            // Find the remote transceiver
-            Assert.AreEqual(1, pc2_.Transceivers.Count);
-            var transceiver2 = pc2_.Transceivers[0];
-            Assert.NotNull(transceiver2);
-
-            // Check name was associated
-            Assert.AreEqual(pairingName, transceiver2.Name);
+            dataChannelRemovedEvent1_.Set();
         }
 
-        [Test(Description = "#179 - Ensure AddVideoTransceiver(null) works.")]
-        public void AddVideoTransceiver_Null()
+        private void OnDataChannelRemoved2(DataChannel channel)
         {
-            var tr = pc1_.AddVideoTransceiver();
-            Assert.IsNotNull(tr);
-        }
-
-        [Test(Description = "#179 - Ensure AddVideoTransceiver(default) works.")]
-        public void AddVideoTransceiver_Default()
-        {
-            var settings = new TransceiverInitSettings();
-            var tr = pc1_.AddVideoTransceiver(settings);
-            Assert.IsNotNull(tr);
-        }
-
-        [Test]
-        public void AddVideoTransceiver_InvalidName()
-        {
-            var settings = new TransceiverInitSettings();
-            settings.Name = "invalid name";
-            VideoTransceiver tr = null;
-            Assert.Throws<ArgumentException>(() => { tr = pc1_.AddVideoTransceiver(settings); });
-            Assert.IsNull(tr);
+            dataChannelRemovedEvent2_.Set();
         }
     }
 }

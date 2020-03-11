@@ -832,7 +832,6 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private object _openCloseLock = new object();
 
-        private PeerConnectionInterop.InteropCallbacks _interopCallbacks;
         private PeerConnectionInterop.PeerCallbackArgs _peerCallbackArgs;
 
         /// <summary>
@@ -905,15 +904,6 @@ namespace Microsoft.MixedReality.WebRTC
                 // Create and lock in memory delegates for all the static callback wrappers (see below).
                 // This avoids delegates being garbage-collected, since the P/Invoke mechanism by itself
                 // does not guarantee their lifetime.
-                _interopCallbacks = new PeerConnectionInterop.InteropCallbacks()
-                {
-                    Peer = this,
-                    TransceiverCreateObjectCallback = TransceiverInterop.TransceiverCreateObjectCallback,
-                    TransceiverFinishCreateCallbak = TransceiverInterop.TransceiverFinishCreateCallback,
-                    RemoteAudioTrackCreateObjectCallback = RemoteAudioTrackInterop.RemoteAudioTrackCreateObjectCallback,
-                    RemoteVideoTrackCreateObjectCallback = RemoteVideoTrackInterop.RemoteVideoTrackCreateObjectCallback,
-                    DataChannelCreateObjectCallback = DataChannelInterop.DataChannelCreateObjectCallback,
-                };
                 _peerCallbackArgs = new PeerConnectionInterop.PeerCallbackArgs()
                 {
                     Peer = this,
@@ -925,30 +915,12 @@ namespace Microsoft.MixedReality.WebRTC
                     IceStateChangedCallback = PeerConnectionInterop.IceStateChangedCallback,
                     IceGatheringStateChangedCallback = PeerConnectionInterop.IceGatheringStateChangedCallback,
                     RenegotiationNeededCallback = PeerConnectionInterop.RenegotiationNeededCallback,
+                    TransceiverAddedCallback = PeerConnectionInterop.TransceiverAddedCallback,
                     AudioTrackAddedCallback = PeerConnectionInterop.AudioTrackAddedCallback,
                     AudioTrackRemovedCallback = PeerConnectionInterop.AudioTrackRemovedCallback,
                     VideoTrackAddedCallback = PeerConnectionInterop.VideoTrackAddedCallback,
                     VideoTrackRemovedCallback = PeerConnectionInterop.VideoTrackRemovedCallback,
                 };
-
-                // Cache values in local variables before starting async task, to avoid any
-                // subsequent external change from affecting that task.
-                // Also set default values, as the native call doesn't handle NULL.
-                PeerConnectionInterop.PeerConnectionConfiguration nativeConfig;
-                if (config != null)
-                {
-                    nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration
-                    {
-                        EncodedIceServers = string.Join("\n\n", config.IceServers),
-                        IceTransportType = config.IceTransportType,
-                        BundlePolicy = config.BundlePolicy,
-                        SdpSemantic = config.SdpSemantic,
-                    };
-                }
-                else
-                {
-                    nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration();
-                }
 
                 // On UWP PeerConnectionCreate() fails on main UI thread, so always initialize the native peer
                 // connection asynchronously from a background worker thread.
@@ -956,7 +928,26 @@ namespace Microsoft.MixedReality.WebRTC
                 {
                     token.ThrowIfCancellationRequested();
 
-                    uint res = PeerConnectionInterop.PeerConnection_Create(nativeConfig, GCHandle.ToIntPtr(_selfHandle), out _nativePeerhandle);
+                    // Cache values in local variables before starting async task, to avoid any
+                    // subsequent external change from affecting that task.
+                    // Also set default values, as the native call doesn't handle NULL.
+                    PeerConnectionInterop.PeerConnectionConfiguration nativeConfig;
+                    if (config != null)
+                    {
+                        nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration
+                        {
+                            EncodedIceServers = string.Join("\n\n", config.IceServers),
+                            IceTransportType = config.IceTransportType,
+                            BundlePolicy = config.BundlePolicy,
+                            SdpSemantic = config.SdpSemantic,
+                        };
+                    }
+                    else
+                    {
+                        nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration();
+                    }
+
+                    uint res = PeerConnectionInterop.PeerConnection_Create(ref nativeConfig, out _nativePeerhandle);
 
                     lock (_openCloseLock)
                     {
@@ -965,7 +956,6 @@ namespace Microsoft.MixedReality.WebRTC
                         {
                             if (_selfHandle.IsAllocated)
                             {
-                                _interopCallbacks = null;
                                 _peerCallbackArgs = null;
                                 _selfHandle.Free();
                             }
@@ -998,16 +988,6 @@ namespace Microsoft.MixedReality.WebRTC
                         // Since the current PeerConnection instance is already locked via _selfHandle,
                         // and it references all delegates via _peerCallbackArgs, those also can't be GC'd.
                         var self = GCHandle.ToIntPtr(_selfHandle);
-                        var interopCallbacks = new PeerConnectionInterop.MarshaledInteropCallbacks
-                        {
-                            TransceiverCreateObjectCallback = _interopCallbacks.TransceiverCreateObjectCallback,
-                            TransceiverFinishCreateCallbak = _interopCallbacks.TransceiverFinishCreateCallbak,
-                            RemoteAudioTrackCreateObjectCallback = _interopCallbacks.RemoteAudioTrackCreateObjectCallback,
-                            RemoteVideoTrackCreateObjectCallback = _interopCallbacks.RemoteVideoTrackCreateObjectCallback,
-                            DataChannelCreateObjectCallback = _interopCallbacks.DataChannelCreateObjectCallback
-                        };
-                        PeerConnectionInterop.PeerConnection_RegisterInteropCallbacks(
-                            _nativePeerhandle, in interopCallbacks);
                         PeerConnectionInterop.PeerConnection_RegisterConnectedCallback(
                             _nativePeerhandle, _peerCallbackArgs.ConnectedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterLocalSdpReadytoSendCallback(
@@ -1020,6 +1000,8 @@ namespace Microsoft.MixedReality.WebRTC
                             _nativePeerhandle, _peerCallbackArgs.IceGatheringStateChangedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterRenegotiationNeededCallback(
                             _nativePeerhandle, _peerCallbackArgs.RenegotiationNeededCallback, self);
+                        PeerConnectionInterop.PeerConnection_RegisterTransceiverAddedCallback(
+                            _nativePeerhandle, _peerCallbackArgs.TransceiverAddedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterAudioTrackAddedCallback(
                             _nativePeerhandle, _peerCallbackArgs.AudioTrackAddedCallback, self);
                         PeerConnectionInterop.PeerConnection_RegisterAudioTrackRemovedCallback(
@@ -1066,9 +1048,6 @@ namespace Microsoft.MixedReality.WebRTC
                 IsConnected = false;
 
                 // Unregister all callbacks and free the delegates
-                var interopCallbacks = new PeerConnectionInterop.MarshaledInteropCallbacks();
-                PeerConnectionInterop.PeerConnection_RegisterInteropCallbacks(
-                    _nativePeerhandle, in interopCallbacks);
                 PeerConnectionInterop.PeerConnection_RegisterConnectedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterLocalSdpReadytoSendCallback(
@@ -1080,6 +1059,8 @@ namespace Microsoft.MixedReality.WebRTC
                 PeerConnectionInterop.PeerConnection_RegisterIceGatheringStateChangedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterRenegotiationNeededCallback(
+                    _nativePeerhandle, null, IntPtr.Zero);
+                PeerConnectionInterop.PeerConnection_RegisterTransceiverAddedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterAudioTrackAddedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
@@ -1095,7 +1076,6 @@ namespace Microsoft.MixedReality.WebRTC
                     _nativePeerhandle, null, IntPtr.Zero);
                 if (_selfHandle.IsAllocated)
                 {
-                    _interopCallbacks = null;
                     _peerCallbackArgs = null;
                     _selfHandle.Free();
                 }
@@ -1107,13 +1087,15 @@ namespace Microsoft.MixedReality.WebRTC
             initTask.Wait();
 
             // Close the native peer connection, disconnecting from the remote peer if currently connected.
+            // This will invalidate all handles to transceivers and remote tracks, as the corresponding
+            // native objects will be destroyed.
             PeerConnectionInterop.PeerConnection_Close(_nativePeerhandle);
 
             // Destroy the native peer connection object. This may be delayed if a P/Invoke callback is underway,
             // but will be handled at some point anyway, even if the PeerConnection managed instance is gone.
             _nativePeerhandle.Close();
 
-            // Notify local tracks they have been removed
+            // Notify tracks they have been removed
             int count = LocalAudioTracks.Count;
             while (count > 0)
             {
@@ -1133,7 +1115,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 var track = RemoteAudioTracks[count - 1];
                 track.OnTrackRemoved(this);
-                track.Dispose(); // remote tracks are owned
+                track.OnConnectionClosed();
                 --count;
             }
             Debug.Assert(RemoteAudioTracks.Count == 0);
@@ -1142,17 +1124,17 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 var track = RemoteVideoTracks[count - 1];
                 track.OnTrackRemoved(this);
-                track.Dispose(); // remote tracks are owned
+                track.OnConnectionClosed();
                 --count;
             }
             Debug.Assert(RemoteVideoTracks.Count == 0);
 
-            // Dispose of owned objects
+            // Notify owned objects to perform clean-up.
             lock (_tracksLock)
             {
                 foreach (var transceiver in Transceivers)
                 {
-                    transceiver?._nativeHandle.Close();
+                    transceiver?.OnDestroyed();
                 }
                 Transceivers.Clear();
             }
@@ -1234,26 +1216,18 @@ namespace Microsoft.MixedReality.WebRTC
             // while the transceiver is in an intermediate state.
             using (var renegotiationNeeded = new ScopedDelayedEvent(_renegotiationNeededEvent))
             {
-                // Create the transceiver implementation and its wrapper
+                // Create the transceiver implementation
                 settings = settings ?? new TransceiverInitSettings();
-                int mlineIndex = Transceivers.Count; //< TODO: retrieve from interop for robustness?
-                Transceiver transceiver;
-                if (mediaKind == MediaKind.Audio)
-                {
-                    transceiver = new AudioTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
-                }
-                else
-                {
-                    transceiver = new VideoTransceiver(this, mlineIndex, settings.Name, settings.InitialDesiredDirection);
-                }
-                TransceiverInterop.InitConfig config = new TransceiverInterop.InitConfig(transceiver, settings);
-                Debug.Assert(transceiver.DesiredDirection == config.desiredDirection);
-                uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, in config,
-                    out TransceiverHandle transceiverHandle);
+                TransceiverInterop.InitConfig config = new TransceiverInterop.InitConfig(mediaKind, settings);
+                uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, in config, out IntPtr transceiverHandle);
                 Utils.ThrowOnErrorCode(res);
-                transceiver.SetHandle(transceiverHandle);
-                OnTransceiverAdded(transceiver);
-                return transceiver;
+
+                // The implementation fires the TransceiverAdded event, which creates the wrapper and
+                // stores a reference in the UserData of the native object.
+                IntPtr transceiver = TransceiverInterop.Transceiver_GetUserData(transceiverHandle);
+                Debug.Assert(transceiver != IntPtr.Zero);
+                var wrapper = Utils.ToWrapper<Transceiver>(transceiver);
+                return wrapper;
             }
         }
 
@@ -1265,12 +1239,15 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Add a new out-of-band data channel with the given ID.
         ///
-        /// A data channel is negotiated out-of-band when the peers agree on an identifier by any mean
+        /// A data channel is branded out-of-band when the peers agree on an identifier by any mean
         /// not known to WebRTC, and both open a data channel with that ID. The WebRTC will match the
         /// incoming and outgoing pipes by this ID to allow sending and receiving through that channel.
         ///
         /// This requires some external mechanism to agree on an available identifier not otherwise taken
         /// by another channel, and also requires to ensure that both peers explicitly open that channel.
+        /// The advantage of in-band data channels is that no SDP session renegotiation is needed, except
+        /// for the very first data channel added (in-band or out-of-band) which requires a negotiation
+        /// for the SCTP handshake (see remarks).
         /// </summary>
         /// <param name="id">The unique data channel identifier to use.</param>
         /// <param name="label">The data channel name.</param>
@@ -1303,14 +1280,14 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Add a new in-band data channel whose ID will be determined by the implementation.
         ///
-        /// A data channel is negotiated in-band when one peer requests its creation to the WebRTC core,
+        /// A data channel is branded in-band when one peer requests its creation to the WebRTC core,
         /// and the implementation negotiates with the remote peer an appropriate ID by sending some
         /// SDP offer message. In that case once accepted the other peer will automatically create the
-        /// appropriate data channel on its side with that negotiated ID, and the ID will be returned on
+        /// appropriate data channel on its side with that same ID, and the ID will be returned on
         /// both sides to the user for information.
         ///
         /// Compared to out-of-band messages, this requires exchanging some SDP messages, but avoids having
-        /// to determine a common unused ID and having to explicitly open the data channel on both sides.
+        /// to agree on a common unused ID and having to explicitly open the data channel on both sides.
         /// </summary>
         /// <param name="label">The data channel name.</param>
         /// <param name="ordered">Indicates whether data channel messages are ordered (see
@@ -1349,43 +1326,29 @@ namespace Microsoft.MixedReality.WebRTC
             // Create the native channel
             return await Task.Run(() =>
             {
-                // Create the wrapper
+                // Create the native object
                 var config = new DataChannelInterop.CreateConfig
                 {
                     id = id,
+                    flags = (ordered ? 0x1u : 0x0u) | (reliable ? 0x2u : 0x0u),
                     label = label,
-                    flags = (ordered ? 0x1u : 0x0u) | (reliable ? 0x2u : 0x0u)
                 };
-                DataChannelInterop.Callbacks callbacks;
-                var dataChannel = DataChannelInterop.CreateWrapper(this, config, out callbacks);
-                if (dataChannel == null)
-                {
-                    return null;
-                }
                 IntPtr nativeHandle = IntPtr.Zero;
-                var wrapperGCHandle = GCHandle.Alloc(dataChannel, GCHandleType.Normal);
-                var wrapperHandle = GCHandle.ToIntPtr(wrapperGCHandle);
-                uint res = PeerConnectionInterop.PeerConnection_AddDataChannel(_nativePeerhandle, wrapperHandle, config, callbacks, ref nativeHandle);
-                if (res == Utils.MRS_SUCCESS)
-                {
-                    DataChannelInterop.SetHandle(dataChannel, nativeHandle);
-                    return dataChannel;
-                }
-
-                // Some error occurred, callbacks are not registered, so remove the GC lock.
-                wrapperGCHandle.Free();
-                dataChannel.Dispose();
-                dataChannel = null;
-
+                uint res = PeerConnectionInterop.PeerConnection_AddDataChannel(_nativePeerhandle, ref config, ref nativeHandle);
                 Utils.ThrowOnErrorCode(res);
-                return null; // for the compiler
+
+                // The wrapper is created by the "DataChannelAdded" event. Find it via the UserData property.
+                var dataChannelRef = DataChannelInterop.DataChannel_GetUserData(nativeHandle);
+                var dataChannelWrapper = Utils.ToWrapper<DataChannel>(dataChannelRef);
+                return dataChannelWrapper;
             });
         }
 
-        internal bool RemoveDataChannel(IntPtr dataChannelHandle)
+        internal void RemoveDataChannel(IntPtr dataChannelHandle)
         {
             ThrowIfConnectionNotOpen();
-            return (PeerConnectionInterop.PeerConnection_RemoveDataChannel(_nativePeerhandle, dataChannelHandle) == Utils.MRS_SUCCESS);
+            var res = PeerConnectionInterop.PeerConnection_RemoveDataChannel(_nativePeerhandle, dataChannelHandle);
+            Utils.ThrowOnErrorCode(res);
         }
 
         #endregion
@@ -2211,8 +2174,8 @@ namespace Microsoft.MixedReality.WebRTC
             AudioTrackRemoved?.Invoke(transceiver, track);
 
             // PeerConnection is owning the remote track, and all internal states have been
-            // updated and events fired, so dispose of the track now.
-            track.Dispose();
+            // updated and events fired, so notify the track to clean its internal state.
+            track.OnDestroyed();
         }
 
         /// <summary>
@@ -2248,8 +2211,8 @@ namespace Microsoft.MixedReality.WebRTC
             VideoTrackRemoved?.Invoke(transceiver, track);
 
             // PeerConnection is owning the remote track, and all internal states have been
-            // updated and events fired, so dispose of the track now.
-            track.Dispose();
+            // updated and events fired, so notify the track to clean its internal state.
+            track.OnDestroyed();
         }
 
         /// <summary>
