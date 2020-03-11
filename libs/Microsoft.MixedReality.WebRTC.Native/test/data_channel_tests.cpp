@@ -18,13 +18,15 @@ using DataAddedCallback = InteropCallback<const mrsDataChannelAddedInfo*>;
 
 void MRS_CALL StaticMessageCallback(void* user_data,
                                     const void* data,
-                                    const uint64_t size) {
+                                    const uint64_t size) noexcept {
   auto func = *static_cast<std::function<void(const void*, const uint64_t)>*>(
       user_data);
   func(data, size);
 }
 
-void MRS_CALL StaticStateCallback(void* user_data, int32_t state, int32_t id) {
+void MRS_CALL StaticStateCallback(void* user_data,
+                                  int32_t state,
+                                  int32_t id) noexcept {
   auto func = *static_cast<std::function<void(int32_t, int32_t)>*>(user_data);
   func(state, id);
 }
