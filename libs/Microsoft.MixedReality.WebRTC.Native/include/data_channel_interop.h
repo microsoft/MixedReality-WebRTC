@@ -20,25 +20,26 @@ MRS_API void MRS_CALL mrsDataChannelSetUserData(mrsDataChannelHandle handle,
 MRS_API void* MRS_CALL
 mrsDataChannelGetUserData(mrsDataChannelHandle handle) noexcept;
 
-/// Callback fired when a message is received on a data channel.
-using mrsDataChannelMessageCallback = void(MRS_CALL*)(void* user_data,
-                                                      const void* data,
-                                                      const uint64_t size);
+/// Callback fired when a message |data| of byte size |size| is received on a
+/// data channel.
+using mrsDataChannelMessageCallback = void(
+    MRS_CALL*)(void* user_data, const void* data, const uint64_t size) noexcept;
 
-/// Callback fired when a data channel buffering changes.
-/// The |previous| and |current| values are the old and new sizes in byte of the
-/// buffering buffer. The |limit| is the capacity of the buffer.
-/// Note that when the buffer is full, any attempt to send data will result is
-/// an abrupt closing of the data channel. So monitoring this state is critical.
-using mrsDataChannelBufferingCallback = void(MRS_CALL*)(void* user_data,
-                                                        const uint64_t previous,
-                                                        const uint64_t current,
-                                                        const uint64_t limit);
+/// Callback invoked when a data channel internal buffering changes.
+/// The |previous| and |current| values are the old and new sizes in bytes of
+/// the buffering buffer. The |limit| is the capacity of the buffer. Note that
+/// when the buffer is full, any attempt to send data will result is an abrupt
+/// closing of the data channel. So monitoring the buffering state is critical.
+using mrsDataChannelBufferingCallback =
+    void(MRS_CALL*)(void* user_data,
+                    const uint64_t previous,
+                    const uint64_t current,
+                    const uint64_t limit) noexcept;
 
 /// Callback fired when the state of a data channel changed.
 using mrsDataChannelStateCallback = void(MRS_CALL*)(void* user_data,
                                                     int32_t state,
-                                                    int32_t id);
+                                                    int32_t id) noexcept;
 
 /// Helper to register a group of data channel callbacks.
 struct mrsDataChannelCallbacks {
@@ -50,7 +51,7 @@ struct mrsDataChannelCallbacks {
   void* state_user_data{};
 };
 
-/// Register callbacks for managing a data channel
+/// Register callbacks for managing a data channel.
 MRS_API void MRS_CALL mrsDataChannelRegisterCallbacks(
     mrsDataChannelHandle handle,
     const mrsDataChannelCallbacks* callbacks) noexcept;
