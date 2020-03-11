@@ -55,6 +55,12 @@ MRS_API void MRS_CALL mrsDataChannelRegisterCallbacks(
     mrsDataChannelHandle handle,
     const mrsDataChannelCallbacks* callbacks) noexcept;
 
+/// Send through the given data channel a raw message |data| of byte length
+/// |size|. The message may be buffered internally, and the caller should
+/// monitor the buffering event to avoid overflowing the internal buffer.
+///
+/// This returns an error if the data channel is not open. The caller should
+/// monitor the state change event to know when it is safe to send a message.
 MRS_API mrsResult MRS_CALL
 mrsDataChannelSendMessage(mrsDataChannelHandle data_channel_handle,
                           const void* data,
