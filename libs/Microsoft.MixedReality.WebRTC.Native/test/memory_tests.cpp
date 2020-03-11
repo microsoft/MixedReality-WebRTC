@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include "interop/interop_api.h"
+#include "interop_api.h"
 
 // Test fast path of mrsMemCpyStride() when data is packed.
 TEST(MemoryUtils, MemCpyStride_Fast) {

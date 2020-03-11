@@ -1,97 +1,72 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="../audio_frame_observer.cpp">
-      <Filter>media</Filter>
-    </ClCompile>
     <ClCompile Include="../pch.cpp" />
-    <ClCompile Include="../peer_connection.cpp" />
-    <ClCompile Include="../video_frame_observer.cpp">
-      <Filter>media</Filter>
-    </ClCompile>
-    <ClCompile Include="../sdp_utils.cpp" />
-    <ClCompile Include="../interop/interop_api.cpp">
-      <Filter>interop</Filter>
-    </ClCompile>
-    <ClCompile Include="../data_channel.cpp">
-      <Filter>media</Filter>
-    </ClCompile>
-    <ClCompile Include="../str.cpp">
-      <Filter>interop</Filter>
-    </ClCompile>
-    <ClCompile Include="../interop/global_factory.cpp">
-      <Filter>interop</Filter>
-    </ClCompile>
-    <ClCompile Include="../interop/peer_connection_interop.cpp">
-      <Filter>interop</Filter>
-    </ClCompile>
-    <ClCompile Include="../interop/local_video_track_interop.cpp">
-      <Filter>interop</Filter>
-    </ClCompile>
-    <ClCompile Include="../media/local_video_track.cpp">
-      <Filter>media</Filter>
-    </ClCompile>
+    <ClCompile Include="..\audio_frame_observer.cpp" />
+    <ClCompile Include="..\data_channel.cpp" />
     <ClCompile Include="..\mrs_errors.cpp" />
-    <ClCompile Include="../media/external_video_track_source.cpp">
-      <Filter>media</Filter>
-    </ClCompile>
+    <ClCompile Include="..\peer_connection.cpp" />
+    <ClCompile Include="..\sdp_utils.cpp" />
+    <ClCompile Include="..\str.cpp" />
+    <ClCompile Include="..\video_frame_observer.cpp" />
     <ClCompile Include="..\interop\external_video_track_source_interop.cpp">
       <Filter>interop</Filter>
     </ClCompile>
+    <ClCompile Include="..\interop\global_factory.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interop\interop_api.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interop\local_video_track_interop.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interop\peer_connection_interop.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\media\external_video_track_source.cpp">
+      <Filter>media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\media\local_video_track.cpp">
+      <Filter>media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tracked_object.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="../../include/audio_frame_observer.h">
-      <Filter>media</Filter>
-    </ClInclude>
-    <ClInclude Include="../../include/callback.h" />
     <ClInclude Include="../pch.h" />
-    <ClInclude Include="../../include/peer_connection.h" />
-    <ClInclude Include="../targetver.h" />
-    <ClInclude Include="../../include/video_frame_observer.h">
-      <Filter>media</Filter>
-    </ClInclude>
-    <ClInclude Include="../../include/sdp_utils.h" />
-    <ClInclude Include="../interop/interop_api.h">
+    <ClInclude Include="..\..\include\export.h" />
+    <ClInclude Include="..\..\include\external_video_track_source_interop.h" />
+    <ClInclude Include="..\..\include\interop_api.h" />
+    <ClInclude Include="..\..\include\local_video_track_interop.h" />
+    <ClInclude Include="..\..\include\peer_connection_interop.h" />
+    <ClInclude Include="..\..\include\result.h" />
+    <ClInclude Include="..\audio_frame_observer.h" />
+    <ClInclude Include="..\callback.h" />
+    <ClInclude Include="..\data_channel.h" />
+    <ClInclude Include="..\external_video_track_source.h" />
+    <ClInclude Include="..\local_video_track.h" />
+    <ClInclude Include="..\mrs_errors.h" />
+    <ClInclude Include="..\peer_connection.h" />
+    <ClInclude Include="..\ref_counted_base.h" />
+    <ClInclude Include="..\refptr.h" />
+    <ClInclude Include="..\sdp_utils.h" />
+    <ClInclude Include="..\str.h" />
+    <ClInclude Include="..\targetver.h" />
+    <ClInclude Include="..\tracked_object.h" />
+    <ClInclude Include="..\video_frame_observer.h" />
+    <ClInclude Include="..\interop\global_factory.h">
       <Filter>interop</Filter>
     </ClInclude>
-    <ClInclude Include="../../include/str.h">
-      <Filter>interop</Filter>
-    </ClInclude>
-    <ClInclude Include="../../include/export.h" />
-    <ClInclude Include="../interop/global_factory.h">
-      <Filter>interop</Filter>
-    </ClInclude>
-    <ClInclude Include="../interop/peer_connection_interop.h">
-      <Filter>interop</Filter>
-    </ClInclude>
-    <ClInclude Include="../../include/data_channel.h">
+    <ClInclude Include="..\media\external_video_track_source.h">
       <Filter>media</Filter>
-    </ClInclude>
-    <ClInclude Include="../interop/local_video_track_interop.h">
-      <Filter>interop</Filter>
-    </ClInclude>
-    <ClInclude Include="../../include/local_video_track.h">
-      <Filter>media</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\mrs_errors.h" />
-    <ClInclude Include="..\..\include\refptr.h" />
-    <ClInclude Include="..\..\include\ref_counted_base.h" />
-    <ClInclude Include="..\..\include\tracked_object.h" />
-    <ClInclude Include="..\..\include\audio_frame.h">
-      <Filter>media</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\video_frame.h">
-      <Filter>media</Filter>
-    </ClInclude>
-    <ClInclude Include="../media/external_video_track_source.h">
-      <Filter>media</Filter>
-    </ClInclude>
-    <ClInclude Include="..\interop\external_video_track_source_interop.h">
-      <Filter>interop</Filter>
     </ClInclude>
     <ClInclude Include="..\media\external_video_track_source_impl.h">
       <Filter>media</Filter>
     </ClInclude>
+    <ClInclude Include="..\media\local_video_track.h">
+      <Filter>media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />
@@ -99,10 +74,10 @@
   </ItemGroup>
   <ItemGroup>
     <Filter Include="interop">
-      <UniqueIdentifier>{95d22db7-d9c3-4693-829c-ce75385a454b}</UniqueIdentifier>
+      <UniqueIdentifier>{2eda4eaf-b512-47aa-b587-45de3b17ef8e}</UniqueIdentifier>
     </Filter>
     <Filter Include="media">
-      <UniqueIdentifier>{57001c36-2fbb-485c-9221-14b016526ede}</UniqueIdentifier>
+      <UniqueIdentifier>{5683d251-f1a9-4d36-89cb-881b2fd36b65}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

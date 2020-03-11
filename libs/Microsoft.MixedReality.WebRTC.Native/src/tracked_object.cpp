@@ -1,0 +1,25 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+#include "pch.h"
+
+#include "interop/global_factory.h"
+#include "tracked_object.h"
+
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
+
+TrackedObject::TrackedObject(RefPtr<GlobalFactory> global_factory,
+                             ObjectType object_type)
+    : global_factory_(std::move(global_factory)), object_type_(object_type) {
+  global_factory_->AddObject(this);
+}
+
+TrackedObject::~TrackedObject() noexcept {
+  global_factory_->RemoveObject(this);
+}
+
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

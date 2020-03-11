@@ -4,8 +4,7 @@
 #pragma once
 
 #include "callback.h"
-#include "interop/interop_api.h"
-#include "str.h"
+#include "interop_api.h"
 #include "tracked_object.h"
 #include "video_frame_observer.h"
 
@@ -39,23 +38,24 @@ class PeerConnection;
 /// has no knowledge about how the source produces the frames.
 class LocalVideoTrack : public VideoFrameObserver, public TrackedObject {
  public:
-  LocalVideoTrack(PeerConnection& owner,
+  LocalVideoTrack(RefPtr<GlobalFactory> global_factory,
+                  PeerConnection& owner,
                   rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
                   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
                   mrsLocalVideoTrackInteropHandle interop_handle) noexcept;
-  MRS_API ~LocalVideoTrack() override;
+  ~LocalVideoTrack() override;
 
   /// Get the name of the local video track.
-  MRS_API std::string GetName() const noexcept override;
+  std::string GetName() const noexcept override;
 
   /// Enable or disable the video track. An enabled track streams its content
   /// from its source to the remote peer. A disabled video track only sends
   /// black frames.
-  MRS_API void SetEnabled(bool enabled) const noexcept;
+  void SetEnabled(bool enabled) const noexcept;
 
   /// Check if the track is enabled.
   /// See |SetEnabled(bool)|.
-  [[nodiscard]] MRS_API bool IsEnabled() const noexcept;
+  [[nodiscard]] bool IsEnabled() const noexcept;
 
   //
   // Advanced use
