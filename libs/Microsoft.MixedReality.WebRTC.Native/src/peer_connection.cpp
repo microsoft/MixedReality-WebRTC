@@ -551,19 +551,20 @@ class PeerConnectionImpl : public PeerConnection,
       mrsMediaKind media_kind,
       int mline_index,
       std::string name,
+      const std::vector<std::string>& string_ids,
       rtc::scoped_refptr<webrtc::RtpTransceiverInterface> rtp_transceiver);
 
   static std::string ExtractTransceiverNameFromSender(
       webrtc::RtpSenderInterface* sender);
 
-  static std::string ExtractTransceiverNameFromReceiver(
-      webrtc::RtpReceiverInterface* receive,
-      bool must_use_msid = false);
+  static std::vector<std::string> ExtractTransceiverStreamIDsFromReceiver(
+      webrtc::RtpReceiverInterface* receive);
 
-  static bool ExtractMlineIndexAndNameFromReceiverPlanB(
+  static bool ExtractTransceiverInfoFromReceiverPlanB(
       webrtc::RtpReceiverInterface* receiver,
       int& mline_index,
-      std::string& name);
+      std::string& name,
+      std::vector<std::string>& stream_ids);
 
   /// Media trait to specialize some implementations for audio or video while
   /// retaining a single copy of the code.
@@ -1048,11 +1049,9 @@ bool PeerConnectionImpl::CreateOffer() noexcept {
     offer_options.offer_to_receive_audio = false;
     offer_options.offer_to_receive_video = false;
     int mline_index = 0;
-    char buffer[32];
     for (auto&& tr : transceivers_) {
-      rtc::SimpleStringBuilder builder(buffer);
-      builder << "mrsw#" << mline_index;
-      std::string stream_id(builder.str());
+      std::string encoded_stream_id =
+          tr->BuildEncodedStreamIDForPlanB(mline_index);
       const char* media_kind_str = nullptr;
       const Transceiver::Direction dir = tr->GetDesiredDirection();
       const bool need_sender = ((dir == Transceiver::Direction::kSendOnly) ||
@@ -1074,7 +1073,7 @@ bool PeerConnectionImpl::CreateOffer() noexcept {
         }
       }
       tr->SyncSenderPlanB(need_sender, peer_, media_kind_str,
-                          stream_id.c_str());
+                          encoded_stream_id.c_str());
       ++mline_index;
     }
   }
@@ -1177,6 +1176,8 @@ ErrorOr<Transceiver*> PeerConnectionImpl::AddTransceiver(
     str << name;
     return Error(Result::kInvalidParameter, str.Release());
   }
+  std::vector<std::string> stream_ids =
+      Transceiver::DecodeStreamIDs(config.stream_ids);
 
   RefPtr<Transceiver> transceiver;
   int mline_index = -1;
@@ -1185,8 +1186,8 @@ ErrorOr<Transceiver*> PeerConnectionImpl::AddTransceiver(
       // Plan B doesn't have transceivers; just create a wrapper.
       mline_index = (int)transceivers_.size();  // append
       transceiver = Transceiver::CreateForPlanB(
-          global_factory_, config.media_kind, *this, mline_index,
-          std::move(name), config.desired_direction);
+          global_factory_, config.media_kind, *this, mline_index, name,
+          std::move(stream_ids), config.desired_direction);
       // Manually invoke the renegotiation needed event for parity with Unified
       // Plan, like the internal implementation would do.
       OnRenegotiationNeeded();
@@ -1195,11 +1196,7 @@ ErrorOr<Transceiver*> PeerConnectionImpl::AddTransceiver(
       // Create the low-level implementation object
       webrtc::RtpTransceiverInit init{};
       init.direction = Transceiver::ToRtp(config.desired_direction);
-      init.stream_ids = Transceiver::DecodeStreamIDs(config.stream_ids);
-      if (!name.empty()) {
-        // Prepend transceiver name as first stream ID for track pairing
-        init.stream_ids.insert(init.stream_ids.begin(), name);
-      }
+      init.stream_ids = stream_ids;
       const cricket::MediaType rtc_media_type =
           MediaKindToRtc(config.media_kind);
       webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
@@ -1222,7 +1219,7 @@ ErrorOr<Transceiver*> PeerConnectionImpl::AddTransceiver(
       // Create the transceiver wrapper
       transceiver = Transceiver::CreateForUnifiedPlan(
           global_factory_, config.media_kind, *this, mline_index, name,
-          std::move(impl), config.desired_direction);
+          std::move(stream_ids), std::move(impl), config.desired_direction);
     } break;
     default:
       return Error(Result::kUnknownError, "Unknown SDP semantic.");
@@ -1240,6 +1237,7 @@ ErrorOr<Transceiver*> PeerConnectionImpl::AddTransceiver(
       info.transceiver_name = name.c_str();
       info.media_kind = config.media_kind;
       info.mline_index = mline_index;
+      info.encoded_stream_ids_ = config.stream_ids;
       info.desired_direction = config.desired_direction;
       cb(&info);
     }
@@ -1615,32 +1613,37 @@ PeerConnectionImpl::GetOrCreateTransceiverForNewRemoteTrack(
     }
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl = *it_impl;
     const int mline_index = (int)std::distance(transceivers.begin(), it_impl);
-
-    std::string name = ExtractTransceiverNameFromReceiver(receiver);
+    std::string name = impl->mid().value_or(std::string{});
+    std::vector<std::string> stream_ids =
+        ExtractTransceiverStreamIDsFromReceiver(receiver);
 
     // Create a new transceiver wrapper for it
     return CreateTransceiverUnifiedPlan(media_kind, mline_index,
-                                        std::move(name), std::move(impl));
+                                        std::move(name), std::move(stream_ids),
+                                        std::move(impl));
   } else {
     RTC_DCHECK(IsPlanB());
     // In Plan B, since there is no guarantee about the order of tracks, they
     // are matched by stream ID (msid).
     int mline_index = -1;
     std::string name;
-    if (!ExtractMlineIndexAndNameFromReceiverPlanB(receiver, mline_index,
-                                                   name)) {
+    std::vector<std::string> stream_ids;
+    if (!ExtractTransceiverInfoFromReceiverPlanB(receiver, mline_index,
+                                                        name, stream_ids)) {
       return Error(
           Result::kUnknownError,
           "Failed to associate RTP receiver with Plan B emulated mline index "
           "for track pairing.");
     }
+    const std::string encoded_stream_ids =
+        Transceiver::EncodeStreamIDs(stream_ids);
 
     // Create the |Transceiver| instance
-    mrsTransceiverInitConfig config{};
-    config.desired_direction = Transceiver::Direction::kRecvOnly;
+    const mrsTransceiverDirection desired_direction =
+        Transceiver::Direction::kRecvOnly;
     RefPtr<Transceiver> transceiver = Transceiver::CreateForPlanB(
         global_factory_, media_kind, *this, mline_index, name,
-        config.desired_direction);
+        std::move(stream_ids), desired_direction);
     transceiver->SetReceiverPlanB(receiver);
     {
       // Insert the transceiver in the peer connection's collection. The peer
@@ -1660,7 +1663,8 @@ PeerConnectionImpl::GetOrCreateTransceiverForNewRemoteTrack(
         info.transceiver_name = name.c_str();
         info.media_kind = media_kind;
         info.mline_index = mline_index;
-        info.desired_direction = config.desired_direction;
+        info.encoded_stream_ids_ = encoded_stream_ids.c_str();
+        info.desired_direction = desired_direction;
         cb(&info);
       }
     }
@@ -1688,9 +1692,12 @@ void PeerConnectionImpl::SynchronizeTransceiversUnifiedPlan(bool remote) {
       // If transceiver is created from the result of applying a
       // remote description, then the transceiver name is extracted
       // from the receiver.
-      std::string name = ExtractTransceiverNameFromReceiver(tr->receiver());
+      std::string name = tr->mid().value_or(std::string{});
+      std::vector<std::string> stream_ids =
+          ExtractTransceiverStreamIDsFromReceiver(tr->receiver());
       ErrorOr<Transceiver*> err = CreateTransceiverUnifiedPlan(
-          MediaKindFromRtc(tr->media_type()), mline_index, std::move(name), tr);
+          MediaKindFromRtc(tr->media_type()), mline_index, std::move(name),
+          std::move(stream_ids), tr);
       if (!err.ok()) {
         RTC_LOG(LS_ERROR) << "Failed to create a Transceiver object to "
                              "hold a new RTP transceiver.";
@@ -1707,12 +1714,13 @@ ErrorOr<Transceiver*> PeerConnectionImpl::CreateTransceiverUnifiedPlan(
     mrsMediaKind media_kind,
     int mline_index,
     std::string name,
+    const std::vector<std::string>& stream_ids,
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> rtp_transceiver) {
   const Transceiver::Direction desired_direction =
       Transceiver::FromRtp(rtp_transceiver->direction());
   RefPtr<Transceiver> transceiver = Transceiver::CreateForUnifiedPlan(
       global_factory_, media_kind, *this, mline_index, std::move(name),
-      std::move(rtp_transceiver), desired_direction);
+      stream_ids, std::move(rtp_transceiver), desired_direction);
   auto err = InsertTransceiverAtMlineIndex(mline_index, transceiver);
   if (!err.ok()) {
     return err;
@@ -1720,11 +1728,13 @@ ErrorOr<Transceiver*> PeerConnectionImpl::CreateTransceiverUnifiedPlan(
   {
     auto lock = std::scoped_lock{callbacks_mutex_};
     if (auto cb = transceiver_added_callback_) {
+      std::string encoded_stream_ids = Transceiver::EncodeStreamIDs(stream_ids);
       mrsTransceiverAddedInfo info{};
       info.transceiver_handle = transceiver.get();
       info.transceiver_name = name.c_str();
       info.media_kind = media_kind;
       info.mline_index = mline_index;
+      info.encoded_stream_ids_ = encoded_stream_ids.c_str();
       info.desired_direction = desired_direction;
       cb(&info);
     }
@@ -1750,60 +1760,45 @@ std::string PeerConnectionImpl::ExtractTransceiverNameFromSender(
   return {};
 }
 
-std::string PeerConnectionImpl::ExtractTransceiverNameFromReceiver(
-    webrtc::RtpReceiverInterface* receiver,
-    bool must_use_msid) {
-  // Find the pairing name as the first stream ID.
-  // See |LocalAudioTrack::GetName()|, |RemoteAudioTrack::GetName()|,
-  // |LocalVideoTrack::GetName()|, |RemoteVideoTrack::GetName()|.
-  {
-    // BUG
-    // webrtc::RtpReceiverInterface::stream_ids() is not proxied correctly, does
-    // not resolve to its implementation and instead always returns an empty
-    // vector. Use ::streams() instead even if deprecated. Fixed by
-    // https://webrtc.googlesource.com/src/+/5b1477839d8569291b88dfe950089d0ebf34bc8f
+std::vector<std::string>
+PeerConnectionImpl::ExtractTransceiverStreamIDsFromReceiver(
+    webrtc::RtpReceiverInterface* receiver) {
+  // BUG
+  // webrtc::RtpReceiverInterface::stream_ids() is not proxied correctly, does
+  // not resolve to its implementation and instead always returns an empty
+  // vector. Use ::streams() instead even if deprecated. Fixed by
+  // https://webrtc.googlesource.com/src/+/5b1477839d8569291b88dfe950089d0ebf34bc8f
 #if 0
-    auto ids = receiver->stream_ids();
-    if (!ids.empty()) {
-      return ids[0];
-    }
+    return receiver->stream_ids();
 #else
-    // Use internal implementation of stream_ids()
-    auto streams = receiver->streams();
-    if (!streams.empty()) {
-      return streams[0]->id();
-    } else if (must_use_msid) {
-      RTC_LOG(LS_ERROR) << "RTP receiver does not have any stream ID.";
-      return {};
-    }
+  // Use internal implementation of stream_ids()
+  auto streams = receiver->streams();
+  std::vector<std::string> stream_ids;
+  stream_ids.reserve(streams.size());
+  for (auto&& stream : streams) {
+    stream_ids.push_back(stream->id());
+  }
+  return stream_ids;
 #endif
-  }
-  // Fallback on track's ID, even though it's not pairable in Unified Plan (and
-  // technically neither in Plan B, although this works in practice).
-  if (rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
-          receiver->track()) {
-    return track->id();
-  }
-  return {};
 }
 
-bool PeerConnectionImpl::ExtractMlineIndexAndNameFromReceiverPlanB(
+bool PeerConnectionImpl::ExtractTransceiverInfoFromReceiverPlanB(
     webrtc::RtpReceiverInterface* receiver,
     int& mline_index,
-    std::string& name) {
-  name =
-      ExtractTransceiverNameFromReceiver(receiver, /* must_use_msid = */ true);
-  if (name.empty()) {
+    std::string& name,
+    std::vector<std::string>& stream_ids) {
+  std::vector<std::string> raw_stream_ids =
+      ExtractTransceiverStreamIDsFromReceiver(receiver);
+  if (raw_stream_ids.empty()) {
+    RTC_LOG(LS_ERROR)
+        << "RTP receiver has no stream ID for automatic Plan B track pairing.";
     return false;
   }
-  if ((name.size() < 6) || (strncmp(name.c_str(), "mrsw#", 5) != 0)) {
-    RTC_LOG(LS_ERROR) << "RTP receiver stream ID does not start with the magic "
-                         "prefix 'mrsw#'.";
-    return false;
-  }
-  mline_index = (int)strtol(name.c_str() + 5, nullptr, 10);
-  RTC_DCHECK(mline_index >= 0);
-  return true;
+  // In Plan B the receiver has a single stream ID; we encode inside it all we
+  // need: mline index, and streams IDs
+  std::string encoded_str = std::move(raw_stream_ids[0]);
+  return Transceiver::DecodedStreamIDForPlanB(encoded_str, mline_index, name,
+                                              stream_ids);
 }
 
 webrtc::PeerConnectionInterface::IceTransportsType ICETransportTypeToNative(

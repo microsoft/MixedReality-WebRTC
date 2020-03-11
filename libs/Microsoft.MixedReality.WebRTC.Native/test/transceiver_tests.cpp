@@ -491,6 +491,64 @@ TYPED_TEST_P(TransceiverTests, UserData) {
   ASSERT_EQ(this, mrsTransceiverGetUserData(transceiver_handle1));
 }
 
+TYPED_TEST_P(TransceiverTests, StreamIDs) {
+  using Media = MediaTrait<TypeParam::MediaType>;
+
+  mrsPeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = TypeParam::kSdpSemantic;
+  LocalPeerPairRaii pair(pc_config);
+
+  const char* const transceiver_name =
+      (TypeParam::kMediaKind == mrsMediaKind::kAudio ? "audio_transceiver_1"
+                                                     : "video_transceiver_1");
+  const char* const encoded_stream_ids = "id1;id2;id3";
+
+  // Register event handler for transceiver added
+  Event transceiver_added1_ev;
+  InteropCallback<const mrsTransceiverAddedInfo*> transceiver_added1_cb =
+      [&](const mrsTransceiverAddedInfo* info) {
+        ASSERT_EQ(TypeParam::kMediaKind, info->media_kind);
+        // Name is equal because the transceiver was created locally
+        ASSERT_STREQ(info->transceiver_name, transceiver_name);
+        ASSERT_STREQ(info->encoded_stream_ids_, encoded_stream_ids);
+        transceiver_added1_ev.Set();
+      };
+  mrsPeerConnectionRegisterTransceiverAddedCallback(pair.pc1(),
+                                                    CB(transceiver_added1_cb));
+  Event transceiver_added2_ev;
+  mrsTransceiverHandle transceiver_handle2{};
+  InteropCallback<const mrsTransceiverAddedInfo*> transceiver_added2_cb =
+      [&](const mrsTransceiverAddedInfo* info) {
+        ASSERT_EQ(TypeParam::kMediaKind, info->media_kind);
+        // Here the name of the transceiver is unknown because it was generated
+        // by the implementation; the name is not synchronized over SDP.
+        ASSERT_STREQ(info->encoded_stream_ids_, encoded_stream_ids);
+        transceiver_handle2 = info->transceiver_handle;
+        transceiver_added2_ev.Set();
+      };
+  mrsPeerConnectionRegisterTransceiverAddedCallback(pair.pc2(),
+                                                    CB(transceiver_added2_cb));
+
+  // Add a transceiver to the local peer (#1)
+  mrsTransceiverHandle transceiver_handle1{};
+  {
+    mrsTransceiverInitConfig transceiver_config{};
+    transceiver_config.name = transceiver_name;
+    transceiver_config.media_kind = TypeParam::kMediaKind;
+    transceiver_config.stream_ids = encoded_stream_ids;
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
+                                              &transceiver_handle1));
+    ASSERT_NE(nullptr, transceiver_handle1);
+    ASSERT_TRUE(transceiver_added1_ev.IsSignaled());
+    transceiver_added1_ev.Reset();
+  }
+
+  // Connect #1 and #2
+  pair.ConnectAndWait();
+  pair.WaitExchangeCompletedFor(60s);
+}
+
 // Note: All tests must be listed in this macro
 REGISTER_TYPED_TEST_CASE_P(TransceiverTests,
                            InvalidName,
@@ -499,7 +557,8 @@ REGISTER_TYPED_TEST_CASE_P(TransceiverTests,
                            SetLocalTrack_InvalidHandle,
                            SetLocalTrackSendRecv,
                            SetLocalTrackRecvOnly,
-                           UserData);
+                           UserData,
+                           StreamIDs);
 
 using TestTypes = ::testing::Types<TestParams<AudioTest, SdpPlanB>,
                                    TestParams<AudioTest, SdpUnifiedPlan>,
