@@ -618,16 +618,15 @@ struct mrsDataChannelConfig {
 /// Add a new data channel to a peer connection.
 ///
 /// The initial configuration of the data channel is provided by |config|, and
-/// is mandatory. The caller can optionally provide a set of callbacks to
-/// register with the data channel via the |callbacks| optional argument. The
-/// function returns in |data_channel_handle_out| the handle to the
-/// newly-created data channel after it was added to the peer connection.
+/// is mandatory. The function returns in |data_channel_handle_out| the handle
+/// to the newly-created data channel after it was added to the peer connection.
 ///
 /// The type of data channel created depends on the |config.id| value:
 /// - If |config.id| < 0, then it adds a new in-band data channel with an ID
 /// that will be selected by the WebRTC implementation itself, and will be
 /// available later. In that case the channel is announced to the remote peer
 /// for it to create a channel with the same ID. This requires a renegotiation.
+/// Once the renegotiation is completed, the ID is available on both peers.
 /// - If |config.id| >= 0, then it adds a new out-of-band negotiated channel
 /// with the given ID, and it is the responsibility of the app to create a
 /// channel with the same ID on the remote peer to be able to use the channel.
