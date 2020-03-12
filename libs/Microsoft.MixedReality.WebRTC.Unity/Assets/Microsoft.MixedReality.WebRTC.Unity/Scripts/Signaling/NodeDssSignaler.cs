@@ -223,12 +223,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     switch (msg.MessageType)
                     {
                         case Message.WireMessageType.Offer:
-                            _nativePeer.SetRemoteDescriptionAsync("offer", msg.Data).Wait();
+                            PeerConnection.SetRemoteDescriptionAsync("offer", msg.Data).Wait();
                             // if we get an offer, we immediately send an answer
                             _nativePeer.CreateAnswer();
                             break;
                         case Message.WireMessageType.Answer:
-                            _ = _nativePeer.SetRemoteDescriptionAsync("answer", msg.Data);
+                            _ = PeerConnection.SetRemoteDescriptionAsync("answer", msg.Data);
                             break;
                         case Message.WireMessageType.Ice:
                             // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener

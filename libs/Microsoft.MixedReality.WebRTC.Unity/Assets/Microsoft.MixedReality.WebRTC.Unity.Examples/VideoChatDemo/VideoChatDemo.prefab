@@ -424,6 +424,7 @@ MonoBehaviour:
   OnError:
     m_PersistentCalls:
       m_Calls: []
+  _transceivers: []
 --- !u!114 &8734329137356271696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -845,16 +846,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a281b3c4d33874459f5fd99bab17626, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PeerConnection: {fileID: 114452439610826054}
+  TrackName: local_audio
+  AutoAddTrack: 1
+  AutoStartCapture: 1
+  PreferredAudioCodec: 
   AudioStreamStarted:
     m_PersistentCalls:
       m_Calls: []
   AudioStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-  AutoStartCapture: 1
-  PreferredAudioCodec: 
-  PeerConnection: {fileID: 114452439610826054}
-  AutoAddTrack: 1
 --- !u!114 &2640554158060291103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -867,20 +869,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a3a632a87fbf1e4db435c4abae3ac33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PeerConnection: {fileID: 114452439610826054}
+  TrackName: local_video
+  AutoAddTrack: 1
+  AutoStartCapture: 1
+  PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
       m_Calls: []
   VideoStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-  AutoStartCapture: 1
-  PreferredVideoCodec: 
   EnableMixedRealityCapture: 1
   EnableMRCRecordingIndicator: 1
-  PeerConnection: {fileID: 114452439610826054}
-  TrackName: 
-  AutoAddTrack: 1
-  Mode: 0
+  FormatMode: 0
   VideoProfileId: 
   VideoProfileKind: 0
   Constraints:
@@ -896,17 +898,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 9179833326995555366}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df42a3d41d8e34340baa406a1de17b48, type: 3}
+  m_Script: {fileID: 11500000, guid: ac54f2f6b8185d444b4a85e048778344, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PeerConnection: {fileID: 114452439610826054}
+  AutoPlayOnAdded: 1
   AudioStreamStarted:
     m_PersistentCalls:
       m_Calls: []
   AudioStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-  PeerConnection: {fileID: 114452439610826054}
-  AutoPlayOnAdded: 1
 --- !u!114 &8285219005052795439
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -919,14 +921,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c8b8e916d2cbf40a9dd142c021c4d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PeerConnection: {fileID: 114452439610826054}
+  AutoPlayOnAdded: 1
   VideoStreamStarted:
     m_PersistentCalls:
       m_Calls: []
   VideoStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-  PeerConnection: {fileID: 114452439610826054}
-  AutoPlayOnAdded: 1
 --- !u!1001 &2981115262886062264
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -8,14 +8,14 @@ using UnityEngine;
 namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 {
     /// <summary>
-    /// Inspector editor for <see cref="LocalVideoSource"/>.
+    /// Inspector editor for <see cref="WebcamSource"/>.
     /// Allows displaying some error message when Mixed Reality Capture is enabled but
     /// XR is not, the later corresponding to a non-exclusive app (2D slate) where MRC
     /// is not available.
     /// </summary>
-    [CustomEditor(typeof(LocalVideoSource))]
+    [CustomEditor(typeof(WebcamSource))]
     [CanEditMultipleObjects]
-    public class LocalVideoSourceEditor : UnityEditor.Editor
+    public class WebcamSourceEditor : UnityEditor.Editor
     {
         SerializedProperty _peerConnection;
         SerializedProperty _trackName;
@@ -23,7 +23,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         SerializedProperty _preferredVideoCodec;
         SerializedProperty _enableMixedRealityCapture;
         SerializedProperty _enableMrcRecordingIndicator;
-        SerializedProperty _autoAddTrack;
         SerializedProperty _formatMode;
         SerializedProperty _videoProfileId;
         SerializedProperty _videoProfileKind;
@@ -77,13 +76,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         /// </summary>
         void OnEnable()
         {
-            _peerConnection = serializedObject.FindProperty("PeerConnection");
             _trackName = serializedObject.FindProperty("TrackName");
             _autoStartCapture = serializedObject.FindProperty("AutoStartCapture");
             _preferredVideoCodec = serializedObject.FindProperty("PreferredVideoCodec");
             _enableMixedRealityCapture = serializedObject.FindProperty("EnableMixedRealityCapture");
             _enableMrcRecordingIndicator = serializedObject.FindProperty("EnableMRCRecordingIndicator");
-            _autoAddTrack = serializedObject.FindProperty("AutoAddTrack");
             _formatMode = serializedObject.FindProperty("FormatMode");
             _videoProfileId = serializedObject.FindProperty("VideoProfileId");
             _videoProfileKind = serializedObject.FindProperty("VideoProfileKind");
@@ -102,9 +99,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             serializedObject.Update();
 
             GUILayout.Space(10);
-            EditorGUILayout.PropertyField(_peerConnection);
             EditorGUILayout.PropertyField(_trackName);
-            EditorGUILayout.PropertyField(_autoAddTrack);
             EditorGUILayout.PropertyField(_autoStartCapture);
 
             EditorGUILayout.PropertyField(_enableMixedRealityCapture);

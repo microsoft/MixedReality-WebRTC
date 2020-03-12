@@ -11,39 +11,55 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// Unity event corresponding to a new video stream being started.
     /// </summary>
     [Serializable]
-    public class VideoStreamStartedEvent : UnityEvent
+    public class VideoStreamStartedEvent : UnityEvent<IVideoSource>
     { };
 
     /// <summary>
     /// Unity event corresponding to an on-going video stream being stopped.
     /// </summary>
     [Serializable]
-    public class VideoStreamStoppedEvent : UnityEvent
+    public class VideoStreamStoppedEvent : UnityEvent<IVideoSource>
     { };
 
     /// <summary>
-    /// Base class for video sources plugging into the internal peer connection API to
-    /// expose a single video stream to a renderer (<see cref="MediaPlayer"/> or custom).
+    /// Enumeration of video encodings.
     /// </summary>
-    public abstract class VideoSource : MonoBehaviour
+    public enum VideoEncoding
     {
         /// <summary>
-        /// Frame queue holding the pending frames enqueued by the video source itself,
-        /// which a video renderer needs to read and display.
+        /// I420A video encoding with chroma (UV) halved in both directions (4:2:0),
+        /// and optional Alpha plane.
         /// </summary>
-        public IVideoFrameQueue FrameQueue { get; protected set; }
+        I420A,
 
         /// <summary>
-        /// Event invoked from the main Unity thread when the video stream starts.
-        /// This means that video frames are available and the renderer should start polling.
+        /// 32-bit ARGB32 video encoding with 8-bit per component, encoded as uint32 little-endian
+        /// 0xAARRGGBB value, or equivalently (B,G,R,A) in byte order.
         /// </summary>
-        public VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
+        Argb32
+    }
 
+    /// <summary>
+    /// Interface for video sources plugging into the internal peer connection API to
+    /// expose a single video stream to a renderer (<see cref="MediaPlayer"/> or custom).
+    /// </summary>
+    public interface IVideoSource
+    {
+        bool IsPlaying { get; }
+
+        VideoStreamStartedEvent GetVideoStreamStarted();
+        VideoStreamStoppedEvent GetVideoStreamStopped();
+        
         /// <summary>
-        /// Event invoked from the main Unity thread when the video stream stops.
-        /// This means that the video frame queue is not populated anymore, though some frames
-        /// may still be present in it that may be rendered.
+        /// Video encoding indicating the kind of frames the source is producing.
+        /// This is used for example by the <see cref="MediaPlayer"/> to determine how to
+        /// render the frame.
         /// </summary>
-        public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
+        VideoEncoding FrameEncoding { get; }
+
+        void RegisterCallback(I420AVideoFrameDelegate callback);
+        void UnregisterCallback(I420AVideoFrameDelegate callback);
+        void RegisterCallback(Argb32VideoFrameDelegate callback);
+        void UnregisterCallback(Argb32VideoFrameDelegate callback);
     }
 }

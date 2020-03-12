@@ -8,20 +8,20 @@ using UnityEngine.XR;
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// Attribute for a <see xref="UnityEngine.Camera"/> property used by <see cref="SceneVideoSource"/>
+    /// Attribute for a <see xref="UnityEngine.Camera"/> property used by <see cref="SceneVideoSender"/>
     /// to capture the content of a framebuffer, and for which some constraints on stereoscopic rendering
     /// options need to be enforced (and errors can be reported in the Editor if they are not followed).
     /// </summary>
-    /// <seealso cref="SceneVideoSource"/>
+    /// <seealso cref="SceneVideoSender"/>
     public class CaptureCameraAttribute : PropertyAttribute
     {
         /// <summary>
         /// Validate that a given <see xref="UnityEngine.Camera"/> instance can be used for framebuffer
-        /// capture by <see cref="SceneVideoSource"/> based on the XR settings currently in effect.
+        /// capture by <see cref="SceneVideoSender"/> based on the XR settings currently in effect.
         /// </summary>
         /// <param name="camera">The camera instance to test the settings of.</param>
         /// <exception xref="System.NotSupportedException">
-        /// The camera has settings not compatible with its use with <see cref="SceneVideoSource"/>.
+        /// The camera has settings not compatible with its use with <see cref="SceneVideoSender"/>.
         /// </exception>
         /// <seealso xref="CaptureCameraDrawer.Validate(Camera)"/>
         public static void Validate(Camera camera)

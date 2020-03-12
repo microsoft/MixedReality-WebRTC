@@ -10,7 +10,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
     /// <summary>
     /// Property drawer for <see cref="CaptureCameraAttribute"/>, to report an error to the user if
     /// the associated <see xref="UnityEngine.Camera"/> property instance cannot be used for framebuffer
-    /// capture by <see cref="SceneVideoSource"/>.
+    /// capture by <see cref="SceneVideoSender"/>.
     /// </summary>
     [CustomPropertyDrawer(typeof(CaptureCameraAttribute))]
     public class CaptureCameraDrawer : PropertyDrawer
@@ -55,12 +55,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
         /// <summary>
         /// Validate that a given <see xref="UnityEngine.Camera"/> instance can be used for framebuffer
-        /// capture by <see cref="SceneVideoSource"/> based on the current settings of the Unity Player
+        /// capture by <see cref="SceneVideoSender"/> based on the current settings of the Unity Player
         /// for the current build platform.
         /// </summary>
         /// <param name="camera">The camera instance to test the settings of.</param>
         /// <exception xref="System.NotSupportedException">
-        /// The camera has settings not compatible with its use with <see cref="SceneVideoSource"/>.
+        /// The camera has settings not compatible with its use with <see cref="SceneVideoSender"/>.
         /// </exception>
         /// <seealso cref="CaptureCameraAttribute.Validate(Camera)"/>
         public static void Validate(Camera camera)
