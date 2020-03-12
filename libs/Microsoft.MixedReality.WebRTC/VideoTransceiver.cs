@@ -35,8 +35,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private LocalVideoTrack _localTrack = null;
 
-        internal VideoTransceiver(IntPtr handle, PeerConnection peerConnection, int mlineIndex, string name, Direction initialDesiredDirection)
-            : base(handle, MediaKind.Video, peerConnection, mlineIndex, name, initialDesiredDirection)
+        internal VideoTransceiver(IntPtr handle, PeerConnection peerConnection, int mlineIndex, string name, string[] streamIDs, Direction initialDesiredDirection)
+            : base(handle, MediaKind.Video, peerConnection, mlineIndex, name, streamIDs, initialDesiredDirection)
         {
         }
 

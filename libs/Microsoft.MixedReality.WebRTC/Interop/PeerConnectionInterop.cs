@@ -521,6 +521,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public int mlineIndex;
 
             /// <summary>
+            /// Encoded string of semi-colon separated list of stream IDs.
+            /// Example for stream IDs ("id1", "id2", "id3"):
+            ///   encodedStreamIDs = "id1;id2;id3";
+            /// </summary>
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string encodedStreamIDs;
+
+            /// <summary>
             /// Initial desired direction of the transceiver on creation.
             /// </summary>
             public Transceiver.Direction desiredDirection;

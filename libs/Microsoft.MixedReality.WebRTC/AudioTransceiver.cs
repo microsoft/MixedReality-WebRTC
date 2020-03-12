@@ -35,8 +35,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private LocalAudioTrack _localTrack = null;
 
-        internal AudioTransceiver(IntPtr handle, PeerConnection peerConnection, int mlineIndex, string name, Direction initialDesiredDirection)
-            : base(handle, MediaKind.Audio, peerConnection, mlineIndex, name, initialDesiredDirection)
+        internal AudioTransceiver(IntPtr handle, PeerConnection peerConnection, int mlineIndex, string name, string[] streamIDs, Direction initialDesiredDirection)
+            : base(handle, MediaKind.Audio, peerConnection, mlineIndex, name, streamIDs, initialDesiredDirection)
         {
         }
 
