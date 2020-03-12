@@ -54,7 +54,7 @@ public class NodeDssSignalerUI : MonoBehaviour
             {
                 PlayerPrefs.SetString(kLastRemotePeerId, RemotePeerId.text);
                 NodeDssSignaler.RemotePeerId = RemotePeerId.text;
-                NodeDssSignaler.PeerConnection.Peer.CreateOffer();
+                NodeDssSignaler.PeerConnection.CreateOffer();
             }
         });
     }
