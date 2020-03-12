@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace Microsoft.MixedReality.WebRTC.Tests
@@ -226,6 +227,12 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.IsTrue(exchangeCompleted_.Wait(TimeSpan.FromSeconds(60.0)));
             Assert.IsFalse(exchangePending_);
             exchangeCompleted_.Reset();
+        }
+
+        protected Task DoNegotiationStartFrom(PeerConnection offeringPeer)
+        {
+            StartOfferWith(offeringPeer);
+            return Task.Run(() => { WaitForSdpExchangeCompleted(); });
         }
 
         private void OnConnected1()

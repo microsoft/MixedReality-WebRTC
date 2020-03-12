@@ -3,21 +3,27 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 
 namespace Microsoft.MixedReality.WebRTC.Tests
 {
-    [TestFixture(SdpSemantic.PlanB)]
-    [TestFixture(SdpSemantic.UnifiedPlan)]
-    internal class AudioTransceiverTests : PeerConnectionTestBase
+    [TestFixture(SdpSemantic.PlanB, MediaKind.Audio)]
+    [TestFixture(SdpSemantic.UnifiedPlan, MediaKind.Audio)]
+    [TestFixture(SdpSemantic.PlanB, MediaKind.Video)]
+    [TestFixture(SdpSemantic.UnifiedPlan, MediaKind.Video)]
+    internal class TransceiverTests : PeerConnectionTestBase
     {
-        public AudioTransceiverTests(SdpSemantic sdpSemantic) : base(sdpSemantic)
+        private readonly MediaKind MediaKind;
+
+        public TransceiverTests(SdpSemantic sdpSemantic, MediaKind mediaKind) : base(sdpSemantic)
         {
+            MediaKind = mediaKind;
         }
 
         [Test]
-        public void SetDirection()
+        public async Task SetDirection()
         {
             // This test use manual offers
             suspendOffer1_ = true;
@@ -27,14 +33,12 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             {
                 Name = "transceiver1",
             };
-            var transceiver1 = pc1_.AddAudioTransceiver(transceiver_settings);
+            var transceiver1 = pc1_.AddTransceiver(MediaKind, transceiver_settings);
             Assert.NotNull(transceiver1);
             Assert.AreEqual(transceiver1.DesiredDirection, Transceiver.Direction.SendReceive); // from implementation
             Assert.AreEqual(transceiver1.NegotiatedDirection, null);
             Assert.AreEqual(pc1_, transceiver1.PeerConnection);
             Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1));
-            Assert.IsNull(transceiver1.LocalTrack);
-            Assert.IsNull(transceiver1.RemoteTrack);
 
             // Wait for local SDP re-negotiation event on #1.
             // This will not create an offer, since we're not connected yet.
@@ -42,14 +46,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             renegotiationEvent1_.Reset();
 
             // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
-            Assert.True(pc1_.IsConnected);
-            Assert.True(pc2_.IsConnected);
-
-            // Wait for transceiver to finish updating before changing its direction
-            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(10.0)));
-            remoteDescAppliedEvent1_.Reset();
+            await DoNegotiationStartFrom(pc1_);
 
             // Note: use manual list instead of Enum.GetValues() to control order, and not
             // get Inactive first (which is the current value, so wouldn't make any change).
@@ -73,11 +70,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 renegotiationEvent1_.Reset();
 
                 // Renegotiate
-                remoteDescAppliedEvent1_.Reset();
-                Assert.True(pc1_.CreateOffer());
-                WaitForSdpExchangeCompleted();
-                Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(10.0)));
-                remoteDescAppliedEvent1_.Reset();
+                await DoNegotiationStartFrom(pc1_);
 
                 // Observe the new negotiated direction
                 Assert.AreEqual(transceiver1.DesiredDirection, direction);
@@ -85,76 +78,68 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             }
         }
 
-        [Test(Description = "Check that the transceiver name is correctly broadcast to the remote peer when the remote transceiver is automatically created.")]
-        public void PairingNameAuto()
+        [Test(Description = "Check that the transceiver stream IDs are correctly broadcast to the remote peer.")]
+        public async Task StreamIDs()
         {
             // This test use manual offers
             suspendOffer1_ = true;
 
             // Create video transceiver on #1. This triggers a renegotiation needed event.
-            string pairingName = "audio_feed";
+            string name1 = "video_feed";
             var initSettings = new TransceiverInitSettings
             {
-                Name = pairingName,
+                Name = name1,
                 InitialDesiredDirection = Transceiver.Direction.SendOnly,
-                StreamIDs = new List<string> { "id1", "id2" } // dummy
+                StreamIDs = new List<string> { "id1", "id2" }
             };
-            var transceiver1 = pc1_.AddAudioTransceiver(initSettings);
+            var transceiver1 = pc1_.AddTransceiver(MediaKind, initSettings);
             Assert.NotNull(transceiver1);
-            Assert.AreEqual(pairingName, transceiver1.Name);
+            // Names are equal only because the transceiver was created by the local peer
+            Assert.AreEqual(name1, transceiver1.Name);
+            Assert.AreEqual(2, transceiver1.StreamIDs.Length);
+            Assert.AreEqual("id1", transceiver1.StreamIDs[0]);
+            Assert.AreEqual("id2", transceiver1.StreamIDs[1]);
             Assert.AreEqual(transceiver1.DesiredDirection, Transceiver.Direction.SendOnly);
             Assert.AreEqual(transceiver1.NegotiatedDirection, null);
             Assert.AreEqual(pc1_, transceiver1.PeerConnection);
             Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1));
-            Assert.IsNull(transceiver1.LocalTrack);
-            Assert.IsNull(transceiver1.RemoteTrack);
-
-            // Wait for local SDP re-negotiation event on #1.
-            // This will not create an offer, since we're not connected yet.
-            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            renegotiationEvent1_.Reset();
 
             // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
-            Assert.True(pc1_.IsConnected);
-            Assert.True(pc2_.IsConnected);
-
-            // Wait for transceiver to finish updating before changing its direction
-            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(10.0)));
-            remoteDescAppliedEvent1_.Reset();
+            await DoNegotiationStartFrom(pc1_);
 
             // Find the remote transceiver
             Assert.AreEqual(1, pc2_.Transceivers.Count);
             var transceiver2 = pc2_.Transceivers[0];
             Assert.NotNull(transceiver2);
 
-            // Check name was associated
-            Assert.AreEqual(pairingName, transceiver2.Name);
+            // Check stream IDs were associated
+            Assert.AreEqual(2, transceiver2.StreamIDs.Length);
+            Assert.AreEqual("id1", transceiver2.StreamIDs[0]);
+            Assert.AreEqual("id2", transceiver2.StreamIDs[1]);
         }
 
-        [Test(Description = "#179 - Ensure AddAudioTransceiver(null) works.")]
-        public void AddAudioTransceiver_Null()
+        [Test(Description = "#179 - Ensure AddTransceiver(mediaKind, null) works.")]
+        public void AddTransceiver_Null()
         {
-            var tr = pc1_.AddAudioTransceiver();
+            var tr = pc1_.AddTransceiver(MediaKind, null);
             Assert.IsNotNull(tr);
         }
 
-        [Test(Description = "#179 - Ensure AddAudioTransceiver(default) works.")]
-        public void AddAudioTransceiver_Default()
+        [Test(Description = "#179 - Ensure AddTransceiver(mediaKind, default) works.")]
+        public void AddTransceiver_Default()
         {
             var settings = new TransceiverInitSettings();
-            var tr = pc1_.AddAudioTransceiver(settings);
+            var tr = pc1_.AddTransceiver(MediaKind, settings);
             Assert.IsNotNull(tr);
         }
 
         [Test]
-        public void AddAudioTransceiver_InvalidName()
+        public void AddTransceiver_InvalidName()
         {
             var settings = new TransceiverInitSettings();
             settings.Name = "invalid name";
-            AudioTransceiver tr = null;
-            Assert.Throws<ArgumentException>(() => { tr = pc1_.AddAudioTransceiver(settings); });
+            Transceiver tr = null;
+            Assert.Throws<ArgumentException>(() => { tr = pc1_.AddTransceiver(MediaKind, settings); });
             Assert.IsNull(tr);
         }
     }
