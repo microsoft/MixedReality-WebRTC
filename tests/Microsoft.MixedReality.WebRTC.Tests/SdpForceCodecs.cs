@@ -1,7 +1,8 @@
-using System;
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.MixedReality.WebRTC;
 using Microsoft.MixedReality.WebRTC.Interop;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
@@ -81,7 +82,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             "a=ssrc:3 msid:local_stream_1 video_track_id_1\r\n" +
             "a=ssrc:3 mslabel:local_stream_1\r\n" +
             "a=ssrc:3 label:video_track_id_1\r\n";
-        
+
         #endregion
 
         [Test]

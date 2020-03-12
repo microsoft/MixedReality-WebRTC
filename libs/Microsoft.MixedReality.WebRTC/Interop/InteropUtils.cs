@@ -88,6 +88,22 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsReportLiveObjects")]
+        public static unsafe extern uint LibraryReportLiveObjects();
+
+        [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsGetShutdownOptions")]
+        public static unsafe extern Library.ShutdownOptionsFlags LibraryGetShutdownOptions();
+
+        [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsSetShutdownOptions")]
+        public static unsafe extern void LibrarySetShutdownOptions(Library.ShutdownOptionsFlags options);
+
+        [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsForceShutdown")]
+        public static unsafe extern void LibraryForceShutdown();
+
+        [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsSdpForceCodecs")]
         public static unsafe extern uint SdpForceCodecs(string message, SdpFilter audioFilter, SdpFilter videoFilter,
             StringBuilder messageOut, ref ulong messageOutLength);

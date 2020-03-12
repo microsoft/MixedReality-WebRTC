@@ -1,9 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-#include "../include/mrs_errors.h"
-#include "../src/interop/interop_api.h"
-#include "../src/interop/peer_connection_interop.h"
+#include "../include/interop_api.h"
+#include "../include/peer_connection_interop.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
@@ -23,6 +22,10 @@ struct Event {
     signaled_ = true;
     cv_.notify_all();
   }
+  bool IsSignaled() const {
+    std::unique_lock<std::mutex> lk(m_);
+    return signaled_;
+  }
   void Wait() {
     std::unique_lock<std::mutex> lk(m_);
     if (!signaled_) {
@@ -36,9 +39,41 @@ struct Event {
     }
     return true;
   }
-  std::mutex m_;
+  mutable std::mutex m_;
   std::condition_variable cv_;
   bool signaled_{false};
+};
+
+/// Simple semaphore.
+struct Semaphore {
+  void Acquire(int64_t count = 1) {
+    std::unique_lock<std::mutex> lk(m_);
+    while (value_ < count) {
+      cv_.wait(lk);
+    }
+    value_ -= count;
+  }
+  bool TryAcquireFor(std::chrono::seconds seconds, int64_t count = 1) {
+    std::unique_lock<std::mutex> lk(m_);
+    while (value_ < count) {
+      if (cv_.wait_for(lk, seconds) == std::cv_status::timeout) {
+        return false;
+      }
+    }
+    value_ -= count;
+    return true;
+  }
+  void Release(int64_t count = 1) {
+    std::unique_lock<std::mutex> lk(m_);
+    const int64_t old_value = value_;
+    value_ += count;
+    if (old_value <= 0) {
+      cv_.notify_all();
+    }
+  }
+  std::mutex m_;
+  std::condition_variable cv_;
+  int64_t value_{0};
 };
 
 /// Wrapper around an interop callback taking an extra raw pointer argument, to
@@ -199,6 +234,17 @@ class LocalPeerPairRaii {
         ice2_cb_(pc2()) {
     setup();
   }
+  LocalPeerPairRaii(const PeerConnectionConfiguration& config,
+                    mrsPeerConnectionInteropHandle h1,
+                    mrsPeerConnectionInteropHandle h2)
+      : pc1_(config, h1),
+        pc2_(config, h2),
+        sdp1_cb_(pc1()),
+        sdp2_cb_(pc2()),
+        ice1_cb_(pc1()),
+        ice2_cb_(pc2()) {
+    setup();
+  }
   ~LocalPeerPairRaii() { shutdown(); }
 
   PeerConnectionHandle pc1() const { return pc1_.handle(); }
@@ -228,16 +274,22 @@ class LocalPeerPairRaii {
   InteropCallback<> connected2_cb_;
   void setup() {
     sdp1_cb_ = [this](const char* type, const char* sdp_data) {
-      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                      pc2_.handle(), type, sdp_data));
+      Event ev;
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionSetRemoteDescriptionAsync(
+                    pc2_.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ev.Wait();
       if (kOfferString == type) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc2_.handle()));
       }
     };
     sdp2_cb_ = [this](const char* type, const char* sdp_data) {
-      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescription(
-                                      pc1_.handle(), type, sdp_data));
+      Event ev;
+      ASSERT_EQ(Result::kSuccess,
+                mrsPeerConnectionSetRemoteDescriptionAsync(
+                    pc1_.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+      ev.Wait();
       if (kOfferString == type) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc1_.handle()));
@@ -266,5 +318,10 @@ class LocalPeerPairRaii {
       mrsPeerConnectionRegisterConnectedCallback(pc2(), nullptr, nullptr);
       connected2_cb_.is_registered_ = false;
     }
+  }
+
+  static void MRS_CALL SetEventOnCompleted(void* user_data) {
+    Event* ev = (Event*)user_data;
+    ev->Set();
   }
 };

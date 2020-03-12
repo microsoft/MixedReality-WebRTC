@@ -1,11 +1,11 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-# [TEMPLATE] Compile WebRTC Core
+# [TEMPLATE] Compile WebRTC Core for Desktop (Win32) platform
 
 parameters:
   buildAgent: ''
-  buildArch: ''        # x86|x64|ARM|ARM64
+  buildArch: ''        # x86|x64
   buildConfig: ''      # Debug|Release
 
 jobs:
@@ -24,6 +24,16 @@ jobs:
   steps:
   - checkout: self
     submodules: recursive
+
+  # Compute the PDB package variables
+  - task: PowerShell@2
+    displayName: 'Compute PDB package variables'
+    inputs:
+      targetType: filePath
+      filePath: tools/ci/computePdbPackageVars.ps1
+    env:
+      # Compute and write $(MRWebRTC_PdbPackageVersion) from build pipeline variables
+      WRITE_VERSION: 'true'
 
   # Map build* variables to script* ones
   - task: PowerShell@2
@@ -44,7 +54,7 @@ jobs:
       configuration: ${{parameters.buildConfig}}
     timeoutInMinutes: 120
 
-  # Publish webrtc.lib
+  # Publish webrtc.lib as pipeline artifacts (limited retention)
   - task: PublishPipelineArtifact@0
     displayName: 'Publish webrtc.lib ($(buildTriple))'
     inputs:
@@ -52,11 +62,26 @@ jobs:
       targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/webrtc.lib'
     timeoutInMinutes: 15
 
-  # Publish PDBs for webrtc.lib
-  - task: PublishPipelineArtifact@0
+  # Publish PDBs for webrtc.lib as pipeline artifacts (limited retention)
+  # - task: PublishPipelineArtifact@0
+  #   displayName: 'Publish PDBs for webrtc.lib ($(buildTriple))'
+  #   inputs:
+  #     artifactName: 'libwebrtc_pdbs_$(buildTriple)'
+  #     targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/pdbs'
+  #   timeoutInMinutes: 15
+
+  # Publish PDBs for webrtc.lib as Universal Package (unlimited retention)
+  - task: UniversalPackages@0
     displayName: 'Publish PDBs for webrtc.lib ($(buildTriple))'
     inputs:
-      artifactName: 'libwebrtc_pdbs_$(buildTriple)'
-      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/pdbs'
-    timeoutInMinutes: 15
+      command: publish
+      publishDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/pdbs'
+      vstsFeedPublish: $(MRWebRTC_PdbFeed)
+      vstsFeedPackagePublish: $(MRWebRTC_PdbPackageName)
+      versionOption: custom
+      versionPublish: $(MRWebRTC_PdbPackageVersion)
+      packagePublishDescription: 'PDBs for MixedReality-WebRTC core (webrtc.lib) $(buildTriple)'
+    timeoutInMinutes: 30
+
+
 
