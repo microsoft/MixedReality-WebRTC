@@ -47,14 +47,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the sender video source
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
-            sender1.AutoAddTrack = true;
+            sender1.AutoStartOnEnabled = true;
+            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
             tr1.Sender = sender1;
 
             // Create the receiver video source
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
-            receiver2.AutoPlayOnPaired = true;
             MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
             tr2.Receiver = receiver2;
 
@@ -87,6 +87,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Connect
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
 
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
+
             // Check pairing
             Assert.NotNull(receiver2.Track);
         }
@@ -112,7 +115,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the sender video source
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
-            sender1.AutoAddTrack = true;
+            sender1.AutoStartOnEnabled = true;
+            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
             tr1.Sender = sender1;
@@ -148,6 +152,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Connect
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
 
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
+
             // Check that even though pairing failed lower-level remote track exists anyway
             Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count);
             Assert.NotNull(sender1.Track);
@@ -181,7 +188,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the receiver video source
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
-            receiver2.AutoPlayOnPaired = true;
             MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
             tr2.Receiver = receiver2;
 
@@ -215,6 +221,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Connect
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
 
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
+
             // Unlike in the case of a missing receiver, if there is no sender then nothing can be negotiated
             Assert.AreEqual(0, pc1.Peer.LocalVideoTracks.Count);
             Assert.AreEqual(0, pc1.Peer.RemoteVideoTracks.Count);
@@ -244,16 +253,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the video sources on peer #1
             var receiver1 = pc1_go.AddComponent<VideoReceiver>();
-            receiver1.AutoPlayOnPaired = true;
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
             tr1.Receiver = receiver1;
 
             // Create the video sources on peer #2
             var sender2 = pc2_go.AddComponent<FakeVideoSource>();
-            sender2.AutoAddTrack = true;
+            sender2.AutoStartOnEnabled = true;
+            sender2.AutoStopOnDisabled = true;
             sender2.TrackName = "track_name";
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
-            receiver2.AutoPlayOnPaired = true;
             MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
             tr2.Sender = sender2;
             tr2.Receiver = receiver2;
@@ -286,6 +294,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Connect
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
 
             // Check pairing
             Assert.AreEqual(0, pc1.Peer.LocalVideoTracks.Count);
@@ -316,17 +327,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the video sources on peer #1
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
-            sender1.AutoAddTrack = true;
+            sender1.AutoStartOnEnabled = true;
+            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             var receiver1 = pc1_go.AddComponent<VideoReceiver>();
-            receiver1.AutoPlayOnPaired = true;
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
             tr1.Sender = sender1;
             tr1.Receiver = receiver1;
 
             // Create the video sources on peer #2
             var sender2 = pc2_go.AddComponent<FakeVideoSource>();
-            sender2.AutoAddTrack = true;
+            sender2.AutoStartOnEnabled = true;
+            sender2.AutoStopOnDisabled = true;
             sender2.TrackName = "track_name";
             MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
             tr2.Sender = sender2;
@@ -360,6 +372,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Connect
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
 
             // Check pairing
             Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count);
@@ -390,17 +405,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the video sources on peer #1
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
-            sender1.AutoAddTrack = true;
+            sender1.AutoStartOnEnabled = true;
+            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
             tr1.Sender = sender1;
 
             // Create the video sources on peer #2
             var sender2 = pc2_go.AddComponent<FakeVideoSource>();
-            sender2.AutoAddTrack = true;
+            sender2.AutoStartOnEnabled = true;
+            sender2.AutoStopOnDisabled = true;
             sender2.TrackName = "track_name";
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
-            receiver2.AutoPlayOnPaired = true;
             MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
             tr2.Sender = sender2;
             tr2.Receiver = receiver2;
@@ -434,6 +450,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Connect
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
 
             // Check pairing
             Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count);
@@ -464,17 +483,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the video sources on peer #1
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
-            sender1.AutoAddTrack = true;
+            sender1.AutoStartOnEnabled = true;
+            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             var receiver1 = pc2_go.AddComponent<VideoReceiver>();
-            receiver1.AutoPlayOnPaired = true;
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
             tr1.Sender = sender1;
             tr1.Receiver = receiver1;
 
             // Create the video sources on peer #2
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
-            receiver2.AutoPlayOnPaired = true;
             MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
             tr2.Receiver = receiver2;
 
@@ -507,6 +525,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Connect
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
 
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
+
             // Check pairing
             Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count);
             Assert.AreEqual(0, pc1.Peer.RemoteVideoTracks.Count); // answer was RecvOnly
@@ -536,20 +557,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the video sources on peer #1
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
-            sender1.AutoAddTrack = true;
+            sender1.AutoStartOnEnabled = true;
+            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             var receiver1 = pc1_go.AddComponent<VideoReceiver>();
-            receiver1.AutoPlayOnPaired = true;
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
             tr1.Sender = sender1;
             tr1.Receiver = receiver1;
 
             // Create the video sources on peer #2
             var sender2 = pc2_go.AddComponent<FakeVideoSource>();
-            sender2.AutoAddTrack = true;
+            sender2.AutoStartOnEnabled = true;
+            sender2.AutoStopOnDisabled = true;
             sender2.TrackName = "track_name";
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
-            receiver2.AutoPlayOnPaired = true;
             MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
             tr2.Sender = sender2;
             tr2.Receiver = receiver2;
@@ -583,6 +604,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Connect
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
 
             // Check pairing
             Assert.NotNull(receiver1.Track);
@@ -737,7 +761,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                     if (HasSend(peer.dir))
                     {
                         var sender1 = pc1_go.AddComponent<FakeVideoSource>();
-                        sender1.AutoAddTrack = true;
+                        sender1.AutoStartOnEnabled = true;
+                        sender1.AutoStopOnDisabled = true;
                         sender1.TrackName = $"track{i}";
                         peer.sender = sender1;
                         tr1.Sender = sender1;
@@ -745,7 +770,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                     if (HasRecv(peer.dir))
                     {
                         var receiver1 = pc1_go.AddComponent<VideoReceiver>();
-                        receiver1.AutoPlayOnPaired = true;
                         peer.receiver = receiver1;
                         tr1.Receiver = receiver1;
                     }
@@ -758,7 +782,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                     if (HasSend(peer.dir))
                     {
                         var sender2 = pc2_go.AddComponent<FakeVideoSource>();
-                        sender2.AutoAddTrack = true;
+                        sender2.AutoStartOnEnabled = true;
+                        sender2.AutoStopOnDisabled = true;
                         sender2.TrackName = $"track{i}";
                         peer.sender = sender2;
                         tr2.Sender = sender2;
@@ -766,7 +791,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                     if (HasRecv(peer.dir))
                     {
                         var receiver2 = pc2_go.AddComponent<VideoReceiver>();
-                        receiver2.AutoPlayOnPaired = true;
                         peer.receiver = receiver2;
                         tr2.Receiver = receiver2;
                     }
@@ -812,6 +836,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Connect
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
 
             // Check pairing
             Assert.AreEqual(numLocal1, pc1.Peer.LocalVideoTracks.Count);
@@ -869,7 +896,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             {
                 var cfg = cfgs[2];
                 var receiver2 = pc2_go.AddComponent<VideoReceiver>();
-                receiver2.AutoPlayOnPaired = true;
                 cfg.peer1.receiver = receiver2;
                 cfg.peer1.mediaLine.Receiver = receiver2;
                 cfg.peer1.expectSender = true;
@@ -882,7 +908,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             {
                 var cfg = cfgs[3];
                 var sender1 = pc1_go.AddComponent<FakeVideoSource>();
-                sender1.AutoAddTrack = true;
+                sender1.AutoStartOnEnabled = true;
+                sender1.AutoStopOnDisabled = true;
                 sender1.TrackName = $"track3";
                 cfg.peer1.sender = sender1;
                 cfg.peer1.mediaLine.Sender = sender1;
@@ -904,6 +931,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Renegotiate
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
 
             // Check pairing
             Assert.AreEqual(numLocal1, pc1.Peer.LocalVideoTracks.Count);
@@ -950,7 +980,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the sender video source
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
-            sender1.AutoAddTrack = true;
+            sender1.AutoStartOnEnabled = true;
+            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             MediaLine ml1 = pc1.AddTransceiver(MediaKind.Video);
             Assert.NotNull(ml1);
@@ -959,7 +990,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the receiver video source
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
-            receiver2.AutoPlayOnPaired = true;
             MediaLine ml2 = pc2.AddTransceiver(MediaKind.Video);
             Assert.NotNull(ml2);
             Assert.AreEqual(MediaKind.Video, ml2.Kind);
@@ -994,6 +1024,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Connect
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
 
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
+
             // Check transceiver update
             Assert.NotNull(ml1.Transceiver); // first negotiation creates this
             Assert.NotNull(ml2.Transceiver); // first negotiation creates this
@@ -1023,6 +1056,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Renegotiate
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
 
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
+
             // Check transceiver update
             Assert.NotNull(ml1.Transceiver); // immutable
             Assert.NotNull(ml2.Transceiver); // immutable
@@ -1051,6 +1087,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Renegotiate
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
 
             // Check transceiver update
             Assert.NotNull(ml1.Transceiver); // immutable

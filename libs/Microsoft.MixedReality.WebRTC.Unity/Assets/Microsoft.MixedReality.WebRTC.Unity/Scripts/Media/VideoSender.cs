@@ -11,16 +11,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// existing WebRTC peer connection and sent to the remote peer. The video track
     /// can optionally be displayed locally with a <see cref="MediaPlayer"/>.
     /// </summary>
-    [AddComponentMenu("MixedReality-WebRTC/Video Sender")]
+    /// <seealso cref="WebcamSource"/>
+    /// <seealso cref="CustomVideoSender{T}"/>
+    /// <seealso cref="SceneVideoSender"/>
     public abstract class VideoSender : MediaSender, IVideoSource
     {
-        /// <summary>
-        /// Automatically start local video capture when this component is enabled.
-        /// </summary>
-        [Header("Local video capture")]
-        [Tooltip("Automatically start local video capture when this component is enabled")]
-        public bool AutoStartCapture = true;
-
         /// <summary>
         /// Name of the preferred video codec, or empty to let WebRTC decide.
         /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
@@ -29,32 +24,41 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public string PreferredVideoCodec = string.Empty;
 
         /// <summary>
-        /// Event invoked from the main Unity thread when the video stream starts.
-        /// This means that video frames are available and the renderer should start polling.
+        /// Event invoked from the main Unity app thread when the video stream starts.
+        /// This means that video frames are available and any renderer should start polling.
         /// </summary>
         public VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
 
         /// <summary>
-        /// Event invoked from the main Unity thread when the video stream stops.
-        /// This means that the video frame queue is not populated anymore, though some frames
-        /// may still be present in it that may be rendered.
+        /// Event invoked from the main Unity app thread when the video stream stops.
+        /// This means that video frames are not produced anymore and any renderer should stop
+        /// trying to poll the track to render them.
         /// </summary>
         public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
+
+        public bool IsStreaming { get; protected set; }
 
         public VideoStreamStartedEvent GetVideoStreamStarted() { return VideoStreamStarted; }
         public VideoStreamStoppedEvent GetVideoStreamStopped() { return VideoStreamStopped; }
 
+        /// <summary>
+        /// Video transceiver the local video track <see cref="Track"/> this components owns
+        /// is added to, if any. If this is non-<c>null</c> and the peer connection the transceiver
+        /// is owned by is connected, then the video frames produced by the local <see cref="Track"/>
+        /// are sent through the <see cref="Transceiver"/> to the remote peer. That is,
+        /// <see cref="Track"/> is attached as <see cref="VideoTransceiver.LocalTrack"/>.
+        /// </summary>
         public VideoTransceiver Transceiver { get; private set; }
 
         /// <inheritdoc/>
         public VideoEncoding FrameEncoding { get; } = VideoEncoding.I420A;
 
         /// <summary>
-        /// Video track added to the peer connection that this component encapsulates.
+        /// Video track that this component encapsulates.
         /// </summary>
-        public LocalVideoTrack Track { get; protected set; }
+        public LocalVideoTrack Track { get; protected set; } = null;
 
-        public VideoSender(VideoEncoding frameEncoding)
+        public VideoSender(VideoEncoding frameEncoding) : base(MediaKind.Video)
         {
             FrameEncoding = frameEncoding;
         }
@@ -91,33 +95,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        protected override async Task CreateTrackAsync()
+        protected override async Task CreateLocalTrackAsync()
         {
             if (Track == null)
             {
                 // Defer track creation to derived classes, which will invoke some methods like
                 // LocalVideoTrack.CreateFromDeviceAsync() or LocalVideoTrack.CreateFromExternalSourceAsync().
-                await DoCreateTrackAsyncAction();
+                await CreateLocalVideoTrackAsync();
                 Debug.Assert(Track != null, "Implementation did not create a valid Track property yet did not throw any exception.", this);
 
                 VideoStreamStarted.Invoke(this);
+                IsStreaming = true;
             }
         }
 
-        protected override void DestroyTrack()
+        protected override void DestroyLocalTrack()
         {
-            DoRemoveTrackAction();
-            Debug.Assert(Track == null, "Implementation did not destroy the existing Track property yet did not throw any exception.", this);
-        }
+            if (Track != null)
+            {
+                IsStreaming = true;
+                VideoStreamStopped.Invoke(this);
 
-        protected override Task DoStartMediaPlaybackAsync()
-        {
-            return CreateTrackAsync();
-        }
-
-        protected override void DoStopMediaPlayback()
-        {
-            DestroyTrack();
+                // Defer track destruction to derived classes.
+                DestroyLocalVideoTrack();
+                Debug.Assert(Track == null, "Implementation did not destroy the existing Track property yet did not throw any exception.", this);
+            }
         }
 
         /// <summary>
@@ -138,7 +140,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Ensure the local sender track exists
             if (Track == null)
             {
-                await CreateTrackAsync();
+                await CreateLocalTrackAsync();
             }
 
             // Attach the local track to the transceiver
@@ -166,21 +168,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Implement this callback to create the <see cref="Track"/> instance.
-        /// On failure, this method must throw. Otherwise it must set the <see cref="Track"/> property
-        /// to a non-<c>null</c> instance.
+        /// On failure, this method must throw an exception. Otherwise it must set the <see cref="Track"/>
+        /// property to a non-<c>null</c> instance.
         /// </summary>
-        protected abstract Task DoCreateTrackAsyncAction();
+        protected abstract Task CreateLocalVideoTrackAsync();
 
         /// <summary>
         /// Re-implement this callback to destroy the <see cref="Track"/> instance
         /// and other associated resources.
         /// </summary>
-        protected virtual void DoRemoveTrackAction()
+        protected virtual void DestroyLocalVideoTrack()
         {
             if (Track != null)
             {
-                VideoStreamStopped.Invoke(this);
-
                 // Track may not be added to any transceiver (e.g. no connection)
                 if (Track.Transceiver != null)
                 {

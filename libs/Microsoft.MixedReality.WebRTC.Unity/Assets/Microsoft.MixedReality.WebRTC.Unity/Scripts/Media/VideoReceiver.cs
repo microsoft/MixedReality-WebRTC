@@ -44,11 +44,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
 
+        public bool IsStreaming { get; protected set; }
+
         public VideoStreamStartedEvent GetVideoStreamStarted() { return VideoStreamStarted; }
         public VideoStreamStoppedEvent GetVideoStreamStopped() { return VideoStreamStopped; }
 
         /// <inheritdoc/>
         public VideoEncoding FrameEncoding { get; } = VideoEncoding.I420A;
+
+        public VideoReceiver() : base(MediaKind.Video)
+        {
+        }
 
         /// <summary>
         /// Register a frame callback to listen to incoming video data receiving through this
@@ -126,28 +132,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Transceiver = videoTransceiver;
         }
 
-        protected override Task DoStartMediaPlaybackAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        protected override void DoStopMediaPlayback()
-        {
-            if (Track != null)
-            {
-                VideoStreamStopped.Invoke(this);
-
-                // Track may not be added to any transceiver (e.g. no connection)
-                if (Track.Transceiver != null)
-                {
-                    Track.Transceiver.LocalTrack = null;
-                }
-
-                // Remote tracks are owned by the peer connection (not disposable)
-                Track = null;
-            }
-        }
-
         /// <summary>
         /// Free-threaded callback invoked by the owning peer connection when a track is paired
         /// with this receiver, which enqueues the <see cref="VideoSource.VideoStreamStarted"/>
@@ -155,14 +139,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         internal void OnPaired(RemoteVideoTrack track)
         {
-            Debug.Assert(Track == null);
-            Track = track;
-
-            //IsPlaying = true;
-
-            // Enqueue invoking the unity event from the main Unity thread, so that listeners
-            // can directly access Unity objects from their handler function.
-            _mainThreadWorkQueue.Enqueue(() => VideoStreamStarted.Invoke(this));
+            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
+            // properties and so that listeners of the event can directly access Unity objects
+            // from their handler function.
+            _mainThreadWorkQueue.Enqueue(() =>
+            {
+                Debug.Assert(Track == null);
+                Track = track;
+                IsLive = true;
+                VideoStreamStarted.Invoke(this);
+                IsStreaming = true;
+            });
         }
 
         /// <summary>
@@ -172,14 +159,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         internal void OnUnpaired(RemoteVideoTrack track)
         {
-            Debug.Assert(Track == track);
-            Track = null;
-
-            //IsPlaying = false;
-
-            // Enqueue invoking the unity event from the main Unity thread, so that listeners
-            // can directly access Unity objects from their handler function.
-            _mainThreadWorkQueue.Enqueue(() => VideoStreamStopped.Invoke(this));
+            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
+            // properties and so that listeners of the event can directly access Unity objects
+            // from their handler function.
+            _mainThreadWorkQueue.Enqueue(() =>
+            {
+                Debug.Assert(Track == track);
+                IsStreaming = false;
+                VideoStreamStopped.Invoke(this);
+                Track = null;
+                IsLive = false;
+            });
         }
     }
 }
