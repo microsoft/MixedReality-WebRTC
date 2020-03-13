@@ -176,6 +176,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
                 // Display the edit field for the enum
                 var newCodecValue = (SdpVideoCodecs)EditorGUILayout.EnumPopup(_preferredVideoCodec.displayName, codecValue);
+                if (newCodecValue == SdpVideoCodecs.H264)
+                {
+                    EditorGUILayout.HelpBox("H.264 is only supported on UWP platforms.", MessageType.Warning);
+                }
 
                 // Update the value if changed or custom
                 if ((newCodecValue != codecValue) || (newCodecValue == SdpVideoCodecs.Custom))
