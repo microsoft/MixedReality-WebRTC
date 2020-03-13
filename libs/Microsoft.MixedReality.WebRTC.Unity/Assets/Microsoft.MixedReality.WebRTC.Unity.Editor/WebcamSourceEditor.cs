@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
@@ -19,7 +19,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
     {
         SerializedProperty _peerConnection;
         SerializedProperty _trackName;
-        SerializedProperty _autoStartCapture;
+        SerializedProperty _autoStartOnEnabled;
+        SerializedProperty _autoStopOnDisabled;
         SerializedProperty _preferredVideoCodec;
         SerializedProperty _enableMixedRealityCapture;
         SerializedProperty _enableMrcRecordingIndicator;
@@ -30,6 +31,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         SerializedProperty _width;
         SerializedProperty _height;
         SerializedProperty _framerate;
+        SerializedProperty _videoStreamStarted;
+        SerializedProperty _videoStreamStopped;
 
         /// <summary>
         /// Helper enumeration for commonly used video codecs.
@@ -77,7 +80,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         void OnEnable()
         {
             _trackName = serializedObject.FindProperty("TrackName");
-            _autoStartCapture = serializedObject.FindProperty("AutoStartCapture");
+            _autoStartOnEnabled = serializedObject.FindProperty("AutoStartOnEnabled");
+            _autoStopOnDisabled = serializedObject.FindProperty("AutoStopOnDisabled");
             _preferredVideoCodec = serializedObject.FindProperty("PreferredVideoCodec");
             _enableMixedRealityCapture = serializedObject.FindProperty("EnableMixedRealityCapture");
             _enableMrcRecordingIndicator = serializedObject.FindProperty("EnableMRCRecordingIndicator");
@@ -88,6 +92,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             _width = _constraints.FindPropertyRelative("width");
             _height = _constraints.FindPropertyRelative("height");
             _framerate = _constraints.FindPropertyRelative("framerate");
+            _videoStreamStarted = serializedObject.FindProperty("VideoStreamStarted");
+            _videoStreamStopped = serializedObject.FindProperty("VideoStreamStopped");
         }
 
         /// <summary>
@@ -99,22 +105,51 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             serializedObject.Update();
 
             GUILayout.Space(10);
-            EditorGUILayout.PropertyField(_trackName);
-            EditorGUILayout.PropertyField(_autoStartCapture);
 
-            EditorGUILayout.PropertyField(_enableMixedRealityCapture);
+            EditorGUILayout.LabelField("Video capture", EditorStyles.boldLabel);
+            _autoStartOnEnabled.boolValue = EditorGUILayout.ToggleLeft("Auto-start capture when enabled", _autoStartOnEnabled.boolValue);
+            _autoStopOnDisabled.boolValue = EditorGUILayout.ToggleLeft("Auto-stop capture when disabled", _autoStopOnDisabled.boolValue);
+            EditorGUILayout.PropertyField(_formatMode, new GUIContent("Capture format"));
+            if ((LocalVideoSourceFormatMode)_formatMode.intValue == LocalVideoSourceFormatMode.Manual)
+            {
+                ++EditorGUI.indentLevel;
+
+                EditorGUILayout.PropertyField(_videoProfileKind);
+                EditorGUILayout.PropertyField(_videoProfileId);
+                EditorGUILayout.IntSlider(_width, 0, 10000);
+                EditorGUILayout.IntSlider(_height, 0, 10000);
+                //EditorGUILayout.Slider(_framerate, 0.0, 60.0); //< TODO
+
+                if ((_videoProfileKind.intValue != (int)VideoProfileKind.Unspecified) && (_videoProfileId.stringValue.Length > 0))
+                {
+                    EditorGUILayout.HelpBox("Video profile ID is already unique. Specifying also a video kind over-constrains the selection algorithm and can decrease the chances of finding a matching video profile. It is recommended to select either a video profile kind, or a video profile ID (and leave the kind to Unspecified).", MessageType.Warning);
+                }
+
+                --EditorGUI.indentLevel;
+            }
+            _enableMixedRealityCapture.boolValue = EditorGUILayout.ToggleLeft("Enable Mixed Reality Capture (MRC)", _enableMixedRealityCapture.boolValue);
             if (_enableMixedRealityCapture.boolValue)
             {
-                EditorGUILayout.PropertyField(_enableMrcRecordingIndicator);
-                if (!PlayerSettings.virtualRealitySupported)
+                using (var scope = new EditorGUI.IndentLevelScope())
                 {
-                    EditorGUILayout.HelpBox("Mixed Reality Capture can only work in exclusive-mode apps. XR support must be enabled in Project Settings > Player > XR Settings > Virtual Reality Supported, and the project then saved to disk.", MessageType.Error);
-                    if (GUILayout.Button("Enable XR support"))
+                    _enableMrcRecordingIndicator.boolValue = EditorGUILayout.ToggleLeft("Show recording indicator in device", _enableMrcRecordingIndicator.boolValue);
+                    if (!PlayerSettings.virtualRealitySupported)
                     {
-                        PlayerSettings.virtualRealitySupported = true;
+                        EditorGUILayout.HelpBox("Mixed Reality Capture can only work in exclusive-mode apps. XR support must be enabled in Project Settings > Player > XR Settings > Virtual Reality Supported, and the project then saved to disk.", MessageType.Error);
+                        if (GUILayout.Button("Enable XR support"))
+                        {
+                            PlayerSettings.virtualRealitySupported = true;
+                        }
                     }
                 }
             }
+            EditorGUILayout.PropertyField(_videoStreamStarted);
+            EditorGUILayout.PropertyField(_videoStreamStopped);
+
+            GUILayout.Space(10);
+
+            EditorGUILayout.LabelField("WebRTC track", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(_trackName);
 
             try
             {
@@ -145,10 +180,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                 }
 
                 // Display the edit field for the enum
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.Label(_preferredVideoCodec.displayName);
-                var newCodecValue = (SdpVideoCodecs)EditorGUILayout.EnumPopup(codecValue);
-                EditorGUILayout.EndHorizontal();
+                var newCodecValue = (SdpVideoCodecs)EditorGUILayout.EnumPopup(_preferredVideoCodec.displayName, codecValue);
 
                 // Update the value if changed or custom
                 if ((newCodecValue != codecValue) || (newCodecValue == SdpVideoCodecs.Custom))
@@ -180,25 +212,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             catch (Exception)
             {
                 EditorGUILayout.PropertyField(_preferredVideoCodec);
-            }
-
-            EditorGUILayout.PropertyField(_formatMode);
-            if ((LocalVideoSourceFormatMode)_formatMode.intValue == LocalVideoSourceFormatMode.Manual)
-            {
-                ++EditorGUI.indentLevel;
-
-                EditorGUILayout.PropertyField(_videoProfileKind);
-                EditorGUILayout.PropertyField(_videoProfileId);
-                EditorGUILayout.IntSlider(_width, 0, 10000);
-                EditorGUILayout.IntSlider(_height, 0, 10000);
-                //EditorGUILayout.Slider(_framerate, 0.0, 60.0); //< TODO
-
-                if ((_videoProfileKind.intValue != (int)VideoProfileKind.Unspecified) && (_videoProfileId.stringValue.Length > 0))
-                {
-                    EditorGUILayout.HelpBox("Video profile ID is already unique. Specifying also a video kind over-constrains the selection algorithm and can decrease the chances of finding a matching video profile. It is recommended to select either a video profile kind, or a video profile ID (and leave the kind to Unspecified).", MessageType.Warning);
-                }
-
-                --EditorGUI.indentLevel;
             }
 
             serializedObject.ApplyModifiedProperties();
