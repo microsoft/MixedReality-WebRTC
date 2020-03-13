@@ -45,17 +45,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         #region Native callbacks
 
-        //[UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        //public delegate IntPtr CreateObjectDelegate(IntPtr peer, in CreateConfig config);
-
-        //[MonoPInvokeCallback(typeof(CreateObjectDelegate))]
-        //public static IntPtr RemoteAudioTrackCreateObjectCallback(IntPtr peer, in CreateConfig config)
-        //{
-        //    var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
-        //    var remoteAudioTrackWrapper = CreateWrapper(peerWrapper, in config);
-        //    return Utils.MakeWrapperRef(remoteAudioTrackWrapper);
-        //}
-
         public class InteropCallbackArgs
         {
             public RemoteAudioTrack Track;
