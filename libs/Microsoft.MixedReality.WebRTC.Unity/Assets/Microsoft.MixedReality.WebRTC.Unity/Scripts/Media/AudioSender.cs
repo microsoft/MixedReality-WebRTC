@@ -12,22 +12,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// existing WebRTC peer connection and sent to the remote peer. The audio track
     /// can optionally be rendered locally with a <see cref="MediaPlayer"/>.
     /// </summary>
-    [AddComponentMenu("MixedReality-WebRTC/Audio Sender")]
-    public class AudioSender : MediaSender, IAudioSource
+    /// <seealso cref="MicrophoneSource"/>
+    public abstract class AudioSender : MediaSender, IAudioSource
     {
-        /// <summary>
-        /// Automatically start local audio capture when this component is enabled.
-        /// </summary>
-        [Header("Local audio capture")]
-        [Tooltip("Automatically start local audio capture when this component is enabled")]
-        public bool AutoStartCapture = true;
-
         /// <summary>
         /// Name of the preferred audio codec, or empty to let WebRTC decide.
         /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
         /// </summary>
         [Tooltip("SDP name of the preferred audio codec to use if supported")]
         public string PreferredAudioCodec = string.Empty;
+
+        public bool IsStreaming { get; protected set; }
 
         public AudioStreamStartedEvent AudioStreamStarted = new AudioStreamStartedEvent();
         public AudioStreamStoppedEvent AudioStreamStopped = new AudioStreamStoppedEvent();
@@ -38,9 +33,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public AudioTransceiver Transceiver { get; private set; }
 
         /// <summary>
-        /// Audio track added to the peer connection that this component encapsulates.
+        /// Audio track that this component encapsulates.
         /// </summary>
-        public LocalAudioTrack Track { get; private set; } = null;
+        public LocalAudioTrack Track { get; protected set; } = null;
+
+        public AudioSender() : base(MediaKind.Audio)
+        {
+        }
 
         /// <summary>
         /// Register a frame callback to listen to outgoing audio data produced by this audio sender
@@ -62,45 +61,30 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <param name="callback">The frame callback to unregister.</param>
         public void UnregisterCallback(AudioFrameDelegate callback) { }
 
-        protected override async Task DoStartMediaPlaybackAsync()
+        protected override async Task CreateLocalTrackAsync()
         {
             if (Track == null)
             {
-                // Ensure the track has a valid name
-                string trackName = TrackName;
-                if (trackName.Length == 0)
-                {
-                    trackName = Guid.NewGuid().ToString();
-                    TrackName = trackName;
-                }
-                SdpTokenAttribute.Validate(trackName, allowEmpty: false);
+                // Defer track creation to derived classes, which will invoke some methods like
+                // LocalAudioTrack.CreateFromDeviceAsync().
+                await CreateLocalAudioTrackAsync();
+                Debug.Assert(Track != null, "Implementation did not create a valid Track property yet did not throw any exception.", this);
 
-                // Create the local track
-                var trackSettings = new LocalAudioTrackSettings
-                {
-                    trackName = trackName
-                };
-                Track = await LocalAudioTrack.CreateFromDeviceAsync(trackSettings);
-
-                AudioStreamStarted.Invoke();
+                AudioStreamStarted.Invoke(this);
+                IsStreaming = true;
             }
         }
 
-        protected override void DoStopMediaPlayback()
+        protected override void DestroyLocalTrack()
         {
             if (Track != null)
             {
-                AudioStreamStopped.Invoke();
+                IsStreaming = false;
+                AudioStreamStopped.Invoke(this);
 
-                // Track may not be added to any transceiver (e.g. no connection)
-                if (Track.Transceiver != null)
-                {
-                    Track.Transceiver.LocalTrack = null;
-                }
-
-                // Local tracks are disposable objects owned by the user (this component)
-                Track.Dispose();
-                Track = null;
+                // Defer track destruction to derived classes.
+                DestroyLocalAudioTrack();
+                Debug.Assert(Track == null, "Implementation did not destroy the existing Track property yet did not throw any exception.", this);
             }
         }
 
@@ -135,7 +119,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Ensure the local sender track exists
             if (Track == null)
             {
-                await DoStartMediaPlaybackAsync();
+                await CreateLocalTrackAsync();
             }
 
             // Attach the local track to the transceiver
@@ -152,41 +136,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Transceiver.LocalTrack = null;
         }
 
-        protected override async Task CreateTrackAsync()
-        {
-            if (Track == null)
-            {
-                // Ensure the track has a valid name
-                string trackName = TrackName;
-                if (trackName.Length == 0)
-                {
-                    trackName = Guid.NewGuid().ToString();
-                    TrackName = trackName;
-                }
-                SdpTokenAttribute.Validate(trackName, allowEmpty: false);
-
-                // Create the local track
-                var trackSettings = new LocalAudioTrackSettings
-                {
-                    trackName = trackName
-                };
-                Track = await LocalAudioTrack.CreateFromDeviceAsync(trackSettings);
-
-                AudioStreamStarted.Invoke();
-            }
-        }
-
-        protected override void DestroyTrack()
-        {
-            if (Track != null)
-            {
-                AudioStreamStopped.Invoke();
-                Debug.Assert(Track.Transceiver == null);
-                Track.Dispose();
-                Track = null;
-            }
-        }
-
         /// <inheritdoc/>
         protected override void MuteImpl(bool mute)
         {
@@ -196,9 +145,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        //private void AudioFrameReady(AudioFrame frame)
-        //{
-        //    _frameQueue.Enqueue(frame);
-        //}
+        /// <summary>
+        /// Implement this callback to create the <see cref="Track"/> instance.
+        /// On failure, this method must throw an exception. Otherwise it must set the <see cref="Track"/>
+        /// property to a non-<c>null</c> instance.
+        /// </summary>
+        protected abstract Task CreateLocalAudioTrackAsync();
+
+        /// <summary>
+        /// Re-implement this callback to destroy the <see cref="Track"/> instance
+        /// and other associated resources.
+        /// </summary>
+        protected virtual void DestroyLocalAudioTrack()
+        {
+            if (Track != null)
+            {
+                // Track may not be added to any transceiver (e.g. no connection)
+                if (Track.Transceiver != null)
+                {
+                    Track.Transceiver.LocalTrack = null;
+                }
+
+                // Local tracks are disposable objects owned by the user (this component)
+                Track.Dispose();
+                Track = null;
+            }
+        }
     }
 }

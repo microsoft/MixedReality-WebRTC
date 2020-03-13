@@ -1,22 +1,24 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// This component represents a media receiver added as a media track to an
-    /// existing WebRTC peer connection by a remote peer and received locally.
-    /// The media track can optionally be displayed locally with a <see cref="MediaPlayer"/>.
+    /// Base class for media sources producing media frames from a remote media
+    /// track receiving them from a remote peer.
     /// </summary>
     public abstract class MediaReceiver : MediaSource
     {
         /// <summary>
-        /// Automatically play the remote track when it is paired.
-        /// This is equivalent to manually calling <see cref="Play"/> when the media receiver is paired with
-        /// a remote track after <see cref="PeerConnection.SetRemoteDescriptionAsync(string, string)"/>.
+        /// Is the media source currently generating frames received from the remote peer?
+        /// This is <c>true</c> while the remote media track exists, which is notified by
+        /// events on the <see cref="AudioReceiver"/> or <see cref="VideoReceiver"/>.
         /// </summary>
-        /// <seealso cref="Play"/>
-        /// <seealso cref="Stop()"/>
-        public bool AutoPlayOnPaired = true;
+        public bool IsLive { get; protected set; }
+
+        /// <inheritdoc/>
+        public MediaReceiver(MediaKind mediaKind) : base(mediaKind)
+        {
+        }
     }
 }

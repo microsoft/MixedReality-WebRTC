@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using UnityEngine;
 using UnityEngine.Events;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -45,9 +44,24 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// </summary>
     public interface IVideoSource
     {
-        bool IsPlaying { get; }
+        /// <summary>
+        /// Is the video source currently streaming some video frames?
+        /// This must be <c>true</c> between the invoking of the video stream started
+        /// and stopped events. That is, this becomes <c>true</c> after the stream started
+        /// event and becomes <c>false</c> before the stream stopped event.
+        /// </summary>
+        bool IsStreaming { get; }
 
+        /// <summary>
+        /// Get the event notifying the user that the video stream started.
+        /// </summary>
+        /// <returns>The event associated with the video source.</returns>
         VideoStreamStartedEvent GetVideoStreamStarted();
+
+        /// <summary>
+        /// Get the event notifying the user that the video stream stopped.
+        /// </summary>
+        /// <returns>The event associated with the video source.</returns>
         VideoStreamStoppedEvent GetVideoStreamStopped();
         
         /// <summary>

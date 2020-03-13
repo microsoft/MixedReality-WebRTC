@@ -56,9 +56,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     }
 
     /// <summary>
-    /// This component represents a local video source added as a video track to an
-    /// existing WebRTC peer connection and sent to the remote peer. The video track
-    /// can optionally be displayed locally with a <see cref="MediaPlayer"/>.
+    /// This component represents a local video sender generating video frames from a local
+    /// video capture device (webcam). The video sender can be added to a video transceiver
+    /// in order for the video data to be sent to the remote peer. The captured video frames
+    /// can also optionally be displayed locally with a <see cref="MediaPlayer"/>.
     /// </summary>
     [AddComponentMenu("MixedReality-WebRTC/Webcam Source")]
     public class WebcamSource : VideoSender
@@ -112,7 +113,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
         }
 
-        protected override async Task DoCreateTrackAsyncAction()
+        protected override async Task CreateLocalVideoTrackAsync()
         {
             string videoProfileId = VideoProfileId;
             var videoProfileKind = VideoProfileKind;
@@ -163,6 +164,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (trackName.Length == 0)
             {
                 trackName = Guid.NewGuid().ToString();
+                // Re-assign the generated track name for consistency
                 TrackName = trackName;
             }
             SdpTokenAttribute.Validate(trackName, allowEmpty: false);

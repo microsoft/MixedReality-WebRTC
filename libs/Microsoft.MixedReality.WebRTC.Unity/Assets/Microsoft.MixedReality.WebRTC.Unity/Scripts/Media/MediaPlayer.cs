@@ -117,9 +117,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     audioSrc.GetAudioStreamStopped().AddListener(AudioStreamStopped);
 
                     // If registering while the audio source is already playing, invoke manually
-                    if (audioSrc.IsPlaying)
+                    if (audioSrc.IsStreaming)
                     {
-                        AudioStreamStarted();
+                        AudioStreamStarted(audioSrc);
                     }
                 }
                 else
@@ -136,7 +136,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     videoSrc.GetVideoStreamStopped().AddListener(VideoStreamStopped);
 
                     // If registering while the audio source is already playing, invoke manually
-                    if (videoSrc.IsPlaying)
+                    if (videoSrc.IsStreaming)
                     {
                         VideoStreamStarted(videoSrc);
                     }
@@ -164,11 +164,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        private void AudioStreamStarted()
+        private void AudioStreamStarted(IAudioSource source)
         {
         }
 
-        private void AudioStreamStopped()
+        private void AudioStreamStopped(IAudioSource source)
         {
         }
 

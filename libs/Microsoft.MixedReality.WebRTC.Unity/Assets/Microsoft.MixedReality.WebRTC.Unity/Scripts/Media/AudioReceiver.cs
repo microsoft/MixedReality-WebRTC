@@ -14,6 +14,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     [AddComponentMenu("MixedReality-WebRTC/Audio Receiver")]
     public class AudioReceiver : MediaReceiver, IAudioSource
     {
+        public bool IsStreaming { get; protected set; }
+
         public AudioStreamStartedEvent AudioStreamStarted = new AudioStreamStartedEvent();
         public AudioStreamStoppedEvent AudioStreamStopped = new AudioStreamStoppedEvent();
 
@@ -34,6 +36,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// with the remote track of the transceiver.
         /// </summary>
         public RemoteAudioTrack Track { get; private set; }
+
+        public AudioReceiver() : base(MediaKind.Audio)
+        {
+        }
 
         /// <summary>
         /// Register a frame callback to listen to incoming audio data receiving through this
@@ -72,28 +78,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Transceiver = audioTransceiver;
         }
 
-        protected override Task DoStartMediaPlaybackAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        protected override void DoStopMediaPlayback()
-        {
-            if (Track != null)
-            {
-                AudioStreamStopped.Invoke();
-
-                // Track may not be added to any transceiver (e.g. no connection)
-                if (Track.Transceiver != null)
-                {
-                    Track.Transceiver.LocalTrack = null;
-                }
-
-                // Remote tracks are owned by the peer connection (not disposable)
-                Track = null;
-            }
-        }
-
         /// <summary>
         /// Free-threaded callback invoked by the owning peer connection when a track is paired
         /// with this receiver, which enqueues the <see cref="AudioSource.AudioStreamStarted"/>
@@ -101,18 +85,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         internal void OnPaired(RemoteAudioTrack track)
         {
-            Debug.Assert(Track == null);
-            Track = track;
-
-            if (AutoPlayOnPaired)
+            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
+            // properties and so that listeners of the event can directly access Unity objects
+            // from their handler function.
+            _mainThreadWorkQueue.Enqueue(() =>
             {
-                PlayAsync().ContinueWith(_ => //IsPlaying = true;
-                {
-                    // Enqueue invoking the unity event from the main Unity thread, so that listeners
-                    // can directly access Unity objects from their handler function.
-                    _mainThreadWorkQueue.Enqueue(() => AudioStreamStarted.Invoke());
-                });
-            }
+                Debug.Assert(Track == null);
+                Track = track;
+                IsLive = true;
+                AudioStreamStarted.Invoke(this);
+                IsStreaming = true;
+            });
         }
 
         /// <summary>
@@ -122,14 +105,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         internal void OnUnpaired(RemoteAudioTrack track)
         {
-            Debug.Assert(Track == track);
-            Track = null;
-
-            //IsPlaying = false;
-
-            // Enqueue invoking the unity event from the main Unity thread, so that listeners
-            // can directly access Unity objects from their handler function.
-            _mainThreadWorkQueue.Enqueue(() => AudioStreamStopped.Invoke());
+            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
+            // properties and so that listeners of the event can directly access Unity objects
+            // from their handler function.
+            _mainThreadWorkQueue.Enqueue(() =>
+            {
+                Debug.Assert(Track == track);
+                IsStreaming = false;
+                AudioStreamStopped.Invoke(this);
+                Track = null;
+                IsLive = false;
+            });
         }
     }
 }

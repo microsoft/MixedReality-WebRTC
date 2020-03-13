@@ -7,45 +7,103 @@ using UnityEngine;
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// This component represents a local media source added as a media track to an
-    /// existing WebRTC peer connection and sent to the remote peer. The track can
-    /// optionally be rendered locally with a <see cref="MediaPlayer"/>.
+    /// Base class for media sources generating their media frames locally,
+    /// with the intention to send them to the remote peer.
     /// </summary>
     public abstract class MediaSender : MediaSource
     {
         /// <summary>
-        /// Name of the track.
-        /// If left empty, the implementation will generate a GUID name for the track.
+        /// Name of the local media track this component will create when calling <see cref="StartCaptureAsync"/>.
+        /// If left empty, the implementation will generate a unique name for the track (generally a GUID).
         /// </summary>
         /// <remarks>
-        /// This must comply with the 'msid' attribute rules as defined in
+        /// This value must comply with the 'msid' attribute rules as defined in
         /// https://tools.ietf.org/html/draft-ietf-mmusic-msid-05#section-2, which in
-        /// particular constraints the set of allows characters to those allowed for a
+        /// particular constraints the set of allowed characters to those allowed for a
         /// 'token' element as specified in https://tools.ietf.org/html/rfc4566#page-43:
         /// - Symbols [!#$%'*+-.^_`{|}~] and ampersand &amp;
-        /// - Alphanumerical [A-Za-z0-9]
+        /// - Alphanumerical characters [A-Za-z0-9]
+        /// 
+        /// Users can manually test if a string is a valid SDP token with the utility
+        /// method <see cref="SdpTokenAttribute.Validate(string, bool)"/>.
         /// </remarks>
-        /// <seealso xref="SdpTokenAttribute.ValidateSdpTokenName"/>
+        /// <seealso cref="SdpTokenAttribute.Validate(string, bool)"/>
         [Tooltip("SDP track name")]
         [SdpToken(allowEmpty: true)]
         public string TrackName;
 
         /// <summary>
-        /// Automatically add a track when the peer connection is ready.
+        /// Automatically start media capture when the component is enabled.
+        /// 
+        /// If <c>true</c>, then <see cref="StartCaptureAsync"/> is automatically called
+        /// when the <see xref="UnityEngine.MonoBehaviour.OnEnabled"/> callback is invoked
+        /// by Unity.
         /// </summary>
-        public bool AutoAddTrack = true;
+        [Tooltip("Automatically start media capture when the component is enabled")]
+        public bool AutoStartOnEnabled = true;
 
         /// <summary>
-        /// Automatically start media playback when the component is enabled.
-        /// This initializes the media source and starts capture, even if not used by any track yet.
+        /// Automatically stop media capture when the component is disabled.
+        /// 
+        /// If <c>true</c>, then <see cref="StopCapture"/> is automatically called when the
+        /// <see xref="UnityEngine.MonoBehaviour.OnDisabled"/> callback is invoked by Unity.
         /// </summary>
-        [Tooltip("Automatically start media playback when the component is enabled")]
-        public bool AutoPlayOnEnabled = true;
+        [Tooltip("Automatically stop media capture when the component is disabled")]
+        public bool AutoStopOnDisabled = true;
+
+        /// <summary>
+        /// Is the media source currently generating frames from local capture?
+        /// The concept of _capture_ is described in the <see cref="StartCaptureAsync"/> function.
+        /// </summary>
+        /// <seealso cref="StartCaptureAsync"/>
+        /// <seealso cref="StopCapture()"/>
+        public bool IsCapturing { get; private set; }
+
+        /// <inheritdoc/>
+        public MediaSender(MediaKind mediaKind) : base(mediaKind)
+        {
+        }
+
+        /// <summary>
+        /// Manually start capture of the local media by creating a local media track.
+        /// 
+        /// If <see cref="AutoStartOnEnabled"/> is <c>true</c> then this is called automatically
+        /// as soon as the component is enabled. Otherwise the user must call this method to create
+        /// the underlying local media track.
+        /// </summary>
+        /// <seealso cref="StopCapture()"/>
+        /// <seealso cref="IsCapturing"/>
+        /// <seealso cref="AutoStartOnEnabled"/>
+        public async Task StartCaptureAsync()
+        {
+            if (!IsCapturing)
+            {
+                await CreateLocalTrackAsync();
+                IsCapturing = true;
+            }
+        }
+
+        /// <summary>
+        /// Stop capture of the local video track and destroy it.
+        /// </summary>
+        /// <seealso cref="StartCaptureAsync()"/>
+        /// <seealso cref="IsCapturing"/>
+        public void StopCapture()
+        {
+            if (IsCapturing)
+            {
+                DestroyLocalTrack();
+                IsCapturing = false;
+            }
+        }
 
         /// <summary>
         /// Mute or unmute the media. For audio, muting turns the source to silence. For video, this
-        /// produces black frames.
+        /// produces black frames. This is transparent to the SDP session and does not requite any
+        /// renegotiation.
         /// </summary>
+        /// <param name="mute"><c>true</c> to mute the local media track, or <c>false</c> to unmute
+        /// it and resume producing media frames.</param>
         public void Mute(bool mute = true)
         {
             MuteImpl(mute);
@@ -53,47 +111,33 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Unmute the media and resume normal source playback.
+        /// This is equivalent to <c>Mute(false)</c>, and provided for code clarity.
         /// </summary>
         public void Unmute()
         {
             MuteImpl(false);
         }
 
+        /// <inheritdoc/>
         protected async Task OnEnable()
         {
-            // Ensure the local sender track is created, in case it was not yet.
-            // Do *not* do that earlier than this callback (e.g. Start() or Awake())
-            // to ensure the track source does *not* start playback before this component
-            // is enabled, to maintain the Unity semantic of an enabled component.
-            await CreateTrackAsync();
-
-            // If need, start media playback
-            if (AutoPlayOnEnabled)
+            if (AutoStartOnEnabled)
             {
-                _ = PlayAsync();
+                await StartCaptureAsync();
             }
         }
 
+        /// <inheritdoc/>
         protected void OnDisable()
         {
-            Stop();
+            if (AutoStopOnDisabled)
+            {
+                StopCapture();
+            }
         }
 
-        protected void OnDestroy()
-        {
-            DestroyTrack();
-        }
-
-        /// <summary>
-        /// Derived classes implement the track creation if needed, and myst support this
-        /// call being made multiple times (and being no-op after the first one).
-        /// </summary>
-        protected abstract Task CreateTrackAsync();
-
-        /// <summary>
-        /// Derived classes implement the track destruction.
-        /// </summary>
-        protected abstract void DestroyTrack();
+        protected abstract Task CreateLocalTrackAsync();
+        protected abstract void DestroyLocalTrack();
 
         /// <summary>
         /// Derived classes implement the mute/unmute action on the track.

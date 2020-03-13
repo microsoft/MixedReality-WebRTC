@@ -22,7 +22,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
         }
 
-        protected override Task DoCreateTrackAsyncAction()
+        protected override Task CreateLocalVideoTrackAsync()
         {
             // Ensure the track has a valid name
             string trackName = TrackName;
@@ -67,9 +67,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             return Task.CompletedTask;
         }
 
-        protected override void DoRemoveTrackAction()
+        protected override void DestroyLocalVideoTrack()
         {
-            base.DoRemoveTrackAction();
+            base.DestroyLocalVideoTrack();
             if (Source != null)
             {
                 Source.Dispose();
