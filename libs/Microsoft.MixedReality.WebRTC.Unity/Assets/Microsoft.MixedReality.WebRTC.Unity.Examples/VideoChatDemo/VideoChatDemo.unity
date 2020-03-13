@@ -311,9 +311,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TrackName: 
-  AutoAddTrack: 1
-  AutoPlayOnEnabled: 1
-  AutoStartCapture: 1
+  AutoStartOnEnabled: 1
+  AutoStopOnDisabled: 1
   PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
@@ -722,7 +721,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _transceivers.Array.data[1].Sender
       value: 
-      objectReference: {fileID: 1932579003}
+      objectReference: {fileID: 0}
     - target: {fileID: 114452439610826054, guid: 94759df28537c86408a84858950de05a,
         type: 3}
       propertyPath: _transceivers.Array.data[0].Receiver
@@ -853,6 +852,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2640554158060291103, guid: 94759df28537c86408a84858950de05a,
+        type: 3}
+      propertyPath: PreferredVideoCodec
+      value: H264
+      objectReference: {fileID: 0}
     - target: {fileID: 6724212155761435517, guid: 94759df28537c86408a84858950de05a,
         type: 3}
       propertyPath: m_Enabled
@@ -862,20 +866,10 @@ PrefabInstance:
         type: 3}
       propertyPath: AudioSource2
       value: 
-      objectReference: {fileID: 1932579003}
+      objectReference: {fileID: 0}
     - target: {fileID: 7953653823404256062, guid: 94759df28537c86408a84858950de05a,
         type: 3}
       propertyPath: VideoSource2
-      value: 
-      objectReference: {fileID: 1932579006}
-    - target: {fileID: 7953653823404256062, guid: 94759df28537c86408a84858950de05a,
-        type: 3}
-      propertyPath: AudioSource
-      value: 
-      objectReference: {fileID: 1932579003}
-    - target: {fileID: 7953653823404256062, guid: 94759df28537c86408a84858950de05a,
-        type: 3}
-      propertyPath: VideoSource
       value: 
       objectReference: {fileID: 1932579006}
     - target: {fileID: 8068314043701345454, guid: 94759df28537c86408a84858950de05a,
@@ -950,18 +944,6 @@ PrefabInstance:
       objectReference: {fileID: 1932579004}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 94759df28537c86408a84858950de05a, type: 3}
---- !u!114 &1932579003 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2247456597125045658, guid: 94759df28537c86408a84858950de05a,
-    type: 3}
-  m_PrefabInstance: {fileID: 1932579001}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a281b3c4d33874459f5fd99bab17626, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1932579004 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5904856271247633657, guid: 94759df28537c86408a84858950de05a,
