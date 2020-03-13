@@ -304,7 +304,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Wrapper for an event possibly delayed.
     /// </summary>
-    public class DelayedEvent
+    internal class DelayedEvent
     {
         /// <summary>
         /// The event handler.
@@ -386,7 +386,7 @@ namespace Microsoft.MixedReality.WebRTC
         public void InvokeAsync() => Invoke(async: true);
 
         /// <summary>
-        /// Lock for renegotiation event suspending variables:
+        /// Lock for internal variables:
         /// - <see cref="_suspendCount"/>
         /// - <see cref="_eventPending"/>
         /// </summary>
@@ -412,7 +412,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// RAII helper to start/stop a delay block for a <see cref="DelayedEvent"/>.
     /// </summary>
-    public class ScopedDelayedEvent : IDisposable
+    internal class ScopedDelayedEvent : IDisposable
     {
         /// <summary>
         /// Initialize a scoped delay for the specified <see cref="DelayedEvent"/>.
