@@ -962,10 +962,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Create the peer connection managed wrapper and its native implementation
             _nativePeer = new WebRTC.PeerConnection();
 
-            // Register event handlers for remote tracks (media receivers)
-            _nativePeer.AudioTrackAdded += Peer_AudioTrackAdded;
+            // Register event handlers for remote tracks removed (media receivers).
+            // There is no point registering events for tracks added because when they
+            // are invoked the transceivers have not been paired yet, so there's not much
+            // we can do with those events.
             _nativePeer.AudioTrackRemoved += Peer_AudioTrackRemoved;
-            _nativePeer.VideoTrackAdded += Peer_VideoTrackAdded;
             _nativePeer.VideoTrackRemoved += Peer_VideoTrackRemoved;
 
             // Register event handlers for signaling
@@ -1090,26 +1091,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             OnInitialized.Invoke();
         }
 
-        private void Peer_AudioTrackAdded(RemoteAudioTrack track)
-        {
-            //for (int mlineIndex = 0; mlineIndex < _transceivers.Count; ++mlineIndex)
-            //{
-            //    var transceiverInfo = _transceivers[mlineIndex];
-            //    if (transceiverInfo.Transceiver == track.Transceiver)
-            //    {
-            //        Debug.Assert(transceiverInfo.Kind == MediaKind.Audio);
-            //        if (transceiverInfo.Receiver != null)
-            //        {
-            //            (transceiverInfo.Receiver as AudioReceiver).OnPaired(track);
-            //        }
-            //        else
-            //        {
-            //            Debug.LogWarning($"Received audio track {track.Name} for transceiver #{mlineIndex} but no audio receiver is registered to handle it. Ignoring that track.");
-            //        }
-            //    }
-            //}
-        }
-
         private void Peer_AudioTrackRemoved(AudioTransceiver transceiver, RemoteAudioTrack track)
         {
             Debug.Assert(track.Transceiver == null); // already removed
@@ -1117,27 +1098,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(mediaLine != null);
             Debug.Assert(mediaLine.Kind == MediaKind.Audio);
             mediaLine.OnUnpaired(track);
-        }
-
-        private void Peer_VideoTrackAdded(RemoteVideoTrack track)
-        {
-            ////< FIXME - This can't work because transceivers have not been paired with components yet
-            //for (int mlineIndex = 0; mlineIndex < _transceivers.Count; ++mlineIndex)
-            //{
-            //    var transceiverInfo = _transceivers[mlineIndex];
-            //    if (transceiverInfo.Transceiver == track.Transceiver)
-            //    {
-            //        Debug.Assert(transceiverInfo.Kind == MediaKind.Video);
-            //        if (transceiverInfo.Receiver != null)
-            //        {
-            //            (transceiverInfo.Receiver as VideoReceiver).OnPaired(track);
-            //        }
-            //        else
-            //        {
-            //            Debug.LogWarning($"Received video track {track.Name} for transceiver #{mlineIndex} but no video receiver is registered to handle it. Ignoring that track.");
-            //        }
-            //    }
-            //}
         }
 
         private void Peer_VideoTrackRemoved(VideoTransceiver transceiver, RemoteVideoTrack track)
