@@ -159,6 +159,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             //< FIXME
             //PeerConnection.Peer.PreferredVideoCodec = PreferredVideoCodec;
 
+            // Check H.264 requests on Desktop (not supported)
+#if !ENABLE_WINMD_SUPPORT
+            if (PreferredVideoCodec == "H264")
+            {
+                Debug.LogError("H.264 encoding is not supported on Desktop platforms. Using VP8 instead.");
+                PreferredVideoCodec = "VP8";
+            }
+#endif
+
             // Ensure the track has a valid name
             string trackName = TrackName;
             if (trackName.Length == 0)
