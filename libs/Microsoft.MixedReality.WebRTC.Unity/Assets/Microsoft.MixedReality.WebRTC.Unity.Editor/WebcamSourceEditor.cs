@@ -52,11 +52,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             H264,
 
             /// <summary>
-            /// Try to use H.265 if available.
-            /// </summary>
-            H265,
-
-            /// <summary>
             /// Try to use VP8 if available.
             /// </summary>
             VP8,
