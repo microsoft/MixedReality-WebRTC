@@ -849,7 +849,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TrackName: local_audio
   AutoStartOnEnabled: 1
-  AutoStopOnDisabled: 1
   PreferredAudioCodec: 
   AudioStreamStarted:
     m_PersistentCalls:
@@ -871,7 +870,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TrackName: local_video
   AutoStartOnEnabled: 1
-  AutoStopOnDisabled: 1
   PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
@@ -883,10 +881,10 @@ MonoBehaviour:
   EnableMRCRecordingIndicator: 1
   FormatMode: 0
   VideoProfileId: 
-  VideoProfileKind: 0
+  VideoProfileKind: 4
   Constraints:
     width: 640
-    height: 480
+    height: 0
     framerate: 0
 --- !u!114 &5904856271247633657
 MonoBehaviour:

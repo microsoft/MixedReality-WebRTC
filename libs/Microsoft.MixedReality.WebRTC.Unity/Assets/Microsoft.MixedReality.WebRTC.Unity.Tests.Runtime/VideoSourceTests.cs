@@ -48,7 +48,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create the sender video source
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
             sender1.AutoStartOnEnabled = true;
-            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
             tr1.Sender = sender1;
@@ -116,7 +115,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create the sender video source
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
             sender1.AutoStartOnEnabled = true;
-            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
             tr1.Sender = sender1;
@@ -259,7 +257,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create the video sources on peer #2
             var sender2 = pc2_go.AddComponent<FakeVideoSource>();
             sender2.AutoStartOnEnabled = true;
-            sender2.AutoStopOnDisabled = true;
             sender2.TrackName = "track_name";
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
             MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
@@ -328,7 +325,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create the video sources on peer #1
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
             sender1.AutoStartOnEnabled = true;
-            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             var receiver1 = pc1_go.AddComponent<VideoReceiver>();
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
@@ -338,7 +334,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create the video sources on peer #2
             var sender2 = pc2_go.AddComponent<FakeVideoSource>();
             sender2.AutoStartOnEnabled = true;
-            sender2.AutoStopOnDisabled = true;
             sender2.TrackName = "track_name";
             MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
             tr2.Sender = sender2;
@@ -406,7 +401,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create the video sources on peer #1
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
             sender1.AutoStartOnEnabled = true;
-            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
             tr1.Sender = sender1;
@@ -414,7 +408,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create the video sources on peer #2
             var sender2 = pc2_go.AddComponent<FakeVideoSource>();
             sender2.AutoStartOnEnabled = true;
-            sender2.AutoStopOnDisabled = true;
             sender2.TrackName = "track_name";
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
             MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
@@ -484,7 +477,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create the video sources on peer #1
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
             sender1.AutoStartOnEnabled = true;
-            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             var receiver1 = pc2_go.AddComponent<VideoReceiver>();
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
@@ -558,7 +550,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create the video sources on peer #1
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
             sender1.AutoStartOnEnabled = true;
-            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             var receiver1 = pc1_go.AddComponent<VideoReceiver>();
             MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
@@ -568,7 +559,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create the video sources on peer #2
             var sender2 = pc2_go.AddComponent<FakeVideoSource>();
             sender2.AutoStartOnEnabled = true;
-            sender2.AutoStopOnDisabled = true;
             sender2.TrackName = "track_name";
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
             MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
@@ -762,7 +752,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                     {
                         var sender1 = pc1_go.AddComponent<FakeVideoSource>();
                         sender1.AutoStartOnEnabled = true;
-                        sender1.AutoStopOnDisabled = true;
                         sender1.TrackName = $"track{i}";
                         peer.sender = sender1;
                         tr1.Sender = sender1;
@@ -783,7 +772,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                     {
                         var sender2 = pc2_go.AddComponent<FakeVideoSource>();
                         sender2.AutoStartOnEnabled = true;
-                        sender2.AutoStopOnDisabled = true;
                         sender2.TrackName = $"track{i}";
                         peer.sender = sender2;
                         tr2.Sender = sender2;
@@ -909,7 +897,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 var cfg = cfgs[3];
                 var sender1 = pc1_go.AddComponent<FakeVideoSource>();
                 sender1.AutoStartOnEnabled = true;
-                sender1.AutoStopOnDisabled = true;
                 sender1.TrackName = $"track3";
                 cfg.peer1.sender = sender1;
                 cfg.peer1.mediaLine.Sender = sender1;
@@ -981,7 +968,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create the sender video source
             var sender1 = pc1_go.AddComponent<FakeVideoSource>();
             sender1.AutoStartOnEnabled = true;
-            sender1.AutoStopOnDisabled = true;
             sender1.TrackName = "track_name";
             MediaLine ml1 = pc1.AddTransceiver(MediaKind.Video);
             Assert.NotNull(ml1);
