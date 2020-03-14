@@ -43,15 +43,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public bool AutoStartOnEnabled = true;
 
         /// <summary>
-        /// Automatically stop media capture when the component is disabled.
-        /// 
-        /// If <c>true</c>, then <see cref="StopCapture"/> is automatically called when the
-        /// <see xref="UnityEngine.MonoBehaviour.OnDisabled"/> callback is invoked by Unity.
-        /// </summary>
-        [Tooltip("Automatically stop media capture when the component is disabled")]
-        public bool AutoStopOnDisabled = true;
-
-        /// <summary>
         /// Is the media source currently generating frames from local capture?
         /// The concept of _capture_ is described in the <see cref="StartCaptureAsync"/> function.
         /// </summary>
@@ -130,10 +121,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <inheritdoc/>
         protected void OnDisable()
         {
-            if (AutoStopOnDisabled)
-            {
-                StopCapture();
-            }
+            StopCapture();
         }
 
         protected abstract Task CreateLocalTrackAsync();

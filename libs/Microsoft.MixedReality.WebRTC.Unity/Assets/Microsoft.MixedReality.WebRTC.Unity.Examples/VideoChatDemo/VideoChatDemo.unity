@@ -312,7 +312,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TrackName: 
   AutoStartOnEnabled: 1
-  AutoStopOnDisabled: 1
   PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
@@ -856,6 +855,16 @@ PrefabInstance:
         type: 3}
       propertyPath: PreferredVideoCodec
       value: H264
+      objectReference: {fileID: 0}
+    - target: {fileID: 2640554158060291103, guid: 94759df28537c86408a84858950de05a,
+        type: 3}
+      propertyPath: VideoProfileKind
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2640554158060291103, guid: 94759df28537c86408a84858950de05a,
+        type: 3}
+      propertyPath: FormatMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6724212155761435517, guid: 94759df28537c86408a84858950de05a,
         type: 3}
