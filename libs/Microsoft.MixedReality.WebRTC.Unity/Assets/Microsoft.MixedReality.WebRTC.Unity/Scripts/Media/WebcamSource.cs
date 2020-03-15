@@ -65,6 +65,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     public class WebcamSource : VideoSender
     {
         /// <summary>
+        /// Optional identifier of the webcam to use. Setting this value forces using the given
+        /// webcam, and will fail opening any other webcam.
+        /// Valid values are obtained by calling <see cref="PeerConnection.GetVideoCaptureDevicesAsync"/>.
+        /// </summary>
+        /// <remarks>
+        /// This property is purposely not shown in the Unity inspector window, as there is very
+        /// little reason to hard-code a value for it, which would only work on a specific device
+        /// with a given immutable hardware. It is still serialized on the off-chance that there
+        /// is a valid use case for hard-coding it.
+        /// </remarks>
+        /// <seealso cref="PeerConnection.GetVideoCaptureDevicesAsync"/>
+        [HideInInspector]
+        public VideoCaptureDevice WebcamDevice = default;
+
+        /// <summary>
         /// Enable Mixed Reality Capture (MRC) if available on the local device.
         /// This option has no effect on devices not supporting MRC, and is silently ignored.
         /// </summary>
@@ -100,8 +115,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// For manual <see cref="FormatMode"/>, optional constraints on the resolution and framerate of
         /// the capture format. These constraints are additive, meaning a matching format must satisfy
         /// all of them at once, in addition of being restricted to the formats supported by the selected
-        /// video profile or kind of profile.
+        /// video profile or kind of profile. Any negative or zero value means no constraint.
         /// </summary>
+        /// <remarks>
+        /// Video capture formats for HoloLens 1 and HoloLens 2 are available here:
+        /// https://docs.microsoft.com/en-us/windows/mixed-reality/locatable-camera
+        /// </remarks>
         public VideoCaptureConstraints Constraints = new VideoCaptureConstraints()
         {
             width = 0,
@@ -147,7 +166,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         {
                             // Holographic AR (transparent) non-x86 platform - Assume HoloLens 2
                             videoProfileKind = WebRTC.VideoProfileKind.VideoConferencing;
-                            width = 1280; // Target 1280 x 720
+                            width = 960; // Target 960 x 540
                         }
                     }
                 }
@@ -182,7 +201,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             var trackSettings = new LocalVideoTrackSettings
             {
                 trackName = trackName,
-                videoDevice = default,
+                videoDevice = WebcamDevice,
                 videoProfileId = videoProfileId,
                 videoProfileKind = videoProfileKind,
                 width = (width > 0 ? (uint?)width : null),
