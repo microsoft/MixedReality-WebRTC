@@ -40,6 +40,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// by Unity.
         /// </summary>
         [Tooltip("Automatically start media capture when the component is enabled")]
+        [Editor.ToggleLeft]
         public bool AutoStartOnEnabled = true;
 
         /// <summary>
