@@ -104,12 +104,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     public class MediaLine
     {
         /// <summary>
+        /// Backing field for the <see cref="Kind"/> property.
+        /// </summary>
+        /// <seealso cref="Kind"/>
+        [SerializeField]
+        private MediaKind _kind;
+
+        /// <summary>
         /// Kind of media of the media line and its attached transceiver.
         /// This is assiged when the media line is created with <see cref="PeerConnection.AddTransceiver(MediaKind)"/>
         /// and is immutable for the lifetime of the peer connection.
         /// </summary>
-        [SerializeField]
-        private MediaKind _kind;
         public MediaKind Kind => _kind;
 
         /// <summary>
@@ -399,8 +404,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// If this field is <c>false</c> then the user needs to call <see cref="InitializeAsync(CancellationToken)"/>
         /// to manually initialize the peer connection before it can be used for any purpose.
         /// </summary>
-        [Header("Behavior")]
-        [Tooltip("Automatically initialize the peer connection on Start()")]
+        [Tooltip("Automatically initialize the peer connection on Start().")]
+        [Editor.ToggleLeft]
         public bool AutoInitializeOnStart = true;
 
         /// <summary>
@@ -416,13 +421,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// automatic offer, depending on whether the negotiated event was dispatched while the
         /// property was still <c>false</c> or not.
         /// </remarks>
-        [Tooltip("Automatically create a new offer when receiving a renegotiation needed event")]
+        [Tooltip("Automatically create a new offer when receiving a renegotiation needed event.")]
+        [Editor.ToggleLeft]
         public bool AutoCreateOfferOnRenegotiationNeeded = true;
 
         /// <summary>
         /// Flag to log all errors to the Unity console automatically.
         /// </summary>
-        [Tooltip("Automatically log all errors to the Unity console")]
+        [Tooltip("Automatically log all errors to the Unity console.")]
+        [Editor.ToggleLeft]
         public bool AutoLogErrorsToUnityConsole = true;
 
         #endregion
@@ -434,7 +441,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Signaler to use to establish the connection.
         /// </summary>
         [Header("Signaling")]
-        [Tooltip("Signaler to use to establish the connection")]
+        [Tooltip("Signaler to use to establish the connection.")]
         public Signaler Signaler;
 
         #endregion

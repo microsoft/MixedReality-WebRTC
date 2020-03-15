@@ -23,16 +23,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
         const float kIconSpacing = 25;
 
-        SerializedProperty autoInitOnStart;
-        SerializedProperty autoLogErrors;
+        SerializedProperty autoInitOnStart_;
+        SerializedProperty autoCreateOffer_;
+        SerializedProperty autoLogErrors_;
 
-        SerializedProperty iceServers;
-        SerializedProperty iceUsername;
-        SerializedProperty iceCredential;
+        SerializedProperty iceServers_;
+        SerializedProperty iceUsername_;
+        SerializedProperty iceCredential_;
 
-        SerializedProperty onInitialized;
-        SerializedProperty onShutdown;
-        SerializedProperty onError;
+        SerializedProperty onInitialized_;
+        SerializedProperty onShutdown_;
+        SerializedProperty onError_;
 
         ReorderableList transceiverList_;
         SerializedProperty mediaLines_;
@@ -103,16 +104,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
         void OnEnable()
         {
-            autoInitOnStart = serializedObject.FindProperty("AutoInitializeOnStart");
-            autoLogErrors = serializedObject.FindProperty("AutoLogErrorsToUnityConsole");
+            autoInitOnStart_ = serializedObject.FindProperty("AutoInitializeOnStart");
+            autoCreateOffer_ = serializedObject.FindProperty("AutoCreateOfferOnRenegotiationNeeded");
+            autoLogErrors_ = serializedObject.FindProperty("AutoLogErrorsToUnityConsole");
 
-            iceServers = serializedObject.FindProperty("IceServers");
-            iceUsername = serializedObject.FindProperty("IceUsername");
-            iceCredential = serializedObject.FindProperty("IceCredential");
+            iceServers_ = serializedObject.FindProperty("IceServers");
+            iceUsername_ = serializedObject.FindProperty("IceUsername");
+            iceCredential_ = serializedObject.FindProperty("IceCredential");
 
-            onInitialized = serializedObject.FindProperty("OnInitialized");
-            onShutdown = serializedObject.FindProperty("OnShutdown");
-            onError = serializedObject.FindProperty("OnError");
+            onInitialized_ = serializedObject.FindProperty("OnInitialized");
+            onShutdown_ = serializedObject.FindProperty("OnShutdown");
+            onError_ = serializedObject.FindProperty("OnError");
 
             mediaLines_ = serializedObject.FindProperty("_mediaLines");
             transceiverList_ = new ReorderableList(serializedObject, mediaLines_, true, true, true, true);
@@ -209,15 +211,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
             EditorGUILayout.Space();
 
-            autoInitOnStart.boolValue = EditorGUILayout.ToggleLeft("Auto-initialize on component Start", autoInitOnStart.boolValue);
-            autoLogErrors.boolValue = EditorGUILayout.ToggleLeft("Log errors to Unity console", autoLogErrors.boolValue);
-            EditorGUILayout.PropertyField(iceServers, true);
-            EditorGUILayout.PropertyField(iceUsername);
-            EditorGUILayout.PropertyField(iceCredential);
+            EditorGUILayout.PropertyField(autoInitOnStart_, new GUIContent("Initialize during component start",
+                "Automatically initialize the peer connection when the component is started."));
+            EditorGUILayout.PropertyField(autoLogErrors_, new GUIContent("Log errors to the Unity console",
+                "Log the WebRTC errors to the Unity console."));
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField("Signaling", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(iceServers_, true);
+            EditorGUILayout.PropertyField(iceUsername_);
+            EditorGUILayout.PropertyField(iceCredential_);
 
             EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Media", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(autoCreateOffer_);
             transceiverList_.DoLayoutList();
             using (var _ = new EditorGUILayout.HorizontalScope())
             {
@@ -234,9 +243,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Events", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(onInitialized);
-            EditorGUILayout.PropertyField(onShutdown);
-            EditorGUILayout.PropertyField(onError);
+            EditorGUILayout.PropertyField(onInitialized_);
+            EditorGUILayout.PropertyField(onShutdown_);
+            EditorGUILayout.PropertyField(onError_);
 
             serializedObject.ApplyModifiedProperties();
         }

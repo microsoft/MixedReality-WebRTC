@@ -926,16 +926,6 @@ PrefabInstance:
       propertyPath: VideoSource2
       value: 
       objectReference: {fileID: 1932579005}
-    - target: {fileID: 9148594838842796426, guid: 94759df28537c86408a84858950de05a,
-        type: 3}
-      propertyPath: VideoSource
-      value: 
-      objectReference: {fileID: 1932579005}
-    - target: {fileID: 9148594838842796426, guid: 94759df28537c86408a84858950de05a,
-        type: 3}
-      propertyPath: AudioSource
-      value: 
-      objectReference: {fileID: 1932579004}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 94759df28537c86408a84858950de05a, type: 3}
 --- !u!114 &1932579004 stripped
