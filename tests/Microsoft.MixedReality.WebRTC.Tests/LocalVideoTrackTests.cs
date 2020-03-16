@@ -523,9 +523,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 transceivers[i].LocalVideoTrack = null;
                 Assert.IsNull(tracks[i].PeerConnection);
                 Assert.IsFalse(pc1_.LocalVideoTracks.Contains(tracks[i]));
-                Assert.IsFalse(source1.Tracks.Contains(tracks[i]));
+                Assert.IsTrue(source1.Tracks.Contains(tracks[i])); // does not change yet
                 tracks[i].Dispose();
                 tracks[i] = null;
+                Assert.IsFalse(source1.Tracks.Contains(tracks[i]));
             }
             Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
             Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());

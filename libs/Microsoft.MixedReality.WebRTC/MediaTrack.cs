@@ -31,8 +31,6 @@ namespace Microsoft.MixedReality.WebRTC
             Name = trackName;
         }
 
-        internal abstract void OnTrackAddedToPeerConnection(PeerConnection newConnection, Transceiver newTransceiver);
-        internal abstract void OnTrackRemovedFromPeerConnection(PeerConnection previousConnection);
         internal abstract void OnMute(bool muted);
 
         /// <inheritdoc/>

@@ -2092,11 +2092,14 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnAudioTrackAdded(RemoteAudioTrack track, Transceiver transceiver)
         {
             MainEventSource.Log.AudioTrackAdded(track.Name);
+
             Debug.Assert(transceiver.MediaKind == MediaKind.Audio);
             Debug.Assert(track.Transceiver == null);
-            track.Transceiver = transceiver;
             Debug.Assert(transceiver.RemoteAudioTrack == null);
+            // track.PeerConnection was set in its constructor
+            track.Transceiver = transceiver;
             transceiver.RemoteAudioTrack = track;
+
             AudioTrackAdded?.Invoke(track);
         }
 
@@ -2133,11 +2136,14 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnVideoTrackAdded(RemoteVideoTrack track, Transceiver transceiver)
         {
             MainEventSource.Log.VideoTrackAdded(track.Name);
+
             Debug.Assert(transceiver.MediaKind == MediaKind.Video);
             Debug.Assert(track.Transceiver == null);
-            track.Transceiver = transceiver;
             Debug.Assert(transceiver.RemoteVideoTrack == null);
+            // track.PeerConnection was set in its constructor
+            track.Transceiver = transceiver;
             transceiver.RemoteVideoTrack = track;
+
             VideoTrackAdded?.Invoke(track);
         }
 

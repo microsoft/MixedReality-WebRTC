@@ -128,8 +128,9 @@ namespace Microsoft.MixedReality.WebRTC
         internal LocalAudioTrack(PeerConnection peer, Transceiver transceiver, string trackName) : base(peer, trackName)
         {
             Debug.Assert(transceiver.MediaKind == MediaKind.Audio);
+            Debug.Assert(transceiver.LocalAudioTrack == null);
             Transceiver = transceiver;
-            transceiver.OnLocalTrackAdded(this);
+            transceiver.LocalAudioTrack = this;
         }
 
         internal void SetHandle(LocalAudioTrackHandle handle)
@@ -192,26 +193,6 @@ namespace Microsoft.MixedReality.WebRTC
         {
             MainEventSource.Log.LocalAudioFrameReady(frame.bitsPerSample, frame.sampleRate, frame.channelCount, frame.sampleCount);
             AudioFrameReady?.Invoke(frame);
-        }
-
-        internal override void OnTrackAddedToPeerConnection(PeerConnection newConnection, Transceiver newTransceiver)
-        {
-            Debug.Assert(newTransceiver.MediaKind == MediaKind.Audio);
-            Debug.Assert(!_nativeHandle.IsClosed);
-            Debug.Assert(PeerConnection == null);
-            Debug.Assert(Transceiver == null);
-            PeerConnection = newConnection;
-            Transceiver = newTransceiver;
-            newTransceiver.OnLocalTrackAdded(this);
-        }
-
-        internal override void OnTrackRemovedFromPeerConnection(PeerConnection previousConnection)
-        {
-            Debug.Assert(!_nativeHandle.IsClosed);
-            Debug.Assert(PeerConnection == previousConnection);
-            PeerConnection = null;
-            Transceiver.OnLocalTrackRemoved(this);
-            Transceiver = null;
         }
 
         internal override void OnMute(bool muted)

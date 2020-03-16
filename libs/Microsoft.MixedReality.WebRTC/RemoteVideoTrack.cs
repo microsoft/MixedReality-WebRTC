@@ -122,16 +122,6 @@ namespace Microsoft.MixedReality.WebRTC
             Argb32VideoFrameReady?.Invoke(frame);
         }
 
-        internal override void OnTrackAddedToPeerConnection(PeerConnection newConnection, Transceiver newTransceiver)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal override void OnTrackRemovedFromPeerConnection(PeerConnection previousConnection)
-        {
-            throw new NotImplementedException();
-        }
-
         internal override void OnMute(bool muted)
         {
 

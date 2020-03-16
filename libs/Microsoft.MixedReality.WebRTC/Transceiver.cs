@@ -314,53 +314,25 @@ namespace Microsoft.MixedReality.WebRTC
                 Utils.ThrowOnErrorCode(res);
             }
 
-            // Capture peer connection; it gets reset during track manipulation below
-            var peerConnection = PeerConnection;
-
             // Remove old track
             if (_localTrack != null)
             {
-                _localTrack.OnTrackRemovedFromPeerConnection(peerConnection);
+                Debug.Assert(_localTrack.Transceiver == this);
+                Debug.Assert(_localTrack.PeerConnection == PeerConnection);
+                _localTrack.Transceiver = null;
+                _localTrack.PeerConnection = null;
+                _localTrack = null;
             }
-            Debug.Assert(_localTrack == null);
 
             // Add new track
             if (track != null)
             {
-                track.OnTrackAddedToPeerConnection(peerConnection, this);
-                Debug.Assert(track == _localTrack);
-                Debug.Assert(_localTrack.PeerConnection == PeerConnection);
-                Debug.Assert(_localTrack.Transceiver == this);
-                Debug.Assert(_localTrack.Transceiver.LocalTrack == _localTrack);
+                Debug.Assert(track.Transceiver == null);
+                Debug.Assert(track.PeerConnection == null);
+                _localTrack = track;
+                _localTrack.Transceiver = this;
+                _localTrack.PeerConnection = PeerConnection;
             }
-        }
-
-        internal void OnLocalTrackAdded(LocalAudioTrack track)
-        {
-            Debug.Assert(MediaKind == MediaKind.Audio);
-            Debug.Assert(_localTrack == null);
-            _localTrack = track;
-        }
-
-        internal void OnLocalTrackAdded(LocalVideoTrack track)
-        {
-            Debug.Assert(MediaKind == MediaKind.Video);
-            Debug.Assert(_localTrack == null);
-            _localTrack = track;
-        }
-
-        internal void OnLocalTrackRemoved(LocalAudioTrack track)
-        {
-            Debug.Assert(MediaKind == MediaKind.Audio);
-            Debug.Assert(_localTrack == track);
-            _localTrack = null;
-        }
-
-        internal void OnLocalTrackRemoved(LocalVideoTrack track)
-        {
-            Debug.Assert(MediaKind == MediaKind.Video);
-            Debug.Assert(_localTrack == track);
-            _localTrack = null;
         }
 
         /// <summary>
