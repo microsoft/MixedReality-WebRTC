@@ -14,11 +14,6 @@ namespace Microsoft.MixedReality.WebRTC
     public class RemoteAudioTrack : MediaTrack
     {
         /// <summary>
-        /// Audio transceiver this track is part of.
-        /// </summary>
-        public AudioTransceiver Transceiver { get; private set; }
-
-        /// <summary>
         /// Enabled status of the track. If enabled, receives audio frames from the remote peer as
         /// expected. If disabled, does not receive anything (silence).
         /// </summary>
@@ -112,14 +107,20 @@ namespace Microsoft.MixedReality.WebRTC
             AudioFrameReady?.Invoke(frame);
         }
 
-        internal void OnTrackAddedToTransceiver(AudioTransceiver transceiver)
+        internal void OnTrackAddedToTransceiver(Transceiver transceiver)
         {
+            Debug.Assert(transceiver.MediaKind == MediaKind.Audio);
             Debug.Assert(PeerConnection == transceiver.PeerConnection);
             Debug.Assert(_nativeHandle != IntPtr.Zero);
             Debug.Assert(Transceiver == null);
             Debug.Assert(transceiver != null);
             Transceiver = transceiver;
             transceiver.OnRemoteTrackAdded(this);
+        }
+
+        internal override void OnTrackAdded(PeerConnection newConnection, Transceiver newTransceiver)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -130,7 +131,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="previousConnection">The peer connection the track was previously attached to.</param>
         /// <remarks><see cref="_nativeHandle"/> is non-<c>null</c> but the native object may have been
         /// destroyed already, so the handle should not be used.</remarks>
-        internal void OnTrackRemoved(PeerConnection previousConnection)
+        internal override void OnTrackRemoved(PeerConnection previousConnection)
         {
             Debug.Assert(PeerConnection == previousConnection);
             Debug.Assert(_nativeHandle != IntPtr.Zero);
@@ -154,7 +155,7 @@ namespace Microsoft.MixedReality.WebRTC
             _nativeHandle = IntPtr.Zero;
         }
 
-        internal void OnMute(bool muted)
+        internal override void OnMute(bool muted)
         {
 
         }

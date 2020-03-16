@@ -108,7 +108,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             {
                 Name = "transceiver1",
             };
-            var transceiver1 = pc1_.AddVideoTransceiver(transceiver_settings);
+            var transceiver1 = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
             Assert.NotNull(transceiver1);
 
             // Wait for local SDP re-negotiation event on #1.
@@ -122,7 +122,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Add local video track channel to #1
             renegotiationEvent1_.Reset();
-            transceiver1.SetLocalTrack(track1);
+            transceiver1.LocalVideoTrack = track1;
             Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
             Assert.AreEqual(pc1_, track1.PeerConnection);
             Assert.AreEqual(track1, transceiver1.LocalTrack);
@@ -146,7 +146,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Remove the track from #1
             renegotiationEvent1_.Reset();
-            transceiver1.LocalTrack = null;
+            transceiver1.LocalVideoTrack = null;
             Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
             Assert.IsNull(track1.PeerConnection);
             Assert.IsNull(track1.Transceiver);
@@ -207,7 +207,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             {
                 Name = "transceiver1",
             };
-            var transceiver1 = pc1_.AddVideoTransceiver(transceiver_settings);
+            var transceiver1 = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
             Assert.NotNull(transceiver1);
             Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1));
 
@@ -240,7 +240,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Add local video track to #1
             renegotiationEvent1_.Reset();
-            transceiver1.SetLocalTrack(track1);
+            transceiver1.LocalVideoTrack = track1;
             Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
             Assert.AreEqual(pc1_, track1.PeerConnection);
             Assert.AreEqual(track1, transceiver1.LocalTrack);
@@ -255,7 +255,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Remove the track from #1
             renegotiationEvent1_.Reset();
-            transceiver1.SetLocalTrack(null);
+            transceiver1.LocalVideoTrack = null;
             Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
             Assert.IsNull(track1.PeerConnection);
             Assert.IsNull(track1.Transceiver);
@@ -330,7 +330,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             {
                 Name = "transceiver1",
             };
-            var transceiver1 = pc1_.AddVideoTransceiver(transceiver_settings);
+            var transceiver1 = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
             Assert.NotNull(transceiver1);
             Assert.IsNull(transceiver1.LocalTrack);
             Assert.IsNull(transceiver1.RemoteTrack);
@@ -353,14 +353,14 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Set track on transceiver
             renegotiationEvent1_.Reset();
-            transceiver1.SetLocalTrack(track1);
+            transceiver1.LocalVideoTrack = track1;
             Assert.AreEqual(pc1_, track1.PeerConnection);
             Assert.IsTrue(pc1_.LocalVideoTracks.Contains(track1));
             Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
 
             // Remove the track from #1
             renegotiationEvent1_.Reset();
-            transceiver1.LocalTrack = null;
+            transceiver1.LocalVideoTrack = null;
             Assert.IsNull(track1.PeerConnection);
             Assert.IsNull(track1.Transceiver);
             Assert.IsFalse(pc1_.LocalVideoTracks.Contains(track1));
@@ -406,7 +406,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             {
                 Name = "transceiver1",
             };
-            var transceiver1 = pc1_.AddVideoTransceiver(transceiver_settings);
+            var transceiver1 = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
             Assert.NotNull(transceiver1);
             Assert.IsNull(transceiver1.LocalTrack);
             Assert.IsNull(transceiver1.RemoteTrack);
@@ -429,14 +429,14 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Set track on transceiver
             renegotiationEvent1_.Reset();
-            transceiver1.SetLocalTrack(track1);
+            transceiver1.LocalVideoTrack = track1;
             Assert.AreEqual(pc1_, track1.PeerConnection);
             Assert.IsTrue(pc1_.LocalVideoTracks.Contains(track1));
             Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
 
             // Remove the track from #1
             renegotiationEvent1_.Reset();
-            transceiver1.LocalTrack = null;
+            transceiver1.LocalVideoTrack = null;
             Assert.IsNull(track1.PeerConnection);
             Assert.IsNull(track1.Transceiver);
             Assert.IsFalse(pc1_.LocalVideoTracks.Contains(track1));
@@ -478,7 +478,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Add external I420A tracks
             const int kNumTracks = 5;
-            var transceivers = new VideoTransceiver[kNumTracks];
+            var transceivers = new Transceiver[kNumTracks];
             var tracks = new LocalVideoTrack[kNumTracks];
             for (int i = 0; i < kNumTracks; ++i)
             {
@@ -486,14 +486,14 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 {
                     Name = $"transceiver1_{i}",
                 };
-                transceivers[i] = pc1_.AddVideoTransceiver(transceiver_settings);
+                transceivers[i] = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
                 Assert.NotNull(transceivers[i]);
 
                 tracks[i] = LocalVideoTrack.CreateFromExternalSource($"track_i420a_{i}", source1);
                 Assert.NotNull(tracks[i]);
                 Assert.IsTrue(source1.Tracks.Contains(tracks[i]));
 
-                transceivers[i].LocalTrack = tracks[i];
+                transceivers[i].LocalVideoTrack = tracks[i];
                 Assert.AreEqual(pc1_, tracks[i].PeerConnection);
                 Assert.IsTrue(pc1_.LocalVideoTracks.Contains(tracks[i]));
             }
@@ -519,7 +519,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             renegotiationEvent1_.Reset();
             for (int i = 0; i < kNumTracks; ++i)
             {
-                transceivers[i].LocalTrack = null;
+                transceivers[i].LocalVideoTrack = null;
                 Assert.IsNull(tracks[i].PeerConnection);
                 Assert.IsFalse(pc1_.LocalVideoTracks.Contains(tracks[i]));
                 Assert.IsFalse(source1.Tracks.Contains(tracks[i]));

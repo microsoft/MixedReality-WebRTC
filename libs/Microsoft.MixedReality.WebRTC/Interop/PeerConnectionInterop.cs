@@ -219,7 +219,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
             IntPtr transceiver = TransceiverInterop.Transceiver_GetUserData(info.audioTransceiverHandle);
             Debug.Assert(transceiver != IntPtr.Zero); // must have been set by the TransceiverAdded event
-            var transceiverWrapper = Utils.ToWrapper<AudioTransceiver>(transceiver);
+            var transceiverWrapper = Utils.ToWrapper<Transceiver>(transceiver);
             var remoteAudioTrackWrapper = RemoteAudioTrackInterop.CreateWrapper(peerWrapper, in info);
             peerWrapper.OnAudioTrackAdded(remoteAudioTrackWrapper, transceiverWrapper);
         }
@@ -239,7 +239,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
             IntPtr transceiver = TransceiverInterop.Transceiver_GetUserData(info.videoTransceiverHandle);
             Debug.Assert(transceiver != IntPtr.Zero); // must have been set by the TransceiverAdded event
-            var transceiverWrapper = Utils.ToWrapper<VideoTransceiver>(transceiver);
+            var transceiverWrapper = Utils.ToWrapper<Transceiver>(transceiver);
             var remoteVideoTrackWrapper = RemoteVideoTrackInterop.CreateWrapper(peerWrapper, in info);
             peerWrapper.OnVideoTrackAdded(remoteVideoTrackWrapper, transceiverWrapper);
         }

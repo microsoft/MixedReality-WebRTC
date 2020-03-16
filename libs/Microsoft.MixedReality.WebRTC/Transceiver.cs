@@ -46,10 +46,8 @@ namespace Microsoft.MixedReality.WebRTC
     /// For Plan B, where RTP transceivers are not available, this wrapper tries to emulate the Unified Plan
     /// transceiver concept, and is therefore providing an abstraction over the WebRTC concept of transceivers.
     /// </remarks>
-    /// <seealso cref="AudioTransceiver"/>
-    /// <seealso cref="VideoTransceiver"/>
     /// <seealso cref="PeerConnection.Close"/>
-    public abstract class Transceiver
+    public class Transceiver
     {
         /// <summary>
         /// Direction of the media flowing inside the transceiver.
@@ -136,6 +134,52 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public string[] StreamIDs { get; }
 
+        public MediaTrack LocalTrack => _localTrack;
+
+        public LocalAudioTrack LocalAudioTrack
+        {
+            get { return (_localTrack as LocalAudioTrack); }
+            set
+            {
+                if (MediaKind == MediaKind.Audio)
+                {
+                    SetLocalTrackImpl(value);
+                }
+                else
+                {
+                    throw new ArgumentException("Cannot assign local audio track as local track of video transceiver");
+                }
+            }
+        }
+
+        public LocalVideoTrack LocalVideoTrack
+        {
+            get { return (_localTrack as LocalVideoTrack); }
+            set
+            {
+                if (MediaKind == MediaKind.Video)
+                {
+                    SetLocalTrackImpl(value);
+                }
+                else
+                {
+                    throw new ArgumentException("Cannot assign local video track as local track of audio transceiver");
+                }
+            }
+        }
+
+        public MediaTrack RemoteTrack => _remoteTrack;
+
+        public RemoteAudioTrack RemoteAudioTrack
+        {
+            get { return (_remoteTrack as RemoteAudioTrack); }
+        }
+
+        public RemoteVideoTrack RemoteVideoTrack
+        {
+            get { return (_remoteTrack as RemoteVideoTrack); }
+        }
+
         /// <summary>
         /// Backing field for <see cref="DesiredDirection"/>.
         /// </summary>
@@ -160,6 +204,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <seealso cref="TransceiverInterop.RegisterCallbacks(Transceiver, out IntPtr)"/>
         private IntPtr _argsRef = IntPtr.Zero;
 
+        private MediaTrack _localTrack = null;
+        private MediaTrack _remoteTrack = null;
+
         /// <summary>
         /// Create a new transceiver associated with a given peer connection.
         /// </summary>
@@ -170,7 +217,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="name">The transceiver name.</param>
         /// <param name="streamIDs">Collection of stream IDs the transceiver is associated with, as set by the peer which created it.</param>
         /// <param name="initialDesiredDirection">Initial value to initialize <see cref="DesiredDirection"/> with.</param>
-        protected Transceiver(IntPtr handle, MediaKind mediaKind, PeerConnection peerConnection, int mlineIndex,
+        internal Transceiver(IntPtr handle, MediaKind mediaKind, PeerConnection peerConnection, int mlineIndex,
             string name, string[] streamIDs, Direction initialDesiredDirection)
         {
             Debug.Assert(handle != IntPtr.Zero);
@@ -203,6 +250,154 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
+        /// Change the local audio track sending data to the remote peer.
+        /// 
+        /// This detaches the previous local audio track if any, and attaches the new one instead.
+        /// Note that the transceiver will only send some audio data to the remote peer if its
+        /// negotiated direction includes sending some data and it has an attached local track to
+        /// produce this data.
+        /// 
+        /// This change is transparent to the session, and does not trigger any renegotiation.
+        /// </summary>
+        /// <param name="track">The new local audio track attached to the transceiver, and used to
+        /// produce audio data to send to the remote peer if the transceiver is sending.
+        /// Passing <c>null</c> is allowed, and will detach the current track if any.</param>
+        private void SetLocalTrackImpl(MediaTrack track)
+        {
+            if (track == _localTrack)
+            {
+                return;
+            }
+
+            var audioTrack = (track as LocalAudioTrack);
+            var videoTrack = (track as LocalVideoTrack);
+            if ((audioTrack != null) && (MediaKind != MediaKind.Audio))
+            {
+                throw new ArgumentException("Cannot set local audio track as local track of video transceiver");
+            }
+            if ((videoTrack != null) && (MediaKind != MediaKind.Video))
+            {
+                throw new ArgumentException("Cannot set local video track as local track of audio transceiver");
+            }
+
+            if (track != null)
+            {
+                if ((track.PeerConnection != null) && (track.PeerConnection != PeerConnection))
+                {
+                    throw new InvalidOperationException($"Cannot set track {track} of peer connection {track.PeerConnection} on transceiver {this} of different peer connection {PeerConnection}.");
+                }
+                uint res = Utils.MRS_E_UNKNOWN;
+                if (audioTrack != null)
+                {
+                    res = TransceiverInterop.Transceiver_SetLocalAudioTrack(_nativeHandle, audioTrack._nativeHandle);
+                }
+                else if (videoTrack != null)
+                {
+                    res = TransceiverInterop.Transceiver_SetLocalVideoTrack(_nativeHandle, videoTrack._nativeHandle);
+                }
+                Utils.ThrowOnErrorCode(res);
+            }
+            else
+            {
+                // Note: Cannot pass null for SafeHandle parameter value (ArgumentNullException)
+                uint res = Utils.MRS_E_UNKNOWN;
+                if (MediaKind == MediaKind.Audio)
+                {
+                    res = TransceiverInterop.Transceiver_SetLocalAudioTrack(_nativeHandle, new LocalAudioTrackHandle());
+                }
+                else if (MediaKind == MediaKind.Video)
+                {
+                    res = TransceiverInterop.Transceiver_SetLocalVideoTrack(_nativeHandle, new LocalVideoTrackHandle());
+                }
+                Utils.ThrowOnErrorCode(res);
+            }
+
+            // Capture peer connection; it gets reset during track manipulation below
+            var peerConnection = PeerConnection;
+
+            // Remove old track
+            if (_localTrack != null)
+            {
+                _localTrack.OnTrackRemoved(peerConnection);
+            }
+            Debug.Assert(_localTrack == null);
+
+            // Add new track
+            if (track != null)
+            {
+                track.OnTrackAdded(peerConnection, this);
+                Debug.Assert(track == _localTrack);
+                Debug.Assert(_localTrack.PeerConnection == PeerConnection);
+                Debug.Assert(_localTrack.Transceiver == this);
+                Debug.Assert(_localTrack.Transceiver.LocalTrack == _localTrack);
+            }
+        }
+
+        internal void OnLocalTrackAdded(LocalAudioTrack track)
+        {
+            Debug.Assert(MediaKind == MediaKind.Audio);
+            Debug.Assert(_localTrack == null);
+            _localTrack = track;
+            PeerConnection.OnLocalTrackAdded(track);
+        }
+
+        internal void OnLocalTrackAdded(LocalVideoTrack track)
+        {
+            Debug.Assert(MediaKind == MediaKind.Video);
+            Debug.Assert(_localTrack == null);
+            _localTrack = track;
+            PeerConnection.OnLocalTrackAdded(track);
+        }
+
+        internal void OnLocalTrackRemoved(LocalAudioTrack track)
+        {
+            Debug.Assert(MediaKind == MediaKind.Audio);
+            Debug.Assert(_localTrack == track);
+            _localTrack = null;
+            PeerConnection.OnLocalTrackRemoved(track);
+        }
+
+        internal void OnLocalTrackRemoved(LocalVideoTrack track)
+        {
+            Debug.Assert(MediaKind == MediaKind.Video);
+            Debug.Assert(_localTrack == track);
+            _localTrack = null;
+            PeerConnection.OnLocalTrackRemoved(track);
+        }
+
+        internal void OnRemoteTrackAdded(RemoteAudioTrack track)
+        {
+            Debug.Assert(MediaKind == MediaKind.Audio);
+            Debug.Assert(RemoteTrack == null);
+            _remoteTrack = track;
+            PeerConnection.OnRemoteTrackAdded(track);
+        }
+
+        internal void OnRemoteTrackAdded(RemoteVideoTrack track)
+        {
+            Debug.Assert(MediaKind == MediaKind.Video);
+            Debug.Assert(RemoteTrack == null);
+            _remoteTrack = track;
+            PeerConnection.OnRemoteTrackAdded(track);
+        }
+
+        internal void OnRemoteTrackRemoved(RemoteAudioTrack track)
+        {
+            Debug.Assert(MediaKind == MediaKind.Audio);
+            Debug.Assert(RemoteTrack == track);
+            _remoteTrack = null;
+            PeerConnection.OnRemoteTrackRemoved(track);
+        }
+
+        internal void OnRemoteTrackRemoved(RemoteVideoTrack track)
+        {
+            Debug.Assert(MediaKind == MediaKind.Video);
+            Debug.Assert(RemoteTrack == track);
+            _remoteTrack = null;
+            PeerConnection.OnRemoteTrackRemoved(track);
+        }
+
+        /// <summary>
         /// Clean-up callback invoked by the peer connection when the transceiver is removed
         /// from it and destroyed.
         /// </summary>
@@ -214,18 +409,6 @@ namespace Microsoft.MixedReality.WebRTC
             Utils.ReleaseWrapperRef(_argsRef);
             _argsRef = IntPtr.Zero;
         }
-
-        /// <summary>
-        /// Callback on local track muted due to transceiver direction change.
-        /// </summary>
-        /// <param name="muted"><c>true</c> if the track is muted, or <c>false</c> otherwise.</param>
-        protected abstract void OnLocalTrackMuteChanged(bool muted);
-
-        /// <summary>
-        /// Callback on remote track muted due to transceiver direction change.
-        /// </summary>
-        /// <param name="muted"><c>true</c> if the track is muted, or <c>false</c> otherwise.</param>
-        protected abstract void OnRemoteTrackMuteChanged(bool muted);
 
         /// <summary>
         /// Callback on internal implementation state changed to synchronize the cached state of this wrapper.
@@ -247,11 +430,11 @@ namespace Microsoft.MixedReality.WebRTC
 
                 if (hadSendBefore != hasSendNow)
                 {
-                    OnLocalTrackMuteChanged(!hasSendNow);
+                    _localTrack?.OnMute(!hasSendNow);
                 }
                 if (hadRecvBefore != hasRecvNow)
                 {
-                    OnRemoteTrackMuteChanged(!hasRecvNow);
+                    _remoteTrack?.OnMute(!hasRecvNow);
                 }
             }
         }
