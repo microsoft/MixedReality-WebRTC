@@ -62,7 +62,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
                 // Change flow direction
                 renegotiationEvent1_.Reset();
-                transceiver1.SetDirection(direction);
+                transceiver1.DesiredDirection = direction;
                 Assert.AreEqual(transceiver1.DesiredDirection, direction);
 
                 // Wait for local SDP re-negotiation event on #1.

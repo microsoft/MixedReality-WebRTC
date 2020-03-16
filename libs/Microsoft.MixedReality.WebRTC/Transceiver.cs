@@ -111,22 +111,30 @@ namespace Microsoft.MixedReality.WebRTC
         /// Once changed by the user, this value is the next direction that will be negotiated when
         /// calling <see cref="PeerConnection.CreateOffer"/> or <see cref="PeerConnection.CreateAnswer"/>.
         /// After the negotiation is completed, this is equal to <see cref="NegotiatedDirection"/>.
+        /// Setting this value triggers a <see cref="PeerConnection.RenegotiationNeeded"/> event.
         /// </summary>
-        /// <seealso cref="SetDirection(Direction)"/>
         /// <seealso cref="NegotiatedDirection"/>
         public Direction DesiredDirection
         {
             get { return _desiredDirection; }
-            set { SetDirection(value); }
+            set
+            {
+                if (value == _desiredDirection)
+                {
+                    return;
+                }
+                var res = TransceiverInterop.Transceiver_SetDirection(_nativeHandle, value);
+                Utils.ThrowOnErrorCode(res);
+                _desiredDirection = value;
+            }
         }
 
         /// <summary>
         /// Last negotiated transceiver direction. This is equal to <see cref="DesiredDirection"/>
-        /// after a negotiation is completed, but remains constant until the next SDP negotiation
-        /// when changing the desired direction with <see cref="SetDirection(Direction)"/>.
+        /// after a negotiation is completed, but remains constant when changing <see cref="DesiredDirection"/>
+        /// until the next SDP negotiation.
         /// </summary>
         /// <seealso cref="DesiredDirection"/>
-        /// <seealso cref="SetDirection(Direction)"/>
         public Direction? NegotiatedDirection { get; protected set; } = null;
 
         /// <summary>
@@ -267,24 +275,6 @@ namespace Microsoft.MixedReality.WebRTC
             StreamIDs = streamIDs;
             _desiredDirection = initialDesiredDirection;
             TransceiverInterop.RegisterCallbacks(this, out _argsRef);
-        }
-
-        /// <summary>
-        /// Change the media flowing direction of the transceiver.
-        /// This triggers a renegotiation needed event to synchronize with the remote peer.
-        /// </summary>
-        /// <param name="newDirection">The new flowing direction.</param>
-        /// <seealso cref="DesiredDirection"/>
-        /// <seealso cref="NegotiatedDirection"/>
-        public void SetDirection(Direction newDirection)
-        {
-            if (newDirection == _desiredDirection)
-            {
-                return;
-            }
-            var res = TransceiverInterop.Transceiver_SetDirection(_nativeHandle, newDirection);
-            Utils.ThrowOnErrorCode(res);
-            _desiredDirection = newDirection;
         }
 
         /// <summary>
