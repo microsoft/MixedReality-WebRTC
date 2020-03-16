@@ -166,8 +166,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(userData);
             IntPtr dataChannelRef = DataChannelInterop.DataChannel_GetUserData(dataChannelHandle);
+            DataChannelInterop.DataChannel_SetUserData(dataChannelHandle, IntPtr.Zero);
             var dataChannelWrapper = Utils.ToWrapper<DataChannel>(dataChannelRef);
             peerWrapper.OnDataChannelRemoved(dataChannelWrapper);
+            dataChannelWrapper.Destroy();
+            Utils.ReleaseWrapperRef(dataChannelRef);
         }
 
         [MonoPInvokeCallback(typeof(LocalSdpReadytoSendDelegate))]
