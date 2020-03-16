@@ -227,7 +227,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// 
         /// The underlying video source initially starts in the capturing state, and will remain live
         /// for as long as the track is alive. It can be added to a peer connection by assigning it to
-        /// the <see cref="VideoTransceiver.LocalTrack"/> property of a video transceiver of that peer
+        /// the <see cref="Transceiver.LocalVideoTrack"/> property of a video transceiver of that peer
         /// connection. Once attached to the peer connection, it can temporarily be disabled and re-enabled
         /// (see <see cref="Enabled"/>) while remaining attached to it.
         /// 
@@ -281,7 +281,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// var videoTrack = await LocalVideoTrack.CreateFromDeviceAsync(settings);
         /// </code>
         /// </example>
-        /// <seealso cref="VideoTransceiver.LocalTrack"/>
+        /// <seealso cref="Transceiver.LocalVideoTrack"/>
         public static Task<LocalVideoTrack> CreateFromDeviceAsync(LocalVideoTrackSettings settings = null)
         {
             return Task.Run(() =>
@@ -312,13 +312,13 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Create a new local video track backed by an existing external video source.
-        /// The track can be added to a peer connection by setting the <see cref="VideoTransceiver.LocalTrack"/>
-        /// property or calling <see cref="VideoTransceiver.SetLocalTrack(LocalVideoTrack)"/>.
+        /// The track can be added to a peer connection by setting the <see cref="Transceiver.LocalVideoTrack"/>
+        /// property.
         /// </summary>
         /// <param name="trackName">Name of the new local video track.</param>
         /// <param name="source">External video track source providing some video frames to the track.</param>
         /// <returns>The newly created local video track.</returns>
-        /// <seealso cref="VideoTransceiver.LocalTrack"/>
+        /// <seealso cref="Transceiver.LocalVideoTrack"/>
         public static LocalVideoTrack CreateFromExternalSource(string trackName, ExternalVideoTrackSource source)
         {
             if (string.IsNullOrEmpty(trackName))
