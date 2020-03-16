@@ -7,6 +7,10 @@
 #include "peer_connection.h"
 #include "utils.h"
 
+#if defined(MR_SHARING_WIN) && !defined(WINUWP)
+#include "rtc_base/win32_socket_init.h"
+#endif
+
 namespace Microsoft {
 namespace MixedReality {
 namespace WebRTC {
@@ -208,6 +212,12 @@ class GlobalFactory {
   /// Collection of all tracked objects alive. This is solely used to display a
   /// debugging report with |ReportLiveObjects()|.
   std::vector<TrackedObject*> alive_objects_ RTC_GUARDED_BY(mutex_);
+
+#if defined(MR_SHARING_WIN) && !defined(WINUWP)
+  // Initializes and quits winsock library on Win32.
+  // See https://bugs.chromium.org/p/webrtc/issues/detail?id=9754
+  const rtc::WinsockInitializer winsock_initializer;
+#endif
 };
 
 }  // namespace WebRTC
