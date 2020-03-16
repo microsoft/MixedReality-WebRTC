@@ -48,30 +48,48 @@ Note how the current code uses the `winuwp` OS variant to enable this. This is b
 
 #### Build
 
-Note that there is currently no difference between Desktop and UWP builds. More precisely, the library produced is only useable on Desktop at the moment, as it uses some non-UWP APIs.
-
-NB: Do **not** use `target_os="winuwp"`, this is the old legacy target that is being removed, and merged with the regular Desktop one (`target_os="win"`).
+In order to build `webrtc.lib`, run:
 
 ```cmd
 cd src
-gn args out\debug_arm64
+gn args out\$(configuration)_$(cpu)[_win32]
 ```
 
-This creates the `out\debug_arm64\args.gn` file (GN configuration for the build) and opens a text editor to edit it:
+Replace the build configuration and target cpu in the argument. Add `_win32` to build for Windows Desktop, leave empty to build for UWP. This particular shape for the folder name is not required for building WebRTC, but is used by the `Microsoft.MixedReality.Native` projects to find `webrtc.lib` when linking (see below).
+
+For example, run `gn args out\debug_x64` to build for Debug UWP X64. This creates the `out\debug_x64\args.gn` file (GN configuration for the build) and opens a text editor to edit it:
 
 ```
-target_os="win"
-target_cpu="arm64"
-use_static_crt=true
+target_os="winuwp"
+is_clang=true
+target_cpu="x64"
+is_debug=true
+rtc_include_tests=false
+rtc_build_examples=false
+rtc_win_video_capture_winrt=true
 ```
 
-Close the editor. The `gn` process generates build files for `ninja` in `out\debug_arm64`.
+Close the editor. The `gn` process generates build files for `ninja` in `out\debug_x64`.
 
 ```cmd
-ninja -C out\debug_arm64
+ninja -C out\debug_x64
 ```
 
-The library is in `out\debug_arm64\obj\webrtc.lib`.
+The library is in `out\debug_x64\obj\webrtc.lib`.
+
+In order to build for a different target CPU, e.g. ARM64, repeat the process replacing the target name in the `target_cpu` line in args.gn:
+```
+target_cpu="arm64"
+```
+
+In order to build the Win32 version, replace the `target_os="winuwp"` line with:
+```
+target_os="win"
+use_static_crt="false"
+```
+
+The release version can be built by setting `is_debug` to `false`.
+
 
 ### MixedReality-WebRTC Native/Core DLLs
 

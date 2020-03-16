@@ -105,8 +105,8 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>strmiids.lib;Msdmo.lib;dmoguids.lib;wmcodecdspuuid.lib;Secur32.lib;winmm.lib;Ole32.lib;Evr.lib;mfreadwrite.lib;mf.lib;mfuuid.lib;mfplat.lib;mfplay.lib;webrtc.lib;$(WebRTCCoreLibCppObjs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)\obj;$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)\obj\buildtools\third_party\libc++\libc++;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>strmiids.lib;Msdmo.lib;dmoguids.lib;wmcodecdspuuid.lib;Secur32.lib;winmm.lib;Ole32.lib;Evr.lib;mfreadwrite.lib;mf.lib;mfuuid.lib;mfplat.lib;mfplay.lib;windowsapp.lib;webrtc.lib;$(WebRTCCoreLibCppObjs);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)_win32\obj;$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)_win32\obj\buildtools\third_party\libc++\libc++;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
