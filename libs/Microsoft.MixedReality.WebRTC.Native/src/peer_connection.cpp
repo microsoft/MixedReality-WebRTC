@@ -951,7 +951,7 @@ void PeerConnectionImpl::RemoveAllDataChannels() noexcept {
 
     // Invoke the DataChannelRemoved callback on the wrapper if any
     if (removed_cb) {
-      DataChannel* const dc = data_channel.operator->();
+      DataChannel* const dc = data_channel.get();
       mrsDataChannelHandle data_native_handle = (void*)dc;
       removed_cb(data_native_handle);
     }
