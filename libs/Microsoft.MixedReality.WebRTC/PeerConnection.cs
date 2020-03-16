@@ -331,18 +331,17 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public void EndSuspend()
         {
-            Action cb = null;
             lock (_lock)
             {
                 Debug.Assert(_suspendCount > 0);
                 --_suspendCount;
-                if (_eventPending && (_suspendCount == 0))
+                if (!_eventPending || (_suspendCount > 0))
                 {
-                    cb = Event;
-                    _eventPending = false;
+                    return;
                 }
+                _eventPending = false;
             }
-            cb?.Invoke();
+            Event?.Invoke();
         }
 
         /// <summary>
@@ -353,29 +352,22 @@ namespace Microsoft.MixedReality.WebRTC
         /// then invoke it asynchronously from a worker thread.</param>
         public void Invoke(bool async = false)
         {
-            Action cb = null;
             lock (_lock)
             {
                 Debug.Assert(_suspendCount >= 0);
                 if (_suspendCount > 0)
                 {
                     _eventPending = true;
-                }
-                else
-                {
-                    cb = Event;
+                    return;
                 }
             }
-            if (cb != null)
+            if (async)
             {
-                if (async)
-                {
-                    Task.Run(() => cb.Invoke());
-                }
-                else
-                {
-                    cb.Invoke();
-                }
+                Task.Run(Event);
+            }
+            else
+            {
+                Event.Invoke();
             }
         }
 
