@@ -173,11 +173,13 @@ namespace Microsoft.MixedReality.WebRTC
         public RemoteAudioTrack RemoteAudioTrack
         {
             get { return (_remoteTrack as RemoteAudioTrack); }
+            internal set { _remoteTrack = value; }
         }
 
         public RemoteVideoTrack RemoteVideoTrack
         {
             get { return (_remoteTrack as RemoteVideoTrack); }
+            internal set { _remoteTrack = value; }
         }
 
         /// <summary>
@@ -187,7 +189,7 @@ namespace Microsoft.MixedReality.WebRTC
         protected Direction _desiredDirection;
 
         /// <summary>
-        /// Handle to the native transceiver object, valid until <see cref="Destroy"/>
+        /// Handle to the native transceiver object, valid until <see cref="CleanUpAfterNativeDestroyed"/>
         /// is called by the native implementation when the transceiver is destroyed as part
         /// of the peer connection closing.
         /// </summary>
@@ -318,14 +320,14 @@ namespace Microsoft.MixedReality.WebRTC
             // Remove old track
             if (_localTrack != null)
             {
-                _localTrack.OnTrackRemoved(peerConnection);
+                _localTrack.OnTrackRemovedFromPeerConnection(peerConnection);
             }
             Debug.Assert(_localTrack == null);
 
             // Add new track
             if (track != null)
             {
-                track.OnTrackAdded(peerConnection, this);
+                track.OnTrackAddedToPeerConnection(peerConnection, this);
                 Debug.Assert(track == _localTrack);
                 Debug.Assert(_localTrack.PeerConnection == PeerConnection);
                 Debug.Assert(_localTrack.Transceiver == this);
@@ -361,55 +363,18 @@ namespace Microsoft.MixedReality.WebRTC
             _localTrack = null;
         }
 
-        internal void OnRemoteTrackAdded(RemoteAudioTrack track)
-        {
-            Debug.Assert(MediaKind == MediaKind.Audio);
-            Debug.Assert(RemoteTrack == null);
-            _remoteTrack = track;
-        }
-
-        internal void OnRemoteTrackAdded(RemoteVideoTrack track)
-        {
-            Debug.Assert(MediaKind == MediaKind.Video);
-            Debug.Assert(RemoteTrack == null);
-            _remoteTrack = track;
-        }
-
-        internal void OnRemoteTrackRemoved(RemoteAudioTrack track)
-        {
-            Debug.Assert(MediaKind == MediaKind.Audio);
-            Debug.Assert(RemoteTrack == track);
-            _remoteTrack = null;
-        }
-
-        internal void OnRemoteTrackRemoved(RemoteVideoTrack track)
-        {
-            Debug.Assert(MediaKind == MediaKind.Video);
-            Debug.Assert(RemoteTrack == track);
-            _remoteTrack = null;
-        }
-
         /// <summary>
-        /// Destroy the transceiver and all its remote tracks, and detach all local tracks.
-        /// This is called by the peer connection when it closes, just before the transceiver
+        /// Callback invoked after the native transceiver has been destroyed, for clean-up.
+        /// This is called by the peer connection when it closes, just before the C# transceiver
         /// object instance is destroyed.
+        /// This replaces an hypothetical TransceiverRemoved callback, which doesn't exist to
+        /// prevent confusion and underline the fact transceiver cannot be removed after being
+        /// added to a peer connection, until that peer connection is closed and destroys them.
         /// </summary>
-        internal void Destroy()
+        internal void CleanUpAfterNativeDestroyed()
         {
-            if (_localTrack != null)
-            {
-                _localTrack.OnTrackRemoved(PeerConnection);
-                _localTrack = null;
-            }
-            if (_remoteTrack != null)
-            {
-                _remoteTrack.OnTrackRemoved(PeerConnection);
-                if (MediaKind == MediaKind.Audio)
-                    ((RemoteAudioTrack)_remoteTrack).OnConnectionClosed();
-                else
-                    ((RemoteVideoTrack)_remoteTrack).OnConnectionClosed();
-                _remoteTrack = null;
-            }
+            Debug.Assert(_localTrack == null);
+            Debug.Assert(_remoteTrack == null);
             Debug.Assert(_nativeHandle != IntPtr.Zero);
             _nativeHandle = IntPtr.Zero;
             // No need (and can't) unregister callbacks, the native transceiver is already destroyed

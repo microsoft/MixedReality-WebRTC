@@ -1091,7 +1091,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 foreach (var transceiver in Transceivers)
                 {
-                    transceiver?.Destroy();
+                    transceiver?.CleanUpAfterNativeDestroyed();
                 }
                 Transceivers.Clear();
             }
@@ -2092,14 +2092,11 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnAudioTrackAdded(RemoteAudioTrack track, Transceiver transceiver)
         {
             MainEventSource.Log.AudioTrackAdded(track.Name);
-            lock (_tracksLock)
-            {
-                if (!Transceivers.Contains(transceiver))
-                {
-                    InsertTransceiverNoLock(transceiver);
-                }
-            }
-            track.OnTrackAddedToTransceiver(transceiver);
+            Debug.Assert(transceiver.MediaKind == MediaKind.Audio);
+            Debug.Assert(track.Transceiver == null);
+            track.Transceiver = transceiver;
+            Debug.Assert(transceiver.RemoteAudioTrack == null);
+            transceiver.RemoteAudioTrack = track;
             AudioTrackAdded?.Invoke(track);
         }
 
@@ -2112,7 +2109,14 @@ namespace Microsoft.MixedReality.WebRTC
         {
             MainEventSource.Log.AudioTrackRemoved(track.Name);
             Transceiver transceiver = track.Transceiver; // cache before removed
-            track.OnTrackRemoved(this);
+
+            Debug.Assert(track.PeerConnection == this);
+            Debug.Assert(transceiver.RemoteAudioTrack == track);
+            Debug.Assert(track.Transceiver == transceiver);
+            track.PeerConnection = null;
+            transceiver.RemoteAudioTrack = null;
+            track.Transceiver = null;
+
             AudioTrackRemoved?.Invoke(transceiver, track);
 
             // PeerConnection is owning the remote track, and all internal states have been
@@ -2129,14 +2133,11 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnVideoTrackAdded(RemoteVideoTrack track, Transceiver transceiver)
         {
             MainEventSource.Log.VideoTrackAdded(track.Name);
-            lock (_tracksLock)
-            {
-                if (!Transceivers.Contains(transceiver))
-                {
-                    InsertTransceiverNoLock(transceiver);
-                }
-            }
-            track.OnTrackAddedToTransceiver(transceiver);
+            Debug.Assert(transceiver.MediaKind == MediaKind.Video);
+            Debug.Assert(track.Transceiver == null);
+            track.Transceiver = transceiver;
+            Debug.Assert(transceiver.RemoteVideoTrack == null);
+            transceiver.RemoteVideoTrack = track;
             VideoTrackAdded?.Invoke(track);
         }
 
@@ -2149,7 +2150,14 @@ namespace Microsoft.MixedReality.WebRTC
         {
             MainEventSource.Log.VideoTrackRemoved(track.Name);
             Transceiver transceiver = track.Transceiver; // cache before removed
-            track.OnTrackRemoved(this);
+
+            Debug.Assert(track.PeerConnection == this);
+            Debug.Assert(transceiver.RemoteVideoTrack == track);
+            Debug.Assert(track.Transceiver == transceiver);
+            track.PeerConnection = null;
+            transceiver.RemoteVideoTrack = null;
+            track.Transceiver = null;
+
             VideoTrackRemoved?.Invoke(transceiver, track);
 
             // PeerConnection is owning the remote track, and all internal states have been
