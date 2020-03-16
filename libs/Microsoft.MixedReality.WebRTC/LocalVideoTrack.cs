@@ -432,7 +432,7 @@ namespace Microsoft.MixedReality.WebRTC
             Argb32VideoFrameReady?.Invoke(frame);
         }
 
-        internal override void OnTrackAdded(PeerConnection newConnection, Transceiver newTransceiver)
+        internal override void OnTrackAddedToPeerConnection(PeerConnection newConnection, Transceiver newTransceiver)
         {
             Debug.Assert(newTransceiver.MediaKind == MediaKind.Video);
             Debug.Assert(!_nativeHandle.IsClosed);
@@ -443,7 +443,7 @@ namespace Microsoft.MixedReality.WebRTC
             newTransceiver.OnLocalTrackAdded(this);
         }
 
-        internal override void OnTrackRemoved(PeerConnection previousConnection)
+        internal override void OnTrackRemovedFromPeerConnection(PeerConnection previousConnection)
         {
             Debug.Assert(!_nativeHandle.IsClosed);
             Debug.Assert(PeerConnection == previousConnection);
