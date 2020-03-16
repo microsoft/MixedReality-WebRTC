@@ -9,6 +9,11 @@ namespace Microsoft.MixedReality.WebRTC
     public abstract class MediaTrack
     {
         /// <summary>
+        /// Transceiver this track is attached to, if any.
+        /// </summary>
+        public Transceiver Transceiver { get; protected set; }
+
+        /// <summary>
         /// Peer connection this media track is added to, if any.
         /// This is <c>null</c> after the track has been removed from the peer connection.
         /// </summary>
@@ -25,6 +30,10 @@ namespace Microsoft.MixedReality.WebRTC
             PeerConnection = peer;
             Name = trackName;
         }
+
+        internal abstract void OnTrackAdded(PeerConnection newConnection, Transceiver newTransceiver);
+        internal abstract void OnTrackRemoved(PeerConnection previousConnection);
+        internal abstract void OnMute(bool muted);
 
         /// <inheritdoc/>
         public override string ToString()

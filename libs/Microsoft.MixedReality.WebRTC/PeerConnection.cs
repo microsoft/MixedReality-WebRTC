@@ -460,7 +460,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="transceiver">The audio transceiver the track was removed from.</param>
         /// <param name="track">The audio track just removed.</param>
-        public delegate void AudioTrackRemovedDelegate(AudioTransceiver transceiver, RemoteAudioTrack track);
+        public delegate void AudioTrackRemovedDelegate(Transceiver transceiver, RemoteAudioTrack track);
 
         /// <summary>
         /// Delegate for <see cref="VideoTrackAdded"/> event.
@@ -473,7 +473,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="transceiver">The video transceiver the track was removed from.</param>
         /// <param name="track">The video track just removed.</param>
-        public delegate void VideoTrackRemovedDelegate(VideoTransceiver transceiver, RemoteVideoTrack track);
+        public delegate void VideoTrackRemovedDelegate(Transceiver transceiver, RemoteVideoTrack track);
 
         /// <summary>
         /// Delegate for <see cref="DataChannelAdded"/> event.
@@ -652,48 +652,6 @@ namespace Microsoft.MixedReality.WebRTC
         /// This requires some renegotiation.
         /// </summary>
         public List<Transceiver> Transceivers { get; } = new List<Transceiver>();
-
-        /// <summary>
-        /// Collection of audio transceivers of the peer connection.
-        /// Once a transceiver is added to the peer connection, it cannot be removed,
-        /// but its tracks can be changed. This requires some renegotiation.
-        /// </summary>
-        public IEnumerable<AudioTransceiver> AudioTransceivers
-        {
-            get
-            {
-                int num = Transceivers.Count;
-                for (int i = 0; i < num; ++i)
-                {
-                    var tr = Transceivers[i];
-                    if (tr.MediaKind == MediaKind.Audio)
-                    {
-                        yield return (AudioTransceiver)tr;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Collection of video transceivers of the peer connection.
-        /// Once a transceiver is added to the peer connection, it cannot be removed,
-        /// but its tracks can be changed. This requires some renegotiation.
-        /// </summary>
-        public IEnumerable<VideoTransceiver> VideoTransceivers
-        {
-            get
-            {
-                int num = Transceivers.Count;
-                for (int i = 0; i < num; ++i)
-                {
-                    var tr = Transceivers[i];
-                    if (tr.MediaKind == MediaKind.Video)
-                    {
-                        yield return (VideoTransceiver)tr;
-                    }
-                }
-            }
-        }
 
         /// <summary>
         /// Collection of local audio tracks attached to the peer connection.
@@ -1157,42 +1115,6 @@ namespace Microsoft.MixedReality.WebRTC
 
 
         #region Transceivers
-
-        /// <summary>
-        /// Add to the current connection a new audio transceiver.
-        /// 
-        /// A transceiver is a container for a pair of audio tracks, one local sending to the remote
-        /// peer, and one remote receiving from the remote peer. Both are optional, and the transceiver
-        /// can be in receive-only mode (no local track), in send-only mode (no remote track), or
-        /// inactive (neither local nor remote track).
-        /// 
-        /// Once a transceiver is added to the peer connection, it cannot be removed, but its tracks can be
-        /// changed (this requires some renegotiation).
-        /// </summary>
-        /// <param name="settings"></param>
-        /// <returns>The newly created transceiver.</returns>
-        public AudioTransceiver AddAudioTransceiver(TransceiverInitSettings settings = null)
-        {
-            return AddTransceiver(MediaKind.Audio, settings) as AudioTransceiver;
-        }
-
-        /// <summary>
-        /// Add to the current connection a new video transceiver.
-        /// 
-        /// A transceiver is a container for a pair of video tracks, one local sending to the remote
-        /// peer, and one remote receiving from the remote peer. Both are optional, and the transceiver
-        /// can be in receive-only mode (no local track), in send-only mode (no remote track), or
-        /// inactive (neither local nor remote track).
-        /// 
-        /// Once a transceiver is added to the peer connection, it cannot be removed, but its tracks can be
-        /// changed (this requires some renegotiation).
-        /// </summary>
-        /// <param name="settings"></param>
-        /// <returns>The newly created transceiver.</returns>
-        public VideoTransceiver AddVideoTransceiver(TransceiverInitSettings settings = null)
-        {
-            return AddTransceiver(MediaKind.Video, settings) as VideoTransceiver;
-        }
 
         /// <summary>
         /// Add to the current connection a new media transceiver.
@@ -2152,7 +2074,7 @@ namespace Microsoft.MixedReality.WebRTC
             TransceiverAdded?.Invoke(tr);
         }
 
-        internal void OnAudioTrackAdded(RemoteAudioTrack track, AudioTransceiver transceiver)
+        internal void OnAudioTrackAdded(RemoteAudioTrack track, Transceiver transceiver)
         {
             MainEventSource.Log.AudioTrackAdded(track.Name);
             lock (_tracksLock)
@@ -2169,7 +2091,7 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnAudioTrackRemoved(RemoteAudioTrack track)
         {
             MainEventSource.Log.AudioTrackRemoved(track.Name);
-            AudioTransceiver transceiver = track.Transceiver; // cache before removed
+            Transceiver transceiver = track.Transceiver; // cache before removed
             track.OnTrackRemoved(this);
             AudioTrackRemoved?.Invoke(transceiver, track);
 
@@ -2184,7 +2106,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="track">The newly created remote video track.</param>
         /// <param name="transceiver">The video transceiver now receiving from the remote peer.</param>
-        internal void OnVideoTrackAdded(RemoteVideoTrack track, VideoTransceiver transceiver)
+        internal void OnVideoTrackAdded(RemoteVideoTrack track, Transceiver transceiver)
         {
             MainEventSource.Log.VideoTrackAdded(track.Name);
             lock (_tracksLock)
@@ -2206,7 +2128,7 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnVideoTrackRemoved(RemoteVideoTrack track)
         {
             MainEventSource.Log.VideoTrackRemoved(track.Name);
-            VideoTransceiver transceiver = track.Transceiver; // cache before removed
+            Transceiver transceiver = track.Transceiver; // cache before removed
             track.OnTrackRemoved(this);
             VideoTrackRemoved?.Invoke(transceiver, track);
 

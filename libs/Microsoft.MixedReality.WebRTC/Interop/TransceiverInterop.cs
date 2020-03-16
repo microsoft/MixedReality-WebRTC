@@ -140,17 +140,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static Transceiver CreateWrapper(PeerConnection parent, in PeerConnectionInterop.TransceiverAddedInfo info)
         {
             // Create a new wrapper
-            Transceiver wrapper;
             var streamIDs = info.encodedStreamIDs.Split(';');
-            if (info.mediaKind == MediaKind.Audio)
-            {
-                wrapper = new AudioTransceiver(info.transceiverHandle, parent, info.mlineIndex, info.name, streamIDs, info.desiredDirection);
-            }
-            else
-            {
-                Debug.Assert(info.mediaKind == MediaKind.Video);
-                wrapper = new VideoTransceiver(info.transceiverHandle, parent, info.mlineIndex, info.name, streamIDs, info.desiredDirection);
-            }
+            Transceiver wrapper = new Transceiver(info.transceiverHandle, info.mediaKind, parent, info.mlineIndex, info.name, streamIDs, info.desiredDirection);
 
             // Assign a reference to it inside the UserData of the native object so it can be retrieved whenever needed
             IntPtr wrapperRef = Utils.MakeWrapperRef(wrapper);
