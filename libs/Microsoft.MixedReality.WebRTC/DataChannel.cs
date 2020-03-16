@@ -160,7 +160,12 @@ namespace Microsoft.MixedReality.WebRTC
         public void Dispose()
         {
             State = ChannelState.Closing;
+            // This will invoke some callback from native, which calls Destroy()
             PeerConnection.RemoveDataChannel(_nativeHandle);
+        }
+
+        internal void Destroy()
+        {
             _nativeHandle = IntPtr.Zero;
             State = ChannelState.Closed;
             Utils.ReleaseWrapperRef(_argsRef);
