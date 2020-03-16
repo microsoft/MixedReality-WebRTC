@@ -66,8 +66,8 @@ namespace TestAppUwp
         /// </summary>
         public bool PluginInitialized { get; private set; } = false;
 
-        private AudioTransceiver _audioTransceiver = null;
-        private VideoTransceiver _videoTransceiver = null;
+        private Transceiver _audioTransceiver = null;
+        private Transceiver _videoTransceiver = null;
 
         private MediaStreamSource localVideoSource = null;
         private MediaSource localMediaSource = null;
@@ -641,8 +641,8 @@ namespace TestAppUwp
 
                 // Add one audio and one video transceiver to signal the connection that it needs
                 // to negotiate one audio transport and one video transport with the remote peer.
-                _audioTransceiver = _peerConnection.AddAudioTransceiver();
-                _videoTransceiver = _peerConnection.AddVideoTransceiver();
+                _audioTransceiver = _peerConnection.AddTransceiver(MediaKind.Audio);
+                _videoTransceiver = _peerConnection.AddTransceiver(MediaKind.Video);
             }
             catch (Exception ex)
             {
@@ -1171,8 +1171,8 @@ namespace TestAppUwp
             await RunOnWorkerThread(() => {
                 lock (_isLocalMediaPlayingLock)
                 {
-                    _audioTransceiver.LocalTrack = null;
-                    _videoTransceiver.LocalTrack = null;
+                    _audioTransceiver.LocalAudioTrack = null;
+                    _videoTransceiver.LocalVideoTrack = null;
                     _renegotiationOfferEnabled = true;
                     if (_peerConnection.IsConnected)
                     {
@@ -1241,7 +1241,7 @@ namespace TestAppUwp
         /// Callback on remote media (audio or video) track removed.
         /// </summary>
         /// <param name="track">The audio track removed.</param>
-        private void Peer_RemoteAudioTrackRemoved(AudioTransceiver transceiver, RemoteAudioTrack track)
+        private void Peer_RemoteAudioTrackRemoved(Transceiver transceiver, RemoteAudioTrack track)
         {
             LogMessage($"Removed remote audio track {track.Name} from transceiver {transceiver.Name}.");
 
@@ -1279,7 +1279,7 @@ namespace TestAppUwp
         /// Callback on remote media (audio or video) track removed.
         /// </summary>
         /// <param name="track">The video track removed.</param>
-        private void Peer_RemoteVideoTrackRemoved(VideoTransceiver transceiver, RemoteVideoTrack track)
+        private void Peer_RemoteVideoTrackRemoved(Transceiver transceiver, RemoteVideoTrack track)
         {
             LogMessage($"Removed remote video track {track.Name} from transceiver {transceiver.Name}.");
 
@@ -1558,8 +1558,8 @@ namespace TestAppUwp
                     _localVideoTrack.I420AVideoFrameReady += LocalVideoTrack_I420AFrameReady;
 
                     // Add the local tracks to the peer connection
-                    _audioTransceiver.LocalTrack = _localAudioTrack;
-                    _videoTransceiver.LocalTrack = _localVideoTrack;
+                    _audioTransceiver.LocalAudioTrack = _localAudioTrack;
+                    _videoTransceiver.LocalVideoTrack = _localVideoTrack;
                 }
                 catch (Exception ex)
                 {
