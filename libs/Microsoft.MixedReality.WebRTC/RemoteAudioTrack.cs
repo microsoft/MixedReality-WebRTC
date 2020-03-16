@@ -87,7 +87,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Dispose of the native track. Invoked by its owner (<see cref="PeerConnection"/>).
         /// </summary>
-        internal void OnDestroyed()
+        internal void Destroy()
         {
             if (_nativeHandle == IntPtr.Zero)
             {
@@ -143,7 +143,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Internal callback invoked by the owner (<see cref="PeerConnection"/>) after the track
         /// has been removed as a result of the peer connection being closed.
-        /// In this case, unlike <see cref="OnDestroyed"/>, the <see cref="_nativeHandle"/> has been
+        /// In this case, unlike <see cref="Destroy"/>, the <see cref="_nativeHandle"/> has been
         /// invalidated, so should not be used to access the native object, which was destroyed. This
         /// is because the peer connection callbacks are unregistered before closing the peer connection,
         /// so there is no notification about the track being removed as part of the closing.
