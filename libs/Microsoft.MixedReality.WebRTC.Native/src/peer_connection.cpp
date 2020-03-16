@@ -1121,18 +1121,18 @@ void PeerConnectionImpl::Close() noexcept {
     for (auto&& transceiver : transceivers_) {
       if (auto remote_track = transceiver->GetRemoteTrack()) {
         if (remote_track->GetKind() == mrsTrackKind::kAudioTrack) {
-          auto* const audio_track =
-              static_cast<RemoteAudioTrack*>(remote_track);
+          RefPtr<RemoteAudioTrack> audio_track(
+              static_cast<RemoteAudioTrack*>(remote_track));  // keep alive
           audio_track->OnTrackRemoved(*this);
           if (audio_cb) {
-            audio_cb(audio_track, transceiver.get());
+            audio_cb(audio_track.get(), transceiver.get());
           }
         } else if (remote_track->GetKind() == mrsTrackKind::kVideoTrack) {
-          auto* const video_track =
-              static_cast<RemoteVideoTrack*>(remote_track);
+          RefPtr<RemoteVideoTrack> video_track(
+              static_cast<RemoteVideoTrack*>(remote_track));  // keep alive
           video_track->OnTrackRemoved(*this);
           if (video_cb) {
-            video_cb(video_track, transceiver.get());
+            video_cb(video_track.get(), transceiver.get());
           }
         }
       }
@@ -1628,8 +1628,8 @@ PeerConnectionImpl::GetOrCreateTransceiverForNewRemoteTrack(
     int mline_index = -1;
     std::string name;
     std::vector<std::string> stream_ids;
-    if (!ExtractTransceiverInfoFromReceiverPlanB(receiver, mline_index,
-                                                        name, stream_ids)) {
+    if (!ExtractTransceiverInfoFromReceiverPlanB(receiver, mline_index, name,
+                                                 stream_ids)) {
       return Error(
           Result::kUnknownError,
           "Failed to associate RTP receiver with Plan B emulated mline index "
