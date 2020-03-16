@@ -134,8 +134,22 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public string[] StreamIDs { get; }
 
+        /// <summary>
+        /// Local track attached to the transceiver, which is used to send data to the remote peer
+        /// if <see cref="NegotiatedDirection"/> includes sending.
+        /// This cannot be assigned directly; instead use <see cref="LocalAudioTrack"/> or
+        /// <see cref="LocalVideoTrack"/> depending on the media kind of the transceiver.
+        /// </summary>
+        /// <seealso cref="LocalAudioTrack"/>
+        /// <seealso cref="LocalVideoTrack"/>
         public MediaTrack LocalTrack => _localTrack;
 
+        /// <summary>
+        /// Local audio track attached to the transceiver, if <see cref="MediaKind"/> is <see cref="MediaKind.Audio"/>.
+        /// The property has two uses:
+        /// - as a convenience getter to retrieve <see cref="LocalTrack"/> already cast to a <see cref="WebRTC.LocalAudioTrack"/> type.
+        /// - to attach a new local audio track if the transceiver is an audio transceiver; otherwise this throws a <see xref="System.ArgumentException"/>.
+        /// </summary>
         public LocalAudioTrack LocalAudioTrack
         {
             get { return (_localTrack as LocalAudioTrack); }
@@ -152,6 +166,12 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
+        /// <summary>
+        /// Local video track attached to the transceiver, if <see cref="MediaKind"/> is <see cref="MediaKind.Video"/>.
+        /// The property has two uses:
+        /// - as a convenience getter to retrieve <see cref="LocalTrack"/> already cast to a <see cref="WebRTC.LocalVideoTrack"/> type.
+        /// - to attach a new local video track if the transceiver is a video transceiver; otherwise this throws a <see xref="System.ArgumentException"/>.
+        /// </summary>
         public LocalVideoTrack LocalVideoTrack
         {
             get { return (_localTrack as LocalVideoTrack); }
@@ -168,14 +188,30 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
+        /// <summary>
+        /// Remote track attached to the transceiver, which is used to receive data from the
+        /// remote peer if <see cref="NegotiatedDirection"/> includes receiving.
+        /// This cannot be assigned. This is updated automatically when the remote track is
+        /// created or destroyed as part of a renegotiation.
+        /// </summary>
+        /// <seealso cref="RemoteAudioTrack"/>
+        /// <seealso cref="RemoteVideoTrack"/>
         public MediaTrack RemoteTrack => _remoteTrack;
 
+        /// <summary>
+        /// Remote audio track attached to the transceiver, if <see cref="MediaKind"/> is <see cref="MediaKind.Audio"/>.
+        /// This is equivalent to <see cref="RemoteTrack"/> for audio transceivers, and <c>null</c> otherwise.
+        /// </summary>
         public RemoteAudioTrack RemoteAudioTrack
         {
             get { return (_remoteTrack as RemoteAudioTrack); }
             internal set { _remoteTrack = value; }
         }
 
+        /// <summary>
+        /// Remote video track attached to the transceiver, if <see cref="MediaKind"/> is <see cref="MediaKind.Video"/>.
+        /// This is equivalent to <see cref="RemoteTrack"/> for video transceivers, and <c>null</c> otherwise.
+        /// </summary>
         public RemoteVideoTrack RemoteVideoTrack
         {
             get { return (_remoteTrack as RemoteVideoTrack); }
