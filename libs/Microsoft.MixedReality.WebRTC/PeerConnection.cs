@@ -1049,7 +1049,7 @@ namespace Microsoft.MixedReality.WebRTC
                 _initTask = null; // This marks the Initialized property as false
                 IsConnected = false;
 
-                // Unregister all callbacks and free the delegates
+                // Unregister all callbacks that could add some new objects
                 PeerConnectionInterop.PeerConnection_RegisterConnectedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterLocalSdpReadytoSendCallback(
@@ -1066,21 +1066,10 @@ namespace Microsoft.MixedReality.WebRTC
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterAudioTrackAddedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
-                PeerConnectionInterop.PeerConnection_RegisterAudioTrackRemovedCallback(
-                    _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterVideoTrackAddedCallback(
-                    _nativePeerhandle, null, IntPtr.Zero);
-                PeerConnectionInterop.PeerConnection_RegisterVideoTrackRemovedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
                 PeerConnectionInterop.PeerConnection_RegisterDataChannelAddedCallback(
                     _nativePeerhandle, null, IntPtr.Zero);
-                PeerConnectionInterop.PeerConnection_RegisterDataChannelRemovedCallback(
-                    _nativePeerhandle, null, IntPtr.Zero);
-                if (_selfHandle.IsAllocated)
-                {
-                    _peerCallbackArgs = null;
-                    _selfHandle.Free();
-                }
             }
 
             // Wait for any pending initializing to finish.
@@ -1110,6 +1099,14 @@ namespace Microsoft.MixedReality.WebRTC
             // Complete shutdown sequence and re-enable InitializeAsync()
             lock (_openCloseLock)
             {
+                // Free all delegates for callbacks previously registered with the native
+                // peer connection, which is now destroyed.
+                if (_selfHandle.IsAllocated)
+                {
+                    _peerCallbackArgs = null;
+                    _selfHandle.Free();
+                }
+
                 _isClosing = false;
             }
         }
