@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
@@ -129,7 +130,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.IsNull(transceiver1.RemoteTrack);
             Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1));
             Assert.IsTrue(pc1_.LocalVideoTracks.Contains(track1));
-            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
 
             // Connect
             StartOfferWith(pc1_);
@@ -138,8 +139,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.True(pc2_.IsConnected);
 
             // Now remote peer #2 has a 1 remote track
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count());
 
             // Wait until the SDP exchange is completed
             WaitForSdpExchangeCompleted();
@@ -150,7 +151,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
             Assert.IsNull(track1.PeerConnection);
             Assert.IsNull(track1.Transceiver);
-            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count);
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
             Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1)); // never removed
             Assert.IsNull(transceiver1.LocalTrack);
             Assert.IsNull(transceiver1.RemoteTrack);
@@ -159,8 +160,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             // Remote peer #2 still has a track, because the transceiver is still receiving,
             // even if there is no track on the sending side (so effectively it receives only
             // black frames).
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count());
 
             // Change the transceiver direction to stop receiving. This requires a renegotiation
             // to take effect, so nothing changes for now.
@@ -175,8 +176,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
 
             // Now the remote track got removed from #2
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
         }
 
         [Test]
@@ -196,10 +197,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             remoteDescAppliedEvent2_.Reset();
 
             // No track yet
-            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count);
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
 
             // Create video transceiver on #1 -- this generates a renegotiation
             renegotiationEvent1_.Reset();
@@ -221,8 +222,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             // Now remote peer #2 has a 1 remote track (which is inactive).
             // Note that tracks are updated before transceivers here. This might be unintuitive, so we might
             // want to revisit this later.
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count());
 
             // Transceiver has been updated to Send+Receive (default desired direction when added), but
             // since peer #2 doesn't intend to send, the actually negotiated direction on #1 is Send only.
@@ -247,7 +248,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.IsNull(transceiver1.RemoteTrack);
             Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1));
             Assert.IsTrue(pc1_.LocalVideoTracks.Contains(track1));
-            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
 
             // SetLocalTrack() does not change the transceiver directions
             Assert.AreEqual(Transceiver.Direction.SendReceive, transceiver1.DesiredDirection);
@@ -259,8 +260,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
             Assert.IsNull(track1.PeerConnection);
             Assert.IsNull(track1.Transceiver);
-            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
             Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1)); // never removed
             Assert.IsNull(transceiver1.LocalTrack);
             Assert.IsNull(transceiver1.RemoteTrack);
@@ -274,8 +275,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             // Remote peer #2 still has a track, because the transceiver is still receiving,
             // even if there is no track on the sending side (so effectively it receives only
             // black frames).
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count());
 
             // Change the transceiver direction to stop receiving. This requires a renegotiation
             // to take effect, so nothing changes for now.
@@ -294,8 +295,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             WaitForSdpExchangeCompleted();
 
             // Now the remote track got removed from #2
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
         }
 
 #endif // !MRSW_EXCLUDE_DEVICE_TESTS
@@ -311,15 +312,15 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             WaitForSdpExchangeCompleted();
 
             // No track yet
-            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count);
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
 
             // Create external I420A source
             var source1 = ExternalVideoTrackSource.CreateFromI420ACallback(CustomI420AFrameCallback);
             Assert.NotNull(source1);
-            Assert.AreEqual(0, source1.Tracks.Count);
+            Assert.AreEqual(0, source1.Tracks.Count());
 
             // Add video transceiver #1
             renegotiationEvent1_.Reset();
@@ -387,15 +388,15 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             WaitForSdpExchangeCompleted();
 
             // No track yet
-            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count);
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
 
             // Create external ARGB32 source
             var source1 = ExternalVideoTrackSource.CreateFromArgb32Callback(CustomArgb32FrameCallback);
             Assert.NotNull(source1);
-            Assert.AreEqual(0, source1.Tracks.Count);
+            Assert.AreEqual(0, source1.Tracks.Count());
 
             // Add video transceiver #1
             renegotiationEvent1_.Reset();
@@ -466,15 +467,15 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             WaitForSdpExchangeCompleted();
 
             // No track yet
-            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count);
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
 
             // Create external I420A source
             var source1 = ExternalVideoTrackSource.CreateFromI420ACallback(CustomI420AFrameCallback);
             Assert.NotNull(source1);
-            Assert.AreEqual(0, source1.Tracks.Count);
+            Assert.AreEqual(0, source1.Tracks.Count());
 
             // Add external I420A tracks
             const int kNumTracks = 5;
@@ -497,9 +498,9 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 Assert.AreEqual(pc1_, tracks[i].PeerConnection);
                 Assert.IsTrue(pc1_.LocalVideoTracks.Contains(tracks[i]));
             }
-            Assert.AreEqual(kNumTracks, source1.Tracks.Count);
-            Assert.AreEqual(kNumTracks, pc1_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count);
+            Assert.AreEqual(kNumTracks, source1.Tracks.Count());
+            Assert.AreEqual(kNumTracks, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
 
             // Wait for local SDP re-negotiation on #1
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
@@ -512,8 +513,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Wait until SDP renegotiation finished
             WaitForSdpExchangeCompleted();
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(kNumTracks, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(kNumTracks, pc2_.RemoteVideoTracks.Count());
 
             // Remove the track from #1
             renegotiationEvent1_.Reset();
@@ -526,9 +527,9 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 tracks[i].Dispose();
                 tracks[i] = null;
             }
-            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count);
-            Assert.AreEqual(0, source1.Tracks.Count);
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, source1.Tracks.Count());
 
             // Dispose of source
             source1.Dispose();
@@ -558,8 +559,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.True(videoTrackRemovedEvent2_.IsSet);
 
             // Remote peer #2 doesn't have any track anymore
-            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
         }
     }
 }

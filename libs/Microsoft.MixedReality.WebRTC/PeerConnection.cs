@@ -648,22 +648,74 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Collection of local audio tracks attached to the peer connection.
         /// </summary>
-        public List<LocalAudioTrack> LocalAudioTracks { get; } = new List<LocalAudioTrack>();
+        public IEnumerable<LocalAudioTrack> LocalAudioTracks
+        {
+            get
+            {
+                foreach (var tr in Transceivers)
+                {
+                    var audioTrack = tr.LocalAudioTrack;
+                    if (audioTrack != null)
+                    {
+                        yield return audioTrack;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Collection of local video tracks attached to the peer connection.
         /// </summary>
-        public List<LocalVideoTrack> LocalVideoTracks { get; } = new List<LocalVideoTrack>();
+        public IEnumerable<LocalVideoTrack> LocalVideoTracks
+        {
+            get
+            {
+                foreach (var tr in Transceivers)
+                {
+                    var videoTrack = tr.LocalVideoTrack;
+                    if (videoTrack != null)
+                    {
+                        yield return videoTrack;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Collection of remote audio tracks attached to the peer connection.
         /// </summary>
-        public List<RemoteAudioTrack> RemoteAudioTracks { get; } = new List<RemoteAudioTrack>();
+        public IEnumerable<RemoteAudioTrack> RemoteAudioTracks
+        {
+            get
+            {
+                foreach (var tr in Transceivers)
+                {
+                    var audioTrack = tr.RemoteAudioTrack;
+                    if (audioTrack != null)
+                    {
+                        yield return audioTrack;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Collection of remote video tracks attached to the peer connection.
         /// </summary>
-        public List<RemoteVideoTrack> RemoteVideoTracks { get; } = new List<RemoteVideoTrack>();
+        public IEnumerable<RemoteVideoTrack> RemoteVideoTracks
+        {
+            get
+            {
+                foreach (var tr in Transceivers)
+                {
+                    var videoTrack = tr.RemoteVideoTrack;
+                    if (videoTrack != null)
+                    {
+                        yield return videoTrack;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Event fired when a connection is established.
@@ -1045,46 +1097,12 @@ namespace Microsoft.MixedReality.WebRTC
             // but will be handled at some point anyway, even if the PeerConnection managed instance is gone.
             _nativePeerhandle.Close();
 
-            // Notify tracks they have been removed
-            int count = LocalAudioTracks.Count;
-            while (count > 0)
-            {
-                LocalAudioTracks[count - 1].OnTrackRemoved(this);
-                --count;
-            }
-            Debug.Assert(LocalAudioTracks.Count == 0);
-            count = LocalVideoTracks.Count;
-            while (count > 0)
-            {
-                LocalVideoTracks[count - 1].OnTrackRemoved(this);
-                --count;
-            }
-            Debug.Assert(LocalVideoTracks.Count == 0);
-            count = RemoteAudioTracks.Count;
-            while (count > 0)
-            {
-                var track = RemoteAudioTracks[count - 1];
-                track.OnTrackRemoved(this);
-                track.OnConnectionClosed();
-                --count;
-            }
-            Debug.Assert(RemoteAudioTracks.Count == 0);
-            count = RemoteVideoTracks.Count;
-            while (count > 0)
-            {
-                var track = RemoteVideoTracks[count - 1];
-                track.OnTrackRemoved(this);
-                track.OnConnectionClosed();
-                --count;
-            }
-            Debug.Assert(RemoteVideoTracks.Count == 0);
-
             // Notify owned objects to perform clean-up.
             lock (_tracksLock)
             {
                 foreach (var transceiver in Transceivers)
                 {
-                    transceiver?.OnDestroyed();
+                    transceiver?.Destroy();
                 }
                 Transceivers.Clear();
             }
@@ -2066,6 +2084,12 @@ namespace Microsoft.MixedReality.WebRTC
             TransceiverAdded?.Invoke(tr);
         }
 
+        /// <summary>
+        /// Callback invoked by the native implementation when a transceiver starts receiving,
+        /// and a remote audio track is created as a result to receive its audio data.
+        /// </summary>
+        /// <param name="track">The newly created remote audio track.</param>
+        /// <param name="transceiver">The audio transceiver now receiving from the remote peer.</param>
         internal void OnAudioTrackAdded(RemoteAudioTrack track, Transceiver transceiver)
         {
             MainEventSource.Log.AudioTrackAdded(track.Name);
@@ -2080,6 +2104,11 @@ namespace Microsoft.MixedReality.WebRTC
             AudioTrackAdded?.Invoke(track);
         }
 
+        /// <summary>
+        /// Callback invoked by the native implementation when a transceiver stops receiving,
+        /// and a remote audio track is removed from it as a result.
+        /// </summary>
+        /// <param name="track">The remote audio track removed from the audio transceiver.</param>
         internal void OnAudioTrackRemoved(RemoteAudioTrack track)
         {
             MainEventSource.Log.AudioTrackRemoved(track.Name);
@@ -2089,12 +2118,12 @@ namespace Microsoft.MixedReality.WebRTC
 
             // PeerConnection is owning the remote track, and all internal states have been
             // updated and events fired, so notify the track to clean its internal state.
-            track.OnDestroyed();
+            track.Destroy();
         }
 
         /// <summary>
-        /// Callback invoked when a transceiver starts receiving, and a remote video track is
-        /// created as a result to receive its video data.
+        /// Callback invoked by the native implementation when a transceiver starts receiving,
+        /// and a remote video track is created as a result to receive its video data.
         /// </summary>
         /// <param name="track">The newly created remote video track.</param>
         /// <param name="transceiver">The video transceiver now receiving from the remote peer.</param>
@@ -2113,8 +2142,8 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Callback invoked when a transceiver stops receiving, and a remote video track is
-        /// removed from it as a result.
+        /// Callback invoked by the native implementation when a transceiver stops receiving,
+        /// and a remote video track is removed from it as a result.
         /// </summary>
         /// <param name="track">The remote video track removed from the video transceiver.</param>
         internal void OnVideoTrackRemoved(RemoteVideoTrack track)
@@ -2126,105 +2155,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             // PeerConnection is owning the remote track, and all internal states have been
             // updated and events fired, so notify the track to clean its internal state.
-            track.OnDestroyed();
-        }
-
-        /// <summary>
-        /// Callback invoked when a transceiver starts receiving, and a remote audio track is
-        /// created as a result to receive its audio data.
-        /// </summary>
-        /// <param name="track">The newly created remote audio track.</param>
-        internal void OnLocalTrackAdded(LocalAudioTrack track)
-        {
-            lock (_tracksLock)
-            {
-                Debug.Assert(!LocalAudioTracks.Contains(track));
-                Debug.Assert(track.Transceiver != null);
-                Debug.Assert(Transceivers.Contains(track.Transceiver));
-                LocalAudioTracks.Add(track);
-            }
-        }
-
-        /// <summary>
-        /// Callback invoked when a transceiver stops receiving, and a remote audio track is
-        /// removed from it as a result.
-        /// </summary>
-        /// <param name="track">The remote video track removed from the video transceiver.</param>
-        internal void OnLocalTrackRemoved(LocalAudioTrack track)
-        {
-            lock (_tracksLock)
-            {
-                Debug.Assert(LocalAudioTracks.Contains(track));
-                Debug.Assert(track.Transceiver != null);
-                Debug.Assert(Transceivers.Contains(track.Transceiver));
-                LocalAudioTracks.Remove(track);
-            }
-        }
-
-        internal void OnLocalTrackAdded(LocalVideoTrack track)
-        {
-            lock (_tracksLock)
-            {
-                Debug.Assert(!LocalVideoTracks.Contains(track));
-                Debug.Assert(track.Transceiver != null);
-                Debug.Assert(Transceivers.Contains(track.Transceiver));
-                LocalVideoTracks.Add(track);
-            }
-        }
-
-        internal void OnLocalTrackRemoved(LocalVideoTrack track)
-        {
-            lock (_tracksLock)
-            {
-                Debug.Assert(LocalVideoTracks.Contains(track));
-                Debug.Assert(track.Transceiver != null);
-                Debug.Assert(Transceivers.Contains(track.Transceiver));
-                LocalVideoTracks.Remove(track);
-            }
-        }
-
-        internal void OnRemoteTrackAdded(RemoteAudioTrack track)
-        {
-            lock (_tracksLock)
-            {
-                Debug.Assert(!RemoteAudioTracks.Contains(track));
-                Debug.Assert(track.Transceiver != null);
-                Debug.Assert(Transceivers.Contains(track.Transceiver));
-                RemoteAudioTracks.Add(track);
-            }
-        }
-
-        internal void OnRemoteTrackRemoved(RemoteAudioTrack track)
-        {
-            lock (_tracksLock)
-            {
-                Debug.Assert(RemoteAudioTracks.Contains(track));
-                Debug.Assert(track.Transceiver != null);
-                Debug.Assert(Transceivers.Contains(track.Transceiver));
-                RemoteAudioTracks.Remove(track);
-            }
-        }
-
-        internal void OnRemoteTrackAdded(RemoteVideoTrack track)
-        {
-            lock (_tracksLock)
-            {
-                Debug.Assert(!RemoteVideoTracks.Contains(track));
-                Debug.Assert(track.Transceiver != null);
-                Debug.Assert(Transceivers.Contains(track.Transceiver));
-                RemoteVideoTracks.Add(track);
-            }
-        }
-
-        internal void OnRemoteTrackRemoved(RemoteVideoTrack track)
-        {
-            lock (_tracksLock)
-            {
-                Debug.Assert(RemoteVideoTracks.Contains(track));
-                Debug.Assert(track.Transceiver != null);
-                Debug.Assert(Transceivers.Contains(track.Transceiver));
-                RemoteVideoTracks.Remove(track);
-            }
+            track.Destroy();
         }
 
         /// <inheritdoc/>
