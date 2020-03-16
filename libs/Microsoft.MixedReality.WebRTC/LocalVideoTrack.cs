@@ -354,8 +354,9 @@ namespace Microsoft.MixedReality.WebRTC
             Transceiver transceiver, string trackName, ExternalVideoTrackSource source = null) : base(peer, trackName)
         {
             Debug.Assert(transceiver.MediaKind == MediaKind.Video);
+            Debug.Assert(transceiver.LocalVideoTrack == null);
             Transceiver = transceiver;
-            transceiver.OnLocalTrackAdded(this);
+            transceiver.LocalVideoTrack = this;
             Source = source;
             source?.OnTrackAddedToSource(this);
         }
@@ -395,6 +396,13 @@ namespace Microsoft.MixedReality.WebRTC
                 return;
             }
 
+            // Notify the source
+            if (Source != null)
+            {
+                Source.OnTrackRemovedFromSource(this);
+                Source = null;
+            }
+
             // Remove the track from the peer connection, if any
             if (Transceiver != null)
             {
@@ -430,31 +438,6 @@ namespace Microsoft.MixedReality.WebRTC
         {
             MainEventSource.Log.Argb32LocalVideoFrameReady(frame.width, frame.height);
             Argb32VideoFrameReady?.Invoke(frame);
-        }
-
-        internal override void OnTrackAddedToPeerConnection(PeerConnection newConnection, Transceiver newTransceiver)
-        {
-            Debug.Assert(newTransceiver.MediaKind == MediaKind.Video);
-            Debug.Assert(!_nativeHandle.IsClosed);
-            Debug.Assert(PeerConnection == null);
-            Debug.Assert(Transceiver == null);
-            PeerConnection = newConnection;
-            Transceiver = newTransceiver;
-            newTransceiver.OnLocalTrackAdded(this);
-        }
-
-        internal override void OnTrackRemovedFromPeerConnection(PeerConnection previousConnection)
-        {
-            Debug.Assert(!_nativeHandle.IsClosed);
-            Debug.Assert(PeerConnection == previousConnection);
-            PeerConnection = null;
-            Transceiver.OnLocalTrackRemoved(this);
-            Transceiver = null;
-            if (Source != null)
-            {
-                Source.OnTrackRemovedFromSource(this);
-                Source = null;
-            }
         }
 
         internal override void OnMute(bool muted)
