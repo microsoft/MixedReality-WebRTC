@@ -204,7 +204,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             bool wasReceiving = (_pairedReceiver != null);
             if (Kind == MediaKind.Audio)
             {
-                var audioTransceiver = (AudioTransceiver)Transceiver;
+                var audioTransceiver = Transceiver;
                 bool isReceiving = (audioTransceiver.RemoteTrack != null);
                 // Note the extra "isReceiving" check, which ensures that when the remote track was
                 // just removed by OnUnpaired(RemoteTrack) from the TrackRemoved event then it is not
@@ -213,20 +213,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     // Transceiver started receiving, and user actually wants to receive
                     var audioReceiver = (AudioReceiver)Receiver;
-                    audioReceiver.OnPaired(audioTransceiver.RemoteTrack);
+                    audioReceiver.OnPaired(audioTransceiver.RemoteAudioTrack);
                     _pairedReceiver = Receiver;
                 }
                 else if (!isReceiving && wasReceiving)
                 {
                     // Transceiver stopped receiving (user intent does not matter here)
                     var audioReceiver = (AudioReceiver)_pairedReceiver;
-                    audioReceiver.OnUnpaired(audioTransceiver.RemoteTrack);
+                    audioReceiver.OnUnpaired(audioTransceiver.RemoteAudioTrack);
                     _pairedReceiver = null;
                 }
             }
             else if (Kind == MediaKind.Video)
             {
-                var videoTransceiver = (VideoTransceiver)Transceiver;
+                var videoTransceiver = Transceiver;
                 bool isReceiving = (videoTransceiver.RemoteTrack != null);
                 // Note the extra "isReceiving" check, which ensures that when the remote track was
                 // just removed by OnUnpaired(RemoteTrack) from the TrackRemoved event then it is not
@@ -235,14 +235,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     // Transceiver started receiving, and user actually wants to receive
                     var videoReceiver = (VideoReceiver)Receiver;
-                    videoReceiver.OnPaired(videoTransceiver.RemoteTrack);
+                    videoReceiver.OnPaired(videoTransceiver.RemoteVideoTrack);
                     _pairedReceiver = Receiver;
                 }
                 else if (!isReceiving && wasReceiving)
                 {
                     // Transceiver stopped receiving (user intent does not matter here)
                     var videoReceiver = (VideoReceiver)_pairedReceiver;
-                    videoReceiver.OnUnpaired(videoTransceiver.RemoteTrack);
+                    videoReceiver.OnUnpaired(videoTransceiver.RemoteVideoTrack);
                     _pairedReceiver = null;
                 }
             }
@@ -253,7 +253,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(track != null);
             Debug.Assert(Kind == MediaKind.Audio);
             Debug.Assert(Transceiver != null);
-            Debug.Assert(((AudioTransceiver)Transceiver).RemoteTrack == null); // already removed
+            Debug.Assert(Transceiver.RemoteAudioTrack == null); // already removed
             // This is called by the TrackRemoved event, which can be fired sometimes even
             // though we did not have any opportunity yet to pair. So only unpair if we did.
             // In details, the case is the answering peer being in sendonly mode, yet created
@@ -274,7 +274,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(track != null);
             Debug.Assert(Kind == MediaKind.Video);
             Debug.Assert(Transceiver != null);
-            Debug.Assert(((VideoTransceiver)Transceiver).RemoteTrack == null); // already removed
+            Debug.Assert(Transceiver.RemoteTrack == null); // already removed
             // This is called by the TrackRemoved event, which can be fired sometimes even
             // though we did not have any opportunity yet to pair. So only unpair if we did.
             // In details, the case is the answering peer being in sendonly mode, yet created
@@ -303,7 +303,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             bool wantsRecv = (Receiver != null);
             if (Kind == MediaKind.Audio)
             {
-                var audioTransceiver = (AudioTransceiver)Transceiver;
+                var audioTransceiver = Transceiver;
                 if (wantsSend)
                 {
                     var audioSender = (AudioSender)Sender;
@@ -317,7 +317,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
             else if (Kind == MediaKind.Video)
             {
-                var videoTransceiver = (VideoTransceiver)Transceiver;
+                var videoTransceiver = Transceiver;
                 if (wantsSend)
                 {
                     var videoSender = (VideoSender)Sender;
@@ -1098,7 +1098,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             OnInitialized.Invoke();
         }
 
-        private void Peer_AudioTrackRemoved(AudioTransceiver transceiver, RemoteAudioTrack track)
+        private void Peer_AudioTrackRemoved(Transceiver transceiver, RemoteAudioTrack track)
         {
             Debug.Assert(track.Transceiver == null); // already removed
             MediaLine mediaLine = _mediaLines.Find((MediaLine ml) => ml.Transceiver == transceiver);
@@ -1107,7 +1107,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             mediaLine.OnUnpaired(track);
         }
 
-        private void Peer_VideoTrackRemoved(VideoTransceiver transceiver, RemoteVideoTrack track)
+        private void Peer_VideoTrackRemoved(Transceiver transceiver, RemoteVideoTrack track)
         {
             Debug.Assert(track.Transceiver == null); // already removed
             MediaLine mediaLine = _mediaLines.Find((MediaLine ml) => ml.Transceiver == transceiver);

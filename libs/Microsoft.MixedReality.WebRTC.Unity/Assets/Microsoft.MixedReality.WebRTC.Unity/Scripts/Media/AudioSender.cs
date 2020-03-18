@@ -30,7 +30,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public AudioStreamStartedEvent GetAudioStreamStarted() { return AudioStreamStarted; }
         public AudioStreamStoppedEvent GetAudioStreamStopped() { return AudioStreamStopped; }
 
-        public AudioTransceiver Transceiver { get; private set; }
+        public Transceiver Transceiver { get; private set; }
 
         /// <summary>
         /// Audio track that this component encapsulates.
@@ -93,7 +93,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// just before the peer connection creates an SDP offer.
         /// </summary>
         /// <param name="audioTransceiver">The audio transceiver this sender is attached with.</param>
-        internal void AttachToTransceiver(AudioTransceiver audioTransceiver)
+        internal void AttachToTransceiver(Transceiver audioTransceiver)
         {
             Debug.Assert((Transceiver == null) || (Transceiver == audioTransceiver));
             Transceiver = audioTransceiver;
@@ -125,7 +125,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Attach the local track to the transceiver
             if (Track != null)
             {
-                Transceiver.LocalTrack = Track;
+                Transceiver.LocalAudioTrack = Track;
             }
         }
 
@@ -133,7 +133,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             Debug.Assert(Transceiver != null);
             Debug.Assert(Transceiver.LocalTrack == Track);
-            Transceiver.LocalTrack = null;
+            Transceiver.LocalAudioTrack = null;
         }
 
         /// <inheritdoc/>
@@ -161,9 +161,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (Track != null)
             {
                 // Track may not be added to any transceiver (e.g. no connection)
-                if (Track.Transceiver != null)
+                var transceiver = Track.Transceiver;
+                if (transceiver != null)
                 {
-                    Track.Transceiver.LocalTrack = null;
+                    Debug.Assert(transceiver.LocalAudioTrack == Track);
+                    transceiver.LocalAudioTrack = null;
                 }
 
                 // Local tracks are disposable objects owned by the user (this component)

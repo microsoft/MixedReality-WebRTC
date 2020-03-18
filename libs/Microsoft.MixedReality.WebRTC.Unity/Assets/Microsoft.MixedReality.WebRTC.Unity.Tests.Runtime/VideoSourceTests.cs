@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections;
+using System.Linq;
 using System.Threading;
 using NUnit.Framework;
 using UnityEngine;
@@ -154,13 +155,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             yield return null;
 
             // Check that even though pairing failed lower-level remote track exists anyway
-            Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count);
+            Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count());
             Assert.NotNull(sender1.Track);
-            Assert.AreEqual(sender1.Track, pc1.Peer.LocalVideoTracks[0]);
-            Assert.AreEqual(0, pc1.Peer.RemoteVideoTracks.Count);
-            Assert.AreEqual(0, pc2.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(1, pc2.Peer.RemoteVideoTracks.Count);
-            var remote2 = pc2.Peer.RemoteVideoTracks[0];
+            Assert.AreEqual(sender1.Track, pc1.Peer.LocalVideoTracks.First());
+            Assert.AreEqual(0, pc1.Peer.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, pc2.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc2.Peer.RemoteVideoTracks.Count());
+            var remote2 = pc2.Peer.RemoteVideoTracks.First();
         }
 
         [UnityTest]
@@ -223,10 +224,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             yield return null;
 
             // Unlike in the case of a missing receiver, if there is no sender then nothing can be negotiated
-            Assert.AreEqual(0, pc1.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc1.Peer.RemoteVideoTracks.Count);
-            Assert.AreEqual(0, pc2.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc2.Peer.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc1.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1.Peer.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, pc2.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2.Peer.RemoteVideoTracks.Count());
             Assert.IsNull(receiver2.Track);
         }
 
@@ -296,10 +297,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             yield return null;
 
             // Check pairing
-            Assert.AreEqual(0, pc1.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(1, pc1.Peer.RemoteVideoTracks.Count);
-            Assert.AreEqual(1, pc2.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc2.Peer.RemoteVideoTracks.Count);
+            Assert.AreEqual(0, pc1.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc1.Peer.RemoteVideoTracks.Count());
+            Assert.AreEqual(1, pc2.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2.Peer.RemoteVideoTracks.Count());
             Assert.NotNull(receiver1.Track);
         }
 
@@ -372,10 +373,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             yield return null;
 
             // Check pairing
-            Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(1, pc1.Peer.RemoteVideoTracks.Count);
-            Assert.AreEqual(1, pc2.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc2.Peer.RemoteVideoTracks.Count);
+            Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc1.Peer.RemoteVideoTracks.Count());
+            Assert.AreEqual(1, pc2.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2.Peer.RemoteVideoTracks.Count());
             Assert.NotNull(receiver1.Track);
         }
 
@@ -448,10 +449,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             yield return null;
 
             // Check pairing
-            Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc1.Peer.RemoteVideoTracks.Count); // offer was SendOnly
-            Assert.AreEqual(1, pc2.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(1, pc2.Peer.RemoteVideoTracks.Count);
+            Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1.Peer.RemoteVideoTracks.Count()); // offer was SendOnly
+            Assert.AreEqual(1, pc2.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc2.Peer.RemoteVideoTracks.Count());
             Assert.NotNull(receiver2.Track);
         }
 
@@ -521,10 +522,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             yield return null;
 
             // Check pairing
-            Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(0, pc1.Peer.RemoteVideoTracks.Count); // answer was RecvOnly
-            Assert.AreEqual(0, pc2.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(1, pc2.Peer.RemoteVideoTracks.Count);
+            Assert.AreEqual(1, pc1.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1.Peer.RemoteVideoTracks.Count()); // answer was RecvOnly
+            Assert.AreEqual(0, pc2.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc2.Peer.RemoteVideoTracks.Count());
             Assert.NotNull(receiver2.Track);
         }
 
@@ -829,10 +830,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             yield return null;
 
             // Check pairing
-            Assert.AreEqual(numLocal1, pc1.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(numRemote1, pc1.Peer.RemoteVideoTracks.Count);
-            Assert.AreEqual(numLocal2, pc2.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(numRemote2, pc2.Peer.RemoteVideoTracks.Count);
+            Assert.AreEqual(numLocal1, pc1.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(numRemote1, pc1.Peer.RemoteVideoTracks.Count());
+            Assert.AreEqual(numLocal2, pc2.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(numRemote2, pc2.Peer.RemoteVideoTracks.Count());
             for (int i = 0; i < NumTransceivers; ++i)
             {
                 var cfg = cfgs[i];
@@ -923,10 +924,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             yield return null;
 
             // Check pairing
-            Assert.AreEqual(numLocal1, pc1.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(numRemote1, pc1.Peer.RemoteVideoTracks.Count);
-            Assert.AreEqual(numLocal2, pc2.Peer.LocalVideoTracks.Count);
-            Assert.AreEqual(numRemote2, pc2.Peer.RemoteVideoTracks.Count);
+            Assert.AreEqual(numLocal1, pc1.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(numRemote1, pc1.Peer.RemoteVideoTracks.Count());
+            Assert.AreEqual(numLocal2, pc2.Peer.LocalVideoTracks.Count());
+            Assert.AreEqual(numRemote2, pc2.Peer.RemoteVideoTracks.Count());
             for (int i = 0; i < NumTransceivers; ++i)
             {
                 var cfg = cfgs[i];
@@ -1024,10 +1025,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(Transceiver.Direction.ReceiveOnly, ml2.Transceiver.NegotiatedDirection.Value);
             Assert.AreEqual(ml1.Transceiver, sender1.Transceiver); // paired on first negotiation
             Assert.AreEqual(ml2.Transceiver, receiver2.Transceiver); // paired on first negotiation
-            var video_tr1 = (ml1.Transceiver as VideoTransceiver);
+            var video_tr1 = ml1.Transceiver;
             Assert.NotNull(video_tr1);
-            var video_tr2 = (ml2.Transceiver as VideoTransceiver);
+            Assert.AreEqual(MediaKind.Video, video_tr1.MediaKind);
+            var video_tr2 = ml2.Transceiver;
             Assert.NotNull(video_tr2);
+            Assert.AreEqual(MediaKind.Video, video_tr2.MediaKind);
 
             // Check track pairing
             Assert.NotNull(receiver2.Track); // paired

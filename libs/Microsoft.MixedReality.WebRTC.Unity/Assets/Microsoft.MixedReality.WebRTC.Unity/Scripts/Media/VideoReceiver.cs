@@ -22,7 +22,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// with the remote track of the transceiver, or until the peer connection associated
         /// with this receiver creates the video receiver right before creating an SDP offer.
         /// </summary>
-        public VideoTransceiver Transceiver { get; private set; }
+        public Transceiver Transceiver { get; private set; }
 
         /// <summary>
         /// Remote video track receiving data from the remote peer.
@@ -126,7 +126,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// created when receiving an answer from the remote peer, if it agreed to send media data through
         /// that transceiver, and <see cref="OnPaired"/> will be invoked at that time.
         /// </remarks>
-        internal void AttachToTransceiver(VideoTransceiver videoTransceiver)
+        internal void AttachToTransceiver(Transceiver videoTransceiver)
         {
             Debug.Assert((Transceiver == null) || (Transceiver == videoTransceiver));
             Transceiver = videoTransceiver;

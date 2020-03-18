@@ -48,7 +48,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// are sent through the <see cref="Transceiver"/> to the remote peer. That is,
         /// <see cref="Track"/> is attached as <see cref="VideoTransceiver.LocalTrack"/>.
         /// </summary>
-        public VideoTransceiver Transceiver { get; private set; }
+        public Transceiver Transceiver { get; private set; }
 
         /// <inheritdoc/>
         public VideoEncoding FrameEncoding { get; } = VideoEncoding.I420A;
@@ -127,7 +127,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// just before the peer connection creates an SDP offer.
         /// </summary>
         /// <param name="videoTransceiver">The video transceiver this sender is attached with.</param>
-        internal void AttachToTransceiver(VideoTransceiver videoTransceiver)
+        internal void AttachToTransceiver(Transceiver videoTransceiver)
         {
             Debug.Assert((Transceiver == null) || (Transceiver == videoTransceiver));
             Transceiver = videoTransceiver;
@@ -146,7 +146,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Attach the local track to the transceiver
             if (Track != null)
             {
-                Transceiver.LocalTrack = Track;
+                Transceiver.LocalVideoTrack = Track;
             }
         }
 
@@ -154,7 +154,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             Debug.Assert(Transceiver != null);
             Debug.Assert(Transceiver.LocalTrack == Track);
-            Transceiver.LocalTrack = null;
+            Transceiver.LocalVideoTrack = null;
         }
 
         /// <inheritdoc/>
@@ -182,9 +182,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (Track != null)
             {
                 // Track may not be added to any transceiver (e.g. no connection)
-                if (Track.Transceiver != null)
+                var transceiver = Track.Transceiver;
+                if (transceiver != null)
                 {
-                    Track.Transceiver.LocalTrack = null;
+                    Debug.Assert(transceiver.LocalVideoTrack == Track);
+                    transceiver.LocalVideoTrack = null;
                 }
 
                 // Local tracks are disposable objects owned by the user (this component)
