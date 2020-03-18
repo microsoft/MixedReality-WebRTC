@@ -76,6 +76,9 @@
     <ClCompile Include="..\tracked_object.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\interop\data_channel_interop.cpp">
+      <Filter>src\interop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\interop\global_factory.h">
