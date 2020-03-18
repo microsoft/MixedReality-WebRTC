@@ -309,7 +309,23 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// The event handler.
         /// </summary>
-        public Action Event;
+        public Action Event
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _event;
+                }
+            }
+            set
+            {
+                lock (_lock)
+                {
+                    _event = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Begin suspending <see cref="Event"/>. This must be matched with a call
@@ -331,6 +347,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public void EndSuspend()
         {
+            Action cb;
             lock (_lock)
             {
                 Debug.Assert(_suspendCount > 0);
@@ -340,8 +357,9 @@ namespace Microsoft.MixedReality.WebRTC
                     return;
                 }
                 _eventPending = false;
+                cb = Event;
             }
-            Event?.Invoke();
+            cb?.Invoke();
         }
 
         /// <summary>
@@ -352,6 +370,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// then invoke it asynchronously from a worker thread.</param>
         public void Invoke(bool async = false)
         {
+            Action cb;
             lock (_lock)
             {
                 Debug.Assert(_suspendCount >= 0);
@@ -360,14 +379,18 @@ namespace Microsoft.MixedReality.WebRTC
                     _eventPending = true;
                     return;
                 }
+                cb = Event;
             }
-            if (async)
+            if (cb != null)
             {
-                Task.Run(Event);
-            }
-            else
-            {
-                Event.Invoke();
+                if (async)
+                {
+                    Task.Run(cb);
+                }
+                else
+                {
+                    cb.Invoke();
+                }
             }
         }
 
@@ -381,6 +404,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Lock for internal variables:
         /// - <see cref="_suspendCount"/>
         /// - <see cref="_eventPending"/>
+        /// - <see cref="_event"/>
         /// </summary>
         private object _lock = new object();
 
@@ -399,6 +423,11 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <remarks>This is protected by <see cref="_lock"/>.</remarks>
         private bool _eventPending = false;
+
+        /// <summary>
+        /// Backup field for <see cref="Event"/>, to be accessed only under <see cref="_lock"/>.
+        /// </summary>
+        private Action _event;
     }
 
     /// <summary>
