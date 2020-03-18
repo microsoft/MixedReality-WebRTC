@@ -1101,19 +1101,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private void Peer_AudioTrackRemoved(Transceiver transceiver, RemoteAudioTrack track)
         {
             Debug.Assert(track.Transceiver == null); // already removed
+            // Note: if the transceiver was created by setting a remote description internally, but
+            // the user did not add any MediaLine in the component, then the transceiver is ignored.
+            // SetRemoteDescriptionAsync() already triggered a warning in this case, so be silent here.
             MediaLine mediaLine = _mediaLines.Find((MediaLine ml) => ml.Transceiver == transceiver);
-            Debug.Assert(mediaLine != null);
-            Debug.Assert(mediaLine.Kind == MediaKind.Audio);
-            mediaLine.OnUnpaired(track);
+            if (mediaLine != null)
+            {
+                Debug.Assert(mediaLine != null);
+                Debug.Assert(mediaLine.Kind == MediaKind.Audio);
+                mediaLine.OnUnpaired(track);
+            }
         }
 
         private void Peer_VideoTrackRemoved(Transceiver transceiver, RemoteVideoTrack track)
         {
             Debug.Assert(track.Transceiver == null); // already removed
+            // Note: if the transceiver was created by SetRemoteDescription() internally, but the user
+            // did not add any MediaLine in the component, then the transceiver is ignored.
+            // SetRemoteDescriptionAsync() already triggered a warning in this case, so be silent here.
             MediaLine mediaLine = _mediaLines.Find((MediaLine ml) => ml.Transceiver == transceiver);
-            Debug.Assert(mediaLine != null);
-            Debug.Assert(mediaLine.Kind == MediaKind.Video);
-            mediaLine.OnUnpaired(track);
+            if (mediaLine != null)
+            {
+                Debug.Assert(mediaLine != null);
+                Debug.Assert(mediaLine.Kind == MediaKind.Video);
+                mediaLine.OnUnpaired(track);
+            }
         }
 
         private void Signaler_LocalSdpReadyToSend(string type, string sdp)
