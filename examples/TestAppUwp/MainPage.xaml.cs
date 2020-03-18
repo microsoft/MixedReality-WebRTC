@@ -1345,6 +1345,8 @@ namespace TestAppUwp
                 if (!_isRemoteVideoPlaying)
                 {
                     _isRemoteVideoPlaying = true;
+                    _remoteVideoWidth = width;
+                    _remoteVideoHeight = height;
                     needNewSource = true;
                 }
                 else if ((width != _remoteVideoWidth) || (height != _remoteVideoHeight))
