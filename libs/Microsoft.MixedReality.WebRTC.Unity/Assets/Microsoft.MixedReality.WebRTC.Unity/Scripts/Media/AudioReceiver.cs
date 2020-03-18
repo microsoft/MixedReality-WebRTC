@@ -28,7 +28,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// with the remote track of the transceiver, or until the peer connection associated
         /// with this receiver creates the audio receiver right before creating an SDP offer.
         /// </summary>
-        public AudioTransceiver Transceiver { get; private set; }
+        public Transceiver Transceiver { get; private set; }
 
         /// <summary>
         /// Remote audio track receiving data from the remote peer.
@@ -72,7 +72,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// created when receiving an answer from the remote peer, if it agreed to send media data through
         /// that transceiver, and <see cref="OnPaired"/> will be invoked at that time.
         /// </remarks>
-        internal void AttachToTransceiver(AudioTransceiver audioTransceiver)
+        internal void AttachToTransceiver(Transceiver audioTransceiver)
         {
             Debug.Assert((Transceiver == null) || (Transceiver == audioTransceiver));
             Transceiver = audioTransceiver;
