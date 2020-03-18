@@ -1,12 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.MixedReality.WebRTC" Version="0.2.0-preview-20190925.5" />
+    <ProjectReference Include="..\..\libs\Microsoft.MixedReality.WebRTC\Microsoft.MixedReality.WebRTC.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /b /y $(SolutionDir)bin\netstandard2.0\$(ConfigurationName)\Microsoft.MixedReality.WebRTC.dll $(TargetDir) &#xD;&#xA;copy /b /y $(SolutionDir)bin\Win32\$(PlatformName)\$(ConfigurationName)\Microsoft.MixedReality.WebRTC.Native.dll $(TargetDir)" />
+  </Target>
 
 </Project>

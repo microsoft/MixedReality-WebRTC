@@ -57,7 +57,7 @@ namespace TestNetCoreConsole
                 Console.WriteLine("Starting signaling...");
                 var signaler = new NamedPipeSignaler.NamedPipeSignaler(pc, "testpipe");
                 signaler.SdpMessageReceived += (string type, string sdp) => {
-                    pc.SetRemoteDescription(type, sdp);
+                    pc.SetRemoteDescriptionAsync(type, sdp).Wait();
                     if (type == "offer")
                     {
                         pc.CreateAnswer();
@@ -72,7 +72,7 @@ namespace TestNetCoreConsole
                 pc.Connected += () => { Console.WriteLine("PeerConnection: connected."); };
                 pc.IceStateChanged += (IceConnectionState newState) => { Console.WriteLine($"ICE state: {newState}"); };
                 int numFrames = 0;
-                pc.I420RemoteVideoFrameReady += (I420AVideoFrame frame) => {
+                pc.I420ARemoteVideoFrameReady += (I420AVideoFrame frame) => {
                     ++numFrames;
                     if (numFrames % 60 == 0)
                     {
