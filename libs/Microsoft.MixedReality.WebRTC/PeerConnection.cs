@@ -718,6 +718,15 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
+        /// Collection of data channels for the peer connection.
+        /// 
+        /// Data channels are either manually added with <see cref="AddDataChannelAsync(string, bool, bool)"/>
+        /// or <see cref="AddDataChannelAsync(ushort, string, bool, bool)"/>, or are created by the implementation
+        /// when the remote peer creates a new in-band data channel.
+        /// </summary>
+        public List<DataChannel> DataChannels { get; } = new List<DataChannel>();
+
+        /// <summary>
         /// Event fired when a connection is established.
         /// </summary>
         public event Action Connected;
@@ -1163,7 +1172,7 @@ namespace Microsoft.MixedReality.WebRTC
         #endregion
 
 
-        #region Data tracks
+        #region Data channels
 
         /// <summary>
         /// Add a new out-of-band data channel with the given ID.
@@ -1224,9 +1233,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
+        /// <exception xref="System.InvalidOperationException">The peer connection is not initialized.</exception>
         /// <exception cref="SctpNotNegotiatedException">SCTP not negotiated. Call <see cref="CreateOffer()"/> first.</exception>
-        /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        /// <exception xref="System.ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         /// <remarks>
         /// See the critical remark about SCTP handshake in <see cref="AddDataChannelAsync(ushort, string, bool, bool)"/>.
         /// </remarks>
@@ -1245,14 +1254,14 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
-        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
-        /// <exception xref="InvalidOperationException">SCTP not negotiated.</exception>
-        /// <exception xref="ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
+        /// <exception xref="System.InvalidOperationException">The peer connection is not initialized.</exception>
+        /// <exception xref="System.InvalidOperationException">SCTP not negotiated.</exception>
+        /// <exception xref="System.ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         private async Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable)
         {
             ThrowIfConnectionNotOpen();
 
-            // Create the native channel
+            // Create the native data channel
             return await Task.Run(() =>
             {
                 // Create the native object
@@ -1271,15 +1280,39 @@ namespace Microsoft.MixedReality.WebRTC
                 var dataChannelRef = DataChannelInterop.DataChannel_GetUserData(nativeHandle);
                 var dataChannelWrapper = Utils.ToWrapper<DataChannel>(dataChannelRef);
                 Debug.Assert(dataChannelWrapper != null);
+                DataChannels.Add(dataChannelWrapper);
+                DataChannelAdded?.Invoke(dataChannelWrapper);
                 return dataChannelWrapper;
             });
         }
 
-        internal void RemoveDataChannel(IntPtr dataChannelHandle)
+        /// <summary>
+        /// Remove an existing data channel from the peer connection and destroy its native implementation.
+        /// </summary>
+        /// <param name="dataChannel">The data channel to remove and destroy.</param>
+        /// <exception xref="System.ArgumentException">The data channel is not owned by this peer connection.</exception>
+        public void RemoveDataChannel(DataChannel dataChannel)
         {
             ThrowIfConnectionNotOpen();
-            var res = PeerConnectionInterop.PeerConnection_RemoveDataChannel(_nativePeerhandle, dataChannelHandle);
-            Utils.ThrowOnErrorCode(res);
+            if (DataChannels.Remove(dataChannel))
+            {
+                // Notify the data channel is being closed.
+                // DestroyNative() will further change the state to Closed() once done.
+                dataChannel.State = DataChannel.ChannelState.Closing;
+
+                var res = PeerConnectionInterop.PeerConnection_RemoveDataChannel(_nativePeerhandle, dataChannel._nativeHandle);
+                Utils.ThrowOnErrorCode(res);
+
+                DataChannelRemoved?.Invoke(dataChannel);
+
+                // PeerConnection is owning the data channel, and all internal states have been
+                // updated and events triggered, so notify the data channel to clean its internal state.
+                dataChannel.DestroyNative();
+            }
+            else
+            {
+                throw new ArgumentException($"Data channel {dataChannel.Label} is not owned by peer connection {Name}.", "dataChannel");
+            }
         }
 
         #endregion
@@ -1945,12 +1978,14 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnDataChannelAdded(DataChannel dataChannel)
         {
             MainEventSource.Log.DataChannelAdded(dataChannel.ID, dataChannel.Label);
+            DataChannels.Add(dataChannel);
             DataChannelAdded?.Invoke(dataChannel);
         }
 
         internal void OnDataChannelRemoved(DataChannel dataChannel)
         {
             MainEventSource.Log.DataChannelRemoved(dataChannel.ID, dataChannel.Label);
+            DataChannels.Remove(dataChannel);
             DataChannelRemoved?.Invoke(dataChannel);
         }
 
@@ -2123,8 +2158,8 @@ namespace Microsoft.MixedReality.WebRTC
             AudioTrackRemoved?.Invoke(transceiver, track);
 
             // PeerConnection is owning the remote track, and all internal states have been
-            // updated and events fired, so notify the track to clean its internal state.
-            track.Destroy();
+            // updated and events triggered, so notify the track to clean its internal state.
+            track.DestroyNative();
         }
 
         /// <summary>
@@ -2167,8 +2202,8 @@ namespace Microsoft.MixedReality.WebRTC
             VideoTrackRemoved?.Invoke(transceiver, track);
 
             // PeerConnection is owning the remote track, and all internal states have been
-            // updated and events fired, so notify the track to clean its internal state.
-            track.Destroy();
+            // updated and events triggered, so notify the track to clean its internal state.
+            track.DestroyNative();
         }
 
         /// <inheritdoc/>

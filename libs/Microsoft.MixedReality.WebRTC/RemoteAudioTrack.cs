@@ -87,7 +87,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Dispose of the native track. Invoked by its owner (<see cref="PeerConnection"/>).
         /// </summary>
-        internal void Destroy()
+        internal void DestroyNative()
         {
             if (_nativeHandle == IntPtr.Zero)
             {

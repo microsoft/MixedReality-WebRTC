@@ -8,8 +8,20 @@ using NUnit.Framework;
 
 namespace Microsoft.MixedReality.WebRTC.Tests
 {
+    /// <summary>
+    /// Base class for most C# tests.
+    /// 
+    /// This helper class provides several features:
+    /// - Allows testing the various SDP semantics.
+    /// - Ensures there is no live object before AND after the test.
+    /// - Sets up and tears down the various event handlers for the most
+    ///   common events, to avoid duplication in all tests.
+    /// </summary>
     internal class PeerConnectionTestBase
     {
+        /// <summary>
+        /// SDP semantic for the current test case.
+        /// </summary>
         protected readonly SdpSemantic sdpSemantic_;
 
         protected PeerConnection pc1_ = null;

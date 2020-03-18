@@ -169,7 +169,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             DataChannelInterop.DataChannel_SetUserData(dataChannelHandle, IntPtr.Zero);
             var dataChannelWrapper = Utils.ToWrapper<DataChannel>(dataChannelRef);
             peerWrapper.OnDataChannelRemoved(dataChannelWrapper);
-            dataChannelWrapper.Destroy();
+            dataChannelWrapper.DestroyNative();
             Utils.ReleaseWrapperRef(dataChannelRef);
         }
 
