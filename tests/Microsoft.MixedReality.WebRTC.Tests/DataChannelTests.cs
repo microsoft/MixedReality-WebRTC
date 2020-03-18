@@ -77,9 +77,6 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 data1.SendMessage(msg);
                 Assert.True(c2.Wait(TimeSpan.FromSeconds(60.0)));
             }
-
-            data1.Dispose();
-            data2.Dispose();
         }
 
         [Test]
@@ -138,9 +135,6 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 data1.SendMessage(msg);
                 Assert.True(c2.Wait(TimeSpan.FromSeconds(60.0)));
             }
-
-            data1.Dispose();
-            data2.Dispose();
         }
 
         [Test]
