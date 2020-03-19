@@ -14,7 +14,7 @@ using System.Threading;
 /// This component is designed to be used in demos where both peers
 /// are present in the same scene.
 /// </summary>
-public class HardcodedSignaler : MonoBehaviour
+public class LocalOnlySignaler : MonoBehaviour
 {
     /// <summary>
     /// First peer to connect, which will generate an offer.
