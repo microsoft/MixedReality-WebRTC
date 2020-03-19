@@ -1,4 +1,7 @@
-﻿using Microsoft.MixedReality.WebRTC;
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using Microsoft.MixedReality.WebRTC;
 using Microsoft.MixedReality.WebRTC.Unity;
 using System;
 using System.Collections.Generic;
@@ -7,7 +10,7 @@ using UnityEngine;
 /// <summary>
 /// A video source producing some colored frames generated programmatically.
 /// </summary>
-public class FakeVideoSource : CustomVideoSender<Argb32VideoFrameStorage>
+public class UniformColorVideoSource : CustomVideoSender<Argb32VideoFrameStorage>
 {
     /// <summary>
     /// List of colors to cycle through.
