@@ -168,7 +168,6 @@ namespace Microsoft.MixedReality.WebRTC
             State = ChannelState.Closed;
             Utils.ReleaseWrapperRef(_argsRef);
             _argsRef = IntPtr.Zero;
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
