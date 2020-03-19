@@ -42,7 +42,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the signaler
             var sig_go = new GameObject("signaler");
-            var sig = sig_go.AddComponent<HardcodedSignaler>();
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
             sig.Peer1 = pc1;
             sig.Peer2 = pc2;
 
@@ -109,7 +109,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the signaler
             var sig_go = new GameObject("signaler");
-            var sig = sig_go.AddComponent<HardcodedSignaler>();
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
             sig.Peer1 = pc1;
             sig.Peer2 = pc2;
 
@@ -179,7 +179,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the signaler
             var sig_go = new GameObject("signaler");
-            var sig = sig_go.AddComponent<HardcodedSignaler>();
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
             sig.Peer1 = pc1;
             sig.Peer2 = pc2;
 
@@ -246,7 +246,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the signaler
             var sig_go = new GameObject("signaler");
-            var sig = sig_go.AddComponent<HardcodedSignaler>();
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
             sig.Peer1 = pc1;
             sig.Peer2 = pc2;
 
@@ -319,7 +319,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the signaler
             var sig_go = new GameObject("signaler");
-            var sig = sig_go.AddComponent<HardcodedSignaler>();
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
             sig.Peer1 = pc1;
             sig.Peer2 = pc2;
 
@@ -395,7 +395,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the signaler
             var sig_go = new GameObject("signaler");
-            var sig = sig_go.AddComponent<HardcodedSignaler>();
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
             sig.Peer1 = pc1;
             sig.Peer2 = pc2;
 
@@ -471,7 +471,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the signaler
             var sig_go = new GameObject("signaler");
-            var sig = sig_go.AddComponent<HardcodedSignaler>();
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
             sig.Peer1 = pc1;
             sig.Peer2 = pc2;
 
@@ -544,7 +544,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the signaler
             var sig_go = new GameObject("signaler");
-            var sig = sig_go.AddComponent<HardcodedSignaler>();
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
             sig.Peer1 = pc1;
             sig.Peer2 = pc2;
 
@@ -648,7 +648,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the signaler
             var sig_go = new GameObject("signaler");
-            var sig = sig_go.AddComponent<HardcodedSignaler>();
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
             sig.Peer1 = pc1;
             sig.Peer2 = pc2;
 
@@ -962,7 +962,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the signaler
             var sig_go = new GameObject("signaler");
-            var sig = sig_go.AddComponent<HardcodedSignaler>();
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
             sig.Peer1 = pc1;
             sig.Peer2 = pc2;
 
