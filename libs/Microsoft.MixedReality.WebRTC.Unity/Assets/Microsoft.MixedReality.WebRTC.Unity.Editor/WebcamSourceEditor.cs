@@ -174,71 +174,64 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             var rect = EditorGUILayout.GetControlRect();
             using (new EditorGUI.PropertyScope(rect, new GUIContent(), _preferredVideoCodec))
             {
-                try
+                // Convert the selected codec name to an enum value.
+                // This may throw an exception if this is a custom name, which will be handled below.
+                SdpVideoCodecs codecValue;
+                string customCodecValue = string.Empty;
+                if (_preferredVideoCodec.stringValue.Length == 0)
                 {
-                    // Convert the selected codec name to an enum value.
-                    // This may throw an exception if this is a custom name, which will be handled below.
-                    SdpVideoCodecs codecValue;
-                    string customCodecValue = string.Empty;
-                    if (_preferredVideoCodec.stringValue.Length == 0)
+                    codecValue = SdpVideoCodecs.None;
+                }
+                else
+                {
+                    try
                     {
-                        codecValue = SdpVideoCodecs.None;
+                        codecValue = (SdpVideoCodecs)Enum.Parse(typeof(SdpVideoCodecs), _preferredVideoCodec.stringValue);
                     }
-                    else
+                    catch
                     {
-                        try
+                        codecValue = SdpVideoCodecs.Custom;
+                        customCodecValue = _preferredVideoCodec.stringValue;
+                        // Hide internal marker
+                        if (customCodecValue == "__CUSTOM")
                         {
-                            codecValue = (SdpVideoCodecs)Enum.Parse(typeof(SdpVideoCodecs), _preferredVideoCodec.stringValue);
-                        }
-                        catch
-                        {
-                            codecValue = SdpVideoCodecs.Custom;
-                            customCodecValue = _preferredVideoCodec.stringValue;
-                            // Hide internal marker
-                            if (customCodecValue == "__CUSTOM")
-                            {
-                                customCodecValue = string.Empty;
-                            }
-                        }
-                    }
-
-                    // Display the edit field for the enum
-                    var newCodecValue = (SdpVideoCodecs)EditorGUI.EnumPopup(rect, _preferredVideoCodec.displayName, codecValue);
-                    if (newCodecValue == SdpVideoCodecs.H264)
-                    {
-                        EditorGUILayout.HelpBox("H.264 is only supported on UWP platforms.", MessageType.Warning);
-                    }
-
-                    // Update the value if changed or custom
-                    if ((newCodecValue != codecValue) || (newCodecValue == SdpVideoCodecs.Custom))
-                    {
-                        if (newCodecValue == SdpVideoCodecs.None)
-                        {
-                            _preferredVideoCodec.stringValue = string.Empty;
-                        }
-                        else if (newCodecValue == SdpVideoCodecs.Custom)
-                        {
-                            ++EditorGUI.indentLevel;
-                            string newValue = EditorGUILayout.TextField("SDP codec name", customCodecValue);
-                            if (newValue == string.Empty)
-                            {
-                                EditorGUILayout.HelpBox("The SDP codec name must be non-empty. See https://en.wikipedia.org/wiki/RTP_audio_video_profile for valid names.", MessageType.Error);
-
-                                // Force a non-empty value now, otherwise the field will reset to None
-                                newValue = "__CUSTOM";
-                            }
-                            _preferredVideoCodec.stringValue = newValue;
-                            --EditorGUI.indentLevel;
-                        }
-                        else
-                        {
-                            _preferredVideoCodec.stringValue = Enum.GetName(typeof(SdpVideoCodecs), newCodecValue);
+                            customCodecValue = string.Empty;
                         }
                     }
                 }
-                catch (Exception)
+
+                // Display the edit field for the enum
+                var newCodecValue = (SdpVideoCodecs)EditorGUI.EnumPopup(rect, _preferredVideoCodec.displayName, codecValue);
+                if (newCodecValue == SdpVideoCodecs.H264)
                 {
-                    EditorGUILayout.PropertyField(_preferredVideoCodec);
+                    EditorGUILayout.HelpBox("H.264 is only supported on UWP platforms.", MessageType.Warning);
+                }
+
+                // Update the value if changed or custom
+                if ((newCodecValue != codecValue) || (newCodecValue == SdpVideoCodecs.Custom))
+                {
+                    if (newCodecValue == SdpVideoCodecs.None)
+                    {
+                        _preferredVideoCodec.stringValue = string.Empty;
+                    }
+                    else if (newCodecValue == SdpVideoCodecs.Custom)
+                    {
+                        ++EditorGUI.indentLevel;
+                        string newValue = EditorGUILayout.TextField("SDP codec name", customCodecValue);
+                        if (newValue == string.Empty)
+                        {
+                            EditorGUILayout.HelpBox("The SDP codec name must be non-empty. See https://en.wikipedia.org/wiki/RTP_audio_video_profile for valid names.", MessageType.Error);
+
+                            // Force a non-empty value now, otherwise the field will reset to None
+                            newValue = "__CUSTOM";
+                        }
+                        _preferredVideoCodec.stringValue = newValue;
+                        --EditorGUI.indentLevel;
+                    }
+                    else
+                    {
+                        _preferredVideoCodec.stringValue = Enum.GetName(typeof(SdpVideoCodecs), newCodecValue);
+                    }
                 }
             }
 
