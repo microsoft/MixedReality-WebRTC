@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using UnityEngine;
-using UnityEngine.UI;
 using Microsoft.MixedReality.WebRTC.Unity;
 using System.Threading;
 
@@ -26,15 +25,14 @@ public class LocalOnlySignaler : MonoBehaviour
     /// </summary>
     public PeerConnection Peer2;
 
-    /// <summary>
-    /// The button that generates an offer from peer #1 to peer #2.
-    /// </summary>
-    [Tooltip("The button that generates an offer to a given target")]
-    public Button CreateOfferButton;
-
     private ManualResetEventSlim _remoteApplied1 = new ManualResetEventSlim();
     private ManualResetEventSlim _remoteApplied2 = new ManualResetEventSlim();
 
+    /// <summary>
+    /// Initiate a connection by having <see cref="Peer1"/> send an offer to <see cref="Peer2"/>,
+    /// and wait indefinitely until the SDP exchange completed.
+    /// </summary>
+    /// <seealso cref="Connect(int)"/>
     public void Connect()
     {
         _remoteApplied1.Reset();
@@ -44,6 +42,16 @@ public class LocalOnlySignaler : MonoBehaviour
         _remoteApplied2.Wait();
     }
 
+    /// <summary>
+    /// Initiate a connection by having <see cref="Peer1"/> send an offer to <see cref="Peer2"/>,
+    /// and wait until the SDP exchange completed.
+    /// 
+    /// If the exchange does not completes within the given timeout, return <c>false</c>.
+    /// </summary>
+    /// <param name="millisecondsTimeout">Timeout in milliseconds for the SDP exchange to complete.</param>
+    /// <returns>This variant returns <c>true</c> if the exchange completed within the given timeout,
+    /// or <c>false</c> otherwise.</returns>
+    /// <seealso cref="Connect"/>
     public bool Connect(int millisecondsTimeout)
     {
         _remoteApplied1.Reset();
@@ -64,11 +72,6 @@ public class LocalOnlySignaler : MonoBehaviour
     {
         Peer1.OnInitialized.AddListener(OnInitialized1);
         Peer2.OnInitialized.AddListener(OnInitialized2);
-
-        CreateOfferButton?.onClick.AddListener(() =>
-        {
-            Peer1.CreateOffer();
-        });
     }
 
     private void OnInitialized1()
