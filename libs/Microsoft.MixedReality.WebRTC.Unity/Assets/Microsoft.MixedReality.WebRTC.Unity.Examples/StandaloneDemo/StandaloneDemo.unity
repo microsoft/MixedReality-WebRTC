@@ -600,9 +600,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TrackName: video_C
-  AutoAddTrack: 1
-  AutoPlayOnEnabled: 1
-  AutoStartCapture: 1
+  AutoStartOnEnabled: 1
   PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
@@ -2021,7 +2019,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c8b8e916d2cbf40a9dd142c021c4d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AutoPlayOnPaired: 1
   VideoStreamStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -3102,7 +3099,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c8b8e916d2cbf40a9dd142c021c4d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AutoPlayOnPaired: 1
   VideoStreamStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -3305,9 +3301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TrackName: video_B
-  AutoAddTrack: 1
-  AutoPlayOnEnabled: 1
-  AutoStartCapture: 1
+  AutoStartOnEnabled: 1
   PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
@@ -3529,7 +3523,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c8b8e916d2cbf40a9dd142c021c4d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AutoPlayOnPaired: 1
   VideoStreamStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -5029,9 +5022,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TrackName: video_A
-  AutoAddTrack: 1
-  AutoPlayOnEnabled: 1
-  AutoStartCapture: 1
+  AutoStartOnEnabled: 1
   PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
