@@ -261,17 +261,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         /// is considered invalid, and means that the value is considered as not set, which shows
         /// up as an unchecked left toggle widget.
         /// 
-        /// To enforce a valid value when the toggle control is checked by the user, a default valid value is provided
-        /// <see cref="defaultValue"/>. For UI consistency, the last selected valid value is returned in <see cref="defaultValue"/>,
-        /// to allow toggling the field ON and OFF without losing the valid value it previously had.
+        /// To enforce a valid value when the toggle control is checked by the user, a default valid
+        /// value is provided <paramref name="lastValidValue"/>. For UI consistency, the last selected
+        /// valid value is returned in <paramref name="lastValidValue"/>, to allow toggling the field
+        /// ON and OFF without losing the valid value it previously had.
         /// </summary>
         /// <param name="intProperty">The integer property associated with the control.</param>
-        /// <param name="defaultValue">Default value if the property value is invalid (negative or zero). Assigned the new value on return if valid.</param>
+        /// <param name="lastValidValue">
+        /// Default value if the property value is invalid (negative or zero).
+        /// Assigned the new value on return if valid.
+        /// </param>
         /// <param name="label">The label to display next to the toggle control.</param>
         /// <param name="unitLabel">The label indicating the unit of the value.</param>
-        private void OptionalIntField(SerializedProperty intProperty, ref int defaultValue, GUIContent label, GUIContent unitLabel)
+        private void OptionalIntField(SerializedProperty intProperty, ref int lastValidValue, GUIContent label, GUIContent unitLabel)
         {
-            if (defaultValue <= 0)
+            if (lastValidValue <= 0)
             {
                 throw new ArgumentOutOfRangeException("Default value cannot be invalid.");
             }
@@ -281,15 +285,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                 var rect = EditorGUILayout.GetControlRect();
                 using (new EditorGUI.PropertyScope(rect, label, intProperty))
                 {
-                    bool hasValidValue = (intProperty.intValue > 0);
-                    hasValidValue = EditorGUI.ToggleLeft(rect, label, hasValidValue);
+                    bool hadValidValue = (intProperty.intValue > 0);
+                    bool needsValidValue = EditorGUI.ToggleLeft(rect, label, hadValidValue);
                     int newValue = intProperty.intValue;
-                    if (hasValidValue)
+                    if (needsValidValue)
                     {
                         // Force a valid value, otherwise the edit field won't show up
                         if (newValue <= 0)
                         {
-                            newValue = defaultValue;
+                            newValue = lastValidValue;
                         }
 
                         // Make updating the value of the serialized property delayed to allow overriding the
@@ -302,7 +306,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     }
                     else
                     {
-                        // Force value for consistency with "constraint", otherwise this breaks Prefab revert
+                        // Force invalid value for consistency, otherwise this breaks Prefab revert
                         newValue = 0;
                     }
                     intProperty.intValue = newValue;
@@ -310,10 +314,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     {
                         GUILayout.Label(unitLabel, GUILayout.Width(_unitWidth));
 
-                        // Save valid value as new default. This allows toggling the constraint ON and OFF
+                        // Save valid value as new default. This allows toggling the toggle widget ON and OFF
                         // without losing the value previously input. This works only while the inspector is
                         // alive, that is while the object is select, but is better than nothing.
-                        defaultValue = newValue;
+                        lastValidValue = newValue;
                     }
                     else
                     {
@@ -331,17 +335,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         /// is considered invalid, and means that the value is considered as not set, which shows
         /// up as an unchecked left toggle widget.
         /// 
-        /// To enforce a valid value when the toggle control is checked by the user, a default valid value is provided
-        /// <see cref="defaultValue"/>. For UI consistency, the last selected valid value is returned in <see cref="defaultValue"/>,
-        /// to allow toggling the field ON and OFF without losing the valid value it previously had.
+        /// To enforce a valid value when the toggle control is checked by the user, a default valid
+        /// value is provided <paramref name="lastValidValue"/>. For UI consistency, the last selected
+        /// valid value is returned in <paramref name="lastValidValue"/>, to allow toggling the field
+        /// ON and OFF without losing the valid value it previously had.
         /// </summary>
         /// <param name="doubleProperty">The double property associated with the control.</param>
-        /// <param name="defaultValue">Default value if the property value is invalid (negative or zero). Assigned the new value on return if valid.</param>
+        /// <param name="lastValidValue">
+        /// Default value if the property value is invalid (negative or zero).
+        /// Assigned the new value on return if valid.
+        /// </param>
         /// <param name="label">The label to display next to the toggle control.</param>
         /// <param name="unitLabel">The label indicating the unit of the value.</param>
-        private void OptionalDoubleField(SerializedProperty doubleProperty, ref double defaultValue, GUIContent label, GUIContent unitLabel)
+        private void OptionalDoubleField(SerializedProperty doubleProperty, ref double lastValidValue, GUIContent label, GUIContent unitLabel)
         {
-            if (defaultValue <= 0.0)
+            if (lastValidValue <= 0.0)
             {
                 throw new ArgumentOutOfRangeException("Default value cannot be invalid.");
             }
@@ -351,15 +359,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                 var rect = EditorGUILayout.GetControlRect();
                 using (new EditorGUI.PropertyScope(rect, label, doubleProperty))
                 {
-                    bool hasValidValue = (doubleProperty.doubleValue > 0.0);
-                    hasValidValue = EditorGUI.ToggleLeft(rect, label, hasValidValue);
+                    bool hadValidValue = (doubleProperty.doubleValue > 0.0);
+                    bool needsValidValue = EditorGUI.ToggleLeft(rect, label, hadValidValue);
                     double newValue = doubleProperty.doubleValue;
-                    if (hasValidValue)
+                    if (needsValidValue)
                     {
                         // Force a valid value, otherwise the edit field won't show up
                         if (newValue <= 0.0)
                         {
-                            newValue = defaultValue;
+                            newValue = lastValidValue;
                         }
 
                         // Make updating the value of the serialized property delayed to allow overriding the
@@ -372,7 +380,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     }
                     else
                     {
-                        // Force value for consistency with "constraint", otherwise this breaks Prefab revert
+                        // Force invalid value for consistency, otherwise this breaks Prefab revert
                         newValue = 0.0;
                     }
                     doubleProperty.doubleValue = newValue;
@@ -380,10 +388,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     {
                         GUILayout.Label(unitLabel, GUILayout.Width(_unitWidth));
 
-                        // Save valid value as new default. This allows toggling the constraint ON and OFF
+                        // Save valid value as new default. This allows toggling the toggle widget ON and OFF
                         // without losing the value previously input. This works only while the inspector is
                         // alive, that is while the object is select, but is better than nothing.
-                        defaultValue = newValue;
+                        lastValidValue = newValue;
                     }
                     else
                     {
@@ -413,22 +421,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         /// EnumPopup with optional toggle associated with a given SerializedProperty, to enable
         /// automatic GUI handlings like Prefab revert menu.
         /// 
-        /// Valid enum values are any value different from <see cref="nilValue"/>. A value of <see cref="nilValue"/>
-        /// is considered invalid, and means that the value is considered as not set, which shows up as an unchecked
-        /// left toggle widget.
+        /// Valid enum values are any value different from <paramref name="nilValue"/>. A value of
+        /// <paramref name="nilValue"/> is considered invalid, and means that the value is considered as
+        /// not set, which shows up as an unchecked left toggle widget.
         /// 
-        /// To enforce a valid value when the toggle control is checked by the user, a default valid value is provided
-        /// <see cref="defaultValue"/> which must be different from <see cref="nilValue"/>. For UI consistency, the
-        /// last selected valid value is returned in <see cref="defaultValue"/>, to allow toggling the field ON and OFF
-        /// without losing the valid value it previously had.
+        /// To enforce a valid value when the toggle control is checked by the user, a default valid value
+        /// is provided <paramref name="lastValidValue"/> which must be different from <paramref name="nilValue"/>.
+        /// For UI consistency, the last selected valid value is returned in <paramref name="lastValidValue"/>,
+        /// to allow toggling the field ON and OFF without losing the valid value it previously had.
         /// </summary>
         /// <param name="enumProperty">The enum property associated with the control.</param>
         /// <param name="nilValue">Value considered to be "invalid", which deselects the toggle control.</param>
-        /// <param name="defaultValue">Default value if the property value is not <see cref="nilValue"/>. Assigned the new value on return if not <see cref="nilValue"/>.</param>
+        /// <param name="lastValidValue">
+        /// Default value if the property value is not <paramref name="nilValue"/>.
+        /// Assigned the new value on return if not <paramref name="nilValue"/>.
+        /// </param>
         /// <param name="label">The label to display next to the toggle control.</param>
-        private void OptionalEnumField<T>(SerializedProperty enumProperty, T nilValue, ref T defaultValue, GUIContent label) where T : Enum
+        private void OptionalEnumField<T>(SerializedProperty enumProperty, T nilValue, ref T lastValidValue, GUIContent label) where T : Enum
         {
-            if (nilValue.CompareTo(defaultValue) == 0)
+            if (nilValue.CompareTo(lastValidValue) == 0)
             {
                 throw new ArgumentOutOfRangeException("Default value cannot be invalid.");
             }
@@ -438,31 +449,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                 var rect = EditorGUILayout.GetControlRect();
                 using (new EditorGUI.PropertyScope(rect, label, enumProperty))
                 {
-                    bool hasValidValue = (enumProperty.intValue != EnumToInt<T>(nilValue));
-                    hasValidValue = EditorGUI.ToggleLeft(rect, label, hasValidValue);
+                    bool hadValidValue = (enumProperty.intValue != EnumToInt<T>(nilValue));
+                    bool needsValidValue = EditorGUI.ToggleLeft(rect, label, hadValidValue);
                     T newValue = IntToEnum<T>(enumProperty.intValue);
-                    if (hasValidValue)
+                    if (needsValidValue)
                     {
                         // Force a valid value, otherwise the popup control won't show up
                         if (newValue.CompareTo(nilValue) == 0)
                         {
-                            newValue = defaultValue;
+                            newValue = lastValidValue;
                         }
 
                         newValue = (T)EditorGUILayout.EnumPopup(newValue);
                     }
                     else
                     {
-                        // Force value for consistency with "constraint", otherwise this breaks Prefab revert
+                        // Force invalid value for consistency, otherwise this breaks Prefab revert
                         newValue = nilValue;
                     }
                     enumProperty.intValue = EnumToInt<T>(newValue);
                     if (newValue.CompareTo(nilValue) != 0)
                     {
-                        // Save valid value as new default. This allows toggling the constraint ON and OFF
+                        // Save valid value as new default. This allows toggling the toggle widget ON and OFF
                         // without losing the value previously input. This works only while the inspector is
                         // alive, that is while the object is select, but is better than nothing.
-                        defaultValue = newValue;
+                        lastValidValue = newValue;
                     }
                     else
                     {
@@ -480,16 +491,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         /// made up of only spaces is considered invalid, and means that the value is considered as
         /// not set, which shows up as an unchecked left toggle widget.
         /// 
-        /// To enforce a valid value when the toggle control is checked by the user, a default valid value is provided
-        /// <see cref="defaultValue"/>. For UI consistency, the last selected valid value is returned in <see cref="defaultValue"/>,
-        /// to allow toggling the field ON and OFF without losing the valid value it previously had.
+        /// To enforce a valid value when the toggle control is checked by the user, a default valid
+        /// value is provided <paramref name="lastValidValue"/>. For UI consistency, the last selected
+        /// valid value is returned in <paramref name="lastValidValue"/>, to allow toggling the field
+        /// ON and OFF without losing the valid value it previously had.
         /// </summary>
         /// <param name="stringProperty">The string property associated with the control.</param>
-        /// <param name="defaultValue">Default value if the property value null or whitespace. Assigned the new value on return if valid.</param>
+        /// <param name="lastValidValue">
+        /// Default value if the property value null or whitespace.
+        /// Assigned the new value on return if valid.
+        /// </param>
         /// <param name="label">The label to display next to the toggle control.</param>
-        private void OptionalTextField(SerializedProperty stringProperty, ref string defaultValue, GUIContent label)
+        private void OptionalTextField(SerializedProperty stringProperty, ref string lastValidValue, GUIContent label)
         {
-            if (string.IsNullOrWhiteSpace(defaultValue))
+            if (string.IsNullOrWhiteSpace(lastValidValue))
             {
                 throw new ArgumentOutOfRangeException("Default value cannot be invalid.");
             }
@@ -499,15 +514,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                 var rect = EditorGUILayout.GetControlRect();
                 using (new EditorGUI.PropertyScope(rect, label, stringProperty))
                 {
-                    bool hasValidValue = !string.IsNullOrWhiteSpace(stringProperty.stringValue);
-                    hasValidValue = EditorGUI.ToggleLeft(rect, label, hasValidValue);
+                    bool hadValidValue = !string.IsNullOrWhiteSpace(stringProperty.stringValue);
+                    bool needsValidValue = EditorGUI.ToggleLeft(rect, label, hadValidValue);
                     string newValue = stringProperty.stringValue;
-                    if (hasValidValue)
+                    if (needsValidValue)
                     {
                         // Force a valid value, otherwise the edit field won't show up
                         if (string.IsNullOrWhiteSpace(newValue))
                         {
-                            newValue = defaultValue;
+                            newValue = lastValidValue;
                         }
 
                         // Make updating the value of the serialized property delayed to allow overriding the
@@ -520,16 +535,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     }
                     else
                     {
-                        // Force value for consistency with "constraint", otherwise this breaks Prefab revert
+                        // Force invalid value for consistency, otherwise this breaks Prefab revert
                         newValue = string.Empty;
                     }
                     stringProperty.stringValue = newValue;
                     if (!string.IsNullOrWhiteSpace(newValue))
                     {
-                        // Save valid value as new default. This allows toggling the constraint ON and OFF
+                        // Save valid value as new default. This allows toggling the toggle widget ON and OFF
                         // without losing the value previously input. This works only while the inspector is
                         // alive, that is while the object is select, but is better than nothing.
-                        defaultValue = newValue;
+                        lastValidValue = newValue;
                     }
                     else
                     {
