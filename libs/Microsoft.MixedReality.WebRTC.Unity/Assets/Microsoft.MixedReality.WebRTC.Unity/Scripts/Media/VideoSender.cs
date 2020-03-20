@@ -46,7 +46,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// is added to, if any. If this is non-<c>null</c> and the peer connection the transceiver
         /// is owned by is connected, then the video frames produced by the local <see cref="Track"/>
         /// are sent through the <see cref="Transceiver"/> to the remote peer. That is,
-        /// <see cref="Track"/> is attached as <see cref="VideoTransceiver.LocalTrack"/>.
+        /// <see cref="Track"/> is attached as <see xref="WebRTC.Transceiver.LocalVideoTrack"/>.
         /// </summary>
         public Transceiver Transceiver { get; private set; }
 

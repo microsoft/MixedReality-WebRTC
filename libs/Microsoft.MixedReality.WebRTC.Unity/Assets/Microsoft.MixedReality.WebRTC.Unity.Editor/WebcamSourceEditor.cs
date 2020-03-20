@@ -406,7 +406,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         /// </summary>
         /// <typeparam name="TValue">The enum type.</typeparam>
         /// <param name="value">The enum value.</param>
-        /// <returns>The integer value associated with <see cref="value"/>.</returns>
+        /// <returns>The integer value associated with <paramref name="value"/>.</returns>
         public static int EnumToInt<TValue>(TValue value) where TValue : Enum => (int)(object)value;
 
         /// <summary>
@@ -414,7 +414,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         /// </summary>
         /// <typeparam name="TValue">The enum type.</typeparam>
         /// <param name="value">The integer value.</param>
-        /// <returns>The enum value whose integer value is <see cref="value"/>.</returns>
+        /// <returns>The enum value whose integer value is <paramref name="value"/>.</returns>
         public static TValue IntToEnum<TValue>(int value) where TValue : Enum => (TValue)(object)value;
 
         /// <summary>
