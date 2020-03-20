@@ -146,7 +146,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         internal override void OnPaired(MediaTrack track)
         {
-            Debug.Assert(track is RemoteAudioTrack);
             var remoteAudioTrack = (RemoteAudioTrack)track;
 
             // Enqueue invoking from the main Unity app thread, both to avoid locks on public
