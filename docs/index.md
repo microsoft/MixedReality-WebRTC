@@ -50,5 +50,5 @@ title: Index
       - The PeerConnection component builds on the same-named library class to expose a remote peer connection.
    2. [Signaler](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler)
       - The abstract Signaler component is the base class for signaling implementations.
-   3. [LocalVideoSource](xref:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource)
-      - The LocalVideoSource component provides access to the local webcam for local rendering and remote streaming.
+   3. [WebcamSource](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource)
+      - The WebcamSource component provides access to the local webcam for local rendering and remote streaming.
