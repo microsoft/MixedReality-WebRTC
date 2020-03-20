@@ -151,7 +151,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         /// <returns>Once the asynchronous operation is completed, the <see cref="Track"/> property
         /// must reference it.</returns>
-        internal async Task AttachTrackAsync()
+        internal override async Task AttachTrackAsync()
         {
             Debug.Assert(Transceiver != null);
 
@@ -174,7 +174,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        internal void DetachTrack()
+        internal override void DetachTrack()
         {
             Debug.Assert(Transceiver != null);
             Debug.Assert(Transceiver.LocalTrack == Track);

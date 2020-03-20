@@ -144,15 +144,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// with this receiver, which enqueues the <see cref="AudioSource.AudioStreamStarted"/>
         /// event to be fired from the main Unity app thread.
         /// </summary>
-        internal void OnPaired(RemoteAudioTrack track)
+        internal override void OnPaired(MediaTrack track)
         {
+            Debug.Assert(track is RemoteAudioTrack);
+            var remoteAudioTrack = (RemoteAudioTrack)track;
+
             // Enqueue invoking from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.
             _mainThreadWorkQueue.Enqueue(() =>
             {
                 Debug.Assert(Track == null);
-                Track = track;
+                Track = remoteAudioTrack;
                 IsLive = true;
                 AudioStreamStarted.Invoke(this);
                 IsStreaming = true;
@@ -164,8 +167,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// from this receiver, which enqueues the <see cref="AudioSource.AudioStreamStopped"/>
         /// event to be fired from the main Unity app thread.
         /// </summary>
-        internal void OnUnpaired(RemoteAudioTrack track)
+        internal override void OnUnpaired(MediaTrack track)
         {
+            Debug.Assert(track is RemoteAudioTrack);
+
             // Enqueue invoking from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.

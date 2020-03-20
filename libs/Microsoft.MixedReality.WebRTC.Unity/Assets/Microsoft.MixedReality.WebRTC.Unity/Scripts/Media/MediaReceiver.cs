@@ -20,5 +20,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public MediaReceiver(MediaKind mediaKind) : base(mediaKind)
         {
         }
+
+        internal abstract void OnPaired(MediaTrack track);
+        internal abstract void OnUnpaired(MediaTrack track);
     }
 }

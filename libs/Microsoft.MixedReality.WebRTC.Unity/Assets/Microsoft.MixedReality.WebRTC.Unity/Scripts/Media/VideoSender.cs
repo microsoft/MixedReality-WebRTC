@@ -133,7 +133,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Transceiver = videoTransceiver;
         }
 
-        internal async Task AttachTrackAsync()
+        internal override async Task AttachTrackAsync()
         {
             Debug.Assert(Transceiver != null);
 
@@ -150,7 +150,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        internal void DetachTrack()
+        internal override void DetachTrack()
         {
             Debug.Assert(Transceiver != null);
             Debug.Assert(Transceiver.LocalTrack == Track);
