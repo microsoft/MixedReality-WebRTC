@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -9,10 +8,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
     /// This component represents a local audio source added as an audio track to an
-    /// existing WebRTC peer connection and sent to the remote peer. The audio track
-    /// can optionally be rendered locally with a <see cref="MediaPlayer"/>.
+    /// existing WebRTC peer connection and sent to the remote peer.
+    /// 
+    /// <div class="WARNING alert alert-warning">
+    /// <h5>WARNING</h5>
+    /// <p>
+    /// Currently the low-level WebRTC implementation does not support registering
+    /// local audio callbacks, therefore the audio track cannot be rendered locally
+    /// with a <see cref="MediaPlayer"/>.
+    /// </p>
+    /// </div>
     /// </summary>
     /// <seealso cref="MicrophoneSource"/>
+    /// <seealso cref="MediaPlayer"/>
     public abstract class AudioSender : MediaSender, IAudioSource
     {
         /// <summary>
@@ -22,18 +30,40 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [Tooltip("SDP name of the preferred audio codec to use if supported")]
         public string PreferredAudioCodec = string.Empty;
 
+        /// <inheritdoc/>
         public bool IsStreaming { get; protected set; }
 
+        /// <summary>
+        /// Event raised when the audio stream started.
+        /// 
+        /// After this event is raised, the <see cref="IsStreaming"/> will become <c>true</c>.
+        /// </summary>
         public AudioStreamStartedEvent AudioStreamStarted = new AudioStreamStartedEvent();
+
+        /// <summary>
+        /// Event raised when the audio stream stopped.
+        /// 
+        /// Before this event is raised, the <see cref="IsStreaming"/> becomes <c>false</c>.
+        /// </summary>
         public AudioStreamStoppedEvent AudioStreamStopped = new AudioStreamStoppedEvent();
 
+        /// <inheritdoc/>
         public AudioStreamStartedEvent GetAudioStreamStarted() { return AudioStreamStarted; }
+
+        /// <inheritdoc/>
         public AudioStreamStoppedEvent GetAudioStreamStopped() { return AudioStreamStopped; }
 
+        /// <summary>
+        /// Audio transceiver this sender is paired with, if any.
+        /// 
+        /// This is <c>null</c> until a remote description is applied which pairs the sender
+        /// with the local track of the transceiver.
+        /// </summary>
         public Transceiver Transceiver { get; private set; }
 
         /// <summary>
-        /// Audio track that this component encapsulates.
+        /// Local audio track that this component encapsulates, which if paired sends data to
+        /// the remote peer.
         /// </summary>
         public LocalAudioTrack Track { get; protected set; } = null;
 
@@ -44,22 +74,37 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Register a frame callback to listen to outgoing audio data produced by this audio sender
         /// and sent to the remote peer.
+        /// 
+        /// <div class="WARNING alert alert-warning">
+        /// <h5>WARNING</h5>
+        /// <p>
+        /// Currently the low-level WebRTC implementation does not support registering local audio callbacks,
+        /// therefore this is not implemented and will throw a <see cref="System.NotImplementedException"/>.
+        /// </p>
+        /// </div>
         /// </summary>
         /// <param name="callback">The new frame callback to register.</param>
         /// <remarks>
         /// Unlike for video, where a typical application might display some local feedback of a local
-        /// webcam recording, local microphone feedback is rare, so this callback is not typically used.
+        /// webcam recording, local audio feedback is rare, so this callback is not typically used.
+        /// One possible use case would be to display some visual feedback, like an audio spectrum analyzer.
         /// 
         /// Note that registering a callback does not influence the audio capture and sending to the
-        /// remote peer, which occurs whether or not a callback is registered.
+        /// remote peer, which occur whether or not a callback is registered.
         /// </remarks>
-        public void RegisterCallback(AudioFrameDelegate callback) { }
+        public void RegisterCallback(AudioFrameDelegate callback)
+        {
+            throw new System.NotImplementedException("Local audio callbacks are not currently implemented.");
+        }
 
         /// <summary>
-        /// Unregister an existing frame callback registered with <see cref="RegisterCallback(AudioFrameDelegate)"/>.
+        /// Unregister a frame callback previously registered with <see cref="RegisterCallback(AudioFrameDelegate)"/>.
         /// </summary>
         /// <param name="callback">The frame callback to unregister.</param>
-        public void UnregisterCallback(AudioFrameDelegate callback) { }
+        public void UnregisterCallback(AudioFrameDelegate callback)
+        {
+            throw new System.NotImplementedException("Local audio callbacks are not currently implemented.");
+        }
 
         protected override async Task CreateLocalTrackAsync()
         {
