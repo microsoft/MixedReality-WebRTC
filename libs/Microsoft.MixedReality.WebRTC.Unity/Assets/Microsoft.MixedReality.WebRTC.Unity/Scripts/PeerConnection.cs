@@ -90,15 +90,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     }
 
     /// <summary>
-    /// Media line abstraction for a peer connection. This container binds together a sender component
-    /// (<see cref="MediaSender"/>) and/or a receiver component (<see cref="MediaReceiver"/>) to a media
-    /// line, and therefore once a negotiation was completed to the transceiver attached to that media line.
+    /// Media line abstraction for a peer connection.
+    /// 
+    /// This container binds together a sender component (<see cref="MediaSender"/>) and/or a receiver component
+    /// (<see cref="MediaReceiver"/>) to a media line, and therefore once a negotiation was completed to the
+    /// transceiver attached to that media line.
     /// 
     /// Assigning Unity components to the <see cref="Sender"/> and <see cref="Receiver"/> fields serves
     /// as an indication of the user intent to send and/or receive media through the transceiver, and is
-    /// used during negotiation to derive the <see cref="Transceiver.Direction"/> to negotiate. After the
-    /// negotiation is completed, the <see cref="Transceiver"/> property refers to the transceiver associated
-    /// with this media line, and which the sender and receiver will use.
+    /// used during negotiation to derive the <see xref="WebRTC.Transceiver.Direction"/> to negotiate.
+    /// After the negotiation is completed, the <see cref="Transceiver"/> property refers to the transceiver
+    /// associated with this media line, and which the sender and receiver will use.
     /// </summary>
     [Serializable]
     public class MediaLine
@@ -620,12 +622,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Add a new transceiver of the given kind to the peer connection.
+        /// 
         /// This creates a media line, which expresses an intent from the user to get a transceiver.
-        /// The actual <see cref="WebRTC.Transceiver"/> object creation is delayed until a session
-        /// negotiation is completed.
+        /// The actual <see xref="WebRTC.Transceiver"/> object creation is delayed
+        /// until a session negotiation is completed.
+        /// 
         /// The user can then assign the <see cref="MediaLine.Sender"/> and <see cref="MediaLine.Receiver"/>
         /// fields to express their intent to send and/or receive some media through the transceiver.
-        /// This information is used in subsequent negotiations to derive a <see cref="Transceiver.Direction"/>
+        /// This information is used in subsequent negotiations to derive a <see xref="WebRTC.Transceiver.Direction"/>
         /// to negotiate.
         /// </summary>
         /// <param name="kind">The kind of media (audio or video) for the transceiver.</param>
@@ -738,10 +742,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// underlying WebRTC implementation, which will parse and use it.
         ///
         /// This must be called by the signaler when receiving a message. Once this operation
-        /// has completed, it is safe to call <see cref="CreateAnswer"/>.
+        /// has completed, it is safe to call <see xref="WebRTC.PeerConnection.CreateAnswer"/>.
         /// 
         /// This implementation does some extra work compared to the lower level implementation
-        /// <see cref="WebRTC.PeerConnection.SetRemoteDescriptionAsync(string, string)"/> found
+        /// <see xref="WebRTC.PeerConnection.SetRemoteDescriptionAsync(string, string)"/> found
         /// in the C# library, and must be called instead of it when using the Unity integration.
         /// This ensures media receiver components are correctly paired with the remote tracks.
         /// </summary>
