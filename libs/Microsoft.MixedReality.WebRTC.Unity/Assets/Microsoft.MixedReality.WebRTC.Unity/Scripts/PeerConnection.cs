@@ -126,6 +126,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// 
         /// If this is non-<c>null</c> then the peer connection will negotiate sending some media, otherwise
         /// it will signal the remote peer that it does not wish to send (receive-only or inactive).
+        /// 
+        /// When this value changes, a new session negotiation is need for the change to take effect.
         /// </summary>
         public MediaSender Sender;
 
@@ -136,6 +138,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// 
         /// If this is non-<c>null</c> then the peer connection will negotiate receiving some media, otherwise
         /// it will signal the remote peer that it does not wish to receive (send-only or inactive).
+        /// 
+        /// When this value changes, a new session negotiation is need for the change to take effect.
         /// </summary>
         public MediaReceiver Receiver;
 
@@ -171,16 +175,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(Transceiver != null);
             Debug.Assert(Sender != null);
             Debug.Assert(_attachedSender == null);
-            if (Kind == MediaKind.Audio)
-            {
-                var audioSender = (AudioSender)Sender;
-                await audioSender.AttachTrackAsync();
-            }
-            else if (Kind == MediaKind.Video)
-            {
-                var videoSender = (VideoSender)Sender;
-                await videoSender.AttachTrackAsync();
-            }
+            await Sender.AttachTrackAsync();
             _attachedSender = Sender;
         }
 
@@ -189,67 +184,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(Transceiver != null);
             Debug.Assert(Sender == null);
             Debug.Assert(_attachedSender != null);
-            if (Kind == MediaKind.Audio)
-            {
-                var audioSender = (AudioSender)_attachedSender;
-                audioSender.DetachTrack();
-            }
-            else if (Kind == MediaKind.Video)
-            {
-                var videoSender = (VideoSender)_attachedSender;
-                videoSender.DetachTrack();
-            }
+            _attachedSender.DetachTrack();
             _attachedSender = null;
         }
 
         internal void UpdateReceiver()
         {
-            Debug.Assert(Transceiver != null);
+            var transceiver = Transceiver;
+            Debug.Assert(transceiver != null);
             bool wantsRecv = (Receiver != null);
             bool wasReceiving = (_pairedReceiver != null);
-            if (Kind == MediaKind.Audio)
+            bool isReceiving = (transceiver.RemoteTrack != null);
+            // Note the extra "isReceiving" check, which ensures that when the remote track was
+            // just removed by OnUnpaired(RemoteTrack) from the TrackRemoved event then it is not
+            // immediately re-added by mistake. 
+            if (wantsRecv && isReceiving && !wasReceiving)
             {
-                var audioTransceiver = Transceiver;
-                bool isReceiving = (audioTransceiver.RemoteTrack != null);
-                // Note the extra "isReceiving" check, which ensures that when the remote track was
-                // just removed by OnUnpaired(RemoteTrack) from the TrackRemoved event then it is not
-                // immediately re-added by mistake. 
-                if (wantsRecv && isReceiving && !wasReceiving)
-                {
-                    // Transceiver started receiving, and user actually wants to receive
-                    var audioReceiver = (AudioReceiver)Receiver;
-                    audioReceiver.OnPaired(audioTransceiver.RemoteAudioTrack);
-                    _pairedReceiver = Receiver;
-                }
-                else if (!isReceiving && wasReceiving)
-                {
-                    // Transceiver stopped receiving (user intent does not matter here)
-                    var audioReceiver = (AudioReceiver)_pairedReceiver;
-                    audioReceiver.OnUnpaired(audioTransceiver.RemoteAudioTrack);
-                    _pairedReceiver = null;
-                }
+                // Transceiver started receiving, and user actually wants to receive
+                Receiver.OnPaired(transceiver.RemoteAudioTrack);
+                _pairedReceiver = Receiver;
             }
-            else if (Kind == MediaKind.Video)
+            else if (!isReceiving && wasReceiving)
             {
-                var videoTransceiver = Transceiver;
-                bool isReceiving = (videoTransceiver.RemoteTrack != null);
-                // Note the extra "isReceiving" check, which ensures that when the remote track was
-                // just removed by OnUnpaired(RemoteTrack) from the TrackRemoved event then it is not
-                // immediately re-added by mistake. 
-                if (wantsRecv && isReceiving && !wasReceiving)
-                {
-                    // Transceiver started receiving, and user actually wants to receive
-                    var videoReceiver = (VideoReceiver)Receiver;
-                    videoReceiver.OnPaired(videoTransceiver.RemoteVideoTrack);
-                    _pairedReceiver = Receiver;
-                }
-                else if (!isReceiving && wasReceiving)
-                {
-                    // Transceiver stopped receiving (user intent does not matter here)
-                    var videoReceiver = (VideoReceiver)_pairedReceiver;
-                    videoReceiver.OnUnpaired(videoTransceiver.RemoteVideoTrack);
-                    _pairedReceiver = null;
-                }
+                // Transceiver stopped receiving (user intent does not matter here)
+                Receiver.OnUnpaired(transceiver.RemoteAudioTrack);
+                _pairedReceiver = null;
             }
         }
 

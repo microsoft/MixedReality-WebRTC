@@ -137,15 +137,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// with this receiver, which enqueues the <see cref="VideoSource.VideoStreamStarted"/>
         /// event to be fired from the main Unity thread.
         /// </summary>
-        internal void OnPaired(RemoteVideoTrack track)
+        internal override void OnPaired(MediaTrack track)
         {
+            Debug.Assert(track is RemoteVideoTrack);
+            var remoteVideoTrack = (RemoteVideoTrack)track;
+
             // Enqueue invoking from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.
             _mainThreadWorkQueue.Enqueue(() =>
             {
                 Debug.Assert(Track == null);
-                Track = track;
+                Track = remoteVideoTrack;
                 IsLive = true;
                 VideoStreamStarted.Invoke(this);
                 IsStreaming = true;
@@ -157,8 +160,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// from this receiver, which enqueues the <see cref="VideoSource.VideoStreamStopped"/>
         /// event to be fired from the main Unity thread.
         /// </summary>
-        internal void OnUnpaired(RemoteVideoTrack track)
+        internal override void OnUnpaired(MediaTrack track)
         {
+            Debug.Assert(track is RemoteVideoTrack);
+
             // Enqueue invoking from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.

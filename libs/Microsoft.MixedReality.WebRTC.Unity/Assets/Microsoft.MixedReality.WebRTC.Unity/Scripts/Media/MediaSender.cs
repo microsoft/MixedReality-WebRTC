@@ -125,6 +125,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             StopCapture();
         }
 
+        internal abstract Task AttachTrackAsync();
+        internal abstract void DetachTrack();
+
         protected abstract Task CreateLocalTrackAsync();
         protected abstract void DestroyLocalTrack();
 
