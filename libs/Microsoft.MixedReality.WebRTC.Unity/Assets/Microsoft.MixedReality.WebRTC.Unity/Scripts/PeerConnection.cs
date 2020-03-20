@@ -123,6 +123,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Media sender producing the media to send through the transceiver attached to this media line.
         /// This must be an instance of a class derived from <see cref="AudioSender"/> or <see cref="VideoSender"/>
         /// depending on <see cref="Kind"/>.
+        /// 
         /// If this is non-<c>null</c> then the peer connection will negotiate sending some media, otherwise
         /// it will signal the remote peer that it does not wish to send (receive-only or inactive).
         /// </summary>
@@ -132,6 +133,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Media receiver consuming the media received through the transceiver attached to this media line.
         /// This must be an instance of a class derived from <see cref="AudioReceiver"/> or <see cref="VideoReceiver"/>
         /// depending on <see cref="Kind"/>.
+        /// 
         /// If this is non-<c>null</c> then the peer connection will negotiate receiving some media, otherwise
         /// it will signal the remote peer that it does not wish to receive (send-only or inactive).
         /// </summary>
@@ -139,6 +141,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Transceiver attached with this media line.
+        /// 
         /// On the offering peer this changes during <see cref="PeerConnection.CreateOffer"/>, while this is updated by
         /// <see cref="PeerConnection.SetRemoteDescriptionAsync(string, string)"/> when receiving an offer on the answering peer.
         /// </summary>
@@ -559,7 +562,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// 
         /// If the peer connection is already initialized, this method returns immediately with
         /// a <see xref="System.Threading.Tasks.Task.CompletedTask"/> object. The caller can check
-        /// that the <see cref="Peer"/> property is non-<c>null</c> to confirmat that the connection
+        /// that the <see cref="Peer"/> property is non-<c>null</c> to confirm that the connection
         /// is in fact initialized.
         /// </remarks>
         public Task InitializeAsync(CancellationToken token = default(CancellationToken))
