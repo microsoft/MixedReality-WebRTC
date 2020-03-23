@@ -136,7 +136,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// it will signal the remote peer that it does not wish to send (receive-only or inactive).
         ///
         /// If <see cref="Transceiver"/> is valid, that is a first session negotiation has already been completed,
-        /// then changing this value raises a <see cref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
+        /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
         /// </summary>
         public MediaSender Sender
@@ -168,7 +168,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// it will signal the remote peer that it does not wish to receive (send-only or inactive).
         ///
         /// If <see cref="Transceiver"/> is valid, that is a first session negotiation has already been conducted,
-        /// then changing this value raises a <see cref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
+        /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
         /// </summary>
         public MediaReceiver Receiver
