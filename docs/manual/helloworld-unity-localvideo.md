@@ -7,30 +7,56 @@ There are two different aspects covered by the concept of _local video_:
 
 Both are optional, although the second one alone simply corresponds to capturing a displaying a local webcam and doesn't require WebRTC. So we generally want the first one in a scenario where an application needs WebRTC. The second one is application-dependent, and even within one given application can be toggled ON and OFF by the user.
 
-Both cases however are covered by the [`LocalVideoSource`](xref:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource) component. This components serves as a bridge between a local video capture device (camera), the peer connection, and an optional video player to render the video feed locally.
+Both cases however are covered by the [`VideoSender`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoSender) component. This components serves as a bridge between a local video track, the peer connection, and an optional video player to render the video feed locally. The video sender itself is an abstract class, whose most useful derived class is the [`WebcamSource`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource) component, which represents a video track capturing its video frames from a _local video capture device_ (or _webcam_ for short, as an abuse of language; but other video capture devices beyond webcams are supported, like the HoloLens camera).
 
-## Adding a local video source
+## Adding a webcam source
 
-For clarity we will create a new game object and add a [`LocalVideoSource`](xref:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource) component. It may sound superfluous at the moment to create a new game object, as we could add the local video source to the same game object already owning the peer connection component, but this will prove more clear and easy to manipulate later.
+For clarity we will create a new game object and add a [`WebcamSource`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource) component. It may sound superfluous at the moment to create a new game object, as we could add the webcam source to the same game object already owning the peer connection component, but this will prove more clear and easy to manipulate later.
 
 - In the **Hierarchy** window, select **Create** > **Create Empty**.
 - In the **Inspector** window, rename the newly-created game object to something memorable like "LocalMediaPlayer".
-- Press the **Add Component** button at the bottom of the window, and select **MixedReality-WebRTC** > **LocalVideoSource**.
-- This component needs to know which peer connection to use. Once again, use the asset selection window to assign our peer connection to the **Peer Connection** property.
+- Press the **Add Component** button at the bottom of the window, and select **MixedReality-WebRTC** > **WebcamSource**.
 
 ![Create a local video source assigned to our peer connection](helloworld-unity-8.png)
 
-The local video source component contains several interesting properties:
+The local video source component contains several interesting properties, divided into 2 groups.
 
-- The **Auto Start Capture** property instructs the component to open the video capture device (webcam) automatically as soon as possible. This enables starting local video playback even before the peer connection is established.
-- The **Enable Mixed Reality Capture** property tells the component it should attempt to open the video capture device with MRC enabled, if supported.
-- The **Auto Add Track** property allows automatically adding a video track to the peer connection and start sending the video feed to the remote peer once the connection is established. If not checked, the user has to manually call some method to add that track.
+### Video capture properties
 
-These are good defaults values to start, and we will leave them as is.
+The video capture properties are related to the video capture itself, that is how the component access the webcam and captures video frames from it, independently of WebRTC.
+
+- The **Start capture when enabled** checkbox, which corresponds to the [`MediaSender.AutoStartOnEnabled`](xref:Microsoft.MixedReality.WebRTC.Unity.MediaSender.AutoStartOnEnabled) property, instructs the component to open the video capture device (webcam) automatically as soon as possible, that is once both:
+  - the component is enabled, that is [`MonoBehaviour.OnEnable()`](https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnEnable.html) executed; and
+  - the peer connection is initialized, that is the [`PeerConnection.Initialized`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.Initialized) event was raised.
+
+  This enables starting local video playback even before the connection to the remote peer is established.
+
+  If unchecked, then the user has to manually call [`MediaSender.StartCaptureAsync()`](xref:Microsoft.MixedReality.WebRTC.Unity.MediaSender.StartCaptureAsync).
+
+- The **Capture format** combobox, which corresponds to the [`WebcamSource.FormatMode`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.FormatMode) property, allows switching between two different modes to control how the _video capture format_ (resolution and framerate, essentially) is choosen:
+
+  - In **Automatic** mode, the best video capture format is automatically selected. In general this means the first format available is chosen. On HoloLens devices however, some extra steps are taken to use the low-power video profile and reduce the capture resolution in order to save the battery and lower the CPU usage.
+
+  - In **Manual** mode, the user can apply a set of constraints to the list of capture formats the device supports. This allows restricting the video capture formats the algorithm can choose from to a subset of the supported format, and even to a single known format. Note however that over-constraining the algorithm may result in no format being available, and the component failing to open the video capture device. In general constraints must match supported capture formats as enumerated by [`PeerConnection.GetVideoCaptureFormatsAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync(System.String)).
+
+- The **Enable Mixed Reality Capture (MRC)** checkbox, which corresponds to the [`WebcamSource.EnableMixedRealityCapture`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.EnableMixedRealityCapture) property, tells the component it should attempt to open the video capture device with MRC enabled, if supported. If the device does not support MRC, then this is silently ignored.
+
+### WebRTC track properties
+
+The WebRTC track properties are related to the WebRTC video track that the component manages to send the video frames to the remote peer.
+
+- The **Track Name** property is the name of the WebRTC track. This can be left empty; the implementation will generate a valid name for it.
+
+- The **Preferred Video Codec** property allows trying to force a particular video encoding for the track. This property takes the SDP name of the video codec (a list of predefined values are also available). Note that this codec will be used for the track **only if the implementation actually supports it**. Otherwise the default codec selected by the implementation will be used.
+
+  > [!WARNING]
+  > **The H.264 video codec is only available on UWP platforms** (including HoloLens). This means selecting this codec will prevent a UWP device from connecting with a non-UWP device if the UWP device makes the connection offer, as the non-UWP device will be unable to handle the H.264 request.
+  >
+  > More generally, for maximum compatibility, or when debugging some video issue, it is recommended to leave this setting to **None** to allow the implementation to maximize the chances of finding a compatible video codec that both peers support.
 
 ## Adding a media player
 
-We said before that the [`LocalVideoSource`](xref:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource) component covers both sending the video feed to the remote peer and displaying it locally. This is partially incorrect. The local video source plugs into the peer connection and the video capture device, and exposes some C# event to access the video frames produced by that video device. But it does not do any rendering itself.
+We said before that the [`WebcamSource`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource) component covers both sending the video feed to the remote peer and displaying it locally. This is partially incorrect. The webcam source plugs into the peer connection and the video capture device, and exposes some C# event to access the video frames produced by that video device. But it does not do any rendering itself.
 
 In order to render the video frames of the local video capture device, MixedReality-WebRTC offers a simple [`MediaPlayer`](xref:Microsoft.MixedReality.WebRTC.Unity.MediaPlayer) component which uses a Unity [`Texture2D`](https://docs.unity3d.com/ScriptReference/Texture2D.html) object and renders the video frames to it. This texture is then applied to the material of a [`Renderer`](https://docs.unity3d.com/ScriptReference/Renderer.html) component to be displayed in Unity on a mesh.
 
