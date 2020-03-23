@@ -302,6 +302,9 @@ class PeerConnection : public TrackedObject {
   virtual void RegisterRemoteAudioFrameCallback(
       AudioFrameReadyCallback callback) noexcept = 0;
 
+  // TODO
+  virtual void PlayRemoteAudioTrack(bool play) = 0;
+
   /// Add to the peer connection an audio track backed by a local audio capture
   /// device. If no RTP sender/transceiver exist, create a new one for that
   /// track.

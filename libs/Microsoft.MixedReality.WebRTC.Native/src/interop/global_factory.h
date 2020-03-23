@@ -132,6 +132,31 @@ class GlobalFactory {
   mrsResult GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory);
 #endif  // defined(WINUWP)
 
+  class CustomAudioMixer : public webrtc::AudioMixer {
+   public:
+    CustomAudioMixer();
+
+    bool AddSource(Source* audio_source) override;
+    void RemoveSource(Source* audio_source) override;
+    void Mix(size_t number_of_channels,
+             webrtc::AudioFrame* audio_frame_for_mixing) override;
+
+    void PlaySource(int ssrc, bool play);
+
+   private:
+
+    struct KnownSource {
+      Source* source;
+      bool is_played;
+    };
+    rtc::CriticalSection crit_;
+    rtc::scoped_refptr<webrtc::AudioMixerImpl> base_impl_;
+    std::map<int, KnownSource> source_from_id_;
+  };
+
+  rtc::scoped_refptr<CustomAudioMixer> custom_audio_mixer() const {
+    return custom_audio_mixer_;
+  }
  private:
   friend struct std::default_delete<GlobalFactory>;
 
@@ -220,6 +245,8 @@ class GlobalFactory {
   /// Collection of all tracked objects alive. This is solely used to display a
   /// debugging report with |ReportLiveObjects()|.
   std::vector<TrackedObject*> alive_objects_ RTC_GUARDED_BY(mutex_);
+
+  rtc::scoped_refptr<CustomAudioMixer> custom_audio_mixer_;
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

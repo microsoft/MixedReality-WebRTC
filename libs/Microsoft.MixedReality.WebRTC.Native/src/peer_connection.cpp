@@ -158,7 +158,8 @@ class PeerConnectionImpl : public PeerConnection,
   PeerConnectionImpl(RefPtr<GlobalFactory> global_factory,
                      mrsPeerConnectionInteropHandle interop_handle)
       : PeerConnection(std::move(global_factory)),
-        interop_handle_(interop_handle) {}
+        interop_handle_(interop_handle),
+        custom_audio_mixer_(global_factory_->custom_audio_mixer()) {}
 
   ~PeerConnectionImpl() noexcept { Close(); }
 
@@ -275,6 +276,22 @@ class PeerConnectionImpl : public PeerConnection,
     if (remote_audio_observer_) {
       remote_audio_observer_->SetCallback(std::move(callback));
     }
+  }
+
+  void PlayRemoteAudioTrack(bool play) noexcept override {
+    const std::lock_guard<std::mutex> lock{remote_audio_mutex_};
+    play_remote_audio_ = play;
+    if (remote_audio_ssrc_) {
+      custom_audio_mixer_->PlaySource(*remote_audio_ssrc_, play);
+    }
+  }
+
+  void SetSsrc(int ssrc) {
+    const std::lock_guard<std::mutex> lock{remote_audio_mutex_};
+    if (!remote_audio_ssrc_) {
+      custom_audio_mixer_->PlaySource(ssrc, play_remote_audio_);
+    }
+    remote_audio_ssrc_ = ssrc;
   }
 
   bool AddLocalAudioTrack(rtc::scoped_refptr<webrtc::AudioTrackInterface>
@@ -478,6 +495,13 @@ class PeerConnectionImpl : public PeerConnection,
   /// force the connection to negotiate the necessary SCTP information. See
   /// https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
   bool sctp_negotiated_ = true;
+
+  // TODO
+  absl::optional<int> remote_audio_ssrc_ RTC_GUARDED_BY(remote_audio_mutex_);
+  bool play_remote_audio_ RTC_GUARDED_BY(remote_audio_mutex_) = true;
+  std::mutex remote_audio_mutex_;
+
+  rtc::scoped_refptr<GlobalFactory::CustomAudioMixer> custom_audio_mixer_;
 
  private:
   PeerConnectionImpl(const PeerConnectionImpl&) = delete;
@@ -1203,6 +1227,23 @@ void PeerConnectionImpl::OnAddTrack(
   const std::string& trackKindStr = track->kind();
   if (trackKindStr == webrtc::MediaStreamTrackInterface::kAudioKind) {
     trackKind = TrackKind::kAudioTrack;
+
+    struct SetSsrcObserver : public webrtc::RTCStatsCollectorCallback {
+      SetSsrcObserver(PeerConnectionImpl& peer_connection)
+          : peer_connection_(peer_connection) {}
+      virtual void OnStatsDelivered(
+          const rtc::scoped_refptr<const webrtc::RTCStatsReport>&
+              report) noexcept override {
+        const auto& stats =
+            report->GetStatsOfType<webrtc::RTCInboundRTPStreamStats>();
+        RTC_DCHECK_EQ(stats.size(), 1);
+        peer_connection_.SetSsrc(*stats[0]->ssrc);
+      }
+      PeerConnectionImpl& peer_connection_;
+    };
+    auto stats_observer = new rtc::RefCountedObject<SetSsrcObserver>(*this);
+    peer_->GetStats(receiver, stats_observer);
+
     if (auto* sink = remote_audio_observer_.get()) {
       auto audio_track = static_cast<webrtc::AudioTrackInterface*>(track.get());
       audio_track->AddSink(sink);
@@ -1366,7 +1407,7 @@ void PeerConnection::GetStats(webrtc::RTCStatsCollectorCallback* callback) {
 
 PeerConnection::PeerConnection(RefPtr<GlobalFactory> global_factory)
     : TrackedObject(std::move(global_factory), ObjectType::kPeerConnection) {}
-  
+
 void AudioReadStream::audioFrameCallback(const void* audio_data,
                                          const uint32_t bits_per_sample,
                                          const uint32_t sample_rate,

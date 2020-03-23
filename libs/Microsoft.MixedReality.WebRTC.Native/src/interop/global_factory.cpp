@@ -190,6 +190,109 @@ uint32_t GlobalFactory::ReportLiveObjects() {
   return static_cast<uint32_t>(alive_objects_.size());
 }
 
+static const int16_t zerobuf[200]{};
+
+GlobalFactory::CustomAudioMixer::CustomAudioMixer()
+    : base_impl_(new rtc::RefCountedObject<webrtc::AudioMixerImpl>(
+          std::make_unique<webrtc::DefaultOutputRateCalculator>(),
+          true)) {}
+
+bool GlobalFactory::CustomAudioMixer::AddSource(Source* audio_source) {
+  RTC_DCHECK(audio_source);
+  rtc::CritScope lock(&crit_);
+
+  auto result =
+      source_from_id_.insert({audio_source->Ssrc(), {audio_source, false}});
+  if (!result.second) {
+    // Source has already been added through PlaySource. Update the Source*.
+    auto& known_source = result.first->second;
+    RTC_DCHECK(!known_source.source);
+    known_source.source = audio_source;
+    // If PlaySource(true) has been called, mix the source through the base
+    // impl.
+    if (known_source.is_played) {
+      base_impl_->AddSource(audio_source);
+    }
+  }
+
+  return true;
+}
+
+void GlobalFactory::CustomAudioMixer::RemoveSource(
+    Source* audio_source) {
+  RTC_DCHECK(audio_source);
+  rtc::CritScope lock(&crit_);
+  const auto iter =
+      source_from_id_.find(audio_source->Ssrc());
+  RTC_DCHECK(iter != source_from_id_.end());
+
+  if (iter->second.is_played) {
+    base_impl_->RemoveSource(audio_source);
+  }
+  source_from_id_.erase(iter);
+}
+void GlobalFactory::CustomAudioMixer::Mix(
+    size_t number_of_channels,
+         webrtc::AudioFrame* audio_frame_for_mixing) {
+
+  std::vector<Source*> redirected_sources;
+  bool no_played_sources;
+  {
+    rtc::CritScope lock(&crit_);
+    // Mix played sources using the base impl.
+    base_impl_->Mix(number_of_channels, audio_frame_for_mixing);
+
+    // Collect the redirected sources.
+    for (auto&& pair : source_from_id_) {
+      if (!pair.second.is_played) {
+        redirected_sources.push_back(pair.second.source);
+      }
+    }
+
+    no_played_sources =
+        (source_from_id_.size() == redirected_sources.size());
+  }
+
+   for (auto& source : redirected_sources) {
+    // This pumps the source and fires the frame observer callbacks
+    // which in turn fill the AudioReadStream buffers
+    const auto audio_frame_info = source->GetAudioFrameWithInfo(
+        source->PreferredSampleRate(), audio_frame_for_mixing);
+
+    if (audio_frame_info == Source::AudioFrameInfo::kError) {
+      RTC_LOG_F(LS_WARNING) << "failed to GetAudioFrameWithInfo() from source";
+      continue;
+    }
+  }
+
+  if (no_played_sources) {
+    // Return an empty frame.
+    audio_frame_for_mixing->UpdateFrame(
+        0, zerobuf, 80, 8000, webrtc::AudioFrame::kNormalSpeech,
+        webrtc::AudioFrame::kVadUnknown, number_of_channels);
+  }
+}
+
+void GlobalFactory::CustomAudioMixer::PlaySource(int ssrc, bool play) {
+  rtc::CritScope lock(&crit_);
+
+  const auto result = source_from_id_.insert({ssrc, {nullptr, play}});
+
+  if (!result.second) {
+    // Source has already been added through PlaySource. Modify the play state.
+    KnownSource& known_source = result.first->second;
+    if (play && !known_source.is_played) {
+        // Add the source to the ones mixed by the base impl.
+        RTC_DCHECK(base_impl_->AddSource(known_source.source));
+    } else if (!play && known_source.is_played) {
+        // Remove the source from the ones mixed by the base impl.
+        base_impl_->RemoveSource(known_source.source);
+    }
+    // else the state of the source is unchanged.
+    known_source.is_played = play;
+  }
+}
+
 #if defined(WINUWP)
 
 using WebRtcFactoryPtr =
@@ -278,66 +381,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
                              signaling_thread_.get());
   signaling_thread_->Start();
 
-#if 1
-  static const int16_t zerobuf[200];
-
-  // UWP has factoryConfig->audioRenderingEnabled but non-UWP doesn't have that flag.
-  // The mixer has a dual role 1) to pull audio from the network 2) send it to the platforms
-  // audio device. Without a mixer to pull the audio, there will be no audio frame received callbacks.
-  // TODO: we have the opportunity here to select certain sources for mixing and others
-  // for callbacks (e.g. spatial audio). Provide an API to manage this.
-  struct PumpSourcesAndDiscardMixer : webrtc::AudioMixer {
-    rtc::CriticalSection crit_;
-    std::vector<Source*> audio_source_list_;
-
-    bool AddSource(Source* audio_source) override {
-      RTC_DCHECK(audio_source);
-      rtc::CritScope lock(&crit_);
-      RTC_DCHECK(find(audio_source_list_.begin(), audio_source_list_.end(),
-                      audio_source) == audio_source_list_.end())
-          << "Source already added to mixer";
-      audio_source_list_.emplace_back(audio_source);
-      return true;
-    }
-    void RemoveSource(Source* audio_source) override {
-      RTC_DCHECK(audio_source);
-      rtc::CritScope lock(&crit_);
-      const auto iter = find(audio_source_list_.begin(),
-                             audio_source_list_.end(), audio_source);
-      RTC_DCHECK(iter != audio_source_list_.end())
-          << "Source not present in mixer";
-      audio_source_list_.erase(iter);
-    }
-    void Mix(size_t number_of_channels,
-             webrtc::AudioFrame* audio_frame_for_mixing) override {
-      for (auto& source : audio_source_list_) {
-        // This pumps the source and fires the frame observer callbacks
-        // which in turn fill the AudioReadStream buffers
-        const auto audio_frame_info = source->GetAudioFrameWithInfo(
-            source->PreferredSampleRate(), audio_frame_for_mixing);
-
-        if (audio_frame_info == Source::AudioFrameInfo::kError) {
-          RTC_LOG_F(LS_WARNING)
-              << "failed to GetAudioFrameWithInfo() from source";
-          continue;
-        }
-      }
-      // We don't actually want these tracks to add to the mix.
-      // So we return an empty frame.
-      // TODO: it would be nice for tracks which are connected to a spatial
-      // audio source to be intercepted earlier. Currently toggling between
-      // local audio rendering and spatial audio is a global switch (not per
-      // track nor connection).
-      audio_frame_for_mixing->UpdateFrame(
-          0, zerobuf, 80, 8000, webrtc::AudioFrame::kNormalSpeech,
-          webrtc::AudioFrame::kVadUnknown, number_of_channels);
-    }
-  };
-
-  auto mixer = new rtc::RefCountedObject<PumpSourcesAndDiscardMixer>();
-#else
-  auto mixer = (webrtc::AudioMixer*)nullptr;
-#endif
+  custom_audio_mixer_ = new rtc::RefCountedObject<CustomAudioMixer>();
 
   peer_factory_ = webrtc::CreatePeerConnectionFactory(
       network_thread_.get(), worker_thread_.get(), signaling_thread_.get(),
@@ -349,7 +393,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
       std::unique_ptr<webrtc::VideoDecoderFactory>(
           new webrtc::MultiplexDecoderFactory(
               absl::make_unique<webrtc::InternalDecoderFactory>())),
-      mixer, nullptr);
+      custom_audio_mixer_, nullptr);
 #endif  // defined(WINUWP)
   return (peer_factory_.get() != nullptr ? Result::kSuccess
                                          : Result::kUnknownError);
