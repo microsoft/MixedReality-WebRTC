@@ -100,3 +100,7 @@ At this point the local audio source and the media player are configured to open
 Press the **Play** button in the Unity Editor. After a few seconds (depending on the device) the video should appear over the quad mesh.
 
 ![Local video feed rendering in the Unity editor](helloworld-unity-12.png)
+
+----
+
+Next : [Adding remote video](helloworld-unity-remotevideo.md)

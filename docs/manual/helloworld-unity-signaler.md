@@ -33,7 +33,7 @@ Create a new [`GameObject`](https://docs.unity3d.com/ScriptReference/GameObject.
 
 ![Create a new GameObject with a NodeDssSignaler component](helloworld-unity-6.png)
 
-By default the [`NodeDssSignaler`](xref:Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler) component is configured to connect to a `node-dss` server running locally on the developper machine at `http://127.0.0.1:3000/` and poll the server every 500 milliseconds to query for available messages.
+By default the [`NodeDssSignaler`](xref:Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler) component is configured to connect to a `node-dss` server running locally on the developper machine at `http://127.0.0.1:3000/` and poll the server every 500 milliseconds to query for available messages. If using another machine, the HTTP address must be changed.
 
 ## Connecting the signaler
 
@@ -48,3 +48,7 @@ The signaler object should now appear in the **Inspector** window of the peer co
 ![Assign the Signaler property in the peer connection](helloworld-unity-7.png)
 
 At that point the peer connection is fully configured and ready to be used. However audio and video tracks are not added automatically, so there is little use for that peer connection. Next we will look at connecting a local webcam and microphone to provide some video and audio track to send through to the peer connection.
+
+----
+
+Next : [Adding local video](helloworld-unity-localvideo.md)

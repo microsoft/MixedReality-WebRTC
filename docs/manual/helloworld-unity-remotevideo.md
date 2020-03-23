@@ -43,3 +43,7 @@ The **Inspector** window should now look like this:
 And we should be able to see in the **Scene** window our two black squares representing the local and remote media players:
 
 ![The local and remote video players](helloworld-unity-15.png)
+
+----
+
+Next : [Establishing a connection](helloworld-unity-connection.md)
