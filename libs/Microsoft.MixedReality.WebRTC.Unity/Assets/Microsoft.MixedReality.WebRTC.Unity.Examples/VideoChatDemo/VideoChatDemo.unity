@@ -773,7 +773,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114452439610826054, guid: 94759df28537c86408a84858950de05a,
         type: 3}
-      propertyPath: _mediaLines.Array.data[0].Sender
+      propertyPath: _mediaLines.Array.data[0]._sender
       value: 
       objectReference: {fileID: 1932579006}
     - target: {fileID: 114452439610826054, guid: 94759df28537c86408a84858950de05a,
@@ -783,12 +783,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114452439610826054, guid: 94759df28537c86408a84858950de05a,
         type: 3}
-      propertyPath: _mediaLines.Array.data[0].Receiver
+      propertyPath: _mediaLines.Array.data[0]._receiver
       value: 
       objectReference: {fileID: 1932579005}
     - target: {fileID: 114452439610826054, guid: 94759df28537c86408a84858950de05a,
         type: 3}
-      propertyPath: _mediaLines.Array.data[1].Sender
+      propertyPath: _mediaLines.Array.data[1]._sender
       value: 
       objectReference: {fileID: 799132311}
     - target: {fileID: 224130425995034712, guid: 94759df28537c86408a84858950de05a,

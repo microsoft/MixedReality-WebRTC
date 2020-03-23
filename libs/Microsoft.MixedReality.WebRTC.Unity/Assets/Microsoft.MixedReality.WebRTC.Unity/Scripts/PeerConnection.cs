@@ -106,7 +106,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     public class MediaLine
     {
         /// <summary>
-        /// Backing field for the <see cref="Kind"/> property.
+        /// Backing field to serialize the <see cref="Kind"/> property.
         /// </summary>
         /// <seealso cref="Kind"/>
         [SerializeField]
@@ -114,34 +114,75 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Kind of media of the media line and its attached transceiver.
+        ///
         /// This is assiged when the media line is created with <see cref="PeerConnection.AddTransceiver(MediaKind)"/>
         /// and is immutable for the lifetime of the peer connection.
         /// </summary>
         public MediaKind Kind => _kind;
 
         /// <summary>
+        /// Backing field to serialize the <see cref="Sender"/> property.
+        /// </summary>
+        /// <seealso cref="Sender"/>
+        [SerializeField]
+        private MediaSender _sender;
+
+        /// <summary>
         /// Media sender producing the media to send through the transceiver attached to this media line.
         /// This must be an instance of a class derived from <see cref="AudioSender"/> or <see cref="VideoSender"/>
         /// depending on <see cref="Kind"/>.
-        /// 
+        ///
         /// If this is non-<c>null</c> then the peer connection will negotiate sending some media, otherwise
         /// it will signal the remote peer that it does not wish to send (receive-only or inactive).
-        /// 
-        /// When this value changes, a new session negotiation is need for the change to take effect.
+        ///
+        /// If <see cref="Transceiver"/> is valid, that is a first session negotiation has already been completed,
+        /// then changing this value raises a <see cref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
+        /// peer connection of <see cref="Transceiver"/>.
         /// </summary>
-        public MediaSender Sender;
+        public MediaSender Sender
+        {
+            get { return _sender; }
+            set
+            {
+                if (_sender != value)
+                {
+                    _sender = value;
+                    UpdateTransceiverDesiredDirection();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Backing field to serialize the <see cref="Receiver"/> property.
+        /// </summary>
+        /// <seealso cref="Receiver"/>
+        [SerializeField]
+        private MediaReceiver _receiver;
 
         /// <summary>
         /// Media receiver consuming the media received through the transceiver attached to this media line.
         /// This must be an instance of a class derived from <see cref="AudioReceiver"/> or <see cref="VideoReceiver"/>
         /// depending on <see cref="Kind"/>.
-        /// 
+        ///
         /// If this is non-<c>null</c> then the peer connection will negotiate receiving some media, otherwise
         /// it will signal the remote peer that it does not wish to receive (send-only or inactive).
-        /// 
-        /// When this value changes, a new session negotiation is need for the change to take effect.
+        ///
+        /// If <see cref="Transceiver"/> is valid, that is a first session negotiation has already been conducted,
+        /// then changing this value raises a <see cref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
+        /// peer connection of <see cref="Transceiver"/>.
         /// </summary>
-        public MediaReceiver Receiver;
+        public MediaReceiver Receiver
+        {
+            get { return _receiver; }
+            set
+            {
+                if (_receiver != value)
+                {
+                    _receiver = value;
+                    UpdateTransceiverDesiredDirection();
+                }
+            }
+        }
 
         /// <summary>
         /// Transceiver attached with this media line.
@@ -168,6 +209,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public MediaLine(MediaKind kind)
         {
             _kind = kind;
+        }
+
+        protected void UpdateTransceiverDesiredDirection()
+        {
+            if (Transceiver != null)
+            {
+                bool wantsSend = (_sender != null);
+                bool wantsRecv = (_receiver != null);
+                Transceiver.DesiredDirection = Transceiver.DirectionFromSendRecv(wantsSend, wantsRecv);
+            }
         }
 
         internal async Task AttachTrackAsync()
@@ -201,13 +252,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (wantsRecv && isReceiving && !wasReceiving)
             {
                 // Transceiver started receiving, and user actually wants to receive
-                Receiver.OnPaired(transceiver.RemoteAudioTrack);
+                Receiver.OnPaired(transceiver.RemoteTrack);
                 _pairedReceiver = Receiver;
             }
             else if (!isReceiving && wasReceiving)
             {
                 // Transceiver stopped receiving (user intent does not matter here)
-                Receiver.OnUnpaired(transceiver.RemoteAudioTrack);
+                Receiver.OnUnpaired(transceiver.RemoteTrack);
                 _pairedReceiver = null;
             }
         }
@@ -259,6 +310,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(tr != null);
             Debug.Assert((Transceiver == null) || (Transceiver == tr));
             Transceiver = tr;
+            UpdateTransceiverDesiredDirection();
 
             // Always do this even after first offer, because the sender and receiver
             // components can be assigned to the media line later, and therefore will

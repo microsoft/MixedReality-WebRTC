@@ -3218,17 +3218,17 @@ MonoBehaviour:
       m_Calls: []
   _mediaLines:
   - _kind: 1
-    Sender: {fileID: 0}
-    Receiver: {fileID: 1533694088}
+    _sender: {fileID: 0}
+    _receiver: {fileID: 1533694088}
   - _kind: 1
-    Sender: {fileID: 0}
-    Receiver: {fileID: 0}
+    _sender: {fileID: 0}
+    _receiver: {fileID: 0}
   - _kind: 1
-    Sender: {fileID: 0}
-    Receiver: {fileID: 1712234956}
+    _sender: {fileID: 0}
+    _receiver: {fileID: 1712234956}
   - _kind: 1
-    Sender: {fileID: 0}
-    Receiver: {fileID: 0}
+    _sender: {fileID: 0}
+    _receiver: {fileID: 0}
 --- !u!4 &1537901324
 Transform:
   m_ObjectHideFlags: 0
@@ -4574,17 +4574,17 @@ MonoBehaviour:
       m_Calls: []
   _mediaLines:
   - _kind: 1
-    Sender: {fileID: 8066520111486228012}
-    Receiver: {fileID: 0}
+    _sender: {fileID: 8066520111486228012}
+    _receiver: {fileID: 0}
   - _kind: 1
-    Sender: {fileID: 1645256671}
-    Receiver: {fileID: 0}
+    _sender: {fileID: 1645256671}
+    _receiver: {fileID: 0}
   - _kind: 1
-    Sender: {fileID: 447630319}
-    Receiver: {fileID: 0}
+    _sender: {fileID: 447630319}
+    _receiver: {fileID: 0}
   - _kind: 1
-    Sender: {fileID: 0}
-    Receiver: {fileID: 989215899}
+    _sender: {fileID: 0}
+    _receiver: {fileID: 989215899}
 --- !u!114 &114460246451956513
 MonoBehaviour:
   m_ObjectHideFlags: 0
