@@ -7,6 +7,7 @@ In this tutorial we create a C# UWP application with a simple XAML-based UI to r
 
 > [!NOTE]
 > This tutorial assumes that the host device where the app will be running during the tutorial has access to:
+>
 > - a webcam, or any other video capture device recognized by WebRTC
 > - a microphone, or any other audio capture device recognized by WebRTC
 
@@ -24,7 +25,7 @@ When prompted to select a platform version, chose a version of at least **Window
 
 Visual Studio 2019 generates a C# project (`.csproj`) and solution (`.sln`). In this tutorial we use the default name `App1`, therefore we get the following hierarchy:
 
-```
+```shell
 - App1/
   - Assets/
   - App.xaml
@@ -61,7 +62,6 @@ After that, the `App1` project should contain a reference to the package.
 
 ![App1 project references](cs-uwp7.png)
 
-
 ## Test the reference
 
 In order to ensure everything works fine and the `Microsoft.MixedReality.WebRTC` assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method [`PeerConnection.GetVideoCaptureDevicesAsync()`](cref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync). This is more simple than creating objects, as there is no clean-up needed after use.
@@ -73,6 +73,7 @@ First, because this sample application is a UWP application, it needs to declare
 Next, edit `MainPage.xaml.cs`:
 
 1. At the top of the file, add some `using` statement to import the `Microsoft.MixedReality.WebRTC` assembly. Also import the `System.Diagnostics` module, as we will be using the `Debugger` class to print debug information to the Visual Studio output window. Finally, import the `Windows.Media.Capture` module to be able to request access to the microphone and webcam, and the `Windows.ApplicationModel` module to handle resource clean-up.
+
    ```cs
    using Microsoft.MixedReality.WebRTC;
    using System.Diagnostics;
@@ -81,6 +82,7 @@ Next, edit `MainPage.xaml.cs`:
    ```
 
 2. In the `MainPage` constructor, register a handler for the [`Loaded`](xref:Windows.UI.Xaml.FrameworkElement.Loaded) event, which will be fired once the XAML user interface finished loading. For now it is not required to wait on the UI to call `Microsoft.MixedReality.WebRTC` methods. But later when accessing the UI to interact with its controls, either to get user inputs or display results, this will be required. So as a best practice we start doing so right away instead of invoking some code directly in the `MainPage` constructor. Also register a handler for the [`Application.Suspending`](xref:Windows.UI.Xaml.Application.Suspending) event to clean-up resources on exit.
+
    ```cs
    public MainPage()
    {
@@ -91,6 +93,7 @@ Next, edit `MainPage.xaml.cs`:
    ```
 
 3. Create the event handler `OnLoaded()` and use it to request access from the user to the microphone and camera, and enumerate the video capture devices. The `MediaCapture.InitializeAsync()` call will prompt the user with a dialog to authorize access to the microphone and webcam. The latter be must authorized before calling `PeerConnection.GetVideoCaptureDevicesAsync()`, while the former will be needed in the following of the tutorial for calls like `PeerConnection.AddLocalAudioTrackAsync()`.
+
    ```cs
    private async void OnLoaded(object sender, RoutedEventArgs e)
    {
@@ -114,6 +117,7 @@ Next, edit `MainPage.xaml.cs`:
    ```
 
 4. Create the event handler `App_Suspending()`. For now there is nothing to do from it.
+
    ```cs
    private void App_Suspending(object sender, SuspendingEventArgs e)
    {
@@ -121,7 +125,8 @@ Next, edit `MainPage.xaml.cs`:
    ```
 
 Launch the app again. The main window is still empty, but the **Output window** of Visual Studio 2019 (**View** > **Output**, or **Alt + 2**) should show a list of devices. This list depends on the actual host device running the app, but looks something like:
-```
+
+```shell
 Webcam <some device name> (id: <some device ID>)
 ```
 
