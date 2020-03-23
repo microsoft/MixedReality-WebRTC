@@ -112,7 +112,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 // Defer track creation to derived classes, which will invoke some methods like
                 // LocalAudioTrack.CreateFromDeviceAsync().
-                await CreateLocalAudioTrackAsync();
+                await CreateLocalAudioTrackAsyncImpl();
                 Debug.Assert(Track != null, "Implementation did not create a valid Track property yet did not throw any exception.", this);
 
                 AudioStreamStarted.Invoke(this);
@@ -195,7 +195,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// On failure, this method must throw an exception. Otherwise it must set the <see cref="Track"/>
         /// property to a non-<c>null</c> instance.
         /// </summary>
-        protected abstract Task CreateLocalAudioTrackAsync();
+        protected abstract Task CreateLocalAudioTrackAsyncImpl();
 
         /// <summary>
         /// Re-implement this callback to destroy the <see cref="Track"/> instance

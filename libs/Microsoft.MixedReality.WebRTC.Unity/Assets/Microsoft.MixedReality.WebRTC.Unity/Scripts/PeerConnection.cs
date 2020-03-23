@@ -678,11 +678,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // creating an offer. The remote peer will then match the transceivers by mlineIndex, then add any missing
             // ones, after it applied the offer.
             {
-                // In case this is not the first offer, some transceivers might already exist
-                var transceivers = _nativePeer.Transceivers;
-                int numTransceivers = transceivers.Count;
-
-                for (int mlineIndex = 0; mlineIndex < _mediaLines.Count; ++mlineIndex)
+                // Create new transceivers for the media lines added since last negotiation
+                int numExistingTransceiversBefore = _nativePeer.Transceivers.Count;
+                int numMediaLines = _mediaLines.Count;
+                for (int mlineIndex = numExistingTransceiversBefore; mlineIndex < numMediaLines; ++mlineIndex)
                 {
                     var mediaLine = _mediaLines[mlineIndex];
 
@@ -695,50 +694,37 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     // answer is received).
                     bool wantsSend = (mediaLine.Sender != null);
                     bool wantsRecv = (mediaLine.Receiver != null);
-                    var wantsDir = (wantsSend ? (wantsRecv ? Transceiver.Direction.SendReceive : Transceiver.Direction.SendOnly)
-                        : (wantsRecv ? Transceiver.Direction.ReceiveOnly : Transceiver.Direction.Inactive));
-
-                    // Ensure the media line has a transceiver, and update its desired direction
-                    Transceiver tr = null;
-                    if (mlineIndex < transceivers.Count)
+                    var wantsDir = Transceiver.DirectionFromSendRecv(wantsSend, wantsRecv);
+                    var settings = new TransceiverInitSettings
                     {
-                        tr = transceivers[mlineIndex];
+                        Name = $"mrsw#{mlineIndex}",
+                        InitialDesiredDirection = wantsDir
+                    };
+                    Transceiver tr = _nativePeer.AddTransceiver(mediaLine.Kind, settings);
+                    Debug.Assert(tr.MlineIndex == mlineIndex);
+                }
 
-                        // If kind mismatch, likely the transceiver order was changed, which is not allowed.
-                        // Transceivers are immutably mapped to a unique mid when negotiated for the first time.
-                        // The only possible way to change this is stopping a tranceiver and recycling the m= line,
-                        // which is not supported by the C# library, so we ignore this case.
-                        Debug.Assert(mediaLine.Kind == tr.MediaKind);
-
-                        // Use an existing transceiver created during a previous negotiation
-                        tr.DesiredDirection = wantsDir;
-                    }
-                    else
-                    {
-                        // Create a new transceiver if none exists
-                        var settings = new TransceiverInitSettings
-                        {
-                            Name = $"mrsw#{mlineIndex}",
-                            InitialDesiredDirection = wantsDir
-                        };
-                        tr = _nativePeer.AddTransceiver(mediaLine.Kind, settings);
-                    }
+                // Update all transceivers, whether previously existing or just created above
+                var transceivers = _nativePeer.Transceivers;
+                int numTransceivers = transceivers.Count;
+                Debug.Assert(numMediaLines <= numTransceivers); // ensured in loop above
+                for (int mlineIndex = 0; mlineIndex < numMediaLines; ++mlineIndex)
+                {
+                    var mediaLine = _mediaLines[mlineIndex];
+                    Transceiver tr = transceivers[mlineIndex];
                     Debug.Assert(tr != null);
                     Debug.Assert(tr.MlineIndex == mlineIndex);
-
-                    // Update tracks
                     //< FIXME - CreateOfferAsync() to use await instead of Wait()
                     mediaLine.UpdateForCreateOfferAsync(tr).Wait();
                 }
 
-                // Ignore extra transceivers without a registered component to attach
-                int numComponents = _mediaLines.Count;
-                if (numComponents < numTransceivers)
+                // Ignore extra transceivers without a media line to associate with
+                if (numMediaLines < numTransceivers)
                 {
                     string peerName = name;
                     _mainThreadWorkQueue.Enqueue(() =>
                     {
-                        for (int i = numComponents; i < numTransceivers; ++i)
+                        for (int i = numMediaLines; i < numTransceivers; ++i)
                         {
                             Debug.LogWarning($"Peer connection {peerName} has transceiver #{i} but no sender/receiver component to process it. The transceiver will be ignored.");
                         }
@@ -794,27 +780,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         var mediaLine = _mediaLines[mlineIndex];
                         Transceiver tr = transceivers[mlineIndex];
-
-                        // If sending, fix up transceiver direction. Because the remote description was already applied before
-                        // any sending transceiver was added (remember, the answering peer didn't add its media senders yet),
-                        // all transceivers automatically added are in ReceiveOnly or Inactive state, since the implementation
-                        // couldn't associate them with existing senders (none were added yet). This ensures that a TrackAdded
-                        // event is fired on the remote peer when it receives the answer.
-                        bool wantsSend = (mediaLine.Sender != null);
-                        bool wantsRecv = (mediaLine.Receiver != null);
-                        {
-                            var wantsDir = (wantsSend ? (wantsRecv ? Transceiver.Direction.SendReceive : Transceiver.Direction.SendOnly)
-                                : (wantsRecv ? Transceiver.Direction.ReceiveOnly : Transceiver.Direction.Inactive));
-                            tr.DesiredDirection = wantsDir;
-                        }
-
                         await mediaLine.UpdateOnReceiveOfferAsync(tr);
 
                         // Check if the remote peer was planning to send something to this peer, but cannot.
+                        bool wantsRecv = (mediaLine.Receiver != null);
                         if (!wantsRecv)
                         {
                             var desDir = tr.DesiredDirection;
-                            if ((desDir == Transceiver.Direction.ReceiveOnly) || (desDir == Transceiver.Direction.SendReceive))
+                            if (Transceiver.HasRecv(desDir))
                             {
                                 string peerName = name;
                                 int idx = mlineIndex;

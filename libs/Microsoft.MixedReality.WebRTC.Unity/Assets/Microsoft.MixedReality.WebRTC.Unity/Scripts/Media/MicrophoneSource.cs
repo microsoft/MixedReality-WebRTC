@@ -16,7 +16,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     [AddComponentMenu("MixedReality-WebRTC/Microphone Source")]
     public class MicrophoneSource : AudioSender
     {
-        protected override async Task CreateLocalAudioTrackAsync()
+        protected override async Task CreateLocalAudioTrackAsyncImpl()
         {
             if (Track == null)
             {
