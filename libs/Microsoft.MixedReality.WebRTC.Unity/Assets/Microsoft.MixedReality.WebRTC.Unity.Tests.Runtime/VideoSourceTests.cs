@@ -39,6 +39,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var pc2 = pc2_go.AddComponent<PeerConnection>();
             pc2.AutoInitializeOnStart = false;
 
+            // Batch changes manually
+            pc1.AutoCreateOfferOnRenegotiationNeeded = false;
+            pc2.AutoCreateOfferOnRenegotiationNeeded = false;
+
             // Create the signaler
             var sig_go = new GameObject("signaler");
             var sig = sig_go.AddComponent<LocalOnlySignaler>();
@@ -262,15 +266,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var pc2 = pc2_go.AddComponent<PeerConnection>();
             pc2.AutoInitializeOnStart = false;
 
+            // Batch changes manually
+            pc1.AutoCreateOfferOnRenegotiationNeeded = false;
+            pc2.AutoCreateOfferOnRenegotiationNeeded = false;
+
             // Create the signaler
             var sig_go = new GameObject("signaler");
             var sig = sig_go.AddComponent<LocalOnlySignaler>();
             sig.Peer1 = pc1;
             sig.Peer2 = pc2;
-
-            // Batch changes manually
-            pc1.AutoCreateOfferOnRenegotiationNeeded = false;
-            pc2.AutoCreateOfferOnRenegotiationNeeded = false;
 
             // Create the senders and receivers
             //     P1     P2
@@ -575,6 +579,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             pc2_go.SetActive(false); // prevent auto-activation of components
             var pc2 = pc2_go.AddComponent<PeerConnection>();
             pc2.AutoInitializeOnStart = false;
+
+            // Batch changes manually
+            pc1.AutoCreateOfferOnRenegotiationNeeded = false;
+            pc2.AutoCreateOfferOnRenegotiationNeeded = false;
 
             // Create the signaler
             var sig_go = new GameObject("signaler");

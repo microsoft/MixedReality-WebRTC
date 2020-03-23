@@ -448,5 +448,16 @@ namespace Microsoft.MixedReality.WebRTC
         {
             return dir.HasValue && ((dir == Direction.ReceiveOnly) || (dir == Direction.SendReceive));
         }
+
+        /// <summary>
+        /// Compute a transceiver direction from some send/receive booleans.
+        /// </summary>
+        /// <param name="hasSend">Does the direction includes sending?</param>
+        /// <param name="hasRecv">Does the direction includes receiving?</param>
+        /// <returns>The computed transceiver direction.</returns>
+        public static Direction DirectionFromSendRecv(bool hasSend, bool hasRecv)
+        {
+            return (hasSend ? (hasRecv ? Direction.SendReceive : Direction.SendOnly) : (hasRecv ? Direction.ReceiveOnly : Direction.Inactive));
+        }
     }
 }

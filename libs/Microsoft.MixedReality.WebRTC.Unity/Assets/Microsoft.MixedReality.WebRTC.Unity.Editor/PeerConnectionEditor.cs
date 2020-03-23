@@ -160,7 +160,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     bool hasReceiver = false;
                     {
 
-                        var p = element.FindPropertyRelative("Sender");
+                        var p = element.FindPropertyRelative("_sender");
                         Object obj = p.objectReferenceValue;
                         obj = EditorGUI.ObjectField(
                             new Rect(rect.x, y0, fieldWidth, EditorGUIUtility.singleLineHeight),
@@ -169,7 +169,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                         p.objectReferenceValue = obj;
                     }
                     {
-                        var p = element.FindPropertyRelative("Receiver");
+                        var p = element.FindPropertyRelative("_receiver");
                         Object obj = p.objectReferenceValue;
                         obj = EditorGUI.ObjectField(
                             new Rect(rect.x, y1, fieldWidth, EditorGUIUtility.singleLineHeight),
