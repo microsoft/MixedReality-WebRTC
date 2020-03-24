@@ -46,7 +46,7 @@ Optional resolution and framerate constraints to apply when selecting a video ca
 
 Reference to the [`LocalVideoTrack`](xref:Microsoft.MixedReality.WebRTC.LocalVideoTrack) instance the component is encapsulating.
 
-#### [`PreferredVideoCodec`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.PreferredVideoCodec)
+#### [`PreferredVideoCodec`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoSender.PreferredVideoCodec)
 
 Optional choice of a preferred video codec to use for local video capture and SDP offering. This is implemented by filtering out all other video codecs when sending an SDP offer message if the original offer was already containing that codec. See [this Wikipedia article](https://en.wikipedia.org/wiki/RTP_audio_video_profile) for the SDP names to use. Currently the implementation only supports some of them, including `"H264"` (UWP only), `"VP8"`, or `"VP9"`. H.265 is not supported.
 

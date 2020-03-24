@@ -13,7 +13,7 @@ The [`NodeDssSignaler`](xref:Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler
 
 The `node-dss` repository has [instructions on how to install and run the server](https://github.com/bengreenier/node-dss/blob/master/README.md), which essentially boil down to installing Node.js, downloading the code, and running:
 
-```
+```cmd
 set DEBUG=dss*
 npm install
 npm start
@@ -37,11 +37,12 @@ By default the [`NodeDssSignaler`](xref:Microsoft.MixedReality.WebRTC.Unity.Node
 
 ## Connecting the signaler
 
-Now that a signaling solution is available, the last step is to assign the [`PeerConnection.Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Signaler) property of our peer connection to that implementation:
+Now that a signaling solution is available, the last step is to assign the [`Signaler.PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler.PeerConnection) property of the peer connection component created earlier:
 
-- In the **Hierarchy** window, select the game object with the peer connection component
-- In the **Inspector** window, find the `Signaler` property and click on the circle to its right to bring the asset selection window
-- From the **Scene** tab, select the game object with the [`NodeDssSignaler`](xref:Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler) component on it.
+1. In the **Hierarchy** window, make sure the game object with the peer connection component is selected, then in the **Inspector** window find the `Peer Connection` property and click on the circle to its right to bring the asset selection window
+2. Select the **Scene** tab of that window
+3. Select the game object with the [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) component on it.
+4. The name of the [`GameObject`](https://docs.unity3d.com/ScriptReference/GameObject.html) containing the component now appears next to the `Peer Connection` property, followed by "`(PeerConnection)`" to indicate the actual value is the component of that game object.
 
 The signaler object should now appear in the **Inspector** window of the peer connection game object.
 

@@ -1,28 +1,25 @@
-# Adding remote video
+# Adding remote media
 
-Unlike local video, the remote video track is controlled by the remote peer who will decide if and when to add the track to the connection. On the receiver side, the only thing to decide is whether or not to handle the video data received through that track.
+Unlike local video, the remote video track is controlled by the remote peer who will decide if and when to add the track to the connection. On the receiver side, the only thing to decide is whether or not to handle the video data received through that track. Similar observations can be made for audio.
 
-The `VideoReceiver` Unity component is used to expose a remote video track. And similarly to the `VideoSender`, it can be added to a `MediaPlayer` to render the content of the video feed.
+The [`VideoReceiver`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoReceiver) component is used to expose a remote video track. And similarly to the [`VideoSender`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoSender), it can be added to a [`MediaPlayer`](xref:Microsoft.MixedReality.WebRTC.Unity.MediaPlayer) component to render the content of the video feed it receives from the remote peer. Same goes for the [`AudioReceiver`](xref:Microsoft.MixedReality.WebRTC.Unity.AudioReceiver) component for audio.
 
-## Adding a video receiver
+> [!IMPORTANT]
+> Currently the [`AudioReceiver`](xref:Microsoft.MixedReality.WebRTC.Unity.AudioReceiver) component is optional because audio is directly played out by the implementation without any user control (See issue [#92](https://github.com/microsoft/MixedReality-WebRTC/issues/92)). This will be fixed eventually, at which point the [`AudioReceiver`](xref:Microsoft.MixedReality.WebRTC.Unity.AudioReceiver) will become mandatory for remote audio playback. Therefore this turorial assumes best practices and adds the component already.
 
-Like we did for the local video feed, we create a new game object with an `AudioReceiver` and a `VideoReceiver` component:
+## Adding audio and video receivers
+
+Like we did for the local video feed, we create a new game object with an [`AudioReceiver`](xref:Microsoft.MixedReality.WebRTC.Unity.AudioReceiver) component and a [`VideoReceiver`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoReceiver) component:
 
 - In the **Hierarchy** window, select **Create** > **Create Empty**.
 - Rename it to something memorable like "RemoteMediaPlayer".
-- Go to the **Transform** component and
-  - move the player slightly to the right side of the screen by setting an X position of `2.5`
-  - slightly rotate the player toward the camera by 10 degrees about the Y axis
-  - increase the scale to `(4,3,1)` to get a 4:3 aspect ratio
-- In the **Inspector** window, press the **Add Component** button at the bottom of the window, and select **MixedReality-WebRTC** > **AudioReceiver**.
-- Do the same to add a **MixedReality-WebRTC** > **VideoReceiver** component.
+- Go to the **Transform** component and increase the scale to `(4,3,1)` to get a 4:3 aspect ratio again.
+- In the **Inspector** window, press the **Add Component** button at the bottom of the window, and select **MixedReality-WebRTC** > **Audio Receiver**.
+- Do the same for the **Video Receiver** component.
 
 ![Create the audio and video receivers](helloworld-unity-13.png)
 
-> [!IMPORTANT]
-> Currently the `AudioReceiver` component is optional because audio is directly played out by the implementation without any user control (See issue [#92](https://github.com/microsoft/MixedReality-WebRTC/issues/92)). This will be fixed eventually, at which point the `AudioReceiver` will become mandatory for remote audio playback. Therefore this turorial assumes best practices and adds the component already.
-
-Like for the audio and video senders, the receiver components need to be associated with the peer connection through a transceiver media line. Select the `PeerConnection` component again, and assign the new receivers to the audio and video media lines.
+Like for the audio and video senders, the receiver components need to be associated with the peer connection through a transceiver media line. Select the [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) component again, and assign the new receivers to the audio and video media lines previously created.
 
 ![Assign the receivers to the media lines](helloworld-unity-13b.png)
 
