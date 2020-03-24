@@ -410,7 +410,6 @@ MonoBehaviour:
   AutoInitializeOnStart: 1
   AutoCreateOfferOnRenegotiationNeeded: 1
   AutoLogErrorsToUnityConsole: 1
-  Signaler: {fileID: 8734329137356271696}
   IceServers:
   - Type: 1
     Uri: stun.l.google.com:19302
@@ -438,6 +437,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f59b5937dc35994c87e058b9edfe08a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PeerConnection: {fileID: 114452439610826054}
   AutoLogErrors: 1
   LocalPeerId: 
   RemotePeerId: 
@@ -877,6 +877,9 @@ MonoBehaviour:
   VideoStreamStopped:
     m_PersistentCalls:
       m_Calls: []
+  WebcamDevice:
+    id: 
+    name: 
   EnableMixedRealityCapture: 1
   EnableMRCRecordingIndicator: 1
   FormatMode: 0
