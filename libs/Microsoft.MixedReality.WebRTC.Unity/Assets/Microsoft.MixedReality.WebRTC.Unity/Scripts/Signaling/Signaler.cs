@@ -9,40 +9,50 @@ using UnityEngine;
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// Base class for WebRTC signaling implementations in Unity.
+    /// Abstract base class to simplify implementing a WebRTC signaling solution in Unity.
+    /// 
+    /// There is no requirement to use this class as a base class for a custom implementation,
+    /// but it handles automatically registering the necessary <see cref="Unity.PeerConnection"/>
+    /// event handlers, as well as dispatching free-threaded callbacks to the main Unity app thread
+    /// for simplicity and safety, and leaves the implementation with instead with a single sending
+    /// method <see cref="SendMessageAsync(Message)"/> to implement, as well as handling received
+    /// messages.
     /// </summary>
     public abstract class Signaler : MonoBehaviour
     {
         /// <summary>
-        /// The <see cref="PeerConnection"/> this signaler is attached to, or <c>null</c>
-        /// if not attached yet to any connection. This is updated automatically by the peer
-        /// connection once it finished initializing.
+        /// The <see cref="PeerConnection"/> this signaler needs to work for.
         /// </summary>
-        public PeerConnection PeerConnection { get; private set; }
+        public PeerConnection PeerConnection;
 
 
         #region Signaler interface
+
+        // TODO - These messages will move into the C# library API eventually (#188)
 
         [Serializable]
         public class Message
         {
             /// <summary>
-            /// Possible message types as-serialized on the wire
+            /// Message types.
             /// </summary>
-            public enum WireMessageType
+            public enum MessageType
             {
                 /// <summary>
                 /// An unrecognized message
                 /// </summary>
                 Unknown = 0,
+
                 /// <summary>
                 /// A SDP offer message
                 /// </summary>
                 Offer,
+
                 /// <summary>
                 /// A SDP answer message
                 /// </summary>
                 Answer,
+
                 /// <summary>
                 /// A trickle-ice or ice message
                 /// </summary>
@@ -50,48 +60,62 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
             /// <summary>
-            /// Convert a message type from <see xref="string"/> to <see cref="WireMessageType"/>.
+            /// The message type.
             /// </summary>
-            /// <param name="stringType">The message type as <see xref="string"/>.</param>
-            /// <returns>The message type as a <see cref="WireMessageType"/> object.</returns>
-            public static WireMessageType WireMessageTypeFromString(string stringType)
+            public readonly MessageType Type;
+
+            public Message(MessageType type)
             {
-                if (string.Equals(stringType, "offer", StringComparison.OrdinalIgnoreCase))
-                {
-                    return WireMessageType.Offer;
-                }
-                else if (string.Equals(stringType, "answer", StringComparison.OrdinalIgnoreCase))
-                {
-                    return WireMessageType.Answer;
-                }
-                throw new ArgumentException($"Unkown signaler message type '{stringType}'");
+                Type = type;
+            }
+        }
+
+        [Serializable]
+        public class SdpMessage : Message
+        {
+            /// <summary>
+            /// The SDP message content.
+            /// </summary>
+            public string Data;
+
+            public SdpMessage(string type, string data) : base(TypeFromString(type))
+            {
+                Data = data;
             }
 
-            /// <summary>
-            /// The message type
-            /// </summary>
-            public WireMessageType MessageType;
+            public static MessageType TypeFromString(string type)
+            {
+                if (type == "offer")
+                {
+                    return MessageType.Offer;
+                }
+                else if (type == "answer")
+                {
+                    return MessageType.Answer;
+                }
+                throw new ArgumentException($"Invalid SDP message type: \"{type}\"", "type");
+            }
+        }
 
+        [Serializable]
+        public class IceMessage : Message
+        {
             /// <summary>
-            /// The primary message contents
+            /// The ICE message content.
             /// </summary>
             public string Data;
 
             /// <summary>
-            /// The data separator needed for proper ICE serialization
+            /// The data separator needed for proper ICE serialization.
             /// </summary>
             public string IceDataSeparator;
+
+            public IceMessage(string sdpMid, int sdpMlineIndex, string candidate) : base(MessageType.Ice)
+            {
+                IceDataSeparator = "|";
+                Data = string.Join(IceDataSeparator, new string[] { candidate, sdpMlineIndex.ToString(), sdpMid });
+            }
         }
-
-        // Those events must be invoked by the derived class
-#pragma warning disable 67
-
-        public event Action OnConnect;
-        public event Action OnDisconnect;
-        public event Action<Message> OnMessage;
-        public event Action<Exception> OnFailure;
-
-#pragma warning restore 67
 
         /// <summary>
         /// Asynchronously send a signaling message to the remote peer.
@@ -107,27 +131,29 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
 
         /// <summary>
-        /// Native <xref href="Microsoft.MixedReality.WebRTC.PeerConnection"/> object from the underlying WebRTC C# library, available once
-        /// the peer has been initialized and the signaler is attached to it.
+        /// Native <xref href="Microsoft.MixedReality.WebRTC.PeerConnection"/> object from the underlying
+        /// WebRTC C# library, available once the peer has been initialized.
         /// </summary>
-        protected WebRTC.PeerConnection _nativePeer;
+        protected WebRTC.PeerConnection _nativePeer = null;
 
-
-        private ConcurrentQueue<Action> _mainThreadQueue = new ConcurrentQueue<Action>();
+        /// <summary>
+        /// Task queue used to defer actions to the main Unity app thread, which is the only thread
+        /// with access to Unity objects.
+        /// </summary>
+        protected ConcurrentQueue<Action> _mainThreadWorkQueue = new ConcurrentQueue<Action>();
 
         /// <summary>
         /// Callback fired from the <see cref="PeerConnection"/> when it finished
         /// initializing, to subscribe to signaling-related events.
         /// </summary>
         /// <param name="peer">The peer connection to attach to</param>
-        public void OnPeerInitialized(PeerConnection peer)
+        public void OnPeerInitialized()
         {
-            PeerConnection = peer;
-            _nativePeer = peer.Peer;
+            _nativePeer = PeerConnection.Peer;
 
             // Register handlers for the SDP events
-            //_nativePeer.IceCandidateReadytoSend += OnIceCandiateReadyToSend_Listener;
-            //_nativePeer.LocalSdpReadytoSend += OnLocalSdpReadyToSend_Listener;
+            _nativePeer.IceCandidateReadytoSend += OnIceCandiateReadyToSend_Listener;
+            _nativePeer.LocalSdpReadytoSend += OnLocalSdpReadyToSend_Listener;
         }
 
         /// <summary>
@@ -135,65 +161,95 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// uninitializing itself and disposing of the underlying implementation object.
         /// </summary>
         /// <param name="peer">The peer connection about to be deinitialized</param>
-        public void OnPeerUninitializing(PeerConnection peer)
+        public void OnPeerUninitializing()
         {
             // Unregister handlers for the SDP events
             //_nativePeer.IceCandidateReadytoSend -= OnIceCandiateReadyToSend_Listener;
             //_nativePeer.LocalSdpReadytoSend -= OnLocalSdpReadyToSend_Listener;
         }
 
-        //private void OnIceCandiateReadyToSend_Listener(string candidate, int sdpMlineIndex, string sdpMid)
-        //{
-        //    _mainThreadQueue.Enqueue(() => OnIceCandiateReadyToSend(candidate, sdpMlineIndex, sdpMid));
-        //}
+        private void OnIceCandiateReadyToSend_Listener(string candidate, int sdpMlineIndex, string sdpMid)
+        {
+            _mainThreadWorkQueue.Enqueue(() => OnIceCandiateReadyToSend(candidate, sdpMlineIndex, sdpMid));
+        }
 
-        ///// <summary>
-        ///// Helper to split SDP offer and answer messages and dispatch to the appropriate handler.
-        ///// </summary>
-        ///// <param name="type"></param>
-        ///// <param name="sdp"></param>
-        //private void OnLocalSdpReadyToSend_Listener(string type, string sdp)
-        //{
-        //    if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        _mainThreadQueue.Enqueue(() => OnSdpOfferReadyToSend(sdp));
-        //    }
-        //    else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        _mainThreadQueue.Enqueue(() => OnSdpAnswerReadyToSend(sdp));
-        //    }
-        //}
+        /// <summary>
+        /// Helper to split SDP offer and answer messages and dispatch to the appropriate handler.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="sdp"></param>
+        private void OnLocalSdpReadyToSend_Listener(string type, string sdp)
+        {
+            if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
+            {
+                _mainThreadWorkQueue.Enqueue(() => OnSdpOfferReadyToSend(sdp));
+            }
+            else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
+            {
+                _mainThreadWorkQueue.Enqueue(() => OnSdpAnswerReadyToSend(sdp));
+            }
+        }
 
+        protected virtual void OnEnable()
+        {
+            PeerConnection.OnInitialized.AddListener(OnPeerInitialized);
+            PeerConnection.OnShutdown.AddListener(OnPeerUninitializing);
+        }
+
+        /// <summary>
+        /// Unity Engine Update() hook
+        /// </summary>
+        /// <remarks>
+        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html
+        /// </remarks>
         protected virtual void Update()
         {
             // Process workloads queued from background threads
-            while (_mainThreadQueue.TryDequeue(out Action action))
+            while (_mainThreadWorkQueue.TryDequeue(out Action action))
             {
                 action();
             }
         }
 
+        protected virtual void OnDisable()
+        {
+            PeerConnection.OnInitialized.RemoveListener(OnPeerInitialized);
+            PeerConnection.OnShutdown.RemoveListener(OnPeerUninitializing);
+        }
+
         /// <summary>
-        /// Callback fired when an ICE candidate message has been generated and is ready to
+        /// Callback invoked when an ICE candidate message has been generated and is ready to
         /// be sent to the remote peer by the signaling object.
         /// </summary>
         /// <param name="candidate"></param>
         /// <param name="sdpMlineIndex"></param>
         /// <param name="sdpMid"></param>
-        protected abstract void OnIceCandiateReadyToSend(string candidate, int sdpMlineIndex, string sdpMid);
+        protected virtual void OnIceCandiateReadyToSend(string candidate, int sdpMlineIndex, string sdpMid)
+        {
+            var message = new IceMessage(sdpMid, sdpMlineIndex, candidate);
+            SendMessageAsync(message);
+        }
 
         /// <summary>
-        /// Callback fired when a local SDP offer has been generated and is ready to
+        /// Callback invoked when a local SDP offer has been generated and is ready to
         /// be sent to the remote peer by the signaling object.
         /// </summary>
         /// <param name="offer">The SDP offer message to send.</param>
-        protected abstract void OnSdpOfferReadyToSend(string offer);
+        protected virtual void OnSdpOfferReadyToSend(string offer)
+        {
+            var message = new SdpMessage("offer", offer);
+            SendMessageAsync(message);
+        }
 
         /// <summary>
-        /// Callback fired when a local SDP answer has been generated and is ready to
+        /// Callback invoked when a local SDP answer has been generated and is ready to
         /// be sent to the remote peer by the signaling object.
         /// </summary>
         /// <param name="answer">The SDP answer message to send.</param>
-        protected abstract void OnSdpAnswerReadyToSend(string answer);
+        protected virtual void OnSdpAnswerReadyToSend(string answer)
+        {
+            var message = new SdpMessage("answer", answer);
+            SendMessageAsync(message);
+        }
     }
 }

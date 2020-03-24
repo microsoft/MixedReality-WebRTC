@@ -50,6 +50,103 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public float PollTimeMs = 500f;
 
         /// <summary>
+        /// Message exchanged with a <c>node-dss</c> server, serialized as JSON.
+        /// </summary>
+        /// <remarks>
+        /// The names of the fields is critical here for proper JSON serialization.
+        /// </remarks>
+        [Serializable]
+        private class NodeDssMessage
+        {
+            /// <summary>
+            /// Possible message types as-serialized on the wire to <c>node-dss</c>.
+            /// </summary>
+            public enum Type
+            {
+                /// <summary>
+                /// An unrecognized message.
+                /// </summary>
+                Unknown = 0,
+
+                /// <summary>
+                /// A SDP offer message.
+                /// </summary>
+                Offer,
+
+                /// <summary>
+                /// A SDP answer message.
+                /// </summary>
+                Answer,
+
+                /// <summary>
+                /// A trickle-ice or ice message.
+                /// </summary>
+                Ice
+            }
+
+            /// <summary>
+            /// Convert a message type from <see xref="string"/> to <see cref="Type"/>.
+            /// </summary>
+            /// <param name="stringType">The message type as <see xref="string"/>.</param>
+            /// <returns>The message type as a <see cref="Type"/> object.</returns>
+            public static Type MessageTypeFromString(string stringType)
+            {
+                if (string.Equals(stringType, "offer", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Type.Offer;
+                }
+                else if (string.Equals(stringType, "answer", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Type.Answer;
+                }
+                throw new ArgumentException($"Unkown signaler message type '{stringType}'", "stringType");
+            }
+
+            public static Type MessageTypeFromSignalerMessageType(Message.MessageType type)
+            {
+                switch (type)
+                {
+                case Message.MessageType.Offer: return Type.Offer;
+                case Message.MessageType.Answer: return Type.Answer;
+                case Message.MessageType.Ice: return Type.Ice;
+                default: return Type.Unknown;
+                }
+            }
+
+            public NodeDssMessage(Message message)
+            {
+                MessageType = MessageTypeFromSignalerMessageType(message.Type);
+                if (MessageType == Type.Ice)
+                {
+                    var iceMsg = (IceMessage)message;
+                    Data = iceMsg.Data;
+                    IceDataSeparator = iceMsg.IceDataSeparator;
+                }
+                else
+                {
+                    var sdpMsg = (SdpMessage)message;
+                    Data = sdpMsg.Data;
+                    IceDataSeparator = string.Empty;
+                }
+            }
+
+            /// <summary>
+            /// The message type.
+            /// </summary>
+            public Type MessageType = Type.Unknown;
+
+            /// <summary>
+            /// The primary message contents.
+            /// </summary>
+            public string Data;
+
+            /// <summary>
+            /// The data separator needed for proper ICE serialization.
+            /// </summary>
+            public string IceDataSeparator;
+        }
+
+        /// <summary>
         /// Internal timing helper
         /// </summary>
         private float timeSincePollMs = 0f;
@@ -58,12 +155,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Internal last poll response status flag
         /// </summary>
         private bool lastGetComplete = true;
-
-        /// <summary>
-        /// Work queue used to defer any work which requires access to the main Unity thread,
-        /// as most methods in the Unity API are not free-threaded, but the WebRTC C# library is.
-        /// </summary>
-        private ConcurrentQueue<Action> _mainThreadWorkQueue = new ConcurrentQueue<Action>();
 
 
         #region ISignaler interface
@@ -75,9 +166,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // has been sent. Because the implementation uses a Unity coroutine, use a reset event to
             // signal the task to complete from the coroutine after the message is sent.
             // Note that the coroutine is a Unity object so needs to be started from the main Unity thread.
-            var mre = new ManualResetEvent(false);
-            _mainThreadWorkQueue.Enqueue(() => StartCoroutine(PostToServerAndWait(message, mre)));
-            return Task.Run(() => mre.WaitOne());
+            // Also note that TaskCompletionSource<bool> is used as a no-result variant; there is no meaning
+            // to the bool value.
+            // https://stackoverflow.com/questions/11969208/non-generic-taskcompletionsource-or-alternative
+            var tcs = new TaskCompletionSource<bool>();
+            var msg = new NodeDssMessage(message);
+            _mainThreadWorkQueue.Enqueue(() => StartCoroutine(PostToServerAndWait(msg, tcs)));
+            return tcs.Task;
         }
 
         #endregion
@@ -108,57 +203,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Callback fired when an ICE candidate message has been generated and is ready to
-        /// be sent to the remote peer by the signaling object.
-        /// </summary>
-        /// <param name="candidate"></param>
-        /// <param name="sdpMlineIndex"></param>
-        /// <param name="sdpMid"></param>
-        protected override void OnIceCandiateReadyToSend(string candidate, int sdpMlineIndex, string sdpMid)
-        {
-            StartCoroutine(PostToServer(new Message()
-            {
-                MessageType = Message.WireMessageType.Ice,
-                Data = $"{candidate}|{sdpMlineIndex}|{sdpMid}",
-                IceDataSeparator = "|"
-            }));
-        }
-
-        /// <summary>
-        /// Callback fired when a local SDP offer has been generated and is ready to
-        /// be sent to the remote peer by the signaling object.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="sdp"></param>
-        protected override void OnSdpOfferReadyToSend(string offer)
-        {
-            StartCoroutine(PostToServer(new Message()
-            {
-                MessageType = Message.WireMessageType.Offer,
-                Data = offer
-            }));
-        }
-
-        /// <summary>
-        /// Callback fired when a local SDP answer has been generated and is ready to
-        /// be sent to the remote peer by the signaling object.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="sdp"></param>
-        protected override void OnSdpAnswerReadyToSend(string answer)
-        {
-            StartCoroutine(PostToServer(new Message()
-            {
-                MessageType = Message.WireMessageType.Answer,
-                Data = answer,
-            }));
-        }
-
-        /// <summary>
         /// Internal helper for sending HTTP data to the node-dss server using POST
         /// </summary>
         /// <param name="msg">the message to send</param>
-        private IEnumerator PostToServer(Message msg)
+        private IEnumerator PostToServer(NodeDssMessage msg)
         {
             if (RemotePeerId.Length == 0)
             {
@@ -178,15 +226,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Internal helper to wrap a coroutine into a synchronous call
-        /// for use inside a <see cref="Task"/> object.
+        /// Internal helper to wrap a coroutine into a synchronous call for use inside
+        /// a <see cref="Task"/> object.
         /// </summary>
         /// <param name="msg">the message to send</param>
-        private IEnumerator PostToServerAndWait(Message message, ManualResetEvent mre)
+        private IEnumerator PostToServerAndWait(NodeDssMessage message, TaskCompletionSource<bool> tcs)
         {
-            // Start the coroutine and wait for it to finish
             yield return StartCoroutine(PostToServer(message));
-            mre.Set();
+            const bool dummy = true; // unused
+            tcs.SetResult(dummy);
         }
 
         /// <summary>
@@ -212,7 +260,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 var json = www.downloadHandler.text;
 
-                var msg = JsonUtility.FromJson<Message>(json);
+                var msg = JsonUtility.FromJson<NodeDssMessage>(json);
 
                 // if the message is good
                 if (msg != null)
@@ -222,31 +270,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     Debug.Log($"Received SDP message: type={msg.MessageType} data={msg.Data}");
                     switch (msg.MessageType)
                     {
-                        case Message.WireMessageType.Offer:
-                            PeerConnection.SetRemoteDescriptionAsync("offer", msg.Data).Wait();
-                            // if we get an offer, we immediately send an answer
+                    case NodeDssMessage.Type.Offer:
+                        // Apply the offer coming from the remote peer to the local peer
+                        PeerConnection.SetRemoteDescriptionAsync("offer", msg.Data).ContinueWith(_ =>
+                        {
+                            // If the remote description was successfully applied then immediately send
+                            // back an answer to the remote peer to acccept the offer.
                             _nativePeer.CreateAnswer();
-                            break;
-                        case Message.WireMessageType.Answer:
-                            _ = PeerConnection.SetRemoteDescriptionAsync("answer", msg.Data);
-                            break;
-                        case Message.WireMessageType.Ice:
-                            // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
-                            var parts = msg.Data.Split(new string[] { msg.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                            // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
-                            _nativePeer.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
-                            break;
-                        //case SignalerMessage.WireMessageType.SetPeer:
-                        //    // this allows a remote peer to set our text target peer id
-                        //    // it is primarily useful when one device does not support keyboard input
-                        //    //
-                        //    // note: when running this sample on HoloLens (for example) we may use postman or a similar
-                        //    // tool to use this message type to set the target peer. This is NOT a production-quality solution.
-                        //    TargetIdField.text = msg.Data;
-                        //    break;
-                        default:
-                            Debug.Log("Unknown message: " + msg.MessageType + ": " + msg.Data);
-                            break;
+                        }, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.RunContinuationsAsynchronously);
+                        break;
+
+                    case NodeDssMessage.Type.Answer:
+                        // No need to wait for completion; there is nothing interesting to do after it.
+                        _ = PeerConnection.SetRemoteDescriptionAsync("answer", msg.Data);
+                        break;
+
+                    case NodeDssMessage.Type.Ice:
+                        // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                        var parts = msg.Data.Split(new string[] { msg.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                        // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                        _nativePeer.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                        break;
+
+                    default:
+                        Debug.Log("Unknown message: " + msg.MessageType + ": " + msg.Data);
+                        break;
                     }
 
                     timeSincePollMs = PollTimeMs + 1f; //fast forward next request
@@ -269,42 +317,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             lastGetComplete = true;
         }
 
-        /// <summary>
-        /// Unity Engine Update() hook
-        /// </summary>
-        /// <remarks>
-        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html
-        /// </remarks>
+        /// <inheritdoc/>
         protected override void Update()
         {
             // Do not forget to call the base class Update(), which processes events from background
             // threads to fire the callbacks implemented in this class.
             base.Update();
 
-            // Execute any pending work enqueued by background tasks
-            while (_mainThreadWorkQueue.TryDequeue(out Action workload))
-            {
-                workload();
-            }
-
-            // if we have not reached our PollTimeMs value...
+            // If we have not reached our PollTimeMs value...
             if (timeSincePollMs <= PollTimeMs)
             {
-                // we keep incrementing our local counter until we do.
+                // ...then we keep incrementing our local counter until we do.
                 timeSincePollMs += Time.deltaTime * 1000.0f;
                 return;
             }
 
-            // if we have a pending request still going, don't queue another yet.
+            // If we have a pending request still going, don't queue another yet.
             if (!lastGetComplete)
             {
                 return;
             }
 
-            // when we have reached our PollTimeMs value...
+            // When we have reached our PollTimeMs value...
             timeSincePollMs = 0f;
 
-            // begin the poll and process.
+            // ...begin the poll and process.
             lastGetComplete = false;
             StartCoroutine(CO_GetAndProcessFromServer());
         }
