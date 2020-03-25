@@ -654,6 +654,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             EntryPoint = "mrsPeerConnectionRegisterRemoteAudioFrameCallback")]
         public static extern void PeerConnection_RegisterRemoteAudioFrameCallback(PeerConnectionHandle peerHandle,
             AudioFrameUnmanagedCallback callback, IntPtr userData);
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsPeerConnectionPlayRemoteAudio")]
+        public static extern void PeerConnection_PlayRemoteAudio(PeerConnectionHandle peerHandle,
+            bool play);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddLocalVideoTrack")]

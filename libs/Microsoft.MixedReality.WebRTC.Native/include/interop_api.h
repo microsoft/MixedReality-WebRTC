@@ -453,6 +453,10 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
     PeerConnectionAudioFrameCallback callback,
     void* user_data) noexcept;
 
+// TODO
+MRS_API void MRS_CALL
+mrsPeerConnectionPlayRemoteAudio(PeerConnectionHandle peerHandle, bool play);
+
 /// Configuration for opening a local video capture device and creating a local
 /// video track.
 struct LocalVideoTrackInitConfig {

@@ -1898,6 +1898,14 @@ namespace Microsoft.MixedReality.WebRTC
             Utils.SetFrameHeightRoundMode(value);
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        public void PlayRemoteAudio(bool play)
+        {
+            PeerConnectionInterop.PeerConnection_PlayRemoteAudio(_nativePeerhandle, play);
+        }
+
         internal void OnConnected()
         {
             MainEventSource.Log.Connected();
