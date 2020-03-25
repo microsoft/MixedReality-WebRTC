@@ -286,9 +286,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         break;
 
                     case NodeDssMessage.Type.Ice:
-                        // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                        // this "parts" protocol is defined above, in OnIceCandidateReadyToSend listener
                         var parts = msg.Data.Split(new string[] { msg.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                        // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                        // Note the inverted arguments; candidate is last here, but first in OnIceCandidateReadyToSend
                         _nativePeer.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
                         break;
 

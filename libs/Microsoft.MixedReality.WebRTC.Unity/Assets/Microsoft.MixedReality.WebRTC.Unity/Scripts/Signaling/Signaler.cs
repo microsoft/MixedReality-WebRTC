@@ -152,7 +152,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _nativePeer = PeerConnection.Peer;
 
             // Register handlers for the SDP events
-            _nativePeer.IceCandidateReadytoSend += OnIceCandiateReadyToSend_Listener;
+            _nativePeer.IceCandidateReadytoSend += OnIceCandidateReadyToSend_Listener;
             _nativePeer.LocalSdpReadytoSend += OnLocalSdpReadyToSend_Listener;
         }
 
@@ -164,13 +164,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public void OnPeerUninitializing()
         {
             // Unregister handlers for the SDP events
-            //_nativePeer.IceCandidateReadytoSend -= OnIceCandiateReadyToSend_Listener;
+            //_nativePeer.IceCandidateReadytoSend -= OnIceCandidateReadyToSend_Listener;
             //_nativePeer.LocalSdpReadytoSend -= OnLocalSdpReadyToSend_Listener;
         }
 
-        private void OnIceCandiateReadyToSend_Listener(string candidate, int sdpMlineIndex, string sdpMid)
+        private void OnIceCandidateReadyToSend_Listener(string candidate, int sdpMlineIndex, string sdpMid)
         {
-            _mainThreadWorkQueue.Enqueue(() => OnIceCandiateReadyToSend(candidate, sdpMlineIndex, sdpMid));
+            _mainThreadWorkQueue.Enqueue(() => OnIceCandidateReadyToSend(candidate, sdpMlineIndex, sdpMid));
         }
 
         /// <summary>
@@ -224,7 +224,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <param name="candidate"></param>
         /// <param name="sdpMlineIndex"></param>
         /// <param name="sdpMid"></param>
-        protected virtual void OnIceCandiateReadyToSend(string candidate, int sdpMlineIndex, string sdpMid)
+        protected virtual void OnIceCandidateReadyToSend(string candidate, int sdpMlineIndex, string sdpMid)
         {
             var message = new IceMessage(sdpMid, sdpMlineIndex, candidate);
             SendMessageAsync(message);
