@@ -37,7 +37,7 @@ The **Inspector** window should now look like this:
 
 ![Create a remote media player](helloworld-unity-14.png)
 
-And we should be able to see in the **Scene** window our two black squares representing the local and remote media players:
+Currently the two game objects holding the local and remote media players are located at the same position. Adjust them so that they don't overlap; for example set their X position to `X=+/-2.5`. We can also add some slight rotation to face the camera, for example `RY=+/-10`. Now we should be able to see in the **Scene** window our two black squares representing the local and remote media players:
 
 ![The local and remote video players](helloworld-unity-15.png)
 
