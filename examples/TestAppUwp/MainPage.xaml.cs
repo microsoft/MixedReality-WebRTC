@@ -891,9 +891,9 @@ namespace TestAppUwp
 
                     case NodeDssSignaler.Message.WireMessageType.Ice:
                         // TODO - This is NodeDSS-specific
-                        // this "parts" protocol is defined above, in OnIceCandiateReadyToSend listener
+                        // this "parts" protocol is defined above, in OnIceCandidateReadyToSend listener
                         var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                        // Note the inverted arguments; candidate is last here, but first in OnIceCandiateReadyToSend
+                        // Note the inverted arguments; candidate is last here, but first in OnIceCandidateReadyToSend
                         _peerConnection.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
                         break;
 
