@@ -1,6 +1,6 @@
 # Establishing a connection
 
-Now that we have a both media senders and receivers, we can attempt to establish a connection with a remote peer.
+Now that we have both media senders and receivers, we can attempt to establish a connection with a remote peer.
 
 There are a few requirements for this:
 
