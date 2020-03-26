@@ -144,12 +144,12 @@ class GlobalFactory {
              webrtc::AudioFrame* audio_frame_for_mixing) override;
 
     // Select if the source with the given id must be played on the audio device.
-    void PlaySource(int ssrc, bool play);
+    void RenderSource(int ssrc, bool render);
 
    private:
     struct KnownSource {
       Source* source;
-      bool is_played;
+      bool is_rendered;
     };
 
     void TryAddToBaseImpl(KnownSource& audio_source);

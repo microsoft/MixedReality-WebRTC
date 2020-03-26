@@ -1899,11 +1899,11 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Experimental. Play or not remote audio tracks on the audio device.
+        /// Experimental. Render or not remote audio tracks on the audio device.
         /// </summary>
-        public void PlayRemoteAudio(bool play)
+        public void RenderRemoteAudio(bool render)
         {
-            PeerConnectionInterop.PeerConnection_PlayRemoteAudio(_nativePeerhandle, play);
+            PeerConnectionInterop.PeerConnection_RenderRemoteAudio(_nativePeerhandle, render);
         }
 
         internal void OnConnected()

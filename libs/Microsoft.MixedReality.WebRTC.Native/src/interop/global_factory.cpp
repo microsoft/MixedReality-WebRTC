@@ -197,7 +197,7 @@ bool GlobalFactory::CustomAudioMixer::AddSource(Source* audio_source) {
   RTC_DCHECK(audio_source);
 
   rtc::CritScope lock(&crit_);
-  // By default add the source as not played.
+  // By default add the source as not rendered.
   auto result =
       source_from_id_.insert({audio_source->Ssrc(), {audio_source, false}});
   if (!result.second) {
@@ -206,9 +206,9 @@ bool GlobalFactory::CustomAudioMixer::AddSource(Source* audio_source) {
     RTC_DCHECK(!known_source.source) << "Source " << audio_source->Ssrc() << " added twice";
     known_source.source = audio_source;
 
-    // If PlaySource(true) has been called before, start mixing the source
+    // If RenderSource(true) has been called before, start mixing the source
     // through the base impl.
-    if (known_source.is_played) {
+    if (known_source.is_rendered) {
       TryAddToBaseImpl(known_source);
     }
   }
@@ -220,7 +220,7 @@ void GlobalFactory::CustomAudioMixer::TryAddToBaseImpl(KnownSource& known_source
   bool added_succesfully = base_impl_->AddSource(known_source.source);
   if (!added_succesfully) {
     RTC_LOG_F(LS_WARNING) << "Cannot mix source " << known_source.source->Ssrc();
-    known_source.is_played = false;
+    known_source.is_rendered = false;
   }
 }
 
@@ -234,7 +234,7 @@ void GlobalFactory::CustomAudioMixer::RemoveSource(
       source_from_id_.find(audio_source->Ssrc());
   RTC_DCHECK(iter != source_from_id_.end()) << "Cannot find source " << audio_source->Ssrc();
 
-  if (iter->second.is_played) {
+  if (iter->second.is_rendered) {
     // Stop mixing the source.
     base_impl_->RemoveSource(audio_source);
   }
@@ -255,7 +255,7 @@ void GlobalFactory::CustomAudioMixer::Mix(
 
     // Collect the redirected sources.
     for (auto&& pair : source_from_id_) {
-      if (!pair.second.is_played) {
+      if (!pair.second.is_rendered) {
         redirected_sources.push_back(pair.second.source);
       } else {
         some_source_is_played = true;
@@ -263,8 +263,8 @@ void GlobalFactory::CustomAudioMixer::Mix(
     }
 
     if (some_source_is_played) {
-      // Mix played sources using the base impl. Do inside the lock in case
-      // sources are added/removed by PlaySource on a different thread.
+      // Mix rendered sources using the base impl. Do inside the lock in case
+      // sources are added/removed by RenderSource on a different thread.
       base_impl_->Mix(number_of_channels, audio_frame_for_mixing);
     }
   }
@@ -289,30 +289,30 @@ void GlobalFactory::CustomAudioMixer::Mix(
   }
 }
 
-void GlobalFactory::CustomAudioMixer::PlaySource(int ssrc, bool play) {
+void GlobalFactory::CustomAudioMixer::RenderSource(int ssrc, bool render) {
 #if defined(WINUWP)
   RTC_LOG_F(LS_WARNING)
-      << "Playing/not playing remote audio explicitly is not supported on UWP";
+      << "Rendering/not rendering remote audio explicitly is not supported on UWP";
 #else   // defined(WINUWP)
   rtc::CritScope lock(&crit_);
 
   // If the source is unknown add a KnownSource with null Source* to remember
   // the choice.
-  const auto result = source_from_id_.insert({ssrc, {nullptr, play}});
+  const auto result = source_from_id_.insert({ssrc, {nullptr, render}});
 
   if (!result.second) {
-    // The source has already been added through PlaySource. Modify the play
+    // The source has already been added through RenderSource. Modify the render
     // state.
     KnownSource& known_source = result.first->second;
-    if (play && !known_source.is_played) {
+    if (render && !known_source.is_rendered) {
       // Add the source to the ones mixed by the base impl.
       TryAddToBaseImpl(known_source);
-    } else if (!play && known_source.is_played) {
+    } else if (!render && known_source.is_rendered) {
       // Remove the source from the ones mixed by the base impl.
       base_impl_->RemoveSource(known_source.source);
     }
     // else the state of the source is unchanged.
-    known_source.is_played = play;
+    known_source.is_rendered = render;
   }
 #endif // defined(WINUWP)
 }

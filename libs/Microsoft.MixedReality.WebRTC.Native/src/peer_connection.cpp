@@ -278,18 +278,18 @@ class PeerConnectionImpl : public PeerConnection,
     }
   }
 
-  void PlayRemoteAudioTrack(bool play) noexcept override {
+  void RenderRemoteAudioTrack(bool render) noexcept override {
     const std::lock_guard<std::mutex> lock{remote_audio_mutex_};
-    play_remote_audio_ = play;
+    render_remote_audio_ = render;
     if (remote_audio_ssrc_) {
-      custom_audio_mixer_->PlaySource(*remote_audio_ssrc_, play);
+      custom_audio_mixer_->RenderSource(*remote_audio_ssrc_, render);
     }
   }
 
   void SetRemoteAudioSsrc(int ssrc) {
     const std::lock_guard<std::mutex> lock{remote_audio_mutex_};
     if (!remote_audio_ssrc_) {
-      custom_audio_mixer_->PlaySource(ssrc, play_remote_audio_);
+      custom_audio_mixer_->RenderSource(ssrc, render_remote_audio_);
     }
     remote_audio_ssrc_ = ssrc;
   }
@@ -499,7 +499,7 @@ class PeerConnectionImpl : public PeerConnection,
   // TODO at the moment we only support one remote audio source so keep just one
   // ssrc and one flag.
   absl::optional<int> remote_audio_ssrc_ RTC_GUARDED_BY(remote_audio_mutex_);
-  bool play_remote_audio_ RTC_GUARDED_BY(remote_audio_mutex_) = true;
+  bool render_remote_audio_ RTC_GUARDED_BY(remote_audio_mutex_) = true;
   std::mutex remote_audio_mutex_;
 
   rtc::scoped_refptr<GlobalFactory::CustomAudioMixer> custom_audio_mixer_;

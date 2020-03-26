@@ -711,10 +711,10 @@ void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
   }
 }
 
-void MRS_CALL mrsPeerConnectionPlayRemoteAudio(PeerConnectionHandle peerHandle,
-                                               bool play) {
+void MRS_CALL mrsPeerConnectionRenderRemoteAudio(PeerConnectionHandle peerHandle,
+                                               bool render) {
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->PlayRemoteAudioTrack(play);
+    peer->RenderRemoteAudioTrack(render);
   }
 }
 
