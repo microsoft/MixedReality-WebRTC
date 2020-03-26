@@ -286,7 +286,7 @@ class PeerConnectionImpl : public PeerConnection,
     }
   }
 
-  void SetSsrc(int ssrc) {
+  void SetRemoteAudioSsrc(int ssrc) {
     const std::lock_guard<std::mutex> lock{remote_audio_mutex_};
     if (!remote_audio_ssrc_) {
       custom_audio_mixer_->PlaySource(ssrc, play_remote_audio_);
@@ -496,7 +496,8 @@ class PeerConnectionImpl : public PeerConnection,
   /// https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
   bool sctp_negotiated_ = true;
 
-  // TODO
+  // TODO at the moment we only support one remote audio source so keep just one
+  // ssrc and one flag.
   absl::optional<int> remote_audio_ssrc_ RTC_GUARDED_BY(remote_audio_mutex_);
   bool play_remote_audio_ RTC_GUARDED_BY(remote_audio_mutex_) = true;
   std::mutex remote_audio_mutex_;
@@ -1237,7 +1238,7 @@ void PeerConnectionImpl::OnAddTrack(
         const auto& stats =
             report->GetStatsOfType<webrtc::RTCInboundRTPStreamStats>();
         RTC_DCHECK_EQ(stats.size(), 1);
-        peer_connection_.SetSsrc(*stats[0]->ssrc);
+        peer_connection_.SetRemoteAudioSsrc(*stats[0]->ssrc);
       }
       PeerConnectionImpl& peer_connection_;
     };
