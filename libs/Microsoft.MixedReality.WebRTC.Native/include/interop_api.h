@@ -453,7 +453,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
     PeerConnectionAudioFrameCallback callback,
     void* user_data) noexcept;
 
-// TODO
+// Experimental. Play or not remote audio tracks on the audio device.
 MRS_API void MRS_CALL
 mrsPeerConnectionPlayRemoteAudio(PeerConnectionHandle peerHandle, bool play);
 

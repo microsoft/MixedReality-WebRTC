@@ -1899,7 +1899,7 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// TODO
+        /// Experimental. Play or not remote audio tracks on the audio device.
         /// </summary>
         public void PlayRemoteAudio(bool play)
         {

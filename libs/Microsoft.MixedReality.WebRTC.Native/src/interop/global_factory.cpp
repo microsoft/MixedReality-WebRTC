@@ -190,70 +190,86 @@ uint32_t GlobalFactory::ReportLiveObjects() {
   return static_cast<uint32_t>(alive_objects_.size());
 }
 
-static const int16_t zerobuf[200]{};
-
 GlobalFactory::CustomAudioMixer::CustomAudioMixer()
-    : base_impl_(new rtc::RefCountedObject<webrtc::AudioMixerImpl>(
-          std::make_unique<webrtc::DefaultOutputRateCalculator>(),
-          true)) {}
+    : base_impl_(webrtc::AudioMixerImpl::Create()) {}
 
 bool GlobalFactory::CustomAudioMixer::AddSource(Source* audio_source) {
   RTC_DCHECK(audio_source);
-  rtc::CritScope lock(&crit_);
 
+  rtc::CritScope lock(&crit_);
+  // By default add the source as not played.
   auto result =
       source_from_id_.insert({audio_source->Ssrc(), {audio_source, false}});
   if (!result.second) {
-    // Source has already been added through PlaySource. Update the Source*.
+    // The source has already been added through PlaySource. Update the Source*.
     auto& known_source = result.first->second;
-    RTC_DCHECK(!known_source.source);
+    RTC_DCHECK(!known_source.source) << "Source " << audio_source->Ssrc() << " added twice";
     known_source.source = audio_source;
-    // If PlaySource(true) has been called, mix the source through the base
-    // impl.
+
+    // If PlaySource(true) has been called before, start mixing the source
+    // through the base impl.
     if (known_source.is_played) {
-      base_impl_->AddSource(audio_source);
+      TryAddToBaseImpl(known_source);
     }
   }
 
   return true;
 }
 
+void GlobalFactory::CustomAudioMixer::TryAddToBaseImpl(KnownSource& known_source) {
+  bool added_succesfully = base_impl_->AddSource(known_source.source);
+  if (!added_succesfully) {
+    RTC_LOG_F(LS_WARNING) << "Cannot mix source " << known_source.source->Ssrc();
+    known_source.is_played = false;
+  }
+}
+
 void GlobalFactory::CustomAudioMixer::RemoveSource(
     Source* audio_source) {
   RTC_DCHECK(audio_source);
+
   rtc::CritScope lock(&crit_);
+  // Check if the source is being played.
   const auto iter =
       source_from_id_.find(audio_source->Ssrc());
-  RTC_DCHECK(iter != source_from_id_.end());
+  RTC_DCHECK(iter != source_from_id_.end()) << "Cannot find source " << audio_source->Ssrc();
 
   if (iter->second.is_played) {
+    // Stop mixing the source.
     base_impl_->RemoveSource(audio_source);
   }
+  // Forget the source.
   source_from_id_.erase(iter);
 }
+
+static const int16_t zerobuf[200]{};
+
 void GlobalFactory::CustomAudioMixer::Mix(
     size_t number_of_channels,
          webrtc::AudioFrame* audio_frame_for_mixing) {
 
   std::vector<Source*> redirected_sources;
-  bool no_played_sources;
+  bool some_source_is_played = false;
   {
     rtc::CritScope lock(&crit_);
-    // Mix played sources using the base impl.
-    base_impl_->Mix(number_of_channels, audio_frame_for_mixing);
 
     // Collect the redirected sources.
     for (auto&& pair : source_from_id_) {
       if (!pair.second.is_played) {
         redirected_sources.push_back(pair.second.source);
+      } else {
+        some_source_is_played = true;
       }
     }
 
-    no_played_sources =
-        (source_from_id_.size() == redirected_sources.size());
+    if (some_source_is_played) {
+      // Mix played sources using the base impl. Do inside the lock in case
+      // sources are added/removed by PlaySource on a different thread.
+      base_impl_->Mix(number_of_channels, audio_frame_for_mixing);
+    }
   }
 
-   for (auto& source : redirected_sources) {
+  for (auto& source : redirected_sources) {
     // This pumps the source and fires the frame observer callbacks
     // which in turn fill the AudioReadStream buffers
     const auto audio_frame_info = source->GetAudioFrameWithInfo(
@@ -265,7 +281,7 @@ void GlobalFactory::CustomAudioMixer::Mix(
     }
   }
 
-  if (no_played_sources) {
+  if (!some_source_is_played) {
     // Return an empty frame.
     audio_frame_for_mixing->UpdateFrame(
         0, zerobuf, 80, 8000, webrtc::AudioFrame::kNormalSpeech,
@@ -274,23 +290,31 @@ void GlobalFactory::CustomAudioMixer::Mix(
 }
 
 void GlobalFactory::CustomAudioMixer::PlaySource(int ssrc, bool play) {
+#if defined(WINUWP)
+  RTC_LOG_F(LS_WARNING)
+      << "Playing/not playing remote audio explicitly is not supported on UWP";
+#else   // defined(WINUWP)
   rtc::CritScope lock(&crit_);
 
+  // If the source is unknown add a KnownSource with null Source* to remember
+  // the choice.
   const auto result = source_from_id_.insert({ssrc, {nullptr, play}});
 
   if (!result.second) {
-    // Source has already been added through PlaySource. Modify the play state.
+    // The source has already been added through PlaySource. Modify the play
+    // state.
     KnownSource& known_source = result.first->second;
     if (play && !known_source.is_played) {
-        // Add the source to the ones mixed by the base impl.
-        RTC_DCHECK(base_impl_->AddSource(known_source.source));
+      // Add the source to the ones mixed by the base impl.
+      TryAddToBaseImpl(known_source);
     } else if (!play && known_source.is_played) {
-        // Remove the source from the ones mixed by the base impl.
-        base_impl_->RemoveSource(known_source.source);
+      // Remove the source from the ones mixed by the base impl.
+      base_impl_->RemoveSource(known_source.source);
     }
     // else the state of the source is unchanged.
     known_source.is_played = play;
   }
+#endif // defined(WINUWP)
 }
 
 #if defined(WINUWP)
@@ -328,6 +352,8 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
     return Result::kSuccess;
   }
 
+  custom_audio_mixer_ = new rtc::RefCountedObject<CustomAudioMixer>();
+
 #if defined(WINUWP)
   RTC_CHECK(!impl_);
   auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
@@ -356,7 +382,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
         wrapper::impl::org::webRtc::WebRtcFactoryConfiguration>();
     factoryConfig->thisWeak_ = factoryConfig;  // mimic wrapper_create()
     factoryConfig->audioCapturingEnabled = true;
-    factoryConfig->audioRenderingEnabled = true; //TODO change to runtime switch
+    factoryConfig->audioRenderingEnabled = true;
     factoryConfig->enableAudioBufferEvents = false;
     impl_ = std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
     impl_->thisWeak_ = impl_;  // mimic wrapper_create()
@@ -381,8 +407,6 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
                              signaling_thread_.get());
   signaling_thread_->Start();
 
-  custom_audio_mixer_ = new rtc::RefCountedObject<CustomAudioMixer>();
-
   peer_factory_ = webrtc::CreatePeerConnectionFactory(
       network_thread_.get(), worker_thread_.get(), signaling_thread_.get(),
       nullptr, webrtc::CreateBuiltinAudioEncoderFactory(),
@@ -403,6 +427,8 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
   if (!peer_factory_) {
     return true;  // already shut down
   }
+
+  custom_audio_mixer_ = nullptr;
 
   // This is read under the init mutex lock so can be relaxed, as it cannot
   // decrease during that time. However we should test the value before it's

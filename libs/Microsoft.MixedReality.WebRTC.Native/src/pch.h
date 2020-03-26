@@ -61,7 +61,6 @@
 #include "media/engine/webrtcvideoencoderfactory.h"
 #include "modules/audio_device/include/audio_device.h"
 #include "modules/audio_mixer/audio_mixer_impl.h"
-#include "modules/audio_mixer/default_output_rate_calculator.h"
 #include "modules/audio_processing/include/audio_processing.h"
 #include "modules/video_capture/video_capture_factory.h"
 #include "rtc_base/memory/aligned_malloc.h"
