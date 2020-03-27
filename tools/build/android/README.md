@@ -31,6 +31,6 @@
 
 ### Artifacts produced by the build
 
-* `./webrtc-native/build/outputs/aar/Microsoft.MixedReality.WebRTC.Native.aar`
+* `./webrtc-native/build/outputs/aar/mrwebrtc.aar`
 
 > Note: This file is automatically copied to the Unity sample project upon successful build.

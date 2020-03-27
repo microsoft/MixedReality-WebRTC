@@ -72,7 +72,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\Microsoft.MixedReality.WebRTC.Native.targets" />
+    <Import Project="..\..\mrwebrtc.targets" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -80,7 +80,7 @@
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <OutDir>..\..\..\..\bin\UWP\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>..\..\..\..\build\Microsoft.MixedReality.WebRTC.Native.UWP\UWP\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>Microsoft.MixedReality.WebRTC.Native</TargetName>
+    <TargetName>mrwebrtc</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(PlatformTarget)' == 'x86'">
     <UnityPluginDirectory>$(ProjectDir)..\..\..\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\WSA\x86</UnityPluginDirectory>
@@ -92,7 +92,7 @@
     <UnityPluginDirectory>$(ProjectDir)..\..\..\\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\WSA\ARM</UnityPluginDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <NativeUnityPluginSourceFiles Include="$(OutDir)\Microsoft.MixedReality.WebRTC.Native.dll;$(OutDir)\Microsoft.MixedReality.WebRTC.Native.pdb" />
+    <NativeUnityPluginSourceFiles Include="$(OutDir)\mrwebrtc.dll;$(OutDir)\mrwebrtc.pdb" />
   </ItemGroup>
   <ItemDefinitionGroup>
     <ClCompile>

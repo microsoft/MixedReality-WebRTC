@@ -24,15 +24,15 @@ set_target_properties(
 )
 
 #---------------------------------------------------------------------
-# Configure Microsoft.MixedReality.WebRTC.Native.so build.
+# Configure libmrwebrtc.so build.
 #
 
-# Base path to Microsoft.MixedReality.WebRTC.Native project.
+# Base path to mrwebrtc project.
 set(mr-webrtc-native-dir ../../../../../../../libs/Microsoft.MixedReality.WebRTC.Native)
 
 # List of source files to compile.
 add_library(
-        Microsoft.MixedReality.WebRTC.Native
+        mrwebrtc
         SHARED
         ${mr-webrtc-native-dir}/src/interop/external_video_track_source_interop.cpp
         ${mr-webrtc-native-dir}/src/interop/global_factory.cpp
@@ -54,7 +54,7 @@ add_library(
 
 # List of include directories.
 target_include_directories(
-        Microsoft.MixedReality.WebRTC.Native
+        mrwebrtc
         PRIVATE
         ${mr-webrtc-native-dir}/include
         ${mr-webrtc-native-dir}/src
@@ -63,9 +63,9 @@ target_include_directories(
         ${libwebrtc-src-dir}/webrtc/src/third_party/libyuv/include
 )
 
-# Build and link Microsoft.MixedReality.WebRTC.Native.so.
+# Build and link libmrwebrtc.so.
 target_link_libraries(
-        Microsoft.MixedReality.WebRTC.Native
+        mrwebrtc
         log
         android
         dl

@@ -39,7 +39,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
     internal static class Utils
     {
-        internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native";
+        // Note that on Windows due to a "bug" in LoadLibraryEx() this filename must not contain any '.'.
+        // See https://github.com/dotnet/runtime/issues/7223
+        internal const string dllPath = "mrwebrtc";
 
         // Error codes returned by the interop API -- see mrs_errors.h
         internal const uint MRS_SUCCESS = 0u;
@@ -144,42 +146,42 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
             switch (res)
             {
-                case MRS_E_UNKNOWN:
-                default:
-                    throw new Exception();
+            case MRS_E_UNKNOWN:
+            default:
+                throw new Exception();
 
-                case MRS_E_INVALID_PARAMETER:
-                    throw new ArgumentException();
+            case MRS_E_INVALID_PARAMETER:
+                throw new ArgumentException();
 
-                case MRS_E_INVALID_OPERATION:
-                    throw new InvalidOperationException();
+            case MRS_E_INVALID_OPERATION:
+                throw new InvalidOperationException();
 
-                case MRS_E_WRONG_THREAD:
-                    throw new InvalidOperationException("This method cannot be called on that thread.");
+            case MRS_E_WRONG_THREAD:
+                throw new InvalidOperationException("This method cannot be called on that thread.");
 
-                case MRS_E_NOTFOUND:
-                    throw new Exception("Object not found.");
+            case MRS_E_NOTFOUND:
+                throw new Exception("Object not found.");
 
-                case MRS_E_INVALID_NATIVE_HANDLE:
-                    throw new InvalidInteropNativeHandleException();
+            case MRS_E_INVALID_NATIVE_HANDLE:
+                throw new InvalidInteropNativeHandleException();
 
-                case MRS_E_NOT_INITIALIZED:
-                    throw new InvalidOperationException("Object not initialized.");
+            case MRS_E_NOT_INITIALIZED:
+                throw new InvalidOperationException("Object not initialized.");
 
-                case MRS_E_UNSUPPORTED:
-                    throw new NotSupportedException();
+            case MRS_E_UNSUPPORTED:
+                throw new NotSupportedException();
 
-                case MRS_E_OUT_OF_RANGE:
-                    throw new ArgumentOutOfRangeException();
+            case MRS_E_OUT_OF_RANGE:
+                throw new ArgumentOutOfRangeException();
 
-                case MRS_E_SCTP_NOT_NEGOTIATED:
-                    throw new SctpNotNegotiatedException();
+            case MRS_E_SCTP_NOT_NEGOTIATED:
+                throw new SctpNotNegotiatedException();
 
-                case MRS_E_PEER_CONNECTION_CLOSED:
-                    throw new InvalidOperationException("The operation cannot complete because the peer connection was closed.");
+            case MRS_E_PEER_CONNECTION_CLOSED:
+                throw new InvalidOperationException("The operation cannot complete because the peer connection was closed.");
 
-                case MRS_E_INVALID_DATA_CHANNEL_ID:
-                    throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
+            case MRS_E_INVALID_DATA_CHANNEL_ID:
+                throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
             }
         }
 
