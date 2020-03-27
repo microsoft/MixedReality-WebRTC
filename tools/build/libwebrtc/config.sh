@@ -42,6 +42,8 @@ OPTIONS:
     -b BRANCH       The name of the Git branch to clone. E.g.: "branch-heads/71"
     -t TARGET_OS    Target OS for cross compilation. Default is 'android'. Possible values are: 'linux', 'mac', 'win', 'android', 'ios'.
     -c TARGET_CPU   Target CPU for cross compilation. Default is determined by TARGET_OS. For 'android', it is 'arm64'. Possible values are: 'x86', 'x64', 'arm64', 'arm'.
+    -s              Ignore disk space check and proceed anyway with low disk space.
+    -u              Ignore unsupported platform check and attempt to install anyway.
 EOF
 }
 
@@ -52,6 +54,8 @@ function verify-arguments() {
     VERBOSE=${VERBOSE:-0}
     TARGET_OS=${TARGET_OS:-android}
     TARGET_CPU=${TARGET_CPU:-arm64}
+    NO_DISK_SPACE=${NO_DISK_SPACE:-0}
+    UNSUPPORTED=${UNSUPPORTED:-0}
     # Print all executed commands?
     [ "$VERBOSE" = 1 ] && set -x || true
 }
@@ -60,19 +64,25 @@ function verify-arguments() {
 # Main
 
 # Read command line
-while getopts d:b:t:c:vh OPTION; do
+while getopts d:b:t:c:vsuh OPTION; do
     case ${OPTION} in
     d) WORK_DIR=$OPTARG ;;
     b) BRANCH=$OPTARG ;;
     t) TARGET_OS=$OPTARG ;;
     c) TARGET_CPU=$OPTARG ;;
     v) VERBOSE=1 ;;
+    s) NO_DISK_SPACE=1 ;;
+    u) UNSUPPORTED=1 ;;
     h | ?) usage && exit 0 ;;
     esac
 done
 
 # Ensure all arguments have reasonable values
 verify-arguments
+
+# Check host requirements
+[ "$NO_DISK_SPACE" = 0 ] && check-host-disk-space || true
+[ "$UNSUPPORTED" = 0 ] && check-host-os || true
 
 # Print a config summary
 print-config

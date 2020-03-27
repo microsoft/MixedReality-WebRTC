@@ -5,6 +5,49 @@
 # Library functions
 
 #-----------------------------------------------------------------------------
+# Check build host disk space is at least 40GB
+function check-host-disk-space() {
+    echo -e "\e[39mChecking host disk space...\e[39m"
+    local AVAIL=$(df -B1 --output=avail $(pwd) | tail -1)
+    if (( $AVAIL < 40000000000 )); then
+        echo -e "\e[31mERROR: Insufficent disk space (need at least 40GB)\n" \
+        "$(df -h $(pwd))\e[39m" >&2
+        exit 1
+    fi
+}
+
+#-----------------------------------------------------------------------------
+# Check build host OS version (required by Google scripts)
+function check-host-os() {
+    echo -e "\e[39mChecking host OS...\e[39m"
+    # Same check as Chrome's install-build-deps.sh
+    # https://chromium.googlesource.com/chromium/src/+/f34485ffde/build/install-build-deps.sh
+    # This is for m71; ideally we'd want to have a dynamic check for the
+    # actual branch selected.
+    if ! which lsb_release > /dev/null; then
+        echo "\e[32mERROR: lsb_release not found in \$PATH\e[39m" >&2
+        exit 1;
+    fi
+    distro_codename=$(lsb_release --codename --short)
+    distro_id=$(lsb_release --id --short)
+    # TODO - These are the checks for M71 only, later (master) also support more
+    # recent Ubuntu releases like 19.04.
+    supported_codenames="(trusty|xenial|artful|bionic)"
+    supported_ids="(Debian)"
+    if [[ ! $distro_codename =~ $supported_codenames &&
+          ! $distro_id =~ $supported_ids ]]; then
+        echo -e "\e[31mERROR: The only distros supported by the Google scripts for M71 are\n" \
+        "\tUbuntu 14.04 LTS (trusty)\n" \
+        "\tUbuntu 16.04 LTS (xenial)\n" \
+        "\tUbuntu 17.10 (artful)\n" \
+        "\tUbuntu 18.04 LTS (bionic)\n" \
+        "\tDebian 8 (jessie) or later\n" \
+        "Attempting to install anyway might fail, so aborting.\e[39m" >&2
+        exit 1
+    fi
+}
+
+#-----------------------------------------------------------------------------
 function print-config() {
     echo -e "\e[39mTarget OS: \e[96m$TARGET_OS\e[39m"
     echo -e "\e[39mTarget CPU \e[96m$TARGET_CPU\e[39m"
