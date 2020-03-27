@@ -10,7 +10,9 @@
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
-    "precompiledReferences": [],
+    "precompiledReferences": [
+        "Microsoft.MixedReality.WebRTC.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": []
 }
