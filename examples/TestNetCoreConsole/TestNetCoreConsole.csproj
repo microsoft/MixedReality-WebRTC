@@ -17,10 +17,10 @@
     <Content Include="..\..\bin\netstandard2.0\$(Configuration)\Microsoft.MixedReality.WebRTC.pdb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\bin\Win32\$(Platform)\$(Configuration)\Microsoft.MixedReality.WebRTC.Native.dll">
+    <Content Include="..\..\bin\Win32\$(Platform)\$(Configuration)\mrwebrtc.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\bin\Win32\$(Platform)\$(Configuration)\Microsoft.MixedReality.WebRTC.Native.pdb">
+    <Content Include="..\..\bin\Win32\$(Platform)\$(Configuration)\mrwebrtc.pdb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
