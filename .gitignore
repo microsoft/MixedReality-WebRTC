@@ -5,12 +5,11 @@
 /obj
 /tools/build/userdef.py
 # TODO - Fix location with directory.build
-examples/TestAppUwp/bin
-examples/TestAppUwp/build
-examples/TestAppUwp/obj
+examples/*/bin
 tests/Microsoft.MixedReality.WebRTC.Tests/bin
 tests/Microsoft.MixedReality.WebRTC.Tests/build
 tests/Microsoft.MixedReality.WebRTC.Tests/obj
+examples/TestNetCoreConsole/bin
 
 # Visual Studio + Code
 .vs
@@ -54,9 +53,6 @@ xdoc.meta
 
 # Profiling data
 *.etl
-
-# TODO - TestNetCoreConsole is misconfigured, builds into its own folder
-examples/TestNetCoreConsole/bin
 
 # CMake
 CMakefiles/
