@@ -83,9 +83,15 @@ using mrsLocalVideoTrackInteropHandle = void*;
 using mrsDataChannelInteropHandle = void*;
 
 /// Callback to create an interop wrapper for a data channel.
+///
+/// The |config| parameter is passed by value to facilitate interop with C#, as
+/// the struct contains a string which would otherwise not be marshaled
+/// correctly.
+///
+/// The |callbacks| struct is filled by the callee with callbacks to register.
 using mrsDataChannelCreateObjectCallback = mrsDataChannelInteropHandle(
     MRS_CALL*)(mrsPeerConnectionInteropHandle parent,
-               const mrsDataChannelConfig& config,
+               mrsDataChannelConfig config,
                mrsDataChannelCallbacks* callbacks);
 
 //
@@ -585,9 +591,9 @@ inline uint32_t operator&(mrsDataChannelConfigFlags a,
 }
 
 struct mrsDataChannelConfig {
-  int32_t id = -1;      // -1 for auto; >=0 for negotiated
-  const char* label{};  // optional; can be null or empty string
+  int32_t id = -1;  // -1 for auto; >=0 for negotiated
   mrsDataChannelConfigFlags flags{};
+  const char* label{};  // optional; can be null or empty string
 };
 
 struct mrsDataChannelCallbacks {
