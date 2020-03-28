@@ -1081,7 +1081,7 @@ void PeerConnectionImpl::OnDataChannel(
 
   // Read the data channel config
   std::string label = impl->label();
-  mrsDataChannelConfig config;
+  mrsDataChannelConfig config{};
   config.id = impl->id();
   config.label = label.c_str();
   if (impl->ordered()) {

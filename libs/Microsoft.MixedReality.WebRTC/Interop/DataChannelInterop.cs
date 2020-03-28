@@ -28,8 +28,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public ref struct CreateConfig
         {
             public int id;
-            public string label;
             public uint flags;
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string label;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -48,8 +49,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         #region Native callbacks
 
+        // Note that CreateConfig is passed by value to allow correct string marshaling.
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate IntPtr CreateObjectDelegate(IntPtr peer, ref CreateConfig config,
+        public delegate IntPtr CreateObjectDelegate(IntPtr peer, CreateConfig config,
             out Callbacks callbacks);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
@@ -76,11 +78,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [MonoPInvokeCallback(typeof(CreateObjectDelegate))]
-        public static IntPtr DataChannelCreateObjectCallback(IntPtr peer, ref CreateConfig config,
+        public static IntPtr DataChannelCreateObjectCallback(IntPtr peer, CreateConfig config,
             out Callbacks callbacks)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
-            var dataChannelWrapper = CreateWrapper(peerWrapper, config, out callbacks);
+            var dataChannelWrapper = CreateWrapper(peerWrapper, in config, out callbacks);
             return Utils.MakeWrapperRef(dataChannelWrapper);
         }
 
@@ -110,7 +112,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         #region Utilities
 
-        public static DataChannel CreateWrapper(PeerConnection parent, CreateConfig config, out Callbacks callbacks)
+        public static DataChannel CreateWrapper(PeerConnection parent, in CreateConfig config, out Callbacks callbacks)
         {
             // Create the callback args for the data channel
             var args = new CallbackArgs()
@@ -133,15 +135,12 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             args.DataChannel = dataChannel;
 
             // Fill out the callbacks
-            callbacks = new Callbacks()
-            {
-                messageCallback = args.MessageCallback,
-                messageUserData = userData,
-                bufferingCallback = args.BufferingCallback,
-                bufferingUserData = userData,
-                stateCallback = args.StateCallback,
-                stateUserData = userData
-            };
+            callbacks.messageCallback = args.MessageCallback;
+            callbacks.messageUserData = userData;
+            callbacks.bufferingCallback = args.BufferingCallback;
+            callbacks.bufferingUserData = userData;
+            callbacks.stateCallback = args.StateCallback;
+            callbacks.stateUserData = userData;
 
             return dataChannel;
         }
