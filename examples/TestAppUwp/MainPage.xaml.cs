@@ -167,16 +167,16 @@ namespace TestAppUwp
             }
         }
 
-        public PeerConnection.VideoProfileKind SelectedVideoProfileKind
+        public VideoProfileKind SelectedVideoProfileKind
         {
             get
             {
                 var videoProfileKindIndex = KnownVideoProfileKindComboBox.SelectedIndex;
                 if (videoProfileKindIndex < 0)
                 {
-                    return PeerConnection.VideoProfileKind.Unspecified;
+                    return VideoProfileKind.Unspecified;
                 }
-                return (PeerConnection.VideoProfileKind)Enum.GetValues(typeof(PeerConnection.VideoProfileKind)).GetValue(videoProfileKindIndex);
+                return (VideoProfileKind)Enum.GetValues(typeof(VideoProfileKind)).GetValue(videoProfileKindIndex);
             }
         }
 
@@ -551,11 +551,11 @@ namespace TestAppUwp
         {
             LogMessage("Initializing the WebRTC native plugin...");
 
-            // Populate the combo box with the PeerConnection.VideoProfileKind enum
+            // Populate the combo box with the VideoProfileKind enum
             {
-                var values = Enum.GetValues(typeof(PeerConnection.VideoProfileKind));
-                KnownVideoProfileKindComboBox.ItemsSource = values.Cast<PeerConnection.VideoProfileKind>();
-                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, PeerConnection.VideoProfileKind.Unspecified);
+                var values = Enum.GetValues(typeof(VideoProfileKind));
+                KnownVideoProfileKindComboBox.ItemsSource = values.Cast<VideoProfileKind>();
+                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, VideoProfileKind.Unspecified);
             }
 
             VideoCaptureDeviceList.SelectionChanged += VideoCaptureDeviceList_SelectionChanged;
@@ -736,11 +736,11 @@ namespace TestAppUwp
                 {
                     return;
                 }
-                var videoProfileKind = (PeerConnection.VideoProfileKind)Enum.GetValues(typeof(PeerConnection.VideoProfileKind)).GetValue(videoProfileKindIndex);
+                var videoProfileKind = (VideoProfileKind)Enum.GetValues(typeof(VideoProfileKind)).GetValue(videoProfileKindIndex);
 
                 // List all video profiles for the select device (and kind, if any specified)
                 IReadOnlyList<MediaCaptureVideoProfile> profiles;
-                if (videoProfileKind == PeerConnection.VideoProfileKind.Unspecified)
+                if (videoProfileKind == VideoProfileKind.Unspecified)
                 {
                     profiles = MediaCapture.FindAllVideoProfiles(device.Id);
                 }
@@ -786,15 +786,15 @@ namespace TestAppUwp
             var device = VideoCaptureDevices[deviceIndex];
 
             // Select a default video profile kind
-            var values = Enum.GetValues(typeof(PeerConnection.VideoProfileKind));
+            var values = Enum.GetValues(typeof(VideoProfileKind));
             if (MediaCapture.IsVideoProfileSupported(device.Id))
             {
-                var defaultProfile = PeerConnection.VideoProfileKind.VideoConferencing;
+                var defaultProfile = VideoProfileKind.VideoConferencing;
                 var profiles = MediaCapture.FindKnownVideoProfiles(device.Id, (KnownVideoProfile)(defaultProfile - 1));
                 if (!profiles.Any())
                 {
                     // Fall back to VideoRecording if VideoConferencing has no profiles (e.g. HoloLens).
-                    defaultProfile = PeerConnection.VideoProfileKind.VideoRecording;
+                    defaultProfile = VideoProfileKind.VideoRecording;
                 }
                 KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, defaultProfile);
 
@@ -805,7 +805,7 @@ namespace TestAppUwp
             }
             else
             {
-                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, PeerConnection.VideoProfileKind.Unspecified);
+                KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, VideoProfileKind.Unspecified);
                 KnownVideoProfileKindComboBox.IsEnabled = false;
                 VideoProfileComboBox.IsEnabled = false;
                 RecordMediaDescList.IsEnabled = false;
@@ -862,18 +862,18 @@ namespace TestAppUwp
             {
                 // Ensure that the filtering values are up to date before passing the message on.
                 UpdateCodecFilters();
-            }).AsTask().ContinueWith(_ =>
+            }).AsTask().ContinueWith(async _ =>
             {
                 switch (message.MessageType)
                 {
                     case NodeDssSignaler.Message.WireMessageType.Offer:
-                        _peerConnection.SetRemoteDescription("offer", message.Data);
-                        // If we get an offer, we immediately send an answer back
+                        await _peerConnection.SetRemoteDescriptionAsync("offer", message.Data);
+                        // If we get an offer, we immediately send an answer back once the offer is applied
                         _peerConnection.CreateAnswer();
                         break;
 
                     case NodeDssSignaler.Message.WireMessageType.Answer:
-                        _peerConnection.SetRemoteDescription("answer", message.Data);
+                        _ = _peerConnection.SetRemoteDescriptionAsync("answer", message.Data);
                         break;
 
                     case NodeDssSignaler.Message.WireMessageType.Ice:
@@ -1448,7 +1448,7 @@ namespace TestAppUwp
 
                 // The default start bitrate is quite low (300 kbps); use a higher value to get
                 // better quality on local network.
-                _peerConnection.SetBitrate(maxBitrateBps: 100000);
+                _peerConnection.SetBitrate(startBitrateBps: (uint)(width * height * framerate / 20));
 
                 try
                 {
@@ -1456,7 +1456,7 @@ namespace TestAppUwp
                     await _peerConnection.AddLocalAudioTrackAsync();
 
                     // Add the local video track captured from the local webcam
-                    var trackConfig = new PeerConnection.LocalVideoTrackSettings
+                    var trackConfig = new LocalVideoTrackSettings
                     {
                         trackName = "local_video",
                         videoDevice = captureDeviceInfo,

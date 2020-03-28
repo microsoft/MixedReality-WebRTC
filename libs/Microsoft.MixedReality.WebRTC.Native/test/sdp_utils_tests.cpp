@@ -194,3 +194,15 @@ TEST(SdpUtils, ForceCodecsShortBuffer) {
                               buffer, &len));
   ASSERT_EQ(sizeof(kSdpForcedAudioOpus), len);
 }
+
+TEST(SdpUtils, IsValidToken) {
+  ASSERT_EQ(mrsBool::kFalse, mrsSdpIsValidToken(nullptr));
+  ASSERT_EQ(mrsBool::kFalse, mrsSdpIsValidToken(""));
+  ASSERT_EQ(mrsBool::kFalse, mrsSdpIsValidToken(" "));
+  ASSERT_EQ(mrsBool::kTrue, mrsSdpIsValidToken("a"));
+  ASSERT_EQ(mrsBool::kFalse, mrsSdpIsValidToken("a z"));
+  for (auto c : std::string_view{"!#$%'*+-.^_`{|}~"}) {
+    const char str[2] = {c, '\0'};
+    ASSERT_EQ(mrsBool::kTrue, mrsSdpIsValidToken(str));
+  }
+}

@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.XR;
 
 #if ENABLE_WINMD_SUPPORT
-using Windows.Graphics.Holographic;
+using global::Windows.Graphics.Holographic;
 #endif
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -119,19 +119,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Selection mode for the video capture format.
         /// </summary>
-        public LocalVideoSourceFormatMode Mode = LocalVideoSourceFormatMode.Automatic;
+        public LocalVideoSourceFormatMode FormatMode = LocalVideoSourceFormatMode.Automatic;
 
         /// <summary>
-        /// For manual <see cref="Mode"/>, unique identifier of the video profile to use,
+        /// For manual <see cref="FormatMode"/>, unique identifier of the video profile to use,
         /// or an empty string to leave unconstrained.
         /// </summary>
         public string VideoProfileId = string.Empty;
 
         /// <summary>
-        /// For manual <see cref="Mode"/>, kind of video profile to use among a list of predefined
+        /// For manual <see cref="FormatMode"/>, kind of video profile to use among a list of predefined
         /// ones, or an empty string to leave unconstrained.
         /// </summary>
-        public WebRTC.PeerConnection.VideoProfileKind VideoProfileKind = WebRTC.PeerConnection.VideoProfileKind.Unspecified;
+        public VideoProfileKind VideoProfileKind = VideoProfileKind.Unspecified;
 
         /// <summary>
         /// Video track added to the peer connection that this component encapsulates.
@@ -145,7 +145,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private VideoFrameQueue<I420AVideoFrameStorage> _frameQueue;
 
         /// <summary>
-        /// For manual <see cref="Mode"/>, optional constraints on the resolution and framerate of
+        /// For manual <see cref="FormatMode"/>, optional constraints on the resolution and framerate of
         /// the capture format. These constraints are additive, meaning a matching format must satisfy
         /// all of them at once, in addition of being restricted to the formats supported by the selected
         /// video profile or kind of profile.
@@ -247,7 +247,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             int height = Constraints.height;
             double framerate = Constraints.framerate;
 #if ENABLE_WINMD_SUPPORT
-            if (Mode == LocalVideoSourceFormatMode.Automatic)
+            if (FormatMode == LocalVideoSourceFormatMode.Automatic)
             {
                 // Do not constrain resolution by default, unless the device calls for it (see below).
                 width = 0; // auto
@@ -259,20 +259,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 framerate = 0; // auto
 
                 // For HoloLens, use video profile to reduce resolution and save power/CPU/bandwidth
-                if (Windows.Graphics.Holographic.HolographicSpace.IsAvailable)
+                if (global::Windows.Graphics.Holographic.HolographicSpace.IsAvailable)
                 {
-                    if (!Windows.Graphics.Holographic.HolographicDisplay.GetDefault().IsOpaque)
+                    if (!global::Windows.Graphics.Holographic.HolographicDisplay.GetDefault().IsOpaque)
                     {
-                        if (Windows.ApplicationModel.Package.Current.Id.Architecture == Windows.System.ProcessorArchitecture.X86)
+                        if (global::Windows.ApplicationModel.Package.Current.Id.Architecture == global::Windows.System.ProcessorArchitecture.X86)
                         {
                             // Holographic AR (transparent) x86 platform - Assume HoloLens 1
-                            videoProfileKind = WebRTC.PeerConnection.VideoProfileKind.VideoRecording; // No profile in VideoConferencing
+                            videoProfileKind = WebRTC.VideoProfileKind.VideoRecording; // No profile in VideoConferencing
                             width = 896; // Target 896 x 504
                         }
                         else
                         {
                             // Holographic AR (transparent) non-x86 platform - Assume HoloLens 2
-                            videoProfileKind = WebRTC.PeerConnection.VideoProfileKind.VideoConferencing;
+                            videoProfileKind = WebRTC.VideoProfileKind.VideoConferencing;
                             width = 1280; // Target 1280 x 720
                         }
                     }
@@ -295,7 +295,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             _frameQueue.Clear();
 
-            var trackSettings = new WebRTC.PeerConnection.LocalVideoTrackSettings
+            var trackSettings = new LocalVideoTrackSettings
             {
                 trackName = trackName,
                 videoDevice = default,

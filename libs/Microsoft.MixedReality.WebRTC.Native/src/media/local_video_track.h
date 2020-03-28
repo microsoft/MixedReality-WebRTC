@@ -5,7 +5,6 @@
 
 #include "callback.h"
 #include "interop_api.h"
-#include "str.h"
 #include "tracked_object.h"
 #include "video_frame_observer.h"
 
@@ -37,7 +36,8 @@ class PeerConnection;
 /// has no knowledge about how the source produces the frames.
 class LocalVideoTrack : public VideoFrameObserver, public TrackedObject {
  public:
-  LocalVideoTrack(PeerConnection& owner,
+  LocalVideoTrack(RefPtr<GlobalFactory> global_factory,
+                  PeerConnection& owner,
                   rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
                   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
                   mrsLocalVideoTrackInteropHandle interop_handle) noexcept;

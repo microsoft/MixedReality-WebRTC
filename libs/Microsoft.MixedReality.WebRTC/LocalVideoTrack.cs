@@ -3,12 +3,157 @@
 
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Microsoft.MixedReality.WebRTC.Interop;
 using Microsoft.MixedReality.WebRTC.Tracing;
 
 namespace Microsoft.MixedReality.WebRTC
 {
+    /// <summary>
+    /// Kind of video profile. This corresponds to the <see xref="Windows.Media.Capture.KnownVideoProfile"/>
+    /// enum of the <see xref="Windows.Media.Capture.MediaCapture"/> API.
+    /// </summary>
+    /// <seealso href="https://docs.microsoft.com/en-us/uwp/api/windows.media.capture.knownvideoprofile"/>
+    public enum VideoProfileKind : int
+    {
+        /// <summary>
+        /// Unspecified video profile kind. Used to remove any constraint on the video profile kind.
+        /// </summary>
+        Unspecified,
+
+        /// <summary>
+        /// Video profile for video recording, often of higher quality and framerate at the expense
+        /// of power consumption and latency.
+        /// </summary>
+        VideoRecording,
+
+        /// <summary>
+        /// Video profile for high quality photo capture.
+        /// </summary>
+        HighQualityPhoto,
+
+        /// <summary>
+        /// Balanced video profile to capture both videos and photos.
+        /// </summary>
+        BalancedVideoAndPhoto,
+
+        /// <summary>
+        /// Video profile for video conferencing, often of lower power consumption
+        /// and lower latency by deprioritizing higher resolutions.
+        /// This is the recommended profile for most WebRTC applications, if supported.
+        /// </summary>
+        VideoConferencing,
+
+        /// <summary>
+        /// Video profile for capturing a sequence of photos.
+        /// </summary>
+        PhotoSequence,
+
+        /// <summary>
+        /// Video profile containing high framerate capture formats.
+        /// </summary>
+        HighFrameRate,
+
+        /// <summary>
+        /// Video profile for capturing a variable sequence of photos.
+        /// </summary>
+        VariablePhotoSequence,
+
+        /// <summary>
+        /// Video profile for capturing videos with High Dynamic Range (HDR) and Wide Color Gamut (WCG).
+        /// </summary>
+        HdrWithWcgVideo,
+
+        /// <summary>
+        /// Video profile for capturing photos with High Dynamic Range (HDR) and Wide Color Gamut (WCG).
+        /// </summary>
+        HdrWithWcgPhoto,
+
+        /// <summary>
+        /// Video profile for capturing videos with High Dynamic Range (HDR).
+        /// </summary>
+        VideoHdr8,
+    };
+
+    /// <summary>
+    /// Settings for adding a local video track backed by a local video capture device (e.g. webcam).
+    /// </summary>
+    public class LocalVideoTrackSettings
+    {
+        /// <summary>
+        /// Name of the track to create, as used for the SDP negotiation.
+        /// This name needs to comply with the requirements of an SDP token, as described in the SDP RFC
+        /// https://tools.ietf.org/html/rfc4566#page-43. In particular the name cannot contain spaces nor
+        /// double quotes <code>"</code>.
+        /// The track name can optionally be empty, in which case the implementation will create a valid
+        /// random track name.
+        /// </summary>
+        public string trackName = string.Empty;
+
+        /// <summary>
+        /// Optional video capture device to use for capture.
+        /// Use the default device if not specified.
+        /// </summary>
+        public VideoCaptureDevice videoDevice = default;
+
+        /// <summary>
+        /// Optional unique identifier of the video profile to use for capture,
+        /// if the device supports video profiles, as retrieved by one of:
+        /// - <see xref="MediaCapture.FindAllVideoProfiles"/>
+        /// - <see xref="MediaCapture.FindKnownVideoProfiles"/>
+        /// This requires <see cref="videoDevice"/> to be specified.
+        /// </summary>
+        public string videoProfileId = string.Empty;
+
+        /// <summary>
+        /// Optional video profile kind to restrict the list of video profiles to consider.
+        /// Note that this is not exclusive with <see cref="videoProfileId"/>, although in
+        /// practice it is recommended to specify only one or the other.
+        /// This requires <see cref="videoDevice"/> to be specified.
+        /// </summary>
+        public VideoProfileKind videoProfileKind = VideoProfileKind.Unspecified;
+
+        /// <summary>
+        /// Enable Mixed Reality Capture (MRC) on devices supporting the feature.
+        /// This setting is silently ignored on device not supporting MRC.
+        /// </summary>
+        /// <remarks>
+        /// This is only supported on UWP.
+        /// </remarks>
+        public bool enableMrc = true;
+
+        /// <summary>
+        /// Display the on-screen recording indicator while MRC is enabled.
+        /// This setting is silently ignored on device not supporting MRC, or if
+        /// <see cref="enableMrc"/> is set to <c>false</c>.
+        /// </summary>
+        /// <remarks>
+        /// This is only supported on UWP.
+        /// </remarks>
+        public bool enableMrcRecordingIndicator = true;
+
+        /// <summary>
+        /// Optional capture resolution width, in pixels.
+        /// This must be a resolution width the device supports.
+        /// </summary>
+        public uint? width;
+
+        /// <summary>
+        /// Optional capture resolution height, in pixels.
+        /// This must be a resolution width the device supports.
+        /// </summary>
+        public uint? height;
+
+        /// <summary>
+        /// Optional capture frame rate, in frames per second (FPS).
+        /// This must be a capture framerate the device supports.
+        /// </summary>
+        /// <remarks>
+        /// This is compared by strict equality, so is best left unspecified or to an exact value
+        /// retrieved by <see cref="PeerConnection.GetVideoCaptureFormatsAsync"/>.
+        /// </remarks>
+        public double? framerate;
+    }
+
     /// <summary>
     /// Video track sending to the remote peer video frames originating from
     /// a local track source.
@@ -82,13 +227,25 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private LocalVideoTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
-        internal LocalVideoTrack(LocalVideoTrackHandle nativeHandle, PeerConnection peer, string trackName, ExternalVideoTrackSource source = null)
+        // Constructor for interop-based creation; SetHandle() will be called later
+        // Constructor for a track associated with a peer connection.
+        internal LocalVideoTrack(PeerConnection peer, string trackName, ExternalVideoTrackSource source = null)
         {
-            _nativeHandle = nativeHandle;
             PeerConnection = peer;
             Name = trackName;
             Source = source;
-            RegisterInteropCallbacks();
+        }
+
+        internal void SetHandle(LocalVideoTrackHandle handle)
+        {
+            Debug.Assert(!handle.IsClosed);
+            // Either first-time assign or no-op (assign same value again)
+            Debug.Assert(_nativeHandle.IsInvalid || (_nativeHandle == handle));
+            if (_nativeHandle != handle)
+            {
+                _nativeHandle = handle;
+                RegisterInteropCallbacks();
+            }
         }
 
         private void RegisterInteropCallbacks()

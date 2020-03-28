@@ -32,8 +32,7 @@ class ArgbBuffer : public webrtc::VideoFrameBuffer {
  public:
   // Create a new buffer with enough storage for a frame with the given
   // width and height in pixels.
-  static inline rtc::scoped_refptr<ArgbBuffer> Create(int width,
-                                                             int height) {
+  static inline rtc::scoped_refptr<ArgbBuffer> Create(int width, int height) {
     return new rtc::RefCountedObject<ArgbBuffer>(width, height, width * 4);
   }
 

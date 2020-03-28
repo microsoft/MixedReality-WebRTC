@@ -3,17 +3,20 @@
 
 #include "pch.h"
 
+#include "interop/global_factory.h"
 #include "local_video_track.h"
 #include "peer_connection.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 
 LocalVideoTrack::LocalVideoTrack(
+    RefPtr<GlobalFactory> global_factory,
     PeerConnection& owner,
     rtc::scoped_refptr<webrtc::VideoTrackInterface> track,
     rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
     mrsLocalVideoTrackInteropHandle interop_handle) noexcept
-    : owner_(&owner),
+    : TrackedObject(std::move(global_factory), ObjectType::kLocalVideoTrack),
+      owner_(&owner),
       track_(std::move(track)),
       sender_(std::move(sender)),
       interop_handle_(interop_handle) {

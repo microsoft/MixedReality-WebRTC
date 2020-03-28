@@ -16,12 +16,15 @@ examples/TestNetCoreConsole/bin
 .vscode
 *.user
 *.suo
+launchSettings.json
 
 # UWP packages
 /examples/TestAppUwp/AppPackages
 
-# Nuget packages
+# Nuget packages and artifacts
 /packages
+project.json
+project.lock.json
 
 # Unity artifacts
 /libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Plugins

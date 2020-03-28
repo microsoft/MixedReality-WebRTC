@@ -10,8 +10,9 @@ namespace Microsoft::MixedReality::WebRTC {
 /// Result code from an operation, typically used through the interop layer
 /// instead of a full-featured Error object.
 ///
-/// Somewhat similar to webrtc::RTCErrorType to avoid pulling it as a dependency in the
-/// public API. This also has extra values not found in webrtc::RTCErrorType.
+/// Somewhat similar to webrtc::RTCErrorType to avoid pulling it as a dependency
+/// in the public API. This also has extra values not found in
+/// webrtc::RTCErrorType.
 enum class Result : std::uint32_t {
   /// The operation was successful.
   kSuccess = 0,
@@ -48,7 +49,8 @@ enum class Result : std::uint32_t {
   /// The current operation is not supported by the implementation.
   kUnsupported = 0x80000007,
 
-  /// An argument was passed to the API function with a value out of the expected range.
+  /// An argument was passed to the API function with a value out of the
+  /// expected range.
   kOutOfRange = 0x80000008,
 
   //

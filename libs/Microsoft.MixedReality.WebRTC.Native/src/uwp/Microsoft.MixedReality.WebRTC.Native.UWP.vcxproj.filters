@@ -30,6 +30,7 @@
     <ClCompile Include="..\media\local_video_track.cpp">
       <Filter>media</Filter>
     </ClCompile>
+    <ClCompile Include="..\tracked_object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../pch.h" />
@@ -58,6 +59,7 @@
       <Filter>media</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\result.h" />
+    <ClInclude Include="..\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

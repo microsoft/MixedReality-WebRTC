@@ -1,5 +1,7 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -120,18 +122,18 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             connectedEvent2_.Set();
         }
 
-        private void OnLocalSdpReady1(string type, string sdp)
+        private async void OnLocalSdpReady1(string type, string sdp)
         {
-            pc2_.SetRemoteDescription(type, sdp);
+            await pc2_.SetRemoteDescriptionAsync(type, sdp);
             if (type == "offer")
             {
                 pc2_.CreateAnswer();
             }
         }
 
-        private void OnLocalSdpReady2(string type, string sdp)
+        private async void OnLocalSdpReady2(string type, string sdp)
         {
-            pc1_.SetRemoteDescription(type, sdp);
+            await pc1_.SetRemoteDescriptionAsync(type, sdp);
             if (type == "offer")
             {
                 pc1_.CreateAnswer();
@@ -311,7 +313,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         [Test]
         public async Task AddLocalVideoTrackAsync_Default()
         {
-            var settings = new PeerConnection.LocalVideoTrackSettings();
+            var settings = new LocalVideoTrackSettings();
             LocalVideoTrack track1 = await pc1_.AddLocalVideoTrackAsync(settings);
             Assert.NotNull(track1);
             Assert.AreEqual(pc1_, track1.PeerConnection);
@@ -323,7 +325,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         public async Task BeforeConnect()
         {
             // Add local video track channel to #1
-            var settings = new PeerConnection.LocalVideoTrackSettings();
+            var settings = new LocalVideoTrackSettings();
             LocalVideoTrack track1 = await pc1_.AddLocalVideoTrackAsync(settings);
             Assert.NotNull(track1);
             Assert.AreEqual(pc1_, track1.PeerConnection);
@@ -364,7 +366,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.True(pc2_.IsConnected);
 
             // Add local video track channel to #1
-            var settings = new PeerConnection.LocalVideoTrackSettings();
+            var settings = new LocalVideoTrackSettings();
             LocalVideoTrack track1 = await pc1_.AddLocalVideoTrackAsync(settings);
             Assert.NotNull(track1);
             Assert.AreEqual(pc1_, track1.PeerConnection);

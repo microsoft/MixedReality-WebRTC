@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-# [TEMPLATE] Compile WebRTC Core and UWP wrappers
+# [TEMPLATE] Compile WebRTC Core and UWP wrappers for UWP platform
 
 parameters:
   buildAgent: ''
@@ -26,6 +26,16 @@ jobs:
   - checkout: self
     submodules: recursive
     clean: $(clean.git)
+
+  # Compute the PDB package variables
+  - task: PowerShell@2
+    displayName: 'Compute PDB package variables'
+    inputs:
+      targetType: filePath
+      filePath: tools/ci/computePdbPackageVars.ps1
+    env:
+      # Compute and write $(MRWebRTC_PdbPackageVersion) from build pipeline variables
+      WRITE_VERSION: 'true'
 
   # Map build* variables to script* ones
   - task: PowerShell@2
@@ -76,7 +86,7 @@ jobs:
       configuration: ${{parameters.buildConfig}}
     timeoutInMinutes: 180
 
-  # Publish webrtc.lib
+  # Publish webrtc.lib as pipeline artifacts (limited retention)
   - task: PublishPipelineArtifact@0
     displayName: 'Publish webrtc.lib ($(buildTriple))'
     inputs:
@@ -84,13 +94,13 @@ jobs:
       targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/webrtc.lib'
     timeoutInMinutes: 15
 
-  # Publish PDBs for webrtc.lib
-  - task: PublishPipelineArtifact@0
-    displayName: 'Publish PDBs for webrtc.lib ($(buildTriple))'
-    inputs:
-      artifactName: 'libwebrtc_pdbs_$(buildTriple)'
-      targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/pdbs'
-    timeoutInMinutes: 15
+  # # Publish PDBs for webrtc.lib as pipeline artifacts (limited retention)
+  # - task: PublishPipelineArtifact@0
+  #   displayName: 'Publish PDBs for webrtc.lib ($(buildTriple))'
+  #   inputs:
+  #     artifactName: 'libwebrtc_pdbs_$(buildTriple)'
+  #     targetPath: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/pdbs'
+  #   timeoutInMinutes: 15
 
   # Publish Org.WebRtc.dll and associated (PDB, ...)
   - task: PublishPipelineArtifact@0
@@ -116,3 +126,33 @@ jobs:
       artifactName: 'orgwebrtc_glue_$(buildTriple)'
       targetPath: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
     timeoutInMinutes: 15
+
+  # Copy all PDBs to a single directory for package publishing
+  - task: PowerShell@2
+    displayName: Copy PDBs for packaging
+    inputs:
+      targetType: filePath
+      filePath: tools/ci/copyPdbsForPackaging.ps1
+      arguments: '-WithUwpWrapper -CorePath "external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}/pdbs" -WrapperPath "external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}" -WrapperGluePath "external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}" -OutputPath $(Build.ArtifactStagingDirectory)/pdbs -BuildConfig ${{parameters.buildConfig}}'
+
+  # List content of PDB packaging folder
+  - powershell: |
+        foreach ($f in $(Get-ChildItem -Path $(Build.ArtifactStagingDirectory)/pdbs -Recurse))
+        {
+          Write-Host $f.FullName
+        }
+    displayName: 'List PDBs to package'
+    timeoutInMinutes: 5
+
+  # Publish PDBs for webrtc.lib as Universal Package (unlimited retention)
+  - task: UniversalPackages@0
+    displayName: 'Publish PDBs for webrtc.lib ($(buildTriple))'
+    inputs:
+      command: publish
+      publishDirectory: '$(Build.ArtifactStagingDirectory)/pdbs'
+      vstsFeedPublish: $(MRWebRTC_PdbFeed)
+      vstsFeedPackagePublish: $(MRWebRTC_PdbPackageName)
+      versionOption: custom
+      versionPublish: $(MRWebRTC_PdbPackageVersion)
+      packagePublishDescription: 'PDBs for MixedReality-WebRTC core (webrtc.lib) $(buildTriple)'
+    timeoutInMinutes: 30

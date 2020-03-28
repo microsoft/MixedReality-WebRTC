@@ -14,11 +14,6 @@ pr: none
 # Give a unique name to the build each time it runs
 name: $(Date:yyyyMMdd)-$(Rev:r)
 
-variables:
-  # Version string is "$(MRWebRTCVersion)-$(MRWebRTCReleaseTag)-$(Build.BuildId)"
-  MRWebRTCVersion: 0.0.1       # Major.Minor.Patch
-  MRWebRTCReleaseTag: 'alpha'  # Optional, without '-'
-
 stages:
 
 # Compile all platform/architecture/config variants as separate jobs

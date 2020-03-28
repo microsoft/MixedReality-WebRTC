@@ -24,7 +24,7 @@ mrsLocalVideoTrackRemoveRef(LocalVideoTrackHandle handle) noexcept;
 /// encoding.
 MRS_API void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
     LocalVideoTrackHandle trackHandle,
-    PeerConnectionI420AVideoFrameCallback callback,
+    mrsI420AVideoFrameCallback callback,
     void* user_data) noexcept;
 
 /// Register a custom callback to be called when the local video track captured
@@ -32,7 +32,7 @@ MRS_API void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
 /// encoding.
 MRS_API void MRS_CALL mrsLocalVideoTrackRegisterArgb32FrameCallback(
     LocalVideoTrackHandle trackHandle,
-    PeerConnectionArgb32VideoFrameCallback callback,
+    mrsArgb32VideoFrameCallback callback,
     void* user_data) noexcept;
 
 /// Enable or disable a local video track. Enabled tracks output their media

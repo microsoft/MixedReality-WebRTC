@@ -6,10 +6,10 @@
 #include <cassert>
 #include <cstdint>
 #include <functional>
+#include <mutex>
 #include <string>
 #include <string_view>
 #include <unordered_set>
-#include <mutex>
 
 #if defined(MR_SHARING_WIN)
 
@@ -67,7 +67,13 @@
 
 // UWP wrappers
 #if defined(WINUWP)
+
+// Stop WinRT from polluting the global namespace
+// https://developercommunity.visualstudio.com/content/problem/859178/asyncinfoh-defines-the-error-symbol-at-global-name.html
+#define _HIDE_GLOBAL_ASYNC_STATUS 1
+
 #include <winrt/windows.applicationmodel.core.h>
+
 #include "impl_org_webRtc_EventQueue.h"
 #include "impl_org_webRtc_VideoCapturer.h"
 #include "impl_org_webRtc_VideoCapturerCreationParameters.h"
@@ -77,6 +83,7 @@
 #include "impl_org_webRtc_WebRtcFactoryConfiguration.h"
 #include "impl_org_webRtc_WebRtcLib.h"
 #include "impl_org_webRtc_WebRtcLibConfiguration.h"
-#endif
+
+#endif  // defined(WINUWP)
 
 #pragma warning(pop)
