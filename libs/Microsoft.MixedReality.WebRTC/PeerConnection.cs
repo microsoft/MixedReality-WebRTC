@@ -1436,7 +1436,18 @@ namespace Microsoft.MixedReality.WebRTC
         public Task SetRemoteDescriptionAsync(string type, string sdp)
         {
             ThrowIfConnectionNotOpen();
-            return PeerConnectionInterop.SetRemoteDescriptionAsync(_nativePeerhandle, type, sdp);
+
+            // If the user specified a preferred audio or video codec, manipulate the SDP message
+            // to exclude other codecs if the preferred one is supported.
+            // We set the local codec params by forcing them here. There seems to be no direct way to set
+            // local codec params so we "pretend" that the remote endpoint is asking for them.
+            string newSdp = ForceSdpCodecs(sdp: sdp,
+                audio: PreferredAudioCodec,
+                audioParams: PreferredAudioCodecExtraParamsLocal,
+                video: PreferredVideoCodec,
+                videoParams: PreferredVideoCodecExtraParamsLocal);
+
+            return PeerConnectionInterop.SetRemoteDescriptionAsync(_nativePeerhandle, type, newSdp);
         }
 
         #endregion

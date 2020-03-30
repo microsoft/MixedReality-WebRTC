@@ -27,6 +27,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             EntryPoint = "mrsDataChannelSendMessage")]
         public static extern uint DataChannel_SendMessage(IntPtr dataChannelHandle, byte[] data, ulong size);
 
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsDataChannelSendMessage")]
+        public static extern uint DataChannel_SendMessage(IntPtr dataChannelHandle, IntPtr data, ulong size);
+
         #endregion
 
 
@@ -37,6 +41,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         {
             public int id;
             public uint flags;
+            [MarshalAs(UnmanagedType.LPStr)]
             public string label;
         }
 
