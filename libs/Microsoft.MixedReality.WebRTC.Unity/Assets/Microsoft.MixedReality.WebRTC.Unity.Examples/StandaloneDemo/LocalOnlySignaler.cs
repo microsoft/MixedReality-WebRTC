@@ -37,7 +37,7 @@ public class LocalOnlySignaler : MonoBehaviour
     {
         _remoteApplied1.Reset();
         _remoteApplied2.Reset();
-        Peer1.CreateOffer();
+        Peer1.StartConnection();
         _remoteApplied1.Wait();
         _remoteApplied2.Wait();
     }
@@ -56,7 +56,7 @@ public class LocalOnlySignaler : MonoBehaviour
     {
         _remoteApplied1.Reset();
         _remoteApplied2.Reset();
-        Peer1.CreateOffer();
+        Peer1.StartConnection();
         if (!_remoteApplied1.Wait(millisecondsTimeout))
         {
             return false;
@@ -88,7 +88,7 @@ public class LocalOnlySignaler : MonoBehaviour
 
     private async void Peer1_LocalSdpReadytoSend(string type, string sdp)
     {
-        await Peer2.SetRemoteDescriptionAsync(type, sdp);
+        await Peer2.HandleConnectionMessageAsync(type, sdp);
         _remoteApplied2.Set();
         if (type == "offer")
         {
@@ -98,7 +98,7 @@ public class LocalOnlySignaler : MonoBehaviour
 
     private async void Peer2_LocalSdpReadytoSend(string type, string sdp)
     {
-        await Peer1.SetRemoteDescriptionAsync(type, sdp);
+        await Peer1.HandleConnectionMessageAsync(type, sdp);
         _remoteApplied1.Set();
         if (type == "offer")
         {
