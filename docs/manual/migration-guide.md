@@ -21,7 +21,7 @@ Audio and video tracks are now standalone objects, not tied to a peer connection
 
 #### Transceivers
 
-Previously in 1.0 the peer connection was based on an API similar to the track-based API of the pre-standard WebRTC specification. The 2.0 release introduces a different _tranceiver_-based API for manipulating audio and video track, which is more closely based on the WebRTC 1.0 standard.
+Previously in 1.0 the peer connection was based on an API similar to the track-based API of the pre-standard WebRTC specification. The 2.0 release introduces a different _transceiver_-based API for manipulating audio and video track, which is more closely based on the WebRTC 1.0 standard.
 
 - A _transceiver_ is a "media pipe" in charge of the encoding and transport of some audio or video tracks (at most one each way, sent and received).
 - A peer connection owns an ordered collection of audio and video transceivers. Users must create a transceiver with [`PeerConnection.AddTransceiver()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddTransceiver(Microsoft.MixedReality.WebRTC.MediaKind,Microsoft.MixedReality.WebRTC.TransceiverInitSettings)). Transceivers cannot be removed; they stay attached to the peer connection until that peer connection is destroyed.
@@ -43,7 +43,7 @@ Migrating from the 1.0 release, users typically:
 
 - On the **offering peer**, replace calls to `PeerConnection.AddLocalAudioTrack()` with:
   - a call to [`LocalAudioTrack.CreateFromDeviceAsync()`](xref:Microsoft.MixedReality.WebRTC.LocalAudioTrack.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalAudioTrackSettings)) to create the audio track.
-  - a call to [`PeerConnection.AddTransceiver()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddTransceiver(Microsoft.MixedReality.WebRTC.MediaKind,Microsoft.MixedReality.WebRTC.TransceiverInitSettings)) to add an audio tranceiver.
+  - a call to [`PeerConnection.AddTransceiver()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddTransceiver(Microsoft.MixedReality.WebRTC.MediaKind,Microsoft.MixedReality.WebRTC.TransceiverInitSettings)) to add an audio transceiver.
   - assigning the [`Transceiver.LocalAudioTrack`](xref:Microsoft.MixedReality.WebRTC.Transceiver.LocalAudioTrack) property to the audio track.
   - setting the [`Transceiver.DesiredDirection`](xref:Microsoft.MixedReality.WebRTC.Transceiver.DesiredDirection) to [`Direction.SendReceive`](xref:Microsoft.MixedReality.WebRTC.Transceiver.Direction.SendReceive) or [`Direction.SendOnly`](xref:Microsoft.MixedReality.WebRTC.Transceiver.Direction.SendOnly) depending on whether they expect to also receive an audio track from the remote peer.
 - On the **answering peer**, replace calls to `PeerConnection.AddLocalAudioTrack()` with a call to [`LocalAudioTrack.CreateFromDeviceAsync()`](xref:Microsoft.MixedReality.WebRTC.LocalAudioTrack.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalAudioTrackSettings)) to create the audio track. However, do not immediately call [`PeerConnection.AddTransceiver()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddTransceiver(Microsoft.MixedReality.WebRTC.MediaKind,Microsoft.MixedReality.WebRTC.TransceiverInitSettings)), but instead wait for the offer to create the transceiver. This requires some coordination, either implicit (pre-established transceiver order) or explicit (user communication between the 2 peers, for example using data channels), to determine on each peer which transceiver to use for which track.
