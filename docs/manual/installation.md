@@ -21,6 +21,9 @@ This will add a dependency to the currently selected C# project. If multiple pro
 
 The C++ library is consumed as a NuGet package by adding a dependency to that package in your C++ project. The C++ library is often referred to as the **native** library.
 
+> [!IMPORTANT]
+> The C++ library as distributed in the NuGet pacakges currently requires some internal headers from the Google's WebRTC implementation to be used, which are **not** shipped with the NuGet packages. See bug [#123](https://github.com/microsoft/MixedReality-WebRTC/issues/123) for details. A workaround is to clone the repository _recursively_ to get those headers.
+
 In Visual Studio 2019:
 
 - Right-click on the C++ project > **Manage NuGet Packages...** to open the NuGet package manager window.
