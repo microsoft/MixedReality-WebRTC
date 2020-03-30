@@ -1,21 +1,23 @@
 # Unity `Signaler` component
 
-The [`Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler) Unity component is an abstract base class for implementing a custom component for a given signaling solution. The [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) Unity component takes a reference to an intance of a [`Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler) Unity component to delegate handling its signaling message.
+The [`Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler) Unity component is an abstract base class used as an helper for implementing a custom component for a given signaling solution. It is not strictly required, but provides some utilities which make it easier to write an implementation.
 
 | Property | Description |
 |---|---|
-| PeerConnection | A back reference to the [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) Unity component that this signaler is attached to. This property is updated automatically after the peer connection is initialized. See [`PeerConnection.Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Signaler). |
-| OnConnect | Event fired when the peer connection is established. Derived classes must invoke this event when appropriate. |
-| OnDisconnect | Event fired when the peer connection is closed. Derived classes must invoke this event when appropriate. |
-| OnMessage | Event fired when a signaling message is received. Derived classes must invoke this event when appropriate to deliver incoming messages to the [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection). |
-| OnFailure | Event fired when an error occurs inside the signaler. Derived classes may invoke this event when appropriate. |
+| PeerConnection | A reference to the [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) Unity component that this signaler should provide signaling for. |
 
 ## Implementing a custom signaler
 
-A custom signaling solution needs to derive from the abstract base [`Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler) class so it can be used by the [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) Unity component.
+A custom signaling solution can derive from the abstract base [`Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler) class for simplicity, or be any other Unity component or C# class.
 
-Derived classes implementing a particular signaling solution must:
-- invoke the [`OnConnect`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler.OnConnect) and [`OnDisconnect`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler.OnDisconnect) events to notify both the user and the peer connection of the state of signaling.
-- invoke the [`OnMessage`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler.OnMessage) event and implement the [`SendMessageAsync`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)) method to respectively deliver incoming messages to the local peer and send outgoing message to the remote peer.
+When deriving from the [`Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler) class, a derived class needs to:
 
-Aditionally it is recommended that implementations also invoke the [`OnFailure`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler.OnFailure) event so that the user can be notified.
+- Implement the [`SendMessageAsync()`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)) abstract method to send messages to the remote peer via the custom signaling solution.
+- Handle incoming messages from the remote peer:
+  - call [`HandleConnectionMessageAsync()`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.HandleConnectionMessageAsync(System.String,System.String)) on the Unity peer connection component when receiving an SDP offer or answer message.
+  - call [`AddIceCandidate()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddIceCandidate(System.String,System.Int32,System.String)) on the underlying C# peer connection object to deliver ICE candidates to the local peer implementation.
+
+When implementing a custom signaling solution from scratch **without** using the [`Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler) class, the custom implementation must, in addition of the above message handling, replace the work done by [`SendMessageAsync()`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)):
+
+- Listen to the [`LocalSdpReadytoSend`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadytoSend) and [`IceCandidateReadytoSend`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSend) events.
+- Send to the remote peer, by whatever mean devised by the implementation, some messages containing the data of those events, such that the remote peer can handle them as described above.

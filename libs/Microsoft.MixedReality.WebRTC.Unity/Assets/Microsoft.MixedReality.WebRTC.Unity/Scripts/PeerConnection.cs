@@ -136,7 +136,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// it will signal the remote peer that it does not wish to send (receive-only or inactive).
         ///
         /// If <see cref="Transceiver"/> is valid, that is a first session negotiation has already been completed,
-        /// then changing this value raises a <see cref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
+        /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
         /// </summary>
         public MediaSender Sender
@@ -168,7 +168,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// it will signal the remote peer that it does not wish to receive (send-only or inactive).
         ///
         /// If <see cref="Transceiver"/> is valid, that is a first session negotiation has already been conducted,
-        /// then changing this value raises a <see cref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
+        /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
         /// </summary>
         public MediaReceiver Receiver
@@ -187,20 +187,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Transceiver attached with this media line.
         /// 
-        /// On the offering peer this changes during <see cref="PeerConnection.CreateOffer"/>, while this is updated by
-        /// <see cref="PeerConnection.SetRemoteDescriptionAsync(string, string)"/> when receiving an offer on the answering peer.
+        /// On the offering peer this changes during <see cref="PeerConnection.StartConnection"/>, while this is updated by
+        /// <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/> when receiving an offer on the answering peer.
         /// </summary>
         public Transceiver Transceiver { get; private set; }
 
         /// <summary>
-        /// Sender actually attached during <see cref="PeerConnection.SetRemoteDescriptionAsync(string, string)"/>.
+        /// Sender actually attached during <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/>.
         /// This is different from <see cref="Sender"/> until a negotiation is achieved.
         /// </summary>
         [NonSerialized]
         private MediaSender _attachedSender;
 
         /// <summary>
-        /// Receiver actually paired during <see cref="PeerConnection.SetRemoteDescriptionAsync(string, string)"/>.
+        /// Receiver actually paired during <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/>.
         /// This is different from <see cref="Receiver"/> until a negotiation is achieved.
         /// </summary>
         [NonSerialized]
@@ -631,7 +631,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// 
         /// The user can then assign the <see cref="MediaLine.Sender"/> and <see cref="MediaLine.Receiver"/>
         /// fields to express their intent to send and/or receive some media through the transceiver.
-        /// This information is used in subsequent negotiations to derive a <see xref="WebRTC.Transceiver.Direction"/>
+        /// This information is used in subsequent negotiations to derive a <see xref="Microsoft.MixedReality.WebRTC.Transceiver.Direction"/>
         /// to negotiate.
         /// </summary>
         /// <param name="kind">The kind of media (audio or video) for the transceiver.</param>
@@ -645,9 +645,28 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Create a new connection offer, either for a first connection to the remote peer, or for
-        /// renegotiating some new or removed tracks.
+        /// renegotiating some new or removed transceivers.
+        /// 
+        /// This method submits an internal task to create an SDP offer message. Once the message is
+        /// created, the implementation raises the <see xref="Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadytoSend"/>
+        /// event to allow the user to send the message via the chosen signaling solution to the remote
+        /// peer.
+        /// 
+        /// <div class="IMPORTANT alert alert-important">
+        /// <h5>IMPORTANT</h5>
+        /// <p>
+        /// This method is very similar to the <c>CreateOffer()</c> method available in the underlying C# library,
+        /// and actually calls it. However it also performs additional work in order to pair the transceivers of
+        /// the local and remote peer. Therefore Unity applications must call this method instead of the C# library
+        /// one to ensure transceiver pairing works as intended.
+        /// </p>
+        /// </div>
         /// </summary>
-        public bool CreateOffer()
+        /// <returns>
+        /// <c>true</c> if the offer creation task was submitted successfully, and <c>false</c> otherwise.
+        /// The offer SDP message is always created asynchronously.
+        /// </returns>
+        public bool StartConnection()
         {
             if (Peer == null)
             {
@@ -732,17 +751,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// This must be called by the signaler when receiving a message. Once this operation
         /// has completed, it is safe to call <see xref="WebRTC.PeerConnection.CreateAnswer"/>.
         /// 
-        /// This implementation does some extra work compared to the lower level implementation
-        /// <see xref="WebRTC.PeerConnection.SetRemoteDescriptionAsync(string, string)"/> found
-        /// in the C# library, and must be called instead of it when using the Unity integration.
-        /// This ensures media receiver components are correctly paired with the remote tracks.
+        /// <div class="IMPORTANT alert alert-important">
+        /// <h5>IMPORTANT</h5>
+        /// <p>
+        /// This method is very similar to the <c>SetRemoteDescriptionAsync()</c> method available in the
+        /// underlying C# library, and actually calls it. However it also performs additional work in order
+        /// to pair the transceivers of the local and remote peer. Therefore Unity applications must call
+        /// this method instead of the C# library one to ensure transceiver pairing works as intended.
+        /// </p>
+        /// </div>
         /// </summary>
         /// <param name="type">The type of SDP message ("offer" or "answer")</param>
         /// <param name="sdp">The content of the SDP message</param>
-        /// <returns>Returns a task which completes once the remote description has been applied and transceivers
+        /// <returns>A task which completes once the remote description has been applied and transceivers
         /// have been updated.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        public Task SetRemoteDescriptionAsync(string type, string sdp)
+        public Task HandleConnectionMessageAsync(string type, string sdp)
         {
             // First apply the remote description
             var task = Peer.SetRemoteDescriptionAsync(type, sdp);
@@ -1092,7 +1116,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // again trigger the renegotiation needed event, which is not re-entrant.
                 // This also allows accessing Unity objects, and makes it safer in general
                 // for other objects.
-                _mainThreadWorkQueue.Enqueue(() => CreateOffer());
+                _mainThreadWorkQueue.Enqueue(() => StartConnection());
             }
         }
 
