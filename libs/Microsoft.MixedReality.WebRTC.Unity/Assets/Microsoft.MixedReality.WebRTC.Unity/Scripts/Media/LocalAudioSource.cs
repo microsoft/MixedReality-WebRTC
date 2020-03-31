@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using UnityEngine;
-using UnityEngine.XR;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
@@ -87,12 +86,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private async void DoAutoStartActions(WebRTC.PeerConnection nativePeer)
         {
-            // If a headset is active then do not capture local streams.
-            if (XRDevice.isPresent)
-            {
-                return;
-            }
-
             if (AutoStartCapture)
             {
                 //nativePeer.LocalAudioFrameReady += LocalAudioFrameReady;
