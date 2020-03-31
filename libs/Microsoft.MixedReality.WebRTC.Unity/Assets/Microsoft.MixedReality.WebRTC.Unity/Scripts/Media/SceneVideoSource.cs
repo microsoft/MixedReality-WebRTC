@@ -72,6 +72,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected new void OnEnable()
         {
+            // If a headset is active then do not capture scene stream.
+            // Note: this was failing on Oculus Quest, but it looks like a solution exists,
+            // see error message from the Quest:
+            //
+            // "NotSupportedException: Capturing scene content in single - pass instanced stereo
+            // rendering requires blitting from the Texture2DArray render target of the camera,
+            // which is not supported before Unity 2019.1. To use this feature, either upgrade
+            // your project to Unity 2019.1 + or use single-pass non - instanced stereo rendering
+            // (XRSettings.stereoRenderingMode = SinglePass)."
+
+            if (XRDevice.isPresent)
+            {
+                return;
+            }
+
             // If no camera provided, attempt to fallback to main camera
             if (SourceCamera == null)
             {
@@ -96,13 +111,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             base.OnDisable();
 
-            // The camera sometimes goes away before this component.
-            if (SourceCamera != null)
+            if (_commandBuffer != null)
             {
-                SourceCamera.RemoveCommandBuffer(CameraEvent, _commandBuffer);
+                // The camera sometimes goes away before this component.
+                if (SourceCamera != null)
+                {
+                    SourceCamera.RemoveCommandBuffer(CameraEvent, _commandBuffer);
+                }
+
+                _commandBuffer.Dispose();
+                _commandBuffer = null;
             }
-            _commandBuffer.Dispose();
-            _commandBuffer = null;
         }
 
         /// <summary>
