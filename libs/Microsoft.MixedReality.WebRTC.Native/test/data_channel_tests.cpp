@@ -17,7 +17,7 @@ const mrsDataChannelInteropHandle kFakeInteropDataChannelHandle = (void*)0x2;
 
 mrsDataChannelInteropHandle MRS_CALL
 FakeIterop_DataChannelCreate(mrsPeerConnectionInteropHandle /*parent*/,
-                             const mrsDataChannelConfig& /*config*/,
+                             mrsDataChannelConfig /*config*/,
                              mrsDataChannelCallbacks* /*callbacks*/) noexcept {
   return kFakeInteropDataChannelHandle;
 }
