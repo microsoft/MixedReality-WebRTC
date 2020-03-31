@@ -13,8 +13,6 @@
 #include "test_utils.h"
 #include "video_test_utils.h"
 
-#if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
-
 namespace {
 
 class VideoTrackTests : public TestUtils::TestBase,
@@ -33,6 +31,8 @@ INSTANTIATE_TEST_CASE_P(,
                         VideoTrackTests,
                         testing::ValuesIn(TestUtils::TestSemantics),
                         TestUtils::SdpSemanticToString);
+
+#if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 
 TEST_P(VideoTrackTests, Simple) {
   mrsPeerConnectionConfiguration pc_config{};
