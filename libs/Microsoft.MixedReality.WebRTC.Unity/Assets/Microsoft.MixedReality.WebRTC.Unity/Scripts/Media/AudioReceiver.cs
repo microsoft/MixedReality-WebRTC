@@ -140,6 +140,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
+        /// Internal callback invoked when the audio receiver is detached from a transceiver about to be
+        /// destroyed by the native implementation.
+        /// </summary>
+        /// <param name="audioTransceiver">The audio transceiver this receiver is attached with.</param>
+        internal void DetachFromTransceiver(Transceiver audioTransceiver)
+        {
+            Debug.Assert((Transceiver == null) || (Transceiver == audioTransceiver));
+            Transceiver = null;
+        }
+
+        /// <summary>
         /// Free-threaded callback invoked by the owning peer connection when a track is paired
         /// with this receiver, which enqueues the <see cref="AudioSource.AudioStreamStarted"/>
         /// event to be fired from the main Unity app thread.

@@ -1,9 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -130,6 +127,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             Debug.Assert((Transceiver == null) || (Transceiver == videoTransceiver));
             Transceiver = videoTransceiver;
+        }
+
+        /// <summary>
+        /// Internal callback invoked when the video receiver is detached from a transceiver about to be
+        /// destroyed by the native implementation.
+        /// </summary>
+        /// <param name="videoTransceiver">The video transceiver this receiver is attached with.</param>
+        internal void DetachFromTransceiver(Transceiver videoTransceiver)
+        {
+            Debug.Assert((Transceiver == null) || (Transceiver == videoTransceiver));
+            Transceiver = null;
         }
 
         /// <summary>

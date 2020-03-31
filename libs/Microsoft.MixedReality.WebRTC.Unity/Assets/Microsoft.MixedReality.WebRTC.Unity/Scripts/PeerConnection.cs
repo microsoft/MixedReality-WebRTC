@@ -90,6 +90,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     }
 
     /// <summary>
+    /// Exception thrown when an invalid transceiver media kind was detected, generally when trying to pair a
+    /// transceiver of one media kind with a media line of a different media kind.
+    /// </summary>
+    public class InvalidTransceiverMediaKindException : Exception
+    {
+        /// <inheritdoc/>
+        public InvalidTransceiverMediaKindException()
+            : base("Invalid transceiver kind.")
+        {
+        }
+
+        /// <inheritdoc/>
+        public InvalidTransceiverMediaKindException(string message)
+            : base(message)
+        {
+        }
+
+        /// <inheritdoc/>
+        public InvalidTransceiverMediaKindException(string message, Exception inner)
+            : base(message, inner)
+        {
+        }
+    }
+
+    /// <summary>
     /// Media line abstraction for a peer connection.
     /// 
     /// This container binds together a sender component (<see cref="MediaSender"/>) and/or a receiver component
@@ -305,11 +330,28 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
+        /// <summary>
+        /// Pair the given transceiver with the current media line.
+        /// </summary>
+        /// <param name="tr">The transceiver to pair with.</param>
+        /// <exception cref="InvalidTransceiverMediaKindException">
+        /// The transceiver associated in the offer with the same media line index as the current media line
+        /// has a different media kind than the media line. This is generally a result of the two peers having
+        /// mismatching media line configurations.
+        /// </exception>
         internal void PairTransceiverOnFirstOffer(Transceiver tr)
         {
             Debug.Assert(tr != null);
             Debug.Assert((Transceiver == null) || (Transceiver == tr));
+
+            // Check consistency before assigning
+            if (tr.MediaKind != Kind)
+            {
+                throw new InvalidTransceiverMediaKindException();
+            }
             Transceiver = tr;
+
+            // Keep the transceiver direction in sync with Sender and Receiver.
             UpdateTransceiverDesiredDirection();
 
             // Always do this even after first offer, because the sender and receiver
@@ -347,6 +389,52 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
+        internal void UnpairTransceiver()
+        {
+            bool wantsSend = (Sender != null);
+            bool wantsRecv = (Receiver != null);
+            if (Kind == MediaKind.Audio)
+            {
+                var audioTransceiver = Transceiver;
+                if (wantsSend)
+                {
+                    var audioSender = (AudioSender)Sender;
+                    audioSender.DetachFromTransceiver(audioTransceiver);
+                }
+                if (wantsRecv)
+                {
+                    var audioReceiver = (AudioReceiver)Receiver;
+                    audioReceiver.DetachFromTransceiver(audioTransceiver);
+                }
+            }
+            else if (Kind == MediaKind.Video)
+            {
+                var videoTransceiver = Transceiver;
+                if (wantsSend)
+                {
+                    var videoSender = (VideoSender)Sender;
+                    videoSender.DetachFromTransceiver(videoTransceiver);
+                }
+                if (wantsRecv)
+                {
+                    var videoReceiver = (VideoReceiver)Receiver;
+                    videoReceiver.DetachFromTransceiver(videoTransceiver);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update the media line when about to create an SDP offer message.
+        /// </summary>
+        /// <param name="tr">
+        /// The transceiver associated in the offer with the same media line index as the current media line.
+        /// </param>
+        /// <returns>A task which completes when the update is done.</returns>
+        /// <exception cref="InvalidTransceiverMediaKindException">
+        /// The transceiver associated in the offer with the same media line index as the current media line
+        /// has a different media kind than the media line. This is generally a result of the two peers having
+        /// mismatching media line configurations.
+        /// </exception>
         internal async Task UpdateForCreateOfferAsync(Transceiver tr)
         {
             Debug.Assert(tr != null);
@@ -369,6 +457,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // the transceiver for now (above) but do not try to pair remote tracks.
         }
 
+        /// <summary>
+        /// Update the media line when receiving an SDP offer message from the remote peer.
+        /// </summary>
+        /// <param name="tr">
+        /// The transceiver associated in the offer with the same media line index as the current media line.
+        /// </param>
+        /// <returns>A task which completes when the update is done.</returns>
+        /// <exception cref="InvalidTransceiverMediaKindException">
+        /// The transceiver associated in the offer with the same media line index as the current media line
+        /// has a different media kind than the media line. This is generally a result of the two peers having
+        /// mismatching media line configurations.
+        /// </exception>
         internal async Task UpdateOnReceiveOfferAsync(Transceiver tr)
         {
             Debug.Assert(tr != null);
@@ -721,8 +821,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     Transceiver tr = transceivers[mlineIndex];
                     Debug.Assert(tr != null);
                     Debug.Assert(tr.MlineIndex == mlineIndex);
-                    //< FIXME - CreateOfferAsync() to use await instead of Wait()
-                    mediaLine.UpdateForCreateOfferAsync(tr).Wait();
+                    try
+                    {
+                        //< FIXME - CreateOfferAsync() to use await instead of Wait()
+                        mediaLine.UpdateForCreateOfferAsync(tr).Wait();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogErrorOnMediaLineException(ex, mediaLine, tr);
+                    }
                 }
 
                 // Ignore extra transceivers without a media line to associate with
@@ -792,7 +899,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         var mediaLine = _mediaLines[mlineIndex];
                         Transceiver tr = transceivers[mlineIndex];
-                        await mediaLine.UpdateOnReceiveOfferAsync(tr);
+                        try
+                        {
+                            await mediaLine.UpdateOnReceiveOfferAsync(tr);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogErrorOnMediaLineException(ex, mediaLine, tr);
+                        }
 
                         // Check if the remote peer was planning to send something to this peer, but cannot.
                         bool wantsRecv = (mediaLine.Receiver != null);
@@ -879,6 +993,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // This does not prevent systems caching a reference from accessing it, but it
                 // is their responsibility to check that the peer is initialized.
                 Peer = null;
+
+                // Detach all transceivers. This prevents senders/receivers from trying to access
+                // them during their clean-up sequence, as transceivers are about to be destroyed
+                // by the native implementation.
+                foreach (var mediaLine in _mediaLines)
+                {
+                    mediaLine.UnpairTransceiver();
+                }
 
                 // Close the connection and release native resources.
                 _nativePeer.Dispose();
@@ -1127,6 +1249,39 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private void OnError_Listener(string error)
         {
             Debug.LogError(error);
+        }
+
+        /// <summary>
+        /// Log an error when receiving an exception related to a media line and transceiver pairing.
+        /// </summary>
+        /// <param name="ex">The exception to log.</param>
+        /// <param name="mediaLine">The media line associated with the exception.</param>
+        /// <param name="transceiver">The transceiver associated with the exception.</param>
+        private void LogErrorOnMediaLineException(Exception ex, MediaLine mediaLine, Transceiver transceiver)
+        {
+            // Dispatch to main thread to access Unity objects to get their names
+            _mainThreadWorkQueue.Enqueue(() =>
+            {
+                string msg;
+                if (ex is InvalidTransceiverMediaKindException)
+                {
+                    msg = $"Peer connection \"{name}\" received {transceiver.MediaKind} transceiver #{transceiver.MlineIndex} \"{transceiver.Name}\", but local peer expected some {mediaLine.Kind} transceiver instead.";
+                    if (mediaLine.Sender != null)
+                    {
+                        msg += $" Sender \"{mediaLine.Sender.name}\" will be ignored.";
+                    }
+                    if (mediaLine.Receiver)
+                    {
+                        msg += $" Receiver \"{mediaLine.Receiver.name}\" will be ignored.";
+                    }
+                }
+                else
+                {
+                    // Generic exception, log its message
+                    msg = ex.Message;
+                }
+                Debug.LogError(msg);
+            });
         }
 
         #endregion

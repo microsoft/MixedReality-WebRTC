@@ -133,6 +133,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Transceiver = videoTransceiver;
         }
 
+        /// <summary>
+        /// Internal callback invoked when the video sender is detached from a transceiver about to be
+        /// destroyed by the native implementation.
+        /// </summary>
+        /// <param name="videoTransceiver">The video transceiver this sender is attached with.</param>
+        internal void DetachFromTransceiver(Transceiver videoTransceiver)
+        {
+            Debug.Assert((Transceiver == null) || (Transceiver == videoTransceiver));
+            Transceiver = null;
+        }
+
         internal override async Task AttachTrackAsync()
         {
             Debug.Assert(Transceiver != null);
@@ -181,8 +192,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Track != null)
             {
-                // Track may not be added to any transceiver (e.g. no connection)
-                var transceiver = Track.Transceiver;
+                // Track may not be added to any transceiver (e.g. no connection), or the
+                // transceiver is about to be destroyed so the DetachFromTransceiver() already
+                // cleared it.
+                var transceiver = Transceiver;
                 if (transceiver != null)
                 {
                     Debug.Assert(transceiver.LocalVideoTrack == Track);

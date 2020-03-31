@@ -145,6 +145,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
+        /// Internal callback invoked when the audio sender is detached from a transceiver about to be
+        /// destroyed by the native implementation.
+        /// </summary>
+        /// <param name="audioTransceiver">The audio transceiver this sender is attached with.</param>
+        internal void DetachFromTransceiver(Transceiver audioTransceiver)
+        {
+            Debug.Assert((Transceiver == null) || (Transceiver == audioTransceiver));
+            Transceiver = null;
+        }
+
+        /// <summary>
         /// Internal callback invoked when a peer connection is about to create an offer,
         /// and needs to create the audio transceivers and senders. The audio sender must
         /// create a local audio track and attach it to the given transceiver.
@@ -205,8 +216,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Track != null)
             {
-                // Track may not be added to any transceiver (e.g. no connection)
-                var transceiver = Track.Transceiver;
+                // Track may not be added to any transceiver (e.g. no connection), or the
+                // transceiver is about to be destroyed so the DetachFromTransceiver() already
+                // cleared it.
+                var transceiver = Transceiver;
                 if (transceiver != null)
                 {
                     Debug.Assert(transceiver.LocalAudioTrack == Track);
