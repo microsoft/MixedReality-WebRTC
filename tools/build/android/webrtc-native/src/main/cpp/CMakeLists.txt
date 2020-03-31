@@ -36,9 +36,9 @@ add_library(
         SHARED
         ${mr-webrtc-native-dir}/src/interop/external_video_track_source_interop.cpp
         ${mr-webrtc-native-dir}/src/interop/global_factory.cpp
+        ${mr-webrtc-native-dir}/src/interop/interop_api.cpp
         ${mr-webrtc-native-dir}/src/interop/local_video_track_interop.cpp
         ${mr-webrtc-native-dir}/src/interop/peer_connection_interop.cpp
-        ${mr-webrtc-native-dir}/src/interop/interop_api.cpp
         ${mr-webrtc-native-dir}/src/media/external_video_track_source.cpp
         ${mr-webrtc-native-dir}/src/media/local_video_track.cpp
         ${mr-webrtc-native-dir}/src/audio_frame_observer.cpp
@@ -48,6 +48,7 @@ add_library(
         ${mr-webrtc-native-dir}/src/peer_connection.cpp
         ${mr-webrtc-native-dir}/src/sdp_utils.cpp
         ${mr-webrtc-native-dir}/src/str.cpp
+        ${mr-webrtc-native-dir}/src/tracked_object.cpp
         ${mr-webrtc-native-dir}/src/video_frame_observer.cpp
         ./jni_onload.cpp
 )
