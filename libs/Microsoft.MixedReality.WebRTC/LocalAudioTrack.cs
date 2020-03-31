@@ -108,7 +108,7 @@ namespace Microsoft.MixedReality.WebRTC
                 var config = new PeerConnectionInterop.LocalAudioTrackInteropInitConfig(track, settings);
 
                 // Create native implementation objects
-                uint res = LocalAudioTrackInterop.LocalAudioTrack_CreateFromDevice(in config, trackName,
+                uint res = LocalAudioTrackInterop.LocalAudioTrack_CreateFromDevice(config, trackName,
                     out LocalAudioTrackHandle trackHandle);
                 Utils.ThrowOnErrorCode(res);
                 track.SetHandle(trackHandle);

@@ -987,7 +987,7 @@ namespace Microsoft.MixedReality.WebRTC
                         nativeConfig = new PeerConnectionInterop.PeerConnectionConfiguration();
                     }
 
-                    uint res = PeerConnectionInterop.PeerConnection_Create(ref nativeConfig, out _nativePeerhandle);
+                    uint res = PeerConnectionInterop.PeerConnection_Create(nativeConfig, out _nativePeerhandle);
 
                     lock (_openCloseLock)
                     {
@@ -1186,7 +1186,7 @@ namespace Microsoft.MixedReality.WebRTC
                 // Create the transceiver implementation
                 settings = settings ?? new TransceiverInitSettings();
                 TransceiverInterop.InitConfig config = new TransceiverInterop.InitConfig(mediaKind, settings);
-                uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, in config, out IntPtr transceiverHandle);
+                uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, config, out IntPtr transceiverHandle);
                 Utils.ThrowOnErrorCode(res);
 
                 // The implementation fires the TransceiverAdded event, which creates the wrapper and
@@ -1300,8 +1300,7 @@ namespace Microsoft.MixedReality.WebRTC
                     flags = (ordered ? 0x1u : 0x0u) | (reliable ? 0x2u : 0x0u),
                     label = label,
                 };
-                IntPtr nativeHandle = IntPtr.Zero;
-                uint res = PeerConnectionInterop.PeerConnection_AddDataChannel(_nativePeerhandle, ref config, ref nativeHandle);
+                uint res = PeerConnectionInterop.PeerConnection_AddDataChannel(_nativePeerhandle, config, out IntPtr nativeHandle);
                 Utils.ThrowOnErrorCode(res);
 
                 // The wrapper is created by the "DataChannelAdded" event invoked by PeerConnection_AddDataChannel().

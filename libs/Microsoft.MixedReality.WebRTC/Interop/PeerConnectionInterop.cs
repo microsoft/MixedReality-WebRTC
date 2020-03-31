@@ -649,7 +649,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public delegate void PeerConnectionVideoTrackRemovedCallback(IntPtr peerHandle, IntPtr videoTrackHandle, IntPtr videoTransceiverHandle);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void AudioFrameUnmanagedCallback(IntPtr userData, ref AudioFrame frame);
+        public delegate void AudioFrameUnmanagedCallback(IntPtr userData, in AudioFrame frame);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionSimpleStatsCallback(IntPtr userData, IntPtr statsReport);
@@ -687,7 +687,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionCreate")]
-        public static extern uint PeerConnection_Create(ref PeerConnectionConfiguration config, out PeerConnectionHandle peerHandleOut);
+        public static extern uint PeerConnection_Create(in PeerConnectionConfiguration config, out PeerConnectionHandle peerHandleOut);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRegisterConnectedCallback")]
@@ -762,7 +762,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddDataChannel")]
         public static extern uint PeerConnection_AddDataChannel(PeerConnectionHandle peerHandle,
-            ref DataChannelInterop.CreateConfig config, ref IntPtr dataChannelHandle);
+            in DataChannelInterop.CreateConfig config, out IntPtr dataChannelHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionRemoveDataChannel")]

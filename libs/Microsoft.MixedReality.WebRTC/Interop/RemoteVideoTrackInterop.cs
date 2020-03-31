@@ -57,14 +57,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [MonoPInvokeCallback(typeof(LocalVideoTrackInterop.I420AVideoFrameUnmanagedCallback))]
-        public static void I420AFrameCallback(IntPtr userData, ref I420AVideoFrame frame)
+        public static void I420AFrameCallback(IntPtr userData, in I420AVideoFrame frame)
         {
             var track = Utils.ToWrapper<RemoteVideoTrack>(userData);
             track.OnI420AFrameReady(frame);
         }
 
         [MonoPInvokeCallback(typeof(LocalVideoTrackInterop.Argb32VideoFrameUnmanagedCallback))]
-        public static void Argb32FrameCallback(IntPtr userData, ref Argb32VideoFrame frame)
+        public static void Argb32FrameCallback(IntPtr userData, in Argb32VideoFrame frame)
         {
             var track = Utils.ToWrapper<RemoteVideoTrack>(userData);
             track.OnArgb32FrameReady(frame);

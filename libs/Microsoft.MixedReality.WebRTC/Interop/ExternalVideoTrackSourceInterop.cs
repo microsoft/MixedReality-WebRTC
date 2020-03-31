@@ -78,7 +78,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 RequestId = requestId,
                 TimestampMs = timestampMs
             };
-            args.FrameRequestCallback.Invoke(in request);
+            args.FrameRequestCallback.Invoke(request);
         }
 
         [MonoPInvokeCallback(typeof(RequestExternalArgb32VideoFrameCallback))]
@@ -92,7 +92,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 RequestId = requestId,
                 TimestampMs = timestampMs
             };
-            args.FrameRequestCallback.Invoke(in request);
+            args.FrameRequestCallback.Invoke(request);
         }
 
         #endregion

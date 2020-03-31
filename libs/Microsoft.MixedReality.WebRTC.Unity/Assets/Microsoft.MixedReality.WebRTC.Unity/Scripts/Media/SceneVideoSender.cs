@@ -226,10 +226,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _commandBuffer.EndSample("Readback");
         }
 
-        /// <summary>
-        /// Callback invoked by the base class when the WebRTC track requires a new frame.
-        /// </summary>
-        /// <param name="request">The frame request to serve.</param>
         protected override void OnFrameRequested(in FrameRequest request)
         {
             // Try to dequeue a frame from the internal frame queue

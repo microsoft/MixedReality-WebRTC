@@ -21,7 +21,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsDataChannelRegisterCallbacks")]
-        public static extern void DataChannel_RegisterCallbacks(IntPtr dataChannelHandle, ref Callbacks callbacks);
+        public static extern void DataChannel_RegisterCallbacks(IntPtr dataChannelHandle, in Callbacks callbacks);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsDataChannelSendMessage")]
@@ -145,7 +145,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 stateCallback = args.StateCallback,
                 stateUserData = argsRef
             };
-            DataChannel_RegisterCallbacks(info.dataChannelHandle, ref callbacks);
+            DataChannel_RegisterCallbacks(info.dataChannelHandle, callbacks);
 
             return dataChannel;
         }

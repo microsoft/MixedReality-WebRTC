@@ -94,7 +94,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [MonoPInvokeCallback(typeof(AudioFrameUnmanagedCallback))]
-        public static void FrameCallback(IntPtr userData, ref AudioFrame frame)
+        public static void FrameCallback(IntPtr userData, in AudioFrame frame)
         {
             var track = Utils.ToWrapper<LocalAudioTrack>(userData);
             track.OnFrameReady(frame);
