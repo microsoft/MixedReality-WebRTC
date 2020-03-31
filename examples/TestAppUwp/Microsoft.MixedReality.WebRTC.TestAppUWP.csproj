@@ -72,12 +72,12 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\bin\UWP\$(Platform)\$(Configuration)\Microsoft.MixedReality.WebRTC.Native.dll">
-      <Link>Microsoft.MixedReality.WebRTC.Native.dll</Link>
+    <Content Include="..\..\bin\UWP\$(Platform)\$(Configuration)\mrwebrtc.dll">
+      <Link>mrwebrtc.dll</Link>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\bin\UWP\$(Platform)\$(Configuration)\Microsoft.MixedReality.WebRTC.Native.pdb">
-      <Link>Microsoft.MixedReality.WebRTC.Native.pdb</Link>
+    <Content Include="..\..\bin\UWP\$(Platform)\$(Configuration)\mrwebrtc.pdb">
+      <Link>mrwebrtc.pdb</Link>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

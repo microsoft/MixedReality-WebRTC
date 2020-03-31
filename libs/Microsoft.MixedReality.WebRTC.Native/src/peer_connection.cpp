@@ -17,6 +17,7 @@
 #include "sdp_utils.h"
 #include "utils.h"
 #include "video_frame_observer.h"
+#include "sdp_utils.h"
 
 #include <functional>
 
@@ -213,7 +214,7 @@ class PeerConnectionImpl : public PeerConnection,
     peer_ = std::move(impl);
   }
 
-  void SetName(std::string_view name) { name_ = name; }
+  void SetName(std::string_view name) override { name_ = name; }
 
   std::string GetName() const override { return name_; }
 
@@ -1261,7 +1262,7 @@ bool PeerConnectionImpl::SetRemoteDescriptionAsync(
     }
   }
   std::string sdp_type_str(type);
-  auto sdp_type = webrtc::SdpTypeFromString(sdp_type_str);
+  auto sdp_type = SdpTypeFromString(sdp_type_str);
   if (!sdp_type.has_value())
     return false;
   std::string remote_desc(sdp);
@@ -1317,6 +1318,8 @@ void PeerConnectionImpl::OnSignalingChange(
     case webrtc::PeerConnectionInterface::kHaveRemoteOffer:
       break;
     case webrtc::PeerConnectionInterface::kHaveRemotePrAnswer:
+      break;
+    case webrtc::PeerConnectionInterface::kClosed:
       break;
   }
 }
