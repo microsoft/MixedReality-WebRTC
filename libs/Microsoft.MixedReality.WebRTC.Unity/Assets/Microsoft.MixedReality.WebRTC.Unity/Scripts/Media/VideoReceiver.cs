@@ -13,42 +13,64 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     [AddComponentMenu("MixedReality-WebRTC/Video Receiver")]
     public class VideoReceiver : MediaReceiver, IVideoSource
     {
+        /// <inheritdoc/>
+        public bool IsStreaming { get; protected set; }
+
         /// <summary>
-        /// Video transceiver this receiver is paired with.
-        /// This is <c>null</c> until a remote description is applied which pairs the receiver
-        /// with the remote track of the transceiver, or until the peer connection associated
-        /// with this receiver creates the video receiver right before creating an SDP offer.
+        /// Event raised when the video stream started.
+        ///
+        /// When this event is raised, the followings are true:
+        /// - The <see cref="Track"/> property is a valid remote video track.
+        /// - The <see cref="MediaReceiver.IsLive"/> property is <c>true</c>.
+        /// - The <see cref="IsStreaming"/> will become <c>true</c> just after the event
+        ///   is raised, by design.
+        /// </summary>
+        /// <remarks>
+        /// This event is raised from the main Unity thread to allow Unity object access.
+        /// </remarks>
+        public VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
+
+        /// <summary>
+        /// Event raised when the video stream stopped.
+        ///
+        /// When this event is raised, the followings are true:
+        /// - The <see cref="Track"/> property is <c>null</c>.
+        /// - The <see cref="MediaReceiver.IsLive"/> property is <c>false</c>.
+        /// - The <see cref="IsStreaming"/> has just become <c>false</c> right before the event
+        ///   was raised, by design.
+        /// </summary>
+        /// <remarks>
+        /// This event is raised from the main Unity thread to allow Unity object access.
+        /// </remarks>
+        public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
+
+        /// <inheritdoc/>
+        public VideoStreamStartedEvent GetVideoStreamStarted() { return VideoStreamStarted; }
+
+        /// <inheritdoc/>
+        public VideoStreamStoppedEvent GetVideoStreamStopped() { return VideoStreamStopped; }
+
+        /// <summary>
+        /// Video transceiver this receiver is paired with, if any.
+        ///
+        /// This is <c>null</c> until a remote description is applied which pairs the media line
+        /// this receiver is associated with to a transceiver, or until the peer connection of this
+        /// receiver's media line creates the video receiver right before creating an SDP offer.
         /// </summary>
         public Transceiver Transceiver { get; private set; }
 
         /// <summary>
         /// Remote video track receiving data from the remote peer.
-        /// This is <c>null</c> until a remote description is applied which pairs the receiver
-        /// with the remote track of the transceiver.
+        ///
+        /// This is <c>null</c> until <see cref="Transceiver"/> is set to a non-null value and a
+        /// remote track is added to that transceiver.
         /// </summary>
         public RemoteVideoTrack Track { get; private set; }
-
-        /// <summary>
-        /// Event invoked from the main Unity thread when the video stream starts.
-        /// This means that video frames are available and the renderer should start polling.
-        /// </summary>
-        public VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
-
-        /// <summary>
-        /// Event invoked from the main Unity thread when the video stream stops.
-        /// This means that the video frame queue is not populated anymore, though some frames
-        /// may still be present in it that may be rendered.
-        /// </summary>
-        public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
-
-        public bool IsStreaming { get; protected set; }
-
-        public VideoStreamStartedEvent GetVideoStreamStarted() { return VideoStreamStarted; }
-        public VideoStreamStoppedEvent GetVideoStreamStopped() { return VideoStreamStopped; }
 
         /// <inheritdoc/>
         public VideoEncoding FrameEncoding { get; } = VideoEncoding.I420A;
 
+        /// <inheritdoc/>
         public VideoReceiver() : base(MediaKind.Video)
         {
         }
@@ -177,10 +199,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _mainThreadWorkQueue.Enqueue(() =>
             {
                 Debug.Assert(Track == track);
-                IsStreaming = false;
-                VideoStreamStopped.Invoke(this);
                 Track = null;
+                IsStreaming = false;
                 IsLive = false;
+                VideoStreamStopped.Invoke(this);
             });
         }
     }

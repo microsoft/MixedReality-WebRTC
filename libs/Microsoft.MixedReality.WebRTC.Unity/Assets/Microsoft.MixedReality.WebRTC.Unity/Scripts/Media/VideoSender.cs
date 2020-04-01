@@ -21,19 +21,33 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
         /// </summary>
         [Tooltip("SDP name of the preferred video codec to use if supported")]
+        [SdpToken(allowEmpty: true)]
         public string PreferredVideoCodec = string.Empty;
 
         /// <summary>
-        /// Event invoked from the main Unity app thread when the video stream starts.
-        /// This means that video frames are available and any renderer should start polling.
+        /// Event raised when the video stream started.
+        ///
+        /// When this event is raised, the followings are true:
+        /// - The <see cref="Track"/> property is a valid local video track.
+        /// - The <see cref="IsStreaming"/> will become <c>true</c> just after the event
+        ///   is raised, by design.
         /// </summary>
+        /// <remarks>
+        /// This event is raised from the main Unity thread to allow Unity object access.
+        /// </remarks>
         public VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
 
         /// <summary>
-        /// Event invoked from the main Unity app thread when the video stream stops.
-        /// This means that video frames are not produced anymore and any renderer should stop
-        /// trying to poll the track to render them.
+        /// Event raised when the video stream stopped.
+        ///
+        /// When this event is raised, the followings are true:
+        /// - The <see cref="Track"/> property is <c>null</c>.
+        /// - The <see cref="IsStreaming"/> has just become <c>false</c> right before the event
+        ///   was raised, by design.
         /// </summary>
+        /// <remarks>
+        /// This event is raised from the main Unity thread to allow Unity object access.
+        /// </remarks>
         public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
 
         public bool IsStreaming { get; protected set; }
@@ -42,11 +56,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public VideoStreamStoppedEvent GetVideoStreamStopped() { return VideoStreamStopped; }
 
         /// <summary>
-        /// Video transceiver the local video track <see cref="Track"/> this components owns
-        /// is added to, if any. If this is non-<c>null</c> and the peer connection the transceiver
-        /// is owned by is connected, then the video frames produced by the local <see cref="Track"/>
-        /// are sent through the <see cref="Transceiver"/> to the remote peer. That is,
-        /// <see cref="Track"/> is attached as <see xref="WebRTC.Transceiver.LocalVideoTrack"/>.
+        /// Video transceiver this sender is paired with, if any.
+        /// 
+        /// This is <c>null</c> until a remote description is applied which pairs the media line
+        /// the sender is associated with to a transceiver.
         /// </summary>
         public Transceiver Transceiver { get; private set; }
 
@@ -104,8 +117,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 await CreateLocalVideoTrackAsync();
                 Debug.Assert(Track != null, "Implementation did not create a valid Track property yet did not throw any exception.", this);
 
-                VideoStreamStarted.Invoke(this);
-                IsStreaming = true;
+                // Dispatch the event to the main Unity app thread to allow Unity object access
+                _mainThreadWorkQueue.Enqueue(() =>
+                {
+                    VideoStreamStarted.Invoke(this);
+
+                    // Only clear this after the event handlers ran
+                    IsStreaming = true;
+                });
             }
         }
 
@@ -113,12 +132,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Track != null)
             {
-                IsStreaming = true;
-                VideoStreamStopped.Invoke(this);
-
                 // Defer track destruction to derived classes.
                 DestroyLocalVideoTrack();
                 Debug.Assert(Track == null, "Implementation did not destroy the existing Track property yet did not throw any exception.", this);
+
+                // Clear this already to make sure it is false when the event is raised.
+                IsStreaming = false;
+
+                // Dispatch the event to the main Unity app thread to allow Unity object access
+                _mainThreadWorkQueue.Enqueue(() =>
+                {
+                    VideoStreamStopped.Invoke(this);
+                });
             }
         }
 
@@ -198,7 +223,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 var transceiver = Transceiver;
                 if (transceiver != null)
                 {
-                    Debug.Assert(transceiver.LocalVideoTrack == Track);
+                    Debug.Assert((transceiver.LocalVideoTrack == null) || (transceiver.LocalVideoTrack == Track));
                     transceiver.LocalVideoTrack = null;
                 }
 

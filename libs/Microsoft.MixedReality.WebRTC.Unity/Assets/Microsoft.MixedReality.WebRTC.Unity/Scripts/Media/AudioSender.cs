@@ -28,6 +28,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// See https://en.wikipedia.org/wiki/RTP_audio_video_profile for the standard SDP names.
         /// </summary>
         [Tooltip("SDP name of the preferred audio codec to use if supported")]
+        [SdpToken(allowEmpty: true)]
         public string PreferredAudioCodec = string.Empty;
 
         /// <inheritdoc/>
@@ -35,16 +36,28 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Event raised when the audio stream started.
-        /// 
-        /// After this event is raised, the <see cref="IsStreaming"/> will become <c>true</c>.
+        ///
+        /// When this event is raised, the followings are true:
+        /// - The <see cref="Track"/> property is a valid local audio track.
+        /// - The <see cref="IsStreaming"/> will become <c>true</c> just after the event
+        ///   is raised, by design.
         /// </summary>
+        /// <remarks>
+        /// This event is raised from the main Unity thread to allow Unity object access.
+        /// </remarks>
         public AudioStreamStartedEvent AudioStreamStarted = new AudioStreamStartedEvent();
 
         /// <summary>
         /// Event raised when the audio stream stopped.
-        /// 
-        /// Before this event is raised, the <see cref="IsStreaming"/> becomes <c>false</c>.
+        ///
+        /// When this event is raised, the followings are true:
+        /// - The <see cref="Track"/> property is <c>null</c>.
+        /// - The <see cref="IsStreaming"/> has just become <c>false</c> right before the event
+        ///   was raised, by design.
         /// </summary>
+        /// <remarks>
+        /// This event is raised from the main Unity thread to allow Unity object access.
+        /// </remarks>
         public AudioStreamStoppedEvent AudioStreamStopped = new AudioStreamStoppedEvent();
 
         /// <inheritdoc/>
@@ -56,8 +69,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Audio transceiver this sender is paired with, if any.
         /// 
-        /// This is <c>null</c> until a remote description is applied which pairs the sender
-        /// with the local track of the transceiver.
+        /// This is <c>null</c> until a remote description is applied which pairs the media line
+        /// the sender is associated with to a transceiver.
         /// </summary>
         public Transceiver Transceiver { get; private set; }
 
@@ -115,8 +128,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 await CreateLocalAudioTrackAsyncImpl();
                 Debug.Assert(Track != null, "Implementation did not create a valid Track property yet did not throw any exception.", this);
 
-                AudioStreamStarted.Invoke(this);
-                IsStreaming = true;
+                // Dispatch the event to the main Unity app thread to allow Unity object access
+                _mainThreadWorkQueue.Enqueue(() =>
+                {
+                    AudioStreamStarted.Invoke(this);
+
+                    // Only clear this after the event handlers ran
+                    IsStreaming = true;
+                });
             }
         }
 
@@ -124,12 +143,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Track != null)
             {
-                IsStreaming = false;
-                AudioStreamStopped.Invoke(this);
-
                 // Defer track destruction to derived classes.
                 DestroyLocalAudioTrack();
                 Debug.Assert(Track == null, "Implementation did not destroy the existing Track property yet did not throw any exception.", this);
+
+                // Clear this already to make sure it is false when the event is raised.
+                IsStreaming = false;
+
+                // Dispatch the event to the main Unity app thread to allow Unity object access
+                _mainThreadWorkQueue.Enqueue(() =>
+                {
+                    AudioStreamStopped.Invoke(this);
+                });
             }
         }
 
@@ -222,7 +247,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 var transceiver = Transceiver;
                 if (transceiver != null)
                 {
-                    Debug.Assert(transceiver.LocalAudioTrack == Track);
+                    Debug.Assert((transceiver.LocalAudioTrack == null) || (transceiver.LocalAudioTrack == Track));
                     transceiver.LocalAudioTrack = null;
                 }
 
