@@ -51,30 +51,30 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     }
 
     /// <summary>
-    /// Represents an Ice server in a simple way that allows configuration from the unity inspector
+    /// ICE server as a serializable data structure for the Unity inspector.
     /// </summary>
     [Serializable]
     public struct ConfigurableIceServer
     {
         /// <summary>
-        /// The type of the server
+        /// The type of ICE server.
         /// </summary>
         [Tooltip("Type of ICE server")]
         public IceType Type;
 
         /// <summary>
-        /// The unqualified uri of the server
+        /// The unqualified URI of the server.
         /// </summary>
         /// <remarks>
-        /// You should not prefix this with "stun:" or "turn:"
+        /// The URI must not have any <c>stun:</c> or <c>turn:</c> prefix.
         /// </remarks>
         [Tooltip("ICE server URI, without any stun: or turn: prefix.")]
         public string Uri;
 
         /// <summary>
-        /// Convert the server to the representation the underlying libraries use
+        /// Convert the server to the representation the underlying implementation use.
         /// </summary>
-        /// <returns>stringified server information</returns>
+        /// <returns>The stringified server information.</returns>
         public override string ToString()
         {
             return string.Format("{0}:{1}", Type.ToString().ToLowerInvariant(), Uri);
@@ -118,14 +118,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// Media line abstraction for a peer connection.
     /// 
     /// This container binds together a sender component (<see cref="MediaSender"/>) and/or a receiver component
-    /// (<see cref="MediaReceiver"/>) to a media line, and therefore once a negotiation was completed to the
-    /// transceiver attached to that media line.
+    /// (<see cref="MediaReceiver"/>) on one side, with a transceiver on the other side. The media line is a
+    /// declarative representation of this association, which is then turned into a binding by the implementation
+    /// during an SDP negotiation. This forms the core of the algorithm allowing automatic transceiver pairing
+    /// between the two peers based on the declaration of intent of the user.
     /// 
     /// Assigning Unity components to the <see cref="Sender"/> and <see cref="Receiver"/> fields serves
     /// as an indication of the user intent to send and/or receive media through the transceiver, and is
-    /// used during negotiation to derive the <see xref="WebRTC.Transceiver.Direction"/> to negotiate.
-    /// After the negotiation is completed, the <see cref="Transceiver"/> property refers to the transceiver
+    /// used during the SDP exchange to derive the <see xref="WebRTC.Transceiver.Direction"/> to negotiate.
+    /// After the SDP negotiation is completed, the <see cref="Transceiver"/> property refers to the transceiver
     /// associated with this media line, and which the sender and receiver will use.
+    /// 
+    /// Users typically interact with this class through the peer connection transceiver collection in the Unity
+    /// inspector window, though direct manipulation via code is also possible.
     /// </summary>
     [Serializable]
     public class MediaLine
@@ -155,7 +160,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Media sender producing the media to send through the transceiver attached to this media line.
         /// This must be an instance of a class derived from <see cref="AudioSender"/> or <see cref="VideoSender"/>
-        /// depending on <see cref="Kind"/>.
+        /// depending on whether <see cref="Kind"/> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"/>
+        /// or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"/>, respectively.
         ///
         /// If this is non-<c>null</c> then the peer connection will negotiate sending some media, otherwise
         /// it will signal the remote peer that it does not wish to send (receive-only or inactive).
@@ -187,7 +193,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Media receiver consuming the media received through the transceiver attached to this media line.
         /// This must be an instance of a class derived from <see cref="AudioReceiver"/> or <see cref="VideoReceiver"/>
-        /// depending on <see cref="Kind"/>.
+        /// depending on whether <see cref="Kind"/> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"/>
+        /// or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"/>, respectively.
         ///
         /// If this is non-<c>null</c> then the peer connection will negotiate receiving some media, otherwise
         /// it will signal the remote peer that it does not wish to receive (send-only or inactive).
@@ -214,6 +221,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// 
         /// On the offering peer this changes during <see cref="PeerConnection.StartConnection"/>, while this is updated by
         /// <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/> when receiving an offer on the answering peer.
+        /// 
+        /// Because transceivers cannot be destroyed, once this property is assigned a non-<c>null</c> value it keeps that
+        /// value until the peer connection owning the media line is closed.
         /// </summary>
         public Transceiver Transceiver { get; private set; }
 
@@ -231,6 +241,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [NonSerialized]
         private MediaReceiver _pairedReceiver;
 
+        /// <param name="kind">Immutable value assigned to the <see cref="Kind"/> property on construction.</param>
         public MediaLine(MediaKind kind)
         {
             _kind = kind;
