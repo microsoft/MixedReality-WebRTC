@@ -1304,12 +1304,10 @@ namespace Microsoft.MixedReality.WebRTC
                 Utils.ThrowOnErrorCode(res);
 
                 // The wrapper is created by the "DataChannelAdded" event invoked by PeerConnection_AddDataChannel().
-                // Find it via the UserData property.
+                // Find it via the UserData property. Note that it was already added to the DataChannels collection.
                 var dataChannelRef = DataChannelInterop.DataChannel_GetUserData(nativeHandle);
                 var dataChannelWrapper = Utils.ToWrapper<DataChannel>(dataChannelRef);
                 Debug.Assert(dataChannelWrapper != null);
-                DataChannels.Add(dataChannelWrapper);
-                DataChannelAdded?.Invoke(dataChannelWrapper);
                 return dataChannelWrapper;
             });
         }
