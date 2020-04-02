@@ -158,7 +158,7 @@
 <td>Include in &quot;References&quot; of your VS project</td>
 </tr>
 <tr>
-<td><code>bin\&lt;platform&gt;\&lt;arch&gt;\Release\Microsoft.MixedReality.WebRTC.Native.dll</code></td>
+<td><code>bin\&lt;platform&gt;\&lt;arch&gt;\Release\mrwebrtc.dll</code></td>
 <td>Add as &quot;Content&quot; to the project, so that the Deploy step copies the DLL to the AppX folder alongside the application executable. See the <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/d78ffa488fbf822377558ce44bbfa8316f0f85f7/examples/TestAppUwp/Microsoft.MixedReality.WebRTC.TestAppUWP.csproj#L74-L83">TestAppUWP project</a> for an example, noting how it uses the <code>$(Platform)</code> and <code>$(Configuration)</code> Visual Studio variables to automatically copy the right DLL corresponding to the currently selected project configuration.</td>
 </tr>
 </tbody>

@@ -147,7 +147,7 @@
 </ul>
 <p>Once downloaded, rename them by changing the <code>.nuget</code> extension to <code>.zip</code>, and extract the archives in some temporary folder of your choice.</p>
 <h3 id="copying-the-native-dlls">Copying the native DLLs</h3>
-<p>Copy all the <code>Microsoft.MixedReality.WebRTC.Native.dll</code> variants as indicated in the table below.</p>
+<p>Copy all the <code>mrwebrtc.dll</code> variants as indicated in the table below.</p>
 <table>
 <thead>
 <tr>
@@ -186,6 +186,10 @@
 </tr>
 </tbody>
 </table>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p>The <code>Microsoft.MixedReality.WebRTC.Native.dll</code> module has been renamed to <code>mrwebrtc.dll</code> in commit <a href="https://github.com/microsoft/MixedReality-WebRTC/commit/169502aab851b61c260831892e3eff9deeb876ae">169502a</a> due to a won't-fix bug in P/Invoke. When extracting the former from a NuGet package built before the rename, the DLL must be renamed into <code>mrwebrtc.dll</code> for the C# library to find it.</p>
+</div>
 <h3 id="copying-the-c-library">Copying the C# library</h3>
 <p>The Unity integration also references the C# library. Copy the <code>Microsoft.MixedReality.WebRTC.dll</code> assembly from either the Desktop package <code>Microsoft.MixedReality.WebRTC.nupkg</code> or the UWP package <code>Microsoft.MixedReality.WebRTC.UWP.nupkg</code>; both packages have the same copy of the C# assembly, and only differ by the associated native DLLs.</p>
 <ul>
@@ -196,32 +200,32 @@
 <h3 id="summary">Summary</h3>
 <p>The above steps should result in the following hierarchy on disk:</p>
 <pre><code class="lang-sh">MyAwesomeUnityProject/Assets/Plugins/
-- Win32.meta
++ Win32.meta
 + Win32/
-  - x86.meta
-  + x86/
-    - Microsoft.MixedReality.WebRTC.Native.dll
-    - Microsoft.MixedReality.WebRTC.Native.dll.meta
-  - x86_64.meta
-  + x86_64/
-    - Microsoft.MixedReality.WebRTC.Native.dll
-    - Microsoft.MixedReality.WebRTC.Native.dll.meta
-    - Microsoft.MixedReality.WebRTC.dll
-    - Microsoft.MixedReality.WebRTC.dll.meta
-- WSA.meta
+| + x86.meta
+| + x86/
+| | + mrwebrtc.dll
+| | + mrwebrtc.dll.meta
+| + x86_64.meta
+| + x86_64/
+|   + mrwebrtc.dll
+|   + mrwebrtc.dll.meta
+|   + Microsoft.MixedReality.WebRTC.dll
+|   + Microsoft.MixedReality.WebRTC.dll.meta
++ WSA.meta
 + WSA/
-  - x86.meta
+  + x86.meta
   + x86/
-    - Microsoft.MixedReality.WebRTC.Native.dll
-    - Microsoft.MixedReality.WebRTC.Native.dll.meta
-  - x86_64.meta
+  | + mrwebrtc.dll
+  | + mrwebrtc.dll.meta
+  + x86_64.meta
   + x86_64/
-    - Microsoft.MixedReality.WebRTC.Native.dll
-    - Microsoft.MixedReality.WebRTC.Native.dll.meta
-  - ARM.meta
+  | + mrwebrtc.dll
+  | + mrwebrtc.dll.meta
+  + ARM.meta
   + ARM/
-    - Microsoft.MixedReality.WebRTC.Native.dll
-    - Microsoft.MixedReality.WebRTC.Native.dll.meta
+    + mrwebrtc.dll
+    + mrwebrtc.dll.meta
 </code></pre>
 </article>
           </div>

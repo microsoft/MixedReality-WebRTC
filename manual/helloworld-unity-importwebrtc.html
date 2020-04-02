@@ -84,8 +84,8 @@
 
 <p>In order to use the Unity integration, the following components are required:</p>
 <ul>
-<li>C++ library : <code>Microsoft.MixedReality.WebRTC.Native.dll</code> (one variant per platform/architecture)</li>
-<li>C# library : <code>Microsoft.MixedReality.WebRTC.dll</code> (single universal module for all platforms/architectures)</li>
+<li>Native implementation : <code>mrwebrtc.dll</code> (one variant per platform and architecture)</li>
+<li>C# library : <code>Microsoft.MixedReality.WebRTC.dll</code> (single universal module for all platforms and architectures)</li>
 <li>Unity integration scripts and assets</li>
 </ul>
 <p>There is currently no pre-packaged distribution method for Unity, so users have to manually copy the relevant files into their Unity project.</p>
@@ -101,20 +101,32 @@
 <pre><code>cd /D D:\testproj
 xcopy D:/mr-webrtc/bin/AnyCPU/Release/Microsoft.MixedReality.WebRTC.dll Assets/Plugins/
 </code></pre>
-<p>For the C++ library <code>Microsoft.MixedReality.WebRTC.Native.dll</code> things are a bit more complex. The C++ code is compiled for a particular platform and architecture, in addition of the Debug or Release build config, and the correct variant needs to be used. On Windows, the Unity Editor needs a 64-bit Desktop variant; it is available from the <code>bin\Win32\x64\Release</code> folder, and should be copied to the <code>Assets\Plugins\Win32\x86_64\</code> folder.</p>
+<p>For the native implementation <code>mrwebrtc.dll</code> things are a bit more complex. The DLL is compiled for a particular platform and architecture, in addition of the Debug or Release build config, and the correct variant needs to be used. On Windows, the Unity Editor needs a <strong>64-bit Desktop</strong> variant (<code>Debug</code> or <code>Release</code>); it is available from the <code>bin\Win32\x64\Release</code> folder (<code>Win32</code> is an alias for <code>Desktop</code>), and should be copied to the <code>Assets\Plugins\Win32\x86_64\</code> folder of the Unity project.</p>
 <pre><code>cd /D D:\testproj
-xcopy D:/mr-webrtc/bin/Win32/x64/Release/Microsoft.MixedReality.WebRTC.Native.dll Assets/Plugins/Win32/x86_64/
+xcopy D:/mr-webrtc/bin/Win32/x64/Release/mrwebrtc.dll Assets/Plugins/Win32/x86_64/
 </code></pre>
 <h2 id="configuring-the-import-settings">Configuring the import settings</h2>
-<p>When building the Unity application for a given platform, another variant may be required. In order for the C# library to be truly platform-independent, the name of all C++ library variants is the same. This allows the C# code to reference the C++ library with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.dllimportattribute?view=netcore-2.1">the same <code>DllImport</code> attribute path</a>. But this also means that Unity needs to know which copy is associated with which build variant, to be able to deploy the correct one. This is done by configuring the platform associated with a DLL in the import settings in the Unity inspector:</p>
-<p><img src="helloworld-unity-2.png" alt="Configure the import settings for a native C++ DLL"></p>
+<p>When building the Unity application for a given platform, another variant than the one the Unity editor uses may be required to deploy on that platform. In order for the C# library to be truly platform-independent, the name of all native implementation library variants is the same: <code>mrwebrtc</code>. This allows the C# code to reference that DLL with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.dllimportattribute?view=netcore-2.1">the same <code>DllImport</code> attribute path</a>. But this also means that multiple files with the same name exist in different folders, and Unity needs to know which one is associated with which build variant, to be able to deploy the correct one only. This is done by configuring the platform associated with a DLL in the import settings in the Unity inspector.</p>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p>The <code>mrwebrtc.dll</code> module was in v1.0 named <code>Microsoft.MixedReality.WebRTC.Native.dll</code> when this module was also the C++ library. Those two have now been split apart. The <code>Microsoft.MixedReality.WebRTC.Native</code> name is still in use in some NuGet packages, so depending on the installation method one or the other name are used. However the Unity project must use the <code>mrwebrtc.dll</code> name only for the C# library to find it.</p>
+</div>
+<ul>
+<li>In the <strong>Project</strong> window, select one of the <code>mrwebrtc.dll</code> files from the <code>Plugins</code> folder.</li>
+<li>The <strong>Inspector</strong> window now shows the import settings for the selected file, which contains option to configure the deploy platform(s) and architecture(s).</li>
+</ul>
 <p>By selecting:</p>
 <ul>
 <li><strong>Any Platform</strong> except <strong>WSAPlayer</strong>, the DLL will be used by Unity on all platforms except when deploying for UWP. <em>WSAPlayer</em> is the name Unity uses for its UWP standalone player.</li>
 <li><strong>CPU</strong> equal to <strong>x86_64</strong>, Unity will only deploy that DLL when deploying on a 64-bit Intel architecture.</li>
 </ul>
-<p>This way, multiple variants of the same-named <code>Microsoft.MixedReality.WebRTC.Native.dll</code> can co-exist in different sub-folders of <code>Assets/Plugins/</code> and Unity will deploy and use the correct variant on each platform.</p>
-<p>For <strong>Windows Desktop</strong>, the C++ library variants are:</p>
+<p><img src="helloworld-unity-2.png" alt="Configure the import settings for a native implementation DLL"></p>
+<p>This way, multiple variants of the same-named <code>mrwebrtc.dll</code> can co-exist in different sub-folders of <code>Assets/Plugins/</code> and Unity will deploy and use the correct variant on each platform.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>If Unity complains about &quot;<em>Multiple plugins with the same name 'mrwebrtc'</em>&quot;, then the configurations of the various <code>mrwebrtc.dll</code> files are not exclusive, and 2 or more files have been allowed for deploy on the same platform. Check the configuration of all variants again.</p>
+</div>
+<p>For <strong>Windows Desktop</strong>, the native implementation DLL variants are:</p>
 <table>
 <thead>
 <tr>
@@ -199,18 +211,18 @@ xcopy D:/mr-webrtc/bin/Win32/x64/Release/Microsoft.MixedReality.WebRTC.Native.dl
 +- Plugins
    +- Win32
    |  +- x86
-   |  |  +- Microsoft.MixedReality.WebRTC.Native.dll
+   |  |  +- mrwebrtc.dll
    |  +- x86_64
-   |     +- Microsoft.MixedReality.WebRTC.Native.dll
+   |     +- mrwebrtc.dll
    +- UWP
       +- x86
-      |  +- Microsoft.MixedReality.WebRTC.Native.dll
+      |  +- mrwebrtc.dll
       +- x86_64
-      |  +- Microsoft.MixedReality.WebRTC.Native.dll
+      |  +- mrwebrtc.dll
       +- ARM
-      |  +- Microsoft.MixedReality.WebRTC.Native.dll
+         +- mrwebrtc.dll
       +- ARM64
-         +- Microsoft.MixedReality.WebRTC.Native.dll
+         +- mrwebrtc.dll
 </code></pre>
 <h2 id="importing-the-unity-integration">Importing the Unity integration</h2>
 <p>In order to import the Unity integration into your new Unity project, simply copy the <code>libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Microsoft.MixedReality.WebRTC.Unity</code> and <code>libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Microsoft.MixedReality.WebRTC.Unity.Editor</code> folders into the <code>Assets</code> folder of your project. The former provides the integration itself, while the later contains some helpers for the Unity Editor. Those helpers are only needed in the Editor, and not when the application is deployed at runtime.</p>
