@@ -66,7 +66,7 @@ namespace Microsoft {
 namespace MixedReality {
 namespace WebRTC {
 
-bool SdpIsValidToken(std::string_view token) noexcept {
+bool SdpIsValidToken(absl::string_view token) noexcept {
   if (token.empty()) {
     return false;
   }
