@@ -365,15 +365,24 @@ namespace Microsoft.MixedReality.WebRTC
         /// Callback invoked after the native transceiver has been destroyed, for clean-up.
         /// This is called by the peer connection when it closes, just before the C# transceiver
         /// object instance is destroyed.
+        ///
         /// This replaces an hypothetical TransceiverRemoved callback, which doesn't exist to
         /// prevent confusion and underline the fact transceiver cannot be removed after being
         /// added to a peer connection, until that peer connection is closed and destroys them.
         /// </summary>
         internal void CleanUpAfterNativeDestroyed()
         {
-            Debug.Assert(_localTrack == null);
-            Debug.Assert(_remoteTrack == null);
+            // The native peer connection was destroyed, therefore all its transceivers and remote
+            // tracks too, since it was owning them. However local tracks are owned by the user, so
+            // are possibly still alive.
             Debug.Assert(_nativeHandle != IntPtr.Zero);
+            Debug.Assert(_remoteTrack == null);
+            if (_localTrack != null)
+            {
+                Debug.Assert(_localTrack.Transceiver == this);
+                _localTrack.Transceiver = null;
+                _localTrack = null;
+            }
             _nativeHandle = IntPtr.Zero;
             // No need (and can't) unregister callbacks, the native transceiver is already destroyed
             Utils.ReleaseWrapperRef(_argsRef);
