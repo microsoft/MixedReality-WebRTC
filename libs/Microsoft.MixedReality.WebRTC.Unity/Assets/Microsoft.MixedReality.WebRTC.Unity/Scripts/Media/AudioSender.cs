@@ -247,8 +247,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 var transceiver = Transceiver;
                 if (transceiver != null)
                 {
-                    Debug.Assert((transceiver.LocalAudioTrack == null) || (transceiver.LocalAudioTrack == Track));
-                    transceiver.LocalAudioTrack = null;
+                    if (transceiver.LocalAudioTrack != null)
+                    {
+                        Debug.Assert(transceiver.LocalAudioTrack == Track);
+                        transceiver.LocalAudioTrack = null;
+                    }
                 }
 
                 // Local tracks are disposable objects owned by the user (this component)
