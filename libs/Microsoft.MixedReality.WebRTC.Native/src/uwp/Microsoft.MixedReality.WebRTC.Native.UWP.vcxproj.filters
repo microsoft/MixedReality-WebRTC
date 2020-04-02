@@ -60,6 +60,13 @@
     </ClInclude>
     <ClInclude Include="..\..\include\result.h" />
     <ClInclude Include="..\utils.h" />
+    <ClInclude Include="..\..\include\export.h" />
+    <ClInclude Include="..\..\include\external_video_track_source_interop.h" />
+    <ClInclude Include="..\..\include\interop_api.h" />
+    <ClInclude Include="..\..\include\local_video_track_interop.h" />
+    <ClInclude Include="..\..\include\peer_connection_interop.h" />
+    <ClInclude Include="..\external_video_track_source.h" />
+    <ClInclude Include="..\local_video_track.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />
