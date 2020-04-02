@@ -20,23 +20,13 @@ The C# library packages contain the C# assembly `Microsoft.MixedReality.WebRTC` 
 
 ## C++ library
 
-The C++ library architecture and distribution changed between the 1.0 and 2.0 releases.
+The C++ library is a standalone library building on top of the native implementation module `mrwebrtc.dll`, and distributed as sources only for C++ projects to integrate it and statically link with it.
 
-### New standalone library (v2.0)
+To download the library, simply clone the MixedReality-WebRTC repository:
 
-Starting from v2.0, the C++ library is a standalone source-only library building on top of the native implementation module `mrwebrtc.dll`. The legacy `Microsoft.MixedReality.WebRTC.Native.dll` previously containing the native implementation is gone. There is currently no precompiled binaries of that `mrwebrtc.dll` implementation module. The C++ library itself is only distributed as sources for C++ projects to integrate it and statically link with it.
-
-### Legacy combined implementation (v1.0)
-
-In v1.0, the C++ library and the native implementation are a single and same module `Microsoft.MixedReality.WebRTC.Native.dll`, distributed as two separate NuGet packages for Windows Desktop and Windows UWP:
-
-- [Windows Desktop package `Microsoft.MixedReality.WebRTC.Native.Desktop`](https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Desktop)
-- [Windows UWP package `Microsoft.MixedReality.WebRTC.Native.UWP`](https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.UWP)
-
-The C++ NuGet packages contain the shared library `Microsoft.MixedReality.WebRTC.Native.dll` as well as its import library (`.lib`).
-
-> [!NOTE]
-> Unlike for the C# library above, the C++ library packages are named explicitly according to the target platform, adding either a `.Desktop` or `.UWP` suffix to the package name.
+```shell
+git clone https://github.com/microsoft/MixedReality-WebRTC.git
+```
 
 ## Unity integration
 
