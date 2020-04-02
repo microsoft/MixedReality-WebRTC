@@ -38,8 +38,6 @@
 #pragma warning(push, 2)
 #pragma warning(disable : 4100)
 #pragma warning(disable : 4244)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-int-float-conversion"
 
 // Core WebRTC
 #include "absl/memory/memory.h"
@@ -65,5 +63,4 @@
 // libyuv from WebRTC repository for video frame conversion
 #include "libyuv.h"
 
-#pragma clang diagnostic pop
 #pragma warning(pop)

@@ -50,7 +50,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
@@ -76,9 +76,6 @@
     <OutDir>..\..\..\..\bin\UWP\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>..\..\..\..\build\Microsoft.MixedReality.WebRTC.Native.UWP\UWP\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>Microsoft.MixedReality.WebRTC.Native</TargetName>
-    <ExecutablePath>$(WebRTCCoreRepoPath)third_party\llvm-build\Release+Asserts\bin;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(WebRTCCoreRepoPath)buildtools\third_party\libc++\trunk\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(WebRTCCoreRepoPath)buildtools\third_party\libc++\trunk\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(PlatformTarget)' == 'x86'">
     <UnityPluginDirectory>$(ProjectDir)..\..\..\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\WSA\x86</UnityPluginDirectory>
@@ -103,25 +100,23 @@
   </ItemGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>_LIBCPP_ENABLE_NODISCARD;_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS;_LIBCPP_ABI_UNSTABLE;_LIBCPP_NO_AUTO_LINK;_WINDLL;MR_SHARING_WIN;MRS_USE_STR_WRAPPER;WINUWP;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDLL;MR_SHARING_WIN;MRS_USE_STR_WRAPPER;WINUWP;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>..\..\include;..\;$(WebRTCCoreRepoPath);$(WebRTCCoreRepoPath)third_party\abseil-cpp;$(WebRTCCoreRepoPath)third_party\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
-      <AdditionalOptions>-Wno-unused-parameter -Xclang -nostdinc++ -D_LIBCPP_DEBUG=0 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(PlatformTarget)'=='ARM64'">--target=aarch64-windows %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalDependencies>Winmm.lib;Ole32.lib;Evr.lib;mf.lib;mfuuid.lib;mfplat.lib;webrtc.lib;WindowsApp.lib;$(WebRTCCoreLibCppObjs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)\obj;$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)\obj\buildtools\third_party\libc++\libc++;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Ole32.lib;Evr.lib;mf.lib;mfuuid.lib;mfplat.lib;webrtc.lib;WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)\obj;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
