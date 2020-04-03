@@ -11,7 +11,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Video track receiving video frames from the remote peer.
     /// </summary>
-    public class RemoteVideoTrack : MediaTrack
+    public class RemoteVideoTrack : MediaTrack, IVideoTrack
     {
         /// <summary>
         /// Enabled status of the track. If enabled, receives video frames from the remote peer as

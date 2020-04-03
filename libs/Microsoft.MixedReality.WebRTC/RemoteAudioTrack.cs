@@ -11,7 +11,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Audio track receiving audio frames from the remote peer.
     /// </summary>
-    public class RemoteAudioTrack : MediaTrack
+    public class RemoteAudioTrack : MediaTrack, IAudioTrack
     {
         /// <summary>
         /// Enabled status of the track. If enabled, receives audio frames from the remote peer as
