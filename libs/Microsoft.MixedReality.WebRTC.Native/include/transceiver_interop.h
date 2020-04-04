@@ -21,6 +21,14 @@ MRS_API void MRS_CALL mrsTransceiverSetUserData(mrsTransceiverHandle handle,
 MRS_API void* MRS_CALL
 mrsTransceiverGetUserData(mrsTransceiverHandle handle) noexcept;
 
+using mrsTransceiverAssociatedCallback = void(MRS_CALL*)(void* user_data,
+                                                         int mlineIndex);
+
+MRS_API void MRS_CALL mrsTransceiverRegisterAssociatedCallback(
+    mrsTransceiverHandle handle,
+    mrsTransceiverAssociatedCallback callback,
+    void* user_data) noexcept;
+
 using mrsTransceiverStateUpdatedCallback =
     void(MRS_CALL*)(void* user_data,
                     mrsTransceiverStateUpdatedReason reason,

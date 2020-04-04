@@ -666,13 +666,32 @@ namespace Microsoft.MixedReality.WebRTC
         public bool IsConnected { get; private set; } = false;
 
         /// <summary>
-        /// Collection of transceivers for the peer conneciton.
-        /// Transceivers are present in the list in order of their media line index
-        /// (<see cref="Transceiver.MlineIndex"/>). Once a transceiver is added to the
-        /// peer connection, it cannot be removed, but its tracks can be changed.
-        /// This requires some renegotiation.
+        /// Collection of transceivers for the peer connection. Once a transceiver is added
+        /// to the peer connection, it cannot be removed, but its tracks can be changed.
+        /// Adding a transceiver or changing its direction require some new session negotiation.
         /// </summary>
         public List<Transceiver> Transceivers { get; } = new List<Transceiver>();
+
+        /// <summary>
+        /// Collection of transceivers which have already been associated with a media line.
+        ///
+        /// A transceiver is associated with a media line when a local or remote offer is applied
+        /// to the peer connection, respectively during <see cref="CreateOffer"/> and
+        /// <see cref="SetRemoteDescriptionAsync(string, string)"/>.
+        /// </summary>
+        public IEnumerable<Transceiver> AssociatedTransceivers
+        {
+            get
+            {
+                foreach (var tr in Transceivers)
+                {
+                    if (tr.MlineIndex >= 0)
+                    {
+                        yield return tr;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Collection of local audio tracks attached to the peer connection.

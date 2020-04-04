@@ -27,6 +27,12 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
+    /// Delegate for the <see cref="Transceiver.Associated"/> event.
+    /// </summary>
+    /// <param name="transceiver">The transceiver becoming associated.</param>
+    public delegate void TransceiverAssociatedDelegate(Transceiver transceiver);
+
+    /// <summary>
     /// Transceiver of a peer connection.
     ///
     /// A transceiver is a media "pipe" connecting the local and remote peers, and used to transmit media
@@ -108,7 +114,27 @@ namespace Microsoft.MixedReality.WebRTC
         /// with a media line index already valid, while transceivers created locally by the peer connection
         /// have an invalid index until the next offer.
         /// </summary>
-        public int MlineIndex { get; } = -1;
+        /// <remarks>
+        /// For Plan B semantic (<see cref="SdpSemantic.PlanB"/>), the media line index is not present
+        /// in the SDP protocol. Instead it is simulated by the implementation, which attempts to emulate
+        /// the behavior of the Unified Plan semantic over an actual Plan B protocol.
+        /// </remarks>
+        /// <seealso cref="Associated"/>
+        public int MlineIndex { get; internal set; } = -1;
+
+        /// <summary>
+        /// Event raised when the transceiver is associated with a media line, which therefore makes
+        /// the <see cref="MlineIndex"/> property take a valid positive value.
+        /// </summary>
+        /// <remarks>
+        /// The event is not raised if the transceiver is created in an associated state, that is if
+        /// the transceiver is already associated when <see cref="PeerConnection.TransceiverAdded"/>
+        /// is raised to signal it was added. This happens when the transceiver is created as part of
+        /// applying a remote offer. In short, this event is raised only for transceivers created locally
+        /// with <see cref="PeerConnection.AddTransceiver(MediaKind, TransceiverInitSettings)"/>.
+        /// </remarks>
+        /// <seealso cref="MlineIndex"/>
+        public event TransceiverAssociatedDelegate Associated;
 
         /// <summary>
         /// Transceiver direction desired by the user.
@@ -407,6 +433,19 @@ namespace Microsoft.MixedReality.WebRTC
             // No need (and can't) unregister callbacks, the native transceiver is already destroyed
             Utils.ReleaseWrapperRef(_argsRef);
             _argsRef = IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// Callback on internal implementation notifying that the transceiver was associated with
+        /// a media line.
+        /// </summary>
+        /// <param name="mlineIndex">The index of the new media line the transceiver is associated with.</param>
+        internal void OnAssociated(int mlineIndex)
+        {
+            Debug.Assert(MlineIndex < 0); // no recycling; otherwise this could be already valid
+            Debug.Assert(mlineIndex >= 0);
+            MlineIndex = mlineIndex;
+            Associated?.Invoke(this);
         }
 
         /// <summary>
