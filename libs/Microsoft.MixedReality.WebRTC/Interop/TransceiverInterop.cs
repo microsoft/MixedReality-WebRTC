@@ -26,7 +26,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsTransceiverRegisterStateUpdatedCallback")]
-        public static unsafe extern uint Transceiver_RegisterStateUpdatedCallback(IntPtr handle,
+        public static unsafe extern void Transceiver_RegisterStateUpdatedCallback(IntPtr handle,
             StateUpdatedDelegate callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
