@@ -33,6 +33,14 @@ namespace Microsoft.MixedReality.WebRTC
     public delegate void TransceiverAssociatedDelegate(Transceiver transceiver);
 
     /// <summary>
+    /// Delegate for the <see cref="Transceiver.DirectionChanged"/> event.
+    /// </summary>
+    /// <param name="transceiver">
+    /// The transceiver whose <see cref="Transceiver.NegotiatedDirection"/> property changed.
+    /// </param>
+    public delegate void TransceiverDirectionChangedDelegate(Transceiver transceiver);
+
+    /// <summary>
     /// Transceiver of a peer connection.
     ///
     /// A transceiver is a media "pipe" connecting the local and remote peers, and used to transmit media
@@ -172,6 +180,13 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <seealso cref="DesiredDirection"/>
         public Direction? NegotiatedDirection { get; protected set; } = null;
+
+        /// <summary>
+        /// Event raised when the <see cref="NegotiatedDirection"/> changed, which occurs after applying
+        /// a local or remote description. This is a convenience event raised only when the direction effectively
+        /// changed, to avoid having to parse all transceivers for change after each description was applied.
+        /// </summary>
+        public event TransceiverDirectionChangedDelegate DirectionChanged;
 
         /// <summary>
         /// List of stream IDs associated with the transceiver.
@@ -457,24 +472,28 @@ namespace Microsoft.MixedReality.WebRTC
         {
             _desiredDirection = desiredDirection;
 
-            if (negotiatedDirection != NegotiatedDirection)
+            if (negotiatedDirection == NegotiatedDirection)
             {
-                bool hadSendBefore = HasSend(NegotiatedDirection);
-                bool hasSendNow = HasSend(negotiatedDirection);
-                bool hadRecvBefore = HasRecv(NegotiatedDirection);
-                bool hasRecvNow = HasRecv(negotiatedDirection);
-
-                NegotiatedDirection = negotiatedDirection;
-
-                if (hadSendBefore != hasSendNow)
-                {
-                    _localTrack?.OnMute(!hasSendNow);
-                }
-                if (hadRecvBefore != hasRecvNow)
-                {
-                    _remoteTrack?.OnMute(!hasRecvNow);
-                }
+                return;
             }
+
+            bool hadSendBefore = HasSend(NegotiatedDirection);
+            bool hasSendNow = HasSend(negotiatedDirection);
+            bool hadRecvBefore = HasRecv(NegotiatedDirection);
+            bool hasRecvNow = HasRecv(negotiatedDirection);
+
+            NegotiatedDirection = negotiatedDirection;
+
+            if (hadSendBefore != hasSendNow)
+            {
+                _localTrack?.OnMute(!hasSendNow);
+            }
+            if (hadRecvBefore != hasRecvNow)
+            {
+                _remoteTrack?.OnMute(!hasRecvNow);
+            }
+
+            DirectionChanged?.Invoke(this);
         }
 
         /// <summary>
