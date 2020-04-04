@@ -60,6 +60,10 @@ class Transceiver : public TrackedObject {
   /// Get the transceiver name, for debugging and logging purpose only.
   [[nodiscard]] std::string GetName() const override { return name_; }
 
+  [[nodiscard]] constexpr int GetMlineIndex() const noexcept {
+    return mline_index_;
+  }
+
   /// Get the kind of transceiver. This is generally used for determining what
   /// type to static_cast<> a |Transceiver| pointer to. If this is |kAudio| then
   /// the object is an |AudioTransceiver| instance, and if this is |kVideo| then
@@ -147,6 +151,15 @@ class Transceiver : public TrackedObject {
   // Interop callbacks
   //
 
+  /// Callback invoked when the transceiver has been associated with a media
+  /// line.
+  using AssociatedCallback = Callback<int>;
+
+  void RegisterAssociatedCallback(AssociatedCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{cb_mutex_};
+    associated_callback_ = std::move(callback);
+  }
+
   /// Callback invoked when the internal state of the transceiver has
   /// been updated.
   using StateUpdatedCallback =
@@ -161,11 +174,12 @@ class Transceiver : public TrackedObject {
   // Advanced
   //
 
-  /// Get a handle to the tranceiver. This is not virtual on purpose, as the API
-  /// doesn't differentiate between audio and video transceivers, so any handle
-  /// would be cast back to a base class |Transceiver| pointer. This handle is
-  /// valid until the transceiver is removed from the peer connection and
-  /// destroyed, which happens during |PeerConnection::Close()|.
+  /// Get a handle to the tranceiver. This is not virtual on purpose, as the
+  /// API doesn't differentiate between audio and video transceivers, so any
+  /// handle would be cast back to a base class |Transceiver| pointer. This
+  /// handle is valid until the transceiver is removed from the peer
+  /// connection and destroyed, which happens during
+  /// |PeerConnection::Close()|.
   [[nodiscard]] constexpr mrsTransceiverHandle GetHandle() const noexcept {
     return (mrsTransceiverHandle)this;
   }
@@ -174,9 +188,9 @@ class Transceiver : public TrackedObject {
       const;
 
   /// Synchronize the RTP sender with the desired direction when using Plan B.
-  /// |needed| indicate whether an RTP sender is needed or not. |peer| is passed
-  /// as argument for convenience, as |owner_| cannot access it. |media_kind| is
-  /// the Cricket value, so "audio" or "video".
+  /// |needed| indicate whether an RTP sender is needed or not. |peer| is
+  /// passed as argument for convenience, as |owner_| cannot access it.
+  /// |media_kind| is the Cricket value, so "audio" or "video".
   void SyncSenderPlanB(bool needed,
                        webrtc::PeerConnectionInterface* peer,
                        const char* media_kind,
@@ -187,14 +201,17 @@ class Transceiver : public TrackedObject {
   void SetReceiverPlanB(
       rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver);
 
-  /// Hot-swap the local sender track on this transceiver, without changing the
-  /// transceiver direction. This emulates the RTP transceiver's SetTrack
+  /// Hot-swap the local sender track on this transceiver, without changing
+  /// the transceiver direction. This emulates the RTP transceiver's SetTrack
   /// function. Because the RTP sender in Plan B only exists when the track is
   /// sending, and therefore acts as a marker for the sender direction, this
   /// does not create an RTP sender if none exists, but instead stores a
   /// reference to it for later. This will however assign the track if an RTP
   /// sender already exists at the time of the call.
   void SetTrackPlanB(webrtc::MediaStreamTrackInterface* new_track);
+
+  /// Callback on associated with a media line.
+  void OnAssociated(int mline_index);
 
   /// Callback on local description updated, to check for any change in the
   /// transceiver direction and update its state.
@@ -223,14 +240,15 @@ class Transceiver : public TrackedObject {
   [[nodiscard]] static std::string EncodeStreamIDs(
       const std::vector<std::string>& stream_ids);
 
-  /// Build the encoded string used as the (single) stream ID of a Plan B track,
-  /// which contains the media line index of the emulated transceiver as well as
-  /// a list of stream IDs, to emulate the properties of Unified Plan.
+  /// Build the encoded string used as the (single) stream ID of a Plan B
+  /// track, which contains the media line index of the emulated transceiver
+  /// as well as a list of stream IDs, to emulate the properties of Unified
+  /// Plan.
   [[nodiscard]] std::string BuildEncodedStreamIDForPlanB(int mline_index) const;
 
-  /// Decode the string encoded by |BuildEncodedStreamIDForPlanB()|, and return
-  /// in addition the encoded media line index string into |name| to be used as
-  /// the transceiver name.
+  /// Decode the string encoded by |BuildEncodedStreamIDForPlanB()|, and
+  /// return in addition the encoded media line index string into |name| to be
+  /// used as the transceiver name.
   [[nodiscard]] static bool DecodedStreamIDForPlanB(
       const std::string& encoded_string,
       int& mline_index_out,
@@ -249,8 +267,8 @@ class Transceiver : public TrackedObject {
               std::vector<std::string> stream_ids,
               Direction desired_direction) noexcept;
 
-  /// Construct a Unified Plan transceiver wrapper referencing an actual WebRTC
-  /// transceiver implementation object as defined in Unified Plan.
+  /// Construct a Unified Plan transceiver wrapper referencing an actual
+  /// WebRTC transceiver implementation object as defined in Unified Plan.
   Transceiver(RefPtr<GlobalFactory> global_factory,
               MediaKind kind,
               PeerConnection& owner,
@@ -271,10 +289,10 @@ class Transceiver : public TrackedObject {
   /// Transceiver media kind.
   const MediaKind kind_;
 
-  /// Media line index (or "mline" index) is the index of the transceiver into
-  /// the collection of its owner peer connection. In Unified Plan, this is also
-  /// the index of the "m=" line in any SDP message.
-  const int mline_index_;
+  /// Media line index (or "mline" index) is the index of the media line the
+  /// transceiver is associated with. In Unified Plan, this is the index of the
+  /// "m=" line in any SDP message. In Plan B media lines are emulated only.
+  int mline_index_;
 
   /// Transceiver name, for debugging and logging purpose. This can be set by
   /// the user on creation, or auto-generated by the implementation if the
@@ -284,8 +302,8 @@ class Transceiver : public TrackedObject {
   /// List of stream IDs associated with the transceiver.
   const std::vector<std::string> stream_ids_;
 
-  /// Local media track, either |LocalAudioTrack| or |LocalVideoTrack| depending
-  /// on |kind_|.
+  /// Local media track, either |LocalAudioTrack| or |LocalVideoTrack|
+  /// depending on |kind_|.
   RefPtr<MediaTrack> local_track_;
 
   /// Remote media track, either |RemoteAudioTrack| or |RemoteVideoTrack|
@@ -295,9 +313,10 @@ class Transceiver : public TrackedObject {
   /// Current transceiver direction, as last negotiated.
   /// This does not map 1:1 with the presence/absence of the local and remote
   /// tracks in |AudioTransceiver| and |VideoTransceiver|, which represent the
-  /// state for the next negotiation, and will differ after changing tracks but
-  /// before renegotiating them. This does map however with the internal concept
-  /// of "preferred direction" |webrtc::RtpTransceiverInterface::direction()|.
+  /// state for the next negotiation, and will differ after changing tracks
+  /// but before renegotiating them. This does map however with the internal
+  /// concept of "preferred direction"
+  /// |webrtc::RtpTransceiverInterface::direction()|.
   OptDirection direction_ = OptDirection::kNotSet;
 
   /// Next desired direction, as set by user via |SetDirection()|.
@@ -309,12 +328,16 @@ class Transceiver : public TrackedObject {
   /// the peer connection.
   rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver_;
 
-  /// Emulation layer for transceiver-over-PlanB. Used when SDP semantic is set
-  /// Plan B to emulate the behavior of a transceiver using the track-based API.
-  /// This is NULL if using Unified Plan.
-  /// This is also used as a cache of which Plan is in use, to avoid querying
-  /// the peer connection.
+  /// Emulation layer for transceiver-over-PlanB. Used when SDP semantic is
+  /// set Plan B to emulate the behavior of a transceiver using the
+  /// track-based API. This is NULL if using Unified Plan. This is also used
+  /// as a cache of which Plan is in use, to avoid querying the peer
+  /// connection.
   std::unique_ptr<PlanBEmulation> plan_b_;
+
+  /// Interop callback invoked when the transceiver has been associated with a
+  /// media line.
+  AssociatedCallback associated_callback_ RTC_GUARDED_BY(cb_mutex_);
 
   /// Interop callback invoked when the internal state of the transceiver has
   /// been updated.

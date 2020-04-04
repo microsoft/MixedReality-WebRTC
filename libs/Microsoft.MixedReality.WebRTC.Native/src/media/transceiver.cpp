@@ -459,6 +459,18 @@ void Transceiver::SetTrackPlanB(webrtc::MediaStreamTrackInterface* new_track) {
   }
 }
 
+void Transceiver::OnAssociated(int mline_index) {
+  assert(mline_index >= 0);
+  // Transceiver recycling is not used, to transceivers can only be associated
+  // once, from their initial non-associated state.
+  assert(mline_index_ < 0);
+  mline_index_ = mline_index;
+  auto lock = std::scoped_lock{cb_mutex_};
+  if (auto cb = associated_callback_) {
+    cb(mline_index);
+  }
+}
+
 void Transceiver::OnSessionDescUpdated(bool remote, bool forced) {
   // Parse state to check for changes
   bool changed = false;

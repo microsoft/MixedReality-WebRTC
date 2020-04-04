@@ -20,6 +20,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static unsafe extern IntPtr Transceiver_GetUserData(IntPtr handle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsTransceiverRegisterAssociatedCallback")]
+        public static unsafe extern void Transceiver_RegisterAssociatedCallback(IntPtr handle,
+            AssociatedDelegate callback, IntPtr userData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsTransceiverRegisterStateUpdatedCallback")]
         public static unsafe extern uint Transceiver_RegisterStateUpdatedCallback(IntPtr handle,
             StateUpdatedDelegate callback, IntPtr userData);
@@ -117,11 +122,22 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         #region Native callbacks
 
-        public static readonly StateUpdatedDelegate StateUpdatedCallback = TransceiverStateUpdatedCallback;
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void AssociatedDelegate(IntPtr transceiver, int mlineIndex);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void StateUpdatedDelegate(IntPtr transceiver, StateUpdatedReason reason,
             OptDirection negotiatedDirection, Transceiver.Direction desiredDirection);
+
+        public static readonly AssociatedDelegate AssociatedCallback = TransceiverAssociatedCallback;
+        public static readonly StateUpdatedDelegate StateUpdatedCallback = TransceiverStateUpdatedCallback;
+
+        [MonoPInvokeCallback(typeof(AssociatedDelegate))]
+        private static void TransceiverAssociatedCallback(IntPtr transceiver, int mlineIndex)
+        {
+            var videoTranceiverWrapper = Utils.ToWrapper<Transceiver>(transceiver);
+            videoTranceiverWrapper.OnAssociated(mlineIndex);
+        }
 
         [MonoPInvokeCallback(typeof(StateUpdatedDelegate))]
         private static void TransceiverStateUpdatedCallback(IntPtr transceiver, StateUpdatedReason reason,
@@ -153,12 +169,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void RegisterCallbacks(Transceiver transceiver, out IntPtr argsRef)
         {
             argsRef = Utils.MakeWrapperRef(transceiver);
+            Transceiver_RegisterAssociatedCallback(transceiver._nativeHandle, AssociatedCallback, argsRef);
             Transceiver_RegisterStateUpdatedCallback(transceiver._nativeHandle, StateUpdatedCallback, argsRef);
         }
 
         public static void UnregisterCallbacks(IntPtr handle, IntPtr argsRef)
         {
             Utils.ReleaseWrapperRef(argsRef);
+            Transceiver_RegisterAssociatedCallback(handle, null, IntPtr.Zero);
             Transceiver_RegisterStateUpdatedCallback(handle, null, IntPtr.Zero);
         }
 

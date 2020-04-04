@@ -29,6 +29,16 @@ mrsTransceiverGetUserData(mrsTransceiverHandle handle) noexcept {
   return nullptr;
 }
 
+void MRS_CALL mrsTransceiverRegisterAssociatedCallback(
+    mrsTransceiverHandle handle,
+    mrsTransceiverAssociatedCallback callback,
+    void* user_data) noexcept {
+  if (auto transceiver = static_cast<Transceiver*>(handle)) {
+    transceiver->RegisterAssociatedCallback(
+        Transceiver::AssociatedCallback{callback, user_data});
+  }
+}
+
 void MRS_CALL mrsTransceiverRegisterStateUpdatedCallback(
     mrsTransceiverHandle handle,
     mrsTransceiverStateUpdatedCallback callback,
