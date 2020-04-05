@@ -1,4 +1,4 @@
-﻿<Project>
+<Project>
 
   <!-- This needs to go first, before Microsoft.Common.props is imported  -->
   <PropertyGroup>

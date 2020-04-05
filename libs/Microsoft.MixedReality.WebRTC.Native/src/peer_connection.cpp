@@ -17,7 +17,6 @@
 #include "sdp_utils.h"
 #include "utils.h"
 #include "video_frame_observer.h"
-#include "sdp_utils.h"
 
 #include <functional>
 
@@ -108,7 +107,6 @@ void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode value) {
 
 namespace Microsoft::MixedReality::WebRTC {
 void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode /*value*/) {}
-
 }  // namespace Microsoft::MixedReality::WebRTC
 
 #endif
@@ -521,11 +519,15 @@ class PeerConnectionImpl : public PeerConnection,
             webrtc::SdpSemantics::kUnifiedPlan);
   }
 
-  /// Insert a new transceiver wrapper at the given media line index into
-  /// |transceivers_|. This will keep the transceiver alive until it is
-  /// destroyed by |Close()|.
-  Error InsertTransceiverAtMlineIndex(int mline_index,
-                                      RefPtr<Transceiver> transceiver);
+  /// Find the |Transceiver| wrapper of an RTP transceiver, or |nullptr| if the
+  /// RTP transceiver doesn't have a wrapper yet.
+  RefPtr<Transceiver> FindWrapperFromRtpTransceiver(
+      webrtc::RtpTransceiverInterface* tr) const;
+
+  /// Extract the media line index from an RTP transceiver, or -1 if not
+  /// associated.
+  static int ExtractMlineIndexFromRtpTransceiver(
+      webrtc::RtpTransceiverInterface* tr);
 
   /// Get an existing or create a new |Transceiver| wrapper for a given RTP
   /// receiver of a newly added remote track. The receiver should have an RTP
@@ -1182,11 +1184,10 @@ ErrorOr<Transceiver*> PeerConnectionImpl::AddTransceiver(
       Transceiver::DecodeStreamIDs(config.stream_ids);
 
   RefPtr<Transceiver> transceiver;
-  int mline_index = -1;
+  const int mline_index = -1;  // just created, so not associated yet
   switch (peer_->GetConfiguration().sdp_semantics) {
     case webrtc::SdpSemantics::kPlanB: {
       // Plan B doesn't have transceivers; just create a wrapper.
-      mline_index = (int)transceivers_.size();  // append
       transceiver = Transceiver::CreateForPlanB(
           global_factory_, config.media_kind, *this, mline_index, name,
           std::move(stream_ids), config.desired_direction);
@@ -1208,16 +1209,6 @@ ErrorOr<Transceiver*> PeerConnectionImpl::AddTransceiver(
       }
       rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl(ret.MoveValue());
 
-      // Find the mline index from the position inside the transceiver list
-      {
-        auto transceivers = peer_->GetTransceivers();
-        auto it_tr =
-            std::find_if(transceivers.begin(), transceivers.end(),
-                         [&impl](auto const& tr) { return (tr == impl); });
-        RTC_DCHECK(it_tr != transceivers.end());
-        mline_index = (int)std::distance(transceivers.begin(), it_tr);
-      }
-
       // Create the transceiver wrapper
       transceiver = Transceiver::CreateForUnifiedPlan(
           global_factory_, config.media_kind, *this, mline_index, name,
@@ -1227,8 +1218,10 @@ ErrorOr<Transceiver*> PeerConnectionImpl::AddTransceiver(
       return Error(Result::kUnknownError, "Unknown SDP semantic.");
   }
   RTC_DCHECK(transceiver);
-  Transceiver* tr_view = transceiver.get();
-  InsertTransceiverAtMlineIndex(mline_index, transceiver);
+  {
+    rtc::CritScope lock(&transceivers_mutex_);
+    transceivers_.push_back(transceiver);
+  }
 
   // Invoke the TransceiverAdded callback
   {
@@ -1245,7 +1238,7 @@ ErrorOr<Transceiver*> PeerConnectionImpl::AddTransceiver(
     }
   }
 
-  return tr_view;
+  return transceiver.get();
 }
 
 bool PeerConnectionImpl::SetRemoteDescriptionAsync(
@@ -1551,33 +1544,38 @@ void PeerConnectionImpl::OnLocalDescCreated(
   peer_->SetLocalDescription(observer, desc);
 }
 
-Error PeerConnectionImpl::InsertTransceiverAtMlineIndex(
-    int mline_index,
-    RefPtr<Transceiver> transceiver) {
-  RTC_CHECK(mline_index >= 0);
+RefPtr<Transceiver> PeerConnectionImpl::FindWrapperFromRtpTransceiver(
+    webrtc::RtpTransceiverInterface* rtp_tr) const {
+  RTC_DCHECK(rtp_tr);
   rtc::CritScope lock(&transceivers_mutex_);
-  if ((size_t)mline_index >= transceivers_.size()) {
-    // Insert empty entries for now; they should be filled when processing
-    // other added remote tracks or when finishing the transceiver status
-    // update.
-    while ((size_t)mline_index >= transceivers_.size() + 1) {
-      transceivers_.push_back(nullptr);
-    }
-    transceivers_.push_back(transceiver);
-  } else {
-    if (transceivers_[mline_index]) {
-      RTC_LOG(LS_ERROR) << "Trying to insert transceiver (name="
-                        << transceiver->GetName().c_str()
-                        << ") at mline index #" << mline_index
-                        << ", but another transceiver (name="
-                        << transceivers_[mline_index]->GetName().c_str()
-                        << ") already exists with the same index.";
-      return Error(Result::kUnknownError,
-                   "Duplicate transceiver for mline index");
-    }
-    transceivers_[mline_index] = transceiver;
+  auto it = std::find_if(transceivers_.begin(), transceivers_.end(),
+                         [&rtp_tr](const RefPtr<Transceiver>& tr) {
+                           return (tr->impl() == rtp_tr);
+                         });
+  if (it != transceivers_.end()) {
+    return *it;
   }
-  return Error(Result::kSuccess);
+  return nullptr;
+}
+
+int PeerConnectionImpl::ExtractMlineIndexFromRtpTransceiver(
+    webrtc::RtpTransceiverInterface* tr) {
+  RTC_DCHECK(tr);
+  // We don't have access to the actual mline index, it is not exposed in the
+  // RTP transceiver API, so instead rely on the (implementation detail) fact
+  // that Google chose to use the mline index as the mid value, thankfully for
+  // us.
+  std::optional<std::string> mid_opt = tr->mid();
+  if (!mid_opt.has_value()) {
+    return -1;
+  }
+  std::string mid = mid_opt.value();
+  char* end = nullptr;
+  long value = std::strtol(mid.c_str(), &end, 10);
+  RTC_CHECK(end > mid.c_str());
+  RTC_CHECK(value >= 0);
+  RTC_CHECK(value <= (long)INT_MAX);
+  return static_cast<int>(value);
 }
 
 ErrorOr<Transceiver*>
@@ -1616,8 +1614,11 @@ PeerConnectionImpl::GetOrCreateTransceiverForNewRemoteTrack(
           "Failed to match RTP receiver with an existing RTP transceiver.");
     }
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl = *it_impl;
-    const int mline_index = (int)std::distance(transceivers.begin(), it_impl);
-    std::string name = impl->mid().value_or(std::string{});
+    const int mline_index = ExtractMlineIndexFromRtpTransceiver(impl);
+    RTC_DCHECK(mline_index >= 0);  // should be always associated here
+    std::optional<std::string> mid = impl->mid();
+    RTC_CHECK(mid.has_value());  // should be always true here
+    std::string name = mid.value();
     std::vector<std::string> stream_ids =
         ExtractTransceiverStreamIDsFromReceiver(receiver);
 
@@ -1650,12 +1651,8 @@ PeerConnectionImpl::GetOrCreateTransceiverForNewRemoteTrack(
         std::move(stream_ids), desired_direction);
     transceiver->SetReceiverPlanB(receiver);
     {
-      // Insert the transceiver in the peer connection's collection. The peer
-      // connection will add a reference to it and keep it alive.
-      auto err = InsertTransceiverAtMlineIndex(mline_index, transceiver);
-      if (!err.ok()) {
-        return err;
-      }
+      rtc::CritScope lock(&transceivers_mutex_);
+      transceivers_.push_back(transceiver);
     }
 
     // Invoke the TransceiverAdded callback
@@ -1678,39 +1675,31 @@ PeerConnectionImpl::GetOrCreateTransceiverForNewRemoteTrack(
 }
 
 void PeerConnectionImpl::SynchronizeTransceiversUnifiedPlan(bool remote) {
-  auto rtp_transceivers = peer_->GetTransceivers();
-  const int num_transceivers = static_cast<int>(rtp_transceivers.size());
-  for (int mline_index = 0; mline_index < num_transceivers; ++mline_index) {
-    // RTP transceivers are in mline_index order by design
-    const rtc::scoped_refptr<webrtc::RtpTransceiverInterface>& tr =
-        rtp_transceivers[mline_index];
-    RefPtr<Transceiver> transceiver;
-    {
-      rtc::CritScope lock(&transceivers_mutex_);
-      if (mline_index < transceivers_.size()) {
-        transceiver = transceivers_[mline_index];
-      }
-      RTC_DCHECK(!transceiver || (transceiver->impl() == tr));
-    }
+  for (auto&& rtp_tr : peer_->GetTransceivers()) {
+    const int mline_index = ExtractMlineIndexFromRtpTransceiver(rtp_tr);
+    RefPtr<Transceiver> transceiver = FindWrapperFromRtpTransceiver(rtp_tr);
     if (!transceiver) {
-      // If transceiver is created from the result of applying a
-      // remote description, then the transceiver name is extracted
-      // from the receiver.
-      std::string name = tr->mid().value_or(std::string{});
+      std::string name = rtp_tr->mid().value_or(std::string{});
       std::vector<std::string> stream_ids =
-          ExtractTransceiverStreamIDsFromReceiver(tr->receiver());
+          ExtractTransceiverStreamIDsFromReceiver(rtp_tr->receiver());
       ErrorOr<Transceiver*> err = CreateTransceiverUnifiedPlan(
-          MediaKindFromRtc(tr->media_type()), mline_index, std::move(name),
-          std::move(stream_ids), tr);
+          MediaKindFromRtc(rtp_tr->media_type()), mline_index, std::move(name),
+          std::move(stream_ids), rtp_tr);
       if (!err.ok()) {
-        RTC_LOG(LS_ERROR) << "Failed to create a Transceiver object to "
-                             "hold a new RTP transceiver.";
+        RTC_LOG(LS_ERROR) << "Failed to create a Transceiver object to hold a "
+                             "new RTP transceiver.";
         continue;
       }
       transceiver = err.MoveValue();
     }
     // Ensure the Transceiver object is in sync with its RTP counterpart
     transceiver->OnSessionDescUpdated(remote);
+    // Check if newly associated
+    if (transceiver->GetMlineIndex() != mline_index) {
+      RTC_DCHECK(mline_index >= 0);
+      RTC_DCHECK(!remote);  // already created associated with remote
+      transceiver->OnAssociated(mline_index);
+    }
   }
 }
 
@@ -1725,9 +1714,9 @@ ErrorOr<Transceiver*> PeerConnectionImpl::CreateTransceiverUnifiedPlan(
   RefPtr<Transceiver> transceiver = Transceiver::CreateForUnifiedPlan(
       global_factory_, media_kind, *this, mline_index, std::move(name),
       stream_ids, std::move(rtp_transceiver), desired_direction);
-  auto err = InsertTransceiverAtMlineIndex(mline_index, transceiver);
-  if (!err.ok()) {
-    return err;
+  {
+    rtc::CritScope lock(&transceivers_mutex_);
+    transceivers_.push_back(transceiver);
   }
   {
     auto lock = std::scoped_lock{callbacks_mutex_};

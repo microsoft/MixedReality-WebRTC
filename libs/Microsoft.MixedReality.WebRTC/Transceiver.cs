@@ -28,24 +28,29 @@ namespace Microsoft.MixedReality.WebRTC
 
     /// <summary>
     /// Transceiver of a peer connection.
-    /// 
+    ///
     /// A transceiver is a media "pipe" connecting the local and remote peers, and used to transmit media
     /// data (audio or video) between the peers. The transceiver has a media flow direction indicating whether
     /// it is sending and/or receiving any media, or is inactive. When sending some media, the transceiver's
     /// local track is used as the source of that media. Conversely, when receiving some media, that media is
-    /// delivered to the remote media track of the transceiver. As a convenience, both tracks can be null to
-    /// avoid sending or ignore the received media, although this does not influence the media flow direction.
-    /// 
+    /// delivered to the remote media track of the transceiver. As a convenience, the local track can be null
+    /// if the local peer does not have anything to send. In that case some empty media is automatically sent
+    /// instead (black frames for video, silence for audio) at very reduced rate. To completely stop sending,
+    /// the media direction must be changed instead.
+    ///
     /// Transceivers are owned by the peer connection which creates them, and cannot be destroyed nor removed
     /// from the peer connection. They become invalid when the peer connection is closed, and should not be
     /// used after that.
     /// </summary>
     /// <remarks>
-    /// This object corresponds roughly to the same-named notion in the WebRTC standard when using the
+    /// This object corresponds roughly to the same-named notion in the WebRTC 1.0 standard when using the
     /// Unified Plan SDP semantic.
-    /// For Plan B, where RTP transceivers are not available, this wrapper tries to emulate the Unified Plan
-    /// transceiver concept, and is therefore providing an abstraction over the WebRTC concept of transceivers.
+    ///
+    /// For Plan B semantic, where RTP transceivers are not available, this wrapper tries to emulate the
+    /// transceiver concept of the Unified Plan semantic, and is therefore providing an abstraction over the
+    /// WebRTC concept of transceivers.
     /// </remarks>
+    /// <seealso cref="PeerConnection.AddTransceiver(MediaKind, TransceiverInitSettings)"/>
     /// <seealso cref="PeerConnection.Close"/>
     public class Transceiver
     {
@@ -96,22 +101,26 @@ namespace Microsoft.MixedReality.WebRTC
         public PeerConnection PeerConnection { get; } = null;
 
         /// <summary>
-        /// Index of the media line in the SDP protocol for this transceiver. This also corresponds
-        /// to the index of the transceiver inside <see cref="PeerConnection.Transceivers"/>.
+        /// Index of the media line in the SDP protocol for this transceiver. If the transceiver is not
+        /// yet associated with a media line, this index has a negative value (invalid). Transceivers are
+        /// associated when an offer, local or remote, is applied to the local peer connection. Consequently,
+        /// transceivers created as a result of applying a remote offer are created in an associated state,
+        /// with a media line index already valid, while transceivers created locally by the peer connection
+        /// have an invalid index until the next offer.
         /// </summary>
-        /// <remarks>
-        /// For Plan B, the media line index is not guaranteed by the SDP protocol, but this index
-        /// is still valid as the index of the transceiver in the global collection of the peer connection
-        /// <see cref="PeerConnection.Transceivers"/>.
-        /// </remarks>
         public int MlineIndex { get; } = -1;
 
         /// <summary>
         /// Transceiver direction desired by the user.
+        ///
         /// Once changed by the user, this value is the next direction that will be negotiated when
         /// calling <see cref="PeerConnection.CreateOffer"/> or <see cref="PeerConnection.CreateAnswer"/>.
-        /// After the negotiation is completed, this is equal to <see cref="NegotiatedDirection"/>.
-        /// Setting this value triggers a <see cref="PeerConnection.RenegotiationNeeded"/> event.
+        ///
+        /// After the negotiation is completed, this is generally equal to <see cref="NegotiatedDirection"/>,
+        /// unless the offer was partially rejected, for example if the local peer offered to send and receive
+        /// some media but the remote peer only accepted to receive.
+        ///
+        /// Changing the value of this property triggers a <see cref="PeerConnection.RenegotiationNeeded"/> event.
         /// </summary>
         /// <seealso cref="NegotiatedDirection"/>
         public Direction DesiredDirection
@@ -130,9 +139,10 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Last negotiated transceiver direction. This is equal to <see cref="DesiredDirection"/>
-        /// after a negotiation is completed, but remains constant when changing <see cref="DesiredDirection"/>
-        /// until the next SDP negotiation.
+        /// Last negotiated transceiver direction. This is constant when changing <see cref="DesiredDirection"/>,
+        /// and is only udpated after an SDP session negotiation. This might be different from the desired
+        /// direction if for example the local peer asked to receive but the remote peer refused. This is the
+        /// actual direction the media is effectively transported in at any point in time.
         /// </summary>
         /// <seealso cref="DesiredDirection"/>
         public Direction? NegotiatedDirection { get; protected set; } = null;
@@ -153,10 +163,15 @@ namespace Microsoft.MixedReality.WebRTC
         public MediaTrack LocalTrack => _localTrack;
 
         /// <summary>
-        /// Local audio track attached to the transceiver, if <see cref="MediaKind"/> is <see cref="MediaKind.Audio"/>.
+        /// Local audio track attached to the transceiver, if <see cref="MediaKind"/> is
+        /// <see cref="MediaKind.Audio"/>.
+        ///
         /// The property has two uses:
-        /// - as a convenience getter to retrieve <see cref="LocalTrack"/> already cast to a <see cref="WebRTC.LocalAudioTrack"/> type.
-        /// - to attach a new local audio track if the transceiver is an audio transceiver; otherwise this throws a <see xref="System.ArgumentException"/>.
+        /// - as a convenience getter to retrieve <see cref="LocalTrack"/> already cast to a
+        ///   <see cref="WebRTC.LocalAudioTrack"/> type, or <c>null</c> if the transceiver
+        ///   media kind is <see cref="MediaKind.Video"/>.
+        /// - to attach a new local audio track if the transceiver is an audio transceiver;
+        ///   otherwise this throws a <see cref="System.ArgumentException"/>.
         /// </summary>
         public LocalAudioTrack LocalAudioTrack
         {
@@ -175,10 +190,15 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Local video track attached to the transceiver, if <see cref="MediaKind"/> is <see cref="MediaKind.Video"/>.
+        /// Local video track attached to the transceiver, if <see cref="MediaKind"/> is
+        /// <see cref="MediaKind.Video"/>.
+        ///
         /// The property has two uses:
-        /// - as a convenience getter to retrieve <see cref="LocalTrack"/> already cast to a <see cref="WebRTC.LocalVideoTrack"/> type.
-        /// - to attach a new local video track if the transceiver is a video transceiver; otherwise this throws a <see xref="System.ArgumentException"/>.
+        /// - as a convenience getter to retrieve <see cref="LocalTrack"/> already cast to a
+        ///   <see cref="WebRTC.LocalVideoTrack"/> type, or <c>null</c> if the transceiver
+        ///   media kind is <see cref="MediaKind.Audio"/>.
+        /// - to attach a new local video track if the transceiver is a video transceiver;
+        ///   otherwise this throws a <see cref="System.ArgumentException"/>.
         /// </summary>
         public LocalVideoTrack LocalVideoTrack
         {

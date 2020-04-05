@@ -2118,29 +2118,6 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Insert the given transceiver into the <see cref="Transceivers"/> list at the index
-        /// corresponding to its <see cref="Transceiver.MlineIndex"/>.
-        /// </summary>
-        /// <param name="transceiver">Transceiver object to insert.</param>
-        internal void InsertTransceiverNoLock(Transceiver transceiver)
-        {
-            int mlineIndex = transceiver.MlineIndex;
-            if (mlineIndex >= Transceivers.Count)
-            {
-                while (mlineIndex >= Transceivers.Count + 1)
-                {
-                    Transceivers.Add(null);
-                }
-                Transceivers.Add(transceiver);
-            }
-            else
-            {
-                Debug.Assert(Transceivers[mlineIndex] == null);
-                Transceivers[mlineIndex] = transceiver;
-            }
-        }
-
-        /// <summary>
         /// Callback on transceiver created for the peer connection, irrelevant of whether
         /// it has tracks or not. This is called both when created from the managed side or
         /// from the native side.
@@ -2150,7 +2127,7 @@ namespace Microsoft.MixedReality.WebRTC
         {
             lock (_tracksLock)
             {
-                InsertTransceiverNoLock(tr);
+                Transceivers.Add(tr);
             }
             TransceiverAdded?.Invoke(tr);
         }
