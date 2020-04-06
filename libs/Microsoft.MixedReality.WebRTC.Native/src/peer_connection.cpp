@@ -1675,10 +1675,29 @@ PeerConnectionImpl::GetOrCreateTransceiverForNewRemoteTrack(
 }
 
 void PeerConnectionImpl::SynchronizeTransceiversUnifiedPlan(bool remote) {
-  for (auto&& rtp_tr : peer_->GetTransceivers()) {
+  // Get RTP transceivers sorted by address in memory
+  auto rtp_transceivers = peer_->GetTransceivers();
+  std::sort(
+      rtp_transceivers.begin(), rtp_transceivers.end(),
+      [](auto const& t1, auto const& t2) { return (t1.get() < t2.get()); });
+  // Get transceiver wrappers sorted by RTP transceiver address in memory
+  std::vector<RefPtr<Transceiver>> wrappers;
+  {
+    rtc::CritScope lock(&transceivers_mutex_);
+    wrappers = transceivers_;
+  }
+  std::sort(wrappers.begin(), wrappers.end(),
+            [](auto const& t1, auto const& t2) {
+              return (t1->impl().get() < t2->impl().get());
+            });
+  // Match transceiver wrappers with their implementation, and create wrappers
+  // for the ones without one yet.
+  RTC_DCHECK_GE(rtp_transceivers.size(), wrappers.size());
+  auto it_wrapper = wrappers.begin();
+  for (auto&& rtp_tr : rtp_transceivers) {
     const int mline_index = ExtractMlineIndexFromRtpTransceiver(rtp_tr);
-    RefPtr<Transceiver> transceiver = FindWrapperFromRtpTransceiver(rtp_tr);
-    if (!transceiver) {
+    // Create a wrapper if it doesn't exist yet
+    if (it_wrapper == wrappers.end()) {
       std::string name = rtp_tr->mid().value_or(std::string{});
       std::vector<std::string> stream_ids =
           ExtractTransceiverStreamIDsFromReceiver(rtp_tr->receiver());
@@ -1690,16 +1709,18 @@ void PeerConnectionImpl::SynchronizeTransceiversUnifiedPlan(bool remote) {
                              "new RTP transceiver.";
         continue;
       }
-      transceiver = err.MoveValue();
+      it_wrapper = wrappers.insert(it_wrapper, err.MoveValue());
     }
+    RTC_DCHECK(it_wrapper != wrappers.end());
     // Ensure the Transceiver object is in sync with its RTP counterpart
-    transceiver->OnSessionDescUpdated(remote);
+    (*it_wrapper)->OnSessionDescUpdated(remote);
     // Check if newly associated
-    if (transceiver->GetMlineIndex() != mline_index) {
+    if ((*it_wrapper)->GetMlineIndex() != mline_index) {
       RTC_DCHECK(mline_index >= 0);
       RTC_DCHECK(!remote);  // already created associated with remote
-      transceiver->OnAssociated(mline_index);
+      (*it_wrapper)->OnAssociated(mline_index);
     }
+    ++it_wrapper;
   }
 }
 
