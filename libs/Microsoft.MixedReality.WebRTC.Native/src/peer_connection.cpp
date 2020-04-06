@@ -504,6 +504,10 @@ class PeerConnectionImpl : public PeerConnection,
   /// data channel is created before the connection is established, which will
   /// force the connection to negotiate the necessary SCTP information. See
   /// https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
+  ///
+  /// FIXME - See Note on
+  /// https://w3c.github.io/webrtc-pc/#dictionary-rtcdatachannelinit-members, it
+  /// looks like this is only a problem for negotiated (out-of-band) channels.
   bool sctp_negotiated_ = true;
 
  private:

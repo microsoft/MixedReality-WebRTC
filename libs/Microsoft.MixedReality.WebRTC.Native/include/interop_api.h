@@ -666,14 +666,25 @@ mrsPeerConnectionAddIceCandidate(mrsPeerConnectionHandle peer_handle,
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionCreateOffer(mrsPeerConnectionHandle peer_handle) noexcept;
 
-/// Create a new JSEP answer to a received offer to try to establish a
-/// connection with a remote peer. This will generate a local answer message,
-/// then fire the |LocalSdpReadytoSendCallback| callback, which should send to
-/// the remote peer this message via the signaling service the user implemented.
+/// Create a new JSEP answer to a received offer, either to try to establish a
+/// new connection with a remote peer, or to update an existing session with
+/// changes. This will generate a local answer message, then fire the
+/// |LocalSdpReadytoSendCallback| callback, which should send to the remote peer
+/// this message via the signaling service the user chose.
 ///
 /// Creating an answer is only possible if the local peer already applied a
 /// remote offer via |mrsPeerConnectionSetRemoteDescriptionAsync| and the async
 /// callback completed successfully.
+///
+/// Note that the answer will only negotiate the transceivers present in the
+/// offer. This aligns with the JSEP protocol JSEP 5.3.1 stating that "If there
+/// are more RtpTransceivers than there are m= sections, the unmatched
+/// RtpTransceivers will need to be associated in a subsequent offer.".
+/// https://tools.ietf.org/html/draft-ietf-rtcweb-jsep-25#page-50
+/// This means that if the callee has any transceiver not yet associated with a
+/// media line, those transceivers will *not* be part of the answer, and a
+/// subsequent offer from that peer needs to be sent to negotiate those
+/// transceivers after the current session negotation is completed.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionCreateAnswer(mrsPeerConnectionHandle peer_handle) noexcept;
 
@@ -730,20 +741,28 @@ struct SdpFilter {
   const char* params = nullptr;
 };
 
-/// Force audio and video codecs when advertizing capabilities in an SDP offer.#
+/// Force audio and video codecs when advertizing capabilities in an SDP offer.
 ///
-/// This is a workaround for the lack of access to codec selection. Instead of
-/// selecting codecs in code, this can be used to intercept a generated SDP
-/// offer before it is sent to the remote peer, and modify it by removing the
-/// codecs the user does not want.
+/// This is a workaround for the lack of access to codec selection in m71.
+/// Instead of selecting codecs in code, this can be used to intercept a
+/// generated SDP offer before it is sent to the remote peer, and modify it by
+/// removing the codecs the user does not want. This procedure is explicitly
+/// allowed by the JSEP specification (section 5.4):
+///     After calling setLocalDescription with an offer or answer, the
+///     application MAY modify the SDP to reduce its capabilities before sending
+///     it to the far side, as long as it follows the rules above that define a
+///     valid JSEP offer or  answer. Likewise, an application that has received
+///     an offer or answer from a peer MAY modify the received SDP, subject to
+///     the same constraints, before calling setRemoteDescription.
+/// https://tools.ietf.org/html/draft-ietf-rtcweb-jsep-25#section-5.4
 ///
 /// Codec names are compared to the list of supported codecs in the input
 /// message string, and if found then other codecs are pruned out. If the codec
-/// name is not found, the codec is assumed to be unsupported, so codecs for
-/// that type are not modified.
+/// name is not found, the codec is assumed to be unsupported, and as a fallback
+/// mechanism the original message is not modified.
 ///
-/// On return the SDP offer message string to be sent via the signaler is stored
-/// into the output buffer pointed to by |buffer|.
+/// On return, the SDP offer message string to be sent via the signaler is
+/// stored into the output buffer pointed to by |buffer|.
 ///
 /// Note that because this function always return a message shorter or equal to
 /// the input message, one way to ensure this function doesn't fail is to pass
