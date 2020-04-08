@@ -61,12 +61,6 @@ std::string EncodeIceServers(const std::string& url);
 std::string EncodeIceServers(const std::string& url,
                              const std::string& username,
                              const std::string& password);
-
-// Copied from src/pc/jsepsessiondescription.cc so that we don't rely on a binary
-// representation of absl::optional as per the Abseil Compatibility Guidelines:
-// https://abseil.io/about/compatibility
-std::optional<webrtc::SdpType> SdpTypeFromString(const std::string& type_str);
-
 }  // namespace WebRTC
 }  // namespace MixedReality
 }  // namespace Microsoft
