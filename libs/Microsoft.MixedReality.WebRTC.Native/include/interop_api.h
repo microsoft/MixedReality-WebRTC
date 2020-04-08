@@ -454,7 +454,8 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
     void* user_data) noexcept;
 
 // Experimental. Render or not remote audio tracks on the audio device.
-MRS_API void MRS_CALL
+// Not supported on UWP.
+MRS_API mrsResult MRS_CALL
 mrsPeerConnectionRenderRemoteAudio(PeerConnectionHandle peerHandle, bool render);
 
 /// Configuration for opening a local video capture device and creating a local

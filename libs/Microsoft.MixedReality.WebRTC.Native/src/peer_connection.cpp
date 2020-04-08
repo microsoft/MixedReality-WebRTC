@@ -279,6 +279,7 @@ class PeerConnectionImpl : public PeerConnection,
   }
 
   void RenderRemoteAudioTrack(bool render) noexcept override {
+    RTC_DCHECK(custom_audio_mixer_);
     const std::lock_guard<std::mutex> lock{remote_audio_mutex_};
     render_remote_audio_ = render;
     if (remote_audio_ssrc_) {
@@ -287,6 +288,7 @@ class PeerConnectionImpl : public PeerConnection,
   }
 
   void SetRemoteAudioSsrc(int ssrc) {
+    RTC_DCHECK(custom_audio_mixer_);
     const std::lock_guard<std::mutex> lock{remote_audio_mutex_};
     if (!remote_audio_ssrc_) {
       custom_audio_mixer_->RenderSource(ssrc, render_remote_audio_);
@@ -1229,21 +1231,27 @@ void PeerConnectionImpl::OnAddTrack(
   if (trackKindStr == webrtc::MediaStreamTrackInterface::kAudioKind) {
     trackKind = TrackKind::kAudioTrack;
 
-    struct SetSsrcObserver : public webrtc::RTCStatsCollectorCallback {
-      SetSsrcObserver(PeerConnectionImpl& peer_connection)
-          : peer_connection_(peer_connection) {}
-      virtual void OnStatsDelivered(
-          const rtc::scoped_refptr<const webrtc::RTCStatsReport>&
-              report) noexcept override {
-        const auto& stats =
-            report->GetStatsOfType<webrtc::RTCInboundRTPStreamStats>();
-        RTC_DCHECK_EQ(stats.size(), 1);
-        peer_connection_.SetRemoteAudioSsrc(*stats[0]->ssrc);
-      }
-      PeerConnectionImpl& peer_connection_;
-    };
-    auto stats_observer = new rtc::RefCountedObject<SetSsrcObserver>(*this);
-    peer_->GetStats(receiver, stats_observer);
+    if (custom_audio_mixer_) {
+      // We need to get the ssrc of the receiver in order to match the track to
+      // the corresponding audio source in the AudioMixer. There doesn't seem to
+      // be a way to get the ssrc from RTPReceiverInterface directly, so we
+      // request the stats for the receiver and get it from there.
+      struct SetSsrcObserver : public webrtc::RTCStatsCollectorCallback {
+        SetSsrcObserver(PeerConnectionImpl& peer_connection)
+            : peer_connection_(peer_connection) {}
+        virtual void OnStatsDelivered(
+            const rtc::scoped_refptr<const webrtc::RTCStatsReport>&
+                report) noexcept override {
+          const auto& stats =
+              report->GetStatsOfType<webrtc::RTCInboundRTPStreamStats>();
+          RTC_DCHECK_EQ(stats.size(), 1);
+          peer_connection_.SetRemoteAudioSsrc(*stats[0]->ssrc);
+        }
+        PeerConnectionImpl& peer_connection_;
+      };
+      auto stats_observer = new rtc::RefCountedObject<SetSsrcObserver>(*this);
+      peer_->GetStats(receiver, stats_observer);
+    }
 
     if (auto* sink = remote_audio_observer_.get()) {
       auto audio_track = static_cast<webrtc::AudioTrackInterface*>(track.get());

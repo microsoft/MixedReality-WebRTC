@@ -1903,7 +1903,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public void RenderRemoteAudio(bool render)
         {
-            PeerConnectionInterop.PeerConnection_RenderRemoteAudio(_nativePeerhandle, render);
+            uint res = PeerConnectionInterop.PeerConnection_RenderRemoteAudio(_nativePeerhandle, render);
+            Utils.ThrowOnErrorCode(res);
         }
 
         internal void OnConnected()

@@ -711,11 +711,18 @@ void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
   }
 }
 
-void MRS_CALL mrsPeerConnectionRenderRemoteAudio(PeerConnectionHandle peerHandle,
+mrsResult MRS_CALL mrsPeerConnectionRenderRemoteAudio(PeerConnectionHandle peerHandle,
                                                bool render) {
+#if defined(WINUWP)
+  RTC_LOG_F(LS_ERROR) << "Rendering/not rendering remote audio explicitly is "
+                           "not supported on UWP";
+  return Result::kUnsupported;
+#else
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
     peer->RenderRemoteAudioTrack(render);
   }
+  return Result::kSuccess;
+#endif
 }
 
 mrsResult MRS_CALL mrsPeerConnectionAddLocalVideoTrack(

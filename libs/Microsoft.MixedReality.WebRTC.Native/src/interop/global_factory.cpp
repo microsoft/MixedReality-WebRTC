@@ -290,10 +290,6 @@ void GlobalFactory::CustomAudioMixer::Mix(
 }
 
 void GlobalFactory::CustomAudioMixer::RenderSource(int ssrc, bool render) {
-#if defined(WINUWP)
-  RTC_LOG_F(LS_WARNING)
-      << "Rendering/not rendering remote audio explicitly is not supported on UWP";
-#else   // defined(WINUWP)
   rtc::CritScope lock(&crit_);
 
   // If the source is unknown add a KnownSource with null Source* to remember
@@ -314,7 +310,6 @@ void GlobalFactory::CustomAudioMixer::RenderSource(int ssrc, bool render) {
     // else the state of the source is unchanged.
     known_source.is_rendered = render;
   }
-#endif // defined(WINUWP)
 }
 
 #if defined(WINUWP)
@@ -351,8 +346,6 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
   if (peer_factory_) {
     return Result::kSuccess;
   }
-
-  custom_audio_mixer_ = new rtc::RefCountedObject<CustomAudioMixer>();
 
 #if defined(WINUWP)
   RTC_CHECK(!impl_);
@@ -393,6 +386,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
   // Cache the peer connection factory
   peer_factory_ = impl_->peerConnectionFactory();
 #else  // defined(WINUWP)
+  custom_audio_mixer_ = new rtc::RefCountedObject<CustomAudioMixer>();
   network_thread_ = rtc::Thread::CreateWithSocketServer();
   RTC_CHECK(network_thread_.get());
   network_thread_->SetName("WebRTC network thread", network_thread_.get());
