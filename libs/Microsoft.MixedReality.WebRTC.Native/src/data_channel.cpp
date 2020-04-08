@@ -94,9 +94,11 @@ void DataChannel::OnStateChange() noexcept {
         owner_->OnDataChannelAdded(*this);
       }
       break;
-    case webrtc::DataChannelInterface::DataState::kConnecting:
-    case webrtc::DataChannelInterface::DataState::kClosing:
     case webrtc::DataChannelInterface::DataState::kClosed:
+      break;
+    case webrtc::DataChannelInterface::DataState::kClosing:
+      break;
+    case webrtc::DataChannelInterface::DataState::kConnecting:
       break;
   }
 

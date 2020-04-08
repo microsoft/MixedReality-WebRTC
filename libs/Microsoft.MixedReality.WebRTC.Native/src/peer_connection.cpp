@@ -11,6 +11,7 @@
 #include "peer_connection.h"
 #include "sdp_utils.h"
 #include "video_frame_observer.h"
+#include "sdp_utils.h"
 
 // Internal
 #include "interop/global_factory.h"
@@ -1027,7 +1028,7 @@ bool PeerConnectionImpl::SetRemoteDescriptionAsync(
     }
   }
   std::string sdp_type_str(type);
-  auto sdp_type = webrtc::SdpTypeFromString(sdp_type_str);
+  auto sdp_type = SdpTypeFromString(sdp_type_str);
   if (!sdp_type.has_value())
     return false;
   std::string remote_desc(sdp);
@@ -1097,7 +1098,7 @@ void PeerConnectionImpl::OnDataChannel(
 
   // Read the data channel config
   std::string label = impl->label();
-  mrsDataChannelConfig config;
+  mrsDataChannelConfig config{};
   config.id = impl->id();
   config.label = label.c_str();
   if (impl->ordered()) {
