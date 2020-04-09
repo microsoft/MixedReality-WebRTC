@@ -1,5 +1,19 @@
-// Copyright (c) Microsoft Corporation.
+//-----------------------------------------------------------------------------
+// Filename: Program.cs
+//
+// Description: Demonstration of receiving and rendering video from a WebRTC
+// enabled browser using https://github.com/microsoft/MixedReality-WebRTC 
+// dotnet library.
+//
+// Author(s):
+// Aaron Clauson (aaron@sipsorcery.com)
+// 
+// History:
+// 07 Feb 2020	Aaron Clauson	Created, Dublin, Ireland.
+//
+// License: 
 // Licensed under the MIT License.
+//-----------------------------------------------------------------------------
 
 using System;
 using System.Drawing;
