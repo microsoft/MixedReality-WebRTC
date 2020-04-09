@@ -3,9 +3,9 @@
 
 #pragma once
 
+#include "audio_frame.h"
 #include "export.h"
 #include "result.h"
-#include "audio_frame.h"
 #include "video_frame.h"
 
 extern "C" {
@@ -456,7 +456,8 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterRemoteAudioFrameCallback(
 // Experimental. Render or not remote audio tracks on the audio device.
 // Not supported on UWP.
 MRS_API mrsResult MRS_CALL
-mrsPeerConnectionRenderRemoteAudio(PeerConnectionHandle peerHandle, bool render);
+mrsPeerConnectionRenderRemoteAudio(PeerConnectionHandle peerHandle,
+                                   bool render);
 
 /// Configuration for opening a local video capture device and creating a local
 /// video track.
