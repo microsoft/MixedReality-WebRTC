@@ -405,16 +405,16 @@ class PeerConnection : public TrackedObject {
   PeerConnection(RefPtr<GlobalFactory> global_factory);
 };
 
-/// High level interface for consuming WebRTC audio streams.
+/// High level interface for consuming WebRTC audio tracks.
 /// The implementation builds on top of the low-level AudioFrame callbacks
 /// and handles all buffering and resampling.
-class AudioReadStream {
+class AudioTrackReadBuffer {
  public:
   /// Create a new stream which buffers 'bufferMs' milliseconds of audio.
   /// WebRTC delivers audio at 10ms intervals so pass a multiple of 10.
   /// Or pass -1 for default buffer size (currently 0.5 seconds).
-  AudioReadStream(PeerConnection* peer, int bufferMs);
-  ~AudioReadStream();
+  AudioTrackReadBuffer(PeerConnection* peer, int bufferMs);
+  ~AudioTrackReadBuffer();
 
   /// Fill data with samples at the given sampleRate and number of channels.
   /// If the internal buffer overruns, the oldest data will be dropped.

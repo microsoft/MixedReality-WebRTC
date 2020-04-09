@@ -153,8 +153,8 @@ using DataChannelHandle = void*;
 /// Opaque handle to a native ExternalVideoTrackSource C++ object.
 using ExternalVideoTrackSourceHandle = void*;
 
-/// Opaque handle to a native AudioReadStream C++ object.
-using AudioReadStreamHandle = void*;
+/// Opaque handle to a native AudioTrackReadBuffer C++ object.
+using AudioTrackReadBufferHandle = void*;
 
 /// Callback fired when the peer connection is connected, that is it finished
 /// the JSEP offer/answer exchange successfully.
@@ -632,19 +632,19 @@ MRS_API void MRS_CALL mrsPeerConnectionRemoveLocalAudioTrack(
     PeerConnectionHandle peerHandle) noexcept;
 
 MRS_API mrsResult MRS_CALL
-mrsAudioReadStreamCreate(PeerConnectionHandle peerHandle,
+mrsAudioTrackReadBufferCreate(PeerConnectionHandle peerHandle,
                          int bufferMs,
-                         AudioReadStreamHandle* readStreamOut);
+                         AudioTrackReadBufferHandle* readStreamOut);
 
 MRS_API mrsResult MRS_CALL
-mrsAudioReadStreamRead(AudioReadStreamHandle readStream,
+mrsAudioTrackReadBufferRead(AudioTrackReadBufferHandle readStream,
                        int sampleRate,
                        float data[],
                        int dataLen,
                        int numChannels);
 
 MRS_API void MRS_CALL
-mrsAudioReadStreamDestroy(AudioReadStreamHandle readStream);
+mrsAudioTrackReadBufferDestroy(AudioTrackReadBufferHandle readStream);
 
 MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
     PeerConnectionHandle peerHandle,

@@ -955,31 +955,31 @@ void MRS_CALL mrsPeerConnectionRemoveLocalAudioTrack(
 }
 
 mrsResult MRS_CALL
-mrsAudioReadStreamCreate(PeerConnectionHandle peerHandle,
+mrsAudioTrackReadBufferCreate(PeerConnectionHandle peerHandle,
                          int bufferMs,
-                         AudioReadStreamHandle* audioBufferOut) {
+                         AudioTrackReadBufferHandle* audioBufferOut) {
   *audioBufferOut = nullptr;
   if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    *audioBufferOut = new AudioReadStream(peer, bufferMs);
+    *audioBufferOut = new AudioTrackReadBuffer(peer, bufferMs);
     return Result::kSuccess;
   }
   return Result::kInvalidNativeHandle;
 }
 
-mrsResult MRS_CALL mrsAudioReadStreamRead(AudioReadStreamHandle readStream,
+mrsResult MRS_CALL mrsAudioTrackReadBufferRead(AudioTrackReadBufferHandle readStream,
                                           int sampleRate,
                                           float data[],
                                           int dataLen,
                                           int numChannels) {
-  if (auto stream = static_cast<AudioReadStream*>(readStream)) {
+  if (auto stream = static_cast<AudioTrackReadBuffer*>(readStream)) {
     stream->Read(sampleRate, data, dataLen, numChannels);
     return Result::kSuccess;
   }
   return Result::kInvalidNativeHandle;
 }
 
-void MRS_CALL mrsAudioReadStreamDestroy(AudioReadStreamHandle readStream) {
-  if (auto ars = static_cast<AudioReadStream*>(readStream)) {
+void MRS_CALL mrsAudioTrackReadBufferDestroy(AudioTrackReadBufferHandle readStream) {
+  if (auto ars = static_cast<AudioTrackReadBuffer*>(readStream)) {
     delete ars;
   }
 }

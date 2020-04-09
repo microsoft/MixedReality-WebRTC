@@ -271,7 +271,7 @@ void GlobalFactory::CustomAudioMixer::Mix(
 
   for (auto& source : redirected_sources) {
     // This pumps the source and fires the frame observer callbacks
-    // which in turn fill the AudioReadStream buffers
+    // which in turn fill the AudioTrackReadBuffer buffers
     const auto audio_frame_info = source->GetAudioFrameWithInfo(
         source->PreferredSampleRate(), audio_frame_for_mixing);
 

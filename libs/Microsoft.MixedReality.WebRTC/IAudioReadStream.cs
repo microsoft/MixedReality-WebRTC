@@ -5,11 +5,11 @@ using System.Text;
 namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
-    /// High level interface for consuming WebRTC audio streams.
+    /// High level interface for consuming WebRTC audio tracks.
     /// The implementation builds on top of the low-level AudioFrame callbacks
     /// and handles all buffering and resampling.
     /// </summary>
-    public interface IAudioReadStream : IDisposable
+    public interface IAudioTrackReadBuffer : IDisposable
     {
         /// <summary>
         /// Consume some data from the stream.

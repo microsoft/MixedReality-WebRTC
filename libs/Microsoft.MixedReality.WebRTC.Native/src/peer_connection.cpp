@@ -1417,7 +1417,7 @@ void PeerConnection::GetStats(webrtc::RTCStatsCollectorCallback* callback) {
 PeerConnection::PeerConnection(RefPtr<GlobalFactory> global_factory)
     : TrackedObject(std::move(global_factory), ObjectType::kPeerConnection) {}
 
-void AudioReadStream::audioFrameCallback(const void* audio_data,
+void AudioTrackReadBuffer::audioFrameCallback(const void* audio_data,
                                          const uint32_t bits_per_sample,
                                          const uint32_t sample_rate,
                                          const uint32_t number_of_channels,
@@ -1441,31 +1441,31 @@ void AudioReadStream::audioFrameCallback(const void* audio_data,
                           src_bytes + size);
 }
 
-void AudioReadStream::staticAudioFrameCallback(
+void AudioTrackReadBuffer::staticAudioFrameCallback(
     void* user_data,
     const AudioFrame& frame) {
-  auto ars = static_cast<AudioReadStream*>(user_data);
+  auto ars = static_cast<AudioTrackReadBuffer*>(user_data);
   ars->audioFrameCallback(frame.data_, frame.bits_per_sample_, frame.sampling_rate_hz_,
                           frame.channel_count_, frame.sample_count_);
 }
 
-AudioReadStream::AudioReadStream(PeerConnection* peer, int bufferMs)
+AudioTrackReadBuffer::AudioTrackReadBuffer(PeerConnection* peer, int bufferMs)
     : peer_(peer),
       buffer_ms_(bufferMs >= 10 ? bufferMs : 500 /*TODO good value?*/) {
   peer->RegisterRemoteAudioFrameCallback(
       AudioFrameReadyCallback{&staticAudioFrameCallback, this});
 }
 
-AudioReadStream::~AudioReadStream() {
+AudioTrackReadBuffer::~AudioTrackReadBuffer() {
   peer_->RegisterRemoteAudioFrameCallback(AudioFrameReadyCallback{});
 }
 
-AudioReadStream::Buffer::Buffer() {
+AudioTrackReadBuffer::Buffer::Buffer() {
   resampler_ = std::make_unique<webrtc::Resampler>();
 }
-AudioReadStream::Buffer::~Buffer() {}
+AudioTrackReadBuffer::Buffer::~Buffer() {}
 
-void AudioReadStream::Buffer::addFrame(const Frame& frame,
+void AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
                                        int dstSampleRate,
                                        int dstChannels) {
   // We may require up to 2 intermediate buffers
@@ -1552,7 +1552,7 @@ void AudioReadStream::Buffer::addFrame(const Frame& frame,
   rate_ = dstSampleRate;
 }
 
-void AudioReadStream::Read(int sampleRate,
+void AudioTrackReadBuffer::Read(int sampleRate,
                            float dataOrig[],
                            int dataLenOrig,
                            int channels) noexcept {

@@ -1061,22 +1061,22 @@ namespace Microsoft.MixedReality.WebRTC
             PeerConnectionInterop.PeerConnection_RemoveLocalAudioTrack(_nativePeerhandle);
         }
 
-        class AudioReadStream : IAudioReadStream
+        class AudioTrackReadBuffer : IAudioTrackReadBuffer
         {
             IntPtr _nativeStreamHandle = IntPtr.Zero;
-            internal AudioReadStream(PeerConnectionHandle peerHandle, int bufferMs)
+            internal AudioTrackReadBuffer(PeerConnectionHandle peerHandle, int bufferMs)
             {
-                uint res = AudioReadStreamInterop.Create(peerHandle, bufferMs, out _nativeStreamHandle);
+                uint res = AudioTrackReadBufferInterop.Create(peerHandle, bufferMs, out _nativeStreamHandle);
                 Utils.ThrowOnErrorCode(res);
             }
-            ~AudioReadStream()
+            ~AudioTrackReadBuffer()
             {
                 Dispose(false);
             }
 
             public void ReadAudio(int sampleRate, float[] data, int channels)
             {
-                AudioReadStreamInterop.Read(_nativeStreamHandle, sampleRate, data, data.Length, channels);
+                AudioTrackReadBufferInterop.Read(_nativeStreamHandle, sampleRate, data, data.Length, channels);
             }
 
             public void Dispose()
@@ -1088,7 +1088,7 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 if (this._nativeStreamHandle != IntPtr.Zero)
                 {
-                    AudioReadStreamInterop.Destroy(_nativeStreamHandle);
+                    AudioTrackReadBufferInterop.Destroy(_nativeStreamHandle);
                     this._nativeStreamHandle = IntPtr.Zero;
                 }
             }
@@ -1100,9 +1100,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// and handles all buffering and resampling.
         /// </summary>
         /// <param name="bufferMs">Size of the buffer in milliseconds or -1 for default.</param>
-        public IAudioReadStream CreateAudioReadStream(int bufferMs = -1)
+        public IAudioTrackReadBuffer CreateAudioTrackReadBuffer(int bufferMs = -1)
         {
-            return new AudioReadStream(_nativePeerhandle, bufferMs);
+            return new AudioTrackReadBuffer(_nativePeerhandle, bufferMs);
         }
 
         #endregion
