@@ -1063,34 +1063,21 @@ namespace Microsoft.MixedReality.WebRTC
 
         class AudioTrackReadBuffer : IAudioTrackReadBuffer
         {
-            IntPtr _nativeStreamHandle = IntPtr.Zero;
+            private AudioTrackReadBufferInterop.Handle _nativeHandle;
             internal AudioTrackReadBuffer(PeerConnectionHandle peerHandle, int bufferMs)
             {
-                uint res = AudioTrackReadBufferInterop.Create(peerHandle, bufferMs, out _nativeStreamHandle);
+                uint res = AudioTrackReadBufferInterop.Create(peerHandle, bufferMs, out _nativeHandle);
                 Utils.ThrowOnErrorCode(res);
-            }
-            ~AudioTrackReadBuffer()
-            {
-                Dispose(false);
             }
 
             public void ReadAudio(int sampleRate, float[] data, int channels)
             {
-                AudioTrackReadBufferInterop.Read(_nativeStreamHandle, sampleRate, data, data.Length, channels);
+                AudioTrackReadBufferInterop.Read(_nativeHandle, sampleRate, data, data.Length, channels);
             }
 
             public void Dispose()
             {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-            protected void Dispose(bool disposing)
-            {
-                if (this._nativeStreamHandle != IntPtr.Zero)
-                {
-                    AudioTrackReadBufferInterop.Destroy(_nativeStreamHandle);
-                    this._nativeStreamHandle = IntPtr.Zero;
-                }
+                _nativeHandle.Dispose();
             }
         }
 
