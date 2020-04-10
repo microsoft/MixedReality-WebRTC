@@ -43,7 +43,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Local storage of audio data to be fed to the output
         /// </summary>
-        private IAudioTrackReadBuffer _audioTrackReadBuffer = null;
+        private AudioTrackReadBuffer _audioTrackReadBuffer = null;
 
         /// <summary>
         /// Cached sample rate since we can't access this in OnAudioFilterRead.
