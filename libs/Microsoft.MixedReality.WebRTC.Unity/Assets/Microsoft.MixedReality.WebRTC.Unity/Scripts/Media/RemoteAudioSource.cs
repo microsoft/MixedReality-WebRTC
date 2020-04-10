@@ -53,7 +53,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Manually start playback of the remote audio feed by registering some listeners
         /// to the peer connection and starting to enqueue audio frames as they become ready.
-        /// 
+        ///
         /// If <see cref="AutoPlayOnAdded"/> is <c>true</c> then this is called automatically
         /// as soon as the peer connection is initialized.
         /// </summary>
@@ -68,7 +68,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (!IsPlaying)
             {
                 IsPlaying = true;
-                OnAudioConfigurationChanged(false);
+                OnAudioConfigurationChanged(deviceWasChanged: false);
                 _audioReadStream = PeerConnection.Peer.CreateAudioReadStream();
             }
         }
@@ -81,7 +81,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Stop playback of the remote audio feed and unregister the handler listening to remote
         /// video frames.
-        /// 
+        ///
         /// Note that this is independent of whether or not a remote track is actually present.
         /// In particular this does not fire the <see cref="AudioSource.AudioStreamStopped"/>, which corresponds
         /// to a track being made available to the local peer by the remote peer.
