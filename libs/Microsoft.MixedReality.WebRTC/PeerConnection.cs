@@ -1899,8 +1899,18 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Experimental. Render or not remote audio tracks on the audio device.
+        /// Experimental. Render or not remote audio tracks from a peer connection on
+        /// the system audio device.
         /// </summary>
+        /// <remarks>
+        /// The default behavior is for every remote audio frame to be passed to
+        /// remote audio frame callbacks, as well as rendered automatically on the
+        /// system audio device. If `false` is passed to this function, remote audio
+        /// frames will still be received and passed to callbacks, but won't be rendered
+        /// on the system device.
+        ///
+        /// Changing the default behavior is not supported on UWP.
+        /// </remarks>
         public void RenderRemoteAudio(bool render)
         {
             uint res = PeerConnectionInterop.PeerConnection_RenderRemoteAudio(_nativePeerhandle, render);

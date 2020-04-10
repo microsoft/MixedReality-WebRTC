@@ -413,7 +413,11 @@ class AudioTrackReadBuffer {
   /// Create a new stream which buffers 'bufferMs' milliseconds of audio.
   /// WebRTC delivers audio at 10ms intervals so pass a multiple of 10.
   /// Or pass -1 for default buffer size (currently 0.5 seconds).
+  /// This registers a remote audio callback on |peer|.
   AudioTrackReadBuffer(PeerConnection* peer, int bufferMs);
+
+  /// Destructs the stream.
+  /// Unregister the remote audio callback on the associated PeerConnection.
   ~AudioTrackReadBuffer();
 
   /// Fill data with samples at the given sampleRate and number of channels.

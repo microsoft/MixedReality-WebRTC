@@ -1234,8 +1234,10 @@ void PeerConnectionImpl::OnAddTrack(
     if (custom_audio_mixer_) {
       // We need to get the ssrc of the receiver in order to match the track to
       // the corresponding audio source in the AudioMixer. There doesn't seem to
-      // be a way to get the ssrc from RTPReceiverInterface directly, so we
-      // request the stats for the receiver and get it from there.
+      // be a way to get the ssrc from RTPReceiverInterface directly -
+      // GetSources() returns no elements if called at this point, nor when the
+      // first frame arrives. The easiest way seems to be requesting the stats
+      // for the receiver and getting it from there.
       struct SetSsrcObserver : public webrtc::RTCStatsCollectorCallback {
         SetSsrcObserver(PeerConnectionImpl& peer_connection)
             : peer_connection_(peer_connection) {}
