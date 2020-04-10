@@ -133,6 +133,7 @@
     <ClInclude Include="..\external_video_track_source.h" />
     <ClInclude Include="..\interop\global_factory.h" />
     <ClInclude Include="..\local_video_track.h" />
+    <ClInclude Include="..\media\audio_track_read_buffer.h" />
     <ClInclude Include="..\media\external_video_track_source.h" />
     <ClInclude Include="..\media\external_video_track_source_impl.h" />
     <ClInclude Include="..\media\local_video_track.h" />
@@ -159,6 +160,7 @@
     <ClCompile Include="..\interop\interop_api.cpp" />
     <ClCompile Include="..\interop\local_video_track_interop.cpp" />
     <ClCompile Include="..\interop\peer_connection_interop.cpp" />
+    <ClCompile Include="..\media\audio_track_read_buffer.cpp" />
     <ClCompile Include="..\media\external_video_track_source.cpp" />
     <ClCompile Include="..\media\local_video_track.cpp" />
     <ClCompile Include="..\mrs_errors.cpp" />

@@ -31,6 +31,9 @@
       <Filter>media</Filter>
     </ClCompile>
     <ClCompile Include="..\tracked_object.cpp" />
+    <ClCompile Include="..\media\audio_track_read_buffer.cpp">
+      <Filter>media</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../pch.h" />
@@ -60,6 +63,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\result.h" />
     <ClInclude Include="..\utils.h" />
+    <ClInclude Include="..\media\audio_track_read_buffer.h">
+      <Filter>media</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="../../docs/design.md" />

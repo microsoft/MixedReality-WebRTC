@@ -11,6 +11,7 @@
 #include "external_video_track_source_interop.h"
 #include "interop/global_factory.h"
 #include "interop_api.h"
+#include "media/audio_track_read_buffer.h"
 #include "media/external_video_track_source_impl.h"
 #include "media/local_video_track.h"
 #include "peer_connection.h"
