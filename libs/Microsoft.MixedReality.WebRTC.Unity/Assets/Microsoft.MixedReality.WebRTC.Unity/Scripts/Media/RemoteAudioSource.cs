@@ -43,7 +43,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Local storage of audio data to be fed to the output
         /// </summary>
-        private IAudioReadStream _audioReadStream = null;
+        private IAudioTrackReadBuffer _audioTrackReadBuffer = null;
 
         /// <summary>
         /// Cached sample rate since we can't access this in OnAudioFilterRead.
@@ -69,7 +69,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 IsPlaying = true;
                 OnAudioConfigurationChanged(deviceWasChanged: false);
-                _audioReadStream = PeerConnection.Peer.CreateAudioReadStream();
+                _audioTrackReadBuffer = PeerConnection.Peer.CreateAudioTrackReadBuffer();
             }
         }
 
@@ -93,10 +93,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (IsPlaying)
             {
                 IsPlaying = false;
-                if (_audioReadStream != null)
+                if (_audioTrackReadBuffer != null)
                 {
-                    _audioReadStream.Dispose();
-                    _audioReadStream = null;
+                    _audioTrackReadBuffer.Dispose();
+                    _audioTrackReadBuffer = null;
                 }
             }
         }
@@ -196,9 +196,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         void OnAudioFilterRead(float[] data, int channels)
         {
-            if (_audioReadStream != null)
+            if (_audioTrackReadBuffer != null)
             {
-                _audioReadStream.ReadAudio(_audioSampleRate, data, channels);
+                _audioTrackReadBuffer.ReadAudio(_audioSampleRate, data, channels);
             }
             else
             {
