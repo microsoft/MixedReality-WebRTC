@@ -1061,33 +1061,13 @@ namespace Microsoft.MixedReality.WebRTC
             PeerConnectionInterop.PeerConnection_RemoveLocalAudioTrack(_nativePeerhandle);
         }
 
-        class AudioTrackReadBuffer : IAudioTrackReadBuffer
-        {
-            private AudioTrackReadBufferInterop.Handle _nativeHandle;
-            internal AudioTrackReadBuffer(PeerConnectionHandle peerHandle, int bufferMs)
-            {
-                uint res = AudioTrackReadBufferInterop.Create(peerHandle, bufferMs, out _nativeHandle);
-                Utils.ThrowOnErrorCode(res);
-            }
-
-            public void ReadAudio(int sampleRate, float[] data, int channels)
-            {
-                AudioTrackReadBufferInterop.Read(_nativeHandle, sampleRate, data, data.Length, channels);
-            }
-
-            public void Dispose()
-            {
-                _nativeHandle.Dispose();
-            }
-        }
-
         /// <summary>
         /// High level interface for consuming WebRTC audio streams.
         /// The implementation builds on top of the low-level AudioFrame callbacks
         /// and handles all buffering and resampling.
         /// </summary>
         /// <param name="bufferMs">Size of the buffer in milliseconds or -1 for default.</param>
-        public IAudioTrackReadBuffer CreateAudioTrackReadBuffer(int bufferMs = -1)
+        public AudioTrackReadBuffer CreateAudioTrackReadBuffer(int bufferMs = -1)
         {
             return new AudioTrackReadBuffer(_nativePeerhandle, bufferMs);
         }
