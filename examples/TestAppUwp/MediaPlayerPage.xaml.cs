@@ -81,11 +81,12 @@ namespace TestAppUwp
     }
 
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Page displaying the media player to preview the content of audio and video tracks,
+    /// both local and remote.
     /// </summary>
     public sealed partial class MediaPlayerPage : Page
     {
-        private MediaPlayerViewModel _viewModel = new MediaPlayerViewModel();
+        private readonly MediaPlayerViewModel _viewModel = new MediaPlayerViewModel();
 
         public MediaPlayerPage()
         {

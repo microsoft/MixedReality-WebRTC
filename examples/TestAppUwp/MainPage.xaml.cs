@@ -110,18 +110,11 @@ namespace TestAppUwp
             //        navigationView.MenuItems.Add(new NavigationViewItemSeparator());
             //    }
             //}
-
-            // Open the "Signaling" page by default
             //navigationView.MenuItemsSource = Categories;
+
+            // Open the first page by default
             rootFrame.Navigate((Categories[0] as Category).PageType);
             //((NavigationViewItem)(navigationView.MenuItems[0])).IsSelected = true; // doesn't work...
-
-            // Those are called during InitializeComponent() but before the controls are initialized (!).
-            // Force-call again to actually initialize the panels correctly.
-            //PreferredAudioCodecChecked(null, null);
-            //PreferredVideoCodecChecked(null, null);
-
-            //Window.Current.Closed += Shutdown; // doesn't work
 
             this.Loaded += OnLoaded;
             Application.Current.Suspending += App_Suspending;
