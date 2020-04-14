@@ -1,0 +1,45 @@
+<Page
+    x:Class="TestAppUwp.TrackListPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TestAppUwp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    NavigationCacheMode="Required">
+    <Page.Resources>
+        <DataTemplate x:Key="AddTrackDataTemplate" x:DataType="local:AddNewTrackViewModel">
+            <StackPanel Orientation="Horizontal" Height="64">
+                <Border Width="48" Height="48" Background="LightGray" Margin="0,8,8,8">
+                    <SymbolIcon Symbol="Add"/>
+                </Border>
+                <TextBlock Text="{x:Bind DisplayName}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="TrackDataTemplate" x:DataType="local:TrackViewModel">
+            <StackPanel Orientation="Horizontal" Height="64">
+                <SymbolIcon Width="48" Height="48" Symbol="{x:Bind Symbol}" Margin="0,8,8,8"/>
+                <Grid Height="64">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="{x:Bind DisplayName}" VerticalAlignment="Bottom"/>
+                    <TextBlock Grid.Row="1" Text="{x:Bind Status}" VerticalAlignment="Top" Foreground="Gray"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+        <local:TrackDataTemplateSelector x:Key="TrackDataTemplateSelector"
+                                         Normal="{StaticResource TrackDataTemplate}"
+                                         AddItem="{StaticResource AddTrackDataTemplate}"/>
+    </Page.Resources>
+    <ScrollViewer>
+        <StackPanel Orientation="Vertical">
+            <ListView x:Name="tracksListView"
+                      ItemsSource="{x:Bind SessionModel.LocalTracks, Mode=OneWay}"
+                      ItemTemplateSelector="{StaticResource TrackDataTemplateSelector}"
+                      ItemClick="ListView_ItemClick" IsItemClickEnabled="True"/>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
