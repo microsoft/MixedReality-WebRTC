@@ -65,6 +65,7 @@ namespace TestAppUwp
             new Category { Name = "Local Tracks", Glyph = Symbol.Library, PageType = typeof(TracksPage) },
             new Category { Name = "Session", Glyph = Symbol.VideoChat, PageType = typeof(SessionPage) },
             new Category { Name = "Media Player", Glyph = Symbol.Play, PageType = typeof(MediaPlayerPage) },
+            new Category { Name = "Chat Channels", Glyph = Symbol.Message, PageType = typeof(ChatChannelsPage) },
             new Category { Name = "Debug Logs", Glyph = Symbol.Memo, PageType = typeof(DebugConsolePage) },
         };
 
@@ -367,58 +368,6 @@ namespace TestAppUwp
             // so that the former can render in the UI the video frames produced in the background by the latter.
             //videoPlayerElement.SetMediaPlayer(_videoPlayer);
         }
-
-        //private void ChatList_ItemClick(object sender, ItemClickEventArgs e)
-        //{
-        //    if (e.ClickedItem is ChatChannelModel chat)
-        //    {
-        //        chatTextBox.Text = chat.FullText;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Callback on Send button from text chat clicker.
-        ///// If connected, this sends the text message to the remote peer using
-        ///// the previously opened data channel.
-        ///// </summary>
-        ///// <param name="sender">The object which invoked the event.</param>
-        ///// <param name="e">Event arguments.</param>
-        //private void ChatSendButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (string.IsNullOrWhiteSpace(chatInputBox.Text))
-        //        return;
-
-        //    var chat = SelectedChatChannel;
-        //    if (chat == null)
-        //        return;
-
-        //    // Send the message through the data channel
-        //    byte[] chatMessage = System.Text.Encoding.UTF8.GetBytes(chatInputBox.Text);
-        //    chat.DataChannel.SendMessage(chatMessage);
-
-        //    // Save and display in the UI
-        //    var newLine = $"[local] {chatInputBox.Text}\n";
-        //    chat.Text += newLine;
-        //    chatTextBox.Text = chat.Text; // reassign or append? not sure...
-        //    chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
-        //        chatScrollViewer.ScrollableHeight,
-        //        chatScrollViewer.ZoomFactor); // scroll to end
-        //    chatInputBox.Text = string.Empty;
-        //}
-
-        ///// <summary>
-        ///// Callback on key down event invoked in the chat window, to handle
-        ///// the "press Enter to send" text chat functionality.
-        ///// </summary>
-        ///// <param name="sender">The object which invoked the event.</param>
-        ///// <param name="e">Event arguments.</param>
-        //private void OnChatKeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
-        //{
-        //    if (e.Key == Windows.System.VirtualKey.Enter)
-        //    {
-        //        ChatSendButton_Click(this, null);
-        //    }
-        //}
 
         private void OnNavigationViewItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {

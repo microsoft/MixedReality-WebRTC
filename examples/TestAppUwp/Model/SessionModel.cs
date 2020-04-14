@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC;
-using Windows.UI.Xaml.Controls;
 
 namespace TestAppUwp
 {
@@ -57,53 +56,6 @@ namespace TestAppUwp
         /// <see cref="ApplyRemoteOfferAsync(string)"/>).
         /// </summary>
         HaveRemoteOffer,
-    }
-
-    /// <summary>
-    /// Model for a chat channel backed by a WebRTC data channel.
-    /// </summary>
-    public class ChatChannelModel : NotifierBase
-    {
-        /// <summary>
-        /// Backing WebRTC data channel used to transmit the chat messages.
-        /// </summary>
-        public DataChannel DataChannel { get; }
-
-        /// <summary>
-        /// Full chat text.
-        /// </summary>
-        public string FullText
-        {
-            get { return _fullText; }
-            set { SetProperty(ref _fullText, value); }
-        }
-
-        /// <summary>
-        /// Channel label.
-        /// </summary>
-        public string Label { get { return DataChannel?.Label; } }
-
-        private string _fullText = "";
-
-        public ChatChannelModel(DataChannel dataChannel)
-        {
-            DataChannel = dataChannel;
-            dataChannel.MessageReceived += (byte[] message) =>
-            {
-                string text = System.Text.Encoding.UTF8.GetString(message);
-                AppendText($"[remote] {text}\n");
-            };
-        }
-
-        /// <summary>
-        /// Append some text to <see cref="FullText"/>.
-        /// </summary>
-        /// <param name="text">The text to append.</param>
-        public void AppendText(string text)
-        {
-            _fullText += text;
-            RaisePropertyChanged("Text");
-        }
     }
 
     /// <summary>
@@ -581,15 +533,6 @@ namespace TestAppUwp
         /// </summary>
         private void OnPeerConnected()
         {
-            //RunOnMainThread(() =>
-            //{
-            //    //sessionStatusText.Text = "joined";
-            //    chatTextBox.IsEnabled = true;
-
-            //    // Reset "Create Offer" button, and re-enable if signaling is available
-            //    createOfferButton.Content = "Create Offer";
-            //    createOfferButton.IsEnabled = _isDssPolling;
-            //});
         }
 
         private void OnLocalSdpReadyToSend(string type, string sdp)
