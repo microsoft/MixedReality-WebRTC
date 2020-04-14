@@ -130,14 +130,12 @@ namespace TestAppUwp
             localSettings.Values["LocalPeerID"] = sessionModel.NodeDssSignaler.LocalPeerId;
             localSettings.Values["RemotePeerID"] = sessionModel.NodeDssSignaler.RemotePeerId;
             localSettings.Values["PollTimeMs"] = sessionModel.NodeDssSignaler.PollTimeMs;
-            //localSettings.Values["PreferredAudioCodec"] = PreferredAudioCodec;
-            //localSettings.Values["PreferredAudioCodecExtraParamsLocal"] = PreferredAudioCodecExtraParamsLocalTextBox.Text;
-            //localSettings.Values["PreferredAudioCodecExtraParamsRemote"] = PreferredAudioCodecExtraParamsRemoteTextBox.Text;
-            //localSettings.Values["PreferredAudioCodec_Custom"] = PreferredAudioCodec_Custom.IsChecked.GetValueOrDefault() ? CustomPreferredAudioCodec.Text : "";
-            //localSettings.Values["PreferredVideoCodec"] = PreferredVideoCodec;
-            //localSettings.Values["PreferredVideoCodecExtraParamsLocal"] = PreferredVideoCodecExtraParamsLocalTextBox.Text;
-            //localSettings.Values["PreferredVideoCodecExtraParamsRemote"] = PreferredVideoCodecExtraParamsRemoteTextBox.Text;
-            //localSettings.Values["PreferredVideoCodec_Custom"] = PreferredVideoCodec_Custom.IsChecked.GetValueOrDefault() ? CustomPreferredVideoCodec.Text : "";
+            localSettings.Values["PreferredAudioCodec"] = sessionModel.PreferredAudioCodec;
+            localSettings.Values["PreferredAudioCodecExtraParamsLocal"] = sessionModel.PreferredAudioCodecExtraParamsLocal;
+            localSettings.Values["PreferredAudioCodecExtraParamsRemote"] = sessionModel.PreferredAudioCodecExtraParamsRemote;
+            localSettings.Values["PreferredVideoCodec"] = sessionModel.PreferredVideoCodec;
+            localSettings.Values["PreferredVideoCodecExtraParamsLocal"] = sessionModel.PreferredVideoCodecExtraParamsLocal;
+            localSettings.Values["PreferredVideoCodecExtraParamsRemote"] = sessionModel.PreferredVideoCodecExtraParamsRemote;
         }
 
         private void App_Resuming(object sender, object e)
@@ -222,90 +220,30 @@ namespace TestAppUwp
                 sessionModel.NodeDssSignaler.RemotePeerId = tmp;
             }
 
-            //if (localSettings.Values.TryGetValue("PreferredAudioCodec", out object preferredAudioObj))
-            //{
-            //    if (preferredAudioObj is string str)
-            //    {
-            //        switch (str)
-            //        {
-            //        case "":
-            //        {
-            //            PreferredAudioCodec_Default.IsChecked = true;
-            //            break;
-            //        }
-            //        case "opus":
-            //        {
-            //            PreferredAudioCodec_OPUS.IsChecked = true;
-            //            break;
-            //        }
-            //        default:
-            //        {
-            //            PreferredAudioCodec_Custom.IsChecked = true;
-            //            CustomPreferredAudioCodec.Text = str;
-            //            break;
-            //        }
-            //        }
-            //    }
-            //}
-            //if (localSettings.Values.TryGetValue("PreferredAudioCodecExtraParamsLocal", out object preferredAudioParamsLocalObj))
-            //{
-            //    if (preferredAudioParamsLocalObj is string str)
-            //    {
-            //        PreferredAudioCodecExtraParamsLocalTextBox.Text = str;
-            //    }
-            //}
-            //if (localSettings.Values.TryGetValue("PreferredAudioCodecExtraParamsRemote", out object preferredAudioParamsRemoteObj))
-            //{
-            //    if (preferredAudioParamsRemoteObj is string str)
-            //    {
-            //        PreferredAudioCodecExtraParamsRemoteTextBox.Text = str;
-            //    }
-            //}
-
-            //if (localSettings.Values.TryGetValue("PreferredVideoCodec", out object preferredVideoObj))
-            //{
-            //    if (preferredVideoObj is string str)
-            //    {
-            //        switch (str)
-            //        {
-            //        case "":
-            //        {
-            //            PreferredVideoCodec_Default.IsChecked = true;
-            //            break;
-            //        }
-            //        case "H264":
-            //        {
-            //            PreferredVideoCodec_H264.IsChecked = true;
-            //            break;
-            //        }
-            //        case "VP8":
-            //        {
-            //            PreferredVideoCodec_VP8.IsChecked = true;
-            //            break;
-            //        }
-            //        default:
-            //        {
-            //            PreferredVideoCodec_Custom.IsChecked = true;
-            //            CustomPreferredVideoCodec.Text = str;
-            //            break;
-            //        }
-            //        }
-            //    }
-            //}
-            //if (localSettings.Values.TryGetValue("PreferredVideoCodecExtraParamsLocal", out object preferredVideoParamsLocalObj))
-            //{
-            //    if (preferredVideoParamsLocalObj is string str)
-            //    {
-            //        PreferredVideoCodecExtraParamsLocalTextBox.Text = str;
-            //    }
-            //}
-            //if (localSettings.Values.TryGetValue("PreferredVideoCodecExtraParamsRemote", out object preferredVideoParamsRemoteObj))
-            //{
-            //    if (preferredVideoParamsRemoteObj is string str)
-            //    {
-            //        PreferredVideoCodecExtraParamsRemoteTextBox.Text = str;
-            //    }
-            //}
+            if (localSettings.Values.TryGetValue("PreferredAudioCodec", out object preferredAudioObj))
+            {
+                sessionModel.PreferredAudioCodec = (preferredAudioObj as string);
+            }
+            if (localSettings.Values.TryGetValue("PreferredAudioCodecExtraParamsLocal", out object preferredAudioParamsLocalObj))
+            {
+                sessionModel.PreferredAudioCodecExtraParamsLocal = (preferredAudioParamsLocalObj as string);
+            }
+            if (localSettings.Values.TryGetValue("PreferredAudioCodecExtraParamsRemote", out object preferredAudioParamsRemoteObj))
+            {
+                sessionModel.PreferredAudioCodecExtraParamsRemote = (preferredAudioParamsRemoteObj as string);
+            }
+            if (localSettings.Values.TryGetValue("PreferredVideoCodec", out object preferredVideoObj))
+            {
+                sessionModel.PreferredVideoCodec = (preferredVideoObj as string);
+            }
+            if (localSettings.Values.TryGetValue("PreferredVideoCodecExtraParamsLocal", out object preferredVideoParamsLocalObj))
+            {
+                sessionModel.PreferredVideoCodecExtraParamsLocal = (preferredVideoParamsLocalObj as string);
+            }
+            if (localSettings.Values.TryGetValue("PreferredVideoCodecExtraParamsRemote", out object preferredVideoParamsRemoteObj))
+            {
+                sessionModel.PreferredVideoCodecExtraParamsRemote = (preferredVideoParamsRemoteObj as string);
+            }
         }
 
         //private void OnPeerRenegotiationNeeded()
