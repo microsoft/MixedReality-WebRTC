@@ -61,7 +61,6 @@ std::string EncodeIceServers(const std::string& url);
 std::string EncodeIceServers(const std::string& url,
                              const std::string& username,
                              const std::string& password);
-
 }  // namespace WebRTC
 }  // namespace MixedReality
 }  // namespace Microsoft

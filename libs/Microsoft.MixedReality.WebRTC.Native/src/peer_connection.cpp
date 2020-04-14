@@ -11,6 +11,7 @@
 #include "peer_connection.h"
 #include "sdp_utils.h"
 #include "video_frame_observer.h"
+#include "sdp_utils.h"
 
 // Internal
 #include "interop/global_factory.h"
@@ -1097,7 +1098,7 @@ void PeerConnectionImpl::OnDataChannel(
 
   // Read the data channel config
   std::string label = impl->label();
-  mrsDataChannelConfig config;
+  mrsDataChannelConfig config{};
   config.id = impl->id();
   config.label = label.c_str();
   if (impl->ordered()) {

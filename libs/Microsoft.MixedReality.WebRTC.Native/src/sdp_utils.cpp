@@ -210,7 +210,6 @@ std::string EncodeIceServers(const std::string& url,
                              const std::string& password) {
   return url + "\nusername:" + username + "\npassword:" + password;
 }
-
 }  // namespace WebRTC
 }  // namespace MixedReality
 }  // namespace Microsoft
