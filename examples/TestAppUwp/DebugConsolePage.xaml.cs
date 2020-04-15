@@ -33,7 +33,9 @@ namespace TestAppUwp
     }
 
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Page displaying the so-called "debug console", a raw text dump of all messages
+    /// output through the <see cref="Logger"/> singleton instance by the various part
+    /// of the application, and mainly used for debugging.
     /// </summary>
     public sealed partial class DebugConsolePage : Page
     {
