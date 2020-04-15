@@ -79,3 +79,6 @@ tools/build/android/local.properties
 tools/build/android/**/build
 tools/build/android/captures
 tools/build/android/**/.externalNativeBuild
+
+# Non-submodule external dependencies
+external/libwebrtc
