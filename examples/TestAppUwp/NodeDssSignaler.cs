@@ -336,75 +336,76 @@ namespace TestAppUwp
             // In order to poll at the specified frequency but also avoid overlapping requests,
             // use a repeating task which re-schedule itself on completion, either immediately
             // if the polling delay is elapsed, or at a later time otherwise.
-            async void PollServerOnce()
+            async void PollServer()
             {
                 try
                 {
-                    masterToken.ThrowIfCancellationRequested();
-
-                    // Send GET request to DSS server.
-                    lastPollTimeTicks = DateTime.UtcNow.Ticks;
-                    HttpResponseMessage response = await _httpClient.GetAsync(requestUri,
-                        HttpCompletionOption.ResponseHeadersRead, masterToken);
-
-                    // On first successful HTTP request, raise the connected event
-                    if (0 == Interlocked.Exchange(ref _connectedEventFired, 1))
+                    // Polling loop
+                    while (true)
                     {
-                        OnConnect?.Invoke();
-                    }
+                        masterToken.ThrowIfCancellationRequested();
 
-                    masterToken.ThrowIfCancellationRequested();
+                        // Send GET request to DSS server.
+                        lastPollTimeTicks = DateTime.UtcNow.Ticks;
+                        HttpResponseMessage response = await _httpClient.GetAsync(requestUri,
+                            HttpCompletionOption.ResponseHeadersRead, masterToken);
 
-                    // In order to avoid exceptions in GetStreamAsync() when the server returns a non-success status code (e.g. 404),
-                    // first get the HTTP headers, check the status code, then if successful wait for content.
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string jsonMsg = await response.Content.ReadAsStringAsync();
+                        // On first successful HTTP request, raise the connected event
+                        if (0 == Interlocked.Exchange(ref _connectedEventFired, 1))
+                        {
+                            OnConnect?.Invoke();
+                        }
 
                         masterToken.ThrowIfCancellationRequested();
 
-                        var jsonSettings = new JsonSerializerSettings
+                        // In order to avoid exceptions in GetStreamAsync() when the server returns a non-success status code (e.g. 404),
+                        // first get the HTTP headers, check the status code, then if successful wait for content.
+                        if (response.IsSuccessStatusCode)
                         {
-                            Error = (object s, ErrorEventArgs e) => throw new Exception("JSON error: " + e.ErrorContext.Error.Message)
-                        };
-                        Message msg = JsonConvert.DeserializeObject<Message>(jsonMsg, jsonSettings);
-                        if (msg != null)
-                        {
-                            OnMessage?.Invoke(msg);
-                        }
-                        else
-                        {
-                            throw new Exception("Failed to deserialize signaler message from JSON.");
-                        }
-                    }
+                            string jsonMsg = await response.Content.ReadAsStringAsync();
 
-                    masterToken.ThrowIfCancellationRequested();
+                            masterToken.ThrowIfCancellationRequested();
 
-                    // Repeat task to continue polling
-                    long curTime = DateTime.UtcNow.Ticks;
-                    long deltaTicks = curTime - lastPollTimeTicks;
-                    if (deltaTicks >= pollTimeTicks)
-                    {
-                        // Previous GET task took more time than polling delay, execute ASAP
-                        Task.Run(PollServerOnce, masterToken);
-                    }
-                    else
-                    {
-                        // Previous GET task took less time than polling delay, schedule next polling
+                            var jsonSettings = new JsonSerializerSettings
+                            {
+                                Error = (object s, ErrorEventArgs e) => throw new Exception("JSON error: " + e.ErrorContext.Error.Message)
+                            };
+                            Message msg = JsonConvert.DeserializeObject<Message>(jsonMsg, jsonSettings);
+                            if (msg != null)
+                            {
+                                OnMessage?.Invoke(msg);
+                            }
+                            else
+                            {
+                                throw new Exception("Failed to deserialize signaler message from JSON.");
+                            }
+                        }
+
+                        masterToken.ThrowIfCancellationRequested();
+
+                        // Delay next loop iteration if current polling was faster than target poll duration
+                        long curTime = DateTime.UtcNow.Ticks;
+                        long deltaTicks = curTime - lastPollTimeTicks;
                         long remainTicks = pollTimeTicks - deltaTicks;
-                        int nextScheduleTimeMs = (int)(new TimeSpan(remainTicks).TotalMilliseconds);
-                        Task.Delay(nextScheduleTimeMs, masterToken).ContinueWith(_ => PollServerOnce(), masterToken);
+                        if (remainTicks > 0)
+                        {
+                            int waitTimeMs = new TimeSpan(remainTicks).Milliseconds;
+                            await Task.Delay(waitTimeMs);
+                        }
                     }
+                }
+                catch (OperationCanceledException)
+                {
+                    // Manual cancellation via UI, do not report error
                 }
                 catch (Exception ex)
                 {
                     OnFailure?.Invoke(ex);
-                    masterTokenSource.Cancel();
                 }
             }
 
-            // Start the first poll task immediately
-            Task.Run(PollServerOnce, masterToken);
+            // Start the poll task immediately
+            Task.Run(PollServer, masterToken);
             return true;
         }
 
