@@ -130,16 +130,6 @@ namespace TestAppUwp
         public bool IsAudioTransceiver => Transceiver.MediaKind == MediaKind.Audio;
         public bool IsVideoTransceiver => Transceiver.MediaKind == MediaKind.Video;
 
-        /// <summary>
-        /// Collection of available sender tracks for the currently selected transceiver
-        /// media kind. This collection is rebuilt each time the selected transceiver changed
-        /// and its media kind is different from the previous transceiver.
-        /// </summary>
-        /// FIXME - There is no check to avoid assigning the same sender track to 2 tranceivers,
-        /// which asserts internally as this is not supported.
-        public ObservableCollection<SenderTrackViewModel> AvailableSenders { get; }
-            = new ObservableCollection<SenderTrackViewModel>();
-
         public TransceiverViewModel(Transceiver transceiver)
         {
             Transceiver = transceiver;
