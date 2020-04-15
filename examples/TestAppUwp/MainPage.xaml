@@ -10,309 +10,60 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
-        <DataTemplate x:Key="NavLinkItemTemplate" x:DataType="local:NavLink">
-            <StackPanel Orientation="Horizontal" Margin="2,0,0,0" AutomationProperties.Name="{x:Bind Label}">
-                <SymbolIcon Symbol="{x:Bind Symbol}" />
-                <TextBlock Text="{x:Bind Label}" Margin="24,0,0,0" VerticalAlignment="Center" />
-            </StackPanel>
+        <local:MenuItemTemplateSelector x:Key="CategoryTemplate">
+            <local:MenuItemTemplateSelector.ItemTemplate>
+                <DataTemplate x:DataType="local:Category" >
+                    <NavigationViewItem Content="{x:Bind Name}">
+                        <NavigationViewItem.Icon>
+                            <SymbolIcon Symbol="{x:Bind Glyph}"/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                </DataTemplate>
+            </local:MenuItemTemplateSelector.ItemTemplate >
+        </local:MenuItemTemplateSelector>
+        <!--<DataTemplate x:Key="AudioTrackItemTemplate" x:DataType="local:AudioTrackViewModel">
+            <TextBlock Text="{x:Bind DisplayName}" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
         </DataTemplate>
-        <DataTemplate x:Key="VideoCaptureDeviceTemplate" x:DataType="local:VideoCaptureDeviceInfo">
-            <StackPanel Orientation="Horizontal">
-                <SymbolIcon Symbol="{x:Bind Symbol}" Margin="0,0,12,0" />
-                <StackPanel Orientation="Vertical" AutomationProperties.Name="{x:Bind DisplayName}">
-                    <TextBlock Text="{x:Bind DisplayName}" VerticalAlignment="Center" />
-                    <TextBlock Text="{x:Bind Id}" VerticalAlignment="Center" FontSize="9px" />
-                </StackPanel>
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="VideoProfileTemplate" x:DataType="winmc:MediaCaptureVideoProfile">
-            <TextBlock Text="{x:Bind Id}" VerticalAlignment="Center"/>
-        </DataTemplate>
-        <DataTemplate x:Key="RecordMediaDescTemplate" x:DataType="winmc:MediaCaptureVideoProfileMediaDescription">
-            <StackPanel Orientation="Horizontal">
-                <SymbolIcon Symbol="WebCam" Margin="0,0,12,0" />
-                <TextBlock VerticalAlignment="Center" >
-                    <Run Text="{x:Bind Width}" />
-                    <Run> x </Run>
-                    <Run Text="{x:Bind Height}" />
-                    <Run> @ </Run>
-                    <Run Text="{x:Bind FrameRate}" />
-                    <Run> FPS (</Run>
-                    <Run Text="{x:Bind Subtype}" />
-                    <Run>)</Run>
-                </TextBlock>
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="VideoCaptureFormatTemplate" x:DataType="webrtc:VideoCaptureFormat">
-            <StackPanel Orientation="Horizontal">
-                <SymbolIcon Symbol="Video" Margin="0,0,12,0" />
-                <TextBlock VerticalAlignment="Center" >
-                    <Run Text="{x:Bind width}" />
-                    <Run> x </Run>
-                    <Run Text="{x:Bind height}" />
-                    <Run> @ </Run>
-                    <Run Text="{x:Bind framerate}" />
-                    <Run> FPS (</Run>
-                    <Run Text="{x:Bind fourcc}" />
-                    <Run>)</Run>
-                </TextBlock>
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="ChatChannelItemTemplate" x:DataType="local:ChatChannel">
-            <StackPanel Orientation="Horizontal" Margin="2,0,0,0" AutomationProperties.Name="{x:Bind Label}">
-                <TextBlock Text="{x:Bind Label}" Margin="24,0,0,0" VerticalAlignment="Center" />
-            </StackPanel>
-        </DataTemplate>
-    </Page.Resources>
-    <Grid x:Name="LayoutRoot" Margin="0,0,0,12">
-        <Pivot SelectedIndex="0">
-            <PivotItem Header="Signaling" Margin="12,12,12,0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Signaling server" VerticalAlignment="Center" Style="{StaticResource BaseTextBlockStyle}" Margin="0,0,0,6" Grid.ColumnSpan="2"/>
-                    <TextBlock Style="{StaticResource BodyTextBlockStyle}" FontStyle="Italic" Grid.Row="1" Grid.ColumnSpan="2">
-                    The signaling server is used to discover a peer to connect to. This app uses <Hyperlink NavigateUri="https://github.com/bengreenier/node-dss">node-dss</Hyperlink>.
-                    </TextBlock>
-                    <TextBlock Text="Server address" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0" Grid.Row="2"/>
-                    <TextBox Name="dssServer" HorizontalAlignment="Left" PlaceholderText="http://server:port/" Text="http://localhost:3000/" VerticalAlignment="Center" Width="285" Grid.Row="2" Grid.Column="1" Margin="0,6,0,6"/>
-                    <TextBlock Text="Poll delay" VerticalAlignment="Center" Grid.Row="3" HorizontalAlignment="Right" Margin="0,0,12,0"/>
-                    <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Margin="0,6,0,6">
-                        <TextBox x:Name="dssPollTimeMs" MinWidth="100" Text="500" TextAlignment="Right"/>
-                        <TextBlock Text="ms" VerticalAlignment="Center" Margin="4,0,0,0" />
-                    </StackPanel>
-                    <TextBlock Text="Local peer UID" VerticalAlignment="Center" Grid.Row="4" HorizontalAlignment="Right" Margin="0,0,12,0" Height="20"  />
-                    <TextBox x:Name="localPeerUidTextBox" MinWidth="250" Grid.Row="4" Grid.Column="1" Margin="0,6,0,6" />
-                    <TextBlock Text="Remote peer UID" VerticalAlignment="Center" Margin="0,0,12,0" Grid.Row="5" HorizontalAlignment="Right"  />
-                    <TextBox x:Name="remotePeerUidTextBox" MinWidth="250" Grid.Row="5" Grid.Column="1" Margin="0,6,0,6" />
-                    <!--<SymbolIcon Symbol="Setting" />-->
-                    <Button x:Name="pollDssButton" Content="Start polling" HorizontalAlignment="Left" Margin="0,12,0,0" VerticalAlignment="Center" Width="125" Click="PollDssButtonClicked" Grid.Row="6" Grid.ColumnSpan="2"/>
-                    <!--<ListView x:Name="NavLinksList" Margin="0,12,0,0" SelectionMode="None" Grid.Row="1" VerticalAlignment="Stretch"
-                    ItemClick="NavLinksList_ItemClick" IsItemClickEnabled="True"
-                    ItemsSource="{x:Bind NavLinks}" ItemTemplate="{StaticResource NavLinkItemTemplate}"/>-->
-                </Grid>
-            </PivotItem>
-            <PivotItem Header="Connection">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Text="STUN server" FontWeight="Bold" />
-                    <TextBlock Text="The STUN server is used to establish a peer connection through NATs." FontStyle="Italic" Grid.Row="1" Margin="12,6,0,0" />
-                    <TextBox Name="stunServer" Width="400" HorizontalAlignment="Left" PlaceholderText="address:port (without prefix)" Text="stun.l.google.com:19302" Grid.Row="2" Margin="12,6,0,6"/>
-                    <!--<TextBlock Text="Discovered peers" FontWeight="Bold" Grid.ColumnSpan="2" Grid.Row="3" Margin="0,12,0,0" FontFamily="Segoe UI" />
-                    <ListView Grid.Row="4" Margin="12,0,0,0" ItemsSource="{x:Bind NavLinks}" ItemTemplate="{StaticResource NavLinkItemTemplate}" />-->
-                    <TextBlock Text="SDP semantic" FontWeight="Bold" />
-                    <TextBlock FontStyle="Italic" Margin="12,6,0,0">
-                        Specifies the <Hyperlink NavigateUri="https://webrtc.org/web-apis/chrome/unified-plan/">SDP dialect</Hyperlink> used to negotiate a peer connection.<LineBreak/>Do not use Plan B unless there is an issue with the Unified Plan.
-                    </TextBlock>
-                    <StackPanel Orientation="Horizontal" Margin="12,0,0,0">
-                        <RadioButton x:Name="sdpSemanticUnifiedPlan" Content="Unified Plan" IsChecked="True" GroupName="SdpSemanticGroup" Margin="0,0,20,0" />
-                        <RadioButton x:Name="sdpSemanticPlanB" Content="Plan B (deprecated)" GroupName="SdpSemanticGroup" />
-                    </StackPanel>
-                    <TextBlock Text="Preferred codecs" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
-                    <TextBlock FontStyle="Italic" Margin="0,6,0,0">
-                            This option allows filtering the SDP offer to retain only one preferred audio and/or video codec amongst the supported ones, thereby forcing their use.<LineBreak/>This must be set before sending an offer to the remote peer. This has no effect on the receiver side.<LineBreak/>If the selected codec is not supported by the local peer implemention, this does nothing, and the default codec is used.
-                    </TextBlock>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Audio :</TextBlock>
-                        <RadioButton x:Name="PreferredAudioCodec_Default" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="(default)" IsChecked="True" />
-                        <RadioButton x:Name="PreferredAudioCodec_OPUS" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="OPUS" />
-                        <RadioButton x:Name="PreferredAudioCodec_Custom" GroupName="PreferredAudioCodecGroup" Checked="PreferredAudioCodecChecked" Content="Custom value" />
-                    </StackPanel>
-                    <TextBlock x:Name="CustomPreferredAudioCodecHelpText" FontStyle="Italic" Margin="48,6,0,0">
-                            Leave blank to use the default video codec. A partial list is <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.<LineBreak />Common values include "opus" or "ISAC". Names are case sensitive.
-                    </TextBlock>
-                    <TextBox x:Name="CustomPreferredAudioCodec" Text="" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Local params:</TextBlock>
-                        <TextBox x:Name="PreferredAudioCodecExtraParamsLocalTextBox" Margin="16,0,0,0" Width="250"></TextBox>
-                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Remote params:</TextBlock>
-                        <TextBox x:Name="PreferredAudioCodecExtraParamsRemoteTextBox" Margin="16,0,0,0" Width="250"></TextBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Video :</TextBlock>
-                        <RadioButton x:Name="PreferredVideoCodec_Default" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="(default)" />
-                        <RadioButton x:Name="PreferredVideoCodec_H264" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="H.264" IsChecked="True" />
-                        <RadioButton x:Name="PreferredVideoCodec_VP8" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="VP8" />
-                        <RadioButton x:Name="PreferredVideoCodec_Custom" GroupName="PreferredVideoCodecGroup" Checked="PreferredVideoCodecChecked" Content="Custom value" />
-                    </StackPanel>
-                    <TextBlock x:Name="CustomPreferredVideoCodecHelpText" FontStyle="Italic" Margin="48,6,0,0">
-                            Leave blank to use the default video codec. A partial list is <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.<LineBreak />Common values include "H264" or "VP8". Names are case sensitive.
-                    </TextBlock>
-                    <TextBox x:Name="CustomPreferredVideoCodec" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Local params:</TextBlock>
-                        <TextBox x:Name="PreferredVideoCodecExtraParamsLocalTextBox" Margin="16,0,0,0" Width="250"></TextBox>
-                        <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Remote params:</TextBlock>
-                        <TextBox x:Name="PreferredVideoCodecExtraParamsRemoteTextBox" Margin="16,0,0,0" Width="250"></TextBox>
-                    </StackPanel>
-                    <TextBlock Text="SDP connection offer" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
-                    <Button Name="createOfferButton" IsEnabled="False" Content="Create offer" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="CreateOfferButtonClicked" Width="125" Margin="0,12,0,0"/>
-                    <Button Name="addExtraDataChannelButton" Content="Add extra data channel" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.511,0.634" Click="AddExtraDataChannelButtonClicked" Width="250" Margin="0,12,0,0"/>
-                </StackPanel>
-            </PivotItem>
-            <PivotItem Header="Webcam">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="20px"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="Video capture device" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
-                        <ListView x:Name="VideoCaptureDeviceList" ItemsSource="{x:Bind VideoCaptureDevices}" ItemTemplate="{StaticResource VideoCaptureDeviceTemplate}" MinHeight="120" MinWidth="120" />
+        <DataTemplate x:Key="VideoTrackItemTemplate" x:DataType="local:VideoTrackViewModel">
+            <TextBlock Text="{x:Bind DisplayName}" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+        </DataTemplate>-->
 
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical" Grid.Column="2">
-                        <TextBlock Text="Video profile" FontWeight="Bold" Margin="0,12,0,0" FontFamily="Segoe UI" />
-                        <ComboBox x:Name="KnownVideoProfileKindComboBox" Margin="0,10,0,0" MaxWidth="400" MinWidth="200" />
-                        <ComboBox x:Name="VideoProfileComboBox" ItemsSource="{x:Bind VideoProfiles}" ItemTemplate="{StaticResource VideoProfileTemplate}" Margin="0,10,0,10" MaxWidth="400" MinWidth="200"/>
-                        <ListView x:Name="RecordMediaDescList" ItemsSource="{x:Bind RecordMediaDescs}" ItemTemplate="{StaticResource RecordMediaDescTemplate}" MinHeight="120" MinWidth="120" />
-                        <ListView x:Name="VideoCaptureFormatList" ItemsSource="{x:Bind VideoCaptureFormats}" ItemTemplate="{StaticResource VideoCaptureFormatTemplate}" MinHeight="120" MinWidth="120" />
-                    </StackPanel>
-                </Grid>
-            </PivotItem>
-            <PivotItem Header="Tracks">
-                <Grid HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="20"/>
-                        <RowDefinition Height="2*"/>
-                        <RowDefinition Height="20"/>
-                        <RowDefinition Height="45"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="12px"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="150px"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Local video channel" FontWeight="Bold" />
-                        <TextBlock x:Name="localVideoSourceName" Grid.Column="1" Margin="12,0,0,0" />
-                        <TextBlock x:Name="localVideoStateText" Text="State:" Grid.Column="2" />
-                    </Grid>
-                    <Grid Grid.Column="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="150px"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Remote video channel" FontWeight="Bold"/>
-                        <TextBlock x:Name="remoteVideoStateText" Text="State:" Grid.Column="1" />
-                    </Grid>
-                    <Border Grid.Row="1" BorderBrush="#66000000" BorderThickness="2,2,2,2" Background="#AAFFFFFF">
-                        <MediaPlayerElement x:Name="localVideo" Height="480" Width="640" />
-                    </Border>
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" Height="68" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,20" Background="#CCB2D0FF" Padding="10,10,10,10" >
-                        <Button  Name="startLocalMedia" IsEnabled="False" VerticalAlignment="Center" Click="StartLocalMediaClicked" Width="48" HorizontalAlignment="Center" Height="48">
-                            <SymbolIcon x:Name="startLocalMediaIcon" Symbol="Play" />
-                        </Button>
-                        <Button Name="muteLocalVideo" IsEnabled="False" VerticalAlignment="Center" Click="MuteLocalVideoClicked" Width="48" HorizontalAlignment="Center" Height="48" Margin="10,0,0,0" Padding="0,0,0,0">
-                            <Grid Width="32" Height="32" VerticalAlignment="Center">
-                                <SymbolIcon Symbol="Video" />
-                                <Path x:Name="muteLocalVideoStroke" Stroke="Black" Data="M 32,0 L 0,32" Width="32" Height="32" />
+        <!--<DataTemplate x:Key="ChatChannelItemTemplate" x:DataType="local:ChatChannel">
+            <StackPanel Orientation="Horizontal" Margin="2,0,0,0" AutomationProperties.Name="{x:Bind Label}">
+                <TextBlock Text="{x:Bind Label}" Margin="24,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+        </DataTemplate>-->
+    </Page.Resources>
+    <Grid x:Name="LayoutRoot">
+        <NavigationView x:Name="navigationView"
+                        MenuItemsSource="{x:Bind Categories, Mode=OneTime}"
+                        MenuItemTemplateSelector="{StaticResource CategoryTemplate}"
+                        ItemInvoked="OnNavigationViewItemInvoked"
+                        OpenPaneLength="170" IsBackButtonVisible="Collapsed">
+            <Frame x:Name="rootFrame" CacheSize="2" />
+            
+            <!--<Grid Grid.Row="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ListView x:Name="chatList" Width="200" ItemClick="ChatList_ItemClick" IsItemClickEnabled="True"
+                                ItemsSource="{x:Bind ChatChannels}" ItemTemplate="{StaticResource ChatChannelItemTemplate}"/>
+                                <ScrollViewer x:Name="chatScrollViewer" Grid.Column="2" >
+                                    <TextBox x:Name="chatTextBox" IsEnabled="False" IsReadOnly="True" AcceptsReturn="True" />
+                                </ScrollViewer>
                             </Grid>
-                        </Button>
-                        <Button Name="muteLocalAudio" IsEnabled="False" VerticalAlignment="Center" Click="MuteLocalAudioClicked" Width="48" HorizontalAlignment="Center" Height="48" Margin="10,0,0,0" Padding="0,0,0,0">
-                            <Grid Width="32" Height="32" VerticalAlignment="Center">
-                                <SymbolIcon Symbol="Microphone" />
-                                <Path x:Name="muteLocalAudioStroke" Stroke="Black" Data="M 32,0 L 0,32" Width="32" Height="32" />
-                            </Grid>
-                        </Button>
-                    </StackPanel>
-                    <Border Grid.Row="1" BorderBrush="#66000000" BorderThickness="2,2,2,2" Grid.Column="2" Background="#AAFFFFFF">
-                        <MediaPlayerElement x:Name="remoteVideo" Height="480" Width="640" />
-                    </Border>
-                    <Grid Grid.Row="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="localLoadText" Text="Produce:" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="localPresentText" Text="Render:"  Grid.Column="1" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="localSkipText" Text="Skip:" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="localLateText" Text="Late:" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                    </Grid>
-                    <Grid Grid.Row="2" Grid.Column="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="remoteLoadText" Text="Receive:"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        <TextBlock x:Name="remotePresentText" Text="Render:"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" />
-                        <TextBlock x:Name="remoteSkipText" Text="Skip:" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="2" />
-                        <TextBlock x:Name="remoteLateText" Text="Late:" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                    </Grid>
-                    <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2">
-                        <TextBlock Text="ICE state : " VerticalAlignment="Top" />
-                        <TextBlock x:Name="iceStateText" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />
-                        <TextBlock Text="ICE gathering : " VerticalAlignment="Top" Margin="20,0,0,0" />
-                        <TextBlock x:Name="iceGatheringStateText" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />
-                        <TextBlock Text="Remote Audio Channels : " VerticalAlignment="Top" Margin="20,0,0,0" />
-                        <TextBlock x:Name="remoteAudioChannelCount" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />
-                        <TextBlock Text="Sample rate : " VerticalAlignment="Top" Margin="20,0,0,0" />
-                        <TextBlock x:Name="remoteAudioSampleRate" Text="-" VerticalAlignment="Top" Margin="6,0,0,0" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Grid.Row="3">
-                        <TextBlock Text="Data channel" VerticalAlignment="Bottom" FontWeight="Bold" />
-                        <TextBlock x:Name="sessionStatusText" Text="(not connected)" VerticalAlignment="Bottom" Margin="6,0,0,0" />
-                    </StackPanel>
-                    <Grid Grid.Row="4" Grid.ColumnSpan="3">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <ListView x:Name="chatList" Width="200" ItemClick="ChatList_ItemClick" IsItemClickEnabled="True"
-                    ItemsSource="{x:Bind ChatChannels}" ItemTemplate="{StaticResource ChatChannelItemTemplate}"/>
-                        <ScrollViewer x:Name="chatScrollViewer" Grid.Column="2" >
-                            <TextBox x:Name="chatTextBox" IsEnabled="False" IsReadOnly="True" AcceptsReturn="True" />
-                        </ScrollViewer>
-                    </Grid>
-                    <Grid Grid.Row="5" Grid.ColumnSpan="3">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Button x:Name="chatSendButton" IsEnabled="False" Margin="0,6,6,0" Click="ChatSendButton_Click">
-                            <SymbolIcon Symbol="Send" />
-                        </Button>
-                        <TextBox x:Name="chatInputBox" IsEnabled="False" Margin="0,6,0,0" PlaceholderText="Type some text to send..." Grid.Column="2" KeyDown="OnChatKeyDown" />
-                    </Grid>
-                </Grid>
-            </PivotItem>
-            <PivotItem Header="Debug">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="Debug console" FontWeight="Bold"/>
-                    <TextBox Name="debugMessages" Text="" TextWrapping="Wrap"  Grid.Row="1" IsReadOnly="True" Background="#AAFFFFFF"/>
-                </Grid>
-            </PivotItem>
-        </Pivot>
+                            <Grid Grid.Row="6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="chatSendButton" IsEnabled="False" Margin="0,6,6,0" Click="ChatSendButton_Click">
+                                    <SymbolIcon Symbol="Send" />
+                                </Button>
+                                <TextBox x:Name="chatInputBox" IsEnabled="False" Margin="0,6,0,0" PlaceholderText="Type some text to send..." Grid.Column="2" KeyDown="OnChatKeyDown" />
+                            </Grid>-->
+        </NavigationView>
     </Grid>
 </Page>
