@@ -104,7 +104,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>..\..\include;..\;$(WebRTCCoreRepoPath);$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)\gen;$(WebRTCCoreRepoPath)third_party\abseil-cpp;$(WebRTCCoreRepoPath)third_party\libyuv\include;$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)\gen\protoc_out;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\;$(WebRTCCoreRepoPath);$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)_uwp\gen;$(WebRTCCoreRepoPath)third_party\abseil-cpp;$(WebRTCCoreRepoPath)third_party\libyuv\include;$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)_uwp\gen\protoc_out;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
@@ -113,7 +113,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalDependencies>Ole32.lib;Evr.lib;mf.lib;mfuuid.lib;mfplat.lib;webrtc.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)\obj;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)_uwp\obj;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
