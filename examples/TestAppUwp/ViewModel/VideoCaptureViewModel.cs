@@ -100,7 +100,7 @@ namespace TestAppUwp
             ErrorMessage = null;
             try
             {
-                await RequestMediaAccesssAsync(StreamingCaptureMode.Video);
+                await RequestMediaAccessAsync(StreamingCaptureMode.Video);
             }
             catch (UnauthorizedAccessException uae)
             {
@@ -153,7 +153,7 @@ namespace TestAppUwp
 
         public async Task AddVideoTrackFromDeviceAsync(string trackName)
         {
-            await RequestMediaAccesssAsync(StreamingCaptureMode.Video);
+            await RequestMediaAccessAsync(StreamingCaptureMode.Video);
 
             VideoCaptureDeviceInfo deviceInfo = VideoCaptureDevices.SelectedItem;
             if (deviceInfo == null)
@@ -184,7 +184,7 @@ namespace TestAppUwp
             SessionModel.Current.LocalTracks.Add(new TrackViewModel(Symbol.Video) { DisplayName = deviceInfo.DisplayName });
         }
 
-        private async Task RequestMediaAccesssAsync(StreamingCaptureMode mode)
+        private async Task RequestMediaAccessAsync(StreamingCaptureMode mode)
         {
             // Ensure that the UWP app was authorized to capture audio (cap:microphone)
             // or video (cap:webcam), otherwise the native plugin will fail.
