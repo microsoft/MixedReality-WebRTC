@@ -31,7 +31,7 @@ namespace TestAppUwp
         {
             const string DefaultAudioDeviceName = "Default audio device";
 
-            await RequestMediaAccesssAsync(StreamingCaptureMode.Audio);
+            await RequestMediaAccessAsync(StreamingCaptureMode.Audio);
 
             var settings = new LocalAudioTrackSettings
             {
@@ -49,7 +49,7 @@ namespace TestAppUwp
             SessionModel.Current.LocalTracks.Add(new TrackViewModel(Symbol.Volume) { DisplayName = DefaultAudioDeviceName });
         }
 
-        private async Task RequestMediaAccesssAsync(StreamingCaptureMode mode)
+        private async Task RequestMediaAccessAsync(StreamingCaptureMode mode)
         {
             // Ensure that the UWP app was authorized to capture audio (cap:microphone)
             // or video (cap:webcam), otherwise the native plugin will fail.
