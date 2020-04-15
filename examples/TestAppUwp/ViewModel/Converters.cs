@@ -15,14 +15,14 @@ namespace TestAppUwp
     /// </summary>
     public class BooleanInverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string langauge)
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
             // true          => false
             // anything else => true
             return (!(value is bool boolValue) || !boolValue);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string langauge)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             // true  => false
             // false => true
@@ -44,7 +44,7 @@ namespace TestAppUwp
     /// </summary>
     public class BooleanToVisibilityInvertedConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string langauge)
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
             if ((value is bool boolValue) && boolValue)
             {
@@ -53,7 +53,7 @@ namespace TestAppUwp
             return Visibility.Visible;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string langauge)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             return (!(value is Visibility visibilityValue) || (visibilityValue != Visibility.Visible));
         }
@@ -61,7 +61,7 @@ namespace TestAppUwp
 
     public class VisibleIfNotEmptyConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string langauge)
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
             if ((value is string stringValue) && !string.IsNullOrWhiteSpace(stringValue))
             {
@@ -70,7 +70,7 @@ namespace TestAppUwp
             return Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string langauge)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException("VisibilleIfNotEmptyConverter is a one-way converter by design.");
         }
@@ -78,12 +78,12 @@ namespace TestAppUwp
 
     public class NullToBoolConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string langauge)
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
             return (value != null);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string langauge)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException("NullToBoolConverter is a one-way converter by design.");
         }
@@ -91,12 +91,12 @@ namespace TestAppUwp
 
     public class CountToBoolNotEmptyConvert : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string langauge)
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
             return ((value is int intValue) && (intValue > 0));
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string langauge)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException("CountToBoolNotEmptyConvert is a one-way converter by design.");
         }
@@ -110,7 +110,7 @@ namespace TestAppUwp
         private const Symbol AudioSymbol = Symbol.Volume;
         private const Symbol VideoSymbol = Symbol.Video;
 
-        public object Convert(object value, Type targetType, object parameter, string langauge)
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value is MediaKind mediaKind)
             {
@@ -123,7 +123,7 @@ namespace TestAppUwp
             throw new ArgumentOutOfRangeException($"Cannot convert non-MediaKind to Symbol.");
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string langauge)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             if (value is Symbol symbolValue)
             {
@@ -149,7 +149,7 @@ namespace TestAppUwp
         private const Symbol SendReceiveSymbol = Symbol.Switch;
         private const Symbol NullSymbol = Symbol.Sync;
 
-        public object Convert(object value, Type targetType, object parameter, string langauge)
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value is Transceiver.Direction directionValue)
             {
@@ -169,7 +169,7 @@ namespace TestAppUwp
             throw new ArgumentOutOfRangeException($"Cannot convert non-Transceiver.Direction to Symbol.");
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string langauge)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             if (value is Symbol symbolValue)
             {
