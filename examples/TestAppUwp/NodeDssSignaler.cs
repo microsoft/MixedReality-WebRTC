@@ -344,7 +344,8 @@ namespace TestAppUwp
 
                     // Send GET request to DSS server.
                     lastPollTimeTicks = DateTime.UtcNow.Ticks;
-                    HttpResponseMessage response = await _httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
+                    HttpResponseMessage response = await _httpClient.GetAsync(requestUri,
+                        HttpCompletionOption.ResponseHeadersRead, masterToken);
 
                     // On first successful HTTP request, raise the connected event
                     if (0 == Interlocked.Exchange(ref _connectedEventFired, 1))

@@ -39,7 +39,7 @@ namespace TestAppUwp
         Stable,
 
         /// <summary>
-        /// New negotitation has been started locally, waiting for offer message to be created.
+        /// New negotiation has been started locally, waiting for offer message to be created.
         /// This happens when calling <see cref="StartNegotiation"/> locally.
         /// </summary>
         Starting,
@@ -336,7 +336,7 @@ namespace TestAppUwp
 
         /// <summary>
         /// Helper class to temporarily defer an automated negotiation until this object
-        /// is diposed.
+        /// is disposed.
         /// </summary>
         /// <seealso cref="GetNegotiationDeferral"/>
         public class SessionNegotiationDeferral : IDisposable
@@ -421,6 +421,26 @@ namespace TestAppUwp
 
             LocalTracks.Add(new AddNewTrackViewModel() { DisplayName = "Add audio track", PageType = typeof(AddAudioTrackPage) });
             LocalTracks.Add(new AddNewTrackViewModel() { DisplayName = "Add video track", PageType = typeof(AddVideoTrackPage) });
+        }
+
+        /// <summary>
+        /// Update the negotiation state from <paramref name="oldState"/> to <paramref name="newState"/>,
+        /// while raising the appropriate property changed events for all related properties.
+        /// </summary>
+        /// <param name="oldState">The expected previous state. Code will assert on this state being current.</param>
+        /// <param name="newState">The new state to set <see cref="_negotiationState"/> to.</param>
+        private void ExchangeNegotiationState(NegotiationState oldState, NegotiationState newState)
+        {
+            lock (_stateLock)
+            {
+                Debug.Assert(_negotiationState == oldState);
+                _negotiationState = newState;
+            }
+            RaisePropertyChanged("NegotiationState");
+            if ((oldState == NegotiationState.Stable) || (newState == NegotiationState.Stable))
+            {
+                RaisePropertyChanged("CanNegotiate");
+            }
         }
 
         /// <summary>
@@ -539,13 +559,7 @@ namespace TestAppUwp
         /// </summary>
         public void OnPeerInitialized()
         {
-            lock (_stateLock)
-            {
-                Debug.Assert(_negotiationState == NegotiationState.Closed);
-                _negotiationState = NegotiationState.Stable;
-            }
-            RaisePropertyChanged("NegotiationState");
-            RaisePropertyChanged("CanNegotiate");
+            ExchangeNegotiationState(NegotiationState.Closed, NegotiationState.Stable);
         }
 
         private void LocalAudioTrackCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -667,12 +681,7 @@ namespace TestAppUwp
         /// </summary>
         public void NotifyLocalOfferApplied()
         {
-            lock (_stateLock)
-            {
-                Debug.Assert(_negotiationState == NegotiationState.Starting);
-                _negotiationState = NegotiationState.HaveLocalOffer;
-            }
-            RaisePropertyChanged("NegotiationState");
+            ExchangeNegotiationState(NegotiationState.Starting, NegotiationState.HaveLocalOffer);
         }
 
         /// <summary>
@@ -680,13 +689,7 @@ namespace TestAppUwp
         /// </summary>
         public void NotifyLocalAnswerApplied()
         {
-            lock (_stateLock)
-            {
-                Debug.Assert(_negotiationState == NegotiationState.HaveRemoteOffer);
-                _negotiationState = NegotiationState.Stable;
-            }
-            RaisePropertyChanged("NegotiationState");
-            RaisePropertyChanged("CanNegotiate");
+            ExchangeNegotiationState(NegotiationState.HaveRemoteOffer, NegotiationState.Stable);
         }
 
         /// <summary>
@@ -699,13 +702,7 @@ namespace TestAppUwp
             // while the remote peer is known to have already initiated one.
             // This slightly deviates from the WebRTC standard which says that the
             // HaveRemoteOffer state is after the remote offer was applied, not before.
-            lock (_stateLock)
-            {
-                Debug.Assert(_negotiationState == NegotiationState.Stable);
-                _negotiationState = NegotiationState.HaveRemoteOffer;
-            }
-            RaisePropertyChanged("NegotiationState");
-            RaisePropertyChanged("CanNegotiate");
+            ExchangeNegotiationState(NegotiationState.Stable, NegotiationState.HaveRemoteOffer);
 
             await _peerConnection.SetRemoteDescriptionAsync("offer", content);
         }
@@ -718,13 +715,7 @@ namespace TestAppUwp
         {
             await _peerConnection.SetRemoteDescriptionAsync("answer", content);
 
-            lock (_stateLock)
-            {
-                Debug.Assert(_negotiationState == NegotiationState.HaveLocalOffer);
-                _negotiationState = NegotiationState.Stable;
-            }
-            RaisePropertyChanged("NegotiationState");
-            RaisePropertyChanged("CanNegotiate");
+            ExchangeNegotiationState(NegotiationState.HaveLocalOffer, NegotiationState.Stable);
         }
 
         /// <summary>
