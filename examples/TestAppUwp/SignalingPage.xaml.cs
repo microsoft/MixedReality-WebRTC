@@ -7,7 +7,9 @@ using Windows.UI.Xaml.Controls;
 namespace TestAppUwp
 {
     /// <summary>
-    /// 
+    /// Page displaying the content of the signaling navigation tab, with controls and options
+    /// to manage the <see cref="NodeDssSignaler"/> instance used for the WebRTC signaling of the
+    /// current session.
     /// </summary>
     public sealed partial class SignalingPage : Page
     {
