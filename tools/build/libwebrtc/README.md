@@ -10,7 +10,7 @@ Chromium's libwebrtc library underpins MixedReality-WebRTC. Here are the instruc
    - Fetch the Google repository of libwebrtc inside `external/libwebrtc`
    - Checkout the M80 branch
    - Apply the UWP patches from [WinRTC](https://github.com/microsoft/winrtc) to allows building on UWP
-   - Synchronize dependencies (`glcient sync`)
+   - Synchronize dependencies (`gclient sync`)
    - Make sure Python is installed, and install `pywin32`
    - Create the output folder in `external/libwebrtc/src/out/[Debug|Release]_[x86|x64|ARM|ARM64]_[win32|uwp]`
    - Generate the `args.gn` file for `gn`
