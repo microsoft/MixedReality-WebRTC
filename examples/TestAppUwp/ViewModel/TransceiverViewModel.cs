@@ -106,14 +106,26 @@ namespace TestAppUwp
         public string Name => Transceiver.Name;
 
         /// <summary>
+        /// Transceiver desired direction.
+        /// </summary>
+        public Transceiver.Direction DesiredDirection
+        {
+            get { return _desiredDirection; }
+            set
+            {
+                if (SetProperty(ref _desiredDirection, value))
+                {
+                    Transceiver.DesiredDirection = _desiredDirection;
+                }
+            }
+        }
+
+        /// <summary>
         /// Transceiver negotiated direction.
         /// </summary>
         public Transceiver.Direction? NegotiatedDirection
         {
-            get
-            {
-                return Transceiver.NegotiatedDirection;
-            }
+            get { return Transceiver.NegotiatedDirection; }
         }
 
         /// <summary>
@@ -134,6 +146,7 @@ namespace TestAppUwp
         {
             Transceiver = transceiver;
             IsAssociated = (transceiver.MlineIndex >= 0);
+            DesiredDirection = transceiver.DesiredDirection;
             transceiver.Associated += OnAssociated;
             transceiver.DirectionChanged += OnDirectionChanged;
 
@@ -168,6 +181,8 @@ namespace TestAppUwp
         /// Backing field for <see cref="Sender"/>.
         /// </summary>
         private SenderTrackViewModel _sender;
+
+        private Transceiver.Direction _desiredDirection = Transceiver.Direction.Inactive;
 
         private void OnDirectionChanged(Transceiver transceiver)
         {

@@ -23,12 +23,20 @@ namespace TestAppUwp
             get { return SessionModel.Current; }
         }
 
-        private SessionViewModel _sessionViewModel;
+        private readonly Transceiver.Direction[] _desiredDirectionList;
+        private readonly Transceiver.Direction?[] _negotiatedDirectionList;
 
         public SessionPage()
         {
             this.InitializeComponent();
-            _sessionViewModel = new SessionViewModel();
+            _desiredDirectionList = (Transceiver.Direction[])System.Enum.GetValues(typeof(Transceiver.Direction));
+            _negotiatedDirectionList = new Transceiver.Direction?[_desiredDirectionList.Length + 1];
+            _negotiatedDirectionList[0] = null;
+            int i = 1;
+            foreach (var dir in _desiredDirectionList)
+            {
+                _negotiatedDirectionList[i++] = dir;
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
