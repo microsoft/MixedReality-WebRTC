@@ -144,6 +144,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private void OnPeerInitialized()
         {
+            // Prevent WebRTC from playing remote audio directly, or it will be played twice.
+            PeerConnection.Peer.RenderRemoteAudio(false);
+
             PeerConnection.Peer.TrackAdded += TrackAdded;
             PeerConnection.Peer.TrackRemoved += TrackRemoved;
 
