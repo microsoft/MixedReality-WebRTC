@@ -93,7 +93,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>..\..\include;..\;$(WebRTCCoreRepoPath);$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)_win32\gen;$(WebRTCCoreRepoPath)third_party\abseil-cpp;$(WebRTCCoreRepoPath)third_party\libyuv\include;$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)_win32\gen\protoc_out;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\;$(WebRTCCoreRepoPath);$(WebRTCCoreRepoPath)out\win\$(PlatformTarget)\$(Configuration)\gen;$(WebRTCCoreRepoPath)third_party\abseil-cpp;$(WebRTCCoreRepoPath)third_party\libyuv\include;$(WebRTCCoreRepoPath)out\win\$(PlatformTarget)\$(Configuration)\gen\protoc_out;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -101,7 +101,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>strmiids.lib;Msdmo.lib;dmoguids.lib;wmcodecdspuuid.lib;Secur32.lib;winmm.lib;Ole32.lib;Evr.lib;mfreadwrite.lib;mf.lib;mfuuid.lib;mfplat.lib;mfplay.lib;windowsapp.lib;webrtc.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)out\$(Configuration)_$(PlatformTarget)_win32\obj;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)out\win\$(PlatformTarget)\$(Configuration)\obj;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
