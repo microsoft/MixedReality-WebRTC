@@ -157,16 +157,8 @@ function Write-GnArgs([string]$Platform, [string]$Arch, [string]$Config, [string
 
     # Map MixedReality-WebRTC build triplet to libwebrtc build parameters
     switch -Exact ($Platform) {
-        "Win32" {
-            $target_os="win"
-        }
-        "UWP" {
-            $target_os="winuwp"
-            $extra_content=@"
-# Use WinRT video capture for UWP
-rtc_win_video_capture_winrt=true
-"@
-        }
+        "Win32" { $target_os="win" }
+        "UWP" { $target_os="winuwp" }
         Default { throw "Unknown platform '$Platform'" }
     }
     switch -Exact ($Arch) {
@@ -217,7 +209,8 @@ rtc_include_tests=false
 rtc_build_tools=false
 rtc_build_examples=false
 
-$extra_content
+# Use WinRT video capturer for Windows Desktop and UWP
+rtc_win_video_capture_winrt=true
 "@
         Write-Host -NoNewline "Writing args.gn file to $FileName..."
         # Set-Content doesn't support UTF8NoBOM before PowerShell 6.0
