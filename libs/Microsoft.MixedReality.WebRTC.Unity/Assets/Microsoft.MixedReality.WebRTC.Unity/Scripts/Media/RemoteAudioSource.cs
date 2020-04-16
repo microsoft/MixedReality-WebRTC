@@ -14,6 +14,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// The audio track can optionally be displayed locally with a <see cref="MediaPlayer"/>.
     /// </summary>
     [AddComponentMenu("MixedReality-WebRTC/Remote Audio Source")]
+    [RequireComponent(typeof(UnityEngine.AudioSource))]
     public class RemoteAudioSource : AudioSource
     {
         /// <summary>
