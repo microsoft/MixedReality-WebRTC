@@ -49,10 +49,7 @@ namespace TestAppUwp
                 if (SetProperty(ref _autoSelectOnAdd, value) && _autoSelectOnAdd)
                 {
                     // If autoselect set to true, try to select immediately
-                    if ((Count > 0) && (_selectedItem == null))
-                    {
-                        SelectedItem = this[0];
-                    }
+                    SelectFirstItemIfAny();
                 }
             }
         }
@@ -65,6 +62,18 @@ namespace TestAppUwp
             // make it multi-tread safe, since the internal container is not. This only avoids
             // some wrong thread error in XAML when raising the PropertyChanged event.
             _dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
+        }
+
+        /// <summary>
+        /// Ensure an item is selected if the collection is not emtpy by selecting
+        /// the first item in the collection if <see cref="SelectedItem"/> is <c>null</c>.
+        /// </summary>
+        public void SelectFirstItemIfAny()
+        {
+            if ((Count > 0) && (_selectedItem == null))
+            {
+                SelectedItem = this[0];
+            }
         }
 
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)

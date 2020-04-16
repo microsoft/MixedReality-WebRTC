@@ -33,14 +33,19 @@ namespace TestAppUwp
         public bool SupportsVideoProfiles { get; }
     }
 
+    /// <summary>
+    /// View model abstracting the video capture selection process, including:
+    /// - selecting a video capture device
+    /// - optionally selecting a video profile or profile kind (if supported by device)
+    /// - optionally selecting a video capture format
+    /// </summary>
     public class VideoCaptureViewModel : NotifierBase
     {
-        private CollectionViewModel<VideoCaptureDeviceInfo> _videoCaptureDevices
-            = new CollectionViewModel<VideoCaptureDeviceInfo>();
-        private CollectionViewModel<VideoCaptureFormatViewModel> _videoCaptureFormats
-            = new CollectionViewModel<VideoCaptureFormatViewModel>();
-        private bool _canCreateTrack = false;
-
+        /// <summary>
+        /// Collection of video capture devices available on the current host device.
+        /// The selected item is the currently selected video capture device, and affects
+        /// the list of video profiles and capture formats.
+        /// </summary>
         public CollectionViewModel<VideoCaptureDeviceInfo> VideoCaptureDevices
         {
             get { return _videoCaptureDevices; }
@@ -53,45 +58,99 @@ namespace TestAppUwp
             }
         }
 
+        /// <summary>
+        /// Collection of video capture formats for the currently selected video capture device.
+        /// The capture formats are further filtered based on the selected video profile.
+        /// </summary>
         public CollectionViewModel<VideoCaptureFormatViewModel> VideoCaptureFormats
         {
             get { return _videoCaptureFormats; }
             set { SetProperty(ref _videoCaptureFormats, value); }
         }
 
+        /// <summary>
+        /// List of video profile kinds.
+        /// </summary>
+        public VideoProfileKind[] VideoProfileKinds { get; }
+
+        /// <summary>
+        /// Currently selected video profile kind. This affects the available video profiles,
+        /// which are filtered based on the current kind.
+        /// </summary>
         public VideoProfileKind SelectedVideoProfileKind
         {
-            get
+            get { return _selectedVideoProfileKind; }
+            set
             {
-                //var videoProfileKindIndex = KnownVideoProfileKindComboBox.SelectedIndex;
-                //if (videoProfileKindIndex < 0)
-                //{
-                //    return VideoProfileKind.Unspecified;
-                //}
-                //return (VideoProfileKind)Enum.GetValues(typeof(VideoProfileKind)).GetValue(videoProfileKindIndex);
-                return VideoProfileKind.Unspecified;
+                if (SetProperty(ref _selectedVideoProfileKind, value))
+                {
+                    // If video profile kind changed, refresh the list of profiles which
+                    // are associated with the currently selected profile kind.
+                    var device = VideoCaptureDevices.SelectedItem;
+                    if (device != null)
+                    {
+                        RefreshVideoProfiles(device, _selectedVideoProfileKind);
+                    }
+                }
             }
         }
 
-        public CollectionViewModel<MediaCaptureVideoProfile> VideoProfiles { get; private set; }
-            = new CollectionViewModel<MediaCaptureVideoProfile>();
+        /// <summary>
+        /// Collection of video profiles for the currently selected video capture device
+        /// and video profile kind.
+        /// </summary>
+        public CollectionViewModel<MediaCaptureVideoProfile> VideoProfiles
+        {
+            get { return _videoProfiles; }
+            private set
+            {
+                if (SetProperty(ref _videoProfiles, value))
+                {
+                    // If the list of video profiles changed, select the first one automatically,
+                    // and refresh the capture formats associated with it.
+                    _videoProfiles.SelectionChanged += () => {
+                        _ = RefreshVideoCaptureFormatsAsync(VideoCaptureDevices.SelectedItem);
+                    };
+                    _videoProfiles.SelectFirstItemIfAny();
+                }
+            }
+        }
 
         public CollectionViewModel<MediaCaptureVideoProfileMediaDescription> RecordMediaDescs { get; private set; }
             = new CollectionViewModel<MediaCaptureVideoProfileMediaDescription>();
 
+        /// <summary>
+        /// Property indicating whether a track can be created based on the currently selected items.
+        /// </summary>
         public bool CanCreateTrack
         {
             get { return _canCreateTrack; }
             set { SetProperty(ref _canCreateTrack, value); }
         }
 
+        /// <summary>
+        /// Error message to report to user when non-<c>null</c>.
+        /// </summary>
         public string ErrorMessage
         {
             get { return _errorMessage; }
             set { SetProperty(ref _errorMessage, value); }
         }
 
+        private CollectionViewModel<VideoCaptureDeviceInfo> _videoCaptureDevices
+            = new CollectionViewModel<VideoCaptureDeviceInfo>();
+        private CollectionViewModel<VideoCaptureFormatViewModel> _videoCaptureFormats
+            = new CollectionViewModel<VideoCaptureFormatViewModel>();
+        private CollectionViewModel<MediaCaptureVideoProfile> _videoProfiles
+            = new CollectionViewModel<MediaCaptureVideoProfile>();
+        private VideoProfileKind _selectedVideoProfileKind = VideoProfileKind.Unspecified;
+        private bool _canCreateTrack = false;
         private string _errorMessage;
+
+        public VideoCaptureViewModel()
+        {
+            VideoProfileKinds = (VideoProfileKind[])Enum.GetValues(typeof(VideoProfileKind));
+        }
 
         public async Task RefreshVideoCaptureDevicesAsync()
         {
@@ -124,31 +183,89 @@ namespace TestAppUwp
             // This is more for demo purpose here because using the UWP API is nicer.
             var devices = await PeerConnection.GetVideoCaptureDevicesAsync();
             var deviceList = new CollectionViewModel<VideoCaptureDeviceInfo>();
-            List<VideoCaptureDeviceInfo> vcds = new List<VideoCaptureDeviceInfo>(devices.Count);
             foreach (var device in devices)
             {
                 Logger.Log($"Found video capture device: id={device.id} name={device.name}");
                 deviceList.Add(new VideoCaptureDeviceInfo(id: device.id, displayName: device.name));
             }
             VideoCaptureDevices = deviceList;
+
+            // Auto-select first device for convenience
+            VideoCaptureDevices.SelectFirstItemIfAny();
         }
 
         private void VideoCaptureDevices_SelectionChanged()
         {
             CanCreateTrack = (VideoCaptureDevices.SelectedItem != null);
-            _ = RefreshVideoCaptureFormatsAsync(VideoCaptureDevices.SelectedItem);
+            if (MediaCapture.IsVideoProfileSupported(VideoCaptureDevices.SelectedItem.Id))
+            {
+                // Refresh the video profiles, which wil automatically refresh the video capture
+                // formats associated with the selected profile.
+                RefreshVideoProfiles(VideoCaptureDevices.SelectedItem, SelectedVideoProfileKind);
+            }
+            else
+            {
+                _ = RefreshVideoCaptureFormatsAsync(VideoCaptureDevices.SelectedItem);
+            }
+        }
+
+        public void RefreshVideoProfiles(VideoCaptureDeviceInfo item, VideoProfileKind kind)
+        {
+            var videoProfiles = new CollectionViewModel<MediaCaptureVideoProfile>();
+            if (item != null)
+            {
+                IReadOnlyList<MediaCaptureVideoProfile> profiles;
+                if (kind == VideoProfileKind.Unspecified)
+                {
+                    profiles = MediaCapture.FindAllVideoProfiles(item.Id);
+                }
+                else
+                {
+                    int index = (int)kind;
+                    profiles = MediaCapture.FindKnownVideoProfiles(item.Id, (KnownVideoProfile)index);
+                }
+                foreach (var profile in profiles)
+                {
+                    videoProfiles.Add(profile);
+                }
+            }
+            VideoProfiles = videoProfiles;
+
+            // Select first item for convenience
+            VideoProfiles.SelectFirstItemIfAny();
         }
 
         public async Task RefreshVideoCaptureFormatsAsync(VideoCaptureDeviceInfo item)
         {
-            // Device doesn't support video profiles; fall back on flat list of capture formats.
-            List<VideoCaptureFormat> formatsList = await PeerConnection.GetVideoCaptureFormatsAsync(item.Id);
             var formats = new CollectionViewModel<VideoCaptureFormatViewModel>();
-            foreach (var format in formatsList)
+            if (item != null)
             {
-                formats.Add(new VideoCaptureFormatViewModel { Format = format });
+                if (MediaCapture.IsVideoProfileSupported(item.Id))
+                {
+                    foreach (var desc in VideoProfiles.SelectedItem?.SupportedRecordMediaDescription)
+                    {
+                        var formatVM = new VideoCaptureFormatViewModel();
+                        formatVM.Format.width = desc.Width;
+                        formatVM.Format.height = desc.Height;
+                        formatVM.Format.framerate = desc.FrameRate;
+                        //formatVM.Format.fourcc = desc.Subtype; // TODO: string => FOURCC
+                        formats.Add(formatVM);
+                    }
+                }
+                else
+                {
+                    // Device doesn't support video profiles; fall back on flat list of capture formats.
+                    List<VideoCaptureFormat> formatsList = await PeerConnection.GetVideoCaptureFormatsAsync(item.Id);
+                    foreach (var format in formatsList)
+                    {
+                        formats.Add(new VideoCaptureFormatViewModel { Format = format });
+                    }
+                }
             }
             VideoCaptureFormats = formats;
+
+            // Select first item for convenience
+            VideoCaptureFormats.SelectFirstItemIfAny();
         }
 
         public async Task AddVideoTrackFromDeviceAsync(string trackName)
@@ -211,133 +328,5 @@ namespace TestAppUwp
                 throw ex;
             }
         }
-
-
-        /// <summary>
-        /// Update the list of video profiles stored in <cref>VideoProfiles</cref>
-        /// when the selected video capture device or known video profile kind change.
-        /// </summary>
-        private async void UpdateVideoProfiles()
-        {
-            VideoProfiles.Clear();
-            VideoCaptureFormats.Clear();
-
-            //// Get the video capture device selected by the user
-            //var deviceIndex = VideoCaptureDeviceList.SelectedIndex;
-            //if (deviceIndex < 0)
-            //{
-            //    return;
-            //}
-            //var device = VideoCaptureDevices[deviceIndex];
-
-            //// Ensure that the video capture device actually supports video profiles
-            //if (MediaCapture.IsVideoProfileSupported(device.Id))
-            //{
-            //    // Get the kind of known video profile selected by the user
-            //    var videoProfileKindIndex = KnownVideoProfileKindComboBox.SelectedIndex;
-            //    if (videoProfileKindIndex < 0)
-            //    {
-            //        return;
-            //    }
-            //    var videoProfileKind = (VideoProfileKind)Enum.GetValues(typeof(VideoProfileKind)).GetValue(videoProfileKindIndex);
-
-            //    // List all video profiles for the select device (and kind, if any specified)
-            //    IReadOnlyList<MediaCaptureVideoProfile> profiles;
-            //    if (videoProfileKind == VideoProfileKind.Unspecified)
-            //    {
-            //        profiles = MediaCapture.FindAllVideoProfiles(device.Id);
-            //    }
-            //    else
-            //    {
-            //        profiles = MediaCapture.FindKnownVideoProfiles(device.Id, (KnownVideoProfile)(videoProfileKind - 1));
-            //    }
-            //    foreach (var profile in profiles)
-            //    {
-            //        VideoProfiles.Add(profile);
-            //    }
-            //    if (profiles.Any())
-            //    {
-            //        VideoProfileComboBox.SelectedIndex = 0;
-            //    }
-            //}
-            //else
-            //{
-            //    // Device doesn't support video profiles; fall back on flat list of capture formats.
-            //    List<VideoCaptureFormat> formatsList = await PeerConnection.GetVideoCaptureFormatsAsync(device.Id);
-            //    foreach (var format in formatsList)
-            //    {
-            //        VideoCaptureFormats.Add(format);
-            //    }
-
-            //    // Default to first format, so that user can start the video capture even without selecting
-            //    // explicitly a format in a different application tab.
-            //    if (formatsList.Count > 0)
-            //    {
-            //        VideoCaptureFormatList.SelectedIndex = 0;
-            //    }
-            //}
-        }
-
-        //private void VideoCaptureDeviceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    // Get the video capture device selected by the user
-        //    var deviceIndex = VideoCaptureDeviceList.SelectedIndex;
-        //    if (deviceIndex < 0)
-        //    {
-        //        return;
-        //    }
-        //    var device = VideoCaptureDevices[deviceIndex];
-
-        //    // Select a default video profile kind
-        //    var values = Enum.GetValues(typeof(VideoProfileKind));
-        //    if (MediaCapture.IsVideoProfileSupported(device.Id))
-        //    {
-        //        var defaultProfile = VideoProfileKind.VideoConferencing;
-        //        var profiles = MediaCapture.FindKnownVideoProfiles(device.Id, (KnownVideoProfile)(defaultProfile - 1));
-        //        if (!profiles.Any())
-        //        {
-        //            // Fall back to VideoRecording if VideoConferencing has no profiles (e.g. HoloLens).
-        //            defaultProfile = VideoProfileKind.VideoRecording;
-        //        }
-        //        KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, defaultProfile);
-
-        //        KnownVideoProfileKindComboBox.IsEnabled = true; //< TODO - Use binding
-        //        VideoProfileComboBox.IsEnabled = true;
-        //        RecordMediaDescList.IsEnabled = true;
-        //        VideoCaptureFormatList.IsEnabled = false;
-        //    }
-        //    else
-        //    {
-        //        KnownVideoProfileKindComboBox.SelectedIndex = Array.IndexOf(values, VideoProfileKind.Unspecified);
-        //        KnownVideoProfileKindComboBox.IsEnabled = false;
-        //        VideoProfileComboBox.IsEnabled = false;
-        //        RecordMediaDescList.IsEnabled = false;
-        //        VideoCaptureFormatList.IsEnabled = true;
-        //    }
-
-        //    UpdateVideoProfiles();
-        //}
-
-        //private void KnownVideoProfileKindComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    UpdateVideoProfiles();
-        //}
-
-        //private void VideoProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    RecordMediaDescs.Clear();
-
-        //    var profile = SelectedVideoProfile;
-        //    if (profile == null)
-        //    {
-        //        return;
-        //    }
-
-        //    foreach (var desc in profile.SupportedRecordMediaDescription)
-        //    {
-        //        RecordMediaDescs.Add(desc);
-        //    }
-        //}
-
     }
 }
