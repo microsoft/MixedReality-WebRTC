@@ -7,11 +7,15 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     {
         internal class Handle : SafeHandle
         {
-            internal Handle(IntPtr h) : base(IntPtr.Zero, true) { handle = h; }
+            /// <summary>
+            /// Used internally by <see cref="Create(PeerConnectionHandle, int, out Handle)"/>.
+            /// </summary>
+            internal Handle() : base(IntPtr.Zero, true) {}
+
             public override bool IsInvalid => handle == IntPtr.Zero;
             protected override bool ReleaseHandle()
             {
-                Destroy(this);
+                Destroy(handle);
                 return true;
             }
         }
@@ -26,6 +30,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsAudioTrackReadBufferDestroy")]
-        public static extern void Destroy(Handle audioTrackReadBuffer);
+        public static extern void Destroy(IntPtr audioTrackReadBuffer);
     }
 }
