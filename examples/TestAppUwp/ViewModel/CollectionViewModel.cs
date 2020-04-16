@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Windows.UI.Core;
 
 namespace TestAppUwp
 {
@@ -56,6 +57,16 @@ namespace TestAppUwp
             }
         }
 
+        private readonly CoreDispatcher _dispatcher;
+
+        public CollectionViewModel()
+        {
+            // TODO - Make this collection thread-aware for the PropertyChanged event does not
+            // make it multi-tread safe, since the internal container is not. This only avoids
+            // some wrong thread error in XAML when raising the PropertyChanged event.
+            _dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
+        }
+
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
             base.OnCollectionChanged(e);
@@ -93,8 +104,27 @@ namespace TestAppUwp
                 return false;
             }
             storage = value;
-            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+            RaisePropertyChanged(propertyName);
             return true;
+        }
+
+        /// <summary>
+        /// Raise the <see cref="PropertyChanged"/> event for the given property name, taking care of dispatching
+        /// the call to the appropriate thread.
+        /// </summary>
+        /// <param name="propertyName">Name of the property which changed.</param>
+        protected void RaisePropertyChanged(string propertyName)
+        {
+            // The event must be raised on the UI thread
+            if (_dispatcher.HasThreadAccess)
+            {
+                OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+            }
+            else
+            {
+                _ = _dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                    () => OnPropertyChanged(new PropertyChangedEventArgs(propertyName)));
+            }
         }
     }
 }
