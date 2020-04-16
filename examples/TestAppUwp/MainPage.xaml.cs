@@ -194,7 +194,7 @@ namespace TestAppUwp
                     sessionModel.NodeDssSignaler.LocalPeerId = str;
                 }
             }
-            if (sessionModel.NodeDssSignaler.LocalPeerId.Length == 0)
+            if (string.IsNullOrWhiteSpace(sessionModel.NodeDssSignaler.LocalPeerId))
             {
                 sessionModel.NodeDssSignaler.LocalPeerId = GetDeviceName();
             }
