@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
 # Get the root folder of MixedReality-WebRTC
 function Get-RootFolder
@@ -157,13 +159,10 @@ function Write-GnArgs([string]$Platform, [string]$Arch, [string]$Config, [string
     switch -Exact ($Platform) {
         "Win32" {
             $target_os="win"
-            $extra="_win32"
         }
         "UWP" {
             $target_os="winuwp"
-            $extra="_uwp"
-            $UwpContent = @"
-
+            $extra_content=@"
 # Use WinRT video capture for UWP
 rtc_win_video_capture_winrt=true
 "@
@@ -178,8 +177,14 @@ rtc_win_video_capture_winrt=true
         Default { throw "Unknown architecture '$Arch'" }
     }
     switch -Exact ($Config) {
-        "Debug" { $is_debug="true" }
-        "Release" { $is_debug="false" }
+        "Debug" { 
+            $is_debug="true"
+            $config_dir="debug"
+        }
+        "Release" {
+            $is_debug="false"
+            $config_dir="release"
+        }
         Default { throw "Unknown build config '$Config'" }
     }
 
@@ -187,7 +192,7 @@ rtc_win_video_capture_winrt=true
     # Only generate args.gn if it doesn't exist, otherwise this forces gn/ninja
     # to run a gn gen again and again, as the file timestamp change looks like
     # a build config change.
-    $Folder = Join-Path $WebRTCBasePath "out\${Config}_${target_cpu}${extra}"
+    $Folder = Join-Path $WebRTCBasePath "out\${target_os}\${target_cpu}\${config_dir}"
     New-Item $Folder -ItemType Directory -Force | Out-Null
     $FileName = Join-Path $Folder "args.gn"
     if (!(Test-Path $FileName))
@@ -200,18 +205,19 @@ rtc_win_video_capture_winrt=true
 target_os="$target_os"
 target_cpu="$target_cpu"
 
-# Variant
+# Build variant
 is_debug=$is_debug
 
-# Use MSVC toolchain
+# Use MSVC toolchain (cl.exe)
 use_lld=false
 is_clang=false
-$UwpContent
 
 # Exclude unused modules to speed up build
 rtc_include_tests=false
 rtc_build_tools=false
 rtc_build_examples=false
+
+$extra_content
 "@
         Write-Host -NoNewline "Writing args.gn file to $FileName..."
         # Set-Content doesn't support UTF8NoBOM before PowerShell 6.0
