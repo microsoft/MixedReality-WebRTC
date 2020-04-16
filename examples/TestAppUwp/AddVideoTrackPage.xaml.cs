@@ -3,6 +3,7 @@
 
 using System;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace TestAppUwp
 {
@@ -17,6 +18,24 @@ namespace TestAppUwp
         {
             this.InitializeComponent();
             _ = VideoCaptureViewModel.RefreshVideoCaptureDevicesAsync();
+
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            // Reset status
+            createTrackStatusText.Text = string.Empty;
+            progressRing.IsActive = false;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            // Pre-populate track name control with unique name
+            // TODO - Ensure unique and valid SDP token
+            int numVideoTracks = SessionModel.Current.VideoTracks.Count;
+            trackName.Text = $"video_track_{numVideoTracks}";
         }
 
         private void CloseClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)

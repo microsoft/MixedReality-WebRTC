@@ -3,6 +3,7 @@
 
 using System;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace TestAppUwp
 {
@@ -13,6 +14,25 @@ namespace TestAppUwp
         public AddAudioTrackPage()
         {
             this.InitializeComponent();
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            // Reset status
+            createTrackStatusText.Text = string.Empty;
+            progressRing.IsActive = false;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            // Pre-populate track name control with unique name
+            // TODO - Ensure unique and valid SDP token
+            int numAudioTracks = SessionModel.Current.AudioTracks.Count;
+            trackName.Text = $"audio_track_{numAudioTracks}";
         }
 
         private void CloseClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)

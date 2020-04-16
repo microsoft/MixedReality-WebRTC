@@ -4,6 +4,7 @@
 using Microsoft.MixedReality.WebRTC;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace TestAppUwp
 {
@@ -30,6 +31,19 @@ namespace TestAppUwp
             _sessionViewModel = new SessionViewModel();
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            PrePopulateTransceiverName();
+        }
+
+        private void PrePopulateTransceiverName()
+        {
+            // Pre-populate transceiver name control with unique name
+            // TODO - Ensure unique and valid SDP token
+            int numTransceivers = SessionModel.Current.Transceivers.Count;
+            newTransceiverName.Text = $"transceiver_{numTransceivers}";
+        }
+
         private void AddPendingTransceiver(MediaKind mediaKind, string name)
         {
             var settings = new TransceiverInitSettings
@@ -44,12 +58,14 @@ namespace TestAppUwp
         {
             var name = newTransceiverName.Text ?? "audio_transceiver"; // TODO: validate SDP token
             AddPendingTransceiver(MediaKind.Audio, name);
+            PrePopulateTransceiverName();
         }
 
         private void AddVideoTransceiver_Click(object sender, RoutedEventArgs e)
         {
             var name = newTransceiverName.Text ?? "video_transceiver"; // TODO: validate SDP token
             AddPendingTransceiver(MediaKind.Video, name);
+            PrePopulateTransceiverName();
         }
 
         private void StartNegotiationButton_Click(object sender, RoutedEventArgs e)
