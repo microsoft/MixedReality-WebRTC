@@ -61,21 +61,24 @@ AudioTrackReadBuffer::Buffer::Buffer() {
 AudioTrackReadBuffer::Buffer::~Buffer() {}
 
 void AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
-                                            int dstSampleRate,
-                                            int dstChannels) {
+                                            int dst_sample_rate,
+                                            int dst_channels) {
+  assert(frame.number_of_channels == 1 || frame.number_of_channels == 2);
+  assert(dst_channels == 1 || dst_channels == 2);
+
   // We may require up to 2 intermediate buffers
   // We always write into buffer_next and then swap front/back buffers
   std::vector<short> buffer_front;
   std::vector<short> buffer_back;
 
-  // tmpData will eventually hold u16 data with the correct number of channels
-  const short* srcData;
-  size_t srcCount;
+  const short* curr_data; //< Current version of the processed data.
+  size_t src_count;  //< Includes samples from *all* channels.
+  int curr_channels = frame.number_of_channels;
 
   // ensure source is 16 bit
   if (frame.bits_per_sample == 16) {
-    srcData = (short*)frame.audio_data.data();
-    srcCount = frame.number_of_frames * frame.number_of_channels;
+    curr_data = (short*)frame.audio_data.data();
+    src_count = frame.number_of_frames * frame.number_of_channels;
   } else if (frame.bits_per_sample == 8) {
     buffer_front.resize(frame.audio_data.size());
     short* data = buffer_front.data();
@@ -83,68 +86,60 @@ void AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
     for (int i = 0; i < (int)frame.audio_data.size(); ++i) {
       data[i] = ((int)frame.audio_data[i] * 256) - 32768;
     }
-    srcData = data;
-    srcCount = buffer_front.size();
+    curr_data = data;
+    src_count = buffer_front.size();
     swap(buffer_front, buffer_back);
   } else {
-    assert(false);
+    FATAL();
     return;
   }
 
-  // match destination number of channels
-  switch (frame.number_of_channels * 16 + dstChannels) {
-    case 0x11:
-    case 0x22:
-      break;      // nop
-    case 0x12: {  // duplicate
-      buffer_front.resize(srcCount * 2);
-      short* data = buffer_front.data();
-      for (int i = 0; i < (int)srcCount; ++i) {
-        data[2 * i + 0] = srcData[i];
-        data[2 * i + 1] = srcData[i];
-      }
-      srcData = data;
-      srcCount = buffer_front.size();
-      swap(buffer_front, buffer_back);
-      break;
+  if (frame.number_of_channels == 2 && dst_channels == 1) {
+    // average L&R
+    buffer_front.resize(src_count / 2);
+    short* data = buffer_front.data();
+    for (int i = 0; i < (int)src_count; ++i) {
+      data[i] = (curr_data[2 * i] + curr_data[2 * i + 1]) / 2;
     }
-    case 0x21: {  // average L&R
-      buffer_front.resize(srcCount / 2);
-      short* data = buffer_front.data();
-      for (int i = 0; i < (int)srcCount; ++i) {
-        data[i] = (srcData[2 * i] + srcData[2 * i + 1]) / 2;
-      }
-      srcData = data;
-      srcCount = buffer_front.size();
-      swap(buffer_front, buffer_back);
-      break;
-    }
-    default:
-      assert(false);
-      return;
+
+    curr_data = data;
+    src_count = buffer_front.size();
+    curr_channels = 1;
+    swap(buffer_front, buffer_back);
   }
 
-  // match sample rate
-  if ((int)frame.sample_rate != dstSampleRate) {
-    buffer_front.resize((srcCount * dstSampleRate / frame.sample_rate) + 1);
+  if ((int)frame.sample_rate != dst_sample_rate) {
+    // match sample rate
+    buffer_front.resize((src_count * dst_sample_rate / frame.sample_rate) + 1);
     short* data = buffer_front.data();
-
-    resampler_->ResetIfNeeded(frame.sample_rate, dstSampleRate, dstChannels);
+    resampler_->ResetIfNeeded(frame.sample_rate, dst_sample_rate, curr_channels);
     size_t count;
-    resampler_->Push(srcData, srcCount, data, buffer_front.size(), count);
-    srcData = data;
-    srcCount = count;
+    int res = resampler_->Push(curr_data, src_count, data, buffer_front.size(), count);
+    RTC_DCHECK(res == 0);
+
+    curr_data = data;
+    src_count = count;
     swap(buffer_front, buffer_back);
   }
 
   // Convert s16 to f32
-  data_.resize(srcCount);
-  for (size_t i = 0; i < srcCount; ++i) {
-    data_[i] = (float)srcData[i] / 32768.0f;
+  if (curr_channels == 1 && dst_channels == 2) {
+    // duplicate
+    data_.resize(src_count * 2);
+    for (int i = 0; i < (int)src_count; ++i) {
+      float val = (float)curr_data[i] / 32768.0f;
+      data_[2 * i + 0] = val;
+      data_[2 * i + 1] = val;
+    }
+  } else {
+    data_.resize(src_count);
+    for (size_t i = 0; i < src_count; ++i) {
+      data_[i] = (float)curr_data[i] / 32768.0f;
+    }
   }
   used_ = 0;
-  channels_ = dstChannels;
-  rate_ = dstSampleRate;
+  channels_ = dst_channels;
+  rate_ = dst_sample_rate;
 }
 
 void AudioTrackReadBuffer::Read(int sampleRate,
