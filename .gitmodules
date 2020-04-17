@@ -1,7 +1,3 @@
-[submodule "external/webrtc-uwp-sdk"]
-	path = external/webrtc-uwp-sdk
-	url = https://github.com/webrtc-uwp/webrtc-uwp-sdk.git
-	branch = releases/m71
 [submodule "external/depot_tools"]
 	path = external/depot_tools
 	url = https://chromium.googlesource.com/chromium/tools/depot_tools.git
