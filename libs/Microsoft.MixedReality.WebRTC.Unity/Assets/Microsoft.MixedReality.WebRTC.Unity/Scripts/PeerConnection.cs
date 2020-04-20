@@ -793,15 +793,24 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // locally-created transceivers is not negotiated yet, so ApplyRemoteDescriptionAsync() won't be able
             // to find them and will re-create a new set of transceivers, leading to duplicates.
             // So we wait until we know this peer is the offering side, and add transceivers to it right before
-            // creating an offer. The remote peer will then match the transceivers by mlineIndex, then add any missing
-            // ones, after it applied the offer.
+            // creating an offer. The remote peer will then match the transceivers by index after it applied the offer,
+            // then add any missing one.
+
+            // Update all transceivers, whether previously existing or just created above
+            var transceivers = _nativePeer.Transceivers;
+            int index = 0;
+            foreach (var mediaLine in _mediaLines)
             {
-                // Create new transceivers for the media lines added since last negotiation
-                int numExistingTransceiversBefore = _nativePeer.Transceivers.Count;
-                int numMediaLines = _mediaLines.Count;
-                for (int mlineIndex = numExistingTransceiversBefore; mlineIndex < numMediaLines; ++mlineIndex)
+                // Ensure each media line has a transceiver
+                Transceiver tr = mediaLine.Transceiver;
+                if (tr != null)
                 {
-                    var mediaLine = _mediaLines[mlineIndex];
+                    // Media line already had a transceiver from a previous session negotiation
+                    Debug.Assert(tr.MlineIndex >= 0); // associated
+                }
+                else
+                {
+                    // Create new transceivers for a media line added since last session negotiation.
 
                     // Compute the transceiver desired direction based on what the local peer expects, both in terms
                     // of sending and in terms of receiving. Note that this means the remote peer will not be able to
@@ -815,45 +824,23 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     var wantsDir = Transceiver.DirectionFromSendRecv(wantsSend, wantsRecv);
                     var settings = new TransceiverInitSettings
                     {
-                        Name = $"mrsw#{mlineIndex}",
+                        Name = $"mrsw#{index}",
                         InitialDesiredDirection = wantsDir
                     };
-                    Transceiver tr = _nativePeer.AddTransceiver(mediaLine.Kind, settings);
-                    Debug.Assert(tr.MlineIndex == mlineIndex);
+                    tr = _nativePeer.AddTransceiver(mediaLine.Kind, settings);
                 }
+                Debug.Assert(tr != null);
+                Debug.Assert(transceivers[index++] == tr);
 
-                // Update all transceivers, whether previously existing or just created above
-                var transceivers = _nativePeer.Transceivers;
-                int numTransceivers = transceivers.Count;
-                Debug.Assert(numMediaLines <= numTransceivers); // ensured in loop above
-                for (int mlineIndex = 0; mlineIndex < numMediaLines; ++mlineIndex)
+                // Update the transceiver
+                try
                 {
-                    var mediaLine = _mediaLines[mlineIndex];
-                    Transceiver tr = transceivers[mlineIndex];
-                    Debug.Assert(tr != null);
-                    Debug.Assert(tr.MlineIndex == mlineIndex);
-                    try
-                    {
-                        //< FIXME - CreateOfferAsync() to use await instead of Wait()
-                        mediaLine.UpdateForCreateOfferAsync(tr).Wait();
-                    }
-                    catch (Exception ex)
-                    {
-                        LogErrorOnMediaLineException(ex, mediaLine, tr);
-                    }
+                    //< FIXME - CreateOfferAsync() to use await instead of Wait()
+                    mediaLine.UpdateForCreateOfferAsync(tr).Wait();
                 }
-
-                // Ignore extra transceivers without a media line to associate with
-                if (numMediaLines < numTransceivers)
+                catch (Exception ex)
                 {
-                    string peerName = name;
-                    _mainThreadWorkQueue.Enqueue(() =>
-                    {
-                        for (int i = numMediaLines; i < numTransceivers; ++i)
-                        {
-                            Debug.LogWarning($"Peer connection {peerName} has transceiver #{i} but no sender/receiver component to process it. The transceiver will be ignored.");
-                        }
-                    });
+                    LogErrorOnMediaLineException(ex, mediaLine, tr);
                 }
             }
 
@@ -884,106 +871,94 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <returns>A task which completes once the remote description has been applied and transceivers
         /// have been updated.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        public Task HandleConnectionMessageAsync(string type, string sdp)
+        public async Task HandleConnectionMessageAsync(string type, string sdp)
         {
             // First apply the remote description
-            var task = Peer.SetRemoteDescriptionAsync(type, sdp);
+            await Peer.SetRemoteDescriptionAsync(type, sdp);
+
+            // Sort associated transceiver by media line index. The media line index is not the index of
+            // the transceiver, but they are both monotonically increasing, so sorting by one or the other
+            // yields the same ordered collection, which allows pairing transceivers and media lines.
+            // TODO - Ensure PeerConnection.Transceivers is already sorted
+            var transceivers = new List<Transceiver>(_nativePeer.AssociatedTransceivers);
+            transceivers.Sort((tr1, tr2) => (tr1.MlineIndex - tr2.MlineIndex));
+            int numAssociatedTransceivers = transceivers.Count;
+            int numMatching = Math.Min(numAssociatedTransceivers, _mediaLines.Count);
 
             // Once applied, try to pair transceivers and remote tracks with the Unity receiver components
-            return task.ContinueWith(async _ =>
+            if (type == "offer")
             {
-                // If receiving an offer, this is the first opportunity for the answering side to add its local tracks
-                // (media senders) and any extra transceiver it wants. The offering peer already did that in CreateOffer().
-                if (type == "offer")
+                // Match transceivers with media line, in order
+                for (int i = 0; i < numMatching; ++i)
                 {
-                    // Remote description has been applied to the peer connection receiving the offer (above). That
-                    // created any transceiver that the remote peer wants added, either to send or to receive (or both).
-                    // Now match that list with the list of local transceivers that this peer wants added, and add the
-                    // ones missing, while updating the transceiver info for existing ones, so that the answer that this
-                    // peer will then send matches the reality of the existing Unity components.
-                    var transceivers = _nativePeer.Transceivers;
-                    int numTransceivers = transceivers.Count;
-                    int numExisting = Math.Min(numTransceivers, _mediaLines.Count);
+                    var tr = transceivers[i];
+                    var mediaLine = _mediaLines[i];
 
-                    // Associate registered media senders/receivers with existing transceivers
-                    for (int mlineIndex = 0; mlineIndex < numExisting; ++mlineIndex)
+                    // Associate the transceiver with the media line, if not already done, and associate
+                    // the track components of the media line to the tracks of the transceiver.
+                    try
                     {
-                        var mediaLine = _mediaLines[mlineIndex];
-                        Transceiver tr = transceivers[mlineIndex];
-                        try
-                        {
-                            await mediaLine.UpdateOnReceiveOfferAsync(tr);
-                        }
-                        catch (Exception ex)
-                        {
-                            LogErrorOnMediaLineException(ex, mediaLine, tr);
-                        }
-
-                        // Check if the remote peer was planning to send something to this peer, but cannot.
-                        bool wantsRecv = (mediaLine.Receiver != null);
-                        if (!wantsRecv)
-                        {
-                            var desDir = tr.DesiredDirection;
-                            if (Transceiver.HasRecv(desDir))
-                            {
-                                string peerName = name;
-                                int idx = mlineIndex;
-                                _mainThreadWorkQueue.Enqueue(() =>
-                                {
-                                    Debug.LogWarning($"The remote peer of peer connection {peerName} offered to send through transceiver #{idx},"
-                                        + $" but peer connection {peerName} has no receiver component to process this media. The remote peer's media will not be negotiated."
-                                        + $" Ensure that peer connection {peerName} has a receiver component associated with its transceiver #{idx}.");
-                                });
-                            }
-                        }
+                        await mediaLine.UpdateOnReceiveOfferAsync(tr);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogErrorOnMediaLineException(ex, mediaLine, tr);
                     }
 
-                    // Ignore extra transceivers without a registered component to attach
-                    if (numExisting < numTransceivers)
+                    // Check if the remote peer was planning to send something to this peer, but cannot.
+                    bool wantsRecv = (mediaLine.Receiver != null);
+                    if (!wantsRecv)
                     {
-                        string peerName = name;
-                        _mainThreadWorkQueue.Enqueue(() =>
+                        var desDir = tr.DesiredDirection;
+                        if (Transceiver.HasRecv(desDir))
                         {
-                            for (int mlineIndex = numExisting; mlineIndex < numTransceivers; ++mlineIndex)
+                            string peerName = name;
+                            int idx = i;
+                            _mainThreadWorkQueue.Enqueue(() =>
                             {
-                                Debug.LogWarning($"The remote peer of peer connection {peerName} has transceiver #{mlineIndex}, but the peer connection"
-                                    + " doesn't have a local transceiver to pair with it. The remote peer's media for this transceiver will not be negotiated."
-                                    + $" Ensure that peer connection {peerName} has transceiver #{mlineIndex} and a receiver component associated with it.");
-                            }
-                        });
+                                LogWarningOnMissingReceiver(peerName, idx);
+                            });
+                        }
                     }
                 }
-                else if (type == "answer")
+
+                // Ignore extra transceivers without a registered component to attach
+                if (numMatching < numAssociatedTransceivers)
                 {
-                    // Much simpler, just pair the newly created remote tracks
-                    var transceivers = _nativePeer.Transceivers;
-                    int numNativeTransceivers = transceivers.Count;
-                    int numExisting = Math.Min(numNativeTransceivers, _mediaLines.Count);
-
-                    // Associate registered media senders/receivers with existing transceivers
-                    for (int i = 0; i < numExisting; ++i)
+                    string peerName = name;
+                    _mainThreadWorkQueue.Enqueue(() =>
                     {
-                        var mediaLine = _mediaLines[i];
-                        Debug.Assert(mediaLine.Transceiver == transceivers[i]);
-                        mediaLine.UpdateOnReceiveAnswer();
-                    }
-
-                    // Ignore extra transceivers without a registered component to attach
-                    if (numExisting < numNativeTransceivers)
-                    {
-                        string peerName = name;
-                        _mainThreadWorkQueue.Enqueue(() =>
+                        for (int i = numMatching; i < numAssociatedTransceivers; ++i)
                         {
-                            for (int mlineIndex = numExisting; mlineIndex < numNativeTransceivers; ++mlineIndex)
-                            {
-                                Debug.LogWarning($"The remote peer of peer connection {peerName} has transceiver #{mlineIndex}, but the peer connection"
-                                    + " doesn't have a local transceiver to pair with it. The remote peer's media for this transceiver will not be negotiated."
-                                    + $" Ensure that peer connection {peerName} has transceiver #{mlineIndex} and a receiver component associated with it.");
-                            }
-                        });
-                    }
+                            LogWarningOnIgnoredTransceiver(peerName, i);
+                        }
+                    });
                 }
-            });
+            }
+            else if (type == "answer")
+            {
+                // Associate registered media senders/receivers with existing transceivers
+                for (int i = 0; i < numMatching; ++i)
+                {
+                    Transceiver tr = transceivers[i];
+                    var mediaLine = _mediaLines[i];
+                    Debug.Assert(mediaLine.Transceiver == transceivers[i]);
+                    mediaLine.UpdateOnReceiveAnswer();
+                }
+
+                // Ignore extra transceivers without a registered component to attach
+                if (numMatching < numAssociatedTransceivers)
+                {
+                    string peerName = name;
+                    _mainThreadWorkQueue.Enqueue(() =>
+                    {
+                        for (int i = numMatching; i < numAssociatedTransceivers; ++i)
+                        {
+                            LogWarningOnIgnoredTransceiver(peerName, i);
+                        }
+                    });
+                }
+            }
         }
 
         /// <summary>
@@ -1293,6 +1268,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 }
                 Debug.LogError(msg);
             });
+        }
+
+        private void LogWarningOnMissingReceiver(string peerName, int trIndex)
+        {
+            Debug.LogWarning($"The remote peer connected to the local peer connection '{peerName}' offered to send some media"
+                + $" through transceiver #{trIndex}, but the local peer connection '{peerName}' has no receiver component to"
+                + " process this media. The remote peer's media will be ignored. To be able to receive that media, ensure that"
+                + $" the local peer connection '{peerName}' has a receiver component associated with its transceiver #{trIndex}.");
+        }
+
+        private void LogWarningOnIgnoredTransceiver(string peerName, int trIndex)
+        {
+            Debug.LogWarning($"The remote peer connected to the local peer connection '{peerName}' has transceiver #{trIndex},"
+                + " but the local peer connection doesn't have a local transceiver to pair with it. The remote peer's media for"
+                + " this transceiver will be ignored. To be able to receive that media, ensure that the local peer connection"
+                + $" '{peerName}' has transceiver #{trIndex} and a receiver component associated with it.");
         }
 
         #endregion

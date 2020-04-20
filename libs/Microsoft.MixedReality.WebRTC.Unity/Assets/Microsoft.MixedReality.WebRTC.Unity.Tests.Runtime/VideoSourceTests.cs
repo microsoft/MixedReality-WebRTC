@@ -4,6 +4,7 @@
 using System.Collections;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -729,6 +730,152 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(video_tr2, receiver2.Track.Transceiver);
             Assert.IsNotNull(video_tr2.RemoteTrack); // re-paired
             Assert.AreEqual(receiver2.Track, video_tr2.RemoteTrack);
+        }
+
+        /// <summary>
+        /// Test interleaving of media transceivers and data channels, which produce a discontinuity in
+        /// the media line indices of the media transceivers since data channels also consume some media
+        /// line. This test ensures the transceiver indexing and pairing is robust to those discontinuities.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator InterleavedMediaAndData()
+        {
+            // Create the peer connections
+            var pc1_go = new GameObject("pc1");
+            pc1_go.SetActive(false); // prevent auto-activation of components
+            var pc1 = pc1_go.AddComponent<PeerConnection>();
+            pc1.AutoInitializeOnStart = false;
+            var pc2_go = new GameObject("pc2");
+            pc2_go.SetActive(false); // prevent auto-activation of components
+            var pc2 = pc2_go.AddComponent<PeerConnection>();
+            pc2.AutoInitializeOnStart = false;
+
+            // Batch changes manually
+            pc1.AutoCreateOfferOnRenegotiationNeeded = false;
+            pc2.AutoCreateOfferOnRenegotiationNeeded = false;
+
+            // Create the signaler
+            var sig_go = new GameObject("signaler");
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
+            sig.Peer1 = pc1;
+            sig.Peer2 = pc2;
+
+            // Create the sender video source
+            var sender1 = pc1_go.AddComponent<UniformColorVideoSource>();
+            sender1.AutoStartOnEnabled = true;
+            sender1.TrackName = "track_name";
+            MediaLine ml1 = pc1.AddTransceiver(MediaKind.Video);
+            Assert.IsNotNull(ml1);
+            ml1.Sender = sender1;
+
+            // Create the receiver video source
+            var receiver2 = pc2_go.AddComponent<VideoReceiver>();
+            MediaLine ml2 = pc2.AddTransceiver(MediaKind.Video);
+            Assert.IsNotNull(ml2);
+            ml2.Receiver = receiver2;
+
+            // Activate
+            pc1_go.SetActive(true);
+            pc2_go.SetActive(true);
+
+            // Initialize
+            var initializedEvent1 = new ManualResetEventSlim(initialState: false);
+            pc1.OnInitialized.AddListener(() => initializedEvent1.Set());
+            Assert.IsNull(pc1.Peer);
+            bool finishedInitializeBeforeTimeout1 = pc1.InitializeAsync().Wait(millisecondsTimeout: 50000);
+            Assert.IsTrue(finishedInitializeBeforeTimeout1);
+            var initializedEvent2 = new ManualResetEventSlim(initialState: false);
+            pc2.OnInitialized.AddListener(() => initializedEvent2.Set());
+            Assert.IsNull(pc2.Peer);
+            bool finishedInitializeBeforeTimeout2 = pc2.InitializeAsync().Wait(millisecondsTimeout: 50000);
+            Assert.IsTrue(finishedInitializeBeforeTimeout2);
+
+            // Wait a frame so that the Unity event OnInitialized can propagate
+            yield return null;
+
+            // Check the event was raised and the C# peer objects created
+            Assert.IsTrue(initializedEvent1.Wait(millisecondsTimeout: 50000));
+            Assert.IsNotNull(pc1.Peer);
+            Assert.IsTrue(initializedEvent2.Wait(millisecondsTimeout: 50000));
+            Assert.IsNotNull(pc2.Peer);
+
+            // Confirm the sender is ready
+            Assert.IsNotNull(sender1.Track);
+
+            // Create some dummy out-of-band data channel to force SCTP negotiation
+            // during the first offer, and be able to add some in-band data channels
+            // later via subsequent SDP session negotiations.
+            {
+                Task<DataChannel> t1 = pc1.Peer.AddDataChannelAsync(42, "dummy", ordered: true, reliable: true);
+                Task<DataChannel> t2 = pc2.Peer.AddDataChannelAsync(42, "dummy", ordered: true, reliable: true);
+                Assert.IsTrue(t1.Wait(millisecondsTimeout: 10000));
+                Assert.IsTrue(t2.Wait(millisecondsTimeout: 10000));
+            }
+
+            // Connect
+            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
+
+            // Check transceiver update
+            var video_tr1 = ml1.Transceiver;
+            Assert.IsNotNull(video_tr1);
+            var video_tr2 = ml2.Transceiver;
+            Assert.IsNotNull(video_tr2);
+            Assert.AreEqual(0, video_tr1.MlineIndex);
+            Assert.AreEqual(0, video_tr2.MlineIndex);
+
+            // ====== Add in-band data channel ====================================
+
+            DataChannel dc1;
+            {
+                Task<DataChannel> t1 = pc1.Peer.AddDataChannelAsync("test_data_channel", ordered: true, reliable: true);
+                Assert.IsTrue(t1.Wait(millisecondsTimeout: 10000));
+                dc1 = t1.Result;
+            }
+
+            DataChannel dc2 = null;
+            pc2.Peer.DataChannelAdded += (DataChannel channel) => { dc2 = channel; };
+
+            // Renegotiate; data channel will consume media line #1
+            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+
+            // Check the data channel is ready
+            Assert.IsNotNull(dc2);
+            Assert.AreEqual(dc1.ID, dc2.ID);
+            Assert.AreEqual(DataChannel.ChannelState.Open, dc1.State);
+            Assert.AreEqual(DataChannel.ChannelState.Open, dc2.State);
+
+            // ====== Add an extra media transceiver ==============================
+
+            // Create the receiver video source
+            var receiver1b = pc1_go.AddComponent<VideoReceiver>();
+            MediaLine ml1b = pc1.AddTransceiver(MediaKind.Video);
+            Assert.IsNotNull(ml1b);
+            ml1b.Receiver = receiver1b;
+
+            // Create the sender video source
+            var sender2b = pc2_go.AddComponent<UniformColorVideoSource>();
+            sender2b.AutoStartOnEnabled = true;
+            sender2b.TrackName = "track_name_2";
+            MediaLine ml2b = pc2.AddTransceiver(MediaKind.Video);
+            Assert.IsNotNull(ml2b);
+            ml2b.Sender = sender2b;
+
+            // Renegotiate
+            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
+
+            // Check transceiver update
+            var video_tr1b = ml1b.Transceiver;
+            Assert.IsNotNull(video_tr1b);
+            var video_tr2b = ml2b.Transceiver;
+            Assert.IsNotNull(video_tr2b);
+            Assert.AreEqual(2, video_tr1b.MlineIndex);
+            Assert.AreEqual(2, video_tr2b.MlineIndex);
         }
     }
 }
