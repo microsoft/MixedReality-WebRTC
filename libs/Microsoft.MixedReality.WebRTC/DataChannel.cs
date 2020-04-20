@@ -20,13 +20,13 @@ namespace Microsoft.MixedReality.WebRTC
     /// https://www.w3.org/TR/webrtc/
     ///
     /// An instance of <see cref="DataChannel"/> is created either by manually calling
-    /// <see cref="PeerConnection.AddDataChannelAsync(string,bool,bool)"/> or one of its variants,
-    /// or automatically by the implementation when a new data channel is created in-band by the
-    /// remote peer (<see cref="PeerConnection.DataChannelAdded"/>).
+    /// <see cref="PeerConnection.AddDataChannelAsync(string,bool,bool,System.Threading.CancellationToken)"/>
+    /// or one of its variants, or automatically by the implementation when a new data channel
+    /// is created in-band by the remote peer (<see cref="PeerConnection.DataChannelAdded"/>).
     /// <see cref="DataChannel"/> cannot be instantiated directly.
     /// </summary>
-    /// <seealso cref="PeerConnection.AddDataChannelAsync(string, bool, bool)"/>
-    /// <seealso cref="PeerConnection.AddDataChannelAsync(ushort, string, bool, bool)"/>
+    /// <seealso cref="PeerConnection.AddDataChannelAsync(string, bool, bool, System.Threading.CancellationToken)"/>
+    /// <seealso cref="PeerConnection.AddDataChannelAsync(ushort, string, bool, bool, System.Threading.CancellationToken)"/>
     /// <seealso cref="PeerConnection.DataChannelAdded"/>
     public class DataChannel
     {

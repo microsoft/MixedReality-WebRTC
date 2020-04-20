@@ -768,9 +768,11 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Collection of data channels for the peer connection.
         /// 
-        /// Data channels are either manually added with <see cref="AddDataChannelAsync(string, bool, bool)"/>
-        /// or <see cref="AddDataChannelAsync(ushort, string, bool, bool)"/>, or are created by the implementation
-        /// when the remote peer creates a new in-band data channel.
+        /// Data channels are either manually added by calling
+        /// <see cref="AddDataChannelAsync(string, bool, bool, CancellationToken)"/> or
+        /// <see cref="AddDataChannelAsync(ushort, string, bool, bool, CancellationToken)"/>,
+        /// or are created by the implementation while applying a remote offer when the remote
+        /// peer created a new in-band data channel.
         /// </summary>
         public List<DataChannel> DataChannels { get; } = new List<DataChannel>();
 
@@ -1241,6 +1243,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <see cref="DataChannel.Ordered"/>).</param>
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
+        /// <param name="cancellationToken">Cancellation token for the task returned.</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
         /// <exception cref="SctpNotNegotiatedException">SCTP not negotiated. Call <see cref="CreateOffer()"/> first.</exception>
@@ -1254,13 +1257,14 @@ namespace Microsoft.MixedReality.WebRTC
         /// one data channel before <see cref="CreateOffer"/> is called. Otherwise all calls will fail with an
         /// <see cref="SctpNotNegotiatedException"/> exception.
         /// </remarks>
-        public async Task<DataChannel> AddDataChannelAsync(ushort id, string label, bool ordered, bool reliable)
+        public Task<DataChannel> AddDataChannelAsync(ushort id, string label, bool ordered, bool reliable,
+            CancellationToken cancellationToken = default)
         {
             if (id < 0)
             {
                 throw new ArgumentOutOfRangeException("id", id, "Data channel ID must be greater than or equal to zero.");
             }
-            return await AddDataChannelAsyncImpl(id, label, ordered, reliable);
+            return AddDataChannelAsyncImpl(id, label, ordered, reliable, cancellationToken);
         }
 
         /// <summary>
@@ -1280,16 +1284,18 @@ namespace Microsoft.MixedReality.WebRTC
         /// <see cref="DataChannel.Ordered"/>).</param>
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
+        /// <param name="cancellationToken">Cancellation token for the task returned.</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
         /// <exception xref="System.InvalidOperationException">The peer connection is not initialized.</exception>
         /// <exception cref="SctpNotNegotiatedException">SCTP not negotiated. Call <see cref="CreateOffer()"/> first.</exception>
         /// <exception xref="System.ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
         /// <remarks>
-        /// See the critical remark about SCTP handshake in <see cref="AddDataChannelAsync(ushort, string, bool, bool)"/>.
+        /// See the critical remark about SCTP handshake in <see cref="AddDataChannelAsync(ushort, string, bool, bool, CancellationToken)"/>.
         /// </remarks>
-        public async Task<DataChannel> AddDataChannelAsync(string label, bool ordered, bool reliable)
+        public Task<DataChannel> AddDataChannelAsync(string label, bool ordered, bool reliable,
+            CancellationToken cancellationToken = default)
         {
-            return await AddDataChannelAsyncImpl(-1, label, ordered, reliable);
+            return AddDataChannelAsyncImpl(-1, label, ordered, reliable, cancellationToken);
         }
 
         /// <summary>
@@ -1301,17 +1307,21 @@ namespace Microsoft.MixedReality.WebRTC
         /// <see cref="DataChannel.Ordered"/>).</param>
         /// <param name="reliable">Indicates whether data channel messages are reliably delivered
         /// (see <see cref="DataChannel.Reliable"/>).</param>
+        /// <param name="cancellationToken">Cancellation token for the task returned.</param>
         /// <returns>Returns a task which completes once the data channel is created.</returns>
         /// <exception xref="System.InvalidOperationException">The peer connection is not initialized.</exception>
         /// <exception xref="System.InvalidOperationException">SCTP not negotiated.</exception>
         /// <exception xref="System.ArgumentOutOfRangeException">Invalid data channel ID, must be in [0:65535].</exception>
-        private async Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable)
+        private Task<DataChannel> AddDataChannelAsyncImpl(int id, string label, bool ordered, bool reliable,
+            CancellationToken cancellationToken)
         {
             ThrowIfConnectionNotOpen();
 
             // Create the native data channel
-            return await Task.Run(() =>
+            return Task.Run(() =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 // Create the native object
                 var config = new DataChannelInterop.CreateConfig
                 {
@@ -1328,7 +1338,7 @@ namespace Microsoft.MixedReality.WebRTC
                 var dataChannelWrapper = Utils.ToWrapper<DataChannel>(dataChannelRef);
                 Debug.Assert(dataChannelWrapper != null);
                 return dataChannelWrapper;
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
