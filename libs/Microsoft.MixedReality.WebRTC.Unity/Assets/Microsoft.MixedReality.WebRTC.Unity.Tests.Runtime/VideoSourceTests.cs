@@ -227,7 +227,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
         class PeerConfig
         {
             // Input
-            public Transceiver.Direction dir;
+            public Transceiver.Direction desiredDirection;
             public MediaLine mediaLine;
             public UniformColorVideoSource sender;
             public VideoReceiver receiver;
@@ -302,60 +302,60 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             {
                 new MultiConfig {
                     peer1 = new PeerConfig {
-                        dir = Transceiver.Direction.SendOnly,
+                        desiredDirection = Transceiver.Direction.SendOnly,
                         expectSender = true,
                         expectReceiver = false,
                     },
                     peer2 = new PeerConfig {
-                        dir = Transceiver.Direction.ReceiveOnly,
+                        desiredDirection = Transceiver.Direction.ReceiveOnly,
                         expectSender = false,
                         expectReceiver = true,
                     }
                 },
                 new MultiConfig {
                     peer1 = new PeerConfig {
-                        dir = Transceiver.Direction.SendReceive,
+                        desiredDirection = Transceiver.Direction.SendReceive,
                         expectSender = true,
                         expectReceiver = true,
                     },
                     peer2 = new PeerConfig {
-                        dir = Transceiver.Direction.SendReceive,
+                        desiredDirection = Transceiver.Direction.SendReceive,
                         expectSender = true,
                         expectReceiver = true,
                     },
                 },
                 new MultiConfig {
                     peer1 = new PeerConfig {
-                        dir = Transceiver.Direction.SendOnly,
+                        desiredDirection = Transceiver.Direction.SendOnly,
                         expectSender = true,
                         expectReceiver = false,
                     },
                     peer2 = new PeerConfig {
-                        dir = Transceiver.Direction.SendReceive,
+                        desiredDirection = Transceiver.Direction.SendReceive,
                         expectSender = true,
                         expectReceiver = true,
                     },
                 },
                 new MultiConfig {
                     peer1 = new PeerConfig {
-                        dir = Transceiver.Direction.ReceiveOnly,
+                        desiredDirection = Transceiver.Direction.ReceiveOnly,
                         expectSender = false,
                         expectReceiver = true,
                     },
                     peer2 = new PeerConfig {
-                        dir = Transceiver.Direction.SendReceive,
+                        desiredDirection = Transceiver.Direction.SendReceive,
                         expectSender = true,
                         expectReceiver = false,
                     },
                 },
                 new MultiConfig {
                     peer1 = new PeerConfig {
-                        dir = Transceiver.Direction.SendOnly,
+                        desiredDirection = Transceiver.Direction.SendOnly,
                         expectSender = true,
                         expectReceiver = false,
                     },
                     peer2 = new PeerConfig {
-                        dir = Transceiver.Direction.ReceiveOnly,
+                        desiredDirection = Transceiver.Direction.ReceiveOnly,
                         expectSender = false,
                         expectReceiver = true,
                     },
@@ -369,7 +369,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                     MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
                     var peer = cfg.peer1;
                     peer.mediaLine = tr1;
-                    if (HasSend(peer.dir))
+                    if (HasSend(peer.desiredDirection))
                     {
                         var sender1 = pc1_go.AddComponent<UniformColorVideoSource>();
                         sender1.AutoStartOnEnabled = true;
@@ -377,7 +377,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                         peer.sender = sender1;
                         tr1.Sender = sender1;
                     }
-                    if (HasRecv(peer.dir))
+                    if (HasRecv(peer.desiredDirection))
                     {
                         var receiver1 = pc1_go.AddComponent<VideoReceiver>();
                         peer.receiver = receiver1;
@@ -389,7 +389,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                     MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
                     var peer = cfg.peer2;
                     peer.mediaLine = tr2;
-                    if (HasSend(peer.dir))
+                    if (HasSend(peer.desiredDirection))
                     {
                         var sender2 = pc2_go.AddComponent<UniformColorVideoSource>();
                         sender2.AutoStartOnEnabled = true;
@@ -397,7 +397,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                         peer.sender = sender2;
                         tr2.Sender = sender2;
                     }
-                    if (HasRecv(peer.dir))
+                    if (HasRecv(peer.desiredDirection))
                     {
                         var receiver2 = pc2_go.AddComponent<VideoReceiver>();
                         peer.receiver = receiver2;
