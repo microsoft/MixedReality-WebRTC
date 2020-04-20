@@ -1736,7 +1736,7 @@ void PeerConnectionImpl::SynchronizeTransceiversUnifiedPlan(bool remote) {
   for (auto&& rtp_tr : rtp_transceivers) {
     const int mline_index = ExtractMlineIndexFromRtpTransceiver(rtp_tr);
     // Create a wrapper if it doesn't exist yet
-    if (it_wrapper == wrappers.end()) {
+    if ((it_wrapper == wrappers.end()) || ((*it_wrapper)->impl() != rtp_tr)) {
       std::string name = rtp_tr->mid().value_or(std::string{});
       if (it_wrapper == wrappers.end()) {
         RTC_LOG(LS_INFO) << "Adding wrapper for transceiver #" << name.c_str()
