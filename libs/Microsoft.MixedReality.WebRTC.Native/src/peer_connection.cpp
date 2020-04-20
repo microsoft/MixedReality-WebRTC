@@ -178,6 +178,38 @@ cricket::MediaType MediaKindToRtc(mrsMediaKind media_kind) {
   }
 }
 
+const char* ToString(cricket::MediaType media_type) {
+  switch (media_type) {
+    case cricket::MediaType::MEDIA_TYPE_AUDIO:
+      return "audio";
+    case cricket::MediaType::MEDIA_TYPE_VIDEO:
+      return "video";
+    case cricket::MediaType::MEDIA_TYPE_DATA:
+      return "data";
+    default:
+      return "<unknown>";
+  }
+}
+
+const char* ToString(webrtc::RtpTransceiverDirection dir) {
+  switch (dir) {
+    case webrtc::RtpTransceiverDirection::kSendRecv:
+      return "kSendRecv";
+    case webrtc::RtpTransceiverDirection::kSendOnly:
+      return "kSendOnly";
+    case webrtc::RtpTransceiverDirection::kRecvOnly:
+      return "kRecvOnly";
+    case webrtc::RtpTransceiverDirection::kInactive:
+      return "kInactive";
+    default:
+      return "<unknown>";
+  }
+}
+
+const char* ToString(bool value) {
+  return (value ? "true" : "false");
+}
+
 class PeerConnectionImpl;
 
 class StreamObserver : public webrtc::ObserverInterface {
@@ -1469,35 +1501,35 @@ void PeerConnectionImpl::OnAddTrack(
 void PeerConnectionImpl::OnTrack(
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver) noexcept {
   RTC_LOG(LS_INFO) << "Added transceiver mid=#" << transceiver->mid().value()
-                   << " of type " << (int)transceiver->media_type()
-                   << " with desired direction "
-                   << (int)transceiver->direction();
-  auto receiver = transceiver->receiver();
-  if (auto track = receiver->track()) {
-    RTC_LOG(LS_INFO) << "Recv with track #" << track->id()
-                     << " enabled=" << track->enabled();
-  } else {
-    RTC_LOG(LS_INFO) << "Recv with NULL track";
-  }
-  for (auto&& id : receiver->stream_ids()) {
-    RTC_LOG(LS_INFO) << "+ Stream #" << id;
-  }
+                   << " of type '" << ToString(transceiver->media_type())
+                   << "' with desired direction "
+                   << ToString(transceiver->direction());
   auto sender = transceiver->sender();
   if (auto track = sender->track()) {
     RTC_LOG(LS_INFO) << "Send #" << track->id()
-                     << " enabled=" << track->enabled();
+                     << " enabled=" << ToString(track->enabled());
   } else {
     RTC_LOG(LS_INFO) << "Send with NULL track";
   }
   for (auto&& id : sender->stream_ids()) {
     RTC_LOG(LS_INFO) << "+ Stream #" << id;
   }
+  auto receiver = transceiver->receiver();
+  if (auto track = receiver->track()) {
+    RTC_LOG(LS_INFO) << "Recv with track #" << track->id()
+                     << " enabled=" << ToString(track->enabled());
+  } else {
+    RTC_LOG(LS_INFO) << "Recv with NULL track";
+  }
+  for (auto&& id : receiver->stream_ids()) {
+    RTC_LOG(LS_INFO) << "+ Stream #" << id;
+  }
 }
 
 void PeerConnectionImpl::OnRemoveTrack(
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) noexcept {
-  RTC_LOG(LS_INFO) << "Removed track #" << receiver->id() << " of type "
-                   << (int)receiver->media_type();
+  RTC_LOG(LS_INFO) << "Removed track #" << receiver->id() << " of type '"
+                   << ToString(receiver->media_type()) << "'";
   for (auto&& stream : receiver->streams()) {
     RTC_LOG(LS_INFO) << "- Track #" << receiver->id() << " with stream #"
                      << stream->id();
@@ -1698,11 +1730,22 @@ void PeerConnectionImpl::SynchronizeTransceiversUnifiedPlan(bool remote) {
   // for the ones without one yet.
   RTC_DCHECK_GE(rtp_transceivers.size(), wrappers.size());
   auto it_wrapper = wrappers.begin();
+  RTC_LOG(LS_INFO) << "Synchronizing " << rtp_transceivers.size()
+                   << " RTP transceivers with " << wrappers.size()
+                   << " transceiver wrappers (remote = " << remote << ").";
   for (auto&& rtp_tr : rtp_transceivers) {
     const int mline_index = ExtractMlineIndexFromRtpTransceiver(rtp_tr);
     // Create a wrapper if it doesn't exist yet
     if (it_wrapper == wrappers.end()) {
       std::string name = rtp_tr->mid().value_or(std::string{});
+      if (it_wrapper == wrappers.end()) {
+        RTC_LOG(LS_INFO) << "Adding wrapper for transceiver #" << name.c_str()
+                         << " at end of list";
+      } else {
+        RTC_LOG(LS_INFO) << "Adding wrapper for transceiver #" << name.c_str()
+                         << " before existing transceiver #"
+                         << (*it_wrapper)->GetMlineIndex();
+      }
       std::vector<std::string> stream_ids =
           ExtractTransceiverStreamIDsFromReceiver(rtp_tr->receiver());
       ErrorOr<Transceiver*> err = CreateTransceiverUnifiedPlan(
