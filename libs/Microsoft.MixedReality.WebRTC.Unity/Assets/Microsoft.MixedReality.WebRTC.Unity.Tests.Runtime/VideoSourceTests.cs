@@ -828,6 +828,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // ====== Add in-band data channel ====================================
 
+            // Add an in-band data channel on peer #1
             DataChannel dc1;
             {
                 Task<DataChannel> t1 = pc1.Peer.AddDataChannelAsync("test_data_channel", ordered: true, reliable: true);
@@ -835,11 +836,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 dc1 = t1.Result;
             }
 
+            // Prepare to receive a new data channel on peer #2
             DataChannel dc2 = null;
-            pc2.Peer.DataChannelAdded += (DataChannel channel) => { dc2 = channel; };
+            var dc2_added_ev = new ManualResetEventSlim(initialState: false);
+            pc2.Peer.DataChannelAdded += (DataChannel channel) => { dc2 = channel; dc2_added_ev.Set(); };
 
             // Renegotiate; data channel will consume media line #1
             Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+
+            // Do not assume that connecting is enough to get the data channel, as callbacks are
+            // asynchronously invoked. Instead explicitly wait for the created event to be raised.
+            Assert.IsTrue(dc2_added_ev.Wait(millisecondsTimeout: 10000));
 
             // Check the data channel is ready
             Assert.IsNotNull(dc2);
