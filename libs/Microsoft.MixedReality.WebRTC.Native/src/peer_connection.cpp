@@ -1735,17 +1735,13 @@ void PeerConnectionImpl::SynchronizeTransceiversUnifiedPlan(bool remote) {
                    << " transceiver wrappers (remote = " << remote << ").";
   for (auto&& rtp_tr : rtp_transceivers) {
     const int mline_index = ExtractMlineIndexFromRtpTransceiver(rtp_tr);
-    // Create a wrapper if it doesn't exist yet
+    // Compare the current item on the sorted arrays of RTP transceiver and
+    // transceiver wrappers; if the current items don't match, this means
+    // there's a missing wrapper for an existing RTP transceiver, so create it.
     if ((it_wrapper == wrappers.end()) || ((*it_wrapper)->impl() != rtp_tr)) {
       std::string name = rtp_tr->mid().value_or(std::string{});
-      if (it_wrapper == wrappers.end()) {
-        RTC_LOG(LS_INFO) << "Adding wrapper for transceiver #" << name.c_str()
-                         << " at end of list";
-      } else {
-        RTC_LOG(LS_INFO) << "Adding wrapper for transceiver #" << name.c_str()
-                         << " before existing transceiver #"
-                         << (*it_wrapper)->GetMlineIndex();
-      }
+      RTC_LOG(LS_INFO) << "Creating new wrapper for RTP transceiver mid='"
+                       << name.c_str() << "' (#" << mline_index << ")";
       std::vector<std::string> stream_ids =
           ExtractTransceiverStreamIDsFromReceiver(rtp_tr->receiver());
       ErrorOr<Transceiver*> err = CreateTransceiverUnifiedPlan(
