@@ -36,6 +36,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         #region Marshaling data structures
 
+        [Flags]
+        public enum Flags : uint
+        {
+            None = 0x0,
+            Ordered = 0x1,
+            Reliable = 0x2
+        }
+
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public ref struct CreateConfig
         {

@@ -1326,7 +1326,8 @@ namespace Microsoft.MixedReality.WebRTC
                 var config = new DataChannelInterop.CreateConfig
                 {
                     id = id,
-                    flags = (ordered ? 0x1u : 0x0u) | (reliable ? 0x2u : 0x0u),
+                    flags = (uint)((ordered ? DataChannelInterop.Flags.Ordered : DataChannelInterop.Flags.None)
+                        | (reliable ? DataChannelInterop.Flags.Reliable : DataChannelInterop.Flags.None)),
                     label = label,
                 };
                 uint res = PeerConnectionInterop.PeerConnection_AddDataChannel(_nativePeerhandle, config, out IntPtr nativeHandle);
