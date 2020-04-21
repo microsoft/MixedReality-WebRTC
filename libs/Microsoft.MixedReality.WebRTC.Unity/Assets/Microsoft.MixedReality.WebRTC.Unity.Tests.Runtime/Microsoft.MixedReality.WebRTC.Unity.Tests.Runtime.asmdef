@@ -1,7 +1,8 @@
 {
     "name": "Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime",
     "references": [
-        "Microsoft.MixedReality.WebRTC.Unity"
+        "Microsoft.MixedReality.WebRTC.Unity",
+        "Microsoft.MixedReality.WebRTC.Unity.Examples"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

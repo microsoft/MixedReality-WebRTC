@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 
+#if !MRSW_EXCLUDE_DEVICE_TESTS
+
 namespace Microsoft.MixedReality.WebRTC.Tests
 {
     /// <summary>
@@ -66,3 +68,5 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         }
     }
 }
+
+#endif // !MRSW_EXCLUDE_DEVICE_TESTS

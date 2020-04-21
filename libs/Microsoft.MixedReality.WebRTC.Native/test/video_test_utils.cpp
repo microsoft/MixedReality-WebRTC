@@ -11,7 +11,7 @@ namespace VideoTestUtils {
 
 /// Generate a test frame to simualte an external video track source.
 mrsResult MRS_CALL MakeTestFrame(void* /*user_data*/,
-                                 ExternalVideoTrackSourceHandle handle,
+                                 mrsExternalVideoTrackSourceHandle handle,
                                  uint32_t request_id,
                                  int64_t timestamp_ms) {
   // Generate a frame

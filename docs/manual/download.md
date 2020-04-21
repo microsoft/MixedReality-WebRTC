@@ -28,6 +28,12 @@ To download the library, simply clone the MixedReality-WebRTC repository:
 git clone https://github.com/microsoft/MixedReality-WebRTC.git
 ```
 
+> [!IMPORTANT]
+> The C++ library as distributed in the NuGet pacakges currently requires some internal headers from the Google's WebRTC implementation to be used, which are **not** shipped with the NuGet packages. See bug [#123](https://github.com/microsoft/MixedReality-WebRTC/issues/123) for details. A workaround is to clone the repository _recursively_ to get those headers.
+
 ## Unity integration
 
 The Unity integration is not currently distributed in any particular packaged way. Instead, users can check out the GitHub repository and copy the relevant parts of the Unity sample project from [`libs/Microsoft.MixedReality.WebRTC.Unity/`](https://github.com/microsoft/MixedReality-WebRTC/tree/master/libs/Microsoft.MixedReality.WebRTC.Unity/). See [Installation](installation.md) for details.
+
+> [!WARNING]
+> The Unity scripts are using the API of the branch they are associated with. This means that the Unity scripts on the `master` branch are only working with the `master` branch API, and are therefore not compatible with the NuGet packages, which are only provided for stable releases (`release/xxx` branches).

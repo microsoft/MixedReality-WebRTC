@@ -64,15 +64,34 @@ class DataChannel : public webrtc::DataChannelObserver {
   /// Callback fired when the data channel state changed.
   using StateCallback = Callback</*DataChannelState*/ int, int>;
 
-  DataChannel(PeerConnection* owner,
-              rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel,
-              mrsDataChannelInteropHandle interop_handle = nullptr) noexcept;
+  DataChannel(
+      PeerConnection* owner,
+      rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) noexcept;
 
   /// Remove the data channel from its parent PeerConnection and close it.
   ~DataChannel() override;
 
+  [[nodiscard]] constexpr void* GetUserData() const noexcept {
+    return user_data_;
+  }
+
+  constexpr void SetUserData(void* user_data) noexcept {
+    user_data_ = user_data;
+  }
+
   /// Get the unique channel identifier.
   [[nodiscard]] int id() const { return data_channel_->id(); }
+
+  [[nodiscard]] mrsDataChannelConfigFlags flags() const noexcept {
+    mrsDataChannelConfigFlags flags{0};
+    if (data_channel_->ordered()) {
+      flags = flags | mrsDataChannelConfigFlags::kOrdered;
+    }
+    if (data_channel_->reliable()) {
+      flags = flags | mrsDataChannelConfigFlags::kReliable;
+    }
+    return flags;
+  }
 
   /// Get the friendly channel name.
   [[nodiscard]] str label() const;
@@ -94,10 +113,6 @@ class DataChannel : public webrtc::DataChannelObserver {
 
   [[nodiscard]] webrtc::DataChannelInterface* impl() const {
     return data_channel_.get();
-  }
-
-  mrsDataChannelInteropHandle GetInteropHandle() const noexcept {
-    return interop_handle_;
   }
 
   /// This is invoked automatically by PeerConnection::RemoveDataChannel().
@@ -129,8 +144,8 @@ class DataChannel : public webrtc::DataChannelObserver {
   StateCallback state_callback_ RTC_GUARDED_BY(mutex_);
   std::mutex mutex_;
 
-  /// Optional interop handle, if associated with an interop wrapper.
-  mrsDataChannelInteropHandle interop_handle_{};
+  /// Opaque user data.
+  void* user_data_{nullptr};
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

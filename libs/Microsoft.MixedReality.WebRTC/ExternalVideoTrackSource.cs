@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.MixedReality.WebRTC.Interop;
 
@@ -81,10 +82,14 @@ namespace Microsoft.MixedReality.WebRTC
     public class ExternalVideoTrackSource : IDisposable
     {
         /// <summary>
-        /// Once the external video track source is attached to some video track(s), this returns the peer connection
-        /// the video track(s) are part of. Otherwise this returns <c>null</c>.
+        /// A name for the external video track source, used for logging and debugging.
         /// </summary>
-        public PeerConnection PeerConnection { get; private set; } = null;
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// List of local video tracks this source is providing raw video frames to.
+        /// </summary>
+        public List<LocalVideoTrack> Tracks { get; } = new List<LocalVideoTrack>();
 
         /// <summary>
         /// Handle to the native ExternalVideoTrackSource object.
@@ -164,10 +169,6 @@ namespace Microsoft.MixedReality.WebRTC
                 return;
             }
 
-            // Remove the tracks associated with this source from the peer connection, if any
-            PeerConnection?.RemoveLocalVideoTracksFromSource(this);
-            Debug.Assert(PeerConnection == null); // see OnTracksRemovedFromSource
-
             // Unregister and release the track callbacks
             ExternalVideoTrackSourceInterop.ExternalVideoTrackSource_Shutdown(_nativeHandle);
             Utils.ReleaseWrapperRef(_frameRequestCallbackArgsHandle);
@@ -177,22 +178,43 @@ namespace Microsoft.MixedReality.WebRTC
             _nativeHandle.Dispose();
         }
 
-        internal void OnTracksAddedToSource(PeerConnection newConnection)
+        internal void OnTrackAddedToSource(LocalVideoTrack track)
         {
-            Debug.Assert(PeerConnection == null);
             Debug.Assert(!_nativeHandle.IsClosed);
-            PeerConnection = newConnection;
-            var args = Utils.ToWrapper<ExternalVideoTrackSourceInterop.VideoFrameRequestCallbackArgs>(_frameRequestCallbackArgsHandle);
-            args.Peer = newConnection;
+            Debug.Assert(!Tracks.Contains(track));
+            Tracks.Add(track);
         }
 
-        internal void OnTracksRemovedFromSource(PeerConnection previousConnection)
+        internal void OnTrackRemovedFromSource(LocalVideoTrack track)
         {
-            Debug.Assert(PeerConnection == previousConnection);
             Debug.Assert(!_nativeHandle.IsClosed);
-            var args = Utils.ToWrapper<ExternalVideoTrackSourceInterop.VideoFrameRequestCallbackArgs>(_frameRequestCallbackArgsHandle);
-            args.Peer = null;
-            PeerConnection = null;
+            bool removed = Tracks.Remove(track);
+            Debug.Assert(removed);
+        }
+
+        internal void OnTracksRemovedFromSource(List<LocalVideoTrack> tracks)
+        {
+            Debug.Assert(!_nativeHandle.IsClosed);
+            var remainingTracks = new List<LocalVideoTrack>();
+            foreach (var track in tracks)
+            {
+                if (track.Source == this)
+                {
+                    bool removed = Tracks.Remove(track);
+                    Debug.Assert(removed);
+                }
+                else
+                {
+                    remainingTracks.Add(track);
+                }
+            }
+            tracks = remainingTracks;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"(ExternalVideoTrackSource)\"{Name}\"";
         }
     }
 }

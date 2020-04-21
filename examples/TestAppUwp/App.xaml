@@ -1,7 +1,16 @@
-﻿<Application
+<Application
     x:Class="TestAppUwp.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:TestAppUwp">
-
+    <Application.Resources>
+        <local:BooleanToVisibilityInvertedConverter x:Key="BooleanToVisibilityInvertedConverter"/>
+        <local:MediaKindToSymbolConverter x:Key="MediaKindToSymbolConverter"/>
+        <local:TransceiverDirectionToSymbolConverter x:Key="TransceiverDirectionToSymbolConverter"/>
+        <local:NullToBoolConverter x:Key="NullToBoolConverter"/>
+        <local:CountToBoolNotEmptyConvert x:Key="CountToBoolNotEmptyConvert"/>
+        <local:BooleanInverter x:Key="BooleanInverter"/>
+        <local:VisibleIfNotEmptyConverter x:Key="VisibleIfNotEmptyConverter"/>
+        <local:StringFormatConverter x:Key="StringFormatConverter"/>
+    </Application.Resources>
 </Application>

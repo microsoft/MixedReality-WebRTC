@@ -121,18 +121,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="../pch.h" />
+    <ClInclude Include="..\..\include\audio_frame.h" />
+    <ClInclude Include="..\..\include\data_channel_interop.h" />
     <ClInclude Include="..\..\include\export.h" />
     <ClInclude Include="..\..\include\external_video_track_source_interop.h" />
     <ClInclude Include="..\..\include\interop_api.h" />
     <ClInclude Include="..\..\include\local_video_track_interop.h" />
     <ClInclude Include="..\..\include\peer_connection_interop.h" />
     <ClInclude Include="..\..\include\result.h" />
+    <ClInclude Include="..\..\include\transceiver_interop.h" />
+    <ClInclude Include="..\..\include\local_audio_track_interop.h" />
+    <ClInclude Include="..\..\include\remote_audio_track_interop.h" />
+    <ClInclude Include="..\..\include\remote_video_track_interop.h" />
+    <ClInclude Include="..\..\include\video_frame.h" />
     <ClInclude Include="..\audio_frame_observer.h" />
     <ClInclude Include="..\callback.h" />
     <ClInclude Include="..\data_channel.h" />
-    <ClInclude Include="..\external_video_track_source.h" />
     <ClInclude Include="..\interop\global_factory.h" />
-    <ClInclude Include="..\local_video_track.h" />
     <ClInclude Include="..\media\external_video_track_source.h" />
     <ClInclude Include="..\media\external_video_track_source_impl.h" />
     <ClInclude Include="..\media\local_video_track.h" />
@@ -146,6 +151,11 @@
     <ClInclude Include="..\tracked_object.h" />
     <ClInclude Include="..\utils.h" />
     <ClInclude Include="..\video_frame_observer.h" />
+    <ClInclude Include="..\media\local_audio_track.h" />
+    <ClInclude Include="..\media\media_track.h" />
+    <ClInclude Include="..\media\remote_audio_track.h" />
+    <ClInclude Include="..\media\remote_video_track.h" />
+    <ClInclude Include="..\media\transceiver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../pch.cpp">
@@ -154,6 +164,7 @@
     </ClCompile>
     <ClCompile Include="..\audio_frame_observer.cpp" />
     <ClCompile Include="..\data_channel.cpp" />
+    <ClCompile Include="..\interop\data_channel_interop.cpp" />
     <ClCompile Include="..\interop\external_video_track_source_interop.cpp" />
     <ClCompile Include="..\interop\global_factory.cpp" />
     <ClCompile Include="..\interop\interop_api.cpp" />
@@ -161,6 +172,15 @@
     <ClCompile Include="..\interop\peer_connection_interop.cpp" />
     <ClCompile Include="..\media\external_video_track_source.cpp" />
     <ClCompile Include="..\media\local_video_track.cpp" />
+    <ClCompile Include="..\interop\transceiver_interop.cpp" />
+    <ClCompile Include="..\interop\local_audio_track_interop.cpp" />
+    <ClCompile Include="..\interop\remote_audio_track_interop.cpp" />
+    <ClCompile Include="..\interop\remote_video_track_interop.cpp" />
+    <ClCompile Include="..\media\local_audio_track.cpp" />
+    <ClCompile Include="..\media\media_track.cpp" />
+    <ClCompile Include="..\media\remote_audio_track.cpp" />
+    <ClCompile Include="..\media\remote_video_track.cpp" />
+    <ClCompile Include="..\media\transceiver.cpp" />
     <ClCompile Include="..\mrs_errors.cpp" />
     <ClCompile Include="..\peer_connection.cpp" />
     <ClCompile Include="..\sdp_utils.cpp" />

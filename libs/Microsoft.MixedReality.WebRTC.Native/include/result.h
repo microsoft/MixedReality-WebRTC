@@ -75,6 +75,14 @@ enum class Result : std::uint32_t {
 
   /// The specified data channel ID is invalid.
   kInvalidDataChannelId = 0x80000302,
+
+  //
+  // Media (0x4xx)
+  //
+
+  /// Some audio-only function was called on a video-only object or vice-versa.
+  /// For example, trying to get the local audio track of a video transceiver.
+  kInvalidMediaKind = 0x80000401,
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Runtime.InteropServices;
+using System.Diagnostics;
 using Microsoft.MixedReality.WebRTC.Interop;
 using Microsoft.MixedReality.WebRTC.Tracing;
 
@@ -10,28 +10,34 @@ namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
     /// Encapsulates a data channel of a peer connection.
-    /// 
-    /// A data channel is a pipe allowing to send and receive arbitrary data to the
+    ///
+    /// A data channel is a "pipe" allowing to send and receive arbitrary data to the
     /// remote peer. Data channels are based on DTLS-SRTP, and are therefore secure (encrypted).
     /// Exact security guarantees are provided by the underlying WebRTC core implementation
     /// and the WebRTC standard itself.
-    /// 
+    ///
     /// https://tools.ietf.org/wg/rtcweb/
-    /// 
-    /// An instance of <see cref="DataChannel"/> is created by calling <see cref="PeerConnection.AddDataChannelAsync(string,bool,bool)"/>
-    /// or one of its variants. <see cref="DataChannel"/> cannot be instantiated directly.
+    /// https://www.w3.org/TR/webrtc/
+    ///
+    /// An instance of <see cref="DataChannel"/> is created either by manually calling
+    /// <see cref="PeerConnection.AddDataChannelAsync(string,bool,bool,System.Threading.CancellationToken)"/>
+    /// or one of its variants, or automatically by the implementation when a new data channel
+    /// is created in-band by the remote peer (<see cref="PeerConnection.DataChannelAdded"/>).
+    /// <see cref="DataChannel"/> cannot be instantiated directly.
     /// </summary>
-    public class DataChannel : IDisposable
+    /// <seealso cref="PeerConnection.AddDataChannelAsync(string, bool, bool, System.Threading.CancellationToken)"/>
+    /// <seealso cref="PeerConnection.AddDataChannelAsync(ushort, string, bool, bool, System.Threading.CancellationToken)"/>
+    /// <seealso cref="PeerConnection.DataChannelAdded"/>
+    public class DataChannel
     {
         /// <summary>
-        /// Connecting state of a data channel, when adding it to a peer connection
-        /// or removing it from a peer connection.
+        /// Connection state of a data channel.
         /// </summary>
         public enum ChannelState
         {
             /// <summary>
             /// The data channel has just been created, and negotiating is underway to establish
-            /// a track between the peers.
+            /// a link between the peers. The data channel cannot be used to send/receive yet.
             /// </summary>
             Connecting = 0,
 
@@ -60,13 +66,19 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="limit">Maximum buffering size, in bytes.</param>
         public delegate void BufferingChangedDelegate(ulong previous, ulong current, ulong limit);
 
-        /// <value>The <see cref="PeerConnection"/> object this data channel was created from.</value>
+        /// <summary>
+        /// The <see cref="PeerConnection"/> object this data channel was created from and is attached to.
+        /// </summary>
         public PeerConnection PeerConnection { get; }
 
-        /// <value>The unique identifier of the data channel in the current connection.</value>
+        /// <summary>
+        /// The unique identifier of the data channel in the current connection.
+        /// </summary>
         public int ID { get; }
 
-        /// <value>The data channel name in the current connection.</value>
+        /// <summary>
+        /// The data channel name in the current connection.
+        /// </summary>
         public string Label { get; }
 
         /// <summary>
@@ -89,22 +101,23 @@ namespace Microsoft.MixedReality.WebRTC
         public bool Reliable { get; }
 
         /// <summary>
-        /// The channel connection state represents the connection status when creating or closing the
-        /// data channel. Changes to this state are notified via the <see cref="StateChanged"/> event.
+        /// The channel connection state represents the connection status.
+        /// Changes to this state are notified via the <see cref="StateChanged"/> event.
         /// </summary>
         /// <value>The channel connection state.</value>
         /// <seealso cref="StateChanged"/>
-        public ChannelState State { get; private set; }
+        public ChannelState State { get; internal set; }
 
         /// <summary>
-        /// Event fired when the data channel state changes, as reported by <see cref="State"/>.
+        /// Event triggered when the data channel state changes.
+        /// The new state is available in <see cref="State"/>.
         /// </summary>
         /// <seealso cref="State"/>
         public event Action StateChanged;
 
         /// <summary>
-        /// Event fired when the data channel buffering changes. Monitor this to ensure calls to
-        /// <see cref="SendMessage(byte[])"/> do not fail. Internally the data channel contains
+        /// Event triggered when the data channel buffering changes. Users should monitor this to ensure
+        /// calls to <see cref="SendMessage(byte[])"/> do not fail. Internally the data channel contains
         /// a buffer of messages to send that could not be sent immediately, for example due to
         /// congestion control. Once this buffer is full, any further call to <see cref="SendMessage(byte[])"/>
         /// will fail until some mesages are processed and removed to make space.
@@ -113,7 +126,7 @@ namespace Microsoft.MixedReality.WebRTC
         public event BufferingChangedDelegate BufferingChanged;
 
         /// <summary>
-        /// Event fires when a message is received through the data channel.
+        /// Event triggered when a message is received through the data channel.
         /// </summary>
         /// <seealso cref="SendMessage(byte[])"/>
         public event Action<byte[]> MessageReceived;
@@ -125,20 +138,25 @@ namespace Microsoft.MixedReality.WebRTC
         public event Action<IntPtr, ulong> MessageReceivedUnsafe;
 
         /// <summary>
-        /// GC handle keeping the internal delegates alive while they are registered
+        /// Reference (GC handle) keeping the internal delegates alive while they are registered
         /// as callbacks with the native code.
         /// </summary>
-        private GCHandle _handle;
+        /// <seealso cref="Utils.MakeWrapperRef(object)"/>
+        private IntPtr _argsRef;
 
         /// <summary>
-        /// Handle to the native object this wrapper is associated with.
+        /// Handle to the native DataChannel object.
         /// </summary>
-        internal IntPtr _interopHandle = IntPtr.Zero;
+        /// <remarks>
+        /// In native land this is a <code>mrsDataChannelHandle</code>.
+        /// </remarks>
+        internal IntPtr _nativeHandle = IntPtr.Zero;
 
-        internal DataChannel(PeerConnection peer, GCHandle handle,
-            int id, string label, bool ordered, bool reliable)
+        internal DataChannel(IntPtr nativeHandle, PeerConnection peer, IntPtr argsRef, int id, string label, bool ordered, bool reliable)
         {
-            _handle = handle;
+            Debug.Assert(nativeHandle != IntPtr.Zero);
+            _nativeHandle = nativeHandle;
+            _argsRef = argsRef;
             PeerConnection = peer;
             ID = id;
             Label = label;
@@ -148,25 +166,14 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Finalizer to ensure the data track is removed from the peer connection
-        /// and the managed resources are cleaned-up.
+        /// Dispose of the native data channel. Invoked by its owner (<see cref="PeerConnection"/>).
         /// </summary>
-        ~DataChannel()
+        internal void DestroyNative()
         {
-            Dispose();
-        }
-
-        /// <summary>
-        /// Remove the data track from the peer connection and destroy it.
-        /// </summary>
-        public void Dispose()
-        {
-            State = ChannelState.Closing;
-            PeerConnection.RemoveDataChannel(_interopHandle);
-            _interopHandle = IntPtr.Zero;
+            _nativeHandle = IntPtr.Zero;
             State = ChannelState.Closed;
-            _handle.Free();
-            GC.SuppressFinalize(this);
+            Utils.ReleaseWrapperRef(_argsRef);
+            _argsRef = IntPtr.Zero;
         }
 
         /// <summary>
@@ -175,15 +182,21 @@ namespace Microsoft.MixedReality.WebRTC
         /// The internal buffering is monitored via the <see cref="BufferingChanged"/> event.
         /// </summary>
         /// <param name="message">The message to send to the remote peer.</param>
-        /// <exception xref="InvalidOperationException">The native data channel is not initialized.</exception>
-        /// <exception xref="Exception">The internal buffer is full.</exception>
+        /// <exception xref="System.InvalidOperationException">The native data channel is not initialized.</exception>
+        /// <exception xref="System.Exception">The internal buffer is full.</exception>
+        /// <exception cref="DataChannelNotOpenException">The data channel is not open yet.</exception>
         /// <seealso cref="PeerConnection.InitializeAsync"/>
         /// <seealso cref="PeerConnection.Initialized"/>
         /// <seealso cref="BufferingChanged"/>
         public void SendMessage(byte[] message)
         {
             MainEventSource.Log.DataChannelSendMessage(ID, message.Length);
-            uint res = DataChannelInterop.DataChannel_SendMessage(_interopHandle, message, (ulong)message.LongLength);
+            // Check channel state before doing a P/Invoke call which would anyway fail
+            if (State != ChannelState.Open)
+            {
+                throw new DataChannelNotOpenException();
+            }
+            uint res = DataChannelInterop.DataChannel_SendMessage(_nativeHandle, message, (ulong)message.LongLength);
             Utils.ThrowOnErrorCode(res);
         }
 
@@ -202,7 +215,7 @@ namespace Microsoft.MixedReality.WebRTC
         public void SendMessage(IntPtr message, ulong size)
         {
             MainEventSource.Log.DataChannelSendMessage(ID, (int)size);
-            uint res = DataChannelInterop.DataChannel_SendMessage(_interopHandle, message, size);
+            uint res = DataChannelInterop.DataChannel_SendMessage(_nativeHandle, message, size);
             Utils.ThrowOnErrorCode(res);
         }
 

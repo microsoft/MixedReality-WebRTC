@@ -12,6 +12,11 @@ namespace TestNetCoreConsole
     {
         static async Task Main(string[] args)
         {
+            Transceiver audioTransceiver = null;
+            Transceiver videoTransceiver = null;
+            LocalAudioTrack localAudioTrack = null;
+            LocalVideoTrack localVideoTrack = null;
+
             try
             {
                 bool needVideo = Array.Exists(args, arg => (arg == "-v") || (arg == "--video"));
@@ -43,14 +48,20 @@ namespace TestNetCoreConsole
                 if (needVideo)
                 {
                     Console.WriteLine("Opening local webcam...");
-                    await pc.AddLocalVideoTrackAsync();
+                    localVideoTrack = await LocalVideoTrack.CreateFromDeviceAsync();
+                    videoTransceiver = pc.AddTransceiver(MediaKind.Video);
+                    videoTransceiver.DesiredDirection = Transceiver.Direction.SendReceive;
+                    videoTransceiver.LocalVideoTrack = localVideoTrack;
                 }
 
                 // Record audio from local microphone, and send to remote peer
                 if (needAudio)
                 {
                     Console.WriteLine("Opening local microphone...");
-                    await pc.AddLocalAudioTrackAsync();
+                    localAudioTrack = await LocalAudioTrack.CreateFromDeviceAsync();
+                    audioTransceiver = pc.AddTransceiver(MediaKind.Audio);
+                    audioTransceiver.DesiredDirection = Transceiver.Direction.SendReceive;
+                    audioTransceiver.LocalAudioTrack = localAudioTrack;
                 }
 
                 // Setup signaling
@@ -72,12 +83,16 @@ namespace TestNetCoreConsole
                 pc.Connected += () => { Console.WriteLine("PeerConnection: connected."); };
                 pc.IceStateChanged += (IceConnectionState newState) => { Console.WriteLine($"ICE state: {newState}"); };
                 int numFrames = 0;
-                pc.I420ARemoteVideoFrameReady += (I420AVideoFrame frame) => {
-                    ++numFrames;
-                    if (numFrames % 60 == 0)
+                pc.VideoTrackAdded += (RemoteVideoTrack track) =>
+                {
+                    track.I420AVideoFrameReady += (I420AVideoFrame frame) =>
                     {
-                        Console.WriteLine($"Received video frames: {numFrames}");
-                    }
+                        ++numFrames;
+                        if (numFrames % 60 == 0)
+                        {
+                            Console.WriteLine($"Received video frames: {numFrames}");
+                        }
+                    };
                 };
                 if (signaler.IsClient)
                 {

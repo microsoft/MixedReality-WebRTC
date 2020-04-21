@@ -54,9 +54,39 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AddAudioTrackPage.xaml.cs">
+      <DependentUpon>AddAudioTrackPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AddVideoTrackPage.xaml.cs">
+      <DependentUpon>AddVideoTrackPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DebugConsolePage.xaml.cs">
+      <DependentUpon>DebugConsolePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MediaPlayerPage.xaml.cs">
+      <DependentUpon>MediaPlayerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SessionModel.cs" />
+    <Compile Include="SessionPage.xaml.cs">
+      <DependentUpon>SessionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsPage.xaml.cs">
+      <DependentUpon>SettingsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SignalingPage.xaml.cs">
+      <DependentUpon>SignalingPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TrackListPage.xaml.cs">
+      <DependentUpon>TrackListPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TracksPage.xaml.cs">
+      <DependentUpon>TracksPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\AudioCaptureViewModel.cs" />
+    <Compile Include="ViewModel\Converters.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -65,6 +95,14 @@
     <Compile Include="Video\StreamSamplePool.cs" />
     <Compile Include="Video\VideoBridge.cs" />
     <Compile Include="Video\YuvUtils.cs" />
+    <Compile Include="ViewModel\MediaPlayerViewModel.cs" />
+    <Compile Include="ViewModel\SessionViewModel.cs" />
+    <Compile Include="ViewModel\CollectionViewModel.cs" />
+    <Compile Include="ViewModel\SignalerViewModel.cs" />
+    <Compile Include="ViewModel\TransceiverCollectionViewModel.cs" />
+    <Compile Include="ViewModel\TransceiverViewModel.cs" />
+    <Compile Include="ViewModel\NotifierBase.cs" />
+    <Compile Include="ViewModel\VideoCaptureViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -98,14 +136,50 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="AddAudioTrackPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AddVideoTrackPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DebugConsolePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="MediaPlayerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SessionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SignalingPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TrackListPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TracksPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.9</Version>
+      <Version>6.2.10</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.2</Version>

@@ -1,0 +1,34 @@
+<Page
+    x:Class="TestAppUwp.AddAudioTrackPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TestAppUwp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    NavigationCacheMode="Required">
+    <Grid Margin="8,0,8,8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical" Grid.Row="0">
+            <TextBlock Text="Add audio track" Margin="0,12,0,0" Style="{StaticResource SubtitleTextBlockStyle}"/>
+            <TextBlock Text="Track" Margin="0,12,0,0" Style="{StaticResource BaseTextBlockStyle}"/>
+            <TextBox x:Name="trackName" PlaceholderText="track_name" Margin="0,8,0,0"/>
+            <TextBlock FontStyle="Italic" Margin="0,8,0,0" TextWrapping="Wrap">
+                MixedReality-WebRTC currently uses the built-in audio from libwebrtc, which does not support any capture option
+                and instead always capture from the default input audio device.
+            </TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
+            <Button Content="Close" Click="CloseClicked" Margin="0,0,8,0"/>
+            <Button Content="Create Track" Click="CreateTrackClicked"
+                    IsEnabled="{x:Bind AudioCaptureViewModel.CanCreateTrack, Mode=OneWay}"/>
+            <ProgressRing x:Name="progressRing" IsActive="False" Margin="0,8,0,0"/>
+            <TextBlock x:Name="createTrackStatusText" Margin="0,8,0,0"/>
+        </StackPanel>
+    </Grid>
+</Page>

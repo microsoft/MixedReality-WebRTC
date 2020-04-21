@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+#pragma once
+
 #include "../include/interop_api.h"
 
 namespace TestUtils {
@@ -17,4 +19,14 @@ class TestBase : public ::testing::Test {
   }
 };
 
-}  // namespace VideoTestUtils
+/// Helper callback accepting an Event object as parameter and calling |Set()|
+/// on it when invoked.
+void MRS_CALL SetEventOnCompleted(void* user_data);
+
+constexpr const mrsSdpSemantic TestSemantics[] = {mrsSdpSemantic::kUnifiedPlan,
+                                                  mrsSdpSemantic::kPlanB};
+
+std::string SdpSemanticToString(
+    const testing::TestParamInfo<mrsSdpSemantic>& info);
+
+}  // namespace TestUtils

@@ -13,11 +13,11 @@ extern "C" {
 
 /// Add a reference to the native object associated with the given handle.
 MRS_API void MRS_CALL mrsExternalVideoTrackSourceAddRef(
-    ExternalVideoTrackSourceHandle handle) noexcept;
+    mrsExternalVideoTrackSourceHandle handle) noexcept;
 
 /// Remove a reference from the native object associated with the given handle.
 MRS_API void MRS_CALL mrsExternalVideoTrackSourceRemoveRef(
-    ExternalVideoTrackSourceHandle handle) noexcept;
+    mrsExternalVideoTrackSourceHandle handle) noexcept;
 
 /// Create a custom video track source external to the implementation. This
 /// allows feeding into WebRTC frames from any source, including generated or
@@ -28,7 +28,7 @@ MRS_API void MRS_CALL mrsExternalVideoTrackSourceRemoveRef(
 MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromI420ACallback(
     mrsRequestExternalI420AVideoFrameCallback callback,
     void* user_data,
-    ExternalVideoTrackSourceHandle* source_handle_out) noexcept;
+    mrsExternalVideoTrackSourceHandle* source_handle_out) noexcept;
 
 /// Create a custom video track source external to the implementation. This
 /// allows feeding into WebRTC frames from any source, including generated or
@@ -39,7 +39,7 @@ MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromI420ACallback(
 MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromArgb32Callback(
     mrsRequestExternalArgb32VideoFrameCallback callback,
     void* user_data,
-    ExternalVideoTrackSourceHandle* source_handle_out) noexcept;
+    mrsExternalVideoTrackSourceHandle* source_handle_out) noexcept;
 
 /// Callback from the wrapper layer indicating that the wrapper has finished
 /// creation, and it is safe to start sending frame requests to it. This needs
@@ -47,11 +47,11 @@ MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromArgb32Callback(
 /// |mrsExternalVideoTrackSourceCreateFromArgb32Callback()| to finish the
 /// creation of the video track source and allow it to start capturing.
 MRS_API void MRS_CALL mrsExternalVideoTrackSourceFinishCreation(
-    ExternalVideoTrackSourceHandle source_handle) noexcept;
+    mrsExternalVideoTrackSourceHandle source_handle) noexcept;
 
 /// Complete a video frame request with a provided I420A video frame.
 MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteI420AFrameRequest(
-    ExternalVideoTrackSourceHandle handle,
+    mrsExternalVideoTrackSourceHandle handle,
     uint32_t request_id,
     int64_t timestamp_ms,
     const mrsI420AVideoFrame* frame_view) noexcept;
@@ -59,7 +59,7 @@ MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCompleteI420AFrameRequest(
 /// Complete a video frame request with a provided ARGB32 video frame.
 MRS_API mrsResult MRS_CALL
 mrsExternalVideoTrackSourceCompleteArgb32FrameRequest(
-    ExternalVideoTrackSourceHandle handle,
+    mrsExternalVideoTrackSourceHandle handle,
     uint32_t request_id,
     int64_t timestamp_ms,
     const mrsArgb32VideoFrame* frame_view) noexcept;
@@ -67,6 +67,6 @@ mrsExternalVideoTrackSourceCompleteArgb32FrameRequest(
 /// Irreversibly stop the video source frame production and shutdown the video
 /// source.
 MRS_API void MRS_CALL mrsExternalVideoTrackSourceShutdown(
-    ExternalVideoTrackSourceHandle handle) noexcept;
+    mrsExternalVideoTrackSourceHandle handle) noexcept;
 
 }  // extern "C"

@@ -26,7 +26,7 @@ namespace TestAppUwp
         }
 
         /// <summary>
-        /// Invoked when the application is launched normally by the end user.  Other entry points
+        /// Invoked when the application is launched normally by the end user. Other entry points
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
@@ -85,9 +85,9 @@ namespace TestAppUwp
         /// <param name="e">Details about the suspend request.</param>
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
-            deferral.Complete();
+            //var deferral = e.SuspendingOperation.GetDeferral();
+            ////TODO: Save application state and stop any background activity
+            //deferral.Complete();
         }
     }
 }
