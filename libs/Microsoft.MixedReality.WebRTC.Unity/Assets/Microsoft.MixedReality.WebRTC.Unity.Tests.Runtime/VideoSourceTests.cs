@@ -63,7 +63,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             {
                 receiver1 = pc1_go.AddComponent<VideoReceiver>();
             }
-            MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
+            MediaLine tr1 = pc1.AddMediaLine(MediaKind.Video);
             tr1.Sender = sender1;
             tr1.Receiver = receiver1;
 
@@ -80,7 +80,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             {
                 receiver2 = pc1_go.AddComponent<VideoReceiver>();
             }
-            MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
+            MediaLine tr2 = pc2.AddMediaLine(MediaKind.Video);
             tr2.Sender = sender2;
             tr2.Receiver = receiver2;
 
@@ -367,7 +367,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 var cfg = cfgs[i];
 
                 {
-                    MediaLine tr1 = pc1.AddTransceiver(MediaKind.Video);
+                    MediaLine tr1 = pc1.AddMediaLine(MediaKind.Video);
                     var peer = cfg.peer1;
                     peer.mediaLine = tr1;
                     if (HasSend(peer.desiredDirection))
@@ -387,7 +387,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 }
 
                 {
-                    MediaLine tr2 = pc2.AddTransceiver(MediaKind.Video);
+                    MediaLine tr2 = pc2.AddMediaLine(MediaKind.Video);
                     var peer = cfg.peer2;
                     peer.mediaLine = tr2;
                     if (HasSend(peer.desiredDirection))
@@ -595,14 +595,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var sender1 = pc1_go.AddComponent<UniformColorVideoSource>();
             sender1.AutoStartOnEnabled = true;
             sender1.TrackName = "track_name";
-            MediaLine ml1 = pc1.AddTransceiver(MediaKind.Video);
+            MediaLine ml1 = pc1.AddMediaLine(MediaKind.Video);
             Assert.IsNotNull(ml1);
             Assert.AreEqual(MediaKind.Video, ml1.Kind);
             ml1.Sender = sender1;
 
             // Create the receiver video source
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
-            MediaLine ml2 = pc2.AddTransceiver(MediaKind.Video);
+            MediaLine ml2 = pc2.AddMediaLine(MediaKind.Video);
             Assert.IsNotNull(ml2);
             Assert.AreEqual(MediaKind.Video, ml2.Kind);
             ml2.Receiver = receiver2;
@@ -764,13 +764,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var sender1 = pc1_go.AddComponent<UniformColorVideoSource>();
             sender1.AutoStartOnEnabled = true;
             sender1.TrackName = "track_name";
-            MediaLine ml1 = pc1.AddTransceiver(MediaKind.Video);
+            MediaLine ml1 = pc1.AddMediaLine(MediaKind.Video);
             Assert.IsNotNull(ml1);
             ml1.Sender = sender1;
 
             // Create the receiver video source
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
-            MediaLine ml2 = pc2.AddTransceiver(MediaKind.Video);
+            MediaLine ml2 = pc2.AddMediaLine(MediaKind.Video);
             Assert.IsNotNull(ml2);
             ml2.Receiver = receiver2;
 
@@ -851,7 +851,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Create the receiver video source
             var receiver1b = pc1_go.AddComponent<VideoReceiver>();
-            MediaLine ml1b = pc1.AddTransceiver(MediaKind.Video);
+            MediaLine ml1b = pc1.AddMediaLine(MediaKind.Video);
             Assert.IsNotNull(ml1b);
             ml1b.Receiver = receiver1b;
 
@@ -859,7 +859,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var sender2b = pc2_go.AddComponent<UniformColorVideoSource>();
             sender2b.AutoStartOnEnabled = true;
             sender2b.TrackName = "track_name_2";
-            MediaLine ml2b = pc2.AddTransceiver(MediaKind.Video);
+            MediaLine ml2b = pc2.AddMediaLine(MediaKind.Video);
             Assert.IsNotNull(ml2b);
             ml2b.Sender = sender2b;
 

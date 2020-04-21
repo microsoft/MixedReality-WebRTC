@@ -145,7 +145,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Kind of media of the media line and its attached transceiver.
         ///
-        /// This is assiged when the media line is created with <see cref="PeerConnection.AddTransceiver(MediaKind)"/>
+        /// This is assiged when the media line is created with <see cref="PeerConnection.AddMediaLine(MediaKind)"/>
         /// and is immutable for the lifetime of the peer connection.
         /// </summary>
         public MediaKind Kind => _kind;
@@ -734,20 +734,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Add a new transceiver of the given kind to the peer connection.
+        /// Add a new media line of the given kind.
         /// 
-        /// This creates a media line, which expresses an intent from the user to get a transceiver.
-        /// The actual <see xref="WebRTC.Transceiver"/> object creation is delayed
-        /// until a session negotiation is completed.
+        /// This method creates a media line, which expresses an intent from the user to get a transceiver.
+        /// The actual <see xref="WebRTC.Transceiver"/> object creation is delayed until a session
+        /// negotiation is completed.
         /// 
-        /// The user can then assign the <see cref="MediaLine.Sender"/> and <see cref="MediaLine.Receiver"/>
-        /// fields to express their intent to send and/or receive some media through the transceiver.
-        /// This information is used in subsequent negotiations to derive a <see xref="Microsoft.MixedReality.WebRTC.Transceiver.Direction"/>
-        /// to negotiate.
+        /// Once the media line is created, the user can then assign its <see cref="MediaLine.Sender"/> and
+        /// <see cref="MediaLine.Receiver"/> properties to express their intent to send and/or receive some media
+        /// through the transceiver that will be associated with that media line once a session is negotiated.
+        /// This information is used in subsequent negotiations to derive a
+        /// <see xref="Microsoft.MixedReality.WebRTC.Transceiver.Direction"/> to negotiate. Therefore users
+        /// should avoid modifying the <see cref="Transceiver.DesiredDirection"/> property manually when using
+        /// the Unity library, and instead modify the <see cref="MediaLine.Sender"/> and
+        /// <see cref="MediaLine.Receiver"/> properties.
         /// </summary>
         /// <param name="kind">The kind of media (audio or video) for the transceiver.</param>
-        /// <returns>A newly created media line for the future transceiver.</returns>
-        public MediaLine AddTransceiver(MediaKind kind)
+        /// <returns>A newly created media line, which will be associated with a transceiver once the next session
+        /// is negotiated.</returns>
+        public MediaLine AddMediaLine(MediaKind kind)
         {
             var ml = new MediaLine(kind);
             _mediaLines.Add(ml);

@@ -232,11 +232,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             {
                 if (GUILayout.Button("+ Audio", EditorStyles.miniButton))
                 {
-                    ((PeerConnection)serializedObject.targetObject).AddTransceiver(MediaKind.Audio);
+                    ((PeerConnection)serializedObject.targetObject).AddMediaLine(MediaKind.Audio);
                 }
                 if (GUILayout.Button("+ Video", EditorStyles.miniButton))
                 {
-                    ((PeerConnection)serializedObject.targetObject).AddTransceiver(MediaKind.Video);
+                    ((PeerConnection)serializedObject.targetObject).AddMediaLine(MediaKind.Video);
                 }
             }
 
