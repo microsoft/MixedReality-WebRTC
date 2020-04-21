@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Enum DataChannel.ChannelState
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -86,8 +86,7 @@
   
   <h1 id="Microsoft_MixedReality_WebRTC_DataChannel_ChannelState" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.ChannelState" class="text-break">Enum DataChannel.ChannelState
   </h1>
-  <div class="markdown level0 summary"><p>Connecting state of a data channel, when adding it to a peer connection
-or removing it from a peer connection.</p>
+  <div class="markdown level0 summary"><p>Connection state of a data channel.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
@@ -120,7 +119,7 @@ It cannot be re-connected; instead a new data channel must be created.</p>
       <tr>
         <td id="Microsoft_MixedReality_WebRTC_DataChannel_ChannelState_Connecting">Connecting</td>
         <td><p>The data channel has just been created, and negotiating is underway to establish
-a track between the peers.</p>
+a link between the peers. The data channel cannot be used to send/receive yet.</p>
 </td>
       </tr>
       <tr>
@@ -141,7 +140,7 @@ a track between the peers.</p>
                     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_ChannelState.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.ChannelState%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L30" class="contribution-link">View Source</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L36" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

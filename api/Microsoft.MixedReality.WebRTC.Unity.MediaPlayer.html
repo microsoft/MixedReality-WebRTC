@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class MediaPlayer
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -113,7 +113,7 @@ via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AudioSource AudioSource</code></pre>
+    <pre><code class="lang-csharp hljs">protected MediaSource AudioSource</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -125,7 +125,7 @@ via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSource.html">AudioSource</a></td>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html">MediaSource</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -212,31 +212,6 @@ via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html
 </div>
   
   
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaPlayer_FrameQueue" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.FrameQueue">FrameQueue</h4>
-  <div class="markdown level1 summary"><p>The frame queue from which frames will be rendered.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IVideoFrameQueue FrameQueue</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">IVideoFrameQueue</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaPlayer_FrameSkipStatHolder" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.FrameSkipStatHolder">FrameSkipStatHolder</h4>
   <div class="markdown level1 summary"><p>A textmesh into which frame skip stat dta will be written</p>
 </div>
@@ -294,7 +269,7 @@ via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public VideoSource VideoSource</code></pre>
+    <pre><code class="lang-csharp hljs">protected MediaSource VideoSource</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -306,7 +281,63 @@ via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSource.html">VideoSource</a></td>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html">MediaSource</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaPlayer_Argb32VideoFrameReady_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.Argb32VideoFrameReady*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaPlayer_Argb32VideoFrameReady_Argb32VideoFrame_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.Argb32VideoFrameReady(Argb32VideoFrame)">Argb32VideoFrameReady(Argb32VideoFrame)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void Argb32VideoFrameReady(Argb32VideoFrame frame)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Argb32VideoFrame</span></td>
+        <td><span class="parametername">frame</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaPlayer_I420AVideoFrameReady_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.I420AVideoFrameReady*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaPlayer_I420AVideoFrameReady_I420AVideoFrame_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.I420AVideoFrameReady(I420AVideoFrame)">I420AVideoFrameReady(I420AVideoFrame)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void I420AVideoFrameReady(I420AVideoFrame frame)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">I420AVideoFrame</span></td>
+        <td><span class="parametername">frame</span></td>
         <td></td>
       </tr>
     </tbody>

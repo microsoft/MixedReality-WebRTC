@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class LocalVideoSourceEditor
+    <title>Delegate PeerConnection.VideoTrackAddedDelegate
    | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class LocalVideoSourceEditor
+    <meta name="title" content="Delegate PeerConnection.VideoTrackAddedDelegate
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,42 +81,38 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.Editor.LocalVideoSourceEditor">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackAddedDelegate">
   
   
-  <h1 id="Microsoft_MixedReality_WebRTC_Unity_Editor_LocalVideoSourceEditor" data-uid="Microsoft.MixedReality.WebRTC.Unity.Editor.LocalVideoSourceEditor" class="text-break">Class LocalVideoSourceEditor
+  <h1 id="Microsoft_MixedReality_WebRTC_PeerConnection_VideoTrackAddedDelegate" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackAddedDelegate" class="text-break">Delegate PeerConnection.VideoTrackAddedDelegate
   </h1>
-  <div class="markdown level0 summary"><p>Inspector editor for <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html">LocalVideoSource</a>.
-Allows displaying some error message when Mixed Reality Capture is enabled but
-XR is not, the later corresponding to a non-exclusive app (2D slate) where MRC
-is not available.</p>
+  <div class="markdown level0 summary"><p>Delegate for <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoTrackAdded">VideoTrackAdded</a> event.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">LocalVideoSourceEditor</span></div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Editor.html">Microsoft.MixedReality.WebRTC.Unity.Editor</a></h6>
-  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="Microsoft_MixedReality_WebRTC_Unity_Editor_LocalVideoSourceEditor_syntax">Syntax</h5>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
+  <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_VideoTrackAddedDelegate_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class LocalVideoSourceEditor : UnityEditor.Editor</code></pre>
+    <pre><code class="lang-csharp hljs">public delegate void VideoTrackAddedDelegate(RemoteVideoTrack track);</code></pre>
   </div>
-  <h3 id="methods">Methods
-  </h3>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_Editor_LocalVideoSourceEditor_OnInspectorGUI_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Editor.LocalVideoSourceEditor.OnInspectorGUI*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Editor_LocalVideoSourceEditor_OnInspectorGUI" data-uid="Microsoft.MixedReality.WebRTC.Unity.Editor.LocalVideoSourceEditor.OnInspectorGUI">OnInspectorGUI()</h4>
-  <div class="markdown level1 summary"><p>Override implementation of <a href="https://docs.unity3d.com/ScriptReference/Editor.OnInspectorGUI.html">Editor.OnInspectorGUI</a>
-to draw the inspector GUI for the currently selected <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html">LocalVideoSource</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override void OnInspectorGUI()</code></pre>
-  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html">RemoteVideoTrack</a></td>
+        <td><span class="parametername">track</span></td>
+        <td><p>The newly added video track.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 </article>
           </div>
           
@@ -124,6 +120,12 @@ to draw the inspector GUI for the currently selected <a class="xref" href="Micro
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_VideoTrackAddedDelegate.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackAddedDelegate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L490" class="contribution-link">View Source</a>
+                  </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">

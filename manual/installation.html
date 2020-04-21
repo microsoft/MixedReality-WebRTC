@@ -8,7 +8,7 @@
     <title>Installation | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Installation | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -100,6 +100,10 @@
 <p>This will add a dependency to the currently selected C# project. If multiple projects are using the MixedReality-WebRTC library, this process must be repeated for each project.</p>
 <h2 id="c-library-1">C++ library</h2>
 <p>The C++ library is consumed as a NuGet package by adding a dependency to that package in your C++ project. The C++ library is often referred to as the <strong>native</strong> library.</p>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p>The C++ library as distributed in the NuGet pacakges currently requires some internal headers from the Google's WebRTC implementation to be used, which are <strong>not</strong> shipped with the NuGet packages. See bug <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/123">#123</a> for details. A workaround is to clone the repository <em>recursively</em> to get those headers.</p>
+</div>
 <p>In Visual Studio 2019:</p>
 <ul>
 <li>Right-click on the C++ project &gt; <strong>Manage NuGet Packages...</strong> to open the NuGet package manager window.</li>

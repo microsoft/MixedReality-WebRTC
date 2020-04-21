@@ -8,7 +8,7 @@
     <title>C# signaling | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="C# signaling | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -97,10 +97,10 @@ peerConnection.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, 
 <h2 id="remote-to-local">Remote to local</h2>
 <p>Upon receiving the above messages, the signaling solution must:</p>
 <ul>
-<li><p>For SDP messages originating from a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend"><code>LocalSdpReadytoSend</code></a> event invoked on the remote peer, call the <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescription(System.String,System.String)"><code>PeerConnection.SetRemoteDescription()</code></a> method to inform the local peer connection of the newly received session description.</p>
+<li><p>For SDP messages originating from a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend"><code>LocalSdpReadytoSend</code></a> event invoked on the remote peer, call the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_System_String_System_String_"><code>PeerConnection.SetRemoteDescriptionAsync()</code></a> method to inform the local peer connection of the newly received session description.</p>
 <pre><code class="lang-cs">public void OnSdpMessage(string type, string sdp) {
-    peerConnection.SetRemoteDescription(type, sdp);
-    // Optionally
+    await peerConnection.SetRemoteDescriptionAsync(type, sdp);
+    // Optionally, and only after SetRemoteDescriptionAsync() completed:
     if (type == &quot;offer&quot;) {
         peerConnection.CreateAnswer();
     }

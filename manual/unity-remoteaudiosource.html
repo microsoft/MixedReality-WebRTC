@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Unity RemoteAudioSource component | MixedReality-WebRTC Documentation </title>
+    <title>Unity AudioReceiver component | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Unity RemoteAudioSource component | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="title" content="Unity AudioReceiver component | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -80,56 +80,14 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="unity-remoteaudiosource-component">Unity <code>RemoteAudioSource</code> component</h1>
+<h1 id="unity-audioreceiver-component">Unity <code>AudioReceiver</code> component</h1>
 
-<p>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html"><code>RemoteAudioSource</code></a> Unity component represents a single audio track received from the remote peer through an established peer connection.</p>
-<p><img src="unity-remoteaudiosource.png" alt="The RemoteAudioSource Unity component"></p>
+<p>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html"><code>AudioReceiver</code></a> Unity component represents a single audio track received from the remote peer through an established peer connection.</p>
+<p><img src="unity-remoteaudiosource.png" alt="The AudioReceiver Unity component"></p>
 <div class="IMPORTANT">
 <h5>Important</h5>
-<p>FIXME: This component is not currently functional. The remote audio data is currently sent directly to the local audio out device by the internal WebRTC implementation without any configuration possible. See issue <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/92">#92</a> for details.</p>
+<p>FIXME: This component is not currently functional. The remote audio data is currently sent directly to the local device audio output (speakers) by the internal WebRTC implementation without any configuration possible. See issue <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/92">#92</a> for details.</p>
 </div>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Audio track</strong></td>
-<td></td>
-</tr>
-<tr>
-<td>PeerConnection</td>
-<td>Reference to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> instance which contains the remote audio track.</td>
-</tr>
-<tr>
-<td>AutoPlayOnAdded</td>
-<td>Automatically start playback of the audio track when added. This corresponds to registering an audio frame callback with the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> instance pointed by the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_RemoteAudioSource_PeerConnection"><code>RemoteAudioSource.PeerConnection</code></a> property.</td>
-</tr>
-<tr>
-<td>AudioTrackAdded</td>
-<td>FIXME: This event is not currently fired.</td>
-</tr>
-<tr>
-<td>AudioTrackRemoved</td>
-<td>FIXME: This event is not currently fired.</td>
-</tr>
-<tr>
-<td><strong>Events</strong></td>
-<td></td>
-</tr>
-<tr>
-<td>AudioStreamStarted</td>
-<td>FIXME: This event is not currently fired.</td>
-</tr>
-<tr>
-<td>AudioStreamStopped</td>
-<td>FIXME: This event is not currently fired.</td>
-</tr>
-</tbody>
-</table>
 </article>
           </div>
           

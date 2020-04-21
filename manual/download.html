@@ -8,7 +8,7 @@
     <title>Downloading MixedReality-WebRTC | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Downloading MixedReality-WebRTC | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -101,8 +101,16 @@
 <p>To download the library, simply clone the MixedReality-WebRTC repository:</p>
 <pre><code class="lang-shell">git clone https://github.com/microsoft/MixedReality-WebRTC.git
 </code></pre>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p>The C++ library as distributed in the NuGet pacakges currently requires some internal headers from the Google's WebRTC implementation to be used, which are <strong>not</strong> shipped with the NuGet packages. See bug <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/123">#123</a> for details. A workaround is to clone the repository <em>recursively</em> to get those headers.</p>
+</div>
 <h2 id="unity-integration">Unity integration</h2>
 <p>The Unity integration is not currently distributed in any particular packaged way. Instead, users can check out the GitHub repository and copy the relevant parts of the Unity sample project from <a href="https://github.com/microsoft/MixedReality-WebRTC/tree/master/libs/Microsoft.MixedReality.WebRTC.Unity/"><code>libs/Microsoft.MixedReality.WebRTC.Unity/</code></a>. See <a href="installation.html">Installation</a> for details.</p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>The Unity scripts are using the API of the branch they are associated with. This means that the Unity scripts on the <code>master</code> branch are only working with the <code>master</code> branch API, and are therefore not compatible with the NuGet packages, which are only provided for stable releases (<code>release/xxx</code> branches).</p>
+</div>
 </article>
           </div>
           

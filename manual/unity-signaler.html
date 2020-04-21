@@ -8,7 +8,7 @@
     <title>Unity Signaler component | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Unity Signaler component | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -82,7 +82,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="unity-signaler-component">Unity <code>Signaler</code> component</h1>
 
-<p>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> Unity component is an abstract base class for implementing a custom component for a given signaling solution. The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> Unity component takes a reference to an intance of a <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> Unity component to delegate handling its signaling message.</p>
+<p>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> Unity component is an abstract base class used as an helper for implementing a custom component for a given signaling solution. It is not strictly required, but provides some utilities which make it easier to write an implementation.</p>
 <table>
 <thead>
 <tr>
@@ -93,34 +93,27 @@
 <tbody>
 <tr>
 <td>PeerConnection</td>
-<td>A back reference to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> Unity component that this signaler is attached to. This property is updated automatically after the peer connection is initialized. See <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Signaler"><code>PeerConnection.Signaler</code></a>.</td>
-</tr>
-<tr>
-<td>OnConnect</td>
-<td>Event fired when the peer connection is established. Derived classes must invoke this event when appropriate.</td>
-</tr>
-<tr>
-<td>OnDisconnect</td>
-<td>Event fired when the peer connection is closed. Derived classes must invoke this event when appropriate.</td>
-</tr>
-<tr>
-<td>OnMessage</td>
-<td>Event fired when a signaling message is received. Derived classes must invoke this event when appropriate to deliver incoming messages to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a>.</td>
-</tr>
-<tr>
-<td>OnFailure</td>
-<td>Event fired when an error occurs inside the signaler. Derived classes may invoke this event when appropriate.</td>
+<td>A reference to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> Unity component that this signaler should provide signaling for.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="implementing-a-custom-signaler">Implementing a custom signaler</h2>
-<p>A custom signaling solution needs to derive from the abstract base <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> class so it can be used by the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> Unity component.</p>
-<p>Derived classes implementing a particular signaling solution must:</p>
+<p>A custom signaling solution can derive from the abstract base <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> class for simplicity, or be any other Unity component or C# class.</p>
+<p>When deriving from the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> class, a derived class needs to:</p>
 <ul>
-<li>invoke the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnConnect"><code>OnConnect</code></a> and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnDisconnect"><code>OnDisconnect</code></a> events to notify both the user and the peer connection of the state of signaling.</li>
-<li>invoke the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnMessage"><code>OnMessage</code></a> event and implement the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_"><code>SendMessageAsync</code></a> method to respectively deliver incoming messages to the local peer and send outgoing message to the remote peer.</li>
+<li>Implement the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_"><code>SendMessageAsync()</code></a> abstract method to send messages to the remote peer via the custom signaling solution.</li>
+<li>Handle incoming messages from the remote peer:
+<ul>
+<li>call <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_HandleConnectionMessageAsync_System_String_System_String_"><code>HandleConnectionMessageAsync()</code></a> on the Unity peer connection component when receiving an SDP offer or answer message.</li>
+<li>call <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddIceCandidate_System_String_System_Int32_System_String_"><code>AddIceCandidate()</code></a> on the underlying C# peer connection object to deliver ICE candidates to the local peer implementation.</li>
 </ul>
-<p>Aditionally it is recommended that implementations also invoke the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnFailure"><code>OnFailure</code></a> event so that the user can be notified.</p>
+</li>
+</ul>
+<p>When implementing a custom signaling solution from scratch <strong>without</strong> using the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> class, the custom implementation must, in addition of the above message handling, replace the work done by <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_"><code>SendMessageAsync()</code></a>:</p>
+<ul>
+<li>Listen to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend"><code>LocalSdpReadytoSend</code></a> and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend"><code>IceCandidateReadytoSend</code></a> events.</li>
+<li>Send to the remote peer, by whatever mean devised by the implementation, some messages containing the data of those events, such that the remote peer can handle them as described above.</li>
+</ul>
 </article>
           </div>
           

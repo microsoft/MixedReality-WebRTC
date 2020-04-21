@@ -1,0 +1,551 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class VideoReceiver
+   | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class VideoReceiver
+   | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.52.0.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver">
+  
+  
+  <h1 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver" class="text-break">Class VideoReceiver
+  </h1>
+  <div class="markdown level0 summary"><p>This component represents a remote video source added as a video track to an
+existing WebRTC peer connection by a remote peer and received locally.
+The video track can optionally be displayed locally with a <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html">MediaPlayer</a>.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html">MediaSource</a></div>
+    <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html">MediaReceiver</a></div>
+    <div class="level3"><span class="xref">VideoReceiver</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_IsLive">MediaReceiver.IsLive</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource_MediaKind">MediaSource.MediaKind</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource__mainThreadWorkQueue">MediaSource._mainThreadWorkQueue</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource_Update">MediaSource.Update()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
+  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class VideoReceiver : MediaReceiver, IVideoSource</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver__ctor_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.#ctor*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver__ctor" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.#ctor">VideoReceiver()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public VideoReceiver()</code></pre>
+  </div>
+  <h3 id="fields">Fields
+  </h3>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_VideoStreamStarted" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.VideoStreamStarted">VideoStreamStarted</h4>
+  <div class="markdown level1 summary"><p>Event raised when the video stream started.</p>
+<p>When this event is raised, the followings are true:</p>
+<ul>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_Track">Track</a> property is a valid remote video track.</li>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_IsLive">IsLive</a> property is <code>true</code>.</li>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_IsStreaming">IsStreaming</a> will become <code>true</code> just after the event
+is raised, by design.</li>
+</ul>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public VideoStreamStartedEvent VideoStreamStarted</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent.html">VideoStreamStartedEvent</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_VideoStreamStarted_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This event is raised from the main Unity thread to allow Unity object access.</p>
+</div>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_VideoStreamStopped" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.VideoStreamStopped">VideoStreamStopped</h4>
+  <div class="markdown level1 summary"><p>Event raised when the video stream stopped.</p>
+<p>When this event is raised, the followings are true:</p>
+<ul>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_Track">Track</a> property is <code>null</code>.</li>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_IsLive">IsLive</a> property is <code>false</code>.</li>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_IsStreaming">IsStreaming</a> has just become <code>false</code> right before the event
+was raised, by design.</li>
+</ul>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public VideoStreamStoppedEvent VideoStreamStopped</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoStreamStoppedEvent.html">VideoStreamStoppedEvent</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_VideoStreamStopped_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This event is raised from the main Unity thread to allow Unity object access.</p>
+</div>
+  <h3 id="properties">Properties
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_FrameEncoding_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.FrameEncoding*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_FrameEncoding" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.FrameEncoding">FrameEncoding</h4>
+  <div class="markdown level1 summary"><p>Video encoding indicating the kind of frames the source is producing.
+This is used for example by the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html">MediaPlayer</a> to determine how to
+render the frame.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public VideoEncoding FrameEncoding { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoEncoding.html">VideoEncoding</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_IsStreaming_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.IsStreaming*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_IsStreaming" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.IsStreaming">IsStreaming</h4>
+  <div class="markdown level1 summary"><p>Is the video source currently streaming some video frames?
+This must be <code>true</code> between the invoking of the video stream started
+and stopped events. That is, this becomes <code>true</code> after the stream started
+event and becomes <code>false</code> before the stream stopped event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsStreaming { get; protected set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_Track_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.Track*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_Track" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.Track">Track</h4>
+  <div class="markdown level1 summary"><p>Remote video track receiving data from the remote peer.</p>
+<p>This is <code>null</code> until <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_Transceiver">Transceiver</a> is set to a non-null value and a
+remote track is added to that transceiver.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RemoteVideoTrack Track { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">RemoteVideoTrack</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_Transceiver_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.Transceiver*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_Transceiver" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.Transceiver">Transceiver</h4>
+  <div class="markdown level1 summary"><p>Video transceiver this receiver is paired with, if any.</p>
+<p>This is <code>null</code> until a remote description is applied which pairs the media line
+this receiver is associated with to a transceiver, or until the peer connection of this
+receiver's media line creates the video receiver right before creating an SDP offer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Transceiver Transceiver { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transceiver</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_GetVideoStreamStarted_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.GetVideoStreamStarted*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_GetVideoStreamStarted" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.GetVideoStreamStarted">GetVideoStreamStarted()</h4>
+  <div class="markdown level1 summary"><p>Get the event notifying the user that the video stream started.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public VideoStreamStartedEvent GetVideoStreamStarted()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent.html">VideoStreamStartedEvent</a></td>
+        <td><p>The event associated with the video source.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_GetVideoStreamStopped_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.GetVideoStreamStopped*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_GetVideoStreamStopped" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.GetVideoStreamStopped">GetVideoStreamStopped()</h4>
+  <div class="markdown level1 summary"><p>Get the event notifying the user that the video stream stopped.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public VideoStreamStoppedEvent GetVideoStreamStopped()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoStreamStoppedEvent.html">VideoStreamStoppedEvent</a></td>
+        <td><p>The event associated with the video source.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_RegisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.RegisterCallback*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_RegisterCallback_Argb32VideoFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.RegisterCallback(Argb32VideoFrameDelegate)">RegisterCallback(Argb32VideoFrameDelegate)</h4>
+  <div class="markdown level1 summary"><p>Register a frame callback to listen to incoming video data receiving through this
+video receiver from the remote peer.
+The callback can only be registered once the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_Track">Track</a> is valid, that is
+once the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_VideoStreamStarted">VideoStreamStarted</a> event was triggered.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void RegisterCallback(Argb32VideoFrameDelegate callback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Argb32VideoFrameDelegate</span></td>
+        <td><span class="parametername">callback</span></td>
+        <td><p>The new frame callback to register.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_RegisterCallback_Argb32VideoFrameDelegate__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>A typical application uses this callback to display the received video.</p>
+</div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_RegisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.RegisterCallback*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_RegisterCallback_I420AVideoFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.RegisterCallback(I420AVideoFrameDelegate)">RegisterCallback(I420AVideoFrameDelegate)</h4>
+  <div class="markdown level1 summary"><p>Register a frame callback to listen to incoming video data receiving through this
+video receiver from the remote peer.
+The callback can only be registered once the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_Track">Track</a> is valid, that is
+once the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_VideoStreamStarted">VideoStreamStarted</a> event was triggered.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void RegisterCallback(I420AVideoFrameDelegate callback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">I420AVideoFrameDelegate</span></td>
+        <td><span class="parametername">callback</span></td>
+        <td><p>The new frame callback to register.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_RegisterCallback_I420AVideoFrameDelegate__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>A typical application uses this callback to display the received video.</p>
+</div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_UnregisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.UnregisterCallback*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_UnregisterCallback_Argb32VideoFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.UnregisterCallback(Argb32VideoFrameDelegate)">UnregisterCallback(Argb32VideoFrameDelegate)</h4>
+  <div class="markdown level1 summary"><p>Unregister an existing frame callback registered with <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_RegisterCallback_Argb32VideoFrameDelegate_">RegisterCallback(Argb32VideoFrameDelegate)</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void UnregisterCallback(Argb32VideoFrameDelegate callback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Argb32VideoFrameDelegate</span></td>
+        <td><span class="parametername">callback</span></td>
+        <td><p>The frame callback to unregister.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_UnregisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.UnregisterCallback*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_UnregisterCallback_I420AVideoFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.UnregisterCallback(I420AVideoFrameDelegate)">UnregisterCallback(I420AVideoFrameDelegate)</h4>
+  <div class="markdown level1 summary"><p>Unregister an existing frame callback registered with <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_RegisterCallback_I420AVideoFrameDelegate_">RegisterCallback(I420AVideoFrameDelegate)</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void UnregisterCallback(I420AVideoFrameDelegate callback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">I420AVideoFrameDelegate</span></td>
+        <td><span class="parametername">callback</span></td>
+        <td><p>The frame callback to unregister.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

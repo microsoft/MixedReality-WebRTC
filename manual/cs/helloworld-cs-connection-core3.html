@@ -8,7 +8,7 @@
     <title>Establishing a WebRTC connection | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Establishing a WebRTC connection | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -96,14 +96,16 @@ pc.IceStateChanged += (IceConnectionState newState) =&gt; {
 </code></pre>
 <p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event is invoked when the peer connection is established. The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceStateChanged"><code>IceStateChanged</code></a> is invoked each time the ICE status changes. Note that the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event can be invoked before the ICE status reaches its <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.IceConnectionState.html"><code>IceConnectionState.Connected</code></a> state.</p>
 </li>
-<li><p>In order to verify that the remote video is received, we also subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420ARemoteVideoFrameReady"><code>I420ARemoteVideoFrameReady</code></a> event. Since this event is invoked frequently, we only print a message every 60 frames.</p>
+<li><p>In order to verify that the remote video is received, we also subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html#Microsoft_MixedReality_WebRTC_RemoteVideoTrack_I420AVideoFrameReady"><code>I420AVideoFrameReady</code></a> event. Since this event is invoked frequently, we only print a message every 60 frames.</p>
 <pre><code class="lang-cs">int numFrames = 0;
-pc.I420ARemoteVideoFrameReady += (I420AVideoFrame frame) =&gt; {
-    ++numFrames;
-    if (numFrames % 60 == 0)
-    {
-        Console.WriteLine($&quot;Received video frames: {numFrames}&quot;);
-    }
+pc.VideoTrackAdded += (RemoteVideoTrack track) =&gt; {
+    track.I420AVideoFrameReady += (I420AVideoFrame frame) =&gt; {
+        ++numFrames;
+        if (numFrames % 60 == 0)
+        {
+            Console.WriteLine($&quot;Received video frames: {numFrames}&quot;);
+        }
+    };
 };
 </code></pre>
 </li>

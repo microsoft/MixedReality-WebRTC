@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Signaler
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -86,7 +86,13 @@
   
   <h1 id="Microsoft_MixedReality_WebRTC_Unity_Signaler" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler" class="text-break">Class Signaler
   </h1>
-  <div class="markdown level0 summary"><p>Base class for WebRTC signaling implementations in Unity.</p>
+  <div class="markdown level0 summary"><p>Abstract base class to simplify implementing a WebRTC signaling solution in Unity.</p>
+<p>There is no requirement to use this class as a base class for a custom implementation,
+but it handles automatically registering the necessary <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html">PeerConnection</a>
+event handlers, as well as dispatching free-threaded callbacks to the main Unity app thread
+for simplicity and safety, and leaves the implementation with instead with a single sending
+method <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_">SendMessageAsync(Signaler.Message)</a> to implement, as well as handling received
+messages.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -105,9 +111,35 @@
   </h3>
   
   
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler__mainThreadWorkQueue" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler._mainThreadWorkQueue">_mainThreadWorkQueue</h4>
+  <div class="markdown level1 summary"><p>Task queue used to defer actions to the main Unity app thread, which is the only thread
+with access to Unity objects.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected ConcurrentQueue&lt;Action&gt; _mainThreadWorkQueue</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentqueue-1">ConcurrentQueue</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler__nativePeer" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler._nativePeer">_nativePeer</h4>
-  <div class="markdown level1 summary"><p>Native <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html">PeerConnection</a> object from the underlying WebRTC C# library, available once
-the peer has been initialized and the signaler is attached to it.</p>
+  <div class="markdown level1 summary"><p>Native <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html">PeerConnection</a> object from the underlying
+WebRTC C# library, available once the peer has been initialized.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -129,22 +161,17 @@ the peer has been initialized and the signaler is attached to it.</p>
       </tr>
     </tbody>
   </table>
-  <h3 id="properties">Properties
-  </h3>
   
   
-  <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_PeerConnection_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.PeerConnection*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_PeerConnection" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.PeerConnection">PeerConnection</h4>
-  <div class="markdown level1 summary"><p>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_PeerConnection">PeerConnection</a> this signaler is attached to, or <code>null</code>
-if not attached yet to any connection. This is updated automatically by the peer
-connection once it finished initializing.</p>
+  <div class="markdown level1 summary"><p>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_PeerConnection">PeerConnection</a> this signaler needs to work for.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PeerConnection PeerConnection { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public PeerConnection PeerConnection</code></pre>
   </div>
-  <h5 class="propertyValue">Property Value</h5>
+  <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -163,15 +190,35 @@ connection once it finished initializing.</p>
   </h3>
   
   
-  <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnIceCandiateReadyToSend_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnIceCandiateReadyToSend*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnIceCandiateReadyToSend_System_String_System_Int32_System_String_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnIceCandiateReadyToSend(System.String,System.Int32,System.String)">OnIceCandiateReadyToSend(String, Int32, String)</h4>
-  <div class="markdown level1 summary"><p>Callback fired when an ICE candidate message has been generated and is ready to
+  <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnDisable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnDisable*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnDisable" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnDisable">OnDisable()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected virtual void OnDisable()</code></pre>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnEnable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnEnable*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnEnable" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnEnable">OnEnable()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected virtual void OnEnable()</code></pre>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnIceCandidateReadyToSend_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnIceCandidateReadyToSend*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnIceCandidateReadyToSend_System_String_System_Int32_System_String_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnIceCandidateReadyToSend(System.String,System.Int32,System.String)">OnIceCandidateReadyToSend(String, Int32, String)</h4>
+  <div class="markdown level1 summary"><p>Callback invoked when an ICE candidate message has been generated and is ready to
 be sent to the remote peer by the signaling object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract void OnIceCandiateReadyToSend(string candidate, int sdpMlineIndex, string sdpMid)</code></pre>
+    <pre><code class="lang-csharp hljs">protected virtual void OnIceCandidateReadyToSend(string candidate, int sdpMlineIndex, string sdpMid)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -203,74 +250,38 @@ be sent to the remote peer by the signaling object.</p>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnPeerInitialized_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnPeerInitialized*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnPeerInitialized_Microsoft_MixedReality_WebRTC_Unity_PeerConnection_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnPeerInitialized(Microsoft.MixedReality.WebRTC.Unity.PeerConnection)">OnPeerInitialized(PeerConnection)</h4>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnPeerInitialized" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnPeerInitialized">OnPeerInitialized()</h4>
   <div class="markdown level1 summary"><p>Callback fired from the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_PeerConnection">PeerConnection</a> when it finished
 initializing, to subscribe to signaling-related events.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void OnPeerInitialized(PeerConnection peer)</code></pre>
+    <pre><code class="lang-csharp hljs">public void OnPeerInitialized()</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html">PeerConnection</a></td>
-        <td><span class="parametername">peer</span></td>
-        <td><p>The peer connection to attach to</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnPeerUninitializing_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnPeerUninitializing*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnPeerUninitializing_Microsoft_MixedReality_WebRTC_Unity_PeerConnection_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnPeerUninitializing(Microsoft.MixedReality.WebRTC.Unity.PeerConnection)">OnPeerUninitializing(PeerConnection)</h4>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnPeerUninitializing" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnPeerUninitializing">OnPeerUninitializing()</h4>
   <div class="markdown level1 summary"><p>Callback fired from the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_PeerConnection">PeerConnection</a> before it starts
 uninitializing itself and disposing of the underlying implementation object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void OnPeerUninitializing(PeerConnection peer)</code></pre>
+    <pre><code class="lang-csharp hljs">public void OnPeerUninitializing()</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html">PeerConnection</a></td>
-        <td><span class="parametername">peer</span></td>
-        <td><p>The peer connection about to be deinitialized</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnSdpAnswerReadyToSend_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnSdpAnswerReadyToSend*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnSdpAnswerReadyToSend_System_String_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnSdpAnswerReadyToSend(System.String)">OnSdpAnswerReadyToSend(String)</h4>
-  <div class="markdown level1 summary"><p>Callback fired when a local SDP answer has been generated and is ready to
+  <div class="markdown level1 summary"><p>Callback invoked when a local SDP answer has been generated and is ready to
 be sent to the remote peer by the signaling object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract void OnSdpAnswerReadyToSend(string answer)</code></pre>
+    <pre><code class="lang-csharp hljs">protected virtual void OnSdpAnswerReadyToSend(string answer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -294,13 +305,13 @@ be sent to the remote peer by the signaling object.</p>
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnSdpOfferReadyToSend_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnSdpOfferReadyToSend*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnSdpOfferReadyToSend_System_String_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnSdpOfferReadyToSend(System.String)">OnSdpOfferReadyToSend(String)</h4>
-  <div class="markdown level1 summary"><p>Callback fired when a local SDP offer has been generated and is ready to
+  <div class="markdown level1 summary"><p>Callback invoked when a local SDP offer has been generated and is ready to
 be sent to the remote peer by the signaling object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract void OnSdpOfferReadyToSend(string offer)</code></pre>
+    <pre><code class="lang-csharp hljs">protected virtual void OnSdpOfferReadyToSend(string offer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -370,110 +381,16 @@ but not necessarily delivered.</p>
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_Update_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.Update*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_Update" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.Update">Update()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Unity Engine Update() hook</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected virtual void Update()</code></pre>
   </div>
-  <h3 id="events">Events
-  </h3>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnConnect" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnConnect">OnConnect</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public event Action OnConnect</code></pre>
-  </div>
-  <h5 class="eventType">Event Type</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnDisconnect" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnDisconnect">OnDisconnect</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public event Action OnDisconnect</code></pre>
-  </div>
-  <h5 class="eventType">Event Type</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnFailure" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnFailure">OnFailure</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public event Action&lt;Exception&gt; OnFailure</code></pre>
-  </div>
-  <h5 class="eventType">Event Type</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception">Exception</a>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_OnMessage" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.OnMessage">OnMessage</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public event Action&lt;Signaler.Message&gt; OnMessage</code></pre>
-  </div>
-  <h5 class="eventType">Event Type</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html">Signaler.Message</a>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_Update_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p><a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html">https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html</a></p>
+</div>
 </article>
           </div>
           

@@ -8,7 +8,7 @@
     <title>Creating a signaler | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Creating a signaler | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -91,7 +91,7 @@
 <p>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> component uses a <a href="https://nodejs.org/">Node.js</a> server with a simple polling model where both peers are constantly checking if a message is available. The server implementation is called <a href="https://github.com/bengreenier/node-dss"><code>node-dss</code></a> and is freely available on GitHub.</p>
 <h2 id="install-and-run-node-dss">Install and run <code>node-dss</code></h2>
 <p>The <code>node-dss</code> repository has <a href="https://github.com/bengreenier/node-dss/blob/master/README.md">instructions on how to install and run the server</a>, which essentially boil down to installing Node.js, downloading the code, and running:</p>
-<pre><code>set DEBUG=dss*
+<pre><code class="lang-cmd">set DEBUG=dss*
 npm install
 npm start
 </code></pre>
@@ -105,17 +105,20 @@ npm start
 <li>Optionally rename the game object to something easy to remember like &quot;MySignaler&quot; to easily find it in the Hierarchy window.</li>
 </ul>
 <p><img src="helloworld-unity-6.png" alt="Create a new GameObject with a NodeDssSignaler component"></p>
-<p>By default the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> component is configured to connect to a <code>node-dss</code> server running locally on the developper machine at <code>http://127.0.0.1:3000/</code> and poll the server every 500 milliseconds to query for available messages.</p>
+<p>By default the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> component is configured to connect to a <code>node-dss</code> server running locally on the developper machine at <code>http://127.0.0.1:3000/</code> and poll the server every 500 milliseconds to query for available messages. If using another machine, the HTTP address must be changed.</p>
 <h2 id="connecting-the-signaler">Connecting the signaler</h2>
-<p>Now that a signaling solution is available, the last step is to assign the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Signaler"><code>PeerConnection.Signaler</code></a> property of our peer connection to that implementation:</p>
-<ul>
-<li>In the <strong>Hierarchy</strong> window, select the game object with the peer connection component</li>
-<li>In the <strong>Inspector</strong> window, find the <code>Signaler</code> property and click on the circle to its right to bring the asset selection window</li>
-<li>From the <strong>Scene</strong> tab, select the game object with the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> component on it.</li>
-</ul>
+<p>Now that a signaling solution is available, the last step is to assign the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_PeerConnection"><code>Signaler.PeerConnection</code></a> property of the peer connection component created earlier:</p>
+<ol>
+<li>In the <strong>Hierarchy</strong> window, make sure the game object with the peer connection component is selected, then in the <strong>Inspector</strong> window find the <code>Peer Connection</code> property and click on the circle to its right to bring the asset selection window</li>
+<li>Select the <strong>Scene</strong> tab of that window</li>
+<li>Select the game object with the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> component on it.</li>
+<li>The name of the <a href="https://docs.unity3d.com/ScriptReference/GameObject.html"><code>GameObject</code></a> containing the component now appears next to the <code>Peer Connection</code> property, followed by &quot;<code>(PeerConnection)</code>&quot; to indicate the actual value is the component of that game object.</li>
+</ol>
 <p>The signaler object should now appear in the <strong>Inspector</strong> window of the peer connection game object.</p>
 <p><img src="helloworld-unity-7.png" alt="Assign the Signaler property in the peer connection"></p>
 <p>At that point the peer connection is fully configured and ready to be used. However audio and video tracks are not added automatically, so there is little use for that peer connection. Next we will look at connecting a local webcam and microphone to provide some video and audio track to send through to the peer connection.</p>
+<hr>
+<p>Next : <a href="helloworld-unity-localvideo.html">Adding local video</a></p>
 </article>
           </div>
           

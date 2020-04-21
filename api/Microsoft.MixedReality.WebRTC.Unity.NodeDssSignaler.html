@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class NodeDssSignaler
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -102,25 +102,31 @@ This is based on <a href="https://github.com/bengreenier/node-dss">https://githu
       <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_PeerConnection">Signaler.PeerConnection</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnConnect">Signaler.OnConnect</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnDisconnect">Signaler.OnDisconnect</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnMessage">Signaler.OnMessage</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnFailure">Signaler.OnFailure</a>
-    </div>
-    <div>
       <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler__nativePeer">Signaler._nativePeer</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnPeerInitialized_Microsoft_MixedReality_WebRTC_Unity_PeerConnection_">Signaler.OnPeerInitialized(PeerConnection)</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler__mainThreadWorkQueue">Signaler._mainThreadWorkQueue</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnPeerUninitializing_Microsoft_MixedReality_WebRTC_Unity_PeerConnection_">Signaler.OnPeerUninitializing(PeerConnection)</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnPeerInitialized">Signaler.OnPeerInitialized()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnPeerUninitializing">Signaler.OnPeerUninitializing()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnEnable">Signaler.OnEnable()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnDisable">Signaler.OnDisable()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnIceCandidateReadyToSend_System_String_System_Int32_System_String_">Signaler.OnIceCandidateReadyToSend(String, Int32, String)</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnSdpOfferReadyToSend_System_String_">Signaler.OnSdpOfferReadyToSend(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnSdpAnswerReadyToSend_System_String_">Signaler.OnSdpAnswerReadyToSend(String)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
@@ -258,109 +264,6 @@ This is based on <a href="https://github.com/bengreenier/node-dss">https://githu
   </table>
   <h3 id="methods">Methods
   </h3>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_OnIceCandiateReadyToSend_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.OnIceCandiateReadyToSend*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_OnIceCandiateReadyToSend_System_String_System_Int32_System_String_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.OnIceCandiateReadyToSend(System.String,System.Int32,System.String)">OnIceCandiateReadyToSend(String, Int32, String)</h4>
-  <div class="markdown level1 summary"><p>Callback fired when an ICE candidate message has been generated and is ready to
-be sent to the remote peer by the signaling object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void OnIceCandiateReadyToSend(string candidate, int sdpMlineIndex, string sdpMid)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">candidate</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">sdpMlineIndex</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">sdpMid</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnIceCandiateReadyToSend_System_String_System_Int32_System_String_">Signaler.OnIceCandiateReadyToSend(String, Int32, String)</a></div>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_OnSdpAnswerReadyToSend_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.OnSdpAnswerReadyToSend*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_OnSdpAnswerReadyToSend_System_String_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.OnSdpAnswerReadyToSend(System.String)">OnSdpAnswerReadyToSend(String)</h4>
-  <div class="markdown level1 summary"><p>Callback fired when a local SDP answer has been generated and is ready to
-be sent to the remote peer by the signaling object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void OnSdpAnswerReadyToSend(string answer)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">answer</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnSdpAnswerReadyToSend_System_String_">Signaler.OnSdpAnswerReadyToSend(String)</a></div>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_OnSdpOfferReadyToSend_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.OnSdpOfferReadyToSend*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_OnSdpOfferReadyToSend_System_String_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.OnSdpOfferReadyToSend(System.String)">OnSdpOfferReadyToSend(String)</h4>
-  <div class="markdown level1 summary"><p>Callback fired when a local SDP offer has been generated and is ready to
-be sent to the remote peer by the signaling object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void OnSdpOfferReadyToSend(string offer)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">offer</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_OnSdpOfferReadyToSend_System_String_">Signaler.OnSdpOfferReadyToSend(String)</a></div>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_NodeDssSignaler_SendMessageAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.SendMessageAsync*"></a>

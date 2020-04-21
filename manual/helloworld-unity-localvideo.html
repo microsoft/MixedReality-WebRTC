@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Adding local video | MixedReality-WebRTC Documentation </title>
+    <title>Adding local media | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Adding local video | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="title" content="Adding local media | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -80,34 +80,109 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="adding-local-video">Adding local video</h1>
+<h1 id="adding-local-media">Adding local media</h1>
 
-<p>There are two different aspects covered by the concept of <em>local video</em>:</p>
+<p>In this section we perform 3 tasks:</p>
 <ul>
-<li>Capturing some video feed from a local camera to send it to the remote peer</li>
-<li>Displaying locally the captured video feed</li>
+<li>Add local video</li>
+<li>Add local audio</li>
+<li>Add a media player to render the local video</li>
 </ul>
-<p>Both are optional, although the second one alone simply corresponds to capturing a displaying a local webcam and doesn't require WebRTC. So we generally want the first one in a scenario where an application needs WebRTC. The second one is application-dependent, and even within one given application can be toggled ON and OFF by the user.</p>
-<p>Both cases however are covered by the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html"><code>LocalVideoSource</code></a> component. This components serves as a bridge between a local video capture device (camera), the peer connection, and an optional video player to render the video feed locally.</p>
-<h2 id="adding-a-local-video-source">Adding a local video source</h2>
-<p>For clarity we will create a new game object and add a <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html"><code>LocalVideoSource</code></a> component. It may sound superfluous at the moment to create a new game object, as we could add the local video source to the same game object already owning the peer connection component, but this will prove more clear and easy to manipulate later.</p>
+<h2 id="local-video">Local video</h2>
+<p>There are three different concepts covered by the term <em>local video</em>:</p>
+<ol>
+<li>Locally generating some video frames, often by capturing them from a <em>video capture device</em> (<em>e.g.</em> webcam) available on the local host, or alternatively obtaining those frames by any other mean (procedurally generated, captured from another source, <em>etc.</em>). This corresponds to the concept of a <em>video source</em> in WebRTC terminology.</li>
+<li>Sending those video frames to the remote peer, which is the most interesting aspect and requires WebRTC, and corresponds to the concept of <em>video track</em> in WebRTC terminology.</li>
+<li>Accessing locally the captured video frames, for example to display them for user feedback. This is application-dependent, and even within one given application can generally be toggled ON and OFF by the user. This corresponds to the concept of <em>video frame callback</em> in MixedReality-WebRTC, and is not an official WebRTC concept from the standard.</li>
+</ol>
+<p>Capturing some video feed from a local video capture device is covered by the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html"><code>WebcamSource</code></a> component, which represents a video track capturing its video frames from a webcam.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>The term <em>webcam</em> as used in the context of the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html"><code>WebcamSource</code></a> component colloquially refers to any <em>local video capture device</em>, and is an abuse of language to shorten the latter. This term therefore includes other capture devices not strictly considered webcams, like for example the HoloLens 1 and HoloLens 2 cameras.</p>
+</div>
+<p>Because the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html"><code>WebcamSource</code></a> component derives from the abstract <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoSender.html"><code>VideoSender</code></a> component which encapsulates a WebRTC local video track, attaching that track to a peer connection covers the second concept of streaming video to a remote peer.</p>
+<p>Finally, the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoSender.html"><code>VideoSender</code></a> component also serves as a bridge between a local video track and an optional video player to render the video feed locally, covering the last concept if needed.</p>
+<h2 id="adding-a-webcam-source">Adding a webcam source</h2>
+<p>For clarity we will create a new game object and add a <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html"><code>WebcamSource</code></a> component. It may sound superfluous at the moment to create a new game object, as we could add the webcam source to the same game object already owning the peer connection component, but this will prove more clear and easy to manipulate later.</p>
 <ul>
 <li>In the <strong>Hierarchy</strong> window, select <strong>Create</strong> &gt; <strong>Create Empty</strong>.</li>
 <li>In the <strong>Inspector</strong> window, rename the newly-created game object to something memorable like &quot;LocalMediaPlayer&quot;.</li>
-<li>Press the <strong>Add Component</strong> button at the bottom of the window, and select <strong>MixedReality-WebRTC</strong> &gt; <strong>LocalVideoSource</strong>.</li>
-<li>This component needs to know which peer connection to use. Once again, use the asset selection window to assign our peer connection to the <strong>Peer Connection</strong> property.</li>
+<li>Press the <strong>Add Component</strong> button at the bottom of the window, and select <strong>MixedReality-WebRTC</strong> &gt; <strong>Webcam Source</strong>.</li>
 </ul>
-<p><img src="helloworld-unity-8.png" alt="Create a local video source assigned to our peer connection"></p>
-<p>The local video source component contains several interesting properties:</p>
+<p><img src="helloworld-unity-8.png" alt="Create a webcam source"></p>
+<p>The webcam source component contains several interesting properties, divided into 2 groups. We detail these properties below for reference, but for now we can leave all of them to their default values.</p>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p>When using Mixed Reality Capture (MRC) on HoloLens, the Unity project needs to be configured to <strong>Enable XR support</strong>. This generates an exclusive-mode application (fullscreen), which is required to get access to MRC, for security and privacy reasons. Otherwise Unity by default generates a shared application (slate app), and MRC access will be denied by the OS.</p>
+</div>
+<h3 id="video-capture-properties">Video capture properties</h3>
+<p>The video capture properties are related to the video capture itself, that is how the component access the webcam and captures video frames from it, independently of WebRTC.</p>
 <ul>
-<li>The <strong>Auto Start Capture</strong> property instructs the component to open the video capture device (webcam) automatically as soon as possible. This enables starting local video playback even before the peer connection is established.</li>
-<li>The <strong>Enable Mixed Reality Capture</strong> property tells the component it should attempt to open the video capture device with MRC enabled, if supported.</li>
-<li>The <strong>Auto Add Track</strong> property allows automatically adding a video track to the peer connection and start sending the video feed to the remote peer once the connection is established. If not checked, the user has to manually call some method to add that track.</li>
+<li><p>The <strong>Start capture when enabled</strong> checkbox, which corresponds to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled"><code>MediaSender.AutoStartOnEnabled</code></a> property, instructs the component to open the video capture device (webcam) automatically as soon as possible, that is once both:</p>
+<ul>
+<li>the component is enabled, that is <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnEnable.html"><code>MonoBehaviour.OnEnable()</code></a> executed; and</li>
+<li>the peer connection is initialized, that is the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Initialized"><code>PeerConnection.Initialized</code></a> event was raised.</li>
 </ul>
-<p>These are good defaults values to start, and we will leave them as is.</p>
+<p>This property is checked by default. This makes the component work out of the box, as a convenience for developers to get started. If unchecked, then the application has to explicitly call <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync"><code>MediaSender.StartCaptureAsync()</code></a> once the two conditions above are true. This can be useful if the application wants to ensure an explicit user action to start video capture, for example where privacy is a concern.</p>
+</li>
+<li><p>The <strong>Capture format</strong> combobox, which corresponds to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html#Microsoft_MixedReality_WebRTC_Unity_WebcamSource_FormatMode"><code>WebcamSource.FormatMode</code></a> property, allows switching between two different modes to control how the <em>video capture format</em> (resolution and framerate, essentially) is choosen:</p>
+<ul>
+<li><p>In <strong>Automatic</strong> mode, the best video capture format is automatically selected.</p>
+<p>In general this means the first format available is chosen. On HoloLens devices however, some extra steps are taken internally to force the use of the low-power video profile and reduce the capture resolution in order to save the battery and lower the CPU usage.</p>
+</li>
+<li><p>In <strong>Manual</strong> mode, the user can apply a set of constraints to the list of capture formats the device supports.</p>
+<p>This allows restricting the video capture formats the selection algorithm can choose from to a subset of all the formats supported by the video capture device, and even to a single known format if needed. Note however that over-constraining the algorithm may result in no format being available, and the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html"><code>WebcamSource</code></a> component failing to open the video capture device.</p>
+<p>In general it is recommended <strong>not</strong> to assign hard-coded resolution / framerate constraints at edit time, unless the application only target a specific kind of device with well-known immutable capture capabilities, and instead enumerate at runtime with <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureFormatsAsync_System_String_"><code>PeerConnection.GetVideoCaptureFormatsAsync()</code></a> the capture formats actually supported by the video capture device, then use constraints to select one or some of those formats.</p>
+</li>
+</ul>
+</li>
+<li><p>The <strong>Enable Mixed Reality Capture (MRC)</strong> checkbox, which corresponds to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html#Microsoft_MixedReality_WebRTC_Unity_WebcamSource_EnableMixedRealityCapture"><code>WebcamSource.EnableMixedRealityCapture</code></a> property, tells the component it should attempt to open the video capture device with MRC enabled, if supported. If the device does not support MRC, then this is silently ignored.</p>
+<p>See the important remark about MRC and exclusive mode application above.</p>
+</li>
+</ul>
+<h3 id="webrtc-track-properties">WebRTC track properties</h3>
+<p>The WebRTC track properties are related to the WebRTC video track that the component manages to send the video frames to the remote peer.</p>
+<ul>
+<li><p>The <strong>Track Name</strong> property, which corresponds to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_Track"><code>VideoSender.Track</code></a> field, is the name of the WebRTC track. This can be left empty; the implementation will generate a valid name for it.</p>
+</li>
+<li><p>The <strong>Preferred Video Codec</strong> property, which corresponds to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_PreferredVideoCodec"><code>VideoSender.PreferredVideoCodec</code></a> field, allows attempting to force the use of a particular video codec for the track. This property takes the SDP name of the video codec (a list of predefined values are also available). Note that this codec will be used for the track <strong>only if the implementation actually supports it</strong>. Otherwise the default codec selected by the implementation will be used and the value supplied by the user ignored.</p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p><strong>The H.264 video codec is only available on UWP platforms</strong> (including HoloLens). This means selecting this codec will prevent a UWP device from connecting with a non-UWP device if the UWP device makes the connection offer, as the non-UWP device will be unable to handle the H.264 request.</p>
+<p>More generally, for maximum compatibility, or when debugging some video issue, it is recommended to leave this setting to <strong>None</strong> to allow the implementation to maximize the chances of finding a compatible video codec that both peers support.</p>
+</div>
+</li>
+</ul>
+<h2 id="local-audio">Local audio</h2>
+<p>The concept of <em>local audio</em> is very similar to the one of <em>local video</em> and can also be decomposed into generating some audio frames, sending them to a remote peer through an audio track, and optionally outputting some local feedback to the user.</p>
+<p>Capturing some audio feed from a local audio capture device is covered by the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html"><code>MicrophoneSource</code></a> component, which represents an audio track capturing its audio frames from a microphone.</p>
+<h2 id="adding-a-microphone-source">Adding a microphone source</h2>
+<p>We continue to use the &quot;LocalMediaPlayer&quot; game object created earlier, and add a <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html"><code>MicrophoneSource</code></a> component to it.</p>
+<ul>
+<li>In the <strong>Hierarchy</strong> window, make sure the &quot;LocalMediaPlayer&quot; game object is selected.</li>
+<li>In the <strong>Inspector</strong> window, press the <strong>Add Component</strong> button at the bottom of the window, and select <strong>MixedReality-WebRTC</strong> &gt; <strong>Microphone Source</strong>.</li>
+</ul>
+<p><img src="helloworld-unity-8b.png" alt="Create a microphone source"></p>
+<p>The microphone source component contains few properties. In particular there is currently no option to configure the audio capture. We can leave all properties with their default values.</p>
+<h2 id="adding-transceivers">Adding transceivers</h2>
+<p>So far the components added are only creating audio and video tracks, but there is no link with any peer connection. This link is achieved through <em>transceivers</em>.</p>
+<p>A <em>transceiver</em> is a &quot;media pipe&quot; (audio or video) through which the peer connection transport the media between the local and remote peers. The transceivers are configured on the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> component directly, and reference the various <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioSender.html"><code>AudioSender</code></a> and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoSender.html"><code>VideoSender</code></a> components to be used to send and receive media through them.</p>
+<p>Let's add an audio transceiver and a video tranceiver, and attach to them the microphone and webcam sources to instruct the peer connection to send those media to the remote peer:</p>
+<ul>
+<li>In the <strong>Hierarchy</strong> window, select the game object with the peer connection component.</li>
+<li>In the <strong>Inspector</strong> window, under the <strong>Transceivers</strong> list, press the <strong>+ Audio</strong> and the <strong>+ Video</strong> to add an audio transceiver and a video transceiver, respectively.</li>
+<li>For the first transceiver (audio), assign the <strong>Audio Sender</strong> property to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html"><code>MicrophoneSource</code></a> component created previously.</li>
+<li>For the second transceiver (video), assign the <strong>Video Sender</strong> property to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html"><code>WebcamSource</code></a> component created previously.</li>
+</ul>
+<p><img src="helloworld-unity-8c.png" alt="Create a microphone source"></p>
+<p>Each transceiver displays an icon indicating the type of media (audio or video). Under that media icon, a direction icon indicates the desired direction of the transceiver based on the configured senders and receivers. Here we added a sender to each transceiver, therefore the direction icon points to the right (send) only.</p>
 <h2 id="adding-a-media-player">Adding a media player</h2>
-<p>We said before that the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html"><code>LocalVideoSource</code></a> component covers both sending the video feed to the remote peer and displaying it locally. This is partially incorrect. The local video source plugs into the peer connection and the video capture device, and exposes some C# event to access the video frames produced by that video device. But it does not do any rendering itself.</p>
-<p>In order to render the video frames of the local video capture device, MixedReality-WebRTC offers a simple <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html"><code>MediaPlayer</code></a> component which uses a Unity <a href="https://docs.unity3d.com/ScriptReference/Texture2D.html"><code>Texture2D</code></a> object and renders the video frames to it. This texture is then applied to the material of a <a href="https://docs.unity3d.com/ScriptReference/Renderer.html"><code>Renderer</code></a> component to be displayed in Unity on a mesh.</p>
+<p>We said before that the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoSender.html"><code>VideoSender</code></a> base component covers both sending the video feed to the remote peer and displaying it locally. This was a simplification, and is partially incorrect. The video sender plugs into the video track and exposes some C# event to access the video frames that the video track consumes. But it does not do any rendering itself.</p>
+<p>In order to simplify rendering those video frames, MixedReality-WebRTC offers a simple <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html"><code>MediaPlayer</code></a> component which uses some Unity <a href="https://docs.unity3d.com/ScriptReference/Texture2D.html"><code>Texture2D</code></a> to render the video frames. The textures are then applied to the material of a <a href="https://docs.unity3d.com/ScriptReference/Renderer.html"><code>Renderer</code></a> component via a custom shader to be displayed in Unity on a mesh.</p>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p>The local audio captured by the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html"><code>MicrophoneSource</code></a> component is directly sent to the remote peer, and unlike video there is currently no possible way to access the raw audio frames captured by this component. This is a limitation of the underlying audio capture implementation (see issue <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/92">#92</a>). It is anyway critical to add this component to capture the audio and send it to the remote peer.</p>
+</div>
 <p>Let's add a <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html"><code>MediaPlayer</code></a> component on our game object:</p>
 <ul>
 <li>In the <strong>Inspector</strong> window, press the <strong>Add Component</strong> button at the bottom of the window, and select <strong>MixedReality-WebRTC</strong> &gt; <strong>MediaPlayer</strong></li>
@@ -124,19 +199,27 @@
 <p>After that, set the component properties as follow:</p>
 <ul>
 <li>In the <strong>Mesh Filter</strong> component, set the <strong>Mesh</strong> property to the built-in Unity <strong>Quad</strong> mesh. This is a simple square mesh on which the texture containing the video feed will be applied.</li>
-<li>The built-in <strong>Quad</strong> mesh size is quite small for rendering a video, so go to the <strong>Transform</strong> component and increase the scale to <code>(5,5,1)</code>.</li>
+<li>The built-in <strong>Quad</strong> mesh size is quite small for rendering a video, so go to the <strong>Transform</strong> component and increase the scale to <code>(4,3,1)</code>. This will produce a 4:3 aspect ratio for the mesh, which is generally, if not equal to, at least pretty close to the actual video frame aspect ratio, and therefore will reduce/prevent distorsions.</li>
 <li>In the <strong>Mesh Renderer</strong> component, expand the <strong>Materials</strong> array and set the first material <strong>Element 0</strong> to the  <code>YUVFeedMaterial</code> material located in the <code>Assets/Microsoft.MixedReality.WebRTC.Unity/Materials</code> folder. This instructs Unity to use that special material and its associated shader to render the video texture on the quad mesh. More on that later.</li>
-<li>In the <strong>Media Player</strong> component, set the <strong>Video Source</strong> property to the local video source component previously added to the same game object. This instructs the media player to connect to the local video source for retrieving the video frames that it will copy to the video texture for rendering.</li>
+<li>In the <strong>Media Player</strong> component, set the <strong>Video Source</strong> property to the webcam source component previously added to the same game object. This instructs the media player to connect to the webcam source for retrieving the video frames that it will copy to the video texture for rendering.</li>
+<li>Note that the <strong>Audio Source</strong> property is left to <strong>None</strong>. There are 2 reasons for this:
+<ul>
+<li>The most important is that unlike video, in most contexts local audio feedback is generally not recommended from a user experience perspective, as hearing one's own voice while talking is distracting.</li>
+<li>More practically, assigning the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html"><code>MicrophoneSource</code></a> component has currently no effect due to issue <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/92">#92</a>, as the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html"><code>MediaPlayer</code></a> component cannot access the raw audio frames captured by the microphone.</li>
+</ul>
+</li>
 </ul>
 <p>This should result in a setup looking like this:</p>
-<p><img src="helloworld-unity-10.png" alt="Configuring the media player to render the local video source"></p>
-<p>And the <strong>Game</strong> view should display a pink square, which materializes the quad mesh:</p>
-<p><img src="helloworld-unity-11.png" alt="The game view shows the quad in pink"></p>
-<p>A word on the <code>YUVFeedMaterial</code> material here. The video frames coming from the local video source are encoded using the I420 format. Unity on the other hand, and more specifically the GPU it abstracts, generally don't support directly rendering I420-encoded textures. So the <code>YUVFeedMaterial</code> material is using a custom shader called <code>YUVFeedShader (Unlit)</code> to load the I420-encoded video frame from the video texture, and convert it to ARGB on the fly before rendering the quad. This GPU-based conversion is very efficient and avoids any software processing on the CPU before uploading the video texture to the GPU. This is how <code>LocalVideoSource</code> is able to directly copy the I420-encoded video frames coming from the WebRTC core implementation into a texture without further processing, and <code>MediaPlayer</code> is able to render them on a quad mesh.</p>
+<p><img src="helloworld-unity-10.png" alt="Configuring the media player to render the webcam source"></p>
+<p>And the <strong>Game</strong> view should display a black rectangle, which materializes the quad mesh:</p>
+<p><img src="helloworld-unity-11.png" alt="The Game view shows the black quad"></p>
+<p>A word about the <code>YUVFeedMaterial</code> material here. The video frames coming from the webcam source are encoded using the I420 format. This format contains 3 separate components : the luminance Y, and the chroma U and V. Unity on the other hand, and more specifically the GPU it abstracts, generally don't support directly rendering I420-encoded images. So the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html"><code>MediaPlayer</code></a> component is uploading the video data for the Y, U, and V channels into 3 separate <a href="https://docs.unity3d.com/ScriptReference/Texture2D.html"><code>Texture2D</code></a> objects, and the <code>YUVFeedMaterial</code> material is using a custom shader called <code>YUVFeedShader (Unlit)</code> to sample those textures and convert the YUV value to an ARGB value on the fly before rendering the quad with it. This GPU-based conversion is very efficient and avoids any software processing on the CPU before uploading the video data to the GPU. This is how <code>WebcamSource</code> is able to directly copy the I420-encoded video frames coming from the WebRTC core implementation into some textures without further processing, and <code>MediaPlayer</code> is able to render them on a quad mesh.</p>
 <h2 id="test-the-local-video">Test the local video</h2>
-<p>At this point the local audio source and the media player are configured to open the local video capture device (webcam) of the local machine the Unity Editor is running on, and display the video feed to that quad mesh in the scene.</p>
-<p>Press the <strong>Play</strong> button in the Unity Editor. After a few seconds (depending on the device) the video should appear over the quad mesh.</p>
+<p>At this point the webcam source and the media player are configured to open the local video capture device (webcam) of the local machine the Unity Editor is running on, and display the video feed to that quad mesh in the scene. The audio is also captured from the microphone, but since there is no feedback for this, there is no opportunity to observe it.</p>
+<p>Press the <strong>Play</strong> button in the Unity Editor. After a few seconds or less (depending on the device) the video should appear over the quad mesh.</p>
 <p><img src="helloworld-unity-12.png" alt="Local video feed rendering in the Unity editor"></p>
+<hr>
+<p>Next : <a href="helloworld-unity-remotevideo.html">Adding remote video</a></p>
 </article>
           </div>
           

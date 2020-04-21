@@ -8,7 +8,7 @@
     <title>Unity MediaPlayer component | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Unity MediaPlayer component | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -102,15 +102,15 @@
 </tr>
 <tr>
 <td>AudioSource</td>
-<td>Reference to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioSource.html"><code>AudioSource</code></a> instance that the media player outputs the audio of.</td>
+<td>Reference to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioSender.html"><code>AudioSender</code></a> or <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioSender.html"><code>AudioReceiver</code></a> instance that the media player outputs the audio of. This property is of type <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaSource.html"><code>MediaSource</code></a>, but only instances of classes implementing the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.IAudioSource.html"><code>IAudioSource</code></a> interface are valid.</td>
 </tr>
 <tr>
 <td>VideoSource</td>
-<td>Reference to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoSource.html"><code>VideoSource</code></a> instance that the media player renders the video of.</td>
+<td>Reference to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoSender.html"><code>VideoSender</code></a> or <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html"><code>VideoReceiver</code></a> instance that the media player renders the video of. This property is of type <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaSource.html"><code>MediaSource</code></a>, but only instances of classes implementing the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html"><code>IVideoSource</code></a> interface are valid.</td>
 </tr>
 <tr>
 <td>MaxVideoFramerate</td>
-<td>Maximum number of frames per second rendered. Extra frames coming from the video source are discarded.</td>
+<td>Maximum number of video frames per second rendered. Extra frames coming from the video source are discarded.</td>
 </tr>
 <tr>
 <td><strong>Statistics</strong></td>

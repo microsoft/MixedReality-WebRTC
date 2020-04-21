@@ -8,7 +8,7 @@
     <title>Unity integration overview | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Unity integration overview | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -87,13 +87,13 @@
 <ul>
 <li>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> component is the entry point for configuring and establishing a peer-to-peer connection.</li>
 <li>The peer connection component makes use of a <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> to handle the <a href="https://en.wikipedia.org/wiki/Session_Description_Protocol">SDP</a> messages dispatching until the direct peer-to-peer connection can be established.</li>
-<li>Audio and video tracks from a local audio(microphone) and video (webcam) capture device are handled by the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.html"><code>LocalAudioSource</code></a> and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSource.html"><code>LocalVideoSource</code></a> components, respectively.</li>
-<li>For remote tracks, similarly the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.RemoteAudioSource.html"><code>RemoteAudioSource</code></a> and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.RemoteVideoSource.html"><code>RemoteVideoSource</code></a> respectively handle configuring a remote audio and video track streamed from the remote peer.</li>
+<li>Audio and video tracks from a local audio (microphone) and video (webcam) capture device are handled by the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html"><code>MicrophoneSource</code></a> and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html"><code>WebcamSource</code></a> components, respectively.</li>
+<li>For remote tracks, similarly the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html"><code>AudioReceiver</code></a> and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html"><code>VideoReceiver</code></a> respectively handle configuring a remote audio and video track streamed from the remote peer.</li>
 <li>Rendering of both local and remote media tracks is handled by the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html"><code>MediaPlayer</code></a> component, which connects to a video source and renders it using a custom shader into a Unity Texture2D object which is later applied on a mesh to be rendered in the scene.</li>
 </ul>
 <div class="WARNING">
 <h5>Warning</h5>
-<p>Currently the remote audio stream is sent directly to the local audio out device, without any interaction with the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html"><code>MediaPlayer</code></a> component, while the local audio stream is never rendered (heard) locally. This is due to the lack of audio callbacks, not yet implemented on the wrapped <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html"><code>PeerConnection</code></a> object from the underlying C# library.</p>
+<p>Currently the remote audio stream is sent directly to the local audio out device (see issue <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/92">#92</a>), without any interaction with the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html"><code>MediaPlayer</code></a> component, while the local audio stream is never played out locally, only streamed to the remote peer.</p>
 </div>
 </article>
           </div>

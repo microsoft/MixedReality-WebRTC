@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace Microsoft.MixedReality.WebRTC
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -95,13 +95,23 @@
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a></h4>
       <section><p>Encapsulates a data channel of a peer connection.</p>
-<p>A data channel is a pipe allowing to send and receive arbitrary data to the
+<p>A data channel is a &quot;pipe&quot; allowing to send and receive arbitrary data to the
 remote peer. Data channels are based on DTLS-SRTP, and are therefore secure (encrypted).
 Exact security guarantees are provided by the underlying WebRTC core implementation
 and the WebRTC standard itself.</p>
-<p><a href="https://tools.ietf.org/wg/rtcweb/">https://tools.ietf.org/wg/rtcweb/</a></p>
-<p>An instance of <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a> is created by calling <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddDataChannelAsync_System_String_System_Boolean_System_Boolean_">AddDataChannelAsync(String, Boolean, Boolean)</a>
-or one of its variants. <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a> cannot be instantiated directly.</p>
+<p><a href="https://tools.ietf.org/wg/rtcweb/">https://tools.ietf.org/wg/rtcweb/</a>
+<a href="https://www.w3.org/TR/webrtc/">https://www.w3.org/TR/webrtc/</a></p>
+<p>An instance of <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a> is created either by manually calling
+<see cref="!:PeerConnection.AddDataChannelAsync(string,bool,bool,System.Threading.CancellationToken)"></see>
+or one of its variants, or automatically by the implementation when a new data channel
+is created in-band by the remote peer (<a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAdded">DataChannelAdded</a>).
+<a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a> cannot be instantiated directly.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannelNotOpenException.html">DataChannelNotOpenException</a></h4>
+      <section><p>Exception thrown when trying to use a data channel that is not open.</p>
+<p>The user should listen to the <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_StateChanged">StateChanged</a> event until the
+<a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_State">State</a> property is <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.ChannelState.html#Microsoft_MixedReality_WebRTC_DataChannel_ChannelState_Open">Open</a>
+before trying to send some message with <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___">SendMessage(Byte[])</a>.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html">ExternalVideoTrackSource</a></h4>
       <section><p>Video source for WebRTC video tracks based on a custom source
@@ -127,12 +137,22 @@ but receives an invalid handle instead.</p>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Library.html">Library</a></h4>
       <section><p>Container for library-wise global settings of MixedReality-WebRTC.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalAudioTrack.html">LocalAudioTrack</a></h4>
+      <section><p>Audio track sending to the remote peer audio frames originating from
+a local track source (local microphone or other audio recording device).</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalAudioTrackSettings.html">LocalAudioTrackSettings</a></h4>
+      <section><p>Settings for adding a local audio track backed by a local audio capture device (e.g. microphone).</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html">LocalVideoTrack</a></h4>
       <section><p>Video track sending to the remote peer video frames originating from
 a local track source.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings.html">LocalVideoTrackSettings</a></h4>
       <section><p>Settings for adding a local video track backed by a local video capture device (e.g. webcam).</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.MediaTrack.html">MediaTrack</a></h4>
+      <section><p>Base class for media tracks sending to or receiving from the remote peer.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.MovingAverage.html">MovingAverage</a></h4>
       <section><p>Utility to manage a moving average of a time series.</p>
@@ -147,6 +167,12 @@ The various stats objects can be read through <a class="xref" href="Microsoft.Mi
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html">PeerConnectionConfiguration</a></h4>
       <section><p>Configuration to initialize a <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html">PeerConnection</a>.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html">RemoteAudioTrack</a></h4>
+      <section><p>Audio track receiving audio frames from the remote peer.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html">RemoteVideoTrack</a></h4>
+      <section><p>Video track receiving video frames from the remote peer.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html">SctpNotNegotiatedException</a></h4>
       <section><p>Exception thrown when trying to add a data channel to a peer connection after
 a connection to a remote peer was established without an SCTP handshake.
@@ -157,6 +183,23 @@ SCTP handshake during the connection.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.TaskExtensions.html">TaskExtensions</a></h4>
       <section><p>Collection of extension methods for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a>.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.html">Transceiver</a></h4>
+      <section><p>Transceiver of a peer connection.</p>
+<p>A transceiver is a media &quot;pipe&quot; connecting the local and remote peers, and used to transmit media
+data (audio or video) between the peers. The transceiver has a media flow direction indicating whether
+it is sending and/or receiving any media, or is inactive. When sending some media, the transceiver's
+local track is used as the source of that media. Conversely, when receiving some media, that media is
+delivered to the remote media track of the transceiver. As a convenience, the local track can be null
+if the local peer does not have anything to send. In that case some empty media is automatically sent
+instead (black frames for video, silence for audio) at very reduced rate. To completely stop sending,
+the media direction must be changed instead.</p>
+<p>Transceivers are owned by the peer connection which creates them, and cannot be destroyed nor removed
+from the peer connection. They become invalid when the peer connection is closed, and should not be
+used after that.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.TransceiverInitSettings.html">TransceiverInitSettings</a></h4>
+      <section><p>Settings to create a new transceiver wrapper.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html">VideoFrameQueue&lt;T&gt;</a></h4>
       <section><p>Small queue of video frames received from a source and pending delivery to a sink.
@@ -220,11 +263,17 @@ and <a href="https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*">https://www
 </section>
     <h3 id="interfaces">Interfaces
   </h3>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IAudioTrack.html">IAudioTrack</a></h4>
+      <section><p>Interface for audio tracks, whether local or remote.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IVideoFrameQueue.html">IVideoFrameQueue</a></h4>
       <section><p>Interface for a queue of video frames.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IVideoFrameStorage.html">IVideoFrameStorage</a></h4>
       <section><p>Interface for a storage of a single video frame.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IVideoTrack.html">IVideoTrack</a></h4>
+      <section><p>Interface for video tracks, whether local or remote.</p>
 </section>
     <h3 id="enums">Enums
   </h3>
@@ -233,8 +282,7 @@ and <a href="https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*">https://www
 See <a href="https://www.w3.org/TR/webrtc/#rtcbundlepolicy-enum">https://www.w3.org/TR/webrtc/#rtcbundlepolicy-enum</a>.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.ChannelState.html">DataChannel.ChannelState</a></h4>
-      <section><p>Connecting state of a data channel, when adding it to a peer connection
-or removing it from a peer connection.</p>
+      <section><p>Connection state of a data channel.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.IceConnectionState.html">IceConnectionState</a></h4>
       <section><p>State of an ICE connection.</p>
@@ -248,6 +296,9 @@ or removing it from a peer connection.</p>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags.html">Library.ShutdownOptionsFlags</a></h4>
       <section><p>Options for library shutdown.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.MediaKind.html">MediaKind</a></h4>
+      <section><p>Type of media track or media transceiver.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html">PeerConnection.FrameHeightRoundMode</a></h4>
       <section><p>Frame height round mode.</p>
 </section>
@@ -256,6 +307,9 @@ or removing it from a peer connection.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.SdpSemantic.html">SdpSemantic</a></h4>
       <section><p>SDP semantic used for (re)negotiating a peer connection.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.Direction.html">Transceiver.Direction</a></h4>
+      <section><p>Direction of the media flowing inside the transceiver.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoProfileKind.html">VideoProfileKind</a></h4>
       <section><p>Kind of video profile. This corresponds to the <see xref="Windows.Media.Capture.KnownVideoProfile"></see>
@@ -286,6 +340,12 @@ and is ready for consumption.</p>
       <section><p>Callback invoked when the WebRTC pipeline needs an external video source to generate
 a new video frame for the track(s) it is connected to.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.AudioTrackAddedDelegate.html">PeerConnection.AudioTrackAddedDelegate</a></h4>
+      <section><p>Delegate for <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioTrackAdded">AudioTrackAdded</a> event.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.AudioTrackRemovedDelegate.html">PeerConnection.AudioTrackRemovedDelegate</a></h4>
+      <section><p>Delegate for <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioTrackRemoved">AudioTrackRemoved</a> event.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate.html">PeerConnection.DataChannelAddedDelegate</a></h4>
       <section><p>Delegate for <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAdded">DataChannelAdded</a> event.</p>
 </section>
@@ -303,6 +363,21 @@ a new video frame for the track(s) it is connected to.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadyToSendDelegate.html">PeerConnection.LocalSdpReadyToSendDelegate</a></h4>
       <section><p>Delegate for <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend">LocalSdpReadytoSend</a> event.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.TransceiverAddedDelegate.html">PeerConnection.TransceiverAddedDelegate</a></h4>
+      <section><p>Delegate for <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TransceiverAdded">TransceiverAdded</a> event.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackAddedDelegate.html">PeerConnection.VideoTrackAddedDelegate</a></h4>
+      <section><p>Delegate for <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoTrackAdded">VideoTrackAdded</a> event.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackRemovedDelegate.html">PeerConnection.VideoTrackRemovedDelegate</a></h4>
+      <section><p>Delegate for <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_VideoTrackRemoved">VideoTrackRemoved</a> event.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.TransceiverAssociatedDelegate.html">TransceiverAssociatedDelegate</a></h4>
+      <section><p>Delegate for the <a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_Associated">Associated</a> event.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.TransceiverDirectionChangedDelegate.html">TransceiverDirectionChangedDelegate</a></h4>
+      <section><p>Delegate for the <a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_DirectionChanged">DirectionChanged</a> event.</p>
 </section>
 </article>
           </div>

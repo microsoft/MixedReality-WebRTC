@@ -8,7 +8,7 @@
     <title>Establishing a WebRTC connection | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Establishing a WebRTC connection | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -95,8 +95,11 @@ _peerConnection.IceStateChanged += (IceConnectionState newState) =&gt; {
 </code></pre>
 <p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event is invoked when the peer connection is established, that is when an offer/answer pair is successfully exchanged. The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceStateChanged"><code>IceStateChanged</code></a> is invoked each time the ICE status changes. Note that the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event can be invoked before the ICE status reaches its <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.IceConnectionState.html"><code>IceConnectionState.Connected</code></a> state.</p>
 </li>
-<li><p>In order to render the remote video, we also subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_I420ARemoteVideoFrameReady"><code>I420ARemoteVideoFrameReady</code></a> event.</p>
-<pre><code class="lang-cs">_peerConnection.I420ARemoteVideoFrameReady += Peer_RemoteI420AFrameReady;
+<li><p>In order to render the remote video, we also subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html#Microsoft_MixedReality_WebRTC_RemoteVideoTrack_I420AVideoFrameReady"><code>RemoteVideoTrack.I420AVideoFrameReady</code></a> event. This requires accessing the remote video track, which is only available once the connection is established and the track created during the session negotiation.</p>
+<pre><code class="lang-cs">_peerConnection.VideoTrackAdded += (RemoteVideoTrack track) =&gt; {
+    _remoteVideoTrack = track;
+    _remoteVideoTrack.I420AVideoFrameReady += RemoteVideo_I420AFrameReady;
+};
 </code></pre>
 </li>
 </ol>
@@ -120,7 +123,7 @@ else
 </code></pre>
 </li>
 <li><p>Implement the handler with the newly created members:</p>
-<pre><code class="lang-cs">private void Peer_RemoteI420AFrameReady(I420AVideoFrame frame)
+<pre><code class="lang-cs">private void RemoteVideo_I420AFrameReady(I420AVideoFrame frame)
 {
     lock (_remoteVideoLock)
     {

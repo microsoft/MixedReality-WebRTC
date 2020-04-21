@@ -8,7 +8,7 @@
     <title>Creating a project | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Creating a project | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -102,7 +102,7 @@
 <p><img src="cs-uwp2.png" alt="The Blank App (Universal Window) project template"></p>
 <p>When prompted to select a platform version, chose a version of at least <strong>Windows 10, version 1803 (10.0; Build 17134)</strong> or higher, as older versions are not officially supported by MixedReality-WebRTC. For HoloLens 2 development, it is strongly recommended to select at least <strong>Windows 10, version 1903 (10.0; Build 18362)</strong> to be able to use the latest OS APIs, although those are not used in this tutorial.</p>
 <p>Visual Studio 2019 generates a C# project (<code>.csproj</code>) and solution (<code>.sln</code>). In this tutorial we use the default name <code>App1</code>, therefore we get the following hierarchy:</p>
-<pre><code>- App1/
+<pre><code class="lang-shell">- App1/
   - Assets/
   - App.xaml
   - App.xaml.cs
@@ -176,7 +176,7 @@ using Windows.ApplicationModel;
 </li>
 </ol>
 <p>Launch the app again. The main window is still empty, but the <strong>Output window</strong> of Visual Studio 2019 (<strong>View</strong> &gt; <strong>Output</strong>, or <strong>Alt + 2</strong>) should show a list of devices. This list depends on the actual host device running the app, but looks something like:</p>
-<pre><code>Webcam &lt;some device name&gt; (id: &lt;some device ID&gt;)
+<pre><code class="lang-shell">Webcam &lt;some device name&gt; (id: &lt;some device ID&gt;)
 </code></pre>
 <p>Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see <a href="cref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings)"><code>PeerConnection.AddLocalVideoTrackAsync</code></a>).</p>
 <p>If this is the first time that <code>MediaCapture.InitializeAsync()</code> is requesting access to the webcam and microhpone, Windows displays a prompt asking the user for confirmation. You must click <strong>Yes</strong>, otherwise access to the microphone and webcam will be denied, and WebRTC will not be able to use them. This is part of the standard UWP capability mechanism for security and privacy.</p>

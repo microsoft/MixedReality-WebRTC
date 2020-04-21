@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class LocalAudioSource
+    <title>Class Signaler.IceMessage
    | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class LocalAudioSource
+    <meta name="title" content="Class Signaler.IceMessage
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,124 +81,103 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage">
   
   
-  <h1 id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource" class="text-break">Class LocalAudioSource
+  <h1 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage" class="text-break">Class Signaler.IceMessage
   </h1>
-  <div class="markdown level0 summary"><p>This component represents a local audio source added as an audio track to an
-existing WebRTC peer connection and sent to the remote peer. The audio track
-can optionally be rendered locally with a <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html">MediaPlayer</a>.</p>
-</div>
+  <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSource.html">AudioSource</a></div>
-    <div class="level2"><span class="xref">LocalAudioSource</span></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html">Signaler.Message</a></div>
+    <div class="level2"><span class="xref">Signaler.IceMessage</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioSource_AudioStreamStarted">AudioSource.AudioStreamStarted</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_Type">Signaler.Message.Type</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioSource_AudioStreamStopped">AudioSource.AudioStreamStopped</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_syntax">Syntax</h5>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class LocalAudioSource : AudioSource</code></pre>
+    <pre><code class="lang-csharp hljs">[Serializable]
+public class IceMessage : Signaler.Message</code></pre>
   </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage__ctor_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage.#ctor*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage__ctor_System_String_System_Int32_System_String_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage.#ctor(System.String,System.Int32,System.String)">IceMessage(String, Int32, String)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IceMessage(string sdpMid, int sdpMlineIndex, string candidate)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">sdpMid</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">sdpMlineIndex</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">candidate</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="fields">Fields
   </h3>
   
   
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_AutoAddTrack" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.AutoAddTrack">AutoAddTrack</h4>
-  <div class="markdown level1 summary"><p>Automatically register as an audio track when the peer connection is ready.</p>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage_Data" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage.Data">Data</h4>
+  <div class="markdown level1 summary"><p>The ICE message content.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool AutoAddTrack</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_AutoStartCapture" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.AutoStartCapture">AutoStartCapture</h4>
-  <div class="markdown level1 summary"><p>Automatically start local audio capture when this component is enabled.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool AutoStartCapture</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_PeerConnection" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.PeerConnection">PeerConnection</h4>
-  <div class="markdown level1 summary"><p>Peer connection this local audio source will add an audio track to.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PeerConnection PeerConnection</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html">PeerConnection</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_PreferredAudioCodec" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.PreferredAudioCodec">PreferredAudioCodec</h4>
-  <div class="markdown level1 summary"><p>Name of the preferred audio codec, or empty to let WebRTC decide.
-See <a href="https://en.wikipedia.org/wiki/RTP_audio_video_profile">https://en.wikipedia.org/wiki/RTP_audio_video_profile</a> for the standard SDP names.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string PreferredAudioCodec</code></pre>
+    <pre><code class="lang-csharp hljs">public string Data</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -215,48 +194,31 @@ See <a href="https://en.wikipedia.org/wiki/RTP_audio_video_profile">https://en.w
       </tr>
     </tbody>
   </table>
-  <h3 id="methods">Methods
-  </h3>
   
   
-  <a id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_Awake_" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.Awake*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_Awake" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.Awake">Awake()</h4>
-  <div class="markdown level1 summary"></div>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage_IceDataSeparator" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage.IceDataSeparator">IceDataSeparator</h4>
+  <div class="markdown level1 summary"><p>The data separator needed for proper ICE serialization.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected void Awake()</code></pre>
+    <pre><code class="lang-csharp hljs">public string IceDataSeparator</code></pre>
   </div>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_OnDestroy_" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.OnDestroy*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_OnDestroy" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.OnDestroy">OnDestroy()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected void OnDestroy()</code></pre>
-  </div>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_OnDisable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.OnDisable*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_OnDisable" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.OnDisable">OnDisable()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected void OnDisable()</code></pre>
-  </div>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_OnEnable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.OnEnable*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_LocalAudioSource_OnEnable" data-uid="Microsoft.MixedReality.WebRTC.Unity.LocalAudioSource.OnEnable">OnEnable()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected void OnEnable()</code></pre>
-  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
 </article>
           </div>
           

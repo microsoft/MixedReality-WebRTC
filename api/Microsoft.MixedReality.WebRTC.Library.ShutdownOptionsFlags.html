@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Enum Library.ShutdownOptionsFlags
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -106,13 +106,21 @@
     <thead>
     <tbody>
       <tr>
+        <td id="Microsoft_MixedReality_WebRTC_Library_ShutdownOptionsFlags_DebugBreakOnForceShutdown">DebugBreakOnForceShutdown</td>
+        <td><p>When forcing shutdown, either because <a class="xref" href="Microsoft.MixedReality.WebRTC.Library.html#Microsoft_MixedReality_WebRTC_Library_ForceShutdown">ForceShutdown()</a> is called or
+because the program terminates, and some objects are still alive, attempt
+to break into the debugger. This is not available for all platforms.</p>
+</td>
+      </tr>
+      <tr>
         <td id="Microsoft_MixedReality_WebRTC_Library_ShutdownOptionsFlags_Default">Default</td>
         <td><p>Default options.</p>
 </td>
       </tr>
       <tr>
         <td id="Microsoft_MixedReality_WebRTC_Library_ShutdownOptionsFlags_LogLiveObjects">LogLiveObjects</td>
-        <td><p>Log with <a class="xref" href="Microsoft.MixedReality.WebRTC.Library.html#Microsoft_MixedReality_WebRTC_Library_ReportLiveObjects">ReportLiveObjects()</a> all objects still alive, to help debugging.</p>
+        <td><p>Log with <a class="xref" href="Microsoft.MixedReality.WebRTC.Library.html#Microsoft_MixedReality_WebRTC_Library_ReportLiveObjects">ReportLiveObjects()</a> all objects still alive, to help debugging.
+This is recommended to prevent deadlocks during shutdown.</p>
 </td>
       </tr>
       <tr>

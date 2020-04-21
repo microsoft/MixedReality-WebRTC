@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class PeerConnection
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -339,31 +339,6 @@ to manually initialize the peer connection before it can be used for any purpose
       </tr>
     </tbody>
   </table>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Signaler" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Signaler">Signaler</h4>
-  <div class="markdown level1 summary"><p>Signaler to use to establish the connection.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Signaler Signaler</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html">Signaler</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="properties">Properties
   </h3>
   
@@ -399,6 +374,63 @@ to manually initialize the peer connection before it can be used for any purpose
   </h3>
   
   
+  <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AddMediaLine_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AddMediaLine*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AddMediaLine_MediaKind_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AddMediaLine(MediaKind)">AddMediaLine(MediaKind)</h4>
+  <div class="markdown level1 summary"><p>Add a new media line of the given kind.</p>
+<p>This method creates a media line, which expresses an intent from the user to get a transceiver.
+The actual <see xref="WebRTC.Transceiver"></see> object creation is delayed until a session
+negotiation is completed.</p>
+<p>Once the media line is created, the user can then assign its <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Sender">Sender</a> and
+<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Receiver">Receiver</a> properties to express their intent to send and/or receive some media
+through the transceiver that will be associated with that media line once a session is negotiated.
+This information is used in subsequent negotiations to derive a
+<see xref="Microsoft.MixedReality.WebRTC.Transceiver.Direction"></see> to negotiate. Therefore users
+should avoid modifying the <see cref="!:Transceiver.DesiredDirection"></see> property manually when using
+the Unity library, and instead modify the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Sender">Sender</a> and
+<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Receiver">Receiver</a> properties.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MediaLine AddMediaLine(MediaKind kind)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MediaKind</span></td>
+        <td><span class="parametername">kind</span></td>
+        <td><p>The kind of media (audio or video) for the transceiver.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html">MediaLine</a></td>
+        <td><p>A newly created media line, which will be associated with a transceiver once the next session
+is negotiated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_GetVideoCaptureDevicesAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.GetVideoCaptureDevicesAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_GetVideoCaptureDevicesAsync" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.GetVideoCaptureDevicesAsync">GetVideoCaptureDevicesAsync()</h4>
   <div class="markdown level1 summary"><p>Enumerate the video capture devices available as a WebRTC local video feed source.</p>
@@ -426,9 +458,73 @@ to manually initialize the peer connection before it can be used for any purpose
   </table>
   
   
+  <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_HandleConnectionMessageAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.HandleConnectionMessageAsync*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_HandleConnectionMessageAsync_System_String_System_String_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.HandleConnectionMessageAsync(System.String,System.String)">HandleConnectionMessageAsync(String, String)</h4>
+  <div class="markdown level1 summary"><p>Pass the given SDP description received from the remote peer via signaling to the
+underlying WebRTC implementation, which will parse and use it.</p>
+<p>This must be called by the signaler when receiving a message. Once this operation
+has completed, it is safe to call <see xref="WebRTC.PeerConnection.CreateAnswer"></see>.</p>
+<div class="IMPORTANT alert alert-important">
+<h5>IMPORTANT</h5>
+<p>
+This method is very similar to the <code>SetRemoteDescriptionAsync()</code> method available in the
+underlying C# library, and actually calls it. However it also performs additional work in order
+to pair the transceivers of the local and remote peer. Therefore Unity applications must call
+this method instead of the C# library one to ensure transceiver pairing works as intended.
+</p>
+</div>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task HandleConnectionMessageAsync(string type, string sdp)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">type</span></td>
+        <td><p>The type of SDP message (&quot;offer&quot; or &quot;answer&quot;)</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">sdp</span></td>
+        <td><p>The content of the SDP message</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>A task which completes once the remote description has been applied and transceivers
+have been updated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
   <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_System_Threading_CancellationToken_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(System.Threading.CancellationToken)">InitializeAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Initialize the underlying WebRTC libraries</p>
+  <div class="markdown level1 summary"><p>Initialize the underlying WebRTC peer connection.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -468,8 +564,64 @@ to manually initialize the peer connection before it can be used for any purpose
     </tbody>
   </table>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This function is asynchronous, to monitor it's status bind a handler to OnInitialized and OnError</p>
+  <div class="markdown level1 remarks"><p>This method must be called once before using the peer connection. If <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AutoInitializeOnStart">AutoInitializeOnStart</a>
+is <code>true</code> then it is automatically called during <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.</p>
+<p>This method is asynchronous and completes its task when the initializing completed.
+On successful completion, it also trigger the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_OnInitialized">OnInitialized</a> event.
+Note however that this completion is free-threaded and complete immediately when the
+underlying peer connection is initialized, whereas any <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_OnInitialized">OnInitialized</a>
+event handler is invoked when control returns to the main Unity app thread. The former
+is faster, but does not allow accessing the underlying peer connection because it
+returns before <span class="xref">Microsoft.MixedReality.WebRTC.Unity.PeerConnection.OnPostInitialize</span> executed. Therefore it is generally
+recommended to listen to the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_OnInitialized">OnInitialized</a> event, and ignore the returned
+<see xref="System.Threading.Tasks.Task"></see> object.</p>
+<p>If the peer connection is already initialized, this method returns immediately with
+a <see xref="System.Threading.Tasks.Task.CompletedTask"></see> object. The caller can check
+that the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Peer">Peer</a> property is non-<code>null</code> to confirm that the connection
+is in fact initialized.</p>
 </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_StartConnection_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.StartConnection*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_StartConnection" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.StartConnection">StartConnection()</h4>
+  <div class="markdown level1 summary"><p>Create a new connection offer, either for a first connection to the remote peer, or for
+renegotiating some new or removed transceivers.</p>
+<p>This method submits an internal task to create an SDP offer message. Once the message is
+created, the implementation raises the <see xref="Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadytoSend"></see>
+event to allow the user to send the message via the chosen signaling solution to the remote
+peer.</p>
+<div class="IMPORTANT alert alert-important">
+<h5>IMPORTANT</h5>
+<p>
+This method is very similar to the <code>CreateOffer()</code> method available in the underlying C# library,
+and actually calls it. However it also performs additional work in order to pair the transceivers of
+the local and remote peer. Therefore Unity applications must call this method instead of the C# library
+one to ensure transceiver pairing works as intended.
+</p>
+</div>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool StartConnection()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><code>true</code> if the offer creation task was submitted successfully, and <code>false</code> otherwise.
+The offer SDP message is always created asynchronously.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Uninitialize_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Uninitialize*"></a>

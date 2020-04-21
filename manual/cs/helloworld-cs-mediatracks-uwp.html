@@ -8,7 +8,7 @@
     <title>Add local media tracks | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Add local media tracks | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.51.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -89,22 +89,46 @@
 </ul>
 <p>The first case is benefical in the sense that media tracks will be immediately negotiated during the connection establishing, without the need for an extra negotiation specific for the tracks. However it requires knowing in advance that the tracks are used. Conversely, the latter case corresponds to a scenario like late joining, where the user or the application can control when to add or remove local tracks, at the expense of requiring an extra network negotiation each time the list of tracks is changed.</p>
 <p>In this tutorial, we add the local media tracks right away for simplicity.</p>
-<h2 id="adding-the-tracks">Adding the tracks</h2>
+<h2 id="creating-the-tracks">Creating the tracks</h2>
 <p>Continue editing the <code>MainPage.xaml.cs</code> file and append in the <code>OnLoaded</code> method the following:</p>
 <ol>
-<li><p>Create a new <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html"><code>LocalVideoTrack</code></a> private variable.</p>
+<li><p>Create a new <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html"><code>LocalVideoTrack</code></a> and a new <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalAudioTrack.html"><code>LocalAudioTrack</code></a> private variables.</p>
 <pre><code class="lang-cs">LocalVideoTrack _localVideoTrack;
+LocalAudioTrack _localAudioTrack;
 </code></pre>
 </li>
-<li><p>Use the <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings)"><code>AddLocalVideoTrackAsync()</code></a> method to add to the peer connection a local video track sending to the remote peer some video frames obtained from a local video capture device (webcam).</p>
-<pre><code class="lang-cs">_localVideoTrack = await _peerConnection.AddLocalVideoTrackAsync();
+<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalVideoTrackSettings_"><code>LocalVideoTrack.CreateFromDeviceAsync()</code></a> method to create a local video track capturing video frames obtained from a local video capture device (webcam).</p>
+<pre><code class="lang-cs">_localVideoTrack = await LocalVideoTrack.CreateFromDeviceAsync();
 </code></pre>
-<p>This method optionally takes a <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings"><code>LocalVideoTrackSettings</code></a> object to configure the video capture. In this tutorial, we leave that object out and use the default settings, which will open the first available webcam with its default resolution and framerate. This is generally acceptable, although on mobile devices like HoloLens you probably want to limit the resolution and framerate to reduce the power consumption and save on battery.</p>
+<p>This method optionally takes a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings.html"><code>LocalVideoTrackSettings</code></a> object to configure the video capture. In this tutorial, we leave that object out and use the default settings, which will open the first available webcam with its default resolution and framerate. This is generally acceptable, although on mobile devices like HoloLens you probably want to limit the resolution and framerate to reduce the power consumption and save on battery.</p>
 </li>
-<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddLocalAudioTrackAsync"><code>AddLocalAudioTrackAsync()</code></a> method to add to the peer connection a local audio track sending to the remote peer some audio frames obtained from a local audio capture device (microphone).</p>
-<pre><code class="lang-cs">await _peerConnection.AddLocalAudioTrackAsync();
+<li><p>Use the [<code>LocalAudioTrack.CreateFromDeviceAsync()</code>](xref:Microsoft.MixedReality.WebRTC.LocalAudioTrack.CreateFromDeviceAsync method to add to the peer connection a local audio track sending to the remote peer some audio frames obtained from a local audio capture device (microphone).</p>
+<pre><code class="lang-cs">_localAudioTrack = await LocalAudioTrack.CreateFromDeviceAsync();
 </code></pre>
 <p>Unlike for the video track, the audio track currently does not offer any configuration option, and will always use the first available audio capture device.</p>
+</li>
+</ol>
+<h2 id="adding-the-transceivers">Adding the transceivers</h2>
+<p>Continue editing the <code>MainPage.xaml.cs</code> file and append in the <code>OnLoaded</code> method the following:</p>
+<ol>
+<li><p>Create 2 new <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Transceiver.html"><code>Transceiver</code></a> variables, one for the audio feed and one for the video feed.</p>
+<pre><code class="lang-cs">Transceiver _audioTransceiver;
+Transceiver _videoTransceiver;
+</code></pre>
+</li>
+<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>AddTransceiver()</code></a> method to create the audio and video transceivers on the peer connection.</p>
+<pre><code class="lang-cs">_audioTransceiver = _peerConnection.AddTransceiver(MediaKind.Audio);
+_videoTransceiver = _peerConnection.AddTransceiver(MediaKind.Video);
+</code></pre>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p>Note that the order of the calls to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>AddTransceiver()</code></a> matters. Here we create first an audio transceiver associated with the <em>media line index</em> #0, and then a video transceiver associated with the <em>media line index</em> #1. On the remote peer, when it receives the SDP offer from this local peer and applies it by calling <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_System_String_System_String_"><code>SetRemoteDescriptionAsync()</code></a>, the transceivers will be created in that same order.</p>
+</div>
+</li>
+<li><p>By default the transceivers have no track attached to them, and will send some empty media data (black frame for video, silence for audio). Attach the local tracks created prevoously to the transceivers, so that the WebRTC implementation uses them instead and send their media data to the remote peer.</p>
+<pre><code class="lang-cs">_audioTransceiver.LocalAudioTrack = _localAudioTrack;
+_videoTransceiver.LocalVideoTrack = _localVideoTrack;
+</code></pre>
 </li>
 </ol>
 <p>At this point, if you run the application again, there is no visible difference, except some extra delay to open the audio and video devices; this delay varies greatly depending on the number of capture devices on the host machine, but is generally within a few seconds too, sometimes much less. Additionally, if the webcam or microphone have a LED indicating recording, it should turn ON when the capture device starts recording. But the captured audio and video are not visible. This is because the audio and video tracks are capturing frames from the webcam and microphone, to be sent later to the remote peer once connected to it, but there is no local rendering by default.</p>
