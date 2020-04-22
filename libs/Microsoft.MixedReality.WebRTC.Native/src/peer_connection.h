@@ -11,6 +11,7 @@
 #include "peer_connection_interop.h"
 #include "refptr.h"
 #include "tracked_object.h"
+#include "utils.h"
 #include "video_frame_observer.h"
 
 namespace Microsoft::MixedReality::WebRTC {
@@ -67,7 +68,8 @@ struct BitrateSettings {
 /// recommended when this is known in advance to add tracks before starting to
 /// establish a connection, in order to perform the first handshake with the
 /// correct tracks offer/answer right away.
-class PeerConnection : public TrackedObject {
+class PeerConnection : public TrackedObject,
+                       public webrtc::PeerConnectionObserver {
  public:
   /// Create a new PeerConnection based on the given |config|.
   /// This serves as the constructor for PeerConnection.
@@ -76,7 +78,9 @@ class PeerConnection : public TrackedObject {
 
   /// Set the name of the peer connection. This is a friendly name opaque to the
   /// implementation, used mainly for debugging and logging.
-  virtual void SetName(std::string_view name) = 0;
+  void SetName(std::string_view name) { name_ = name; }
+
+  std::string GetName() const override { return name_; }
 
   //
   // Signaling
@@ -97,8 +101,11 @@ class PeerConnection : public TrackedObject {
   /// register a callback and handle sending SDP messages to the remote peer,
   /// otherwise the connection cannot be established, even on local network.
   /// Only one callback can be registered at a time.
-  virtual void RegisterLocalSdpReadytoSendCallback(
-      LocalSdpReadytoSendCallback&& callback) noexcept = 0;
+  void RegisterLocalSdpReadytoSendCallback(
+      LocalSdpReadytoSendCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{local_sdp_ready_to_send_callback_mutex_};
+    local_sdp_ready_to_send_callback_ = std::move(callback);
+  }
 
   /// Callback invoked when a local ICE candidate message is ready to be sent to
   /// the remote peer via the signalling solution.
@@ -116,8 +123,11 @@ class PeerConnection : public TrackedObject {
   /// connection cannot be established (except on local networks with direct IP
   /// access, where NAT traversal is not needed). Only one callback can be
   /// registered at a time.
-  virtual void RegisterIceCandidateReadytoSendCallback(
-      IceCandidateReadytoSendCallback&& callback) noexcept = 0;
+  void RegisterIceCandidateReadytoSendCallback(
+      IceCandidateReadytoSendCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{ice_candidate_ready_to_send_callback_mutex_};
+    ice_candidate_ready_to_send_callback_ = std::move(callback);
+  }
 
   /// Callback invoked when the state of the ICE connection changed.
   /// Note that the current implementation (M71) mixes the state of ICE and
@@ -127,8 +137,11 @@ class PeerConnection : public TrackedObject {
 
   /// Register a custom |IceStateChangedCallback| invoked when the state of the
   /// ICE connection changed. Only one callback can be registered at a time.
-  virtual void RegisterIceStateChangedCallback(
-      IceStateChangedCallback&& callback) noexcept = 0;
+  void RegisterIceStateChangedCallback(
+      IceStateChangedCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{ice_state_changed_callback_mutex_};
+    ice_state_changed_callback_ = std::move(callback);
+  }
 
   /// Callback invoked when the state of the ICE gathering changed.
   using IceGatheringStateChangedCallback = Callback<mrsIceGatheringState>;
@@ -136,8 +149,11 @@ class PeerConnection : public TrackedObject {
   /// Register a custom |IceStateChangedCallback| invoked when the state of the
   /// ICE gathering process changed. Only one callback can be registered at a
   /// time.
-  virtual void RegisterIceGatheringStateChangedCallback(
-      IceGatheringStateChangedCallback&& callback) noexcept = 0;
+  void RegisterIceGatheringStateChangedCallback(
+      IceGatheringStateChangedCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{ice_gathering_state_changed_callback_mutex_};
+    ice_gathering_state_changed_callback_ = std::move(callback);
+  }
 
   /// Callback invoked when some SDP negotiation needs to be initiated, often
   /// because some tracks have been added to or removed from the peer
@@ -152,24 +168,27 @@ class PeerConnection : public TrackedObject {
 
   /// Register a custom |RenegotiationNeededCallback| invoked when a session
   /// renegotiation is needed. Only one callback can be registered at a time.
-  virtual void RegisterRenegotiationNeededCallback(
-      RenegotiationNeededCallback&& callback) noexcept = 0;
+  void RegisterRenegotiationNeededCallback(
+      RenegotiationNeededCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{renegotiation_needed_callback_mutex_};
+    renegotiation_needed_callback_ = std::move(callback);
+  }
 
   /// Notify the WebRTC engine that an ICE candidate has been received from the
   /// remote peer. The parameters correspond to the SDP message data provided by
   /// the |IceCandidateReadytoSendCallback|, after being transmitted to the
   /// other peer.
-  virtual bool AddIceCandidate(const char* sdp_mid,
-                               const int sdp_mline_index,
-                               const char* candidate) noexcept = 0;
+  bool AddIceCandidate(const char* sdp_mid,
+                       const int sdp_mline_index,
+                       const char* candidate) noexcept;
 
   /// Notify the WebRTC engine that an SDP message has been received from the
   /// remote peer. The parameters correspond to the SDP message data provided by
   /// the |LocalSdpReadytoSendCallback|, after being transmitted to the
   /// other peer.
-  virtual bool SetRemoteDescriptionAsync(const char* type,
-                                         const char* sdp,
-                                         Callback<> callback) noexcept = 0;
+  bool SetRemoteDescriptionAsync(const char* type,
+                                 const char* sdp,
+                                 Callback<> callback) noexcept;
 
   //
   // Connection
@@ -182,31 +201,39 @@ class PeerConnection : public TrackedObject {
 
   /// Register a custom |ConnectedCallback| invoked when the connection is
   /// established. Only one callback can be registered at a time.
-  virtual void RegisterConnectedCallback(
-      ConnectedCallback&& callback) noexcept = 0;
+  void RegisterConnectedCallback(ConnectedCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{connected_callback_mutex_};
+    connected_callback_ = std::move(callback);
+  }
 
   /// Set the connection bitrate limits. These settings limit the network
   /// bandwidth use of the peer connection.
-  virtual mrsResult SetBitrate(const BitrateSettings& settings) noexcept = 0;
+  mrsResult SetBitrate(const BitrateSettings& settings) noexcept {
+    webrtc::BitrateSettings bitrate;
+    bitrate.start_bitrate_bps = settings.start_bitrate_bps;
+    bitrate.min_bitrate_bps = settings.min_bitrate_bps;
+    bitrate.max_bitrate_bps = settings.max_bitrate_bps;
+    return ResultFromRTCErrorType(peer_->SetBitrate(bitrate).type());
+  }
 
   /// Create an SDP offer to attempt to establish a connection with the remote
   /// peer. Once the offer message is ready, the |LocalSdpReadytoSendCallback|
   /// callback is invoked to deliver the message.
-  virtual bool CreateOffer() noexcept = 0;
+  bool CreateOffer() noexcept;
 
   /// Create an SDP answer to accept a previously-received offer to establish a
   /// connection wit the remote peer. Once the answer message is ready, the
   /// |LocalSdpReadytoSendCallback| callback is invoked to deliver the message.
-  virtual bool CreateAnswer() noexcept = 0;
+  bool CreateAnswer() noexcept;
 
   /// Close the peer connection. After the connection is closed, it cannot be
   /// opened again with the same C++ object. Instantiate a new |PeerConnection|
   /// object instead to create a new connection. No-op if already closed.
-  virtual void Close() noexcept = 0;
+  void Close() noexcept;
 
   /// Check if the connection is closed. This returns |true| once |Close()| has
   /// been called.
-  virtual bool IsClosed() const noexcept = 0;
+  bool IsClosed() const noexcept;
 
   //
   // Transceivers
@@ -218,14 +245,17 @@ class PeerConnection : public TrackedObject {
   /// Register a custom TransceiverAddedCallback invoked when a transceiver is
   /// is added to the peer connection. Only one callback can be registered at a
   /// time.
-  virtual void RegisterTransceiverAddedCallback(
-      TransceiverAddedCallback&& callback) noexcept = 0;
+  void RegisterTransceiverAddedCallback(
+      TransceiverAddedCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{callbacks_mutex_};
+    transceiver_added_callback_ = std::move(callback);
+  }
 
   /// Add a new audio or video transceiver to the peer connection.
   /// The transceiver is owned by the peer connection until it is closed with
   /// |Close()|, and the pointer is valid until that time.
-  virtual ErrorOr<Transceiver*> AddTransceiver(
-      const mrsTransceiverInitConfig& config) noexcept = 0;
+  ErrorOr<Transceiver*> AddTransceiver(
+      const mrsTransceiverInitConfig& config) noexcept;
 
   //
   // Video
@@ -238,8 +268,11 @@ class PeerConnection : public TrackedObject {
   /// Register a custom |VideoTrackAddedCallback| invoked when a remote video
   /// track is added to the peer connection. Only one callback can be registered
   /// at a time.
-  virtual void RegisterVideoTrackAddedCallback(
-      VideoTrackAddedCallback&& callback) noexcept = 0;
+  void RegisterVideoTrackAddedCallback(
+      VideoTrackAddedCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{media_track_callback_mutex_};
+    video_track_added_callback_ = std::move(callback);
+  }
 
   /// Callback invoked when a remote video track is removed from the peer
   /// connection.
@@ -249,8 +282,11 @@ class PeerConnection : public TrackedObject {
   /// Register a custom |VideoTrackRemovedCallback| invoked when a remote video
   /// track is removed from the peer connection. Only one callback can be
   /// registered at a time.
-  virtual void RegisterVideoTrackRemovedCallback(
-      VideoTrackRemovedCallback&& callback) noexcept = 0;
+  void RegisterVideoTrackRemovedCallback(
+      VideoTrackRemovedCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{media_track_callback_mutex_};
+    video_track_removed_callback_ = std::move(callback);
+  }
 
   /// Rounding mode of video frame height for |SetFrameHeightRoundMode()|.
   /// This is only used on HoloLens 1 (UWP x86).
@@ -291,8 +327,11 @@ class PeerConnection : public TrackedObject {
   /// Register a custom AudioTrackAddedCallback invoked when a remote audio
   /// track is is added to the peer connection. Only one callback can be
   /// registered at a time.
-  virtual void RegisterAudioTrackAddedCallback(
-      AudioTrackAddedCallback&& callback) noexcept = 0;
+  void RegisterAudioTrackAddedCallback(
+      AudioTrackAddedCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{media_track_callback_mutex_};
+    audio_track_added_callback_ = std::move(callback);
+  }
 
   /// Callback invoked when a remote audio track is removed from the peer
   /// connection.
@@ -302,8 +341,11 @@ class PeerConnection : public TrackedObject {
   /// Register a custom AudioTrackRemovedCallback invoked when a remote audio
   /// track is removed from the peer connection. Only one callback can be
   /// registered at a time.
-  virtual void RegisterAudioTrackRemovedCallback(
-      AudioTrackRemovedCallback&& callback) noexcept = 0;
+  void RegisterAudioTrackRemovedCallback(
+      AudioTrackRemovedCallback&& callback) noexcept {
+    auto lock = std::scoped_lock{media_track_callback_mutex_};
+    audio_track_removed_callback_ = std::move(callback);
+  }
 
   //
   // Data channel
@@ -320,42 +362,451 @@ class PeerConnection : public TrackedObject {
   /// Register a custom callback invoked when a new data channel is received
   /// from the remote peer and added locally. Only one callback can be
   /// registered at a time.
-  virtual void RegisterDataChannelAddedCallback(
-      DataChannelAddedCallback callback) noexcept = 0;
+  void RegisterDataChannelAddedCallback(
+      DataChannelAddedCallback callback) noexcept {
+    auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
+    data_channel_added_callback_ = std::move(callback);
+  }
 
   /// Register a custom callback invoked when a data channel is removed by the
   /// remote peer and removed locally. Only one callback can be registered at a
   /// time.
-  virtual void RegisterDataChannelRemovedCallback(
-      DataChannelRemovedCallback callback) noexcept = 0;
+  void RegisterDataChannelRemovedCallback(
+      DataChannelRemovedCallback callback) noexcept {
+    auto lock = std::scoped_lock{data_channel_removed_callback_mutex_};
+    data_channel_removed_callback_ = std::move(callback);
+  }
 
   /// Create a new data channel and add it to the peer connection.
   /// This invokes the DataChannelAdded callback.
-  ErrorOr<std::shared_ptr<DataChannel>> virtual AddDataChannel(
-      int id,
-      std::string_view label,
-      bool ordered,
-      bool reliable) noexcept = 0;
+  ErrorOr<std::shared_ptr<DataChannel>> AddDataChannel(int id,
+                                                       std::string_view label,
+                                                       bool ordered,
+                                                       bool reliable) noexcept;
 
   /// Close a given data channel and remove it from the peer connection.
   /// This invokes the DataChannelRemoved callback.
-  virtual void RemoveDataChannel(const DataChannel& data_channel) noexcept = 0;
+  void RemoveDataChannel(const DataChannel& data_channel) noexcept;
 
   /// Close and remove from the peer connection all data channels at once.
   /// This invokes the DataChannelRemoved callback for each data channel.
-  virtual void RemoveAllDataChannels() noexcept = 0;
+  void RemoveAllDataChannels() noexcept;
 
   /// Notification from a non-negotiated DataChannel that it is open, so that
   /// the PeerConnection can fire a DataChannelAdded event. This is called
   /// automatically by non-negotiated data channels; do not call manually.
-  virtual void OnDataChannelAdded(const DataChannel& data_channel) noexcept = 0;
+  void OnDataChannelAdded(const DataChannel& data_channel) noexcept;
+
+  void OnStreamChanged(
+      rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) noexcept;
 
   // Internal use.
   void GetStats(webrtc::RTCStatsCollectorCallback* callback);
   void InvokeRenegotiationNeeded();
 
+  //
+  // PeerConnectionObserver interface
+  //
+
+  // Triggered when the SignalingState changed.
+  void OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState
+                             new_state) noexcept override;
+
+  // Triggered when media is received on a new stream from remote peer.
+  void OnAddStream(rtc::scoped_refptr<webrtc::MediaStreamInterface>
+                       stream) noexcept override;
+
+  // Triggered when a remote peer closes a stream.
+  void OnRemoveStream(rtc::scoped_refptr<webrtc::MediaStreamInterface>
+                          stream) noexcept override;
+
+  // Triggered when a remote peer opens a data channel.
+  void OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface>
+                         data_channel) noexcept override;
+
+  /// Triggered when renegotiation is needed. For example, an ICE restart
+  /// has begun, or a track has been added or removed.
+  void OnRenegotiationNeeded() noexcept override;
+
+  /// Called any time the IceConnectionState changes.
+  ///
+  /// From the Google implementation:
+  /// "Note that our ICE states lag behind the standard slightly. The most
+  /// notable differences include the fact that "failed" occurs after 15
+  /// seconds, not 30, and this actually represents a combination ICE + DTLS
+  /// state, so it may be "failed" if DTLS fails while ICE succeeds."
+  void OnIceConnectionChange(webrtc::PeerConnectionInterface::IceConnectionState
+                                 new_state) noexcept override;
+
+  /// Called any time the IceGatheringState changes.
+  void OnIceGatheringChange(webrtc::PeerConnectionInterface::IceGatheringState
+                                new_state) noexcept override;
+
+  /// A new ICE candidate has been gathered.
+  void OnIceCandidate(
+      const webrtc::IceCandidateInterface* candidate) noexcept override;
+
+  /// Callback on remote track added.
+  void OnAddTrack(
+      rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
+      const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>&
+          streams) noexcept override;
+
+  void OnTrack(rtc::scoped_refptr<webrtc::RtpTransceiverInterface>
+                   transceiver) noexcept override;
+
+  /// Callback on remote track removed.
+  void OnRemoveTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface>
+                         receiver) noexcept override;
+
+  void OnLocalDescCreated(webrtc::SessionDescriptionInterface* desc) noexcept;
+
+  //
+  // Internal
+  //
+
+  /// The underlying PC object from the core implementation. This is NULL
+  /// after |Close()| is called.
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_;
+
  protected:
+  /// Peer connection name assigned by the user. This has no meaning for the
+  /// implementation.
+  std::string name_;
+
+  /// User callback invoked when the peer connection received a new data channel
+  /// from the remote peer and added it locally.
+  DataChannelAddedCallback data_channel_added_callback_
+      RTC_GUARDED_BY(data_channel_added_callback_mutex_);
+
+  /// User callback invoked when the peer connection received a data channel
+  /// remove message from the remote peer and removed it locally.
+  DataChannelRemovedCallback data_channel_removed_callback_
+      RTC_GUARDED_BY(data_channel_removed_callback_mutex_);
+
+  /// User callback invoked when a transceiver is added to the peer connection,
+  /// whether manually with |AddTransceiver()| or automatically during
+  /// |SetRemoteDescription()|.
+  TransceiverAddedCallback transceiver_added_callback_
+      RTC_GUARDED_BY(callbacks_mutex_);
+
+  /// User callback invoked when the peer connection is established.
+  /// This is generally invoked even if ICE didn't finish.
+  ConnectedCallback connected_callback_
+      RTC_GUARDED_BY(connected_callback_mutex_);
+
+  /// User callback invoked when a local SDP message has been crafted by the
+  /// core engine and is ready to be sent by the signaling solution.
+  LocalSdpReadytoSendCallback local_sdp_ready_to_send_callback_
+      RTC_GUARDED_BY(local_sdp_ready_to_send_callback_mutex_);
+
+  /// User callback invoked when a local ICE message has been crafted by the
+  /// core engine and is ready to be sent by the signaling solution.
+  IceCandidateReadytoSendCallback ice_candidate_ready_to_send_callback_
+      RTC_GUARDED_BY(ice_candidate_ready_to_send_callback_mutex_);
+
+  /// User callback invoked when the ICE connection state changed.
+  IceStateChangedCallback ice_state_changed_callback_
+      RTC_GUARDED_BY(ice_state_changed_callback_mutex_);
+
+  /// User callback invoked when the ICE gathering state changed.
+  IceGatheringStateChangedCallback ice_gathering_state_changed_callback_
+      RTC_GUARDED_BY(ice_gathering_state_changed_callback_mutex_);
+
+  /// User callback invoked when SDP renegotiation is needed.
+  RenegotiationNeededCallback renegotiation_needed_callback_
+      RTC_GUARDED_BY(renegotiation_needed_callback_mutex_);
+
+  /// User callback invoked when a remote audio track is added.
+  AudioTrackAddedCallback audio_track_added_callback_
+      RTC_GUARDED_BY(media_track_callback_mutex_);
+
+  /// User callback invoked when a remote audio track is removed.
+  AudioTrackRemovedCallback audio_track_removed_callback_
+      RTC_GUARDED_BY(media_track_callback_mutex_);
+
+  /// User callback invoked when a remote video track is added.
+  VideoTrackAddedCallback video_track_added_callback_
+      RTC_GUARDED_BY(media_track_callback_mutex_);
+
+  /// User callback invoked when a remote video track is removed.
+  VideoTrackRemovedCallback video_track_removed_callback_
+      RTC_GUARDED_BY(media_track_callback_mutex_);
+
+  std::mutex data_channel_added_callback_mutex_;
+  std::mutex data_channel_removed_callback_mutex_;
+  std::mutex callbacks_mutex_;
+  std::mutex connected_callback_mutex_;
+  std::mutex local_sdp_ready_to_send_callback_mutex_;
+  std::mutex ice_candidate_ready_to_send_callback_mutex_;
+  std::mutex ice_state_changed_callback_mutex_;
+  std::mutex ice_gathering_state_changed_callback_mutex_;
+  std::mutex renegotiation_needed_callback_mutex_;
+  std::mutex media_track_callback_mutex_;
+
+  class StreamObserver : public webrtc::ObserverInterface {
+   public:
+    StreamObserver(PeerConnection& owner,
+                   rtc::scoped_refptr<webrtc::MediaStreamInterface> stream)
+        : owner_(owner), stream_(std::move(stream)) {}
+
+   protected:
+    PeerConnection& owner_;
+    rtc::scoped_refptr<webrtc::MediaStreamInterface> stream_;
+
+    //
+    // ObserverInterface
+    //
+
+    void OnChanged() override { owner_.OnStreamChanged(stream_); }
+  };
+
+  std::unordered_map<std::unique_ptr<StreamObserver>,
+                     rtc::scoped_refptr<webrtc::MediaStreamInterface>>
+      remote_streams_;
+
+  /// Collection of all transceivers of this peer connection.
+  std::vector<RefPtr<Transceiver>> transceivers_
+      RTC_GUARDED_BY(transceivers_mutex_);
+
+  /// Mutex for the collections of transceivers.
+  rtc::CriticalSection transceivers_mutex_;
+
+  /// Collection of all data channels associated with this peer connection.
+  std::vector<std::shared_ptr<DataChannel>> data_channels_
+      RTC_GUARDED_BY(data_channel_mutex_);
+
+  /// Collection of data channels from their unique ID.
+  /// This contains only data channels pre-negotiated or opened by the remote
+  /// peer, as data channels opened locally won't have immediately a unique ID.
+  std::unordered_map<int, std::shared_ptr<DataChannel>> data_channel_from_id_
+      RTC_GUARDED_BY(data_channel_mutex_);
+
+  /// Collection of data channels from their label.
+  /// This contains only data channels with a non-empty label.
+  std::unordered_multimap<str, std::shared_ptr<DataChannel>>
+      data_channel_from_label_ RTC_GUARDED_BY(data_channel_mutex_);
+
+  /// Mutex for data structures related to data channels.
+  std::mutex data_channel_mutex_;
+
+  /// Flag to indicate if SCTP was negotiated during the initial SDP handshake
+  /// (m=application), which allows subsequently to use data channels. If this
+  /// is false then data channels will never connnect. This is set to true if a
+  /// data channel is created before the connection is established, which will
+  /// force the connection to negotiate the necessary SCTP information. See
+  /// https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
+  ///
+  /// FIXME - See Note on
+  /// https://w3c.github.io/webrtc-pc/#dictionary-rtcdatachannelinit-members, it
+  /// looks like this is only a problem for negotiated (out-of-band) channels.
+  bool sctp_negotiated_ = true;
+
+ private:
   PeerConnection(RefPtr<GlobalFactory> global_factory);
+  PeerConnection(const PeerConnection&) = delete;
+  ~PeerConnection() noexcept { Close(); }
+  PeerConnection& operator=(const PeerConnection&) = delete;
+
+  bool IsPlanB() const {
+    return (peer_->GetConfiguration().sdp_semantics ==
+            webrtc::SdpSemantics::kPlanB);
+  }
+  bool IsUnifiedPlan() const {
+    return (peer_->GetConfiguration().sdp_semantics ==
+            webrtc::SdpSemantics::kUnifiedPlan);
+  }
+
+  /// Find the |Transceiver| wrapper of an RTP transceiver, or |nullptr| if the
+  /// RTP transceiver doesn't have a wrapper yet.
+  RefPtr<Transceiver> FindWrapperFromRtpTransceiver(
+      webrtc::RtpTransceiverInterface* tr) const;
+
+  /// Extract the media line index from an RTP transceiver, or -1 if not
+  /// associated.
+  static int ExtractMlineIndexFromRtpTransceiver(
+      webrtc::RtpTransceiverInterface* tr);
+
+  /// Get an existing or create a new |Transceiver| wrapper for a given RTP
+  /// receiver of a newly added remote track. The receiver should have an RTP
+  /// transceiver already, and this only takes care of finding/creating a
+  /// wrapper for it, so should never fail as long as the receiver is indeed
+  /// associated with this peer connection. This is only called for new remote
+  /// tracks, so will only create new transceiver wrappers for some of the new
+  /// RTP transceivers. The callback on remote description applied will use
+  /// |GetOrCreateTransceiverWrapper()| to create the other ones.
+  ErrorOr<Transceiver*> GetOrCreateTransceiverForNewRemoteTrack(
+      mrsMediaKind media_kind,
+      webrtc::RtpReceiverInterface* receiver);
+
+  /// Ensure each RTP transceiver has a corresponding |Transceiver| instance
+  /// associated with it. This is called each time a local or remote description
+  /// was just applied on the local peer.
+  void SynchronizeTransceiversUnifiedPlan(bool remote);
+
+  /// Create a new |Transceiver| instance for an exist RTP transceiver not
+  /// associated with any. This automatically inserts the transceiver into the
+  /// peer connection, and return a raw pointer to it valid until the peer
+  /// connection is closed.
+  ErrorOr<Transceiver*> CreateTransceiverUnifiedPlan(
+      mrsMediaKind media_kind,
+      int mline_index,
+      std::string name,
+      const std::vector<std::string>& string_ids,
+      rtc::scoped_refptr<webrtc::RtpTransceiverInterface> rtp_transceiver);
+
+  static std::string ExtractTransceiverNameFromSender(
+      webrtc::RtpSenderInterface* sender);
+
+  static std::vector<std::string> ExtractTransceiverStreamIDsFromReceiver(
+      webrtc::RtpReceiverInterface* receive);
+
+  static bool ExtractTransceiverInfoFromReceiverPlanB(
+      webrtc::RtpReceiverInterface* receiver,
+      int& mline_index,
+      std::string& name,
+      std::vector<std::string>& stream_ids);
+
+  /// Media trait to specialize some implementations for audio or video while
+  /// retaining a single copy of the code.
+  template <mrsMediaKind MEDIA_KIND>
+  struct MediaTrait;
+
+  template <>
+  struct MediaTrait<mrsMediaKind::kAudio> {
+    constexpr static const mrsMediaKind kMediaKind = mrsMediaKind::kAudio;
+    using RtcMediaTrackInterfaceT = webrtc::AudioTrackInterface;
+    using RemoteMediaTrackT = RemoteAudioTrack;
+    using RemoteMediaTrackHandleT = mrsRemoteAudioTrackHandle;
+    using RemoteMediaTrackConfigT = mrsRemoteAudioTrackConfig;
+    using MediaTrackAddedCallbackT =
+        Callback<const mrsRemoteAudioTrackAddedInfo*>;
+    using MediaTrackRemovedCallbackT =
+        Callback<mrsRemoteAudioTrackHandle, mrsTransceiverHandle>;
+    static void ExecTrackAdded(
+        mrsRemoteAudioTrackHandle track_handle,
+        mrsTransceiverHandle transceiver_handle,
+        const char* track_name,
+        const MediaTrackAddedCallbackT& callback) noexcept {
+      mrsRemoteAudioTrackAddedInfo info{};
+      info.track_handle = track_handle;
+      info.audio_transceiver_handle = transceiver_handle;
+      info.track_name = track_name;
+      callback(&info);
+    }
+  };
+
+  template <>
+  struct MediaTrait<mrsMediaKind::kVideo> {
+    constexpr static const mrsMediaKind kMediaKind = mrsMediaKind::kVideo;
+    using RtcMediaTrackInterfaceT = webrtc::VideoTrackInterface;
+    using RemoteMediaTrackT = RemoteVideoTrack;
+    using RemoteMediaTrackHandleT = mrsRemoteVideoTrackHandle;
+    using RemoteMediaTrackConfigT = mrsRemoteVideoTrackConfig;
+    using MediaTrackAddedCallbackT =
+        Callback<const mrsRemoteVideoTrackAddedInfo*>;
+    using MediaTrackRemovedCallbackT =
+        Callback<mrsRemoteVideoTrackHandle, mrsTransceiverHandle>;
+    static void ExecTrackAdded(
+        mrsRemoteVideoTrackHandle track_handle,
+        mrsTransceiverHandle transceiver_handle,
+        const char* track_name,
+        const MediaTrackAddedCallbackT& callback) noexcept {
+      mrsRemoteVideoTrackAddedInfo info{};
+      info.track_handle = track_handle;
+      info.audio_transceiver_handle = transceiver_handle;
+      info.track_name = track_name;
+      callback(&info);
+    }
+  };
+
+  /// Create a new remote media (audio or video) track wrapper for an existing
+  /// RTP media receiver which was just created or started receiving (Unified
+  /// Plan) or was created for a newly receiving track (Plan B).
+  template <mrsMediaKind MEDIA_KIND>
+  void AddRemoteMediaTrack(
+      rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
+      webrtc::RtpReceiverInterface* receiver,
+      typename MediaTrait<MEDIA_KIND>::MediaTrackAddedCallbackT*
+          track_added_cb) {
+    using Media = MediaTrait<MEDIA_KIND>;
+
+    rtc::scoped_refptr<typename Media::RtcMediaTrackInterfaceT> media_track(
+        static_cast<typename Media::RtcMediaTrackInterfaceT*>(track.release()));
+
+    // Get or create the transceiver wrapper based on the RTP receiver. Because
+    // this callback is fired before the one at the end of the remote
+    // description being applied, the transceiver wrappers for the newly added
+    // RTP transceivers have not been created yet, so create them here.
+    // Note that the returned transceiver is always added to |transceivers_| and
+    // therefore kept alive by the peer connection.
+    auto ret =
+        GetOrCreateTransceiverForNewRemoteTrack(Media::kMediaKind, receiver);
+    if (!ret.ok()) {
+      return;
+    }
+    Transceiver* const transceiver = ret.value();
+
+    // Create the native object. Note that the transceiver passed as argument
+    // will acquire a reference and keep it alive.
+    RefPtr<typename Media::RemoteMediaTrackT> remote_media_track = new
+        typename Media::RemoteMediaTrackT(global_factory_, *this, transceiver,
+                                          std::move(media_track),
+                                          std::move(receiver));
+
+    // Invoke the TrackAdded callback, which will set the native handle on the
+    // interop wrapper (if created above)
+    {
+      auto lock = std::scoped_lock{media_track_callback_mutex_};
+      // Read the function pointer inside the lock to avoid race condition
+      auto cb = *track_added_cb;
+      if (cb) {
+        Media::ExecTrackAdded(remote_media_track.get(), transceiver,
+                              remote_media_track->GetName().c_str(), cb);
+      }
+    }
+  }
+
+  /// Destroy an existing remote media (audio or video) track wrapper for an
+  /// existing RTP media receiver which stopped receiving (Unified Plan) or is
+  /// about to be destroyed itself (Plan B).
+  template <mrsMediaKind MEDIA_KIND>
+  void RemoveRemoteMediaTrack(
+      webrtc::RtpReceiverInterface* receiver,
+      typename MediaTrait<MEDIA_KIND>::MediaTrackRemovedCallbackT*
+          track_removed_cb) {
+    using Media = MediaTrait<MEDIA_KIND>;
+
+    rtc::CritScope tracks_lock(&transceivers_mutex_);
+    auto it = std::find_if(transceivers_.begin(), transceivers_.end(),
+                           [receiver](const RefPtr<Transceiver>& tr) {
+                             return tr->HasReceiver(receiver);
+                           });
+    if (it == transceivers_.end()) {
+      RTC_LOG(LS_ERROR)
+          << "Trying to remove receiver " << receiver->id().c_str()
+          << " from peer connection " << GetName()
+          << " but no transceiver was found which owns such receiver.";
+      return;
+    }
+    RefPtr<Transceiver> transceiver = *it;
+    RTC_DCHECK(transceiver->GetMediaKind() == MEDIA_KIND);
+    RefPtr<typename Media::RemoteMediaTrackT> media_track(
+        static_cast<typename Media::RemoteMediaTrackT*>(
+            transceiver->GetRemoteTrack()));
+    media_track->OnTrackRemoved(*this);
+
+    // Invoke the TrackRemoved callback
+    {
+      auto lock = std::scoped_lock{media_track_callback_mutex_};
+      // Read the function pointer inside the lock to avoid race condition
+      auto cb = *track_removed_cb;
+      if (cb) {
+        cb(media_track.get(), transceiver.get());
+      }
+    }
+    // |media_track| goes out of scope and destroys the C++ instance
+  }
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

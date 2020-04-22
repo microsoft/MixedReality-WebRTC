@@ -79,6 +79,9 @@
     <ClCompile Include="..\interop\data_channel_interop.cpp">
       <Filter>src\interop</Filter>
     </ClCompile>
+    <ClCompile Include="..\utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\media\external_video_track_source.h">
