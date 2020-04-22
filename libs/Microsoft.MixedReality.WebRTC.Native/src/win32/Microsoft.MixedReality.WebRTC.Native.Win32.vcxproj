@@ -186,6 +186,7 @@
     <ClCompile Include="..\sdp_utils.cpp" />
     <ClCompile Include="..\str.cpp" />
     <ClCompile Include="..\tracked_object.cpp" />
+    <ClCompile Include="..\utils.cpp" />
     <ClCompile Include="..\video_frame_observer.cpp" />
   </ItemGroup>
   <ItemGroup>
