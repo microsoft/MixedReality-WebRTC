@@ -132,33 +132,6 @@ class GlobalFactory {
   mrsResult GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory);
 #endif  // defined(WINUWP)
 
-  /// Can mix selected audio sources only.
-  class CustomAudioMixer : public webrtc::AudioMixer {
-   public:
-    CustomAudioMixer();
-
-    // AudioMixer implementation.
-    bool AddSource(Source* audio_source) override;
-    void RemoveSource(Source* audio_source) override;
-    void Mix(size_t number_of_channels,
-             webrtc::AudioFrame* audio_frame_for_mixing) override;
-
-    // Select if the source with the given id must be played on the audio device.
-    void RenderSource(int ssrc, bool render);
-
-   private:
-    struct KnownSource {
-      Source* source;
-      bool is_rendered;
-    };
-
-    void TryAddToBaseImpl(KnownSource& audio_source);
-
-    rtc::CriticalSection crit_;
-    rtc::scoped_refptr<webrtc::AudioMixerImpl> base_impl_;
-    std::map<int, KnownSource> source_from_id_;
-  };
-
   rtc::scoped_refptr<CustomAudioMixer> custom_audio_mixer() const {
     return custom_audio_mixer_;
   }

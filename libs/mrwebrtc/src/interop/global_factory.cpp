@@ -207,10 +207,10 @@ uint32_t GlobalFactory::ReportLiveObjects() {
   return static_cast<uint32_t>(alive_objects_.size());
 }
 
-GlobalFactory::CustomAudioMixer::CustomAudioMixer()
+CustomAudioMixer::CustomAudioMixer()
     : base_impl_(webrtc::AudioMixerImpl::Create()) {}
 
-bool GlobalFactory::CustomAudioMixer::AddSource(Source* audio_source) {
+bool CustomAudioMixer::AddSource(Source* audio_source) {
   RTC_DCHECK(audio_source);
 
   rtc::CritScope lock(&crit_);
@@ -233,7 +233,7 @@ bool GlobalFactory::CustomAudioMixer::AddSource(Source* audio_source) {
   return true;
 }
 
-void GlobalFactory::CustomAudioMixer::TryAddToBaseImpl(KnownSource& known_source) {
+void CustomAudioMixer::TryAddToBaseImpl(KnownSource& known_source) {
   bool added_succesfully = base_impl_->AddSource(known_source.source);
   if (!added_succesfully) {
     RTC_LOG_F(LS_WARNING) << "Cannot mix source " << known_source.source->Ssrc();
@@ -241,7 +241,7 @@ void GlobalFactory::CustomAudioMixer::TryAddToBaseImpl(KnownSource& known_source
   }
 }
 
-void GlobalFactory::CustomAudioMixer::RemoveSource(
+void CustomAudioMixer::RemoveSource(
     Source* audio_source) {
   RTC_DCHECK(audio_source);
 
@@ -261,7 +261,7 @@ void GlobalFactory::CustomAudioMixer::RemoveSource(
 
 static const int16_t zerobuf[200]{};
 
-void GlobalFactory::CustomAudioMixer::Mix(
+void CustomAudioMixer::Mix(
     size_t number_of_channels,
          webrtc::AudioFrame* audio_frame_for_mixing) {
 
@@ -306,7 +306,7 @@ void GlobalFactory::CustomAudioMixer::Mix(
   }
 }
 
-void GlobalFactory::CustomAudioMixer::RenderSource(int ssrc, bool render) {
+void CustomAudioMixer::RenderSource(int ssrc, bool render) {
   rtc::CritScope lock(&crit_);
 
   // If the source is unknown add a KnownSource with null Source* to remember

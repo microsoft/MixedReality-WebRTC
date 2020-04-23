@@ -22,7 +22,7 @@
     <ProjectGuid>{6D020425-2E3E-4BA7-BC46-00C8D29081C0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>Microsoft.MixedReality.WebRTC.Native.Tests</ProjectName>
+    <ProjectName>mrwebrtc-win32-tests</ProjectName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -41,7 +41,7 @@
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets">
-    <Import Project="..\mrwebrtc.targets" />
+    <Import Project="..\..\mrwebrtc.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -51,37 +51,37 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup>
-    <OutDir>..\..\..\bin\Win32\$(PlatformTarget)\$(Configuration)\</OutDir>
-    <IntDir>..\..\..\build\Microsoft.MixedReality.WebRTC.Native.Tests\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>Microsoft.MixedReality.WebRTC.Native.Tests</TargetName>
+    <OutDir>$(MRWebRTCProjectRoot)bin\Win32\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(MRWebRTCProjectRoot)build\mrwebrtc-win32-tests\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>mrwebrtc-win32-tests</TargetName>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="peer_connection_test_helpers.h" />
-    <ClInclude Include="simple_interop.h" />
-    <ClInclude Include="test_utils.h" />
-    <ClInclude Include="video_test_utils.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\pch.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\peer_connection_test_helpers.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\simple_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\test_utils.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_test_utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="audio_track_tests.cpp" />
-    <ClCompile Include="external_video_track_source_tests.cpp" />
-    <ClCompile Include="library_tests.cpp" />
-    <ClCompile Include="memory_tests.cpp" />
-    <ClCompile Include="peer_connection_tests.cpp" />
-    <ClCompile Include="sdp_utils_tests.cpp" />
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\audio_track_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\external_video_track_source_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\library_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\memory_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\peer_connection_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\sdp_utils_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="data_channel_tests.cpp" />
-    <ClCompile Include="test_utils.cpp" />
-    <ClCompile Include="video_frame_observer_tests.cpp" />
-    <ClCompile Include="simple_interop.cpp" />
-    <ClCompile Include="video_test_utils.cpp" />
-    <ClCompile Include="video_track_tests.cpp" />
-    <ClCompile Include="transceiver_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\data_channel_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\test_utils.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_frame_observer_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\simple_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_test_utils.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_track_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\transceiver_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\win32\Microsoft.MixedReality.WebRTC.Native.Win32.vcxproj">
+    <ProjectReference Include="..\mrwebrtc-win32.vcxproj">
       <Project>{b69106ca-ecd6-49cc-a1a1-e5d97e9eb9e0}</Project>
     </ProjectReference>
   </ItemGroup>
@@ -90,7 +90,7 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets" Condition="Exists('..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" />
+    <Import Project="..\..\..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets" Condition="Exists('..\..\..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" />
   </ImportGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -101,7 +101,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_CONSOLE;MR_SHARING_WIN;MRS_USE_STR_WRAPPER;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\include;..\src;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MRWebRTCProjectRoot)libs\mrwebrtc\include;$(MRWebRTCProjectRoot)libs\mrwebrtc\src;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -135,6 +135,6 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
   </Target>
 </Project>

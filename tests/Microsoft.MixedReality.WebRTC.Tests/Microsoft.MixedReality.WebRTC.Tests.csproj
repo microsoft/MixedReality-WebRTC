@@ -1,4 +1,4 @@
-﻿<Project>
+<Project>
 
   <!-- This needs to go first, before Microsoft.Common.props is imported  -->
   <PropertyGroup>
@@ -6,6 +6,7 @@
     <!-- <BaseIntermediateOutputPath>..\..\build\Microsoft.MixedReality.WebRTC\UWP\$(Platform)\$(Configuration)</BaseIntermediateOutputPath> -->
     <OutputPath>..\..\bin\netstandard2.0\$(Configuration)</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Platforms>x64;x86</Platforms>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
@@ -19,8 +20,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <!-- Default to x64 if not specified -->
-  <PropertyGroup Condition="'$(Platform)'=='AnyCPU'">
+  <PropertyGroup Condition="'$(Platform)'=='x86'">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(DisableDeviceTests)'!=''">
