@@ -2,6 +2,7 @@
 # [Getting started](gettingstarted.md)
 ## [Download](download.md)
 ## [Installation](installation.md)
+## [Migration guide](migration-guide.md)
 ## [Building from sources](building.md)
 ## [C# tutorial (Desktop)](cs/helloworld-cs-core3.md)
 ### [Creating a project](cs/helloworld-cs-setup-core3.md)

@@ -3,6 +3,7 @@
 
 using Microsoft.MixedReality.WebRTC.Tracing;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -39,11 +40,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
     internal static class Utils
     {
-#if MR_SHARING_WIN
-        internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.dll";
-#elif MR_SHARING_ANDROID
-        internal const string dllPath = "Microsoft.MixedReality.WebRTC.Native.so";
-#endif
+        // Note that on Windows due to a "bug" in LoadLibraryEx() this filename must not contain any '.'.
+        // See https://github.com/dotnet/runtime/issues/7223
+        internal const string dllPath = "mrwebrtc";
 
         // Error codes returned by the interop API -- see mrs_errors.h
         internal const uint MRS_SUCCESS = 0u;
@@ -60,16 +59,16 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
         internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
 
-        public static IntPtr MakeWrapperRef(object obj)
+        public static IntPtr MakeWrapperRef(object wrapper)
         {
-            var handle = GCHandle.Alloc(obj, GCHandleType.Normal);
-            var arg = GCHandle.ToIntPtr(handle);
-            return arg;
+            var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
+            var wrapperRef = GCHandle.ToIntPtr(handle);
+            return wrapperRef;
         }
 
-        public static T ToWrapper<T>(IntPtr peer) where T : class
+        public static T ToWrapper<T>(IntPtr wrapperRef) where T : class
         {
-            var handle = GCHandle.FromIntPtr(peer);
+            var handle = GCHandle.FromIntPtr(wrapperRef);
             var wrapper = (handle.Target as T);
             return wrapper;
         }
@@ -164,42 +163,42 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
             switch (res)
             {
-                case MRS_E_UNKNOWN:
-                default:
-                    throw new Exception();
+            case MRS_E_UNKNOWN:
+            default:
+                throw new Exception();
 
-                case MRS_E_INVALID_PARAMETER:
-                    throw new ArgumentException();
+            case MRS_E_INVALID_PARAMETER:
+                throw new ArgumentException();
 
-                case MRS_E_INVALID_OPERATION:
-                    throw new InvalidOperationException();
+            case MRS_E_INVALID_OPERATION:
+                throw new InvalidOperationException();
 
-                case MRS_E_WRONG_THREAD:
-                    throw new InvalidOperationException("This method cannot be called on that thread.");
+            case MRS_E_WRONG_THREAD:
+                throw new InvalidOperationException("This method cannot be called on that thread.");
 
-                case MRS_E_NOTFOUND:
-                    throw new Exception("Object not found.");
+            case MRS_E_NOTFOUND:
+                throw new Exception("Object not found.");
 
-                case MRS_E_INVALID_NATIVE_HANDLE:
-                    throw new InvalidInteropNativeHandleException();
+            case MRS_E_INVALID_NATIVE_HANDLE:
+                throw new InvalidInteropNativeHandleException();
 
-                case MRS_E_NOT_INITIALIZED:
-                    throw new InvalidOperationException("Object not initialized.");
+            case MRS_E_NOT_INITIALIZED:
+                throw new InvalidOperationException("Object not initialized.");
 
-                case MRS_E_UNSUPPORTED:
-                    throw new NotSupportedException();
+            case MRS_E_UNSUPPORTED:
+                throw new NotSupportedException();
 
-                case MRS_E_OUT_OF_RANGE:
-                    throw new ArgumentOutOfRangeException();
+            case MRS_E_OUT_OF_RANGE:
+                throw new ArgumentOutOfRangeException();
 
-                case MRS_E_SCTP_NOT_NEGOTIATED:
-                    throw new SctpNotNegotiatedException();
+            case MRS_E_SCTP_NOT_NEGOTIATED:
+                throw new SctpNotNegotiatedException();
 
-                case MRS_E_PEER_CONNECTION_CLOSED:
-                    throw new InvalidOperationException("The operation cannot complete because the peer connection was closed.");
+            case MRS_E_PEER_CONNECTION_CLOSED:
+                throw new InvalidOperationException("The operation cannot complete because the peer connection was closed.");
 
-                case MRS_E_INVALID_DATA_CHANNEL_ID:
-                    throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
+            case MRS_E_INVALID_DATA_CHANNEL_ID:
+                throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
             }
         }
 
@@ -209,5 +208,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         /// <param name="value"></param>
         [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsSetFrameHeightRoundMode")]
         public static unsafe extern void SetFrameHeightRoundMode(PeerConnection.FrameHeightRoundMode value);
+
+        public static string EncodeTransceiverStreamIDs(List<string> streamIDs)
+        {
+            if ((streamIDs == null) || (streamIDs.Count == 0))
+            {
+                return string.Empty;
+            }
+            return string.Join(";", streamIDs.ToArray());
+        }
     }
 }

@@ -410,7 +410,6 @@ MonoBehaviour:
   AutoInitializeOnStart: 1
   AutoCreateOfferOnRenegotiationNeeded: 1
   AutoLogErrorsToUnityConsole: 1
-  Signaler: {fileID: 8734329137356271696}
   IceServers:
   - Type: 1
     Uri: stun.l.google.com:19302
@@ -425,6 +424,7 @@ MonoBehaviour:
   OnError:
     m_PersistentCalls:
       m_Calls: []
+  _mediaLines: []
 --- !u!114 &8734329137356271696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,6 +437,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f59b5937dc35994c87e058b9edfe08a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PeerConnection: {fileID: 114452439610826054}
   AutoLogErrors: 1
   LocalPeerId: 
   RemotePeerId: 
@@ -834,7 +835,7 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
---- !u!114 &2247456597125045658
+--- !u!114 &997043514636984954
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -843,19 +844,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 8066520112810591890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a281b3c4d33874459f5fd99bab17626, type: 3}
+  m_Script: {fileID: 11500000, guid: dafbc4e8e99e46e41823d17cdabbd651, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TrackName: local_audio
+  AutoStartOnEnabled: 1
+  PreferredAudioCodec: 
   AudioStreamStarted:
     m_PersistentCalls:
       m_Calls: []
   AudioStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-  AutoStartCapture: 1
-  PreferredAudioCodec: 
-  PeerConnection: {fileID: 114452439610826054}
-  AutoAddTrack: 1
 --- !u!114 &2640554158060291103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -868,24 +868,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a3a632a87fbf1e4db435c4abae3ac33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TrackName: local_video
+  AutoStartOnEnabled: 1
+  PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
       m_Calls: []
   VideoStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-  AutoStartCapture: 1
-  PreferredVideoCodec: 
+  WebcamDevice:
+    id: 
+    name: 
   EnableMixedRealityCapture: 1
   EnableMRCRecordingIndicator: 1
-  PeerConnection: {fileID: 114452439610826054}
-  TrackName: 
-  AutoAddTrack: 1
   FormatMode: 0
   VideoProfileId: 
-  VideoProfileKind: 0
+  VideoProfileKind: 4
   Constraints:
-    width: 0
+    width: 640
     height: 0
     framerate: 0
 --- !u!114 &5904856271247633657
@@ -897,7 +898,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9179833326995555366}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df42a3d41d8e34340baa406a1de17b48, type: 3}
+  m_Script: {fileID: 11500000, guid: ac54f2f6b8185d444b4a85e048778344, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   AudioStreamStarted:
@@ -906,8 +907,6 @@ MonoBehaviour:
   AudioStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-  PeerConnection: {fileID: 114452439610826054}
-  AutoPlayOnAdded: 1
 --- !u!82 &7340908855015211579
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1022,8 +1021,6 @@ MonoBehaviour:
   VideoStreamStopped:
     m_PersistentCalls:
       m_Calls: []
-  PeerConnection: {fileID: 114452439610826054}
-  AutoPlayOnAdded: 1
 --- !u!1001 &2981115262886062264
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1201,7 +1198,7 @@ PrefabInstance:
         type: 3}
       propertyPath: AudioSource
       value: 
-      objectReference: {fileID: 2247456597125045658}
+      objectReference: {fileID: 997043514636984954}
     - target: {fileID: 6316678915622682930, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
       propertyPath: VideoSource

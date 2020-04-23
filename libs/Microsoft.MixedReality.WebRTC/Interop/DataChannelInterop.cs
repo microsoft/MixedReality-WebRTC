@@ -12,6 +12,18 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         #region Native functions
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsDataChannelSetUserData")]
+        public static unsafe extern void DataChannel_SetUserData(IntPtr handle, IntPtr userData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsDataChannelGetUserData")]
+        public static unsafe extern IntPtr DataChannel_GetUserData(IntPtr handle);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsDataChannelRegisterCallbacks")]
+        public static extern void DataChannel_RegisterCallbacks(IntPtr dataChannelHandle, in Callbacks callbacks);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsDataChannelSendMessage")]
         public static extern uint DataChannel_SendMessage(IntPtr dataChannelHandle, byte[] data, ulong size);
 
@@ -24,12 +36,21 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         #region Marshaling data structures
 
+        [Flags]
+        public enum Flags : uint
+        {
+            None = 0x0,
+            Ordered = 0x1,
+            Reliable = 0x2
+        }
+
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public ref struct CreateConfig
         {
             public int id;
-            public string label;
             public uint flags;
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string label;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -47,10 +68,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
 
         #region Native callbacks
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate IntPtr CreateObjectDelegate(IntPtr peer, CreateConfig config,
-            out Callbacks callbacks);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void MessageCallback(IntPtr userData, IntPtr data, ulong size);
@@ -73,15 +90,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public MessageCallback MessageCallback;
             public BufferingCallback BufferingCallback;
             public StateCallback StateCallback;
-        }
-
-        [MonoPInvokeCallback(typeof(CreateObjectDelegate))]
-        public static IntPtr DataChannelCreateObjectCallback(IntPtr peer, CreateConfig config,
-            out Callbacks callbacks)
-        {
-            var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
-            var dataChannelWrapper = CreateWrapper(peerWrapper, config, out callbacks);
-            return Utils.MakeWrapperRef(dataChannelWrapper);
         }
 
         [MonoPInvokeCallback(typeof(MessageCallback))]
@@ -110,7 +118,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         #region Utilities
 
-        public static DataChannel CreateWrapper(PeerConnection parent, CreateConfig config, out Callbacks callbacks)
+        public static DataChannel CreateWrapper(PeerConnection parent, in PeerConnectionInterop.DataChannelAddedInfo info)
         {
             // Create the callback args for the data channel
             var args = new CallbackArgs()
@@ -123,35 +131,31 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             };
 
             // Pin the args to pin the delegates while they're registered with the native code
-            var handle = GCHandle.Alloc(args, GCHandleType.Normal);
-            IntPtr userData = GCHandle.ToIntPtr(handle);
+            IntPtr argsRef = Utils.MakeWrapperRef(args);
 
-            // Create a new data channel. It will hold the lock for its args while alive.
-            bool ordered = (config.flags & 0x1) != 0;
-            bool reliable = (config.flags & 0x2) != 0;
-            var dataChannel = new DataChannel(parent, handle, config.id, config.label, ordered, reliable);
+            // Create a new data channel wrapper. It will hold the lock for its args while alive.
+            bool ordered = (info.flags & 0x1) != 0;
+            bool reliable = (info.flags & 0x2) != 0;
+            var dataChannel = new DataChannel(info.dataChannelHandle, parent, argsRef, info.id, info.label, ordered, reliable);
             args.DataChannel = dataChannel;
 
-            // Fill out the callbacks
-            callbacks = new Callbacks()
+            // Assign a reference to it inside the UserData of the native object so it can be retrieved whenever needed
+            IntPtr wrapperRef = Utils.MakeWrapperRef(dataChannel);
+            DataChannel_SetUserData(info.dataChannelHandle, wrapperRef);
+
+            // Register the callbacks
+            var callbacks = new Callbacks()
             {
                 messageCallback = args.MessageCallback,
-                messageUserData = userData,
+                messageUserData = argsRef,
                 bufferingCallback = args.BufferingCallback,
-                bufferingUserData = userData,
+                bufferingUserData = argsRef,
                 stateCallback = args.StateCallback,
-                stateUserData = userData
+                stateUserData = argsRef
             };
+            DataChannel_RegisterCallbacks(info.dataChannelHandle, callbacks);
 
             return dataChannel;
-        }
-
-        public static void SetHandle(DataChannel dataChannel, IntPtr handle)
-        {
-            Debug.Assert(handle != IntPtr.Zero);
-            // Either first-time assign or no-op (assign same value again)
-            Debug.Assert((dataChannel._interopHandle == IntPtr.Zero) || (dataChannel._interopHandle == handle));
-            dataChannel._interopHandle = handle;
         }
 
         #endregion

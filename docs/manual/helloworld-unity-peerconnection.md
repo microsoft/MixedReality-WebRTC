@@ -10,6 +10,8 @@ Create a new [`GameObject`](https://docs.unity3d.com/ScriptReference/GameObject.
 
 ![Create a new GameObject with a PeerConnection component](helloworld-unity-5.png)
 
-The [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) component provided by the Unity integration of MixedReality-WebRTC has various settings to configure its behaviour. For the moment you can leave the default values.
+The [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) component provided by the Unity integration of MixedReality-WebRTC has various settings to configure its behaviour. For the moment you can leave the default values. We will come back to it later in particular to add some transceivers.
 
-The component has one required property however, the [`PeerConnection.Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Signaler) property, which it uses to establish a connection. This property must point to another component deriving from the base [`Microsoft.MixedReality.WebRTC.Unity.Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler) component. For the moment it points to nothing, so Unity shows "None".
+----
+
+Next : [Creating a signaler](helloworld-unity-signaler.md)

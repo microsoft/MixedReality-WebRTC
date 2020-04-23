@@ -3,86 +3,71 @@
 
 #include "pch.h"
 
+#include "data_channel_interop.h"
 #include "interop_api.h"
 
 #include "test_utils.h"
 
 namespace {
 
-class DataChannelTests : public TestUtils::TestBase {};
-
-const mrsPeerConnectionInteropHandle kFakeInteropPeerConnectionHandle =
-    (void*)0x1;
-const mrsDataChannelInteropHandle kFakeInteropDataChannelHandle = (void*)0x2;
-
-mrsDataChannelInteropHandle MRS_CALL
-FakeIterop_DataChannelCreate(mrsPeerConnectionInteropHandle /*parent*/,
-                             const mrsDataChannelConfig& /*config*/,
-                             mrsDataChannelCallbacks* /*callbacks*/) noexcept {
-  return kFakeInteropDataChannelHandle;
-}
+class DataChannelTests : public TestUtils::TestBase,
+                         public testing::WithParamInterface<mrsSdpSemantic> {};
 
 // OnDataChannelAdded
-using DataAddedCallback =
-    InteropCallback<mrsDataChannelInteropHandle, DataChannelHandle>;
-
-void MRS_CALL SetEventOnCompleted(void* user_data) {
-  Event* ev = (Event*)user_data;
-  ev->Set();
-}
+using DataAddedCallback = InteropCallback<const mrsDataChannelAddedInfo*>;
 
 void MRS_CALL StaticMessageCallback(void* user_data,
                                     const void* data,
-                                    const uint64_t size) {
+                                    const uint64_t size) noexcept {
   auto func = *static_cast<std::function<void(const void*, const uint64_t)>*>(
       user_data);
   func(data, size);
 }
 
-void MRS_CALL StaticStateCallback(void* user_data, int32_t state, int32_t id) {
+void MRS_CALL StaticStateCallback(void* user_data,
+                                  int32_t state,
+                                  int32_t id) noexcept {
   auto func = *static_cast<std::function<void(int32_t, int32_t)>*>(user_data);
   func(state, id);
 }
 
 }  // namespace
 
-TEST_F(DataChannelTests, AddChannelBeforeInit) {
-  PCRaii pc;
+INSTANTIATE_TEST_CASE_P(,
+                        DataChannelTests,
+                        testing::ValuesIn(TestUtils::TestSemantics),
+                        TestUtils::SdpSemanticToString);
+
+TEST_P(DataChannelTests, AddChannelBeforeInit) {
+  mrsPeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  PCRaii pc(pc_config);
   ASSERT_NE(nullptr, pc.handle());
   mrsDataChannelConfig config{};
   config.label = "data";
   config.flags = mrsDataChannelConfigFlags::kOrdered |
                  mrsDataChannelConfigFlags::kReliable;
-  mrsDataChannelCallbacks callbacks{};
-  DataChannelHandle handle;
-  mrsDataChannelInteropHandle interopHandle = kFakeInteropDataChannelHandle;
+  mrsDataChannelHandle handle;
   ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionAddDataChannel(pc.handle(), interopHandle, config,
-                                            callbacks, &handle));
+            mrsPeerConnectionAddDataChannel(pc.handle(), &config, &handle));
 }
 
-TEST_F(DataChannelTests, InBand) {
+TEST_P(DataChannelTests, InBand) {
   // Create PC
-  PeerConnectionConfiguration config{};  // local connection only
-  PCRaii pc1(config);
+  mrsPeerConnectionConfiguration pc_config{};  // local connection only
+  pc_config.sdp_semantic = GetParam();
+  PCRaii pc1(pc_config);
   ASSERT_NE(nullptr, pc1.handle());
-  PCRaii pc2(config);
+  PCRaii pc2(pc_config);
   ASSERT_NE(nullptr, pc2.handle());
-
-  // In order to allow creating interop wrappers from native code, register the
-  // necessary interop callbacks.
-  mrsPeerConnectionInteropCallbacks interop{};
-  interop.data_channel_create_object = &FakeIterop_DataChannelCreate;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionRegisterInteropCallbacks(pc2.handle(), &interop));
 
   // Setup signaling
   SdpCallback sdp1_cb(pc1.handle(), [&pc2](const char* type,
                                            const char* sdp_data) {
     Event ev;
-    ASSERT_EQ(Result::kSuccess,
-              mrsPeerConnectionSetRemoteDescriptionAsync(
-                  pc2.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
+                                    pc2.handle(), type, sdp_data,
+                                    &TestUtils::SetEventOnCompleted, &ev));
     ev.Wait();
     if (kOfferString == type) {
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc2.handle()));
@@ -91,9 +76,9 @@ TEST_F(DataChannelTests, InBand) {
   SdpCallback sdp2_cb(pc2.handle(), [&pc1](const char* type,
                                            const char* sdp_data) {
     Event ev;
-    ASSERT_EQ(Result::kSuccess,
-              mrsPeerConnectionSetRemoteDescriptionAsync(
-                  pc1.handle(), type, sdp_data, &SetEventOnCompleted, &ev));
+    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
+                                    pc1.handle(), type, sdp_data,
+                                    &TestUtils::SetEventOnCompleted, &ev));
     ev.Wait();
     if (kOfferString == type) {
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc1.handle()));
@@ -122,15 +107,11 @@ TEST_F(DataChannelTests, InBand) {
     data_config.label = "dummy_out_of_band";
     data_config.flags = mrsDataChannelConfigFlags::kOrdered |
                         mrsDataChannelConfigFlags::kReliable;
-    mrsDataChannelCallbacks callbacks{};
-    DataChannelHandle handle;
-    mrsDataChannelInteropHandle interopHandle = kFakeInteropDataChannelHandle;
-    ASSERT_EQ(Result::kSuccess,
-              mrsPeerConnectionAddDataChannel(pc1.handle(), interopHandle,
-                                              data_config, callbacks, &handle));
-    ASSERT_EQ(Result::kSuccess,
-              mrsPeerConnectionAddDataChannel(pc2.handle(), interopHandle,
-                                              data_config, callbacks, &handle));
+    mrsDataChannelHandle handle;
+    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddDataChannel(
+                                    pc1.handle(), &data_config, &handle));
+    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddDataChannel(
+                                    pc2.handle(), &data_config, &handle));
   }
 
   // Connect
@@ -149,15 +130,9 @@ TEST_F(DataChannelTests, InBand) {
   const std::string channel_label = "test data channel";
   Event data2_ev;
   DataAddedCallback data_added_cb =
-      [&pc2, &data2_ev, &channel_label](
-          mrsDataChannelInteropHandle data_channel_wrapper,
-          DataChannelHandle data_channel) {
-        ASSERT_EQ(kFakeInteropDataChannelHandle, data_channel_wrapper);
-        ASSERT_NE(nullptr, data_channel);
-
-        // TODO expose label
-        // ASSERT_EQ(channel_label, data2->label());
-
+      [&pc2, &data2_ev, &channel_label](const mrsDataChannelAddedInfo* info) {
+        ASSERT_NE(nullptr, info->handle);
+        ASSERT_STREQ(channel_label.c_str(), info->label);
         data2_ev.Set();
       };
   mrsPeerConnectionRegisterDataChannelAddedCallback(pc2.handle(),
@@ -170,12 +145,9 @@ TEST_F(DataChannelTests, InBand) {
     data_config.label = channel_label.c_str();
     data_config.flags = mrsDataChannelConfigFlags::kOrdered |
                         mrsDataChannelConfigFlags::kReliable;
-    mrsDataChannelCallbacks callbacks{};
-    DataChannelHandle data1_handle;
-    mrsDataChannelInteropHandle interopHandle = kFakeInteropDataChannelHandle;
+    mrsDataChannelHandle data1_handle;
     ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddDataChannel(
-                                    pc1.handle(), interopHandle, data_config,
-                                    callbacks, &data1_handle));
+                                    pc1.handle(), &data_config, &data1_handle));
     ASSERT_NE(nullptr, data1_handle);
 
     // TODO expose label
@@ -206,8 +178,10 @@ TEST_F(DataChannelTests, InBand) {
   }
 }
 
-TEST_F(DataChannelTests, MultiThreadCreate) {
-  PCRaii pc;
+TEST_P(DataChannelTests, MultiThreadCreate) {
+  mrsPeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  PCRaii pc(pc_config);
   constexpr int kNumThreads = 16;
   std::thread threads[kNumThreads];
   Event ev_start;
@@ -215,11 +189,9 @@ TEST_F(DataChannelTests, MultiThreadCreate) {
     t = std::move(*new std::thread([&ev_start, &pc]() {
       ev_start.Wait();
       mrsDataChannelConfig config{};
-      DataChannelHandle handle;
+      mrsDataChannelHandle handle;
       ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionAddDataChannel(
-                    pc.handle(), (mrsDataChannelInteropHandle)0x1, config, {},
-                    &handle));
+                mrsPeerConnectionAddDataChannel(pc.handle(), &config, &handle));
     }));
   }
   ev_start.SetBroadcast();
@@ -228,8 +200,10 @@ TEST_F(DataChannelTests, MultiThreadCreate) {
   }
 }
 
-TEST_F(DataChannelTests, Send) {
-  LocalPeerPairRaii pair;
+TEST_P(DataChannelTests, Send) {
+  mrsPeerConnectionConfiguration pc_config{};
+  pc_config.sdp_semantic = GetParam();
+  LocalPeerPairRaii pair(pc_config);
 
   const int kId = 42;
 
@@ -261,16 +235,16 @@ TEST_F(DataChannelTests, Send) {
           ev_state1.Set();
         }
       });
+  mrsDataChannelHandle handle1;
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionAddDataChannel(pair.pc1(), &config, &handle1));
+
   mrsDataChannelCallbacks callbacks1{};
   callbacks1.message_callback = &StaticMessageCallback;
   callbacks1.message_user_data = &message1_cb;
   callbacks1.state_callback = &StaticStateCallback;
   callbacks1.state_user_data = &state1_cb;
-  DataChannelHandle handle1;
-  mrsDataChannelInteropHandle interopHandle1 = kFakeInteropDataChannelHandle;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionAddDataChannel(pair.pc1(), interopHandle1, config,
-                                            callbacks1, &handle1));
+  mrsDataChannelRegisterCallbacks(handle1, &callbacks1);
 
   Event ev_msg2, ev_state2;
   std::function<void(const void*, const uint64_t)> message2_cb(
@@ -287,16 +261,16 @@ TEST_F(DataChannelTests, Send) {
           ev_state2.Set();
         }
       });
+  mrsDataChannelHandle handle2;
+  ASSERT_EQ(Result::kSuccess,
+            mrsPeerConnectionAddDataChannel(pair.pc2(), &config, &handle2));
+
   mrsDataChannelCallbacks callbacks2{};
   callbacks2.message_callback = &StaticMessageCallback;
   callbacks2.message_user_data = &message2_cb;
   callbacks2.state_callback = &StaticStateCallback;
   callbacks2.state_user_data = &state2_cb;
-  DataChannelHandle handle2;
-  mrsDataChannelInteropHandle interopHandle2 = kFakeInteropDataChannelHandle;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionAddDataChannel(pair.pc2(), interopHandle2, config,
-                                            callbacks2, &handle2));
+  mrsDataChannelRegisterCallbacks(handle2, &callbacks2);
 
   // Connect and waitfor channels to be ready
   pair.ConnectAndWait();
@@ -349,7 +323,7 @@ TEST_F(DataChannelTests, Send_InvalidHandle) {
 //            mrsPeerConnectionRegisterInteropCallbacks(pair.pc2(), &interop));
 //
 //  // Add dummy out-of-band data channel
-//  DataChannelHandle handle1, handle2;
+//  mrsDataChannelHandle handle1, handle2;
 //  uint64_t peak = 0;
 //  {
 //    mrsDataChannelConfig data_config{};

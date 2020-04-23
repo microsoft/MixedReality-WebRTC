@@ -47,12 +47,14 @@ void AudioTrackReadBuffer::staticAudioFrameCallback(void* user_data,
 AudioTrackReadBuffer::AudioTrackReadBuffer(PeerConnection* peer, int bufferMs)
     : peer_(peer),
       buffer_ms_(bufferMs >= 10 ? bufferMs : 500 /*TODO good value?*/) {
-  peer->RegisterRemoteAudioFrameCallback(
-      AudioFrameReadyCallback{&staticAudioFrameCallback, this});
+    // FIXME
+  //peer->RegisterRemoteAudioFrameCallback(
+  //    AudioFrameReadyCallback{&staticAudioFrameCallback, this});
 }
 
 AudioTrackReadBuffer::~AudioTrackReadBuffer() {
-  peer_->RegisterRemoteAudioFrameCallback(AudioFrameReadyCallback{});
+    // FIXME
+  //peer_->RegisterRemoteAudioFrameCallback(AudioFrameReadyCallback{});
 }
 
 AudioTrackReadBuffer::Buffer::Buffer() {

@@ -21,12 +21,29 @@ using namespace Microsoft::MixedReality::WebRTC;
 /// returns a view over a global constant buffer (static storage), which is
 /// always valid, never deallocated.
 std::string_view ObjectTypeToString(ObjectType type) {
-  static_assert((int)ObjectType::kPeerConnection == 0, "");
-  static_assert((int)ObjectType::kLocalVideoTrack == 1, "");
-  static_assert((int)ObjectType::kExternalVideoTrackSource == 2, "");
-  constexpr const std::string_view s_types[] = {
-      "PeerConnection", "LocalVideoTrack", "ExternalVideoTrackSource"};
-  return s_types[(int)type];
+  switch (type) {
+    case ObjectType::kPeerConnection:
+      return "PeerConnection";
+    case ObjectType::kLocalAudioTrack:
+      return "LocalAudioTrack";
+    case ObjectType::kLocalVideoTrack:
+      return "LocalVideoTrack";
+    case ObjectType::kExternalVideoTrackSource:
+      return "ExternalVideoTrackSource";
+    case ObjectType::kRemoteAudioTrack:
+      return "RemoteAudioTrack";
+    case ObjectType::kRemoteVideoTrack:
+      return "RemoteVideoTrack";
+    case ObjectType::kDataChannel:
+      return "DataChannel";
+    case ObjectType::kAudioTransceiver:
+      return "AudioTransceiver";
+    case ObjectType::kVideoTransceiver:
+      return "VideoTransceiver";
+    default:
+      RTC_NOTREACHED();
+      return "<UnknownObjectType>";
+  }
 }
 
 /// Utility to format a tracked object into a string, for debugging purpose.
@@ -443,7 +460,8 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
     if ((shutdown_options_ & mrsShutdownOptions::kLogLiveObjects) != 0) {
       ReportLiveObjectsNoLock();
     }
-    if ((shutdown_options_ & mrsShutdownOptions::kDebugBreakOnForceShutdown) != 0) {
+    if ((shutdown_options_ & mrsShutdownOptions::kDebugBreakOnForceShutdown) !=
+        0) {
 #if defined(MR_SHARING_WIN)
       DebugBreak();
 #endif

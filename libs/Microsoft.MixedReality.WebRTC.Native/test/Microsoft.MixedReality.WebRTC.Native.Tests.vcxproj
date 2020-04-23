@@ -41,7 +41,7 @@
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets">
-    <Import Project="..\Microsoft.MixedReality.WebRTC.Native.targets" />
+    <Import Project="..\mrwebrtc.targets" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -58,6 +58,7 @@
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="peer_connection_test_helpers.h" />
+    <ClInclude Include="simple_interop.h" />
     <ClInclude Include="test_utils.h" />
     <ClInclude Include="video_test_utils.h" />
   </ItemGroup>
@@ -72,9 +73,12 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="data_channel_tests.cpp" />
+    <ClCompile Include="test_utils.cpp" />
     <ClCompile Include="video_frame_observer_tests.cpp" />
+    <ClCompile Include="simple_interop.cpp" />
     <ClCompile Include="video_test_utils.cpp" />
     <ClCompile Include="video_track_tests.cpp" />
+    <ClCompile Include="transceiver_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\win32\Microsoft.MixedReality.WebRTC.Native.Win32.vcxproj">

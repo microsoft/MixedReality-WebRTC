@@ -2,218 +2,19 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 
 namespace Microsoft.MixedReality.WebRTC.Tests
 {
-    [TestFixture]
-    internal class LocalVideoTrackTests
+    [TestFixture(SdpSemantic.PlanB)]
+    [TestFixture(SdpSemantic.UnifiedPlan)]
+    internal class LocalVideoTrackTests : PeerConnectionTestBase
     {
-        PeerConnection pc1_ = null;
-        PeerConnection pc2_ = null;
-        ManualResetEventSlim connectedEvent1_ = null;
-        ManualResetEventSlim connectedEvent2_ = null;
-        ManualResetEventSlim renegotiationEvent1_ = null;
-        ManualResetEventSlim renegotiationEvent2_ = null;
-        ManualResetEventSlim trackAddedEvent1_ = null;
-        ManualResetEventSlim trackAddedEvent2_ = null;
-        ManualResetEventSlim trackRemovedEvent1_ = null;
-        ManualResetEventSlim trackRemovedEvent2_ = null;
-        ManualResetEventSlim iceConnectedEvent1_ = null;
-        ManualResetEventSlim iceConnectedEvent2_ = null;
-
-        [SetUp]
-        public void SetupConnection()
+        public LocalVideoTrackTests(SdpSemantic sdpSemantic) : base(sdpSemantic)
         {
-            // Create the 2 peers
-            var config = new PeerConnectionConfiguration();
-            pc1_ = new PeerConnection();
-            pc2_ = new PeerConnection();
-            pc1_.InitializeAsync(config).Wait(); // cannot use async/await in OneTimeSetUp
-            pc2_.InitializeAsync(config).Wait();
-
-            // Allocate callback events
-            connectedEvent1_ = new ManualResetEventSlim(false);
-            connectedEvent2_ = new ManualResetEventSlim(false);
-            iceConnectedEvent1_ = new ManualResetEventSlim(false);
-            iceConnectedEvent2_ = new ManualResetEventSlim(false);
-            renegotiationEvent1_ = new ManualResetEventSlim(false);
-            renegotiationEvent2_ = new ManualResetEventSlim(false);
-            trackAddedEvent1_ = new ManualResetEventSlim(false);
-            trackAddedEvent2_ = new ManualResetEventSlim(false);
-            trackRemovedEvent1_ = new ManualResetEventSlim(false);
-            trackRemovedEvent2_ = new ManualResetEventSlim(false);
-
-            // Connect all signals
-            pc1_.Connected += OnConnected1;
-            pc2_.Connected += OnConnected2;
-            pc1_.LocalSdpReadytoSend += OnLocalSdpReady1;
-            pc2_.LocalSdpReadytoSend += OnLocalSdpReady2;
-            pc1_.IceCandidateReadytoSend += OnIceCandidateReadytoSend1;
-            pc2_.IceCandidateReadytoSend += OnIceCandidateReadytoSend2;
-            pc1_.IceStateChanged += OnIceStateChanged1;
-            pc2_.IceStateChanged += OnIceStateChanged2;
-            pc1_.RenegotiationNeeded += OnRenegotiationNeeded1;
-            pc2_.RenegotiationNeeded += OnRenegotiationNeeded2;
-            pc1_.TrackAdded += OnTrackAdded1;
-            pc2_.TrackAdded += OnTrackAdded2;
-            pc1_.TrackRemoved += OnTrackRemoved1;
-            pc2_.TrackRemoved += OnTrackRemoved2;
-        }
-
-        [TearDown]
-        public void TearDownConnectin()
-        {
-            // Unregister all callbacks
-            pc1_.LocalSdpReadytoSend -= OnLocalSdpReady1;
-            pc2_.LocalSdpReadytoSend -= OnLocalSdpReady2;
-            pc1_.IceCandidateReadytoSend -= OnIceCandidateReadytoSend1;
-            pc2_.IceCandidateReadytoSend -= OnIceCandidateReadytoSend2;
-            pc1_.IceStateChanged -= OnIceStateChanged1;
-            pc2_.IceStateChanged -= OnIceStateChanged2;
-            pc1_.RenegotiationNeeded -= OnRenegotiationNeeded1;
-            pc2_.RenegotiationNeeded -= OnRenegotiationNeeded2;
-            pc1_.TrackAdded -= OnTrackAdded1;
-            pc2_.TrackAdded -= OnTrackAdded2;
-            pc1_.TrackRemoved -= OnTrackRemoved1;
-            pc2_.TrackRemoved -= OnTrackRemoved2;
-
-            // Clean-up callback events
-            trackAddedEvent1_.Dispose();
-            trackAddedEvent1_ = null;
-            trackRemovedEvent1_.Dispose();
-            trackRemovedEvent1_ = null;
-            trackAddedEvent2_.Dispose();
-            trackAddedEvent2_ = null;
-            trackRemovedEvent2_.Dispose();
-            trackRemovedEvent2_ = null;
-            renegotiationEvent1_.Dispose();
-            renegotiationEvent1_ = null;
-            renegotiationEvent2_.Dispose();
-            renegotiationEvent2_ = null;
-            iceConnectedEvent1_.Dispose();
-            iceConnectedEvent1_ = null;
-            iceConnectedEvent2_.Dispose();
-            iceConnectedEvent2_ = null;
-            connectedEvent1_.Dispose();
-            connectedEvent1_ = null;
-            connectedEvent2_.Dispose();
-            connectedEvent2_ = null;
-
-            // Destroy peers
-            pc1_.Close();
-            pc1_.Dispose();
-            pc1_ = null;
-            pc2_.Close();
-            pc2_.Dispose();
-            pc2_ = null;
-        }
-
-        private void OnConnected1()
-        {
-            connectedEvent1_.Set();
-        }
-
-        private void OnConnected2()
-        {
-            connectedEvent2_.Set();
-        }
-
-        private async void OnLocalSdpReady1(string type, string sdp)
-        {
-            await pc2_.SetRemoteDescriptionAsync(type, sdp);
-            if (type == "offer")
-            {
-                pc2_.CreateAnswer();
-            }
-        }
-
-        private async void OnLocalSdpReady2(string type, string sdp)
-        {
-            await pc1_.SetRemoteDescriptionAsync(type, sdp);
-            if (type == "offer")
-            {
-                pc1_.CreateAnswer();
-            }
-        }
-
-        private void OnIceCandidateReadytoSend1(string candidate, int sdpMlineindex, string sdpMid)
-        {
-            pc2_.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
-        }
-
-        private void OnIceCandidateReadytoSend2(string candidate, int sdpMlineindex, string sdpMid)
-        {
-            pc1_.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
-        }
-
-        private void OnRenegotiationNeeded1()
-        {
-            renegotiationEvent1_.Set();
-            if (pc1_.IsConnected)
-            {
-                pc1_.CreateOffer();
-            }
-        }
-
-        private void OnRenegotiationNeeded2()
-        {
-            renegotiationEvent2_.Set();
-            if (pc2_.IsConnected)
-            {
-                pc2_.CreateOffer();
-            }
-        }
-
-        private void OnTrackAdded1(PeerConnection.TrackKind trackKind)
-        {
-            Assert.True(trackKind == PeerConnection.TrackKind.Video);
-            trackAddedEvent1_.Set();
-        }
-
-        private void OnTrackAdded2(PeerConnection.TrackKind trackKind)
-        {
-            Assert.True(trackKind == PeerConnection.TrackKind.Video);
-            trackAddedEvent2_.Set();
-        }
-
-        private void OnTrackRemoved1(PeerConnection.TrackKind trackKind)
-        {
-            Assert.True(trackKind == PeerConnection.TrackKind.Video);
-            trackRemovedEvent1_.Set();
-        }
-
-        private void OnTrackRemoved2(PeerConnection.TrackKind trackKind)
-        {
-            Assert.True(trackKind == PeerConnection.TrackKind.Video);
-            trackRemovedEvent2_.Set();
-        }
-
-        private void OnIceStateChanged1(IceConnectionState newState)
-        {
-            if ((newState == IceConnectionState.Connected) || (newState == IceConnectionState.Completed))
-            {
-                iceConnectedEvent1_.Set();
-            }
-        }
-
-        private void OnIceStateChanged2(IceConnectionState newState)
-        {
-            if ((newState == IceConnectionState.Connected) || (newState == IceConnectionState.Completed))
-            {
-                iceConnectedEvent2_.Set();
-            }
-        }
-
-        private void WaitForSdpExchangeCompleted()
-        {
-            Assert.True(connectedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            Assert.True(connectedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
-            connectedEvent1_.Reset();
-            connectedEvent2_.Reset();
         }
 
         private unsafe void CustomI420AFrameCallback(in FrameRequest request)
@@ -301,137 +102,269 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 #if !MRSW_EXCLUDE_DEVICE_TESTS
 
         [Test]
-        public async Task AddLocalVideoTrackAsync_Null()
-        {
-            LocalVideoTrack track1 = await pc1_.AddLocalVideoTrackAsync();
-            Assert.NotNull(track1);
-            Assert.AreEqual(pc1_, track1.PeerConnection);
-            pc1_.RemoveLocalVideoTrack(track1);
-            track1.Dispose();
-        }
-
-        [Test]
-        public async Task AddLocalVideoTrackAsync_Default()
-        {
-            var settings = new LocalVideoTrackSettings();
-            LocalVideoTrack track1 = await pc1_.AddLocalVideoTrackAsync(settings);
-            Assert.NotNull(track1);
-            Assert.AreEqual(pc1_, track1.PeerConnection);
-            pc1_.RemoveLocalVideoTrack(track1);
-            track1.Dispose();
-        }
-
-        [Test]
         public async Task BeforeConnect()
         {
-            // Add local video track channel to #1
-            var settings = new LocalVideoTrackSettings();
-            LocalVideoTrack track1 = await pc1_.AddLocalVideoTrackAsync(settings);
-            Assert.NotNull(track1);
-            Assert.AreEqual(pc1_, track1.PeerConnection);
+            // Create video transceiver on #1
+            var transceiver_settings = new TransceiverInitSettings
+            {
+                Name = "transceiver1",
+            };
+            var transceiver1 = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
+            Assert.NotNull(transceiver1);
 
-            // Wait for local SDP re-negotiation on #1.
+            // Wait for local SDP re-negotiation event on #1.
             // This will not create an offer, since we're not connected yet.
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
 
+            // Create local video track
+            var settings = new LocalVideoTrackSettings();
+            LocalVideoTrack track1 = await LocalVideoTrack.CreateFromDeviceAsync(settings);
+            Assert.NotNull(track1);
+
+            // Add local video track channel to #1
+            renegotiationEvent1_.Reset();
+            transceiver1.LocalVideoTrack = track1;
+            Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
+            Assert.AreEqual(pc1_, track1.PeerConnection);
+            Assert.AreEqual(track1, transceiver1.LocalTrack);
+            Assert.IsNull(transceiver1.RemoteTrack);
+            Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1));
+            Assert.IsTrue(pc1_.LocalVideoTracks.Contains(track1));
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+
             // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
+            StartOfferWith(pc1_);
+            WaitForTransportsWritable();
             Assert.True(pc1_.IsConnected);
             Assert.True(pc2_.IsConnected);
 
+            // Now remote peer #2 has a 1 remote track
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count());
+
+            // Wait until the SDP exchange is completed
+            WaitForSdpExchangeCompleted();
+
             // Remove the track from #1
             renegotiationEvent1_.Reset();
-            pc1_.RemoveLocalVideoTrack(track1);
+            transceiver1.LocalVideoTrack = null;
+            Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
             Assert.IsNull(track1.PeerConnection);
+            Assert.IsNull(track1.Transceiver);
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1)); // never removed
+            Assert.IsNull(transceiver1.LocalTrack);
+            Assert.IsNull(transceiver1.RemoteTrack);
             track1.Dispose();
 
-            // Wait for local SDP re-negotiation on #1
+            // Remote peer #2 still has a track, because the transceiver is still receiving,
+            // even if there is no track on the sending side (so effectively it receives only
+            // black frames).
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count());
+
+            // Change the transceiver direction to stop receiving. This requires a renegotiation
+            // to take effect, so nothing changes for now.
+            remoteDescAppliedEvent1_.Reset();
+            remoteDescAppliedEvent2_.Reset();
+            transceiver1.DesiredDirection = Transceiver.Direction.Inactive;
+
+            // Wait for renegotiate to complete
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-
-            // Confirm remote track was removed from #2
-            Assert.True(trackRemovedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
-
-            // Wait until SDP renegotiation finished
             WaitForSdpExchangeCompleted();
+            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+            Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+
+            // Now the remote track got removed from #2
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
         }
 
         [Test]
         public async Task AfterConnect()
         {
             // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
+            StartOfferWith(pc1_);
+            WaitForTransportsWritable();
             Assert.True(pc1_.IsConnected);
             Assert.True(pc2_.IsConnected);
 
-            // Add local video track channel to #1
-            var settings = new LocalVideoTrackSettings();
-            LocalVideoTrack track1 = await pc1_.AddLocalVideoTrackAsync(settings);
-            Assert.NotNull(track1);
-            Assert.AreEqual(pc1_, track1.PeerConnection);
+            // Wait for all transceivers to be updated on both peers
+            WaitForSdpExchangeCompleted();
+            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(20.0)));
+            Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(20.0)));
+            remoteDescAppliedEvent1_.Reset();
+            remoteDescAppliedEvent2_.Reset();
 
-            // Wait for local SDP re-negotiation on #1
-            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+            // No track yet
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
 
-            // Confirm remote track was added on #2
-            Assert.True(trackAddedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+            // Create video transceiver on #1 -- this generates a renegotiation
+            renegotiationEvent1_.Reset();
+            var transceiver_settings = new TransceiverInitSettings
+            {
+                Name = "transceiver1",
+            };
+            var transceiver1 = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
+            Assert.NotNull(transceiver1);
+            Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1));
+
+            // Confirm (inactive) remote track was added on #2 due to transceiver being added
+            Assert.True(videoTrackAddedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
 
             // Wait until SDP renegotiation finished
+            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
             WaitForSdpExchangeCompleted();
+
+            // Now remote peer #2 has a 1 remote track (which is inactive).
+            // Note that tracks are updated before transceivers here. This might be unintuitive, so we might
+            // want to revisit this later.
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count());
+
+            // Transceiver has been updated to Send+Receive (default desired direction when added), but
+            // since peer #2 doesn't intend to send, the actually negotiated direction on #1 is Send only.
+            Assert.AreEqual(Transceiver.Direction.SendReceive, transceiver1.DesiredDirection);
+            Assert.AreEqual(Transceiver.Direction.SendOnly, transceiver1.NegotiatedDirection);
+
+            // Create local track
+            renegotiationEvent1_.Reset();
+            var settings = new LocalVideoTrackSettings();
+            LocalVideoTrack track1 = await LocalVideoTrack.CreateFromDeviceAsync(settings);
+            Assert.NotNull(track1);
+            Assert.IsNull(track1.PeerConnection);
+            Assert.IsNull(track1.Transceiver);
+            Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
+
+            // Add local video track to #1
+            renegotiationEvent1_.Reset();
+            transceiver1.LocalVideoTrack = track1;
+            Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
+            Assert.AreEqual(pc1_, track1.PeerConnection);
+            Assert.AreEqual(track1, transceiver1.LocalTrack);
+            Assert.IsNull(transceiver1.RemoteTrack);
+            Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1));
+            Assert.IsTrue(pc1_.LocalVideoTracks.Contains(track1));
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+
+            // SetLocalTrack() does not change the transceiver directions
+            Assert.AreEqual(Transceiver.Direction.SendReceive, transceiver1.DesiredDirection);
+            Assert.AreEqual(Transceiver.Direction.SendOnly, transceiver1.NegotiatedDirection);
 
             // Remove the track from #1
             renegotiationEvent1_.Reset();
-            pc1_.RemoveLocalVideoTrack(track1);
+            transceiver1.LocalVideoTrack = null;
+            Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
             Assert.IsNull(track1.PeerConnection);
+            Assert.IsNull(track1.Transceiver);
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+            Assert.IsTrue(pc1_.Transceivers.Contains(transceiver1)); // never removed
+            Assert.IsNull(transceiver1.LocalTrack);
+            Assert.IsNull(transceiver1.RemoteTrack);
             track1.Dispose();
 
-            // Wait for local SDP re-negotiation on #1
+            // SetLocalTrack() does not change the transceiver directions, even when the local
+            // sending track is disposed of.
+            Assert.AreEqual(Transceiver.Direction.SendReceive, transceiver1.DesiredDirection);
+            Assert.AreEqual(Transceiver.Direction.SendOnly, transceiver1.NegotiatedDirection);
+
+            // Remote peer #2 still has a track, because the transceiver is still receiving,
+            // even if there is no track on the sending side (so effectively it receives only
+            // black frames).
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count());
+
+            // Change the transceiver direction to stop receiving. This requires a renegotiation
+            // to take effect, so nothing changes for now.
+            // Note: In Plan B, a renegotiation needed event is manually forced for parity with
+            // Unified Plan. However setting the transceiver to inactive removes the remote peer's
+            // remote track, which causes another renegotiation needed event. So we suspend the
+            // automatic offer to trigger it manually.
+            suspendOffer1_ = true;
+            remoteDescAppliedEvent1_.Reset();
+            remoteDescAppliedEvent2_.Reset();
+            transceiver1.DesiredDirection = Transceiver.Direction.Inactive;
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
 
-            // Confirm remote track was removed from #2 -- not fired in Unified Plan
-            //Assert.True(trackRemovedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
-
-            // Wait until SDP renegotiation finished
+            // Wait for renegotiate to complete
+            StartOfferWith(pc1_);
             WaitForSdpExchangeCompleted();
+
+            // Now the remote track got removed from #2
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
         }
 
 #endif // !MRSW_EXCLUDE_DEVICE_TESTS
-
 
         [Test]
         public void SimpleExternalI420A()
         {
             // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
+            StartOfferWith(pc1_);
+            WaitForTransportsWritable();
             Assert.True(pc1_.IsConnected);
             Assert.True(pc2_.IsConnected);
+            WaitForSdpExchangeCompleted();
 
-            // Create external ARGB32 source
+            // No track yet
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
+
+            // Create external I420A source
             var source1 = ExternalVideoTrackSource.CreateFromI420ACallback(CustomI420AFrameCallback);
             Assert.NotNull(source1);
-            Assert.AreEqual(null, source1.PeerConnection); // before any track was added, this is null
+            Assert.AreEqual(0, source1.Tracks.Count());
 
-            // Add external ARGB32 track
-            var track1 = pc1_.AddCustomLocalVideoTrack("custom_i420a", source1);
-            Assert.NotNull(track1);
-            Assert.AreEqual(pc1_, track1.PeerConnection);
-            Assert.AreEqual(pc1_, source1.PeerConnection); // after a track was added, this is the PC of the track
+            // Add video transceiver #1
+            renegotiationEvent1_.Reset();
+            remoteDescAppliedEvent1_.Reset();
+            remoteDescAppliedEvent2_.Reset();
+            Assert.IsFalse(videoTrackAddedEvent2_.IsSet);
+            var transceiver_settings = new TransceiverInitSettings
+            {
+                Name = "transceiver1",
+            };
+            var transceiver1 = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
+            Assert.NotNull(transceiver1);
+            Assert.IsNull(transceiver1.LocalTrack);
+            Assert.IsNull(transceiver1.RemoteTrack);
+            Assert.AreEqual(pc1_, transceiver1.PeerConnection);
 
-            // Wait for local SDP re-negotiation on #1
+            // Wait for renegotiation
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-
-            // Confirm remote track was added on #2
-            Assert.True(trackAddedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
-
-            // Wait until SDP renegotiation finished
+            Assert.True(videoTrackAddedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+            Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
             WaitForSdpExchangeCompleted();
+
+            // Create external I420A track
+            var track1 = LocalVideoTrack.CreateFromExternalSource("custom_i420a", source1);
+            Assert.NotNull(track1);
+            Assert.AreEqual(source1, track1.Source);
+            Assert.IsNull(track1.PeerConnection);
+            Assert.IsNull(track1.Transceiver);
+            Assert.IsFalse(pc1_.LocalVideoTracks.Contains(track1));
+
+            // Set track on transceiver
+            renegotiationEvent1_.Reset();
+            transceiver1.LocalVideoTrack = track1;
+            Assert.AreEqual(pc1_, track1.PeerConnection);
+            Assert.IsTrue(pc1_.LocalVideoTracks.Contains(track1));
+            Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
 
             // Remove the track from #1
             renegotiationEvent1_.Reset();
-            pc1_.RemoveLocalVideoTrack(track1);
+            transceiver1.LocalVideoTrack = null;
             Assert.IsNull(track1.PeerConnection);
+            Assert.IsNull(track1.Transceiver);
+            Assert.IsFalse(pc1_.LocalVideoTracks.Contains(track1));
 
             // Dispose of the track and its source
             track1.Dispose();
@@ -439,49 +372,75 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             source1.Dispose();
             source1 = null;
 
-            // Wait for local SDP re-negotiation on #1
-            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-
-            // Confirm remote track was removed from #2
-            Assert.True(trackRemovedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
-
-            // Wait until SDP renegotiation finished
-            WaitForSdpExchangeCompleted();
+            // On peer #1 the track was replaced on the transceiver, but the transceiver stays
+            // on the peer connection, so no renegotiation is needed.
+            Assert.IsFalse(renegotiationEvent1_.IsSet);
         }
 
         [Test]
         public void SimpleExternalArgb32()
         {
             // Connect
-            Assert.True(pc1_.CreateOffer());
-            WaitForSdpExchangeCompleted();
+            StartOfferWith(pc1_);
+            WaitForTransportsWritable();
             Assert.True(pc1_.IsConnected);
             Assert.True(pc2_.IsConnected);
+            WaitForSdpExchangeCompleted();
+
+            // No track yet
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
 
             // Create external ARGB32 source
             var source1 = ExternalVideoTrackSource.CreateFromArgb32Callback(CustomArgb32FrameCallback);
             Assert.NotNull(source1);
-            Assert.AreEqual(null, source1.PeerConnection); // before any track was added, this is null
+            Assert.AreEqual(0, source1.Tracks.Count());
 
-            // Add external ARGB32 track
-            var track1 = pc1_.AddCustomLocalVideoTrack("custom_argb32", source1);
-            Assert.NotNull(track1);
-            Assert.AreEqual(pc1_, track1.PeerConnection);
-            Assert.AreEqual(pc1_, source1.PeerConnection); // after a track was added, this is the PC of the track
+            // Add video transceiver #1
+            renegotiationEvent1_.Reset();
+            remoteDescAppliedEvent1_.Reset();
+            remoteDescAppliedEvent2_.Reset();
+            Assert.IsFalse(videoTrackAddedEvent2_.IsSet);
+            var transceiver_settings = new TransceiverInitSettings
+            {
+                Name = "transceiver1",
+            };
+            var transceiver1 = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
+            Assert.NotNull(transceiver1);
+            Assert.IsNull(transceiver1.LocalTrack);
+            Assert.IsNull(transceiver1.RemoteTrack);
+            Assert.AreEqual(pc1_, transceiver1.PeerConnection);
 
-            // Wait for local SDP re-negotiation on #1
+            // Wait for renegotiation
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-
-            // Confirm remote track was added on #2
-            Assert.True(trackAddedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
-
-            // Wait until SDP renegotiation finished
+            Assert.True(videoTrackAddedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+            Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
             WaitForSdpExchangeCompleted();
+
+            // Create external ARGB32 track
+            var track1 = LocalVideoTrack.CreateFromExternalSource("custom_argb32", source1);
+            Assert.NotNull(track1);
+            Assert.AreEqual(source1, track1.Source);
+            Assert.IsNull(track1.PeerConnection);
+            Assert.IsNull(track1.Transceiver);
+            Assert.IsFalse(pc1_.LocalVideoTracks.Contains(track1));
+
+            // Set track on transceiver
+            renegotiationEvent1_.Reset();
+            transceiver1.LocalVideoTrack = track1;
+            Assert.AreEqual(pc1_, track1.PeerConnection);
+            Assert.IsTrue(pc1_.LocalVideoTracks.Contains(track1));
+            Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
 
             // Remove the track from #1
             renegotiationEvent1_.Reset();
-            pc1_.RemoveLocalVideoTrack(track1);
+            transceiver1.LocalVideoTrack = null;
             Assert.IsNull(track1.PeerConnection);
+            Assert.IsNull(track1.Transceiver);
+            Assert.IsFalse(pc1_.LocalVideoTracks.Contains(track1));
 
             // Dispose of the track and its source
             track1.Dispose();
@@ -489,14 +448,120 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             source1.Dispose();
             source1 = null;
 
+            // On peer #1 the track was replaced on the transceiver, but the transceiver stays
+            // on the peer connection, so no renegotiation is needed.
+            Assert.IsFalse(renegotiationEvent1_.IsSet);
+        }
+
+        [Test]
+        public void MultiExternalI420A()
+        {
+            // Batch changes in this test, and manually (re)negotiate
+            suspendOffer1_ = true;
+
+            // Connect
+            StartOfferWith(pc1_);
+            WaitForTransportsWritable();
+            Assert.True(pc1_.IsConnected);
+            Assert.True(pc2_.IsConnected);
+            WaitForSdpExchangeCompleted();
+
+            // No track yet
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
+
+            // Create external I420A source
+            var source1 = ExternalVideoTrackSource.CreateFromI420ACallback(CustomI420AFrameCallback);
+            Assert.NotNull(source1);
+            Assert.AreEqual(0, source1.Tracks.Count());
+
+            // Add external I420A tracks
+            const int kNumTracks = 5;
+            var transceivers = new Transceiver[kNumTracks];
+            var tracks = new LocalVideoTrack[kNumTracks];
+            for (int i = 0; i < kNumTracks; ++i)
+            {
+                var transceiver_settings = new TransceiverInitSettings
+                {
+                    Name = $"transceiver1_{i}",
+                };
+                transceivers[i] = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
+                Assert.NotNull(transceivers[i]);
+
+                tracks[i] = LocalVideoTrack.CreateFromExternalSource($"track_i420a_{i}", source1);
+                Assert.NotNull(tracks[i]);
+                Assert.IsTrue(source1.Tracks.Contains(tracks[i]));
+
+                transceivers[i].LocalVideoTrack = tracks[i];
+                Assert.AreEqual(pc1_, tracks[i].PeerConnection);
+                Assert.IsTrue(pc1_.LocalVideoTracks.Contains(tracks[i]));
+            }
+            Assert.AreEqual(kNumTracks, source1.Tracks.Count());
+            Assert.AreEqual(kNumTracks, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+
             // Wait for local SDP re-negotiation on #1
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
 
-            // Confirm remote track was removed from #2
-            Assert.True(trackRemovedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
+            // Renegotiate
+            StartOfferWith(pc1_);
+
+            // Confirm remote track was added on #2
+            Assert.True(videoTrackAddedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
 
             // Wait until SDP renegotiation finished
             WaitForSdpExchangeCompleted();
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(kNumTracks, pc2_.RemoteVideoTracks.Count());
+
+            // Remove the track from #1
+            renegotiationEvent1_.Reset();
+            for (int i = 0; i < kNumTracks; ++i)
+            {
+                transceivers[i].LocalVideoTrack = null;
+                Assert.IsNull(tracks[i].PeerConnection);
+                Assert.IsFalse(pc1_.LocalVideoTracks.Contains(tracks[i]));
+                Assert.IsTrue(source1.Tracks.Contains(tracks[i])); // does not change yet
+                tracks[i].Dispose();
+                tracks[i] = null;
+                Assert.IsFalse(source1.Tracks.Contains(tracks[i]));
+            }
+            Assert.AreEqual(0, pc1_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc1_.RemoteVideoTracks.Count());
+            Assert.AreEqual(0, source1.Tracks.Count());
+
+            // Dispose of source
+            source1.Dispose();
+            source1 = null;
+
+            // Changes on transceiver's local track do not require renegotiation
+            Assert.False(renegotiationEvent1_.IsSet);
+
+            // Change the transceivers direction to stop sending
+            renegotiationEvent1_.Reset();
+            videoTrackRemovedEvent2_.Reset();
+            remoteDescAppliedEvent1_.Reset();
+            remoteDescAppliedEvent2_.Reset();
+            for (int i = 0; i < kNumTracks; ++i)
+            {
+                transceivers[i].DesiredDirection = Transceiver.Direction.Inactive;
+            }
+
+            // Renegotiate manually the batch of changes
+            Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+            StartOfferWith(pc1_);
+
+            // Wait everything to be ready
+            WaitForSdpExchangeCompleted();
+
+            // Confirm remote tracks were removed from #2 as part of removing all transceivers
+            Assert.True(videoTrackRemovedEvent2_.IsSet);
+
+            // Remote peer #2 doesn't have any track anymore
+            Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
+            Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
         }
     }
 }

@@ -29,11 +29,8 @@ namespace Microsoft::MixedReality::WebRTC {
 
 DataChannel::DataChannel(
     PeerConnection* owner,
-    rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel,
-    mrsDataChannelInteropHandle interop_handle) noexcept
-    : owner_(owner),
-      data_channel_(std::move(data_channel)),
-      interop_handle_(interop_handle) {
+    rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) noexcept
+    : owner_(owner), data_channel_(std::move(data_channel)) {
   RTC_CHECK(owner_);
   data_channel_->RegisterObserver(this);
 }
@@ -91,6 +88,12 @@ void DataChannel::OnStateChange() noexcept {
       if (data_channel_->negotiated()) {
         owner_->OnDataChannelAdded(*this);
       }
+      break;
+    case webrtc::DataChannelInterface::DataState::kClosed:
+      break;
+    case webrtc::DataChannelInterface::DataState::kClosing:
+      break;
+    case webrtc::DataChannelInterface::DataState::kConnecting:
       break;
   }
 

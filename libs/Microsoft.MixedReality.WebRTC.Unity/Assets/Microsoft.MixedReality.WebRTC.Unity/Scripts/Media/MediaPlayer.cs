@@ -3,6 +3,7 @@
 
 using UnityEngine;
 using Unity.Profiling;
+using System;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
@@ -19,10 +20,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     {
         [Header("Source")]
         [Tooltip("Audio source providing the audio data used by this player")]
-        public AudioSource AudioSource;
+        [SerializeField]
+        protected MediaSource AudioSource;
 
         [Tooltip("Video source providing the video frames rendered by this player")]
-        public VideoSource VideoSource;
+        [SerializeField]
+        protected MediaSource VideoSource;
 
         [Tooltip("Max video playback framerate, in frames per second")]
         [Range(0.001f, 120f)]
@@ -59,11 +62,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public TextMesh FrameSkipStatHolder;
 
         /// <summary>
-        /// The frame queue from which frames will be rendered.
-        /// </summary>
-        public IVideoFrameQueue FrameQueue = null;
-
-        /// <summary>
         /// Internal reference to the attached texture
         /// </summary>
         private Texture2D _textureY = null; // also used for ARGB32
@@ -78,9 +76,27 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private Material videoMaterial;
         private float _minUpdateDelay;
 
+        private VideoFrameQueue<I420AVideoFrameStorage> _i420aFrameQueue = null;
+        private VideoFrameQueue<Argb32VideoFrameStorage> _argb32FrameQueue = null;
+
         private ProfilerMarker displayStatsMarker = new ProfilerMarker("DisplayStats");
         private ProfilerMarker loadTextureDataMarker = new ProfilerMarker("LoadTextureData");
         private ProfilerMarker uploadTextureToGpuMarker = new ProfilerMarker("UploadTextureToGPU");
+
+        private void OnValidate()
+        {
+            // Ensure that AudioSource implements IAudioSource
+            if (!(AudioSource is IAudioSource))
+            {
+                AudioSource = null;
+            }
+
+            // Ensure that VideoSource implements IVideoSource
+            if (!(VideoSource is IVideoSource))
+            {
+                VideoSource = null;
+            }
+        }
 
         private void Start()
         {
@@ -89,41 +105,111 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Leave 3ms of margin, otherwise it misses 1 frame and drops to ~20 FPS
             // when Unity is running at 60 FPS.
             _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxVideoFramerate) - 0.003f);
-
-            AudioSource?.AudioStreamStarted.AddListener(AudioStreamStarted);
-            AudioSource?.AudioStreamStopped.AddListener(AudioStreamStopped);
-            VideoSource?.VideoStreamStarted.AddListener(VideoStreamStarted);
-            VideoSource?.VideoStreamStopped.AddListener(VideoStreamStopped);
         }
 
-        private void OnDestroy()
+        private void OnEnable()
         {
-            AudioSource?.AudioStreamStarted.RemoveListener(AudioStreamStarted);
-            AudioSource?.AudioStreamStopped.RemoveListener(AudioStreamStopped);
-            VideoSource?.VideoStreamStarted.RemoveListener(VideoStreamStarted);
-            VideoSource?.VideoStreamStopped.RemoveListener(VideoStreamStopped);
+            if (AudioSource != null)
+            {
+                if (AudioSource is IAudioSource audioSrc)
+                {
+                    audioSrc.GetAudioStreamStarted().AddListener(AudioStreamStarted);
+                    audioSrc.GetAudioStreamStopped().AddListener(AudioStreamStopped);
+
+                    // If registering while the audio source is already playing, invoke manually
+                    if (audioSrc.IsStreaming)
+                    {
+                        AudioStreamStarted(audioSrc);
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException("Audio source does not implement IAudioSource.");
+                }
+            }
+
+            if (VideoSource != null)
+            {
+                if (VideoSource is IVideoSource videoSrc)
+                {
+                    videoSrc.GetVideoStreamStarted().AddListener(VideoStreamStarted);
+                    videoSrc.GetVideoStreamStopped().AddListener(VideoStreamStopped);
+
+                    // If registering while the audio source is already playing, invoke manually
+                    if (videoSrc.IsStreaming)
+                    {
+                        VideoStreamStarted(videoSrc);
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException("Video source does not implement IVideoSource.");
+                }
+            }
         }
 
-        private void AudioStreamStarted()
+        private void OnDisable()
+        {
+            var audioSrc = (IAudioSource)AudioSource;
+            if (audioSrc != null) // depends in particular on Unity's component destruction order
+            {
+                audioSrc.GetAudioStreamStarted().RemoveListener(AudioStreamStarted);
+                audioSrc.GetAudioStreamStopped().RemoveListener(AudioStreamStopped);
+            }
+            var videoSrc = (IVideoSource)VideoSource;
+            if (videoSrc != null) // depends in particular on Unity's component destruction order
+            {
+                videoSrc.GetVideoStreamStarted().RemoveListener(VideoStreamStarted);
+                videoSrc.GetVideoStreamStopped().RemoveListener(VideoStreamStopped);
+            }
+        }
+
+        private void AudioStreamStarted(IAudioSource source)
         {
         }
 
-        private void AudioStreamStopped()
+        private void AudioStreamStopped(IAudioSource source)
         {
         }
 
-        private void VideoStreamStarted()
+        private void VideoStreamStarted(IVideoSource source)
         {
-            FrameQueue = VideoSource.FrameQueue;
+            bool isRemote = (source is VideoReceiver);
+            int frameQueueSize = (isRemote ? 5 : 3);
+            var videoSrc = (IVideoSource)VideoSource;
+            switch (videoSrc.FrameEncoding)
+            {
+                case VideoEncoding.I420A:
+                    _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(frameQueueSize);
+                    videoSrc.RegisterCallback(I420AVideoFrameReady);
+                    break;
+
+                case VideoEncoding.Argb32:
+                    _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(frameQueueSize);
+                    videoSrc.RegisterCallback(Argb32VideoFrameReady);
+                    break;
+            }
         }
 
-        private void VideoStreamStopped()
+        private void VideoStreamStopped(IVideoSource source)
         {
-            FrameQueue = null;
-
             // Clear the video display to not confuse the user who could otherwise
-            // think that the video is still playing but is lagging.
+            // think that the video is still playing but is lagging/frozen.
             CreateEmptyVideoTextures();
+        }
+
+        protected void I420AVideoFrameReady(I420AVideoFrame frame)
+        {
+            // This callback is generally from a non-UI thread, but Unity object access is only allowed
+            // on the main UI thread, so defer to that point.
+            _i420aFrameQueue.Enqueue(frame);
+        }
+
+        protected void Argb32VideoFrameReady(Argb32VideoFrame frame)
+        {
+            // This callback is generally from a non-UI thread, but Unity object access is only allowed
+            // on the main UI thread, so defer to that point.
+            _argb32FrameQueue.Enqueue(frame);
         }
 
         private void CreateEmptyVideoTextures()
@@ -146,20 +232,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             // Assign that texture to the video player's Renderer component
             videoMaterial = GetComponent<Renderer>().material;
-            //< TODO - Better abstraction
-            if (FrameQueue is VideoFrameQueue<I420AVideoFrameStorage>)
+            if (_i420aFrameQueue != null)
             {
                 videoMaterial.SetTexture("_YPlane", _textureY);
                 videoMaterial.SetTexture("_UPlane", _textureU);
                 videoMaterial.SetTexture("_VPlane", _textureV);
             }
-            else if (FrameQueue is VideoFrameQueue<Argb32VideoFrameStorage>)
+            else if (_argb32FrameQueue != null)
             {
                 videoMaterial.SetTexture("_MainTex", _textureY);
             }
         }
 
-        /// <summary>
+        //// <summary>
         /// Unity Engine Start() hook
         /// </summary>
         /// <remarks>
@@ -167,7 +252,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private void Update()
         {
-            if (FrameQueue != null)
+            if ((_i420aFrameQueue != null) || (_argb32FrameQueue != null))
             {
 #if UNITY_EDITOR
                 // Inside the Editor, constantly update _minUpdateDelay to
@@ -177,10 +262,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // when Unity is running at 60 FPS.
                 _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxVideoFramerate) - 0.003f);
 #endif
+                // FIXME - This will overflow/underflow the queue if not set at the same rate
+                // as the one at which frames are enqueued!
                 var curTime = Time.time;
                 if (curTime - lastUpdateTime >= _minUpdateDelay)
                 {
-                    TryProcessFrame();
+                    if (_i420aFrameQueue != null)
+                    {
+                        TryProcessI420AFrame();
+                    }
+                    else if (_argb32FrameQueue != null)
+                    {
+                        TryProcessArgb32Frame();
+                    }
                     lastUpdateTime = curTime;
                 }
 
@@ -189,17 +283,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     // Share our stats values, if possible.
                     using (var profileScope = displayStatsMarker.Auto())
                     {
+                        IVideoFrameQueue stats = (_i420aFrameQueue != null ? (IVideoFrameQueue)_i420aFrameQueue : _argb32FrameQueue);
                         if (FrameLoadStatHolder != null)
                         {
-                            FrameLoadStatHolder.text = FrameQueue.QueuedFramesPerSecond.ToString("F2");
+                            FrameLoadStatHolder.text = stats.QueuedFramesPerSecond.ToString("F2");
                         }
                         if (FramePresentStatHolder != null)
                         {
-                            FramePresentStatHolder.text = FrameQueue.DequeuedFramesPerSecond.ToString("F2");
+                            FramePresentStatHolder.text = stats.DequeuedFramesPerSecond.ToString("F2");
                         }
                         if (FrameSkipStatHolder != null)
                         {
-                            FrameSkipStatHolder.text = FrameQueue.DroppedFramesPerSecond.ToString("F2");
+                            FrameSkipStatHolder.text = stats.DroppedFramesPerSecond.ToString("F2");
                         }
                     }
                 }
@@ -209,101 +304,101 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Internal helper that attempts to process frame data in the frame queue
         /// </summary>
-        private void TryProcessFrame()
+        private void TryProcessI420AFrame()
         {
-            //< TODO - Better abstraction
-            if (FrameQueue is VideoFrameQueue<I420AVideoFrameStorage> i420queue)
+            if (_i420aFrameQueue.TryDequeue(out I420AVideoFrameStorage frame))
             {
-                if (i420queue.TryDequeue(out I420AVideoFrameStorage frame))
+                int lumaWidth = (int)frame.Width;
+                int lumaHeight = (int)frame.Height;
+                if (_textureY == null || (_textureY.width != lumaWidth || _textureY.height != lumaHeight))
                 {
-                    int lumaWidth = (int)frame.Width;
-                    int lumaHeight = (int)frame.Height;
-                    if (_textureY == null || (_textureY.width != lumaWidth || _textureY.height != lumaHeight))
-                    {
-                        _textureY = new Texture2D(lumaWidth, lumaHeight, TextureFormat.R8, mipChain: false);
-                        videoMaterial.SetTexture("_YPlane", _textureY);
-                    }
-                    int chromaWidth = lumaWidth / 2;
-                    int chromaHeight = lumaHeight / 2;
-                    if (_textureU == null || (_textureU.width != chromaWidth || _textureU.height != chromaHeight))
-                    {
-                        _textureU = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, mipChain: false);
-                        videoMaterial.SetTexture("_UPlane", _textureU);
-                    }
-                    if (_textureV == null || (_textureV.width != chromaWidth || _textureV.height != chromaHeight))
-                    {
-                        _textureV = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, mipChain: false);
-                        videoMaterial.SetTexture("_VPlane", _textureV);
-                    }
+                    _textureY = new Texture2D(lumaWidth, lumaHeight, TextureFormat.R8, mipChain: false);
+                    videoMaterial.SetTexture("_YPlane", _textureY);
+                }
+                int chromaWidth = lumaWidth / 2;
+                int chromaHeight = lumaHeight / 2;
+                if (_textureU == null || (_textureU.width != chromaWidth || _textureU.height != chromaHeight))
+                {
+                    _textureU = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, mipChain: false);
+                    videoMaterial.SetTexture("_UPlane", _textureU);
+                }
+                if (_textureV == null || (_textureV.width != chromaWidth || _textureV.height != chromaHeight))
+                {
+                    _textureV = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, mipChain: false);
+                    videoMaterial.SetTexture("_VPlane", _textureV);
+                }
 
-                    // Copy data from C# buffer into system memory managed by Unity.
-                    // Note: This only "looks right" in Unity because we apply the 
-                    // "YUVFeedShader" to the texture (converting YUV planar to RGB).
-                    using (var profileScope = loadTextureDataMarker.Auto())
+                // Copy data from C# buffer into system memory managed by Unity.
+                // Note: This only "looks right" in Unity because we apply the 
+                // "YUVFeedShader" to the texture (converting YUV planar to RGB).
+                using (var profileScope = loadTextureDataMarker.Auto())
+                {
+                    unsafe
                     {
-                        unsafe
+                        fixed (void* buffer = frame.Buffer)
                         {
-                            fixed (void* buffer = frame.Buffer)
-                            {
-                                var src = new System.IntPtr(buffer);
-                                int lumaSize = lumaWidth * lumaHeight;
-                                _textureY.LoadRawTextureData(src, lumaSize);
-                                src += lumaSize;
-                                int chromaSize = chromaWidth * chromaHeight;
-                                _textureU.LoadRawTextureData(src, chromaSize);
-                                src += chromaSize;
-                                _textureV.LoadRawTextureData(src, chromaSize);
-                            }
+                            var src = new System.IntPtr(buffer);
+                            int lumaSize = lumaWidth * lumaHeight;
+                            _textureY.LoadRawTextureData(src, lumaSize);
+                            src += lumaSize;
+                            int chromaSize = chromaWidth * chromaHeight;
+                            _textureU.LoadRawTextureData(src, chromaSize);
+                            src += chromaSize;
+                            _textureV.LoadRawTextureData(src, chromaSize);
                         }
                     }
-
-                    // Upload from system memory to GPU
-                    using (var profileScope = uploadTextureToGpuMarker.Auto())
-                    {
-                        _textureY.Apply();
-                        _textureU.Apply();
-                        _textureV.Apply();
-                    }
-
-                    // Recycle the video frame packet for a later frame
-                    i420queue.RecycleStorage(frame);
                 }
+
+                // Upload from system memory to GPU
+                using (var profileScope = uploadTextureToGpuMarker.Auto())
+                {
+                    _textureY.Apply();
+                    _textureU.Apply();
+                    _textureV.Apply();
+                }
+
+                // Recycle the video frame packet for a later frame
+                _i420aFrameQueue.RecycleStorage(frame);
             }
-            else if (FrameQueue is VideoFrameQueue<Argb32VideoFrameStorage> argbQueue)
-            {
-                if (argbQueue.TryDequeue(out Argb32VideoFrameStorage frame))
-                {
-                    int width = (int)frame.Width;
-                    int height = (int)frame.Height;
-                    if (_textureY == null || (_textureY.width != width || _textureY.height != height))
-                    {
-                        _textureY = new Texture2D(width, height, TextureFormat.BGRA32, mipChain: false);
-                        videoMaterial.SetTexture("_MainTex", _textureY);
-                    }
+        }
 
-                    // Copy data from C# buffer into system memory managed by Unity.
-                    using (var profileScope = loadTextureDataMarker.Auto())
+        /// <summary>
+        /// Internal helper that attempts to process frame data in the frame queue
+        /// </summary>
+        private void TryProcessArgb32Frame()
+        {
+            if (_argb32FrameQueue.TryDequeue(out Argb32VideoFrameStorage frame))
+            {
+                int width = (int)frame.Width;
+                int height = (int)frame.Height;
+                if (_textureY == null || (_textureY.width != width || _textureY.height != height))
+                {
+                    _textureY = new Texture2D(width, height, TextureFormat.BGRA32, mipChain: false);
+                    videoMaterial.SetTexture("_MainTex", _textureY);
+                }
+
+                // Copy data from C# buffer into system memory managed by Unity.
+                using (var profileScope = loadTextureDataMarker.Auto())
+                {
+                    unsafe
                     {
-                        unsafe
+                        fixed (void* buffer = frame.Buffer)
                         {
-                            fixed (void* buffer = frame.Buffer)
-                            {
-                                var src = new System.IntPtr(buffer);
-                                int size = width * height * 4;
-                                _textureY.LoadRawTextureData(src, size);
-                            }
+                            var src = new System.IntPtr(buffer);
+                            int size = width * height * 4;
+                            _textureY.LoadRawTextureData(src, size);
                         }
                     }
-
-                    // Upload from system memory to GPU
-                    using (var profileScope = uploadTextureToGpuMarker.Auto())
-                    {
-                        _textureY.Apply();
-                    }
-
-                    // Recycle the video frame packet for a later frame
-                    argbQueue.RecycleStorage(frame);
                 }
+
+                // Upload from system memory to GPU
+                using (var profileScope = uploadTextureToGpuMarker.Auto())
+                {
+                    _textureY.Apply();
+                }
+
+                // Recycle the video frame packet for a later frame
+                _argb32FrameQueue.RecycleStorage(frame);
             }
         }
     }
