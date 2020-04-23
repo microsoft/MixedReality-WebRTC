@@ -26,8 +26,9 @@ jobs:
   - name: PackagesConfigFile
     value: '$(Build.SourcesDirectory)/tools/build/mrwebrtc/${{parameters.buildPlatform}}/packages.config'
   steps:
-  - checkout: self
-    submodules: recursive
+  - checkout: 'self'
+    submodules: 'recursive'
+    fetchDepth: '1'
 
   # Map build* variables to script* ones
   - task: PowerShell@2
