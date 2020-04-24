@@ -103,7 +103,7 @@ jobs:
   # Build TestAppUWP (Debug)
   - task: MSBuild@1
     condition: succeededOrFailed() # Build even previous task failed
-    displayName: 'Build C# sample TestAppUWP (AnyCPU-Debug)'
+    displayName: 'Build C# sample TestAppUWP (x64-Debug)'
     inputs:
       msbuildVersion: latest
       msbuildArchitecture: x64
@@ -115,21 +115,21 @@ jobs:
   # Build TestAppUWP (Release)
   - task: MSBuild@1
     condition: succeededOrFailed() # Build even previous task failed
-    displayName: 'Build C# sample TestAppUWP (AnyCPU-Release) [.NET Native]'
+    displayName: 'Build C# sample TestAppUWP (x64-Release) [.NET Native]'
     inputs:
       msbuildVersion: latest
       msbuildArchitecture: x64
       solution: examples/TestAppUwp/Microsoft.MixedReality.WebRTC.TestAppUWP.csproj
       platform: x64
       configuration: Release
-      msbuildArguments: -restore -p:AppxPackageSigningEnabled=false
+      msbuildArguments: '-restore -p:AppxPackageSigningEnabled=false'
 
   # Build C# tests
   - task: DotNetCoreCLI@2
-    displayName: 'Build C# Tests (AnyCPU-${{parameters.testConfig}}) [incremental]'
+    displayName: 'Build C# Tests (x64-${{parameters.testConfig}}) [incremental]'
     inputs:
       projects: tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Tests.csproj
-      arguments: '-c ${{parameters.testConfig}} -p:DisableDeviceTests=1'
+      arguments: '-c ${{parameters.testConfig}} -p:DisableDeviceTests=1 -p:Platform=x64'
       workingDirectory: tests/Microsoft.MixedReality.WebRTC.Tests/
 
   # Run tests (Win32-x64-Release)
