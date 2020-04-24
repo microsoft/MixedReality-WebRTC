@@ -1,5 +1,5 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See LICENSE in the project root for license information.
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
 # [TEMPLATE] Compile C# library Microsoft.MixedReality.WebRTC.dll and run tests
 
@@ -12,7 +12,7 @@ parameters:
  
 jobs:
 
-# Compile Microsoft.MixedReality.WebRTC.Native.dll
+# Compile Microsoft.MixedReality.WebRTC.dll
 - job: cs_${{parameters.buildConfig}}_test_${{parameters.testConfig}}
   timeoutInMinutes: 60
   pool:
@@ -23,39 +23,39 @@ jobs:
   steps:
   - checkout: self
 
-  # Download Microsoft.MixedReality.WebRTC.Native.dll (Win32-x64-Debug)
+  # Download mrwebrtc.dll (Win32-x64-Debug)
   - task: DownloadPipelineArtifact@2
-    displayName: 'Download native library (Win32-x64-Debug)'
+    displayName: 'Download mrwebrtc library (Win32-x64-Debug)'
     inputs:
       source: specific
       project: $(ArtifactConfig.Project)
       definition: $(ArtifactConfig.CppDefinitionId)
       runVersion: 'latest'
-      artifact: 'Microsoft.MixedReality.WebRTC.Native_Win32-x64-Debug'
+      artifact: 'mrwebrtc_Win32-x64-Debug'
       patterns: '**/*.@(pdb|dll)'
       path: 'bin/Win32/x64/Debug'
 
-  # Download Microsoft.MixedReality.WebRTC.Native.dll (UWP-x64-Debug)
+  # Download mrwebrtc.dll (UWP-x64-Debug)
   - task: DownloadPipelineArtifact@2
-    displayName: 'Download native library (UWP-x64-Debug)'
+    displayName: 'Download mrwebrtc library (UWP-x64-Debug)'
     inputs:
       source: specific
       project: $(ArtifactConfig.Project)
       definition: $(ArtifactConfig.CppDefinitionId)
       runVersion: 'latest'
-      artifact: 'Microsoft.MixedReality.WebRTC.Native_UWP-x64-Debug'
+      artifact: 'mrwebrtc_UWP-x64-Debug'
       patterns: '**/*.@(pdb|dll)'
       path: 'bin/UWP/x64/Debug'
 
-  # Download Microsoft.MixedReality.WebRTC.Native.dll (UWP-x64-Release)
+  # Download mrwebrtc.dll (UWP-x64-Release)
   - task: DownloadPipelineArtifact@2
-    displayName: 'Download native library (UWP-x64-Release)'
+    displayName: 'Download mrwebrtc library (UWP-x64-Release)'
     inputs:
       source: specific
       project: $(ArtifactConfig.Project)
       definition: $(ArtifactConfig.CppDefinitionId)
       runVersion: 'latest'
-      artifact: 'Microsoft.MixedReality.WebRTC.Native_UWP-x64-Release'
+      artifact: 'mrwebrtc_UWP-x64-Release'
       patterns: '**/*.@(pdb|dll)'
       path: 'bin/UWP/x64/Release'
 
@@ -134,7 +134,7 @@ jobs:
 
   # Run tests (Win32-x64-Release)
   - task: VSTest@2
-    displayName: 'C# Testing (C++ Win32-x64-Release / C# ${{parameters.testConfig}})'
+    displayName: 'C# Testing (mrwebrtc Win32-x64-Release / C# ${{parameters.testConfig}})'
     inputs:
       testAssemblyVer2: Microsoft.MixedReality.WebRTC.Tests.dll
       searchFolder: bin/netstandard2.0/${{parameters.testConfig}}/
