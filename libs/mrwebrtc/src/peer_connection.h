@@ -10,6 +10,7 @@
 #include "mrs_errors.h"
 #include "peer_connection_interop.h"
 #include "refptr.h"
+#include "toggle_audio_mixer.h"
 #include "tracked_object.h"
 #include "utils.h"
 #include "video_frame_observer.h"
@@ -34,33 +35,6 @@ struct BitrateSettings {
 
   /// Maximum bitrate in bits per seconds.
   std::optional<int> max_bitrate_bps;
-};
-
-  /// Can mix selected audio sources only.
-class CustomAudioMixer : public webrtc::AudioMixer {
- public:
-  CustomAudioMixer();
-
-  // AudioMixer implementation.
-  bool AddSource(Source* audio_source) override;
-  void RemoveSource(Source* audio_source) override;
-  void Mix(size_t number_of_channels,
-           webrtc::AudioFrame* audio_frame_for_mixing) override;
-
-  // Select if the source with the given id must be played on the audio device.
-  void RenderSource(int ssrc, bool render);
-
- private:
-  struct KnownSource {
-    Source* source;
-    bool is_rendered;
-  };
-
-  void TryAddToBaseImpl(KnownSource& audio_source);
-
-  rtc::CriticalSection crit_;
-  rtc::scoped_refptr<webrtc::AudioMixerImpl> base_impl_;
-  std::map<int, KnownSource> source_from_id_;
 };
 
 /// The PeerConnection class is the entry point to most of WebRTC.
@@ -638,7 +612,7 @@ class PeerConnection : public TrackedObject,
   bool render_remote_audio_ RTC_GUARDED_BY(remote_audio_mutex_) = true;
   std::mutex remote_audio_mutex_;
 
-  rtc::scoped_refptr<CustomAudioMixer> custom_audio_mixer_;
+  rtc::scoped_refptr<ToggleAudioMixer> custom_audio_mixer_;
 
  private:
   PeerConnection(RefPtr<GlobalFactory> global_factory);

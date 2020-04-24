@@ -1306,7 +1306,7 @@ void PeerConnection::InvokeRenegotiationNeeded() {
 
 PeerConnection::PeerConnection(RefPtr<GlobalFactory> global_factory)
     : TrackedObject(std::move(global_factory), ObjectType::kPeerConnection),
-      custom_audio_mixer_(global_factory_->custom_audio_mixer()) {}
+      custom_audio_mixer_(global_factory_->audio_mixer()) {}
 
 void PeerConnection::RenderRemoteAudioTrack(bool render) {
   RTC_DCHECK(custom_audio_mixer_);
