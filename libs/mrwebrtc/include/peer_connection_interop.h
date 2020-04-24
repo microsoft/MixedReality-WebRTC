@@ -71,6 +71,7 @@ mrsPeerConnectionAddTransceiver(mrsPeerConnectionHandle peer_handle,
                                 const mrsTransceiverInitConfig* config,
                                 mrsTransceiverHandle* handle) noexcept;
 
+#if 0 // WIP
 /// Experimental. Render or not remote audio tracks from a peer connection on
 /// the system audio device.
 ///
@@ -98,5 +99,5 @@ mrsAudioTrackReadBufferRead(AudioTrackReadBufferHandle readStream,
 
 MRS_API void MRS_CALL
 mrsAudioTrackReadBufferDestroy(AudioTrackReadBufferHandle readStream);
-
+#endif
 }  // extern "C"

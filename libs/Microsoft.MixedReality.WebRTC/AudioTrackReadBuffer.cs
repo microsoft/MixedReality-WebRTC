@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+#if false // WIP
 using Microsoft.MixedReality.WebRTC.Interop;
 using System;
 
@@ -44,3 +45,4 @@ namespace Microsoft.MixedReality.WebRTC
         }
     }
 }
+#endif

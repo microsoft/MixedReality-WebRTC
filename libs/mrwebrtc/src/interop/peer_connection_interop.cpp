@@ -71,6 +71,7 @@ mrsPeerConnectionAddTransceiver(mrsPeerConnectionHandle peer_handle,
   return Result::kInvalidNativeHandle;
 }
 
+#if 0  // WIP
 mrsResult MRS_CALL
 mrsPeerConnectionRenderRemoteAudio(mrsPeerConnectionHandle peerHandle,
                                    bool render) {
@@ -117,3 +118,4 @@ mrsAudioTrackReadBufferDestroy(AudioTrackReadBufferHandle readStream) {
     delete ars;
   }
 }
+#endif

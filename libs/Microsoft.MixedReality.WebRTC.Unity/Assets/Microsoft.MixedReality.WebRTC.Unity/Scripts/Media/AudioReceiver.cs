@@ -15,6 +15,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     [RequireComponent(typeof(UnityEngine.AudioSource))]
     public class AudioReceiver : MediaReceiver, IAudioSource
     {
+#if false // WIP
         /// <summary>
         /// Local storage of audio data to be fed to the output
         /// </summary>
@@ -24,7 +25,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Cached sample rate since we can't access this in OnAudioFilterRead.
         /// </summary>
         private int _audioSampleRate = 0;
-
+#endif
         /// <inheritdoc/>
         public bool IsStreaming { get; protected set; }
 
@@ -84,23 +85,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
         }
 
-        /// <summary>
-        /// Implementation of <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Awake.html">MonoBehaviour.Awake</a>
-        /// which registers some handlers with the peer connection to listen to its <see cref="PeerConnection.OnInitialized"/>
-        /// and <see cref="PeerConnection.OnShutdown"/> events.
-        /// </summary>
+#if false // WIP
         protected void Awake()
         {
             AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
         }
 
-        /// <summary>
-        /// Implementation of <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDestroy.html">MonoBehaviour.OnDestroy</a>
-        /// which unregisters all listeners from the peer connection.
-        /// </summary>
         protected void OnDestroy()
         {
             AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
+        }
+
+        private void OnAudioConfigurationChanged(bool deviceWasChanged)
+        {
+            _audioSampleRate = AudioSettings.outputSampleRate;
         }
 
         void OnAudioFilterRead(float[] data, int channels)
@@ -117,7 +115,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 }
             }
         }
-
+#endif
         /// <summary>
         /// Register a frame callback to listen to incoming audio data receiving through this
         /// audio receiver from the remote peer.
@@ -232,10 +230,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 IsLive = false;
                 AudioStreamStopped.Invoke(this);
             });
-        }
-        private void OnAudioConfigurationChanged(bool deviceWasChanged)
-        {
-            _audioSampleRate = AudioSettings.outputSampleRate;
         }
     }
 }
