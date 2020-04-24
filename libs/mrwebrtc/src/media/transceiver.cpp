@@ -8,7 +8,9 @@
 #include "transceiver.h"
 #include "utils.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 struct Transceiver::PlanBEmulation {
   /// RTP sender, indicating that the transceiver wants to send and/or is
@@ -318,7 +320,7 @@ Transceiver::Direction Transceiver::FromRtp(
 }
 
 Transceiver::OptDirection Transceiver::FromRtp(
-    std::optional<webrtc::RtpTransceiverDirection> rtp_direction) {
+    absl::optional<webrtc::RtpTransceiverDirection> rtp_direction) {
   using RtpDir = webrtc::RtpTransceiverDirection;
   static_assert((int)OptDirection::kSendRecv == (int)RtpDir::kSendRecv, "");
   static_assert((int)OptDirection::kSendOnly == (int)RtpDir::kSendOnly, "");
@@ -465,7 +467,7 @@ void Transceiver::OnAssociated(int mline_index) {
   // once, from their initial non-associated state.
   assert(mline_index_ < 0);
   mline_index_ = mline_index;
-  auto lock = std::scoped_lock{cb_mutex_};
+  const std::lock_guard<std::mutex> lock(cb_mutex_);
   if (auto cb = associated_callback_) {
     cb(mline_index);
   }
@@ -518,10 +520,12 @@ void Transceiver::OnSessionDescUpdated(bool remote, bool forced) {
 
 void Transceiver::FireStateUpdatedEvent(
     mrsTransceiverStateUpdatedReason reason) {
-  auto lock = std::scoped_lock{cb_mutex_};
+  const std::lock_guard<std::mutex> lock(cb_mutex_);
   if (auto cb = state_updated_callback_) {
     cb(reason, direction_, desired_direction_);
   }
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

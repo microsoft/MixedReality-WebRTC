@@ -7,7 +7,9 @@
 #include "media_track.h"
 #include "peer_connection.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 MediaTrack::MediaTrack(RefPtr<GlobalFactory> global_factory,
                        ObjectType object_type) noexcept
@@ -24,4 +26,6 @@ MediaTrack::~MediaTrack() {
   RTC_CHECK(!owner_);
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

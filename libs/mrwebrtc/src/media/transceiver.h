@@ -20,7 +20,9 @@ namespace webrtc {
 class RtpTransceiverInterface;
 }
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 class PeerConnection;
 
@@ -156,7 +158,7 @@ class Transceiver : public TrackedObject {
   using AssociatedCallback = Callback<int>;
 
   void RegisterAssociatedCallback(AssociatedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{cb_mutex_};
+    const std::lock_guard<std::mutex> lock(cb_mutex_);
     associated_callback_ = std::move(callback);
   }
 
@@ -166,7 +168,7 @@ class Transceiver : public TrackedObject {
       Callback<mrsTransceiverStateUpdatedReason, OptDirection, Direction>;
 
   void RegisterStateUpdatedCallback(StateUpdatedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{cb_mutex_};
+    const std::lock_guard<std::mutex> lock(cb_mutex_);
     state_updated_callback_ = std::move(callback);
   }
 
@@ -226,7 +228,7 @@ class Transceiver : public TrackedObject {
   [[nodiscard]] static Direction FromRtp(
       webrtc::RtpTransceiverDirection rtp_direction);
   [[nodiscard]] static OptDirection FromRtp(
-      std::optional<webrtc::RtpTransceiverDirection> rtp_direction);
+      absl::optional<webrtc::RtpTransceiverDirection> rtp_direction);
   [[nodiscard]] static Direction FromSendRecv(bool send, bool recv);
   [[nodiscard]] static OptDirection OptFromSendRecv(bool send, bool recv);
 
@@ -346,4 +348,6 @@ class Transceiver : public TrackedObject {
   std::mutex cb_mutex_;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

@@ -7,7 +7,9 @@
 #include "local_audio_track.h"
 #include "peer_connection.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 LocalAudioTrack::LocalAudioTrack(
     RefPtr<GlobalFactory> global_factory,
@@ -122,4 +124,6 @@ void LocalAudioTrack::RemoveFromPeerConnection(
   }
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

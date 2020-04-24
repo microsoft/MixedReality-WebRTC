@@ -20,7 +20,9 @@ class RtpSenderInterface;
 class AudioTrackInterface;
 }  // namespace webrtc
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 class PeerConnection;
 class Transceiver;
@@ -113,4 +115,6 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   const std::string track_name_;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

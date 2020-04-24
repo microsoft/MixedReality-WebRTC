@@ -7,7 +7,9 @@
 #include "media/remote_audio_track.h"
 #include "peer_connection.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 RemoteAudioTrack::RemoteAudioTrack(
     RefPtr<GlobalFactory> global_factory,
@@ -55,4 +57,6 @@ void RemoteAudioTrack::OnTrackRemoved(PeerConnection& owner) {
   transceiver_ = nullptr;
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

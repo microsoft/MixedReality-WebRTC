@@ -41,7 +41,7 @@ class BuiltinVideoCaptureDeviceTrackSource
       public rtc::VideoSinkInterface<webrtc::VideoFrame> {
  public:
   static mrsResult Create(
-      const LocalVideoTrackInitConfig& config,
+      const mrsLocalVideoTrackInitConfig& config,
       rtc::scoped_refptr<BuiltinVideoCaptureDeviceTrackSource>& source_out) {
     std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
         webrtc::VideoCaptureFactory::CreateDeviceInfo());
@@ -736,20 +736,6 @@ mrsResult MRS_CALL mrsLocalVideoTrackCreateFromDevice(
     return Result::kUnknownError;
   }
 
-  // Add the video track to the peer connection
-  auto result = peer->AddLocalVideoTrack(std::move(video_track),
-                                         config->track_interop_handle);
-  if (result.ok()) {
-    RefPtr<LocalVideoTrack>& video_track_wrapper = result.value();
-    video_track_wrapper->AddRef();  // for the handle
-    *track_handle_out = video_track_wrapper.get();
-    return Result::kSuccess;
-  }
-
-  RTC_LOG(LS_ERROR) << "Failed to add local video track to peer connection.";
-  return Result::kUnknownError;
-}
-
   // Create the video track wrapper
   RefPtr<LocalVideoTrack> track =
       new LocalVideoTrack(std::move(global_factory), std::move(video_track));
@@ -771,12 +757,11 @@ mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
   if (!peer) {
     return Result::kInvalidNativeHandle;
   }
-
-  const bool ordered = (config.flags & mrsDataChannelConfigFlags::kOrdered);
-  const bool reliable = (config.flags & mrsDataChannelConfigFlags::kReliable);
-  const absl::string_view label = (config.label ? config.label : "");
-  ErrorOr<std::shared_ptr<DataChannel>> data_channel = peer->AddDataChannel(
-      config.id, label, ordered, reliable, dataChannelInteropHandle);
+  const bool ordered = (config->flags & mrsDataChannelConfigFlags::kOrdered);
+  const bool reliable = (config->flags & mrsDataChannelConfigFlags::kReliable);
+  const absl::string_view label = (config->label ? config->label : "");
+  ErrorOr<std::shared_ptr<DataChannel>> data_channel =
+      peer->AddDataChannel(config->id, label, ordered, reliable);
   if (data_channel.ok()) {
     *data_channel_handle_out = data_channel.value().operator->();
   }

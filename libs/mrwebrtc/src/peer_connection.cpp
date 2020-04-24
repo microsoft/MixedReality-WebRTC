@@ -17,6 +17,11 @@
 #include "sdp_utils.h"
 #include "utils.h"
 #include "video_frame_observer.h"
+#include "sdp_utils.h"
+
+// Internal
+#include "interop/global_factory.h"
+#include "interop_api.h"
 
 #include <functional>
 
@@ -95,19 +100,29 @@ bool IsHololens() {
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode value) {
   if (IsHololens()) {
     webrtc__WinUWPH264EncoderImpl__frame_height_round_mode = (int)value;
   }
 }
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
 
 #else
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
+
 void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode /*value*/) {}
-}  // namespace Microsoft::MixedReality::WebRTC
+
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
 
 #endif
 
@@ -196,14 +211,14 @@ mrsIceConnectionState IceStateFromImpl(
     webrtc::PeerConnectionInterface::IceConnectionState impl_state) {
   using Native = mrsIceConnectionState;
   using Impl = webrtc::PeerConnectionInterface::IceConnectionState;
-  static_assert((int)Native::kNew == (int)Impl::kIceConnectionNew);
-  static_assert((int)Native::kChecking == (int)Impl::kIceConnectionChecking);
-  static_assert((int)Native::kConnected == (int)Impl::kIceConnectionConnected);
-  static_assert((int)Native::kCompleted == (int)Impl::kIceConnectionCompleted);
-  static_assert((int)Native::kFailed == (int)Impl::kIceConnectionFailed);
+  static_assert((int)Native::kNew == (int)Impl::kIceConnectionNew, "");
+  static_assert((int)Native::kChecking == (int)Impl::kIceConnectionChecking, "");
+  static_assert((int)Native::kConnected == (int)Impl::kIceConnectionConnected, "");
+  static_assert((int)Native::kCompleted == (int)Impl::kIceConnectionCompleted, "");
+  static_assert((int)Native::kFailed == (int)Impl::kIceConnectionFailed, "");
   static_assert((int)Native::kDisconnected ==
-                (int)Impl::kIceConnectionDisconnected);
-  static_assert((int)Native::kClosed == (int)Impl::kIceConnectionClosed);
+                (int)Impl::kIceConnectionDisconnected, "");
+  static_assert((int)Native::kClosed == (int)Impl::kIceConnectionClosed, "");
   return (mrsIceConnectionState)impl_state;
 }
 
@@ -214,9 +229,10 @@ mrsIceGatheringState IceGatheringStateFromImpl(
     webrtc::PeerConnectionInterface::IceGatheringState impl_state) {
   using Native = mrsIceGatheringState;
   using Impl = webrtc::PeerConnectionInterface::IceGatheringState;
-  static_assert((int)Native::kNew == (int)Impl::kIceGatheringNew);
-  static_assert((int)Native::kGathering == (int)Impl::kIceGatheringGathering);
-  static_assert((int)Native::kComplete == (int)Impl::kIceGatheringComplete);
+  static_assert((int)Native::kNew == (int)Impl::kIceGatheringNew, "");
+  static_assert((int)Native::kGathering == (int)Impl::kIceGatheringGathering,
+                "");
+  static_assert((int)Native::kComplete == (int)Impl::kIceGatheringComplete, "");
   return (mrsIceGatheringState)impl_state;
 }
 
@@ -224,10 +240,10 @@ webrtc::PeerConnectionInterface::IceTransportsType ICETransportTypeToNative(
     mrsIceTransportType value) {
   using Native = webrtc::PeerConnectionInterface::IceTransportsType;
   using Impl = mrsIceTransportType;
-  static_assert((int)Native::kNone == (int)Impl::kNone);
-  static_assert((int)Native::kNoHost == (int)Impl::kNoHost);
-  static_assert((int)Native::kRelay == (int)Impl::kRelay);
-  static_assert((int)Native::kAll == (int)Impl::kAll);
+  static_assert((int)Native::kNone == (int)Impl::kNone, "");
+  static_assert((int)Native::kNoHost == (int)Impl::kNoHost, "");
+  static_assert((int)Native::kRelay == (int)Impl::kRelay, "");
+  static_assert((int)Native::kAll == (int)Impl::kAll, "");
   return static_cast<Native>(value);
 }
 
@@ -235,19 +251,23 @@ webrtc::PeerConnectionInterface::BundlePolicy BundlePolicyToNative(
     mrsBundlePolicy value) {
   using Native = webrtc::PeerConnectionInterface::BundlePolicy;
   using Impl = mrsBundlePolicy;
-  static_assert((int)Native::kBundlePolicyBalanced == (int)Impl::kBalanced);
-  static_assert((int)Native::kBundlePolicyMaxBundle == (int)Impl::kMaxBundle);
-  static_assert((int)Native::kBundlePolicyMaxCompat == (int)Impl::kMaxCompat);
+  static_assert((int)Native::kBundlePolicyBalanced == (int)Impl::kBalanced, "");
+  static_assert((int)Native::kBundlePolicyMaxBundle == (int)Impl::kMaxBundle,
+                "");
+  static_assert((int)Native::kBundlePolicyMaxCompat == (int)Impl::kMaxCompat,
+                "");
   return static_cast<Native>(value);
 }
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 ErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
     int id,
-    std::string_view label,
+    absl::string_view label,
     bool ordered,
     bool reliable) noexcept {
   if (IsClosed()) {
@@ -264,9 +284,11 @@ ErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
   if (id < 0) {
     // In-band data channel with automatic ID assignment
     config.id = -1;
+    config.negotiated = false;
   } else if (id <= 0xFFFF) {
     // Out-of-band negotiated data channel with pre-established ID
     config.id = id;
+    config.negotiated = true;
   } else {
     // Valid IDs are 0-65535 (16 bits)
     return Error(Result::kOutOfRange);
@@ -277,13 +299,13 @@ ErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
     // Create the native object
     auto data_channel = std::make_shared<DataChannel>(this, std::move(impl));
     {
-      auto lock = std::scoped_lock{data_channel_mutex_};
+      const std::lock_guard<std::mutex> lock{data_channel_mutex_};
       data_channels_.push_back(data_channel);
       if (!labelString.empty()) {
         data_channel_from_label_.emplace(std::move(labelString), data_channel);
       }
       if (config.id >= 0) {
-        data_channel_from_id_.try_emplace(config.id, data_channel);
+        data_channel_from_id_.emplace(config.id, data_channel);
       }
     }
 
@@ -308,7 +330,7 @@ void PeerConnection::RemoveDataChannel(
   // Move the channel to destroy out of the internal data structures
   std::shared_ptr<DataChannel> data_channel_ptr;
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_mutex_};
 
     // The channel must be owned by this PeerConnection, so must be known
     // already
@@ -343,7 +365,8 @@ void PeerConnection::RemoveDataChannel(
 
   // Invoke the DataChannelRemoved callback
   {
-    auto lock = std::scoped_lock{data_channel_removed_callback_mutex_};
+    const std::lock_guard<std::mutex> lock(
+        data_channel_removed_callback_mutex_);
     auto removed_cb = data_channel_removed_callback_;
     if (removed_cb) {
       mrsDataChannelHandle data_native_handle = (void*)&data_channel;
@@ -357,9 +380,10 @@ void PeerConnection::RemoveDataChannel(
 }
 
 void PeerConnection::RemoveAllDataChannels() noexcept {
-  auto lock_cb = std::scoped_lock{data_channel_removed_callback_mutex_};
+  const std::lock_guard<std::mutex> lock_cb(
+      data_channel_removed_callback_mutex_);
   auto removed_cb = data_channel_removed_callback_;
-  auto lock = std::scoped_lock{data_channel_mutex_};
+  const std::lock_guard<std::mutex> lock{data_channel_mutex_};
   for (auto&& data_channel : data_channels_) {
     // Close the WebRTC data channel
     webrtc::DataChannelInterface* const impl = data_channel->impl();
@@ -387,7 +411,7 @@ void PeerConnection::OnDataChannelAdded(
   // It was added in AddDataChannel() when the DataChannel object was created.
 #if RTC_DCHECK_IS_ON
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_mutex_};
     RTC_DCHECK(std::find_if(
                    data_channels_.begin(), data_channels_.end(),
                    [&data_channel](const std::shared_ptr<DataChannel>& other) {
@@ -398,7 +422,7 @@ void PeerConnection::OnDataChannelAdded(
 
   // Invoke the DataChannelAdded callback
   {
-    auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
+    const std::lock_guard<std::mutex> lock(data_channel_added_callback_mutex_);
     auto added_cb = data_channel_added_callback_;
     if (added_cb) {
       mrsDataChannelAddedInfo info{};
@@ -450,7 +474,7 @@ bool PeerConnection::CreateOffer() noexcept {
     return false;
   }
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_mutex_};
     if (data_channels_.empty()) {
       sctp_negotiated_ = false;
     }
@@ -533,7 +557,7 @@ void PeerConnection::Close() noexcept {
 
     // Force-remove remote tracks. It doesn't look like the TrackRemoved
     // callback is called when Close() is used, so force it here.
-    auto cb_lock = std::scoped_lock{media_track_callback_mutex_};
+    const std::lock_guard<std::mutex> cb_lock(media_track_callback_mutex_);
     auto audio_cb = audio_track_removed_callback_;
     auto video_cb = video_track_removed_callback_;
     for (auto&& transceiver : transceivers_) {
@@ -639,7 +663,7 @@ ErrorOr<Transceiver*> PeerConnection::AddTransceiver(
 
   // Invoke the TransceiverAdded callback
   {
-    auto lock = std::scoped_lock{callbacks_mutex_};
+    const std::lock_guard<std::mutex> lock(callbacks_mutex_);
     if (auto cb = transceiver_added_callback_) {
       mrsTransceiverAddedInfo info{};
       info.transceiver_handle = transceiver.get();
@@ -662,13 +686,13 @@ bool PeerConnection::SetRemoteDescriptionAsync(const char* type,
     return false;
   }
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_mutex_};
     if (data_channels_.empty()) {
       sctp_negotiated_ = false;
     }
   }
   std::string sdp_type_str(type);
-  auto sdp_type = SdpTypeFromString(sdp_type_str);
+  auto sdp_type = webrtc::SdpTypeFromString(sdp_type_str);
   if (!sdp_type.has_value())
     return false;
   std::string remote_desc(sdp);
@@ -713,7 +737,7 @@ void PeerConnection::OnSignalingChange(
       // but this callback would not be invoked then because there's no
       // transition.
       {
-        auto lock = std::scoped_lock{connected_callback_mutex_};
+        const std::lock_guard<std::mutex> lock{connected_callback_mutex_};
         connected_callback_();
       }
       break;
@@ -783,7 +807,7 @@ void PeerConnection::OnDataChannel(
   // Create a new native object
   auto data_channel = std::make_shared<DataChannel>(this, impl);
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    const std::lock_guard<std::mutex> lock{data_channel_mutex_};
     data_channels_.push_back(data_channel);
     if (!label.empty()) {
       // Move |label| into the map to avoid copy
@@ -793,13 +817,13 @@ void PeerConnection::OnDataChannel(
       config.label = it->first.c_str();
     }
     if (data_channel->id() >= 0) {
-      data_channel_from_id_.try_emplace(data_channel->id(), data_channel);
+      data_channel_from_id_.emplace(data_channel->id(), data_channel);
     }
   }
 
   // Invoke the DataChannelAdded callback
   {
-    auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
+    const std::lock_guard<std::mutex> lock(data_channel_added_callback_mutex_);
     auto added_cb = data_channel_added_callback_;
     if (added_cb) {
       mrsDataChannelAddedInfo info{};
@@ -813,7 +837,7 @@ void PeerConnection::OnDataChannel(
 }
 
 void PeerConnection::OnRenegotiationNeeded() noexcept {
-  auto lock = std::scoped_lock{renegotiation_needed_callback_mutex_};
+  const std::lock_guard<std::mutex> lock{renegotiation_needed_callback_mutex_};
   auto cb = renegotiation_needed_callback_;
   if (cb) {
     cb();
@@ -822,7 +846,7 @@ void PeerConnection::OnRenegotiationNeeded() noexcept {
 
 void PeerConnection::OnIceConnectionChange(
     webrtc::PeerConnectionInterface::IceConnectionState new_state) noexcept {
-  auto lock = std::scoped_lock{ice_state_changed_callback_mutex_};
+  const std::lock_guard<std::mutex> lock{ice_state_changed_callback_mutex_};
   auto cb = ice_state_changed_callback_;
   if (cb) {
     cb(IceStateFromImpl(new_state));
@@ -831,7 +855,8 @@ void PeerConnection::OnIceConnectionChange(
 
 void PeerConnection::OnIceGatheringChange(
     webrtc::PeerConnectionInterface::IceGatheringState new_state) noexcept {
-  auto lock = std::scoped_lock{ice_gathering_state_changed_callback_mutex_};
+  const std::lock_guard<std::mutex> lock(
+      ice_gathering_state_changed_callback_mutex_);
   auto cb = ice_gathering_state_changed_callback_;
   if (cb) {
     cb(IceGatheringStateFromImpl(new_state));
@@ -840,7 +865,8 @@ void PeerConnection::OnIceGatheringChange(
 
 void PeerConnection::OnIceCandidate(
     const webrtc::IceCandidateInterface* candidate) noexcept {
-  auto lock = std::scoped_lock{ice_candidate_ready_to_send_callback_mutex_};
+  const std::lock_guard<std::mutex> lock(
+      ice_candidate_ready_to_send_callback_mutex_);
   auto cb = ice_candidate_ready_to_send_callback_;
   if (cb) {
     std::string sdp;
@@ -939,7 +965,7 @@ void PeerConnection::OnLocalDescCreated(
 
         // Fire interop callback, if any
         {
-          auto lock = std::scoped_lock{local_sdp_ready_to_send_callback_mutex_};
+          const std::lock_guard<std::mutex> lock(local_sdp_ready_to_send_callback_mutex_);
           if (auto cb = local_sdp_ready_to_send_callback_) {
             auto desc = peer_->local_description();
             std::string type{SdpTypeToString(desc->GetType())};
@@ -976,7 +1002,7 @@ int PeerConnection::ExtractMlineIndexFromRtpTransceiver(
   // RTP transceiver API, so instead rely on the (implementation detail) fact
   // that Google chose to use the mline index as the mid value, thankfully for
   // us.
-  std::optional<std::string> mid_opt = tr->mid();
+  absl::optional<std::string> mid_opt = tr->mid();
   if (!mid_opt.has_value()) {
     return -1;
   }
@@ -1026,7 +1052,7 @@ ErrorOr<Transceiver*> PeerConnection::GetOrCreateTransceiverForNewRemoteTrack(
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl = *it_impl;
     const int mline_index = ExtractMlineIndexFromRtpTransceiver(impl);
     RTC_DCHECK(mline_index >= 0);  // should be always associated here
-    std::optional<std::string> mid = impl->mid();
+    absl::optional<std::string> mid = impl->mid();
     RTC_CHECK(mid.has_value());  // should be always true here
     std::string name = mid.value();
     std::vector<std::string> stream_ids =
@@ -1067,7 +1093,7 @@ ErrorOr<Transceiver*> PeerConnection::GetOrCreateTransceiverForNewRemoteTrack(
 
     // Invoke the TransceiverAdded callback
     {
-      auto lock = std::scoped_lock{callbacks_mutex_};
+      const std::lock_guard<std::mutex> lock(callbacks_mutex_);
       if (auto cb = transceiver_added_callback_) {
         mrsTransceiverAddedInfo info{};
         info.transceiver_handle = transceiver.get();
@@ -1157,7 +1183,7 @@ ErrorOr<Transceiver*> PeerConnection::CreateTransceiverUnifiedPlan(
     transceivers_.push_back(transceiver);
   }
   {
-    auto lock = std::scoped_lock{callbacks_mutex_};
+    const std::lock_guard<std::mutex> lock(callbacks_mutex_);
     if (auto cb = transceiver_added_callback_) {
       std::string encoded_stream_ids = Transceiver::EncodeStreamIDs(stream_ids);
       mrsTransceiverAddedInfo info{};
@@ -1282,4 +1308,6 @@ void PeerConnection::InvokeRenegotiationNeeded() {
 PeerConnection::PeerConnection(RefPtr<GlobalFactory> global_factory)
     : TrackedObject(std::move(global_factory), ObjectType::kPeerConnection) {}
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

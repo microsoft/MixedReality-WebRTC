@@ -39,8 +39,8 @@ using namespace std::chrono_literals;
 
 #pragma warning(push)
 #pragma warning(disable : 4100 4127 4244)
-#include "api/datachannelinterface.h"
-#include "api/peerconnectioninterface.h"
+#include "api/data_channel_interface.h"
+#include "api/peer_connection_interface.h"
 #include "rtc_base/memory/aligned_malloc.h"
 #include "rtc_base/thread_annotations.h"
 #pragma warning(pop)
