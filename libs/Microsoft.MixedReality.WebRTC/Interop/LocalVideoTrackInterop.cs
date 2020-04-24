@@ -55,17 +55,15 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
     internal class LocalVideoTrackInterop
     {
-        #region Native callbacks
+        #region Unmanaged delegates
 
-        // The callbacks below ideally would use 'in', but that generates an error with .NET Native:
-        // "error : ILT0021: Could not resolve method 'EETypeRva:0x--------'".
-        // So instead use 'ref' to ensure the signature is compatible with the C++ const& signature.
+        // Note - none of those method arguments can be SafeHandle; use IntPtr instead.
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void I420AVideoFrameUnmanagedCallback(IntPtr userData, ref I420AVideoFrame frame);
+        public delegate void I420AVideoFrameUnmanagedCallback(IntPtr userData, in I420AVideoFrame frame);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void Argb32VideoFrameUnmanagedCallback(IntPtr userData, ref Argb32VideoFrame frame);
+        public delegate void Argb32VideoFrameUnmanagedCallback(IntPtr userData, in Argb32VideoFrame frame);
 
         #endregion
 
@@ -80,6 +78,17 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsLocalVideoTrackRemoveRef")]
         public static unsafe extern void LocalVideoTrack_RemoveRef(IntPtr handle);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsLocalVideoTrackCreateFromDevice")]
+        public static unsafe extern uint LocalVideoTrack_CreateFromDevice(in PeerConnectionInterop.LocalVideoTrackInteropInitConfig config,
+            string trackName, out LocalVideoTrackHandle trackHandle);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsLocalVideoTrackCreateFromExternalSource")]
+        public static unsafe extern uint LocalVideoTrack_CreateFromExternalSource(
+            in PeerConnectionInterop.LocalVideoTrackFromExternalSourceInteropInitConfig config,
+            out LocalVideoTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsLocalVideoTrackRegisterI420AFrameCallback")]
@@ -109,14 +118,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [MonoPInvokeCallback(typeof(I420AVideoFrameUnmanagedCallback))]
-        public static void I420AFrameCallback(IntPtr userData, ref I420AVideoFrame frame)
+        public static void I420AFrameCallback(IntPtr userData, in I420AVideoFrame frame)
         {
             var track = Utils.ToWrapper<LocalVideoTrack>(userData);
             track.OnI420AFrameReady(frame);
         }
 
         [MonoPInvokeCallback(typeof(Argb32VideoFrameUnmanagedCallback))]
-        public static void Argb32FrameCallback(IntPtr userData, ref Argb32VideoFrame frame)
+        public static void Argb32FrameCallback(IntPtr userData, in Argb32VideoFrame frame)
         {
             var track = Utils.ToWrapper<LocalVideoTrack>(userData);
             track.OnArgb32FrameReady(frame);

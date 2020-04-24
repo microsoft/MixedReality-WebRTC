@@ -1,5 +1,5 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See LICENSE in the project root for license information.
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
 # [TEMPLATE] Compile C# library Microsoft.MixedReality.WebRTC.dll and run tests
 
@@ -12,7 +12,7 @@ parameters:
  
 jobs:
 
-# Compile Microsoft.MixedReality.WebRTC.Native.dll
+# Compile Microsoft.MixedReality.WebRTC.dll
 - job: cs_${{parameters.buildConfig}}_test_${{parameters.testConfig}}
   timeoutInMinutes: 60
   pool:
@@ -23,39 +23,39 @@ jobs:
   steps:
   - checkout: self
 
-  # Download Microsoft.MixedReality.WebRTC.Native.dll (Win32-x64-Debug)
+  # Download mrwebrtc.dll (Win32-x64-Debug)
   - task: DownloadPipelineArtifact@2
-    displayName: 'Download native library (Win32-x64-Debug)'
+    displayName: 'Download mrwebrtc library (Win32-x64-Debug)'
     inputs:
       source: specific
       project: $(ArtifactConfig.Project)
       definition: $(ArtifactConfig.CppDefinitionId)
       runVersion: 'latest'
-      artifact: 'Microsoft.MixedReality.WebRTC.Native_Win32-x64-Debug'
+      artifact: 'mrwebrtc_Win32-x64-Debug'
       patterns: '**/*.@(pdb|dll)'
       path: 'bin/Win32/x64/Debug'
 
-  # Download Microsoft.MixedReality.WebRTC.Native.dll (UWP-x64-Debug)
+  # Download mrwebrtc.dll (UWP-x64-Debug)
   - task: DownloadPipelineArtifact@2
-    displayName: 'Download native library (UWP-x64-Debug)'
+    displayName: 'Download mrwebrtc library (UWP-x64-Debug)'
     inputs:
       source: specific
       project: $(ArtifactConfig.Project)
       definition: $(ArtifactConfig.CppDefinitionId)
       runVersion: 'latest'
-      artifact: 'Microsoft.MixedReality.WebRTC.Native_UWP-x64-Debug'
+      artifact: 'mrwebrtc_UWP-x64-Debug'
       patterns: '**/*.@(pdb|dll)'
       path: 'bin/UWP/x64/Debug'
 
-  # Download Microsoft.MixedReality.WebRTC.Native.dll (UWP-x64-Release)
+  # Download mrwebrtc.dll (UWP-x64-Release)
   - task: DownloadPipelineArtifact@2
-    displayName: 'Download native library (UWP-x64-Release)'
+    displayName: 'Download mrwebrtc library (UWP-x64-Release)'
     inputs:
       source: specific
       project: $(ArtifactConfig.Project)
       definition: $(ArtifactConfig.CppDefinitionId)
       runVersion: 'latest'
-      artifact: 'Microsoft.MixedReality.WebRTC.Native_UWP-x64-Release'
+      artifact: 'mrwebrtc_UWP-x64-Release'
       patterns: '**/*.@(pdb|dll)'
       path: 'bin/UWP/x64/Release'
 
@@ -103,7 +103,7 @@ jobs:
   # Build TestAppUWP (Debug)
   - task: MSBuild@1
     condition: succeededOrFailed() # Build even previous task failed
-    displayName: 'Build C# sample TestAppUWP (AnyCPU-Debug)'
+    displayName: 'Build C# sample TestAppUWP (x64-Debug)'
     inputs:
       msbuildVersion: latest
       msbuildArchitecture: x64
@@ -115,26 +115,26 @@ jobs:
   # Build TestAppUWP (Release)
   - task: MSBuild@1
     condition: succeededOrFailed() # Build even previous task failed
-    displayName: 'Build C# sample TestAppUWP (AnyCPU-Release) [.NET Native]'
+    displayName: 'Build C# sample TestAppUWP (x64-Release) [.NET Native]'
     inputs:
       msbuildVersion: latest
       msbuildArchitecture: x64
       solution: examples/TestAppUwp/Microsoft.MixedReality.WebRTC.TestAppUWP.csproj
       platform: x64
       configuration: Release
-      msbuildArguments: -restore -p:AppxPackageSigningEnabled=false
+      msbuildArguments: '-restore -p:AppxPackageSigningEnabled=false'
 
   # Build C# tests
   - task: DotNetCoreCLI@2
-    displayName: 'Build C# Tests (AnyCPU-${{parameters.testConfig}}) [incremental]'
+    displayName: 'Build C# Tests (x64-${{parameters.testConfig}}) [incremental]'
     inputs:
       projects: tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Tests.csproj
-      arguments: '-c ${{parameters.testConfig}} -p:DisableDeviceTests=1'
+      arguments: '-c ${{parameters.testConfig}} -p:DisableDeviceTests=1 -p:Platform=x64'
       workingDirectory: tests/Microsoft.MixedReality.WebRTC.Tests/
 
   # Run tests (Win32-x64-Release)
   - task: VSTest@2
-    displayName: 'C# Testing (C++ Win32-x64-Release / C# ${{parameters.testConfig}})'
+    displayName: 'C# Testing (mrwebrtc Win32-x64-Release / C# ${{parameters.testConfig}})'
     inputs:
       testAssemblyVer2: Microsoft.MixedReality.WebRTC.Tests.dll
       searchFolder: bin/netstandard2.0/${{parameters.testConfig}}/

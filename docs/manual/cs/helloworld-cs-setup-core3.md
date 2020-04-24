@@ -4,6 +4,7 @@ In this tutorial we use [.NET Core 3.0](https://dotnet.microsoft.com/download/do
 
 > [!Note]
 > This tutorial assumes that the host device where the app will be running during the tutorial has access to:
+>
 > - a webcam, or any other video capture device recognized by WebRTC
 > - a microphone, or any other audio capture device recognized by WebRTC
 
@@ -18,11 +19,12 @@ Download the latest .NET Core 3.0 **SDK** (and not Runtime) from its [download p
 
 Open a terminal and use the `dotnet` command to create a new project from the `console` template. We will name this tutorial project `TestNetCoreConsole`.
 
-```
+```shell
 dotnet new console --name TestNetCoreConsole
 ```
 
 This generates a folder named `TestNetCoreConsole` which contains the following notable files:
+
 - **`TestNetCoreConsole.csproj`** : The C# project
 - **`Program.cs`** : The C# source code for the application
 
@@ -44,7 +46,7 @@ In order to use the MixedReality-WebRTC project in this new `TestNetCoreConsole`
 
 There are again multiple ways to add a reference to this NuGet package, in particular via the Visual Studio NuGet package manager for the project, or via the `dotnet` command line. For simplicity, we show here how to do so the `dotnet` way, which simply involves typing a single command from within the project folder.
 
-```
+```shell
 dotnet add TestNetCoreConsole.csproj package Microsoft.MixedReality.WebRTC
 ```
 
@@ -68,17 +70,20 @@ In order to ensure everything works fine and the `Microsoft.MixedReality.WebRTC`
 Edit the `Program.cs` file:
 
 1. At the top of the file, add some `using` statement to import the `Microsoft.MixedReality.WebRTC` assembly. Also import the `System.Threading.Tasks` module, as we will use the `async` / `await` construct and the `Task` object.
+
    ```cs
    using System.Threading.Tasks;
    using Microsoft.MixedReality.WebRTC;
    ```
 
 2. Modify the signature of the `Main` function to make it asynchronous, by changing its return type from `void` to `Task` and adding the `async` keyword. This allows using the `await` keyword inside its body.
+
    ```cs
    static async Task Main(string[] args)
    ```
 
 3. Change the body of the `Main` function to call [`GetVideoCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync) and display the list of devices found on the standard output.
+
    ```cs
    static async Task Main(string[] args)
    {
@@ -101,11 +106,12 @@ Edit the `Program.cs` file:
    ```
 
 Launch the application again. This time the terminal window shows a list of devices. This list depends on the actual host device (computer) where the application is running, but looks something like:
-```
+
+```shell
 Found webcam <some webcam name> (id: <some long ID>)
 ```
 
-Note that there might be multiple lines if multiple capture devices are available, which is unusual but can happen _e.g._ if you plug a USB webcam into a laptop which already has an integrated webcam. In general the first capture device listed will be the default one used by WebRTC, although it is possible to explicitly select a device (see [`PeerConnection.AddLocalVideoTrackAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings)) for more details).
+Note that there might be multiple lines if multiple capture devices are available, which is unusual but can happen _e.g._ if you plug a USB webcam into a laptop which already has an integrated webcam. In general the first capture device listed will be the default one used by WebRTC, although it is possible to explicitly select a device (see [`LocalVideoTrack.CreateFromDeviceAsync()`](xref:Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings)) for more details).
 
 ----
 

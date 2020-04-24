@@ -1,39 +1,42 @@
 # Importing MixedReality-WebRTC
 
-In order to use the Unity integration, the following components are required:
+In order to use the Unity integration, the following pieces are required:
 
 - Native implementation : `mrwebrtc.dll` (one variant per platform and architecture)
 - C# library : `Microsoft.MixedReality.WebRTC.dll` (single universal module for all platforms and architectures)
 - Unity integration scripts and assets
 
-There is currently no pre-packaged distribution method for Unity, so users have to manually copy the relevant files into their Unity project.
+> [!NOTE]
+> There is currently no pre-packaged distribution method for Unity, so users have to manually copy the relevant files from the `libs\Microsoft.MixedReality.WebRTC.Unity\Assets` folder of the GitHub repository into the `Assets` folder of their own Unity project.
 
-## Copying the libraries
+## Copying the binaries
 
-The libraries can be copied either from a local build of the solution, of from the NuGet packages. The latter does not require any building, but is generally only available for the latest stable release, so will be missing any newer development available on the `master` branch. The former allows accessing the latest features, but may contain some API breaking changes since the latest stable release, so may require some code changes when upgrading an existing project using an earlier API version.
+The binaries can be obtained either prebuilt from the NuGet packages, or from a local build of the Visual Studio solution provided in [the GitHub repository](https://github.com/microsoft/MixedReality-WebRTC/).
+
+- **NuGet packages** do not require any build step, so are the most convenient approach. But they are generally only available for stable releases (_e.g._ [the `release/1.0` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/release/1.0/)), so will be missing any newer development available on [the `master` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/master/).
+
+- **A local build** via the Visual Studio solution `Microsoft.MixedReality.WebRTC.sln` allows accessing the latest features, but may contain some API breaking changes since the latest stable release, so may require some code changes when upgrading an existing project using an earlier API version.
 
 ### NuGet packages
 
-The C++ and C# libraries of MixedReality-WebRTC are available precompiled via NuGet packages. See the [GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases) for the latest packages.
+The native implementation and C# library of MixedReality-WebRTC are available precompiled via NuGet packages. See the [GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases) for the latest packages.
 
-The packages can be downloaded from nuget.org, and once downloaded can be extracted by simply changing their extension from `.nupkg` to `.zip` and using any standard ZIP archive extraction method. Once extracted, the DLLs can be copied as detailed on the **Unity integration** section of the [installation page](installation.md).
+The packages can be downloaded from [nuget.org](https://www.nuget.org/profiles/MicrosoftMR). Once downloaded, they can be extracted by simply renaming their extension from `.nupkg` to `.zip`, and using any standard ZIP archive extraction method. After the packages are extracted, the DLLs can be copied as detailed on the **Unity integration** section of the [installation page](installation.md).
 
 ### Local solution build
 
-If the C++ and C# libraries are compiled from sources as explained in the [Building](building.md) page, they are available in one of the sub-folders under the `<root>/bin/` folder of the MixedReality-WebRTC project.
+If the native implementation and C# library are compiled from sources as explained in the [Building](building.md) page, they are available in one of the sub-folders under the `bin/` folder at the root of the repository of the MixedReality-WebRTC project.
 
-Note that **the copy is automatically done by a build script when compiling via the provided Visual Studio solution**. The steps below are only required if the libraries are compiled in another way. Otherwise you can skip to the next step to _Configure the import settings_.
+The C# library `Microsoft.MixedReality.WebRTC.dll` is a .NET Standard 2.0 library. This means it is compatible with all CPU architectures. This is often referred to as "AnyCPU", and the C# library is therefore available from `bin\AnyCPU\Debug` or `bin\AnyCPU\Release` depending on the build configuration which was compiled. In doubt you can use the `Release` configuration, which can provide better performance. This module needs to be copied somewhere into the `Assets\Plugins\` folder of the Unity project (if that folder doesn't exist you can create it). On Windows this can be done via the command line with `xcopy`, assuming that the git repository of MixedReality-WebRTC was cloned in `D:\mr-webrtc`:
 
-The C# library `Microsoft.MixedReality.WebRTC.dll` is a .NET Standard 2.0 library. This means it is compatible with all CPU architectures. This is often referred to as "AnyCPU", and the C# library is therefore available from `bin\AnyCPU\Debug` or `bin\AnyCPU\Release` depending on the build configuration which was compiled. In doubt you can use the `Release` configuration, which provides better performance. This module needs to be copied somewhere into the `Assets\Plugins\` folder of the Unity project (if that folder doesn't exist you can create it). On Windows this can be done via the command line with `xcopy`, assuming that the MixedReality-WebRTC project is located in `D:\mr-webrtc`:
-
-```
+```cmd
 cd /D D:\testproj
 xcopy D:/mr-webrtc/bin/AnyCPU/Release/Microsoft.MixedReality.WebRTC.dll Assets/Plugins/
 ```
 
 For the native implementation `mrwebrtc.dll` things are a bit more complex. The DLL is compiled for a particular platform and architecture, in addition of the Debug or Release build config, and the correct variant needs to be used. On Windows, the Unity Editor needs a **64-bit Desktop** variant (`Debug` or `Release`); it is available from the `bin\Win32\x64\Release` folder (`Win32` is an alias for `Desktop`), and should be copied to the `Assets\Plugins\Win32\x86_64\` folder of the Unity project.
 
-```
+```cmd
 cd /D D:\testproj
 xcopy D:/mr-webrtc/bin/Win32/x64/Release/mrwebrtc.dll Assets/Plugins/Win32/x86_64/
 ```
@@ -48,9 +51,9 @@ When building the Unity application for a given platform, another variant than t
 - In the **Project** window, select one of the `mrwebrtc.dll` files from the `Plugins` folder.
 - The **Inspector** window now shows the import settings for the selected file, which contains option to configure the deploy platform(s) and architecture(s).
 
-By selecting:
+For example, by selecting in the **Inspector** window:
 
-- **Any Platform** except **WSAPlayer**, the DLL will be used by Unity on all platforms except when deploying for UWP. _WSAPlayer_ is the name Unity uses for its UWP standalone player.
+- **Any Platform** and **Exclude Platforms: WSAPlayer**, the DLL will be used by Unity on all platforms except UWP platforms. _WSAPlayer_ is the name Unity uses for its UWP standalone player.
 - **CPU** equal to **x86_64**, Unity will only deploy that DLL when deploying on a 64-bit Intel architecture.
 
 ![Configure the import settings for a native implementation DLL](helloworld-unity-2.png)
@@ -64,25 +67,25 @@ For **Windows Desktop**, the native implementation DLL variants are:
 
 | Path | Any Platform | Exclude Platforms | CPU | OS | Example use |
 |---|---|---|---|---|---|
-| `Assets/Plugins/Win32/x86` | yes | -WSAPlayer | x86 | Windows | 32-bit Windows Desktop application |
-| `Assets/Plugins/Win32/x86_64` | yes | -WSAPlayer | x86_64 | Windows | 64-bit Windows Desktop application, including the Unity Editor on Windows |
+| `Assets/Plugins/Win32/x86` | yes | WSAPlayer | x86 | Windows | 32-bit Windows Desktop application |
+| `Assets/Plugins/Win32/x86_64` | yes | WSAPlayer | x86_64 | Windows | 64-bit Windows Desktop application, including the Unity Editor on Windows |
 
-For **Windows UWP**, the C++ library variants are:
+For **Windows UWP**, the native implementation DLL variants are:
 
 | Path | Any Platform | Include Platforms | SDK | CPU | Example use |
 |---|---|---|---|---|---|
-| `Assets/Plugins/UWP/x86` | no | +WSAPlayer | UWP | X86 | Microsoft HoloLens |
-| `Assets/Plugins/UWP/x86_64` | no | +WSAPlayer | UWP | X64 | 64-bit UWP Desktop app on Windows |
-| `Assets/Plugins/UWP/ARM` | no | +WSAPlayer | UWP | ARM | HoloLens 2 (compatibility) |
-| `Assets/Plugins/UWP/ARM64` | no | +WSAPlayer | UWP | ARM64* | HoloLens 2 |
+| `Assets/Plugins/UWP/x86` | no | WSAPlayer | UWP | X86 | Microsoft HoloLens (1st gen) |
+| `Assets/Plugins/UWP/x86_64` | no | WSAPlayer | UWP | X64 | 64-bit UWP Desktop app on Windows |
+| `Assets/Plugins/UWP/ARM` | no | WSAPlayer | UWP | ARM | HoloLens 2 (compatibility) |
 
-_*ARM64 is only available on Unity 2019.1+_
+> [!NOTE]
+> ARM64 is not currently available. The ARM (32-bit) architecture variant can be used as a fallback on HoloLens 2 and other devices which support running 32-bit ARM applications on ARM64 hardware.
 
 ![Configure the import settings for a native C++ DLL for UWP](helloworld-unity-3.png)
 
 If all variants are installed, the resulting hierarchy should look like this:
 
-```
+```shell
 Assets
 +- Plugins
    +- Win32
@@ -96,15 +99,28 @@ Assets
       +- x86_64
       |  +- mrwebrtc.dll
       +- ARM
-         +- mrwebrtc.dll
+      |  +- mrwebrtc.dll
       +- ARM64
          +- mrwebrtc.dll
 ```
 
 ## Importing the Unity integration
 
-In order to import the Unity integration into your new Unity project, simply copy the `libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Microsoft.MixedReality.WebRTC.Unity` and `libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Microsoft.MixedReality.WebRTC.Unity.Editor` folders into the `Assets` folder of your project. The former provides the integration itself, while the later contains some helpers for the Unity Editor. Those helpers are only needed in the Editor, and not when the application is deployed at runtime.
+In order to import the Unity integration into your new Unity project, simply copy the following folders from `libs\Microsoft.MixedReality.WebRTC.Unity\Assets\` into your project's `Assets` folder:
+
+- `Microsoft.MixedReality.WebRTC.Unity` : the core runtime integration, which must ship with the project.
+- `Microsoft.MixedReality.WebRTC.Unity.Editor` : some Unity Editor utilities, not required at runtime.
 
 After Unity finished processing the new files, the **Project** window should look like this:
 
 ![Import the Unity integration](helloworld-unity-4.png)
+
+The other folders are optional and contain samples and tests. They can be imported for testing and prototyping, but are not required to ship a project with MixedReality-WebRTC:
+
+- `Microsoft.MixedReality.WebRTC.Unity.Examples` : sample projects demonstrating the use of the Unity integration and its various components.
+- `Microsoft.MixedReality.WebRTC.Unity.Tests.Editor` : Editor-only tests for the Unity integration.
+- `Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime` : runtime tests for the Unity integration.
+
+----
+
+Next : [Creating a peer connection](helloworld-unity-peerconnection.md)

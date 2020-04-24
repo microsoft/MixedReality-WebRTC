@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{928899BC-F131-4343-A1AB-72F3A5787E41}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <ProjectName>mrwebrtc-win32</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\mrwebrtc.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutDir>$(MRWebRTCProjectRoot)bin\Win32\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(MRWebRTCProjectRoot)build\mrwebrtc\Win32\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>mrwebrtc</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(PlatformTarget)' == 'x86'">
+    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86</UnityPluginDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(PlatformTarget)' == 'x64'">
+    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86_64</UnityPluginDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(PlatformTarget)' == 'ARM64'">
+    <UnityPluginDirectory>$(ProjectDir)..\..\..\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\ARM64</UnityPluginDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <NativeUnityPluginSourceFiles Include="$(OutDir)\mrwebrtc.dll;$(OutDir)\mrwebrtc.pdb" />
+  </ItemGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(MRWebRTCProjectRoot)libs\mrwebrtc\include;$(MRWebRTCProjectRoot)libs\mrwebrtc\src;$(WebRTCCoreRepoPath);$(WebRTCCoreRepoPath)out\win\$(PlatformTarget)\$(Configuration)\gen;$(WebRTCCoreRepoPath)third_party\abseil-cpp;$(WebRTCCoreRepoPath)third_party\libyuv\include;$(WebRTCCoreRepoPath)out\win\$(PlatformTarget)\$(Configuration)\gen\protoc_out;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ConformanceMode>false</ConformanceMode>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>strmiids.lib;Msdmo.lib;dmoguids.lib;wmcodecdspuuid.lib;Secur32.lib;winmm.lib;Ole32.lib;Evr.lib;mfreadwrite.lib;mf.lib;mfuuid.lib;mfplat.lib;mfplay.lib;windowsapp.lib;webrtc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(WebRTCCoreRepoPath)out\win\$(PlatformTarget)\$(Configuration)\obj;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDLL;MR_SHARING_WIN;MRS_USE_STR_WRAPPER;WINUWP;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;_ITERATOR_DEBUG_LEVEL=0;_HAS_EXCEPTIONS=0;__STD_C;_CRT_RAND_S;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_DEPRECATE;_ATL_NO_OPENGL;_WINDOWS;CERT_CHAIN_PARA_HAS_EXTRA_FIELDS;PSAPI_VERSION=2;WIN32;_SECURE_ATL;_USING_V110_SDK71_;__WRL_NO_DEFAULT_LIB__;WINAPI_FAMILY=WINAPI_FAMILY_PC_APP;WIN10=_WIN32_WINNT_WIN10;WIN32_LEAN_AND_MEAN;NOMINMAX;_UNICODE;UNICODE;NTDDI_VERSION=NTDDI_WIN10_RS2;_WIN32_WINNT=0x0A00;WINVER=0x0A00;NVALGRIND;DYNAMIC_ANNOTATIONS_ENABLED=0;WEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE;RTC_ENABLE_VP9;HAVE_SCTP;WEBRTC_LIBRARY_IMPL;WEBRTC_NON_STATIC_TRACE_EVENT_HANDLERS=0;WEBRTC_WIN;ABSL_ALLOCATOR_NOTHROW=1;_DEBUG%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_WINDLL;MR_SHARING_WIN;MRS_USE_STR_WRAPPER;WINUWP;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;_ITERATOR_DEBUG_LEVEL=0;_HAS_EXCEPTIONS=0;__STD_C;_CRT_RAND_S;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_DEPRECATE;_ATL_NO_OPENGL;_WINDOWS;CERT_CHAIN_PARA_HAS_EXTRA_FIELDS;PSAPI_VERSION=2;WIN32;_SECURE_ATL;_USING_V110_SDK71_;__WRL_NO_DEFAULT_LIB__;WINAPI_FAMILY=WINAPI_FAMILY_PC_APP;WIN10=_WIN32_WINNT_WIN10;WIN32_LEAN_AND_MEAN;NOMINMAX;_UNICODE;UNICODE;NTDDI_VERSION=NTDDI_WIN10_RS2;_WIN32_WINNT=0x0A00;WINVER=0x0A00;NVALGRIND;DYNAMIC_ANNOTATIONS_ENABLED=0;WEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE;RTC_ENABLE_VP9;HAVE_SCTP;WEBRTC_LIBRARY_IMPL;WEBRTC_NON_STATIC_TRACE_EVENT_HANDLERS=0;WEBRTC_WIN;ABSL_ALLOCATOR_NOTHROW=1;NDEBUG%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\pch.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\audio_frame.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\data_channel_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\export.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\external_video_track_source_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\interop_api.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\local_video_track_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\peer_connection_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\result.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\transceiver_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\local_audio_track_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\remote_audio_track_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\remote_video_track_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\video_frame.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\audio_frame_observer.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\callback.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\data_channel.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\global_factory.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\external_video_track_source.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\external_video_track_source_impl.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_video_track.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\mrs_errors.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\peer_connection.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\refptr.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\ref_counted_base.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\sdp_utils.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\str.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\targetver.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\tracked_object.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\utils.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\video_frame_observer.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_audio_track.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\media_track.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_audio_track.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_video_track.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\transceiver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\audio_frame_observer.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\data_channel.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\data_channel_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\external_video_track_source_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\global_factory.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\interop_api.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\local_video_track_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\peer_connection_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\external_video_track_source.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_video_track.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\transceiver_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\local_audio_track_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\remote_audio_track_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\remote_video_track_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_audio_track.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\media_track.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_audio_track.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_video_track.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\transceiver.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\mrs_errors.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\peer_connection.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\sdp_utils.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\str.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\tracked_object.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\utils.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\video_frame_observer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\docs\design.md" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="@(NativeUnityPluginSourceFiles)" DestinationFolder="$(UnityPluginDirectory)" />
+  </Target>
+</Project>

@@ -1,0 +1,104 @@
+<Page
+    x:Class="TestAppUwp.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TestAppUwp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    NavigationCacheMode="Required">
+    <ScrollViewer>
+        <StackPanel Orientation="Vertical" Margin="12,12,12,12">
+            <TextBlock Text="STUN server" Style="{StaticResource TitleTextBlockStyle}"/>
+            <TextBlock FontStyle="Italic" Grid.Row="1" Margin="0,6,0,0">
+                The STUN server is used to establish a peer connection through NATs.<LineBreak/>This can be left empty
+                to not use any server; in that case NAT traversal won't be available.
+            </TextBlock>
+            <TextBox Name="stunServer" Width="400" HorizontalAlignment="Left"
+                     PlaceholderText="address:port (without prefix)"
+                     Grid.Row="2" Margin="0,6,0,6" TextChanged="StunServerTextChanged" />
+            <TextBlock Text="SDP semantic" Style="{StaticResource TitleTextBlockStyle}" Margin="0,16,0,0"/>
+            <TextBlock Margin="0,6,0,6" FontStyle="Italic">
+                Specifies the <Hyperlink NavigateUri="https://webrtc.org/web-apis/chrome/unified-plan/">SDP dialect</Hyperlink>
+                used to negotiate a peer connection.<LineBreak/>The dialect must be the same on both peers, otherwise some
+                features will not work.<LineBreak/>Do not use Plan B unless there is an issue with the Unified Plan.
+            </TextBlock>
+            <RadioButton x:Name="sdpSemanticUnifiedPlan" IsChecked="True"
+                         GroupName="SdpSemanticGroup" Margin="0,0,0,8" Click="SdpSemanticChanged">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Unified Plan"/>
+                    <TextBlock Margin="0,3,0,0" FontStyle="Italic">
+                        The <Span FontWeight="SemiBold">Unified Plan</Span> semantic is the SDP semantic
+                        adopted in the <Hyperlink NavigateUri="https://www.w3.org/TR/webrtc/">WebRTC 1.0 standard</Hyperlink>.
+                    </TextBlock>
+                </StackPanel>
+            </RadioButton>
+            <RadioButton x:Name="sdpSemanticPlanB" GroupName="SdpSemanticGroup" Click="SdpSemanticChanged">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Plan B (deprecated)"/>
+                    <TextBlock Margin="0,3,0,0" FontStyle="Italic">
+                        The <Span FontWeight="SemiBold">Plan B</Span> semantic is the historical SDP semantic used in many
+                        WebRTC implementations.
+                    </TextBlock>
+                </StackPanel>
+            </RadioButton>
+            <TextBlock Text="Preferred codecs" Style="{StaticResource TitleTextBlockStyle}" Margin="0,16,0,0"/>
+            <TextBlock FontStyle="Italic" Margin="0,6,0,0" TextWrapping="Wrap">
+                    This option allows filtering the SDP offer to retain only one preferred audio and/or video codec amongst
+                    the supported ones, thereby forcing their use.<LineBreak/>If the selected codec is not supported by the
+                    local peer implemention, this does nothing, and the default codec is used.
+            </TextBlock>
+            <StackPanel Orientation="Vertical" x:Name="preferredAudioCodecsBlock">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="PreferredAudioCodec_Default" GroupName="PreferredAudioCodecGroup"
+                                 Checked="PreferredAudioCodecChecked" Content="(default)" IsChecked="True"/>
+                    <RadioButton x:Name="PreferredAudioCodec_OPUS" GroupName="PreferredAudioCodecGroup"
+                                 Checked="PreferredAudioCodecChecked" Content="OPUS"/>
+                    <RadioButton x:Name="PreferredAudioCodec_Custom" GroupName="PreferredAudioCodecGroup"
+                                 Checked="PreferredAudioCodecChecked" Content="Custom value"/>
+                </StackPanel>
+                <TextBlock x:Name="CustomPreferredAudioCodecHelpText" FontStyle="Italic" Margin="48,6,0,0" Visibility="Collapsed">
+                    Leave blank to use the default video codec. A partial list is
+                    <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.
+                    <LineBreak />Common values include "opus" or "ISAC". Names are case sensitive.
+                </TextBlock>
+                <TextBox Visibility="Collapsed" x:Name="CustomPreferredAudioCodec" Text="" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Local params:</TextBlock>
+                    <TextBox Margin="16,0,0,0" Width="250" PlaceholderText="extra_audio_param_local"
+                             Text="{x:Bind SessionModel.PreferredAudioCodecExtraParamsLocal, Mode=TwoWay}"/>
+                    <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Remote params:</TextBlock>
+                    <TextBox Margin="16,0,0,0" Width="250" PlaceholderText="extra_audio_param_remote"
+                             Text="{x:Bind SessionModel.PreferredAudioCodecExtraParamsRemote, Mode=TwoWay}"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" x:Name="preferredVideoCodecsBlock">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="PreferredVideoCodec_Default" GroupName="PreferredVideoCodecGroup"
+                                 Checked="PreferredVideoCodecChecked" Content="(default)" IsChecked="True"/>
+                    <RadioButton x:Name="PreferredVideoCodec_H264" GroupName="PreferredVideoCodecGroup"
+                                 Checked="PreferredVideoCodecChecked" Content="H.264"/>
+                    <RadioButton x:Name="PreferredVideoCodec_VP8" GroupName="PreferredVideoCodecGroup"
+                                 Checked="PreferredVideoCodecChecked" Content="VP8"/>
+                    <RadioButton x:Name="PreferredVideoCodec_Custom" GroupName="PreferredVideoCodecGroup"
+                                 Checked="PreferredVideoCodecChecked" Content="Custom value"/>
+                </StackPanel>
+                <TextBlock x:Name="CustomPreferredVideoCodecHelpText" FontStyle="Italic" Margin="48,6,0,0" Visibility="Collapsed">
+                    Leave blank to use the default video codec. A partial list is
+                    <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.
+                    <LineBreak />Common values include "H264" or "VP8". Names are case sensitive.
+                </TextBlock>
+                <TextBox Visibility="Collapsed" x:Name="CustomPreferredVideoCodec" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Local params:</TextBlock>
+                    <TextBox Margin="16,0,0,0" Width="250" PlaceholderText="extra_video_param_local"
+                             Text="{x:Bind SessionModel.PreferredVideoCodecExtraParamsLocal, Mode=TwoWay}"/>
+                    <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Remote params:</TextBlock>
+                    <TextBox Margin="16,0,0,0" Width="250" PlaceholderText="extra_video_param_remote"
+                             Text="{x:Bind SessionModel.PreferredVideoCodecExtraParamsRemote, Mode=TwoWay}"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

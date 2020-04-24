@@ -78,7 +78,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 RequestId = requestId,
                 TimestampMs = timestampMs
             };
-            args.FrameRequestCallback.Invoke(in request);
+            args.FrameRequestCallback.Invoke(request);
         }
 
         [MonoPInvokeCallback(typeof(RequestExternalArgb32VideoFrameCallback))]
@@ -92,7 +92,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 RequestId = requestId,
                 TimestampMs = timestampMs
             };
-            args.FrameRequestCallback.Invoke(in request);
+            args.FrameRequestCallback.Invoke(request);
         }
 
         #endregion
@@ -100,7 +100,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         public class VideoFrameRequestCallbackArgs
         {
-            public PeerConnection Peer;
             public ExternalVideoTrackSource Source;
         }
 
@@ -166,7 +165,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             // Create some static callback args which keep the sourceDelegate alive
             var args = new I420AVideoFrameRequestCallbackArgs
             {
-                Peer = null, // set when track added
                 Source = null, // set below
                 FrameRequestCallback = frameRequestCallback,
                 // This wraps the method into a temporary System.Delegate object, which is then assigned to
@@ -206,7 +204,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             // Create some static callback args which keep the sourceDelegate alive
             var args = new Argb32VideoFrameRequestCallbackArgs
             {
-                Peer = null, // set when track added
                 Source = null, // set below
                 FrameRequestCallback = frameRequestCallback,
                 // This wraps the method into a temporary System.Delegate object, which is then assigned to
