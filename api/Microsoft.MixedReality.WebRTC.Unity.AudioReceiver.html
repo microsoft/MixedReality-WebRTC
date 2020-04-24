@@ -86,19 +86,9 @@
   
   <h1 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver" class="text-break">Class AudioReceiver
   </h1>
-  <div class="markdown level0 summary"><p>This component represents a remote audio source receiving its audio data from a remote
-peer through an audio track associated with the peer connection.</p>
-<div class="WARNING alert alert-warning">
-<h5>WARNING</h5>
-<p>
-Currently the low-level WebRTC implementation automatically outputs the received audio
-to a default audio device, without any user interaction. Therefore registering this receiver
-with a <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html">MediaPlayer</a> has no effect, and using the callback mechanism provided via
-<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html#Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_RegisterCallback_AudioFrameDelegate_">RegisterCallback(AudioFrameDelegate)</a> to inject this audio in a custom audio
-pipeline will lead to duplicated output : one from the WebRTC implementation, one from the
-custom audio pipeline.
-</p>
-</div>
+  <div class="markdown level0 summary"><p>This component represents a remote audio source added as an audio track to an
+existing WebRTC peer connection by a remote peer and received locally.
+The audio track can optionally be displayed locally with a <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html">MediaPlayer</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
