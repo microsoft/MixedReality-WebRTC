@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstdint>
+#include "mrs_errors.h"
 
 inline bool IsStringNullOrEmpty(const char* str) noexcept {
   return ((str == nullptr) || (str[0] == '\0'));

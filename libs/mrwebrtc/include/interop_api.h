@@ -156,6 +156,9 @@ MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 // Peer connection
 //
 
+/// Opaque handle to a native AudioTrackReadBuffer C++ object.
+using AudioTrackReadBufferHandle = void*;
+
 /// Callback fired when the peer connection is connected, that is it finished
 /// the JSEP offer/answer exchange successfully.
 using mrsPeerConnectionConnectedCallback = void(MRS_CALL*)(void* user_data);
@@ -255,6 +258,7 @@ using mrsPeerConnectionAudioTrackRemovedCallback =
     void(MRS_CALL*)(void* user_data,
                     mrsRemoteAudioTrackHandle audio_track,
                     mrsTransceiverHandle transceiver);
+
 
 /// Callback fired when a remote video track is added to a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the
