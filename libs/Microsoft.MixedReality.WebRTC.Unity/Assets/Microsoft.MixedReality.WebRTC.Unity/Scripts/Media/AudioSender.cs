@@ -196,6 +196,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // accounted for.
             //< FIXME - Multi-track override!!!
             Transceiver.PeerConnection.PreferredAudioCodec = PreferredAudioCodec;
+            Debug.LogWarning("PreferredAudioCodec is currently a per-PeerConnection setting; overriding the value for peer"
+                + $" connection '{Transceiver.PeerConnection.Name}' with track's value of '{PreferredAudioCodec}'.");
 
             // Ensure the local sender track exists
             if (Track == null)
