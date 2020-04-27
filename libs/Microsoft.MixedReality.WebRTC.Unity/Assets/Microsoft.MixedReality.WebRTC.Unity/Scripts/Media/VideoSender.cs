@@ -126,12 +126,24 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     IsStreaming = true;
                 });
             }
+
+            // Attach the local track to the transceiver
+            if (Transceiver != null)
+            {
+                Transceiver.LocalVideoTrack = Track;
+            }
         }
 
         protected override void DestroyLocalTrack()
         {
             if (Track != null)
             {
+                // Detach the local track from the transceiver
+                if ((Transceiver != null) && (Transceiver.LocalVideoTrack == Track))
+                {
+                    Transceiver.LocalVideoTrack = null;
+                }
+
                 // Defer track destruction to derived classes.
                 DestroyLocalVideoTrack();
                 Debug.Assert(Track == null, "Implementation did not destroy the existing Track property yet did not throw any exception.", this);
@@ -177,17 +189,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // so that modifications to the property done after OnPeerInitialized() are
             // accounted for.
             //< FIXME - Multi-track override!!!
-            Transceiver.PeerConnection.PreferredVideoCodec = PreferredVideoCodec;
-            Debug.LogWarning("PreferredVideoCodec is currently a per-PeerConnection setting; overriding the value for peer"
-                + $" connection '{Transceiver.PeerConnection.Name}' with track's value of '{PreferredVideoCodec}'.");
-
-            // Ensure the local sender track exists
-            if (Track == null)
+            if (!string.IsNullOrWhiteSpace(PreferredVideoCodec))
             {
-                await CreateLocalTrackAsync();
+                Transceiver.PeerConnection.PreferredVideoCodec = PreferredVideoCodec;
+                Debug.LogWarning("PreferredVideoCodec is currently a per-PeerConnection setting; overriding the value for peer"
+                    + $" connection '{Transceiver.PeerConnection.Name}' with track's value of '{PreferredVideoCodec}'.");
             }
 
-            // Attach the local track to the transceiver
+            // Ensure the local sender track exists and is ready, but do not create it
+            // if the component is not active.
+            if (isActiveAndEnabled)
+            {
+                await StartCaptureAsync();
+            }
+
+            // Attach the local track to the transceiver if any
             if (Track != null)
             {
                 Transceiver.LocalVideoTrack = Track;
@@ -197,8 +213,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         internal override void DetachTrack()
         {
             Debug.Assert(Transceiver != null);
-            Debug.Assert(Transceiver.LocalTrack == Track);
-            Transceiver.LocalVideoTrack = null;
+            if (Track != null)
+            {
+                Debug.Assert(Transceiver.LocalVideoTrack == Track);
+                Transceiver.LocalVideoTrack = null;
+            }
         }
 
         /// <inheritdoc/>

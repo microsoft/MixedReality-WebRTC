@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System.Collections;
@@ -47,12 +47,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Check the event was raised
             Assert.IsTrue(initializedEvent.Wait(millisecondsTimeout: 50000));
             Assert.IsNotNull(pc.Peer);
-        }
-
-        [UnityTest]
-        public IEnumerator RuntimeTestsWithEnumeratorPasses()
-        {
-            yield return null;
         }
     }
 }
