@@ -173,6 +173,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             Debug.Assert(Transceiver != null);
 
+            // Force again PreferredVideoCodec right before starting the local capture,
+            // so that modifications to the property done after OnPeerInitialized() are
+            // accounted for.
+            //< FIXME - Multi-track override!!!
+            Transceiver.PeerConnection.PreferredVideoCodec = PreferredVideoCodec;
+            Debug.LogWarning("PreferredVideoCodec is currently a per-PeerConnection setting; overriding the value for peer"
+                + $" connection '{Transceiver.PeerConnection.Name}' with track's value of '{PreferredVideoCodec}'.");
+
             // Ensure the local sender track exists
             if (Track == null)
             {
