@@ -49,7 +49,10 @@ function Initialize-BuildEnvironment {
         Write-Host "PATH already includes depot_tools location"
     }
 
-    Write-Host  "Use local Windows toolchain (DEPOT_TOOLS_WIN_TOOLCHAIN = 0)"
+    Write-Host "Disable depot_tools auto-update (DEPOT_TOOLS_UPDATE = 0)"
+    $env:DEPOT_TOOLS_UPDATE = "0"
+
+    Write-Host "Use local Windows toolchain (DEPOT_TOOLS_WIN_TOOLCHAIN = 0)"
     $env:DEPOT_TOOLS_WIN_TOOLCHAIN = "0"
 
     Write-Host "Use Visual Studio 2019 (GYP_MSVS_VERSION = 2019)"
