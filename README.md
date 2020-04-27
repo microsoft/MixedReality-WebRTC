@@ -127,7 +127,7 @@ See the user manual section on [Building from sources](https://microsoft.github.
 The current version is a public preview under active development, which contains known issues being addressed:
 
 - HoloLens 2 exhibits some small performance penalty due to the [missing support (#157)](https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/157) for SIMD-accelerated YUV conversion in WebRTC UWP SDK on ARM.
-- H.264 hardware video encoding (UWP only) exhibits some quality degrading (blockiness). See [#74]((https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/74)) and [#101]((https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/101)) for details.
+- H.264 hardware video encoding (UWP only) exhibits some quality degrading (blockiness). See [#74]((https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/74)) and [#153]((https://github.com/webrtc-uwp/webrtc-uwp-sdk/issues/153)) for details.
 - H.264 is not currently available on Desktop at all (even in software). Only VP8 and VP9 are available instead (software encoding/decoding).
 - The NuGet packages (v1.x) for the former C++ library `Microsoft.MixedReality.WebRTC.Native` include some WebRTC headers from the Google repository, which are not shipped with any of the NuGet packages themselves, but instead require cloning this repository and its dependencies (see #123).
 
