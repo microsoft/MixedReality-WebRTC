@@ -53,129 +53,74 @@ TEST_P(DataChannelTests, AddChannelBeforeInit) {
 }
 
 TEST_P(DataChannelTests, InBand) {
-  // Create PC
-  mrsPeerConnectionConfiguration pc_config{};  // local connection only
+  mrsPeerConnectionConfiguration pc_config{};
   pc_config.sdp_semantic = GetParam();
-  PCRaii pc1(pc_config);
-  ASSERT_NE(nullptr, pc1.handle());
-  PCRaii pc2(pc_config);
-  ASSERT_NE(nullptr, pc2.handle());
-
-  // Setup signaling
-  SdpCallback sdp1_cb(pc1.handle(), [&pc2](const char* type,
-                                           const char* sdp_data) {
-    Event ev;
-    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
-                                    pc2.handle(), type, sdp_data,
-                                    &TestUtils::SetEventOnCompleted, &ev));
-    ev.Wait();
-    if (kOfferString == type) {
-      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc2.handle()));
-    }
-  });
-  SdpCallback sdp2_cb(pc2.handle(), [&pc1](const char* type,
-                                           const char* sdp_data) {
-    Event ev;
-    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
-                                    pc1.handle(), type, sdp_data,
-                                    &TestUtils::SetEventOnCompleted, &ev));
-    ev.Wait();
-    if (kOfferString == type) {
-      ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc1.handle()));
-    }
-  });
-  IceCallback ice1_cb(
-      pc1.handle(),
-      [&pc2](const char* candidate, int sdpMlineindex, const char* sdpMid) {
-        ASSERT_EQ(Result::kSuccess,
-                  mrsPeerConnectionAddIceCandidate(pc2.handle(), sdpMid,
-                                                   sdpMlineindex, candidate));
-      });
-  IceCallback ice2_cb(
-      pc2.handle(),
-      [&pc1](const char* candidate, int sdpMlineindex, const char* sdpMid) {
-        ASSERT_EQ(Result::kSuccess,
-                  mrsPeerConnectionAddIceCandidate(pc1.handle(), sdpMid,
-                                                   sdpMlineindex, candidate));
-      });
+  LocalPeerPairRaii pair(pc_config);
 
   // Add dummy out-of-band data channel to force SCTP negotiating, otherwise
   // further data channel opening after connecting will fail.
+  // ID must be >= 0 for negotiated (out-of-band) channel.
+  constexpr int kDummyDataChannelId = 25;
   {
     mrsDataChannelConfig data_config{};
-    data_config.id = 25;  // must be >= 0 for negotiated (out-of-band) channel
+    data_config.id = kDummyDataChannelId;
     data_config.label = "dummy_out_of_band";
     data_config.flags = mrsDataChannelConfigFlags::kOrdered |
                         mrsDataChannelConfigFlags::kReliable;
     mrsDataChannelHandle handle;
     ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddDataChannel(
-                                    pc1.handle(), &data_config, &handle));
+                                    pair.pc1(), &data_config, &handle));
     ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddDataChannel(
-                                    pc2.handle(), &data_config, &handle));
+                                    pair.pc2(), &data_config, &handle));
   }
 
   // Connect
-  Event ev1, ev2;
-  InteropCallback<> connectec1_cb([&ev1]() { ev1.Set(); });
-  InteropCallback<> connectec2_cb([&ev2]() { ev2.Set(); });
-  mrsPeerConnectionRegisterConnectedCallback(pc1.handle(), CB(connectec1_cb));
-  connectec1_cb.is_registered_ = true;
-  mrsPeerConnectionRegisterConnectedCallback(pc2.handle(), CB(connectec2_cb));
-  connectec2_cb.is_registered_ = true;
-  ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateOffer(pc1.handle()));
-  ASSERT_EQ(true, ev1.WaitFor(55s));  // should complete within 5s (usually ~1s)
-  ASSERT_EQ(true, ev2.WaitFor(55s));
+  pair.ConnectAndWait();
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(5s));
 
   // Register a callback on PC #2
   const std::string channel_label = "test data channel";
   Event data2_ev;
   DataAddedCallback data_added_cb =
-      [&pc2, &data2_ev, &channel_label](const mrsDataChannelAddedInfo* info) {
-        ASSERT_NE(nullptr, info->handle);
-        ASSERT_STREQ(channel_label.c_str(), info->label);
-        data2_ev.Set();
+      [kDummyDataChannelId, &data2_ev,
+       &channel_label](const mrsDataChannelAddedInfo* info) {
+        // Ignore dummy channel; even if previous session is established,
+        // callback might be delayed until after this handler is registered.
+        if (info->id != kDummyDataChannelId) {
+          ASSERT_NE(nullptr, info->handle);
+          ASSERT_STREQ(channel_label.c_str(), info->label);
+          data2_ev.Set();
+        }
       };
-  mrsPeerConnectionRegisterDataChannelAddedCallback(pc2.handle(),
+  mrsPeerConnectionRegisterDataChannelAddedCallback(pair.pc2(),
                                                     CB(data_added_cb));
   data_added_cb.is_registered_ = true;
 
-  // Add a data channel on PC #1, which should get negotiated to PC #2
-  {
-    mrsDataChannelConfig data_config{};
-    data_config.label = channel_label.c_str();
-    data_config.flags = mrsDataChannelConfigFlags::kOrdered |
-                        mrsDataChannelConfigFlags::kReliable;
-    mrsDataChannelHandle data1_handle;
-    ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddDataChannel(
-                                    pc1.handle(), &data_config, &data1_handle));
-    ASSERT_NE(nullptr, data1_handle);
+  // Add a data channel on PC #1
+  mrsDataChannelConfig data_config{};
+  data_config.label = channel_label.c_str();
+  data_config.flags = mrsDataChannelConfigFlags::kOrdered |
+                      mrsDataChannelConfigFlags::kReliable;
+  mrsDataChannelHandle data1_handle;
+  ASSERT_EQ(Result::kSuccess, mrsPeerConnectionAddDataChannel(
+                                  pair.pc1(), &data_config, &data1_handle));
+  ASSERT_NE(nullptr, data1_handle);
 
-    // TODO expose label
-    // ASSERT_EQ(channel_label, data1->label());
+  // Renegotiate, including the new data channel
+  pair.ConnectAndWait();
+  ASSERT_TRUE(pair.WaitExchangeCompletedFor(5s));
 
-    ASSERT_EQ(true, data2_ev.WaitFor(30s));
+  // TODO expose label
+  // ASSERT_EQ(channel_label, data1->label());
 
-    // Clean-up
-    mrsPeerConnectionRegisterConnectedCallback(pc1.handle(), nullptr, nullptr);
-    connectec1_cb.is_registered_ = false;
-    mrsPeerConnectionRegisterConnectedCallback(pc2.handle(), nullptr, nullptr);
-    connectec2_cb.is_registered_ = false;
-    mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(pc1.handle(),
-                                                             nullptr, nullptr);
-    ice1_cb.is_registered_ = false;
-    mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(pc2.handle(),
-                                                             nullptr, nullptr);
-    ice2_cb.is_registered_ = false;
-    mrsPeerConnectionRegisterDataChannelAddedCallback(pc2.handle(), nullptr,
-                                                      nullptr);
-    data_added_cb.is_registered_ = false;
-    mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(pc1.handle(), nullptr,
-                                                         nullptr);
-    sdp1_cb.is_registered_ = false;
-    mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(pc2.handle(), nullptr,
-                                                         nullptr);
-    sdp2_cb.is_registered_ = false;
-  }
+  // Ensure the data channel was created on peer #2 as part of the new session
+  // negotiation.
+  ASSERT_EQ(true, data2_ev.WaitFor(30s));
+
+  // Clean-up
+  mrsPeerConnectionRegisterDataChannelAddedCallback(pair.pc2(), nullptr,
+                                                    nullptr);
+  data_added_cb.is_registered_ = false;
 }
 
 TEST_P(DataChannelTests, MultiThreadCreate) {
