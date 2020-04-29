@@ -311,9 +311,9 @@ ErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
 
     // For in-band channels, the creating side (here) doesn't receive an
     // OnDataChannel() message, so invoke the DataChannelAdded event right now.
-    if (!data_channel->impl()->negotiated()) {
-      OnDataChannelAdded(*data_channel.get());
-    }
+    // For out-of-band channels, the standard doesn't ask to raise that event,
+    // but we do it anyway for convenience and for consistency.
+    OnDataChannelAdded(*data_channel.get());
 
     return data_channel;
   }
