@@ -80,31 +80,12 @@ bool DataChannel::Send(const void* data, size_t size) noexcept {
 }
 
 void DataChannel::OnStateChange() noexcept {
-  const webrtc::DataChannelInterface::DataState state = data_channel_->state();
-  switch (state) {
-    case webrtc::DataChannelInterface::DataState::kOpen:
-      // Negotiated (out-of-band) data channels never generate an
-      // OnDataChannel() message, so simulate it for the DataChannelAdded event
-      // to be consistent.
-      if (data_channel_->negotiated()) {
-        owner_->OnDataChannelAdded(*this);
-      }
-      break;
-    case webrtc::DataChannelInterface::DataState::kClosed:
-      break;
-    case webrtc::DataChannelInterface::DataState::kClosing:
-      break;
-    case webrtc::DataChannelInterface::DataState::kConnecting:
-      break;
-  }
-
-  // Invoke the StateChanged event
-  {
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (state_callback_) {
-      auto apiState = apiStateFromRtcState(state);
-      state_callback_((int)apiState, data_channel_->id());
-    }
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (state_callback_) {
+    const webrtc::DataChannelInterface::DataState state =
+        data_channel_->state();
+    auto apiState = apiStateFromRtcState(state);
+    state_callback_((int)apiState, data_channel_->id());
   }
 }
 
