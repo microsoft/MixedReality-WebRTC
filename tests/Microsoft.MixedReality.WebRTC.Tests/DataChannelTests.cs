@@ -14,6 +14,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
     [TestFixture(SdpSemantic.UnifiedPlan)]
     internal class DataChannelTests : PeerConnectionTestBase
     {
+        const int DummyDataChannelID = 42;
+
         public DataChannelTests(SdpSemantic sdpSemantic) : base(sdpSemantic)
         {
         }
@@ -27,8 +29,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Add dummy out-of-band data channel to force SCTP negotiating.
             // Otherwise after connecting AddDataChannelAsync() will fail.
-            await pc1_.AddDataChannelAsync(42, "dummy", false, false);
-            await pc2_.AddDataChannelAsync(42, "dummy", false, false);
+            await pc1_.AddDataChannelAsync(DummyDataChannelID, "dummy", false, false);
+            await pc2_.AddDataChannelAsync(DummyDataChannelID, "dummy", false, false);
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
             Assert.True(renegotiationEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
             renegotiationEvent1_.Reset();
@@ -49,8 +51,11 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 var c2 = new ManualResetEventSlim(false);
                 pc2_.DataChannelAdded += (DataChannel channel) =>
                 {
-                    data2 = channel;
-                    c2.Set();
+                    if (channel.ID != DummyDataChannelID)
+                    {
+                        data2 = channel;
+                        c2.Set();
+                    }
                 };
                 // Note that for SCTP data channels (always the case in MixedReality-WebRTC) a renegotiation
                 // needed event is triggered only on the first data channel created. Since dummy channels were
