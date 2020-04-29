@@ -75,6 +75,12 @@ function Clear-PostCheckout([string]$SourceFolder) {
 
     # Remove third_party/catapult
     Remove-Item -Path $(Join-Path $SourceFolder "third_party/catapult" -Resolve) -Force -Recurse | Out-Null
+
+    # Remove third_party/depot_tools
+    Remove-Item -Path $(Join-Path $SourceFolder "third_party/depot_tools" -Resolve) -Force -Recurse | Out-Null
+
+    # Remove third_party/node
+    Remove-Item -Path $(Join-Path $SourceFolder "third_party/node" -Resolve) -Force -Recurse | Out-Null
 }
 
 # Install the Google repository of libwebrtc into external/libwebrtc
