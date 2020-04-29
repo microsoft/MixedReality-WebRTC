@@ -59,6 +59,24 @@ function Initialize-BuildEnvironment {
     $env:GYP_MSVS_VERSION = "2019"
 }
 
+# Post-checkout clean-up
+function Clear-PostCheckout([string]$SourceFolder) {
+    # Remove tools/ (except tools/clang/ and tools/protoc_wrapper/)
+    $toolsFolder = Join-Path $SourceFolder "tools" -Resolve
+    Rename-Item -Path $toolsFolder -NewName "_tools"
+    $oldToolsFolder = Join-Path $SourceFolder "_tools" -Resolve
+    New-Item -Path $toolsFolder -ItemType Directory | Out-Null
+    Move-Item -Path $(Join-Path $oldToolsFolder "clang") -Destination $toolsFolder
+    Move-Item -Path $(Join-Path $oldToolsFolder "protoc_wrapper") -Destination $toolsFolder
+    Remove-Item -Path $oldToolsFolder -Recurse -Force | Out-Null
+
+    # Remove third_party/blink
+    Remove-Item -Path $(Join-Path $SourceFolder "third_party/blink" -Resolve) -Force -Recurse | Out-Null
+
+    # Remove third_party/catapult
+    Remove-Item -Path $(Join-Path $SourceFolder "third_party/catapult" -Resolve) -Force -Recurse | Out-Null
+}
+
 # Install the Google repository of libwebrtc into external/libwebrtc
 function Install-GoogleRepository {
     $externalFolder = Get-ExternalFolder
@@ -97,13 +115,7 @@ function Install-GoogleRepository {
 
     # Delete sources not needed; this prevent security alerts on unused components,
     # and makes the overall checkout size smaller.
-    $toolsFolder = Join-Path $libwebrtcFolder "tools" -Resolve
-    Rename-Item -Path $toolsFolder -NewName "_tools"
-    $oldToolsFolder = Join-Path $libwebrtcFolder "_tools" -Resolve
-    New-Item -Path $toolsFolder -ItemType Directory | Out-Null
-    Move-Item -Path $(Join-Path $oldToolsFolder "clang") -Destination $toolsFolder
-    Move-Item -Path $(Join-Path $oldToolsFolder "protoc_wrapper") -Destination $toolsFolder
-    Remove-Item -Path $oldToolsFolder -Recurse -Force | Out-Null
+    Clear-PostCheckout -SourceFolder $libwebrtcFolder
 
     # Apply patches
     $env:WEBRTCM80_ROOT = $libwebrtcFolder
