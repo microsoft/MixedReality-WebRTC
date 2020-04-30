@@ -4,7 +4,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://chromium.googlesource.com/external/webrtc", 
-         "commitHash": "baa89682df1ab891ae274a1cb2d9be3b1ee7e20b" 
+         "commitHash": "0680f27b996a4bc68c200a581ff12ba52669f2fa" 
          }
        }
     },
@@ -13,7 +13,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-uwp-sdk", 
-         "commitHash": "c6fdf8c33637b7f1e07aa2b5b0fe375dbcbbb088" 
+         "commitHash": "13ebaf1c2cd33e026433d467593753cf8655722c" 
          }
        }
     },
@@ -31,16 +31,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://github.com/webrtc-uwp/PeerCC", 
-         "commitHash": "693ec8637846ef23f3a26a397d20d1beffe2683b" 
-         }
-       }
-    },
-    {
-      "component": { 
-       "type": "git", 
-       "git": { 
-         "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-uwp.github.io", 
-         "commitHash": "1b0f4576f9c8896f25cd367298ef30b877ac910f" 
+         "commitHash": "2db07b2ddfa7e85d6ad250a1caa149537d3f3fbc" 
          }
        }
     },
@@ -49,7 +40,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-scripts", 
-         "commitHash": "3f2eb87b1baa3f49c6341d144e0b3c3be11c78ae" 
+         "commitHash": "66c7bce1e6413c19c7c24a68848e14cad3a0d5af" 
          }
        }
     },
@@ -76,7 +67,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-windows", 
-         "commitHash": "1bb3fea09316ac8d087fe7b009686ca374dde9c9" 
+         "commitHash": "33cd625d8aa57b88d2fb67ca34c1941dbaaaeee0" 
          }
        }
     },
@@ -112,7 +103,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://github.com/webrtc-uwp/chromium-build", 
-         "commitHash": "ce61deb53143460c96b3ee2750f536114293dde5" 
+         "commitHash": "495bba670b418b77b2b58d0c14f15b34c5c58458" 
          }
        }
     },
@@ -247,7 +238,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://github.com/webrtc-uwp/libvpx", 
-         "commitHash": "04ce135db1823c8eaf3491e65aa43df7b35b6b96" 
+         "commitHash": "c41a69ccf2e5812ed4ef78a1614e3670dcc8e573" 
          }
        }
     },
@@ -256,7 +247,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://github.com/webrtc-uwp/libyuv", 
-         "commitHash": "f1e39df1a6ffc965a1743622632cc79e9f927286" 
+         "commitHash": "bdff617d430cfd05d857595a044ed00f9eeaa7eb" 
          }
        }
     },
@@ -319,7 +310,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://github.com/webrtc-uwp/webrtc", 
-         "commitHash": "baa89682df1ab891ae274a1cb2d9be3b1ee7e20b" 
+         "commitHash": "0680f27b996a4bc68c200a581ff12ba52669f2fa" 
          }
        }
     },
@@ -328,7 +319,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://github.com/webrtc-uwp/webrtc-apis", 
-         "commitHash": "0d303d62f7e6483cf4b57c24ef295c487b0c28dd" 
+         "commitHash": "659f09a61d8ba8885221379722b361c7eddf7be5" 
          }
        }
     },
@@ -364,7 +355,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://github.com/webrtc-uwp/zsLib", 
-         "commitHash": "86ca02ff3effa26eaf4cbe3783fe79b00a5fd217" 
+         "commitHash": "f65d364639b3da032c392d5f4c7cdd4573e419e9" 
          }
        }
     },
@@ -373,7 +364,7 @@
        "type": "git", 
        "git": { 
          "repositoryUrl": "https://github.com/webrtc-uwp/zsLib-eventing", 
-         "commitHash": "9d4abb9779508aabdaf9867c938b82e9040abd0f" 
+         "commitHash": "308cbc319cfea35e9d91b4b3907e8805df5853ec" 
          }
        }
     }
