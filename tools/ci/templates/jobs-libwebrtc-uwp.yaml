@@ -23,9 +23,16 @@ jobs:
     buildTriple: UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}
     projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
   steps:
+
+  # Checkout
   - checkout: self
     submodules: recursive
     clean: $(clean.git)
+  - powershell: |
+      Write-Host "Deleting gsutil from depot_tools before building"
+      Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/depot_tools/external_bin/gsutil" -Resolve) -Force -Recurse | Out-Null
+    env:
+      SDK_ROOT: 'external/webrtc-uwp-sdk'
 
   # Compute the PDB package variables
   - task: PowerShell@2
