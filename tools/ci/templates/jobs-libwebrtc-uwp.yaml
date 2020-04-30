@@ -83,8 +83,14 @@ jobs:
 
   # Clean-up unused files
   - powershell: |
-      Write-Host "Deleting gsutil from depot_tools before building"
+      Write-Host "Deleting gsutil from depot_tools"
       Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/depot_tools/external_bin/gsutil" -Resolve) -Force -Recurse | Out-Null
+      Write-Host "Deleting chromium/third_party/protobuf"
+      Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/chromium/third_party/protobuf" -Resolve) -Force -Recurse | Out-Null
+      Write-Host "Deleting chromium/tools/android"
+      Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/chromium/tools/android" -Resolve) -Force -Recurse | Out-Null
+      Write-Host "Deleting chromium/tools/code_coverage"
+      Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/chromium/tools/code_coverage" -Resolve) -Force -Recurse | Out-Null
     displayName: 'Clean-up unused files'
     env:
       SDK_ROOT: 'external/webrtc-uwp-sdk'
