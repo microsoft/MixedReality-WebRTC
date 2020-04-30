@@ -21,64 +21,64 @@ stages:
 - stage: build
   displayName: Build Core WebRTC
   jobs:
-  - template: templates/jobs-libwebrtc-win32.yaml
-    parameters:
-      buildAgent: $(BuildAgent)
-      buildArch: 'x86'
-      buildConfig: 'Debug'
-  - template: templates/jobs-libwebrtc-win32.yaml
-    parameters:
-      buildAgent: $(BuildAgent)
-      buildArch: 'x64'
-      buildConfig: 'Debug'
-  - template: templates/jobs-libwebrtc-uwp.yaml
-    parameters:
-      buildAgent: $(BuildAgent)
-      buildArch: 'x86'
-      buildConfig: 'Debug'
-      publishWinRtHeaders: true # Randomly selected, any UWP build will do
-  - template: templates/jobs-libwebrtc-uwp.yaml
-    parameters:
-      buildAgent: $(BuildAgent)
-      buildArch: 'x64'
-      buildConfig: 'Debug'
-  - template: templates/jobs-libwebrtc-uwp.yaml
-    parameters:
-      buildAgent: $(BuildAgent)
-      buildArch: 'ARM'
-      buildConfig: 'Debug'
-  # - template: templates/jobs-libwebrtc-uwp.yaml
+  # - template: templates/jobs-libwebrtc-win32.yaml
   #   parameters:
   #     buildAgent: $(BuildAgent)
-  #     buildArch: 'ARM64'
+  #     buildArch: 'x86'
   #     buildConfig: 'Debug'
-  - template: templates/jobs-libwebrtc-win32.yaml
-    parameters:
-      buildAgent: $(BuildAgent)
-      buildArch: 'x86'
-      buildConfig: 'Release'
+  # - template: templates/jobs-libwebrtc-win32.yaml
+  #   parameters:
+  #     buildAgent: $(BuildAgent)
+  #     buildArch: 'x64'
+  #     buildConfig: 'Debug'
+  # - template: templates/jobs-libwebrtc-uwp.yaml
+  #   parameters:
+  #     buildAgent: $(BuildAgent)
+  #     buildArch: 'x86'
+  #     buildConfig: 'Debug'
+  #     publishWinRtHeaders: true # Randomly selected, any UWP build will do
+  # - template: templates/jobs-libwebrtc-uwp.yaml
+  #   parameters:
+  #     buildAgent: $(BuildAgent)
+  #     buildArch: 'x64'
+  #     buildConfig: 'Debug'
+  # - template: templates/jobs-libwebrtc-uwp.yaml
+  #   parameters:
+  #     buildAgent: $(BuildAgent)
+  #     buildArch: 'ARM'
+  #     buildConfig: 'Debug'
+  # # - template: templates/jobs-libwebrtc-uwp.yaml
+  # #   parameters:
+  # #     buildAgent: $(BuildAgent)
+  # #     buildArch: 'ARM64'
+  # #     buildConfig: 'Debug'
+  # - template: templates/jobs-libwebrtc-win32.yaml
+  #   parameters:
+  #     buildAgent: $(BuildAgent)
+  #     buildArch: 'x86'
+  #     buildConfig: 'Release'
   - template: templates/jobs-libwebrtc-win32.yaml
     parameters:
       buildAgent: $(BuildAgent)
       buildArch: 'x64'
-      buildConfig: 'Release'
-  - template: templates/jobs-libwebrtc-uwp.yaml
-    parameters:
-      buildAgent: $(BuildAgent)
-      buildArch: 'x86'
-      buildConfig: 'Release'
-  - template: templates/jobs-libwebrtc-uwp.yaml
-    parameters:
-      buildAgent: $(BuildAgent)
-      buildArch: 'x64'
-      buildConfig: 'Release'
-  - template: templates/jobs-libwebrtc-uwp.yaml
-    parameters:
-      buildAgent: $(BuildAgent)
-      buildArch: 'ARM'
       buildConfig: 'Release'
   # - template: templates/jobs-libwebrtc-uwp.yaml
   #   parameters:
   #     buildAgent: $(BuildAgent)
-  #     buildArch: 'ARM64'
+  #     buildArch: 'x86'
   #     buildConfig: 'Release'
+  # - template: templates/jobs-libwebrtc-uwp.yaml
+  #   parameters:
+  #     buildAgent: $(BuildAgent)
+  #     buildArch: 'x64'
+  #     buildConfig: 'Release'
+  # - template: templates/jobs-libwebrtc-uwp.yaml
+  #   parameters:
+  #     buildAgent: $(BuildAgent)
+  #     buildArch: 'ARM'
+  #     buildConfig: 'Release'
+  # # - template: templates/jobs-libwebrtc-uwp.yaml
+  # #   parameters:
+  # #     buildAgent: $(BuildAgent)
+  # #     buildArch: 'ARM64'
+  # #     buildConfig: 'Release'

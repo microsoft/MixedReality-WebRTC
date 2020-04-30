@@ -28,11 +28,6 @@ jobs:
   - checkout: self
     submodules: recursive
     clean: $(clean.git)
-  - powershell: |
-      Write-Host "Deleting gsutil from depot_tools before building"
-      Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/depot_tools/external_bin/gsutil" -Resolve) -Force -Recurse | Out-Null
-    env:
-      SDK_ROOT: 'external/webrtc-uwp-sdk'
 
   # Compute the PDB package variables
   - task: PowerShell@2
@@ -71,15 +66,38 @@ jobs:
       restoreDirectory: ../../../solutions/packages
     timeoutInMinutes: 10
 
+  # Prepare build
+  - task: PythonScript@0
+    displayName: 'Prepare build'
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a prepare -t webrtc -p winuwp --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper'
+      failOnStderr: false
+
+  # Clean-up unused files
+  - powershell: |
+      Write-Host "Deleting gsutil from depot_tools before building"
+      Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/depot_tools/external_bin/gsutil" -Resolve) -Force -Recurse | Out-Null
+    displayName: 'Clean-up unused files'
+    env:
+      SDK_ROOT: 'external/webrtc-uwp-sdk'
+
+  # Run component detection
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      #scanType: 'LogOnly'
+      #sourceScanPath: '$(sourcesRoot)'
+
   # Build webrtc.lib
-  - task: MSBuild@1
+  - task: PythonScript@0
     displayName: 'Build webrtc.lib ($(buildTriple))'
     inputs:
-      solution: '$(projectRoot)WebRtc.UWP.Native.Builder/WebRtc.UWP.Native.Builder.vcxproj'
-      msbuildVersion: '15.0'
-      msbuildArchitecture: x64
-      platform: ${{parameters.buildArch}}
-      configuration: ${{parameters.buildConfig}}
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a build -t webrtc -p winuwp --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper'
+      failOnStderr: false
     timeoutInMinutes: 120
 
   # Build the UWP wrapper
