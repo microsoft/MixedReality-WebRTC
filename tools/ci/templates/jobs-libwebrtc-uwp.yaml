@@ -82,18 +82,25 @@ jobs:
       failOnStderr: false
 
   # Clean-up unused files
-  - powershell: |
-      Write-Host "Deleting gsutil from depot_tools"
-      Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/depot_tools/external_bin/gsutil") -Force -Recurse -ErrorAction Ignore | Out-Null
-      Write-Host "Deleting chromium/third_party/protobuf"
-      Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/chromium/third_party/protobuf") -Force -Recurse -ErrorAction Ignore | Out-Null
-      Write-Host "Deleting chromium/tools/android"
-      Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/chromium/tools/android") -Force -Recurse -ErrorAction Ignore | Out-Null
-      Write-Host "Deleting chromium/tools/code_coverage"
-      Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/chromium/tools/code_coverage") -Force -Recurse -ErrorAction Ignore | Out-Null
+  - script: |
+      del /F /S /Q "depot_tools/external_bin/gsutil"
+      del /F /S /Q "chromium/third_party/protobuf"
+      del /F /S /Q "chromium/tools/android"
+      del /F /S /Q "chromium/tools/code_coverage"
+    workingDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform'
     displayName: 'Clean-up unused files'
-    env:
-      SDK_ROOT: 'external/webrtc-uwp-sdk'
+  # - powershell: |
+  #     Write-Host "Deleting gsutil from depot_tools"
+  #     Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/depot_tools/external_bin/gsutil") -Force -Recurse -ErrorAction Ignore | Out-Null
+  #     Write-Host "Deleting chromium/third_party/protobuf"
+  #     Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/chromium/third_party/protobuf") -Force -Recurse -ErrorAction Ignore | Out-Null
+  #     Write-Host "Deleting chromium/tools/android"
+  #     Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/chromium/tools/android") -Force -Recurse -ErrorAction Ignore | Out-Null
+  #     Write-Host "Deleting chromium/tools/code_coverage"
+  #     Remove-Item -Path $(Join-Path $env:SDK_ROOT "webrtc/xplatform/chromium/tools/code_coverage") -Force -Recurse -ErrorAction Ignore | Out-Null
+  #   displayName: 'Clean-up unused files'
+  #   env:
+  #     SDK_ROOT: 'external/webrtc-uwp-sdk'
 
   # Run component detection
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
