@@ -31,6 +31,7 @@ jobs:
   # Checkout
   - checkout: self
     submodules: recursive
+    clean: $(clean.git)
 
   # Compute the PDB package variables
   - task: PowerShell@2
