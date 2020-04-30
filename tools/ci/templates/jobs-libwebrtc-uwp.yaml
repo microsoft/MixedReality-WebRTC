@@ -24,6 +24,12 @@ jobs:
     projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
   steps:
 
+  # Install Python 2.7.17 and select as default
+  - template: 'steps-install-python2x.yaml'
+    parameters:
+      tempFolder: '$(Build.BinariesDirectory)\py27'
+      pythonVersion: '2.7.17'
+
   # Checkout
   - checkout: self
     submodules: recursive
