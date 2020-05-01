@@ -218,10 +218,27 @@ is_debug=$is_debug
 use_lld=false
 is_clang=false
 
+# Force-include mandatory components for clarity
+rtc_include_internal_audio_device=true
+rtc_include_builtin_audio_codecs=true
+rtc_include_builtin_video_codecs=true
+rtc_libvpx_build_vp9=true
+rtc_include_ilbc=true
+rtc_include_opus=true
+rtc_enable_sctp=true
+rtc_disable_logging=false
+rtc_disable_trace_events=false
+
+# Disable proprietary codecs (MP3,MP4,OpenH264,AAC,...)
+proprietary_codecs=false
+rtc_use_h264=false # OpenH264
+
 # Exclude unused modules to speed up build
 rtc_include_tests=false
 rtc_build_tools=false
 rtc_build_examples=false
+rtc_enable_protobuf=false
+rtc_enable_external_auth=false
 
 # Use WinRT video capturer for Windows Desktop and UWP
 rtc_win_video_capture_winrt=true
