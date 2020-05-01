@@ -1,10 +1,9 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See LICENSE in the project root for license information.
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
 # Map build* variables to script* variables
 #   build* variables are for MSVC and use uppercase : ARM(64), Debug|Release, Win32|UWP
 #   script* variables are for the Google Python scripts and use lowercase: arm(64), debug|release, win|winuwp
-# See https://github.com/webrtc-uwp/webrtc-scripts/blob/3f2eb87b1baa3f49c6341d144e0b3c3be11c78ae/defaults.py#L17
 
 param(
     [Parameter(Position=0)]
@@ -12,7 +11,7 @@ param(
     [string]$BuildPlatform,
 
     [Parameter(Position=1)]
-    [ValidateSet('x86','x64','ARM')]
+    [ValidateSet('x86','x64','ARM','ARM64')]
     [string]$BuildArch,
 
     [Parameter(Position=2)]
@@ -33,8 +32,8 @@ else {
     Write-Host "##vso[task.complete result=Failed;]Unknown build platform '$BuildPlatform'."
 }
 
-# buildArch = x86|x64|ARM
-# scriptArch = x86|x64|arm
+# buildArch = x86|x64|ARM|ARM64
+# scriptArch = x86|x64|arm|arm64
 Write-Host "buildArch = $BuildArch"
 if ($BuildArch -eq "x86") {
     Write-Host "##vso[task.setvariable variable=scriptArch; ]x86"
@@ -44,6 +43,9 @@ elseif ($BuildArch -eq "x64") {
 }
 elseif ($BuildArch -eq "ARM") {
     Write-Host "##vso[task.setvariable variable=scriptArch; ]arm"
+}
+elseif ($BuildArch -eq "ARM64") {
+    Write-Host "##vso[task.setvariable variable=scriptArch; ]arm64"
 }
 else {
     Write-Host "##vso[task.complete result=Failed; ]Unknown build architecture '$BuildArch'."
