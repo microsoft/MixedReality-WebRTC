@@ -73,7 +73,7 @@ jobs:
   - powershell: |
       if ("$env:BUILD_ARCH" -eq "x86") {
         $msbuildPlatform = "Win32"
-      } else {s
+      } else {
         $msbuildPlatform = $env:BUILD_ARCH
       }
       Write-Host "MSBuild platform = $msbuildPlatform"
