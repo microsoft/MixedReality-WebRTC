@@ -40,83 +40,83 @@ parameters:
   default: true
 
 jobs:
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: ${{parameters.buildAgent}}
-    buildPlatform: 'Win32'
-    buildArch: 'x86'
-    buildConfig: 'Debug'
-    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
-    runComponentDetection: ${{parameters.runComponentDetection}}
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: ${{parameters.buildAgent}}
-    buildPlatform: 'Win32'
-    buildArch: 'x86'
-    buildConfig: 'Release'
-    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
-    runComponentDetection: ${{parameters.runComponentDetection}}
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: ${{parameters.buildAgent}}
-    buildPlatform: 'Win32'
-    buildArch: 'x64'
-    buildConfig: 'Debug'
-    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
-    runComponentDetection: ${{parameters.runComponentDetection}}
+# - template: templates/jobs-cpp.yaml
+#   parameters:
+#     buildAgent: ${{parameters.buildAgent}}
+#     buildPlatform: 'Win32'
+#     buildArch: 'x86'
+#     buildConfig: 'Debug'
+#     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+#     runComponentDetection: ${{parameters.runComponentDetection}}
+# - template: templates/jobs-cpp.yaml
+#   parameters:
+#     buildAgent: ${{parameters.buildAgent}}
+#     buildPlatform: 'Win32'
+#     buildArch: 'x86'
+#     buildConfig: 'Release'
+#     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+#     runComponentDetection: ${{parameters.runComponentDetection}}
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
     buildPlatform: 'Win32'
     buildArch: 'x64'
-    buildConfig: 'Release'
-    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
-    runComponentDetection: ${{parameters.runComponentDetection}}
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: ${{parameters.buildAgent}}
-    buildPlatform: 'UWP'
-    buildArch: 'x86'
     buildConfig: 'Debug'
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: ${{parameters.buildAgent}}
-    buildPlatform: 'UWP'
-    buildArch: 'x86'
-    buildConfig: 'Release'
-    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
-    runComponentDetection: ${{parameters.runComponentDetection}}
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: ${{parameters.buildAgent}}
-    buildPlatform: 'UWP'
-    buildArch: 'x64'
-    buildConfig: 'Debug'
-    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
-    runComponentDetection: ${{parameters.runComponentDetection}}
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: ${{parameters.buildAgent}}
-    buildPlatform: 'UWP'
-    buildArch: 'x64'
-    buildConfig: 'Release'
-    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
-    runComponentDetection: ${{parameters.runComponentDetection}}
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: ${{parameters.buildAgent}}
-    buildPlatform: 'UWP'
-    buildArch: 'ARM'
-    buildConfig: 'Debug'
-    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
-    runComponentDetection: ${{parameters.runComponentDetection}}
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: ${{parameters.buildAgent}}
-    buildPlatform: 'UWP'
-    buildArch: 'ARM'
-    buildConfig: 'Release'
-    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
-    runComponentDetection: ${{parameters.runComponentDetection}}
+# - template: templates/jobs-cpp.yaml
+#   parameters:
+#     buildAgent: ${{parameters.buildAgent}}
+#     buildPlatform: 'Win32'
+#     buildArch: 'x64'
+#     buildConfig: 'Release'
+#     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+#     runComponentDetection: ${{parameters.runComponentDetection}}
+# - template: templates/jobs-cpp.yaml
+#   parameters:
+#     buildAgent: ${{parameters.buildAgent}}
+#     buildPlatform: 'UWP'
+#     buildArch: 'x86'
+#     buildConfig: 'Debug'
+#     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+#     runComponentDetection: ${{parameters.runComponentDetection}}
+# - template: templates/jobs-cpp.yaml
+#   parameters:
+#     buildAgent: ${{parameters.buildAgent}}
+#     buildPlatform: 'UWP'
+#     buildArch: 'x86'
+#     buildConfig: 'Release'
+#     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+#     runComponentDetection: ${{parameters.runComponentDetection}}
+# - template: templates/jobs-cpp.yaml
+#   parameters:
+#     buildAgent: ${{parameters.buildAgent}}
+#     buildPlatform: 'UWP'
+#     buildArch: 'x64'
+#     buildConfig: 'Debug'
+#     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+#     runComponentDetection: ${{parameters.runComponentDetection}}
+# - template: templates/jobs-cpp.yaml
+#   parameters:
+#     buildAgent: ${{parameters.buildAgent}}
+#     buildPlatform: 'UWP'
+#     buildArch: 'x64'
+#     buildConfig: 'Release'
+#     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+#     runComponentDetection: ${{parameters.runComponentDetection}}
+# - template: templates/jobs-cpp.yaml
+#   parameters:
+#     buildAgent: ${{parameters.buildAgent}}
+#     buildPlatform: 'UWP'
+#     buildArch: 'ARM'
+#     buildConfig: 'Debug'
+#     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+#     runComponentDetection: ${{parameters.runComponentDetection}}
+# - template: templates/jobs-cpp.yaml
+#   parameters:
+#     buildAgent: ${{parameters.buildAgent}}
+#     buildPlatform: 'UWP'
+#     buildArch: 'ARM'
+#     buildConfig: 'Release'
+#     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+#     runComponentDetection: ${{parameters.runComponentDetection}}
