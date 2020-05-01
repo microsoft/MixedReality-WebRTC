@@ -4,12 +4,52 @@
 # [TEMPLATE] Compile library mrwebrtc.dll
 
 parameters:
-  buildAgent: ''
-  buildPlatform: ''    # Win32|UWP
-  buildArch: ''        # x86|x64|ARM|ARM64
-  msbuildPlatform: ''  # Win32|x64|ARM|ARM64
-  buildConfig: ''      # Debug|Release
-  withTesting: true    # true|false
+# Build agent pool
+- name: buildAgent
+  displayName: 'Build Agent Pool'
+  type: string
+  default: ''
+# Restore PDBs of libwebrtc from Core build
+- name: restoreCorePdbs
+  displayName: 'Restore core PDBs'
+  type: boolean
+  default: true
+# Run Component Governance detection and submit results
+- name: runComponentDetection
+  displayName: 'Run component detection'
+  type: boolean
+  default: true
+# Build platform
+- name: buildPlatform
+  displayName: 'Build Platform'
+  type: string
+  default: ''
+  values:
+  - 'Win32'
+  - 'UWP'
+# Build architecture
+- name: buildArch
+  displayName: 'Build Architecture'
+  type: string
+  default: ''
+  values:
+  - 'x86'
+  - 'x64'
+  - 'ARM'
+  - 'ARM64'
+# Build configuration
+- name: buildConfig
+  displayName: 'Build Configuration'
+  type: string
+  default: ''
+  values:
+  - 'Debug'
+  - 'Release'
+# Do testing
+- name: withTesting
+  displayName: 'Enable testing'
+  type: boolean
+  default: true
 
 jobs:
 
@@ -28,6 +68,22 @@ jobs:
   - name: PackagesConfigFile
     value: '$(Build.SourcesDirectory)/tools/build/mrwebrtc/${{parameters.buildPlatform}}/packages.config'
   steps:
+
+  # Calculate MSBuild platform
+  - powershell: |
+      if ("$env:BUILD_ARCH" -eq "x86") {
+        $msbuildPlatform = "Win32"
+      } else {s
+        $msbuildPlatform = $env:BUILD_ARCH
+      }
+      Write-Host "MSBuild $(Platform) = $msbuildPlatform"
+      Write-Host "##vso[task.setvariable variable=msbuildPlatform;]$msbuildPlatform"
+    displayName: 'Compute MSBuild platform'
+    env:
+      BUILD_ARCH: ${{parameters.buildArch}}
+    timeoutInMinutes: 5
+
+  # Checkout MixedReality-WebRTC
   - checkout: 'self'
     submodules: 'recursive'
     fetchDepth: '1'
@@ -42,7 +98,7 @@ jobs:
     timeoutInMinutes: 5
 
   # Compute the PDB package variables
-  - ${{ if eq(variables['MRWebRTC_RestorePDBs'], 'true') }}:
+  - ${{ if eq(parameters.restoreCorePdbs, 'true') }}:
     - task: PowerShell@2
       displayName: 'Compute libwebrtc PDB package variables'
       inputs:
@@ -54,7 +110,7 @@ jobs:
       timeoutInMinutes: 5
 
   # Download the PDBs for libwebrtc
-  - ${{ if eq(variables['MRWebRTC_RestorePDBs'], 'true') }}:
+  - ${{ if eq(parameters.restoreCorePdbs, 'true') }}:
     - task: UniversalPackages@0
       displayName: 'Download libwebrtc PDBs'
       inputs:
@@ -66,7 +122,7 @@ jobs:
       timeoutInMinutes: 10
 
   # Move PDBs back into their original location for the linker to find them
-  - ${{ if eq(variables['MRWebRTC_RestorePDBs'], 'true') }}:
+  - ${{ if eq(parameters.restoreCorePdbs, 'true') }}:
     - task: PowerShell@2
       displayName: 'Move libwebrtc PDBs back in place'
       inputs:
@@ -85,7 +141,7 @@ jobs:
   # Generate custom packages.config to restore only the necessary packages for the current build triple.
   # This helps both with decreasing restore time and with minimizing disk space to avoid the 10GB limit.
   # This task sets $(PackagesConfigFile) to the filename of the generated 'packages.config' file.
-  - ${{ if eq(variables['MRWebRTC_RestorePDBs'], 'true') }}:
+  - ${{ if eq(parameters.restoreCorePdbs, 'true') }}:
     - task: PowerShell@2
       displayName: 'Generate packages.config for build triple'
       inputs:
@@ -141,7 +197,7 @@ jobs:
     displayName: 'Clean-up unused files'
 
   # Generate custom .vcxproj to import only the necessary packages for the current build triple
-  - ${{ if eq(variables['MRWebRTC_RestorePDBs'], 'true') }}:
+  - ${{ if eq(parameters.restoreCorePdbs, 'true') }}:
     - task: PowerShell@2
       displayName: 'Modify .vcxproj for build triple'
       inputs:
@@ -150,7 +206,7 @@ jobs:
         arguments: '-BuildConfig ${{parameters.buildConfig}} -BuildPlatform ${{parameters.buildPlatform}} -BuildArch ${{parameters.buildArch}} -ProjectFile "tools/build/mrwebrtc/${{parameters.buildPlatform}}/mrwebrtc-${{parameters.buildPlatform}}.vcxproj"'
 
   # Run component detection
-  - ${{ if eq(variables['MRWebRTC_RunComponentDetection'], 'true') }}:
+  - ${{ if eq(parameters.runComponentDetection, 'true') }}:
     - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
       displayName: 'Component Detection'
       timeoutInMinutes: 15
@@ -162,7 +218,7 @@ jobs:
       solution: 'tools/build/mrwebrtc/${{parameters.buildPlatform}}/mrwebrtc-${{parameters.buildPlatform}}.vcxproj'
       msbuildVersion: 15.0
       msbuildArchitecture: x64
-      platform: '${{parameters.msbuildPlatform}}'
+      platform: '$(msbuildPlatform)'
       configuration: '${{parameters.buildConfig}}'
     timeoutInMinutes: 20
 
@@ -210,7 +266,7 @@ jobs:
         solution: '$(Build.SourcesDirectory)/tools/build/mrwebrtc/win32/tests/mrwebrtc-win32-tests.vcxproj'
         msbuildVersion: '15.0'
         msbuildArchitecture: 'x64'
-        platform: '${{parameters.msbuildPlatform}}'
+        platform: '$(msbuildPlatform)'
         configuration: '${{parameters.buildConfig}}'
         msbuildArguments: '/p:DisableDeviceTests=1' # Disable tests requiring a webcam or microphone
       timeoutInMinutes: 15

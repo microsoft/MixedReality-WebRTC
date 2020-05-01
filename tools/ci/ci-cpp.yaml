@@ -22,74 +22,101 @@ pr: none
 # Give a unique name to the build each time it runs
 name: ci-cpp-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
+parameters:
+# Build agent pool
+- name: buildAgent
+  displayName: 'Build Agent Pool'
+  type: string
+  default: 'Hosted VS2017' # vs2017-win2016
+# Restore PDBs of libwebrtc from Core build
+- name: restoreCorePdbs
+  displayName: 'Restore core PDBs'
+  type: boolean
+  default: true
+# Run Component Governance detection and submit results
+- name: runComponentDetection
+  displayName: 'Run component detection'
+  type: boolean
+  default: true
+
 jobs:
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildAgent: ${{parameters.buildAgent}}
     buildPlatform: 'Win32'
     buildArch: 'x86'
-    msbuildPlatform: 'Win32'
     buildConfig: 'Debug'
+    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+    runComponentDetection: ${{parameters.runComponentDetection}}
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildAgent: ${{parameters.buildAgent}}
     buildPlatform: 'Win32'
     buildArch: 'x86'
-    msbuildPlatform: 'Win32'
     buildConfig: 'Release'
+    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+    runComponentDetection: ${{parameters.runComponentDetection}}
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildAgent: ${{parameters.buildAgent}}
     buildPlatform: 'Win32'
     buildArch: 'x64'
-    msbuildPlatform: 'x64'
     buildConfig: 'Debug'
+    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+    runComponentDetection: ${{parameters.runComponentDetection}}
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildAgent: ${{parameters.buildAgent}}
     buildPlatform: 'Win32'
     buildArch: 'x64'
-    msbuildPlatform: 'x64'
     buildConfig: 'Release'
+    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+    runComponentDetection: ${{parameters.runComponentDetection}}
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildAgent: ${{parameters.buildAgent}}
     buildPlatform: 'UWP'
     buildArch: 'x86'
-    msbuildPlatform: 'Win32'
     buildConfig: 'Debug'
+    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+    runComponentDetection: ${{parameters.runComponentDetection}}
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildAgent: ${{parameters.buildAgent}}
     buildPlatform: 'UWP'
     buildArch: 'x86'
-    msbuildPlatform: 'Win32'
     buildConfig: 'Release'
+    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+    runComponentDetection: ${{parameters.runComponentDetection}}
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildAgent: ${{parameters.buildAgent}}
     buildPlatform: 'UWP'
     buildArch: 'x64'
-    msbuildPlatform: 'x64'
     buildConfig: 'Debug'
+    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+    runComponentDetection: ${{parameters.runComponentDetection}}
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildAgent: ${{parameters.buildAgent}}
     buildPlatform: 'UWP'
     buildArch: 'x64'
-    msbuildPlatform: 'x64'
     buildConfig: 'Release'
+    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+    runComponentDetection: ${{parameters.runComponentDetection}}
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildAgent: ${{parameters.buildAgent}}
     buildPlatform: 'UWP'
     buildArch: 'ARM'
-    msbuildPlatform: 'ARM'
     buildConfig: 'Debug'
+    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+    runComponentDetection: ${{parameters.runComponentDetection}}
 - template: templates/jobs-cpp.yaml
   parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
+    buildAgent: ${{parameters.buildAgent}}
     buildPlatform: 'UWP'
     buildArch: 'ARM'
-    msbuildPlatform: 'ARM'
     buildConfig: 'Release'
+    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+    runComponentDetection: ${{parameters.runComponentDetection}}
