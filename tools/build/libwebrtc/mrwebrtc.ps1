@@ -122,8 +122,6 @@ function Install-GoogleRepository {
     # Delete sources not needed; this prevent security alerts on unused components,
     # and makes the overall checkout size smaller.
     Clear-PostCheckout -SourceFolder $libwebrtcFolder
-
-    # Remove depot_tools/external_bin/gsutil
     Remove-Item -Path $(Join-Path $externalFolder "depot_tools/external_bin/gsutil" -Resolve) -Force -Recurse | Out-Null
 
     # Apply patches
