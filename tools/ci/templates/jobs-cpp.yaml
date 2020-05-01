@@ -76,7 +76,7 @@ jobs:
       } else {s
         $msbuildPlatform = $env:BUILD_ARCH
       }
-      Write-Host "MSBuild $(Platform) = $msbuildPlatform"
+      Write-Host "MSBuild platform = $msbuildPlatform"
       Write-Host "##vso[task.setvariable variable=msbuildPlatform;]$msbuildPlatform"
     displayName: 'Compute MSBuild platform'
     env:
