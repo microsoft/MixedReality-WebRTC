@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 # Generate a custom packages.config to restore only the necessary Core
 # NuGet packages for the given build triple, to save on disk space
 

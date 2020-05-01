@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 # Modify the .vcxproj project file to only import the NuGet packages for
 # the current build triple, which are the only ones restored.
 
