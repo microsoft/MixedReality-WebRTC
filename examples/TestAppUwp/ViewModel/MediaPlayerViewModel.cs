@@ -31,6 +31,7 @@ namespace TestAppUwp
     public class VideoCaptureFormatViewModel
     {
         public VideoCaptureFormat Format;
+        public string FormatEncodingDisplayName;
     }
 
     public class MediaPlayerViewModel : NotifierBase
