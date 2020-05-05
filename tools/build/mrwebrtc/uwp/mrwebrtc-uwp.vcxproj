@@ -181,6 +181,7 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_audio_track.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_video_track.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\transceiver.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\toggle_audio_mixer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\pch.cpp">
@@ -213,6 +214,7 @@
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\tracked_object.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\utils.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\video_frame_observer.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\toggle_audio_mixer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\docs\design.md" />

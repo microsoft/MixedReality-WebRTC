@@ -116,19 +116,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
     /// <summary>
     /// Media line abstraction for a peer connection.
-    /// 
+    ///
     /// This container binds together a sender component (<see cref="MediaSender"/>) and/or a receiver component
     /// (<see cref="MediaReceiver"/>) on one side, with a transceiver on the other side. The media line is a
     /// declarative representation of this association, which is then turned into a binding by the implementation
     /// during an SDP negotiation. This forms the core of the algorithm allowing automatic transceiver pairing
     /// between the two peers based on the declaration of intent of the user.
-    /// 
+    ///
     /// Assigning Unity components to the <see cref="Sender"/> and <see cref="Receiver"/> fields serves
     /// as an indication of the user intent to send and/or receive media through the transceiver, and is
     /// used during the SDP exchange to derive the <see xref="WebRTC.Transceiver.Direction"/> to negotiate.
     /// After the SDP negotiation is completed, the <see cref="Transceiver"/> property refers to the transceiver
     /// associated with this media line, and which the sender and receiver will use.
-    /// 
+    ///
     /// Users typically interact with this class through the peer connection transceiver collection in the Unity
     /// inspector window, though direct manipulation via code is also possible.
     /// </summary>
@@ -218,10 +218,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Transceiver attached with this media line.
-        /// 
+        ///
         /// On the offering peer this changes during <see cref="PeerConnection.StartConnection"/>, while this is updated by
         /// <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/> when receiving an offer on the answering peer.
-        /// 
+        ///
         /// Because transceivers cannot be destroyed, once this property is assigned a non-<c>null</c> value it keeps that
         /// value until the peer connection owning the media line is closed.
         /// </summary>
@@ -284,7 +284,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             bool isReceiving = (transceiver.RemoteTrack != null);
             // Note the extra "isReceiving" check, which ensures that when the remote track was
             // just removed by OnUnpaired(RemoteTrack) from the TrackRemoved event then it is not
-            // immediately re-added by mistake. 
+            // immediately re-added by mistake.
             if (wantsRecv && isReceiving && !wasReceiving)
             {
                 // Transceiver started receiving, and user actually wants to receive
@@ -542,7 +542,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Note that the renegotiation needed event may be dispatched asynchronously, so it is
         /// discourages to toggle this field ON and OFF. Instead, the user should choose an
         /// approach (manual or automatic) and stick to it.
-        /// 
+        ///
         /// In particular, temporarily setting this to <c>false</c> during a batch of changes and
         /// setting it back to <c>true</c> right after the last change may or may not produce an
         /// automatic offer, depending on whether the negotiated event was dispatched while the
@@ -659,7 +659,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// This method must be called once before using the peer connection. If <see cref="AutoInitializeOnStart"/>
         /// is <c>true</c> then it is automatically called during <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
-        /// 
+        ///
         /// This method is asynchronous and completes its task when the initializing completed.
         /// On successful completion, it also trigger the <see cref="OnInitialized"/> event.
         /// Note however that this completion is free-threaded and complete immediately when the
@@ -669,7 +669,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// returns before <see cref="OnPostInitialize"/> executed. Therefore it is generally
         /// recommended to listen to the <see cref="OnInitialized"/> event, and ignore the returned
         /// <see xref="System.Threading.Tasks.Task"/> object.
-        /// 
+        ///
         /// If the peer connection is already initialized, this method returns immediately with
         /// a <see xref="System.Threading.Tasks.Task.CompletedTask"/> object. The caller can check
         /// that the <see cref="Peer"/> property is non-<c>null</c> to confirm that the connection
@@ -698,9 +698,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             /*
                 * Below is equivalent of this java code:
-                * PeerConnectionFactory.InitializationOptions.Builder builder = 
+                * PeerConnectionFactory.InitializationOptions.Builder builder =
                 *   PeerConnectionFactory.InitializationOptions.builder(UnityPlayer.currentActivity);
-                * PeerConnectionFactory.InitializationOptions options = 
+                * PeerConnectionFactory.InitializationOptions options =
                 *   builder.createInitializationOptions();
                 * PeerConnectionFactory.initialize(options);
                 */
@@ -735,11 +735,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Add a new media line of the given kind.
-        /// 
+        ///
         /// This method creates a media line, which expresses an intent from the user to get a transceiver.
         /// The actual <see xref="WebRTC.Transceiver"/> object creation is delayed until a session
         /// negotiation is completed.
-        /// 
+        ///
         /// Once the media line is created, the user can then assign its <see cref="MediaLine.Sender"/> and
         /// <see cref="MediaLine.Receiver"/> properties to express their intent to send and/or receive some media
         /// through the transceiver that will be associated with that media line once a session is negotiated.
@@ -762,12 +762,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Create a new connection offer, either for a first connection to the remote peer, or for
         /// renegotiating some new or removed transceivers.
-        /// 
+        ///
         /// This method submits an internal task to create an SDP offer message. Once the message is
         /// created, the implementation raises the <see xref="Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadytoSend"/>
         /// event to allow the user to send the message via the chosen signaling solution to the remote
         /// peer.
-        /// 
+        ///
         /// <div class="IMPORTANT alert alert-important">
         /// <h5>IMPORTANT</h5>
         /// <p>
@@ -860,7 +860,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         ///
         /// This must be called by the signaler when receiving a message. Once this operation
         /// has completed, it is safe to call <see xref="WebRTC.PeerConnection.CreateAnswer"/>.
-        /// 
+        ///
         /// <div class="IMPORTANT alert alert-important">
         /// <h5>IMPORTANT</h5>
         /// <p>
@@ -1074,11 +1074,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _nativePeer = new WebRTC.PeerConnection();
 
             // Register event handlers for remote tracks removed (media receivers).
-            // There is no point registering events for tracks added because when they
-            // are invoked the transceivers have not been paired yet, so there's not much
-            // we can do with those events.
+            // Note that handling of tracks added is done in HandleConnectionMessageAsync rather than
+            // in TrackAdded because when these are invoked the transceivers have not been
+            // paired yet, so there's not much we can do with those events.
             _nativePeer.AudioTrackRemoved += Peer_AudioTrackRemoved;
             _nativePeer.VideoTrackRemoved += Peer_VideoTrackRemoved;
+
+            // TODO uncomment when remote audio is played through AudioReceiver
+            //_nativePeer.AudioTrackAdded +=
+            //    (RemoteAudioTrack track) =>
+            //    {
+            //        // Tracks will be rendered by AudioReceivers, so avoid rendering them twice.
+            //        track.RenderToDevice(false);
+            //    };
         }
 
         /// <summary>
@@ -1125,7 +1133,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Internal handler to actually initialize the 
+        /// Internal handler to actually initialize the plugin.
         /// </summary>
         private Task InitializePluginAsync(CancellationToken token)
         {
