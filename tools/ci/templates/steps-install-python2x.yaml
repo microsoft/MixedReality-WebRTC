@@ -1,0 +1,69 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# [TEMPLATE] Steps to install Python 2.x on the build agent
+
+parameters:
+# Temporary folder where to download the Python 2.x NuGet package before moving
+# it to the agent's tools folder. This folder will be completely cleared.
+- name: 'tempFolder'
+  type: string
+  default: ''
+# Python version (e.g. 2.7.17)
+- name: 'pythonVersion'
+  type: string
+  default: ''
+
+steps:
+
+# Clean-up the temporary folder
+- powershell: 'Remove-Item "${{parameters.tempFolder}}\*" -Force -Recurse -ErrorAction Ignore'
+  displayName: 'Clean-up temp install folder'
+
+# Install Python from NuGet
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+  displayName: 'Install Python ${{parameters.pythonVersion}}'
+  inputs:
+    command: 'custom'
+    arguments: 'install python2 -Version ${{parameters.pythonVersion}} -OutputDirectory ${{parameters.tempFolder}}'
+
+# Move downloaded version to the agent's tools folder
+- powershell: |
+    Write-Host "Content of downloaded NuGet package ${{parameters.tempFolder}}:"
+    foreach ($f in $(Get-ChildItem -Path ${{parameters.tempFolder}} -Recurse)) {
+        Write-Host $f.FullName
+    }
+    Remove-Item "$(Agent.ToolsDirectory)\Python\${{parameters.pythonVersion}}\*" -Force -Recurse -ErrorAction Ignore
+    New-Item -Path "$(Agent.ToolsDirectory)\Python\${{parameters.pythonVersion}}" -ItemType 'Directory' -ErrorAction Ignore
+    Move-Item -Path "${{parameters.tempFolder}}\python2.${{parameters.pythonVersion}}\tools" -Destination "$(Agent.ToolsDirectory)\Python\${{parameters.pythonVersion}}"
+    Rename-Item -Path "$(Agent.ToolsDirectory)\Python\${{parameters.pythonVersion}}\tools" -NewName "x64"
+    Write-Host "Content of agent tools folder $(Agent.ToolsDirectory)\Python\${{parameters.pythonVersion}}:"
+    foreach ($f in $(Get-ChildItem -Path $(Agent.ToolsDirectory)\Python\${{parameters.pythonVersion}} -Recurse)) {
+        Write-Host $f.FullName
+    }
+  displayName: 'Move Python ${{parameters.pythonVersion}}'
+
+# Register the new tool with the agent
+- powershell: |
+    Write-Host "Creating '.complete' file for build tool registration..."
+    New-Item "$(Agent.ToolsDirectory)\Python\${{parameters.pythonVersion}}\x64.complete" -Force
+  displayName: 'Register Python ${{parameters.pythonVersion}} with build agent'
+
+# Select the new tool to be used by subsequent steps
+- task: UsePythonVersion@0
+  displayName: 'Use Python ${{parameters.pythonVersion}}'
+  inputs:
+    versionSpec: ${{parameters.pythonVersion}}
+
+# Print the current Python version for validation
+- task: PythonScript@0
+  displayName: 'Print Python version'
+  inputs:
+    scriptSource: inline
+    script: |
+      import sys;
+      print(sys.version_info);
+
+# Install pywin32 via pip
+- script: 'python -m pip install pywin32'
+  displayName: 'Install pywin32'

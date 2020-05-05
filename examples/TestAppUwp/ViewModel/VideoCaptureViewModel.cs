@@ -108,7 +108,8 @@ namespace TestAppUwp
                 {
                     // If the list of video profiles changed, select the first one automatically,
                     // and refresh the capture formats associated with it.
-                    _videoProfiles.SelectionChanged += () => {
+                    _videoProfiles.SelectionChanged += () =>
+                    {
                         _ = RefreshVideoCaptureFormatsAsync(VideoCaptureDevices.SelectedItem);
                     };
                     _videoProfiles.SelectFirstItemIfAny();
@@ -235,6 +236,16 @@ namespace TestAppUwp
             VideoProfiles.SelectFirstItemIfAny();
         }
 
+        public static string FourCCToString(uint fourcc)
+        {
+            byte[] str = new byte[4];
+            str[0] = (byte)(fourcc & 0xFF);
+            str[1] = (byte)((fourcc & 0xFF00) >> 8);
+            str[2] = (byte)((fourcc & 0xFF0000) >> 16);
+            str[3] = (byte)((fourcc & 0xFF000000) >> 24);
+            return System.Text.Encoding.ASCII.GetString(str);
+        }
+
         public async Task RefreshVideoCaptureFormatsAsync(VideoCaptureDeviceInfo item)
         {
             var formats = new CollectionViewModel<VideoCaptureFormatViewModel>();
@@ -249,6 +260,7 @@ namespace TestAppUwp
                         formatVM.Format.height = desc.Height;
                         formatVM.Format.framerate = desc.FrameRate;
                         //formatVM.Format.fourcc = desc.Subtype; // TODO: string => FOURCC
+                        formatVM.FormatEncodingDisplayName = desc.Subtype;
                         formats.Add(formatVM);
                     }
                 }
@@ -258,7 +270,11 @@ namespace TestAppUwp
                     List<VideoCaptureFormat> formatsList = await PeerConnection.GetVideoCaptureFormatsAsync(item.Id);
                     foreach (var format in formatsList)
                     {
-                        formats.Add(new VideoCaptureFormatViewModel { Format = format });
+                        formats.Add(new VideoCaptureFormatViewModel
+                        {
+                            Format = format,
+                            FormatEncodingDisplayName = FourCCToString(format.fourcc)
+                        });
                     }
                 }
             }

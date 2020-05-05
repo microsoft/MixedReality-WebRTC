@@ -21,7 +21,9 @@ class TestBase : public ::testing::Test {
 
 /// Helper callback accepting an Event object as parameter and calling |Set()|
 /// on it when invoked.
-void MRS_CALL SetEventOnCompleted(void* user_data);
+void MRS_CALL SetEventOnCompleted(void* user_data,
+                                  mrsResult result,
+                                  const char* error_message);
 
 constexpr const mrsSdpSemantic TestSemantics[] = {mrsSdpSemantic::kUnifiedPlan,
                                                   mrsSdpSemantic::kPlanB};

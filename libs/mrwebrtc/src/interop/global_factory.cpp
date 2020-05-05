@@ -8,6 +8,7 @@
 #include "interop/global_factory.h"
 #include "media/local_video_track.h"
 #include "peer_connection.h"
+#include "rtc_base/refcountedobject.h"
 #include "utils.h"
 
 #include <exception>
@@ -254,6 +255,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
 //  // Cache the peer connection factory
 //  peer_factory_ = impl_->peerConnectionFactory();
 //#else   // defined(WINUWP)
+  custom_audio_mixer_ = new rtc::RefCountedObject<ToggleAudioMixer>();
   network_thread_ = rtc::Thread::CreateWithSocketServer();
   RTC_CHECK(network_thread_.get());
   network_thread_->SetName("WebRTC network thread", network_thread_.get());
@@ -278,7 +280,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
       std::unique_ptr<webrtc::VideoDecoderFactory>(
           new webrtc::MultiplexDecoderFactory(
               absl::make_unique<webrtc::InternalDecoderFactory>())),
-      nullptr, nullptr);
+      custom_audio_mixer_, nullptr);
 //#endif  // defined(WINUWP)
   return (peer_factory_.get() != nullptr ? Result::kSuccess
                                          : Result::kUnknownError);
@@ -288,6 +290,8 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
   if (!peer_factory_) {
     return true;  // already shut down
   }
+
+  custom_audio_mixer_ = nullptr;
 
   // This is read under the init mutex lock so can be relaxed, as it cannot
   // decrease during that time. However we should test the value before it's
