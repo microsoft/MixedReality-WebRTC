@@ -56,7 +56,7 @@ mrsRemoteAudioTrackIsEnabled(mrsRemoteAudioTrackHandle track_handle) noexcept {
 }
 
 void MRS_CALL
-mrsRemoteAudioOutputToDevice(mrsRemoteAudioTrackHandle track_handle,
+mrsRemoteAudioTrackOutputToDevice(mrsRemoteAudioTrackHandle track_handle,
     bool output) noexcept {
   if (auto track = static_cast<RemoteAudioTrack*>(track_handle)) {
       track->OutputToDevice(output);

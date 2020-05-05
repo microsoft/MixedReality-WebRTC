@@ -52,7 +52,7 @@ mrsRemoteAudioTrackIsEnabled(mrsRemoteAudioTrackHandle track_handle) noexcept;
 ///
 /// NOTE: Changing the default behavior is not supported on UWP.
 MRS_API void MRS_CALL
-mrsRemoteAudioOutputToDevice(mrsRemoteAudioTrackHandle track_handle, bool output) noexcept;
+mrsRemoteAudioTrackOutputToDevice(mrsRemoteAudioTrackHandle track_handle, bool output) noexcept;
 
 /// Returns whether the track is output directly to the system audio device.
 MRS_API mrsBool MRS_CALL
