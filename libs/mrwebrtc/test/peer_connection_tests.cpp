@@ -33,14 +33,14 @@ TEST_P(PeerConnectionTests, LocalNoIce) {
     // Setup signaling
     Event ev_completed;
     SdpCallback sdp1_cb(pc1.handle(), [&pc2, &ev_completed](
-                                          const char* type,
+                                          mrsSdpMessageType type,
                                           const char* sdp_data) {
       Event ev;
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
                                       pc2.handle(), type, sdp_data,
                                       &TestUtils::SetEventOnCompleted, &ev));
       ev.Wait();
-      if (kOfferString == type) {
+      if (type == mrsSdpMessageType::kOffer) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc2.handle()));
       } else {
@@ -48,14 +48,14 @@ TEST_P(PeerConnectionTests, LocalNoIce) {
       }
     });
     SdpCallback sdp2_cb(pc2.handle(), [&pc1, &ev_completed](
-                                          const char* type,
+                                          mrsSdpMessageType type,
                                           const char* sdp_data) {
       Event ev;
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
                                       pc1.handle(), type, sdp_data,
                                       &TestUtils::SetEventOnCompleted, &ev));
       ev.Wait();
-      if (kOfferString == type) {
+      if (type == mrsSdpMessageType::kOffer) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc1.handle()));
       } else {

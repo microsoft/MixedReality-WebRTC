@@ -221,7 +221,8 @@ namespace NamedPipeSignaler
                     }
 
                     Console.WriteLine($"[<-] SDP message: {type} {sdp}");
-                    SdpMessageReceived?.Invoke(type, sdp);
+                    var message = new SdpMessage { Type = SdpMessage.StringToType(type), Content = sdp };
+                    SdpMessageReceived?.Invoke(message);
                 }
             }
             Console.WriteLine("Finished processing messages");
@@ -270,10 +271,11 @@ namespace NamedPipeSignaler
             SendMessage($"ice\n{sdpMid}\n{sdpMlineindex}\n{candidate}\n\n");
         }
 
-        private void PeerConnection_LocalSdpReadytoSend(string type, string sdp)
+        private void PeerConnection_LocalSdpReadytoSend(SdpMessage message)
         {
             // See ProcessIncomingMessages() for the message format
-            SendMessage($"sdp\n{type}\n{sdp}\n\n");
+            string typeStr = SdpMessage.TypeToString(message.Type);
+            SendMessage($"sdp\n{typeStr}\n{message.Content}\n\n");
         }
     }
 }

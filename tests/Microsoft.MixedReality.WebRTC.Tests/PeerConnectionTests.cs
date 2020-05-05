@@ -19,10 +19,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             var pc2 = new PeerConnection();
 
             var evExchangeCompleted = new ManualResetEventSlim(initialState: false);
-            pc1.LocalSdpReadytoSend += async (string type, string sdp) =>
+            pc1.LocalSdpReadytoSend += async (SdpMessage message) =>
             {
-                await pc2.SetRemoteDescriptionAsync(type, sdp);
-                if (type == "offer")
+                await pc2.SetRemoteDescriptionAsync(message);
+                if (message.Type == SdpMessageType.Offer)
                 {
                     pc2.CreateAnswer();
                 }
@@ -31,10 +31,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                     evExchangeCompleted.Set();
                 }
             };
-            pc2.LocalSdpReadytoSend += async (string type, string sdp) =>
+            pc2.LocalSdpReadytoSend += async (SdpMessage message) =>
             {
-                await pc1.SetRemoteDescriptionAsync(type, sdp);
-                if (type == "offer")
+                await pc1.SetRemoteDescriptionAsync(message);
+                if (message.Type == SdpMessageType.Offer)
                 {
                     pc1.CreateAnswer();
                 }
@@ -62,10 +62,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         protected async Task MakeICECall(PeerConnection pc1, PeerConnection pc2)
         {
             var evExchangeCompleted = new ManualResetEventSlim(initialState: false);
-            pc1.LocalSdpReadytoSend += async (string type, string sdp) =>
+            pc1.LocalSdpReadytoSend += async (SdpMessage message) =>
             {
-                await pc2.SetRemoteDescriptionAsync(type, sdp);
-                if (type == "offer")
+                await pc2.SetRemoteDescriptionAsync(message);
+                if (message.Type == SdpMessageType.Offer)
                 {
                     pc2.CreateAnswer();
                 }
@@ -74,10 +74,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                     evExchangeCompleted.Set();
                 }
             };
-            pc2.LocalSdpReadytoSend += async (string type, string sdp) =>
+            pc2.LocalSdpReadytoSend += async (SdpMessage message) =>
             {
-                await pc1.SetRemoteDescriptionAsync(type, sdp);
-                if (type == "offer")
+                await pc1.SetRemoteDescriptionAsync(message);
+                if (message.Type == SdpMessageType.Offer)
                 {
                     pc1.CreateAnswer();
                 }
@@ -178,9 +178,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             {
                 await pc.InitializeAsync();
                 // Invalid arguments; SRD not even enqueued, fails immediately while validating arguments
-                Assert.ThrowsAsync<ArgumentException>(async () => await pc.SetRemoteDescriptionAsync(null, null));
-                Assert.ThrowsAsync<ArgumentException>(async () => await pc.SetRemoteDescriptionAsync("offer", null));
-                Assert.ThrowsAsync<ArgumentException>(async () => await pc.SetRemoteDescriptionAsync(null, "v=0"));
+                var message = new SdpMessage { Type = SdpMessageType.Offer, Content = null };
+                Assert.ThrowsAsync<ArgumentException>(async () => await pc.SetRemoteDescriptionAsync(message));
+                message.Content = "";
+                Assert.ThrowsAsync<ArgumentException>(async () => await pc.SetRemoteDescriptionAsync(message));
             }
         }
 
@@ -203,7 +204,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             {
                 await pc.InitializeAsync();
                 // Set answer without offer; SRD task enqueued, but fails when executing
-                Assert.CatchAsync<InvalidOperationException>(async () => await pc.SetRemoteDescriptionAsync("answer", kDummyMessage));
+                var message = new SdpMessage { Type = SdpMessageType.Answer, Content = kDummyMessage };
+                Assert.CatchAsync<InvalidOperationException>(async () => await pc.SetRemoteDescriptionAsync(message));
             }
         }
     }

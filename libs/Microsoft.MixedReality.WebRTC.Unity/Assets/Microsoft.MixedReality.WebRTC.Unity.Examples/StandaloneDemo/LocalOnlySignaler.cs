@@ -86,21 +86,21 @@ public class LocalOnlySignaler : MonoBehaviour
         Peer2.Peer.IceCandidateReadytoSend += Peer2_IceCandidateReadytoSend;
     }
 
-    private async void Peer1_LocalSdpReadytoSend(string type, string sdp)
+    private async void Peer1_LocalSdpReadytoSend(Microsoft.MixedReality.WebRTC.SdpMessage message)
     {
-        await Peer2.HandleConnectionMessageAsync(type, sdp);
+        await Peer2.HandleConnectionMessageAsync(message);
         _remoteApplied2.Set();
-        if (type == "offer")
+        if (message.Type == Microsoft.MixedReality.WebRTC.SdpMessageType.Offer)
         {
             Peer2.Peer.CreateAnswer();
         }
     }
 
-    private async void Peer2_LocalSdpReadytoSend(string type, string sdp)
+    private async void Peer2_LocalSdpReadytoSend(Microsoft.MixedReality.WebRTC.SdpMessage message)
     {
-        await Peer1.HandleConnectionMessageAsync(type, sdp);
+        await Peer1.HandleConnectionMessageAsync(message);
         _remoteApplied1.Set();
-        if (type == "offer")
+        if (message.Type == Microsoft.MixedReality.WebRTC.SdpMessageType.Offer)
         {
             Peer1.Peer.CreateAnswer();
         }

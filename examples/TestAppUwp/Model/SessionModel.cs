@@ -592,24 +592,19 @@ namespace TestAppUwp
             //});
         }
 
-        private void OnLocalSdpReadyToSend(string type, string sdp)
+        private void OnLocalSdpReadyToSend(SdpMessage message)
         {
-            Logger.Log($"Local {type} ready to be sent to remote peer.");
-            if (type == "offer")
+            Logger.Log($"Local {message.Type} ready to be sent to remote peer.");
+            if (message.Type == SdpMessageType.Offer)
             {
                 NotifyLocalOfferApplied();
             }
-            else if (type == "answer")
+            if (message.Type == SdpMessageType.Answer)
             {
                 NotifyLocalAnswerApplied();
             }
-            var message = new NodeDssSignaler.Message
-            {
-                MessageType = NodeDssSignaler.Message.WireMessageTypeFromString(type),
-                Data = sdp,
-                IceDataSeparator = "|"
-            };
-            NodeDssSignaler.SendMessageAsync(message);
+            var dssMessage = NodeDssSignaler.Message.FromSdpMessage(message);
+            NodeDssSignaler.SendMessageAsync(dssMessage);
             //RunOnMainThread(() => negotiationStatusText.Text = (type == "offer" ? "Sending local offer" : "Idle (answer sent)"));
         }
 
@@ -703,8 +698,8 @@ namespace TestAppUwp
             // This slightly deviates from the WebRTC standard which says that the
             // HaveRemoteOffer state is after the remote offer was applied, not before.
             ExchangeNegotiationState(NegotiationState.Stable, NegotiationState.HaveRemoteOffer);
-
-            await _peerConnection.SetRemoteDescriptionAsync("offer", content);
+            var message = new SdpMessage { Type = SdpMessageType.Offer, Content = content };
+            await _peerConnection.SetRemoteDescriptionAsync(message);
         }
 
         /// <summary>
@@ -713,7 +708,8 @@ namespace TestAppUwp
         /// <param name="content">The SDP answer message content.</param>
         public async Task ApplyRemoteAnswerAsync(string content)
         {
-            await _peerConnection.SetRemoteDescriptionAsync("answer", content);
+            var message = new SdpMessage { Type = SdpMessageType.Answer, Content = content };
+            await _peerConnection.SetRemoteDescriptionAsync(message);
 
             ExchangeNegotiationState(NegotiationState.HaveLocalOffer, NegotiationState.Stable);
         }

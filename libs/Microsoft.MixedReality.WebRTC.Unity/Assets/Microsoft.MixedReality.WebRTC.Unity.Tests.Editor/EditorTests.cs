@@ -57,18 +57,18 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                     await pc2.InitializeAsync();
 
                     // Prepare SDP event handlers
-                    pc1.LocalSdpReadytoSend += async (string type, string sdp) =>
+                    pc1.LocalSdpReadytoSend += async (SdpMessage message) =>
                     {
-                        await pc2.SetRemoteDescriptionAsync(type, sdp);
-                        if (type == "offer")
+                        await pc2.SetRemoteDescriptionAsync(message);
+                        if (message.Type == SdpMessageType.Offer)
                         {
                             pc2.CreateAnswer();
                         }
                     };
-                    pc2.LocalSdpReadytoSend += async (string type, string sdp) =>
+                    pc2.LocalSdpReadytoSend += async (SdpMessage message) =>
                     {
-                        await pc1.SetRemoteDescriptionAsync(type, sdp);
-                        if (type == "offer")
+                        await pc1.SetRemoteDescriptionAsync(message);
+                        if (message.Type == SdpMessageType.Offer)
                         {
                             pc1.CreateAnswer();
                         }

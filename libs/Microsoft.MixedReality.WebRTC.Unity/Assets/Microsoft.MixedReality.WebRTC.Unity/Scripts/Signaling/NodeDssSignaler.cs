@@ -270,7 +270,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                     case NodeDssMessage.Type.Offer:
                         // Apply the offer coming from the remote peer to the local peer
-                        PeerConnection.HandleConnectionMessageAsync("offer", msg.Data).ContinueWith(_ =>
+                        var sdpOffer = new WebRTC.SdpMessage { Type = SdpMessageType.Offer, Content = msg.Data };
+                        PeerConnection.HandleConnectionMessageAsync(sdpOffer).ContinueWith(_ =>
                         {
                             // If the remote description was successfully applied then immediately send
                             // back an answer to the remote peer to acccept the offer.
@@ -280,7 +281,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
                     case NodeDssMessage.Type.Answer:
                         // No need to wait for completion; there is nothing interesting to do after it.
-                        _ = PeerConnection.HandleConnectionMessageAsync("answer", msg.Data);
+                        var sdpAnswer = new WebRTC.SdpMessage { Type = SdpMessageType.Answer, Content = msg.Data };
+                        _ = PeerConnection.HandleConnectionMessageAsync(sdpAnswer);
                         break;
 
                     case NodeDssMessage.Type.Ice:
