@@ -47,7 +47,7 @@
                     <Run> @ </Run>
                     <Run Text="{x:Bind Format.framerate}" />
                     <Run> FPS (</Run>
-                    <Run Text="{x:Bind Format.fourcc}" />
+                    <Run Text="{x:Bind FormatEncodingDisplayName}" />
                     <Run>)</Run>
                 </TextBlock>
             </StackPanel>

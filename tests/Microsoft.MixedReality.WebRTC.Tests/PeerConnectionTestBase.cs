@@ -124,7 +124,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         }
 
         [TearDown]
-        public void TearDownConnectin()
+        public void TearDownConnection()
         {
             // Unregister all callbacks
             pc1_.LocalSdpReadytoSend -= OnLocalSdpReady1;

@@ -183,13 +183,20 @@ class PeerConnection : public TrackedObject,
                        const int sdp_mline_index,
                        const char* candidate) noexcept;
 
+  /// Callback invoked when |SetRemoteDescriptionAsync()| finished applying a
+  /// remote description, successfully or not. The first parameter is the result
+  /// of the operation, and the second one contains the error message if the
+  /// description was not successfully applied.
+  using RemoteDescriptionAppliedCallback = Callback<mrsResult, const char*>;
+
   /// Notify the WebRTC engine that an SDP message has been received from the
   /// remote peer. The parameters correspond to the SDP message data provided by
   /// the |LocalSdpReadytoSendCallback|, after being transmitted to the
   /// other peer.
-  bool SetRemoteDescriptionAsync(const char* type,
-                                 const char* sdp,
-                                 Callback<> callback) noexcept;
+  bool SetRemoteDescriptionAsync(
+      const char* type,
+      const char* sdp,
+      RemoteDescriptionAppliedCallback callback) noexcept;
 
   //
   // Connection
