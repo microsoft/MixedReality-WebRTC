@@ -2450,6 +2450,32 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.Enabled
   nameWithType: RemoteAudioTrack.Enabled
+- uid: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.IsOutputToDevice
+  name: IsOutputToDevice()
+  href: api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_IsOutputToDevice
+  commentId: M:Microsoft.MixedReality.WebRTC.RemoteAudioTrack.IsOutputToDevice
+  fullName: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.IsOutputToDevice()
+  nameWithType: RemoteAudioTrack.IsOutputToDevice()
+- uid: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.IsOutputToDevice*
+  name: IsOutputToDevice
+  href: api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_IsOutputToDevice_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.RemoteAudioTrack.IsOutputToDevice
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.IsOutputToDevice
+  nameWithType: RemoteAudioTrack.IsOutputToDevice
+- uid: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.OutputToDevice(System.Boolean)
+  name: OutputToDevice(Boolean)
+  href: api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_OutputToDevice_System_Boolean_
+  commentId: M:Microsoft.MixedReality.WebRTC.RemoteAudioTrack.OutputToDevice(System.Boolean)
+  fullName: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.OutputToDevice(System.Boolean)
+  nameWithType: RemoteAudioTrack.OutputToDevice(Boolean)
+- uid: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.OutputToDevice*
+  name: OutputToDevice
+  href: api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_OutputToDevice_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.RemoteAudioTrack.OutputToDevice
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.OutputToDevice
+  nameWithType: RemoteAudioTrack.OutputToDevice
 - uid: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.ToString
   name: ToString()
   href: api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_ToString
