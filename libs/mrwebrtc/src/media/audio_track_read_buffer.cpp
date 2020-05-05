@@ -24,14 +24,15 @@ void AudioTrackReadBuffer::audioFrameCallback(const void* audio_data,
     frames_.pop_front();
   }
   // add the new frame
-  auto& frame = frames_.emplace_back();
+  frames_.emplace_back();
+  auto& frame = frames_.back();
   frame.bits_per_sample = bits_per_sample;
   frame.sample_rate = sample_rate;
   frame.number_of_channels = number_of_channels;
   frame.number_of_frames = number_of_frames;
   size_t size =
       (size_t)(bits_per_sample / 8) * number_of_channels * number_of_frames;
-  auto src_bytes = static_cast<const std::byte*>(audio_data);
+  auto src_bytes = static_cast<const std::uint8_t*>(audio_data);
   frame.audio_data.insert(frame.audio_data.begin(), src_bytes,
                           src_bytes + size);
 }

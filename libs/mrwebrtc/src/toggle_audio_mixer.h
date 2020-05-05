@@ -3,7 +3,9 @@
 
 #pragma once
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// Can mix selected audio sources only.
 class ToggleAudioMixer : public webrtc::AudioMixer {
@@ -32,4 +34,6 @@ class ToggleAudioMixer : public webrtc::AudioMixer {
   std::map<int, KnownSource> source_from_id_;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
