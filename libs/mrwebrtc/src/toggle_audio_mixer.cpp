@@ -41,8 +41,7 @@ bool ToggleAudioMixer::AddSource(Source* audio_source) {
 void ToggleAudioMixer::TryAddToBaseImpl(KnownSource& known_source) {
   bool added_succesfully = base_impl_->AddSource(known_source.source);
   if (!added_succesfully) {
-    RTC_LOG_F(LS_ERROR) << "Cannot mix source "
-                          << known_source.source->Ssrc();
+    RTC_LOG_F(LS_ERROR) << "Cannot mix source " << known_source.source->Ssrc();
     known_source.is_output = false;
   }
 }
