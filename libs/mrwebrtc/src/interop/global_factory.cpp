@@ -8,7 +8,6 @@
 #include "interop/global_factory.h"
 #include "media/local_video_track.h"
 #include "peer_connection.h"
-#include "rtc_base/refcountedobject.h"
 #include "utils.h"
 
 #include <exception>
