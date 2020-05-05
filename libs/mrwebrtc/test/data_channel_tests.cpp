@@ -84,20 +84,14 @@ TEST_P(DataChannelTests, InBand) {
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc1.handle()));
     }
   });
-  IceCallback ice1_cb(
-      pc1.handle(),
-      [&pc2](const char* candidate, int sdpMlineindex, const char* sdpMid) {
-        ASSERT_EQ(Result::kSuccess,
-                  mrsPeerConnectionAddIceCandidate(pc2.handle(), sdpMid,
-                                                   sdpMlineindex, candidate));
-      });
-  IceCallback ice2_cb(
-      pc2.handle(),
-      [&pc1](const char* candidate, int sdpMlineindex, const char* sdpMid) {
-        ASSERT_EQ(Result::kSuccess,
-                  mrsPeerConnectionAddIceCandidate(pc1.handle(), sdpMid,
-                                                   sdpMlineindex, candidate));
-      });
+  IceCallback ice1_cb(pc1.handle(), [&pc2](const mrsIceCandidate* candidate) {
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionAddIceCandidate(pc2.handle(), candidate));
+  });
+  IceCallback ice2_cb(pc2.handle(), [&pc1](const mrsIceCandidate* candidate) {
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionAddIceCandidate(pc1.handle(), candidate));
+  });
 
   // Add dummy out-of-band data channel to force SCTP negotiating, otherwise
   // further data channel opening after connecting will fail.

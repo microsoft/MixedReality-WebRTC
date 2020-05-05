@@ -74,10 +74,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                         }
 
                     };
-                    pc1.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, string sdpMid)
-                        => pc2.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
-                    pc2.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, string sdpMid)
-                        => pc1.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+                    pc1.IceCandidateReadytoSend += (IceCandidate candidate) => pc2.AddIceCandidate(candidate);
+                    pc2.IceCandidateReadytoSend += (IceCandidate candidate) => pc1.AddIceCandidate(candidate);
 
                     // Connect
                     var conn1 = new ManualResetEventSlim(initialState: false);

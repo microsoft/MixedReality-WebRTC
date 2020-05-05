@@ -599,7 +599,7 @@ void MRS_CALL mrsPeerConnectionRegisterIceCandidateReadytoSendCallback(
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterIceCandidateReadytoSendCallback(
-        Callback<const char*, int, const char*>{callback, user_data});
+        Callback<const mrsIceCandidate*>{callback, user_data});
   }
 }
 
@@ -846,15 +846,21 @@ mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
 
 mrsResult MRS_CALL
 mrsPeerConnectionAddIceCandidate(mrsPeerConnectionHandle peer_handle,
-                                 const char* sdp,
-                                 const int sdp_mline_index,
-                                 const char* sdp_mid) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
-    return (peer->AddIceCandidate(sdp, sdp_mline_index, sdp_mid)
-                ? Result::kSuccess
-                : Result::kUnknownError);
+                                 const mrsIceCandidate* candidate) noexcept {
+  if (!candidate || IsStringNullOrEmpty(candidate->sdp_mid) ||
+      IsStringNullOrEmpty(candidate->content) ||
+      (candidate->sdp_mline_index < 0)) {
+    return mrsResult::kInvalidParameter;
   }
-  return Result::kInvalidNativeHandle;
+  auto const peer = static_cast<PeerConnection*>(peer_handle);
+  if (!peer) {
+    return Result::kInvalidNativeHandle;
+  }
+  Error result = peer->AddIceCandidate(*candidate);
+  if (!result.ok()) {
+    RTC_LOG(LS_ERROR) << result.message();
+  }
+  return result.result();
 }
 
 mrsResult MRS_CALL

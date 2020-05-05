@@ -190,10 +190,10 @@ class SdpCallback : public InteropCallback<mrsSdpMessageType, const char*> {
 };
 
 // OnIceCandidateReadyToSend
-class IceCallback : public InteropCallback<const char*, int, const char*> {
+class IceCallback : public InteropCallback<const mrsIceCandidate*> {
  public:
-  using Base = InteropCallback<const char*, int, const char*>;
-  using callback_type = void(const char*, int, const char*);
+  using Base = InteropCallback<const mrsIceCandidate*>;
+  using callback_type = void(const mrsIceCandidate*);
   IceCallback(mrsPeerConnectionHandle pc) : pc_(pc) {}
   IceCallback(mrsPeerConnectionHandle pc, std::function<callback_type> func)
       : Base(std::move(func)), pc_(pc) {
@@ -306,17 +306,13 @@ class LocalPeerPairRaii {
         exchange_completed_.Set();
       }
     };
-    ice1_cb_ = [this](const char* candidate, int sdpMlineindex,
-                      const char* sdpMid) {
+    ice1_cb_ = [this](const mrsIceCandidate* candidate) {
       ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionAddIceCandidate(pc2_.handle(), sdpMid,
-                                                 sdpMlineindex, candidate));
+                mrsPeerConnectionAddIceCandidate(pc2_.handle(), candidate));
     };
-    ice2_cb_ = [this](const char* candidate, int sdpMlineindex,
-                      const char* sdpMid) {
+    ice2_cb_ = [this](const mrsIceCandidate* candidate) {
       ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionAddIceCandidate(pc1_.handle(), sdpMid,
-                                                 sdpMlineindex, candidate));
+                mrsPeerConnectionAddIceCandidate(pc1_.handle(), candidate));
     };
   }
 

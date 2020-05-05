@@ -202,7 +202,13 @@ namespace NamedPipeSignaler
                     }
 
                     Console.WriteLine($"[<-] ICE candidate: {sdpMid} {sdpMlineindex} {candidate}");
-                    IceCandidateReceived?.Invoke(sdpMid, sdpMlineindex, candidate);
+                    var iceCandidate = new IceCandidate
+                    {
+                        SdpMid = sdpMid,
+                        SdpMlineIndex = sdpMlineindex,
+                        Content = candidate
+                    };
+                    IceCandidateReceived?.Invoke(iceCandidate);
                 }
                 else if (line == "sdp")
                 {
@@ -265,10 +271,10 @@ namespace NamedPipeSignaler
             }
         }
 
-        private void PeerConnection_IceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
+        private void PeerConnection_IceCandidateReadytoSend(IceCandidate candidate)
         {
             // See ProcessIncomingMessages() for the message format
-            SendMessage($"ice\n{sdpMid}\n{sdpMlineindex}\n{candidate}\n\n");
+            SendMessage($"ice\n{candidate.SdpMid}\n{candidate.SdpMlineIndex}\n{candidate.Content}\n\n");
         }
 
         private void PeerConnection_LocalSdpReadytoSend(SdpMessage message)

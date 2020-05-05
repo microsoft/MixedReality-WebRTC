@@ -527,6 +527,28 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
+    /// ICE candidate to send to a remote peer or received from it.
+    /// </summary>
+    public class IceCandidate
+    {
+        /// <summary>
+        /// Media ID (m=) of the candidate.
+        /// </summary>
+        public string SdpMid;
+
+        /// <summary>
+        /// Index of the media line associated with the candidate.
+        /// </summary>
+        public int SdpMlineIndex;
+
+        /// <summary>
+        /// Candidate raw content.
+        /// </summary>
+        public string Content;
+
+    }
+
+    /// <summary>
     /// The WebRTC peer connection object is the entry point to using WebRTC.
     /// </summary>
     public class PeerConnection : IDisposable
@@ -584,10 +606,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Delegate for the <see cref="IceCandidateReadytoSend"/> event.
         /// </summary>
-        /// <param name="candidate">Raw SDP message describing the ICE candidate.</param>
-        /// <param name="sdpMlineindex">Index of the m= line.</param>
-        /// <param name="sdpMid">Media identifier.</param>
-        public delegate void IceCandidateReadytoSendDelegate(string candidate, int sdpMlineindex, string sdpMid);
+        /// <param name="candidate">The ICE candidate to send.</param>
+        public delegate void IceCandidateReadytoSendDelegate(IceCandidate candidate);
 
         /// <summary>
         /// Delegate for the <see cref="IceStateChanged"/> event.
@@ -1458,15 +1478,19 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Inform the WebRTC peer connection of a newly received ICE candidate.
         /// </summary>
-        /// <param name="sdpMid"></param>
-        /// <param name="sdpMlineindex"></param>
-        /// <param name="candidate"></param>
+        /// <param name="candidate">The ICE candidate received from the remote peer.</param>
         /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
-        public void AddIceCandidate(string sdpMid, int sdpMlineindex, string candidate)
+        public void AddIceCandidate(IceCandidate candidate)
         {
-            MainEventSource.Log.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+            MainEventSource.Log.AddIceCandidate(candidate.SdpMid, candidate.SdpMlineIndex, candidate.Content);
             ThrowIfConnectionNotOpen();
-            PeerConnectionInterop.PeerConnection_AddIceCandidate(_nativePeerhandle, sdpMid, sdpMlineindex, candidate);
+            var marshalCandidate = new PeerConnectionInterop.IceCandidate
+            {
+                SdpMid = candidate.SdpMid,
+                SdpMlineIndex = candidate.SdpMlineIndex,
+                Content = candidate.Content
+            };
+            PeerConnectionInterop.PeerConnection_AddIceCandidate(_nativePeerhandle, in marshalCandidate);
         }
 
         /// <summary>
@@ -2224,10 +2248,16 @@ namespace Microsoft.MixedReality.WebRTC
             LocalSdpReadytoSend?.Invoke(message);
         }
 
-        internal void OnIceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
+        internal void OnIceCandidateReadytoSend(in PeerConnectionInterop.IceCandidate candidate)
         {
-            MainEventSource.Log.IceCandidateReady(sdpMid, sdpMlineindex, candidate);
-            IceCandidateReadytoSend?.Invoke(candidate, sdpMlineindex, sdpMid);
+            MainEventSource.Log.IceCandidateReady(candidate.SdpMid, candidate.SdpMlineIndex, candidate.Content);
+            var iceCandidate = new IceCandidate
+            {
+                SdpMid = candidate.SdpMid,
+                SdpMlineIndex = candidate.SdpMlineIndex,
+                Content = candidate.Content
+            };
+            IceCandidateReadytoSend?.Invoke(iceCandidate);
         }
 
         internal void OnIceStateChanged(IceConnectionState newState)

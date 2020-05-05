@@ -74,8 +74,8 @@ namespace TestNetCoreConsole
                         pc.CreateAnswer();
                     }
                 };
-                signaler.IceCandidateReceived += (string sdpMid, int sdpMlineindex, string candidate) => {
-                    pc.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+                signaler.IceCandidateReceived += (IceCandidate candidate) => {
+                    pc.AddIceCandidate(candidate);
                 };
                 await signaler.StartAsync();
 

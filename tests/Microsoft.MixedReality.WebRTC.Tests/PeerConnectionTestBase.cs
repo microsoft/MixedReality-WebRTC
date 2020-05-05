@@ -289,14 +289,14 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             }
         }
 
-        private void OnIceCandidateReadytoSend1(string candidate, int sdpMlineindex, string sdpMid)
+        private void OnIceCandidateReadytoSend1(IceCandidate candidate)
         {
-            pc2_.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+            pc2_.AddIceCandidate(candidate);
         }
 
-        private void OnIceCandidateReadytoSend2(string candidate, int sdpMlineindex, string sdpMid)
+        private void OnIceCandidateReadytoSend2(IceCandidate candidate)
         {
-            pc1_.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+            pc1_.AddIceCandidate(candidate);
         }
 
         private void OnRenegotiationNeeded1()

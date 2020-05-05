@@ -110,13 +110,7 @@ class PeerConnection : public TrackedObject,
 
   /// Callback invoked when a local ICE candidate message is ready to be sent to
   /// the remote peer via the signalling solution.
-  ///
-  /// The callback parameters are:
-  /// - The null-terminated ICE message content.
-  /// - The mline index.
-  /// - The MID string value.
-  using IceCandidateReadytoSendCallback =
-      Callback<const char*, int, const char*>;
+  using IceCandidateReadytoSendCallback = Callback<const mrsIceCandidate*>;
 
   /// Register a custom |IceCandidateReadytoSendCallback| invoked when a local
   /// ICE candidate has been generated and is ready to be sent. Users MUST
@@ -179,9 +173,7 @@ class PeerConnection : public TrackedObject,
   /// remote peer. The parameters correspond to the SDP message data provided by
   /// the |IceCandidateReadytoSendCallback|, after being transmitted to the
   /// other peer.
-  bool AddIceCandidate(const char* sdp_mid,
-                       const int sdp_mline_index,
-                       const char* candidate) noexcept;
+  Error AddIceCandidate(const mrsIceCandidate& candidate) noexcept;
 
   /// Callback invoked when |SetRemoteDescriptionAsync()| finished applying a
   /// remote description, successfully or not. The first parameter is the result

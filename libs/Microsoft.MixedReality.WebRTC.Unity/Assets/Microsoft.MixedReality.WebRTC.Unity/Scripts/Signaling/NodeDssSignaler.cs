@@ -57,6 +57,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private class NodeDssMessage
         {
             /// <summary>
+            /// Separator for ICE messages.
+            /// </summary>
+            public const string IceSeparatorChar = "|";
+
+            /// <summary>
             /// Possible message types as-serialized on the wire to <c>node-dss</c>.
             /// </summary>
             public enum Type
@@ -100,32 +105,44 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 throw new ArgumentException($"Unkown signaler message type '{stringType}'", "stringType");
             }
 
-            public static Type MessageTypeFromSignalerMessageType(Message.MessageType type)
+            public static Type MessageTypeFromSdpMessageType(SdpMessageType type)
             {
                 switch (type)
                 {
-                case Message.MessageType.Offer: return Type.Offer;
-                case Message.MessageType.Answer: return Type.Answer;
-                case Message.MessageType.Ice: return Type.Ice;
+                case SdpMessageType.Offer: return Type.Offer;
+                case SdpMessageType.Answer: return Type.Answer;
                 default: return Type.Unknown;
                 }
             }
 
-            public NodeDssMessage(Message message)
+            public IceCandidate ToIceCandidate()
             {
-                MessageType = MessageTypeFromSignalerMessageType(message.Type);
-                if (MessageType == Type.Ice)
+                if (MessageType != Type.Ice)
                 {
-                    var iceMsg = (IceMessage)message;
-                    Data = iceMsg.Data;
-                    IceDataSeparator = iceMsg.IceDataSeparator;
+                    throw new InvalidOperationException("The node-dss message it not an ICE candidate message.");
                 }
-                else
+                var parts = Data.Split(new string[] { IceSeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
+                // Note the inverted arguments; candidate is last in IceCandidate, but first in the node-dss wire message
+                return new IceCandidate
                 {
-                    var sdpMsg = (SdpMessage)message;
-                    Data = sdpMsg.Data;
-                    IceDataSeparator = string.Empty;
-                }
+                    SdpMid = parts[2],
+                    SdpMlineIndex = int.Parse(parts[1]),
+                    Content = parts[0]
+                };
+            }
+
+            public NodeDssMessage(SdpMessage message)
+            {
+                MessageType = MessageTypeFromSdpMessageType(message.Type);
+                Data = message.Content;
+                IceDataSeparator = string.Empty;
+            }
+
+            public NodeDssMessage(IceCandidate candidate)
+            {
+                MessageType = Type.Ice;
+                Data = string.Join(IceSeparatorChar, candidate.Content, candidate.SdpMlineIndex.ToString(), candidate.SdpMid);
+                IceDataSeparator = IceSeparatorChar;
             }
 
             /// <summary>
@@ -158,23 +175,32 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #region ISignaler interface
 
         /// <inheritdoc/>
-        public override Task SendMessageAsync(Message message)
+        public override Task SendMessageAsync(SdpMessage message)
         {
-            // This method needs to return a Task object which gets completed once the signaler message
-            // has been sent. Because the implementation uses a Unity coroutine, use a reset event to
-            // signal the task to complete from the coroutine after the message is sent.
-            // Note that the coroutine is a Unity object so needs to be started from the main Unity thread.
-            // Also note that TaskCompletionSource<bool> is used as a no-result variant; there is no meaning
-            // to the bool value.
-            // https://stackoverflow.com/questions/11969208/non-generic-taskcompletionsource-or-alternative
-            var tcs = new TaskCompletionSource<bool>();
-            var msg = new NodeDssMessage(message);
-            _mainThreadWorkQueue.Enqueue(() => StartCoroutine(PostToServerAndWait(msg, tcs)));
-            return tcs.Task;
+            return SendMessageImplAsync(new NodeDssMessage(message));
+        }
+
+        /// <inheritdoc/>
+        public override Task SendMessageAsync(IceCandidate candidate)
+        {
+            return SendMessageImplAsync(new NodeDssMessage(candidate));
         }
 
         #endregion
 
+        private Task SendMessageImplAsync(NodeDssMessage message)
+        {
+            // This method needs to return a Task object which gets completed once the signaler message
+            // has been sent. Because the implementation uses a Unity coroutine, use a reset event to
+            // signal the task to complete from the coroutine after the message is sent.
+            // Note that the coroutine is a Unity object so needs to be started from the main Unity app thread.
+            // Also note that TaskCompletionSource<bool> is used as a no-result variant; there is no meaning
+            // to the bool value.
+            // https://stackoverflow.com/questions/11969208/non-generic-taskcompletionsource-or-alternative
+            var tcs = new TaskCompletionSource<bool>();
+            _mainThreadWorkQueue.Enqueue(() => StartCoroutine(PostToServerAndWait(message, tcs)));
+            return tcs.Task;
+        }
 
         /// <summary>
         /// Unity Engine Start() hook
@@ -287,9 +313,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
                     case NodeDssMessage.Type.Ice:
                         // this "parts" protocol is defined above, in OnIceCandidateReadyToSend listener
-                        var parts = msg.Data.Split(new string[] { msg.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                        // Note the inverted arguments; candidate is last here, but first in OnIceCandidateReadyToSend
-                        _nativePeer.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                        _nativePeer.AddIceCandidate(msg.ToIceCandidate());
                         break;
 
                     default:
