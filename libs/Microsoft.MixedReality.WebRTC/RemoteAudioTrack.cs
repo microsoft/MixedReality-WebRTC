@@ -45,14 +45,14 @@ namespace Microsoft.MixedReality.WebRTC
         public event AudioFrameDelegate AudioFrameReady;
 
         /// <summary>
-        /// Output the audio track to the system audio device.
+        /// Output the audio track to the WebRTC audio device.
         /// </summary>
         /// <remarks>
         /// The default behavior is for every remote audio frame to be passed to
-        /// remote audio frame callbacks, as well as output automatically on the
-        /// system audio device. If |false| is passed to this function, remote audio
-        /// frames will still be received and passed to callbacks, but won't be output
-        /// on the system device.
+        /// remote audio frame callbacks, as well as output automatically to the
+        /// audio device used by WebRTC. If |false| is passed to this function, remote
+        /// audio frames will still be received and passed to callbacks, but won't be
+        /// output to the audio device.
         ///
         /// NOTE: Changing the default behavior is not supported on UWP.
         /// </remarks>
