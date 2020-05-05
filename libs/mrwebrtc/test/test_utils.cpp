@@ -7,7 +7,10 @@
 
 namespace TestUtils {
 
-void MRS_CALL SetEventOnCompleted(void* user_data) {
+void MRS_CALL SetEventOnCompleted(void* user_data,
+                                  mrsResult result,
+                                  const char* error_message) {
+  ASSERT_EQ(mrsResult::kSuccess, result) << error_message;
   Event* ev = (Event*)user_data;
   ev->Set();
 }

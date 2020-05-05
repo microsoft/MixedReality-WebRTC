@@ -8,8 +8,8 @@
 #include "audio_frame_observer.h"
 #include "common_audio/resampler/include/resampler.h"
 #include "data_channel.h"
-#include "interop_api.h"
 #include "interop/global_factory.h"
+#include "interop_api.h"
 #include "media/local_audio_track.h"
 #include "media/local_video_track.h"
 #include "media/remote_audio_track.h"
@@ -172,6 +172,8 @@ class SessionDescObserver : public webrtc::SetSessionDescriptionObserver {
   ~SessionDescObserver() override = default;
 };
 
+/// Custom observer for SetRemoteDescription(), invoked when the call completes
+/// (successfully or not) to notify the original caller.
 struct SetRemoteSessionDescObserver
     : public webrtc::SetRemoteDescriptionObserverInterface {
  public:
@@ -180,14 +182,21 @@ struct SetRemoteSessionDescObserver
   SetRemoteSessionDescObserver(Closure&& callback)
       : callback_(std::forward<Closure>(callback)) {}
   void OnSetRemoteDescriptionComplete(webrtc::RTCError error) override {
-    RTC_LOG(LS_INFO) << "Remote description set. err=" << error.message();
-    if (error.ok() && callback_) {
-      callback_();
+    if (error.ok()) {
+      RTC_LOG(LS_INFO) << "Remote description successfully set.";
+    } else {
+      RTC_LOG(LS_ERROR) << "Error setting remote description: "
+                        << error.message();
+    }
+    // #313 - Always call the callback if provided; this is used in some interop
+    // to complete some async task / promise.
+    if (callback_) {
+      callback_(ResultFromRTCErrorType(error.type()), error.message());
     }
   }
 
  protected:
-  std::function<void()> callback_;
+  std::function<void(mrsResult, const char*)> callback_;
 };
 
 /// Convert an implementation value to a native API value of the ICE connection
@@ -656,9 +665,10 @@ ErrorOr<Transceiver*> PeerConnection::AddTransceiver(
   return transceiver.get();
 }
 
-bool PeerConnection::SetRemoteDescriptionAsync(const char* type,
-                                               const char* sdp,
-                                               Callback<> callback) noexcept {
+bool PeerConnection::SetRemoteDescriptionAsync(
+    const char* type,
+    const char* sdp,
+    RemoteDescriptionAppliedCallback callback) noexcept {
   if (!peer_) {
     return false;
   }
@@ -679,26 +689,29 @@ bool PeerConnection::SetRemoteDescriptionAsync(const char* type,
   if (!session_description)
     return false;
   rtc::scoped_refptr<webrtc::SetRemoteDescriptionObserverInterface> observer =
-      new rtc::RefCountedObject<SetRemoteSessionDescObserver>([this, callback] {
-        if (IsUnifiedPlan()) {
-          SynchronizeTransceiversUnifiedPlan(/*remote=*/true);
-        } else {
-          RTC_DCHECK(IsPlanB());
-          // In Plan B there is no RTP transceiver, and all remote tracks which
-          // start/stop receiving are triggering a TrackAdded or TrackRemoved
-          // event. Therefore there is no extra work to do like there was in
-          // Unified Plan above.
+      new rtc::RefCountedObject<SetRemoteSessionDescObserver>(
+          [this, callback](mrsResult result, const char* error_message) {
+            if (result == Result::kSuccess) {
+              if (IsUnifiedPlan()) {
+                SynchronizeTransceiversUnifiedPlan(/*remote=*/true);
+              } else {
+                RTC_DCHECK(IsPlanB());
+                // In Plan B there is no RTP transceiver, and all remote tracks
+                // which start/stop receiving are triggering a TrackAdded or
+                // TrackRemoved event. Therefore there is no extra work to do
+                // like there was in Unified Plan above.
 
-          // TODO - Clarify if this is really needed (and if we really need to
-          // force the update) for parity with Unified Plan and to get the
-          // transceiver update event fired once and once only.
-          for (auto&& tr : transceivers_) {
-            tr->OnSessionDescUpdated(/*remote=*/true, /*forced=*/true);
-          }
-        }
-        // Fire completed callback to signal remote description was applied.
-        callback();
-      });
+                // TODO - Clarify if this is really needed (and if we really
+                // need to force the update) for parity with Unified Plan and to
+                // get the transceiver update event fired once and once only.
+                for (auto&& tr : transceivers_) {
+                  tr->OnSessionDescUpdated(/*remote=*/true, /*forced=*/true);
+                }
+              }
+            }
+            // Fire completed callback to signal remote description was applied.
+            callback(result, error_message);
+          });
   peer_->SetRemoteDescription(std::move(session_description),
                               std::move(observer));
   return true;
