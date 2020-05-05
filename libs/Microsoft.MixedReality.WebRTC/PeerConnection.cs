@@ -1472,7 +1472,10 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="sdp">The content of the SDP message</param>
         /// <returns>Returns a task which completes once the remote description has been applied and transceivers
         /// have been updated.</returns>
-        /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
+        /// <exception xref="InvalidOperationException">The peer connection is not initialized, or the peer connection
+        /// is not in an expected state to apply the given message.</exception>
+        /// <exception xref="ArgumentException">At least one of the arguments is invalid, including a malformed SDP
+        /// message that failed to be parsed.</exception>
         public Task SetRemoteDescriptionAsync(string type, string sdp)
         {
             ThrowIfConnectionNotOpen();

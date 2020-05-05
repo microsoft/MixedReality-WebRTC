@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.MixedReality.WebRTC.Interop
@@ -256,11 +255,19 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             peerWrapper.OnVideoTrackRemoved(videoTrackWrapper);
         }
 
-        [MonoPInvokeCallback(typeof(ActionDelegate))]
-        public static void RemoteDescriptionApplied(IntPtr args)
+        [MonoPInvokeCallback(typeof(PeerConnectionRemoteDescriptionAppliedDelegate))]
+        public static void RemoteDescriptionApplied(IntPtr argsRef, uint result, string errorMessage)
         {
-            var remoteDesc = Utils.ToWrapper<RemoteDescArgs>(args);
-            remoteDesc.completedEvent.Set();
+            var remoteDescArgs = Utils.ToWrapper<RemoteDescArgs>(argsRef);
+            if (result != Utils.MRS_SUCCESS)
+            {
+                remoteDescArgs.tcs.SetException(Utils.GetExceptionForErrorCode(result));
+            }
+            else
+            {
+                remoteDescArgs.tcs.SetResult(true);
+            }
+            Utils.ReleaseWrapperRef(argsRef);
         }
 
         public static readonly PeerConnectionSimpleStatsCallback SimpleStatsReportDelegate = SimpleStatsReportCallback;
@@ -609,6 +616,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public delegate void PeerConnectionDataChannelRemovedCallback(IntPtr userData, IntPtr dataChannelHandle);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void PeerConnectionRemoteDescriptionAppliedDelegate(IntPtr userData, uint result, string errorMessage);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionInteropCallbacks(IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
@@ -793,7 +803,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionSetRemoteDescriptionAsync")]
         public static extern uint PeerConnection_SetRemoteDescriptionAsync(PeerConnectionHandle peerHandle,
-            string type, string sdp, ActionDelegate callback, IntPtr callbackArgs);
+            string type, string sdp, PeerConnectionRemoteDescriptionAppliedDelegate callback, IntPtr callbackArgs);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionClose")]
@@ -814,31 +824,34 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         #endregion
 
         #region Utilities
+
         class RemoteDescArgs
         {
-            public ActionDelegate callback;
-            public ManualResetEventSlim completedEvent;
+            public PeerConnectionRemoteDescriptionAppliedDelegate callback;
+            public TaskCompletionSource<bool> tcs;
         }
 
         public static Task SetRemoteDescriptionAsync(PeerConnectionHandle peerHandle, string type, string sdp)
         {
-            return Task.Run(() =>
+            var args = new RemoteDescArgs
             {
-                var args = new RemoteDescArgs
-                {
-                    callback = RemoteDescriptionApplied,
-                    completedEvent = new ManualResetEventSlim(initialState: false)
-                };
+                callback = RemoteDescriptionApplied,
+                tcs = new TaskCompletionSource<bool>() // dummy bool, unused
+            };
+
+            Task.Run(() =>
+            {
                 IntPtr argsRef = Utils.MakeWrapperRef(args);
                 uint res = PeerConnection_SetRemoteDescriptionAsync(peerHandle, type, sdp, args.callback, argsRef);
                 if (res != Utils.MRS_SUCCESS)
                 {
+                    // On error, the SRD task was not enqueued, so the callback will never get called
+                    args.tcs.SetException(Utils.GetExceptionForErrorCode(res));
                     Utils.ReleaseWrapperRef(argsRef);
-                    Utils.ThrowOnErrorCode(res);
                 }
-                args.completedEvent.Wait();
-                Utils.ReleaseWrapperRef(argsRef);
             });
+
+            return args.tcs.Task;
         }
 
         #endregion
