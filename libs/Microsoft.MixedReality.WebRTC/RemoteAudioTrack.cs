@@ -11,6 +11,15 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Audio track receiving audio frames from the remote peer.
     /// </summary>
+    /// <remarks>
+    /// Instances of this class are created by <see cref="PeerConnection"/> when a negotiation
+    /// adds tracks sent by the remote peer.
+    ///
+    /// New tracks are automatically played on the system audio device after
+    /// <see cref="PeerConnection.AudioTrackAdded"/> is fired on track creation. To avoid the track
+    /// being played, call <see cref="RenderToDevice(bool)"/> in a <see cref="PeerConnection.AudioTrackAdded"/>
+    /// handler (or later).
+    /// </remarks>
     public class RemoteAudioTrack : MediaTrack, IAudioTrack
     {
         /// <summary>
@@ -34,6 +43,31 @@ namespace Microsoft.MixedReality.WebRTC
         /// Event that occurs when a audio frame has been received from the remote peer.
         /// </summary>
         public event AudioFrameDelegate AudioFrameReady;
+
+        /// <summary>
+        /// Render the audio track to the system audio device.
+        /// </summary>
+        /// <remarks>
+        /// The default behavior is for every remote audio frame to be passed to
+        /// remote audio frame callbacks, as well as rendered automatically on the
+        /// system audio device. If |false| is passed to this function, remote audio
+        /// frames will still be received and passed to callbacks, but won't be rendered
+        /// on the system device.
+        ///
+        /// NOTE: Changing the default behavior is not supported on UWP.
+        /// </remarks>
+        public void RenderToDevice(bool render)
+        {
+            RemoteAudioTrackInterop.RemoteAudioTrack_RenderToDevice(_nativeHandle, render ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Returns whether the track is rendering directly to the system audio device.
+        /// </summary>
+        public bool IsRenderingToDevice()
+        {
+            return RemoteAudioTrackInterop.RemoteAudioTrack_IsRenderingToDevice(_nativeHandle) != 0;
+        }
 
         /// <summary>
         /// Handle to the native RemoteAudioTrack object.

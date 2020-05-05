@@ -55,4 +55,23 @@ void RemoteAudioTrack::OnTrackRemoved(PeerConnection& owner) {
   transceiver_ = nullptr;
 }
 
+void RemoteAudioTrack::RenderToDevice(bool render) noexcept {
+  render_to_device_ = render;
+  if (ssrc_) {
+    global_factory_->audio_mixer()->RenderSource(*ssrc_, render);
+  }
+  // else SSRC is unknown and we can't change the render state now. InitSsrc
+  // will do it when called.
+}
+
+void RemoteAudioTrack::InitSsrc(int ssrc) {
+  RTC_DCHECK(!ssrc_);
+  ssrc_ = ssrc;
+
+  // Now that we know the SSRC id, we can initialize the render state.
+  // Note that render_to_device_ is true by default but might have been changed
+  // if RenderToDevice has been called in the track creation callback.
+  global_factory_->audio_mixer()->RenderSource(ssrc, render_to_device_);
+}
+
 }  // namespace Microsoft::MixedReality::WebRTC

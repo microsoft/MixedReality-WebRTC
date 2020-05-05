@@ -866,10 +866,11 @@ void PeerConnection::OnAddTrack(
       receiver->track();
   const std::string& track_kind_str = track->kind();
   if (track_kind_str == webrtc::MediaStreamTrackInterface::kAudioKind) {
-    AddRemoteMediaTrack<mrsMediaKind::kAudio>(std::move(track), receiver.get(),
-
-                                              &audio_track_added_callback_);
-    if (custom_audio_mixer_) {
+    RefPtr<RemoteAudioTrack> track_wrapper =
+        AddRemoteMediaTrack<mrsMediaKind::kAudio>(
+            std::move(track), receiver.get(), &audio_track_added_callback_);
+    if (audio_mixer_) {
+      // The track won't be rendered by the mixer until RenderSource is called.
       // We need to get the ssrc of the receiver in order to match the track to
       // the corresponding audio source in the AudioMixer. There doesn't seem to
       // be a way to get the ssrc from RTPReceiverInterface directly -
@@ -877,19 +878,22 @@ void PeerConnection::OnAddTrack(
       // first frame arrives. The easiest way seems to be requesting the stats
       // for the receiver and getting it from there.
       struct SetSsrcObserver : public webrtc::RTCStatsCollectorCallback {
-        SetSsrcObserver(PeerConnection& peer_connection)
-            : peer_connection_(peer_connection) {}
+        SetSsrcObserver(RefPtr<RemoteAudioTrack> track)
+            : track_(std::move(track)) {}
         virtual void OnStatsDelivered(
             const rtc::scoped_refptr<const webrtc::RTCStatsReport>&
                 report) noexcept override {
           const auto& stats =
               report->GetStatsOfType<webrtc::RTCInboundRTPStreamStats>();
           RTC_DCHECK_EQ(stats.size(), 1);
-          peer_connection_.SetRemoteAudioSsrc(*stats[0]->ssrc);
+          // This starts rendering the track - or not, if the user has called
+          // RenderToDevice(false) in the track added callback.
+          track_->InitSsrc(*stats[0]->ssrc);
         }
-        PeerConnection& peer_connection_;
+        RefPtr<RemoteAudioTrack> track_;
       };
-      auto stats_observer = new rtc::RefCountedObject<SetSsrcObserver>(*this);
+      auto stats_observer =
+          new rtc::RefCountedObject<SetSsrcObserver>(track_wrapper);
       peer_->GetStats(receiver, stats_observer);
     }
   } else if (track_kind_str == webrtc::MediaStreamTrackInterface::kVideoKind) {
@@ -1306,24 +1310,6 @@ void PeerConnection::InvokeRenegotiationNeeded() {
 
 PeerConnection::PeerConnection(RefPtr<GlobalFactory> global_factory)
     : TrackedObject(std::move(global_factory), ObjectType::kPeerConnection),
-      custom_audio_mixer_(global_factory_->audio_mixer()) {}
-
-void PeerConnection::RenderRemoteAudioTrack(bool render) {
-  RTC_DCHECK(custom_audio_mixer_);
-  const std::lock_guard<std::mutex> lock{remote_audio_mutex_};
-  render_remote_audio_ = render;
-  if (remote_audio_ssrc_) {
-    custom_audio_mixer_->RenderSource(*remote_audio_ssrc_, render);
-  }
-}
-
-void PeerConnection::SetRemoteAudioSsrc(int ssrc) {
-  RTC_DCHECK(custom_audio_mixer_);
-  const std::lock_guard<std::mutex> lock{remote_audio_mutex_};
-  if (!remote_audio_ssrc_) {
-    custom_audio_mixer_->RenderSource(ssrc, render_remote_audio_);
-  }
-  remote_audio_ssrc_ = ssrc;
-}
+      audio_mixer_(global_factory_->audio_mixer()) {}
 
 }  // namespace Microsoft::MixedReality::WebRTC

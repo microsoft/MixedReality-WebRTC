@@ -42,4 +42,20 @@ mrsRemoteAudioTrackSetEnabled(mrsRemoteAudioTrackHandle track_handle,
 MRS_API mrsBool MRS_CALL
 mrsRemoteAudioTrackIsEnabled(mrsRemoteAudioTrackHandle track_handle) noexcept;
 
+/// Render the audio track to the system audio device.
+///
+/// The default behavior is for every remote audio frame to be passed to
+/// remote audio frame callbacks, as well as rendered automatically to the
+/// system audio device. If |false| is passed to this function, remote audio
+/// frames will still be received and passed to callbacks, but won't be rendered
+/// to the system device.
+///
+/// NOTE: Changing the default behavior is not supported on UWP.
+MRS_API void MRS_CALL
+mrsRemoteAudioRenderToDevice(mrsRemoteAudioTrackHandle track_handle, bool render) noexcept;
+
+/// Returns whether the track is rendering directly to the system audio device.
+MRS_API mrsBool MRS_CALL
+mrsRemoteAudioTrackIsRenderingToDevice(mrsRemoteAudioTrackHandle track_handle) noexcept;
+
 }  // extern "C"

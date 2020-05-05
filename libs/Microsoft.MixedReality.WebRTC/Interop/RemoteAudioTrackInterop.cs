@@ -29,6 +29,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             EntryPoint = "mrsRemoteAudioTrackIsEnabled")]
         public static extern int RemoteAudioTrack_IsEnabled(IntPtr trackHandle);
 
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsRemoteAudioTrackRenderToDevice")]
+        public static extern void RemoteAudioTrack_RenderToDevice(IntPtr trackHandle, int render);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsRemoteAudioTrackIsRenderingToDevice")]
+        public static extern int RemoteAudioTrack_IsRenderingToDevice(IntPtr trackHandle);
+
         #endregion
 
 

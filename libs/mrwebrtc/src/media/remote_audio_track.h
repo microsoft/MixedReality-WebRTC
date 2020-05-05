@@ -8,6 +8,7 @@
 #include "interop_api.h"
 #include "media_track.h"
 #include "refptr.h"
+#include "toggle_audio_mixer.h"
 #include "tracked_object.h"
 
 namespace rtc {
@@ -53,6 +54,14 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// See |SetEnabled(bool)|.
   [[nodiscard]] bool IsEnabled() const noexcept { return track_->enabled(); }
 
+  /// See |mrsRemoteAudioRenderToDevice|.
+  void RenderToDevice(bool render) noexcept;
+
+  /// See |mrsRemoteAudioTrackIsRenderingToDevice|.
+  [[nodiscard]] bool IsRenderingToDevice() const noexcept {
+    return render_to_device_;
+  }
+
   //
   // Advanced use
   //
@@ -79,6 +88,9 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
   // Automatically called - do not use.
   void OnTrackRemoved(PeerConnection& owner);
 
+  /// Automatically called - do not use.
+  void InitSsrc(int ssrc);
+
  private:
   /// Underlying core implementation.
   rtc::scoped_refptr<webrtc::AudioTrackInterface> track_;
@@ -94,6 +106,13 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
 
   /// Cached track name, to avoid dispatching on signaling thread.
   const std::string track_name_;
+
+  /// SSRC id of the corresponding RtpReceiver.
+  absl::optional<int> ssrc_;
+
+  /// Indicates whether or not this track is rendered automatically to the
+  /// system audio device.
+  bool render_to_device_{true};
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC
