@@ -835,22 +835,20 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         {
             var args = new RemoteDescArgs
             {
+                // Keep the delegate alive during the async call
                 callback = RemoteDescriptionApplied,
-                tcs = new TaskCompletionSource<bool>() // dummy bool, unused
+                // Use dummy <bool> due to lack of parameterless variant
+                tcs = new TaskCompletionSource<bool>()
             };
-
-            Task.Run(() =>
+            IntPtr argsRef = Utils.MakeWrapperRef(args);
+            uint res = PeerConnection_SetRemoteDescriptionAsync(peerHandle, type, sdp, args.callback, argsRef);
+            if (res != Utils.MRS_SUCCESS)
             {
-                IntPtr argsRef = Utils.MakeWrapperRef(args);
-                uint res = PeerConnection_SetRemoteDescriptionAsync(peerHandle, type, sdp, args.callback, argsRef);
-                if (res != Utils.MRS_SUCCESS)
-                {
-                    // On error, the SRD task was not enqueued, so the callback will never get called
-                    args.tcs.SetException(Utils.GetExceptionForErrorCode(res));
-                    Utils.ReleaseWrapperRef(argsRef);
-                }
-            });
-
+                // On error, the SRD task was not enqueued, so the callback will never get called
+                Utils.ReleaseWrapperRef(argsRef);
+                Utils.ThrowOnErrorCode(res);
+                return Task.CompletedTask;
+            }
             return args.tcs.Task;
         }
 
