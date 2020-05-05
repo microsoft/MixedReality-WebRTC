@@ -1075,7 +1075,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             // Register event handlers for remote tracks removed (media receivers).
             // Note that handling of tracks added is done in HandleConnectionMessageAsync rather than
-            // in *TrackAdded because when these are invoked the transceivers have not been
+            // in TrackAdded because when these are invoked the transceivers have not been
             // paired yet, so there's not much we can do with those events.
             _nativePeer.AudioTrackRemoved += Peer_AudioTrackRemoved;
             _nativePeer.VideoTrackRemoved += Peer_VideoTrackRemoved;
@@ -1133,7 +1133,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Internal handler to actually initialize the
+        /// Internal handler to actually initialize the plugin.
         /// </summary>
         private Task InitializePluginAsync(CancellationToken token)
         {

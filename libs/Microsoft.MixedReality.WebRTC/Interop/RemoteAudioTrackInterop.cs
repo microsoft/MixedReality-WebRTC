@@ -31,11 +31,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsRemoteAudioTrackRenderToDevice")]
-        public static extern void RemoteAudioTrack_RenderToDevice(IntPtr trackHandle, int render);
+        public static extern void RemoteAudioTrack_RenderToDevice(IntPtr trackHandle, mrsBool render);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsRemoteAudioTrackIsRenderingToDevice")]
-        public static extern int RemoteAudioTrack_IsRenderingToDevice(IntPtr trackHandle);
+        public static extern mrsBool RemoteAudioTrack_IsRenderingToDevice(IntPtr trackHandle);
 
         #endregion
 

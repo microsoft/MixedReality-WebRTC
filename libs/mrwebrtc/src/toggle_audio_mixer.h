@@ -5,7 +5,7 @@
 
 namespace Microsoft::MixedReality::WebRTC {
 
-  /// Can mix selected audio sources only.
+/// Can mix selected audio sources only.
 class ToggleAudioMixer : public webrtc::AudioMixer {
  public:
   ToggleAudioMixer();

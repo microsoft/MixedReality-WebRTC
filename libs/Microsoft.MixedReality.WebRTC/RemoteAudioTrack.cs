@@ -58,7 +58,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </remarks>
         public void RenderToDevice(bool render)
         {
-            RemoteAudioTrackInterop.RemoteAudioTrack_RenderToDevice(_nativeHandle, render ? 1 : 0);
+            RemoteAudioTrackInterop.RemoteAudioTrack_RenderToDevice(_nativeHandle, (mrsBool)render);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public bool IsRenderingToDevice()
         {
-            return RemoteAudioTrackInterop.RemoteAudioTrack_IsRenderingToDevice(_nativeHandle) != 0;
+            return (bool)RemoteAudioTrackInterop.RemoteAudioTrack_IsRenderingToDevice(_nativeHandle);
         }
 
         /// <summary>
