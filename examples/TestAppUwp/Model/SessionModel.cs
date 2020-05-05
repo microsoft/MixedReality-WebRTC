@@ -551,14 +551,9 @@ namespace TestAppUwp
             //RunOnMainThread(() => negotiationStatusText.Text = (type == "offer" ? "Sending local offer" : "Idle (answer sent)"));
         }
 
-        private void OnIceCandidateReadyToSend(string candidate, int sdpMlineindex, string sdpMid)
+        private void OnIceCandidateReadyToSend(IceCandidate candidate)
         {
-            var message = new NodeDssSignaler.Message
-            {
-                MessageType = NodeDssSignaler.Message.WireMessageType.Ice,
-                Data = $"{candidate}|{sdpMlineindex}|{sdpMid}", // see DssSignaler_OnMessage
-                IceDataSeparator = "|"
-            };
+            var message = NodeDssSignaler.Message.FromIceCandidate(candidate);
             NodeDssSignaler.SendMessageAsync(message);
         }
 
@@ -891,10 +886,7 @@ namespace TestAppUwp
 
             case NodeDssSignaler.Message.WireMessageType.Ice:
                 // TODO - This is NodeDSS-specific
-                // this "parts" protocol is defined above, in OnIceCandidateReadyToSend listener
-                var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                // Note the inverted arguments; candidate is last here, but first in OnIceCandidateReadyToSend
-                _peerConnection.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
+                _peerConnection.AddIceCandidate(message.ToIceCandidate());
                 break;
 
             default:

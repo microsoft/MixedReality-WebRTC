@@ -159,6 +159,16 @@ MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 /// Type of SDP message.
 enum class mrsSdpMessageType : int32_t { kOffer = 1, kAnswer = 2 };
 
+/// ICE candidate.
+struct mrsIceCandidate {
+  /// Value of the "mid" attribute.
+  const char* sdp_mid{nullptr};
+  /// Raw candidate content.
+  const char* content{nullptr};
+  /// Media line index the candidate is associated with.
+  int32_t sdp_mline_index{-1};
+};
+
 /// Opaque handle to a native AudioTrackReadBuffer C++ object.
 using AudioTrackReadBufferHandle = void*;
 
@@ -174,10 +184,7 @@ using mrsPeerConnectionLocalSdpReadytoSendCallback = void(
 /// Callback fired when an ICE candidate has been prepared and is ready to be
 /// sent by the user via the signaling service.
 using mrsPeerConnectionIceCandidateReadytoSendCallback =
-    void(MRS_CALL*)(void* user_data,
-                    const char* candidate,
-                    int sdpMlineindex,
-                    const char* sdpMid);
+    void(MRS_CALL*)(void* user_data, const mrsIceCandidate* candidate);
 
 /// State of the ICE connection.
 /// See https://www.w3.org/TR/webrtc/#rtciceconnectionstate-enum.
@@ -651,15 +658,9 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionRemoveDataChannel(
 /// Add a new ICE candidate received from a signaling service. This function
 /// must be called by the user each time an ICE candidate was received from the
 /// remote peer, to inform the WebRTC implementation of that candidate.
-///
-/// The candidate is defined by its "mid" attribute |sdp_mid| and the media line
-/// index it is associated with |sdp_mline_index|. The raw SDP candidate content
-/// is passed in |candidate|.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionAddIceCandidate(mrsPeerConnectionHandle peer_handle,
-                                 const char* sdp_mid,
-                                 const int sdp_mline_index,
-                                 const char* candidate) noexcept;
+                                 const mrsIceCandidate* candidate) noexcept;
 
 /// Create a new JSEP offer to try to establish a connection with a remote peer.
 /// This will generate a local offer message, then fire the

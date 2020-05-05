@@ -86,13 +86,13 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                     evExchangeCompleted.Set();
                 }
             };
-            pc1.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, string sdpMid) =>
+            pc1.IceCandidateReadytoSend += (IceCandidate candidate) =>
             {
-                pc2.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+                pc2.AddIceCandidate(candidate);
             };
-            pc2.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, string sdpMid) =>
+            pc2.IceCandidateReadytoSend += (IceCandidate candidate) =>
             {
-                pc1.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+                pc1.AddIceCandidate(candidate);
             };
 
             var pcConfig = new PeerConnectionConfiguration();

@@ -14,9 +14,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// There is no requirement to use this class as a base class for a custom implementation,
     /// but it handles automatically registering the necessary <see cref="Unity.PeerConnection"/>
     /// event handlers, as well as dispatching free-threaded callbacks to the main Unity app thread
-    /// for simplicity and safety, and leaves the implementation with instead with a single sending
-    /// method <see cref="SendMessageAsync(Message)"/> to implement, as well as handling received
-    /// messages.
+    /// for simplicity and safety, and leaves the implementation with instead with two sending methods
+    /// <see cref="SendMessageAsync(SdpMessage)"/> and <see cref="SendMessageAsync(IceCandidate)"/> to
+    /// implement, as well as handling received messages.
     /// </summary>
     public abstract class Signaler : MonoBehaviour
     {
@@ -28,104 +28,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         #region Signaler interface
 
-        // TODO - These messages will move into the C# library API eventually (#188)
-
-        [Serializable]
-        public class Message
-        {
-            /// <summary>
-            /// Message types.
-            /// </summary>
-            public enum MessageType
-            {
-                /// <summary>
-                /// An unrecognized message
-                /// </summary>
-                Unknown = 0,
-
-                /// <summary>
-                /// A SDP offer message
-                /// </summary>
-                Offer,
-
-                /// <summary>
-                /// A SDP answer message
-                /// </summary>
-                Answer,
-
-                /// <summary>
-                /// A trickle-ice or ice message
-                /// </summary>
-                Ice
-            }
-
-            /// <summary>
-            /// The message type.
-            /// </summary>
-            public readonly MessageType Type;
-
-            public Message(MessageType type)
-            {
-                Type = type;
-            }
-        }
-
-        [Serializable]
-        public class SdpMessage : Message
-        {
-            /// <summary>
-            /// The SDP message content.
-            /// </summary>
-            public string Data;
-
-            public SdpMessage(string type, string data) : base(TypeFromString(type))
-            {
-                Data = data;
-            }
-
-            public static MessageType TypeFromString(string type)
-            {
-                if (type == "offer")
-                {
-                    return MessageType.Offer;
-                }
-                else if (type == "answer")
-                {
-                    return MessageType.Answer;
-                }
-                throw new ArgumentException($"Invalid SDP message type: \"{type}\"", "type");
-            }
-        }
-
-        [Serializable]
-        public class IceMessage : Message
-        {
-            /// <summary>
-            /// The ICE message content.
-            /// </summary>
-            public string Data;
-
-            /// <summary>
-            /// The data separator needed for proper ICE serialization.
-            /// </summary>
-            public string IceDataSeparator;
-
-            public IceMessage(string sdpMid, int sdpMlineIndex, string candidate) : base(MessageType.Ice)
-            {
-                IceDataSeparator = "|";
-                Data = string.Join(IceDataSeparator, new string[] { candidate, sdpMlineIndex.ToString(), sdpMid });
-            }
-        }
-
         /// <summary>
-        /// Asynchronously send a signaling message to the remote peer.
+        /// Asynchronously send an SDP message to the remote peer.
         /// </summary>
-        /// <param name="message">The signaling message to send to the remote peer.</param>
+        /// <param name="message">The SDP message to send to the remote peer.</param>
         /// <returns>
         /// A <see cref="Task"/> object completed once the message has been sent,
         /// but not necessarily delivered.
         /// </returns>
-        public abstract Task SendMessageAsync(Message message);
+        public abstract Task SendMessageAsync(SdpMessage message);
+
+        /// <summary>
+        /// Asynchronously send an ICE candidate to the remote peer.
+        /// </summary>
+        /// <param name="candidate">The ICE candidate to send to the remote peer.</param>
+        /// <returns>
+        /// A <see cref="Task"/> object completed once the message has been sent,
+        /// but not necessarily delivered.
+        /// </returns>
+        public abstract Task SendMessageAsync(IceCandidate candidate);
 
         #endregion
 
@@ -168,24 +89,24 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             //_nativePeer.LocalSdpReadytoSend -= OnLocalSdpReadyToSend_Listener;
         }
 
-        private void OnIceCandidateReadyToSend_Listener(string candidate, int sdpMlineIndex, string sdpMid)
+        private void OnIceCandidateReadyToSend_Listener(IceCandidate candidate)
         {
-            _mainThreadWorkQueue.Enqueue(() => OnIceCandidateReadyToSend(candidate, sdpMlineIndex, sdpMid));
+            _mainThreadWorkQueue.Enqueue(() => OnIceCandidateReadyToSend(candidate));
         }
 
         /// <summary>
         /// Helper to split SDP offer and answer messages and dispatch to the appropriate handler.
         /// </summary>
         /// <param name="message">The SDP message ready to be sent to the remote peer.</param>
-        private void OnLocalSdpReadyToSend_Listener(WebRTC.SdpMessage message)
+        private void OnLocalSdpReadyToSend_Listener(SdpMessage message)
         {
             if (message.Type == SdpMessageType.Offer)
             {
-                _mainThreadWorkQueue.Enqueue(() => OnSdpOfferReadyToSend(message.Content));
+                _mainThreadWorkQueue.Enqueue(() => OnSdpOfferReadyToSend(message));
             }
             else if (message.Type == SdpMessageType.Answer)
             {
-                _mainThreadWorkQueue.Enqueue(() => OnSdpAnswerReadyToSend(message.Content));
+                _mainThreadWorkQueue.Enqueue(() => OnSdpAnswerReadyToSend(message));
             }
         }
 
@@ -220,13 +141,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Callback invoked when an ICE candidate message has been generated and is ready to
         /// be sent to the remote peer by the signaling object.
         /// </summary>
-        /// <param name="candidate"></param>
-        /// <param name="sdpMlineIndex"></param>
-        /// <param name="sdpMid"></param>
-        protected virtual void OnIceCandidateReadyToSend(string candidate, int sdpMlineIndex, string sdpMid)
+        /// <param name="candidate">ICE candidate to send to the remote peer.</param>
+        protected virtual void OnIceCandidateReadyToSend(IceCandidate candidate)
         {
-            var message = new IceMessage(sdpMid, sdpMlineIndex, candidate);
-            SendMessageAsync(message);
+            SendMessageAsync(candidate);
         }
 
         /// <summary>
@@ -234,10 +152,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// be sent to the remote peer by the signaling object.
         /// </summary>
         /// <param name="offer">The SDP offer message to send.</param>
-        protected virtual void OnSdpOfferReadyToSend(string offer)
+        protected virtual void OnSdpOfferReadyToSend(SdpMessage offer)
         {
-            var message = new SdpMessage("offer", offer);
-            SendMessageAsync(message);
+            SendMessageAsync(offer);
         }
 
         /// <summary>
@@ -245,10 +162,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// be sent to the remote peer by the signaling object.
         /// </summary>
         /// <param name="answer">The SDP answer message to send.</param>
-        protected virtual void OnSdpAnswerReadyToSend(string answer)
+        protected virtual void OnSdpAnswerReadyToSend(SdpMessage answer)
         {
-            var message = new SdpMessage("answer", answer);
-            SendMessageAsync(message);
+            SendMessageAsync(answer);
         }
     }
 }

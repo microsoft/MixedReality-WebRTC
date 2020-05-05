@@ -106,13 +106,13 @@ public class LocalOnlySignaler : MonoBehaviour
         }
     }
 
-    private void Peer1_IceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
+    private void Peer1_IceCandidateReadytoSend(Microsoft.MixedReality.WebRTC.IceCandidate candidate)
     {
-        Peer2.Peer.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+        Peer2.Peer.AddIceCandidate(candidate);
     }
 
-    private void Peer2_IceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
+    private void Peer2_IceCandidateReadytoSend(Microsoft.MixedReality.WebRTC.IceCandidate candidate)
     {
-        Peer1.Peer.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+        Peer1.Peer.AddIceCandidate(candidate);
     }
 }

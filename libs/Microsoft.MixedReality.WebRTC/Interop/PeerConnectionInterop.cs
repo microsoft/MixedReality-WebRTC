@@ -61,7 +61,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         // Types of trampolines for MonoPInvokeCallback
         private delegate void ConnectedDelegate(IntPtr peer);
         private delegate void LocalSdpReadytoSendDelegate(IntPtr peer, string type, string sdp);
-        private delegate void IceCandidateReadytoSendDelegate(IntPtr peer, string candidate, int sdpMlineindex, string sdpMid);
+        private delegate void IceCandidateReadytoSendDelegate(IntPtr peer, in IceCandidate candidate);
         private delegate void IceStateChangedDelegate(IntPtr peer, IceConnectionState newState);
         private delegate void IceGatheringStateChangedDelegate(IntPtr peer, IceGatheringState newState);
         private delegate void RenegotiationNeededDelegate(IntPtr peer);
@@ -180,10 +180,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [MonoPInvokeCallback(typeof(IceCandidateReadytoSendDelegate))]
-        public static void IceCandidateReadytoSendCallback(IntPtr userData, string candidate, int sdpMlineindex, string sdpMid)
+        public static void IceCandidateReadytoSendCallback(IntPtr userData, in IceCandidate candidate)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
-            peer.OnIceCandidateReadytoSend(candidate, sdpMlineindex, sdpMid);
+            peer.OnIceCandidateReadytoSend(candidate);
         }
 
         [MonoPInvokeCallback(typeof(IceStateChangedDelegate))]
@@ -338,6 +338,16 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public IceTransportType IceTransportType;
             public BundlePolicy BundlePolicy;
             public SdpSemantic SdpSemantic;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        internal ref struct IceCandidate
+        {
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string SdpMid;
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string Content;
+            public int SdpMlineIndex;
         }
 
         /// <summary>
@@ -629,8 +639,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             SdpMessageType type, string sdp);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void PeerConnectionIceCandidateReadytoSendCallback(IntPtr userData,
-            string candidate, int sdpMlineindex, string sdpMid);
+        public delegate void PeerConnectionIceCandidateReadytoSendCallback(IntPtr userData, in IceCandidate candidate);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionIceStateChangedCallback(IntPtr userData,
@@ -785,8 +794,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddIceCandidate")]
-        public static extern void PeerConnection_AddIceCandidate(PeerConnectionHandle peerHandle, string sdpMid,
-            int sdpMlineindex, string candidate);
+        public static extern void PeerConnection_AddIceCandidate(PeerConnectionHandle peerHandle, in IceCandidate candidate);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionCreateOffer")]

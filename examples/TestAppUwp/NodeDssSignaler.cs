@@ -3,13 +3,10 @@
 
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC;
-using System.ComponentModel;
 using Newtonsoft.Json.Serialization;
 
 namespace TestAppUwp
@@ -24,39 +21,41 @@ namespace TestAppUwp
     /// as well as allow rapid prototyping with the <c>node-dss</c>
     /// server solution.
     /// </remarks>
-    public class NodeDssSignaler
-        : NotifierBase // FIXME - Use ViewModel instead
+    public class NodeDssSignaler : NotifierBase // FIXME - Use ViewModel instead
     {
         /// <summary>
-        /// Data that makes up a signaler message
+        /// Signaler message as serialized to and from the node-dss server.
         /// </summary>
         /// <remarks>
-        /// Note: the same data is used for transmitting and receiving
+        /// Field names are defined by the node-dss protocol.
         /// </remarks>
         [Serializable]
         public class Message
         {
             /// <summary>
-            /// Possible message types as-serialized on the wire
+            /// Serialized message type.
             /// </summary>
+            /// <remarks>
+            /// The enumeration values are defined by the node-dss protocol.
+            /// </remarks>
             public enum WireMessageType
             {
                 /// <summary>
-                /// An unrecognized message
+                /// Unknown message.
                 /// </summary>
                 Unknown = 0,
                 /// <summary>
-                /// A SDP offer message
+                /// SDP offer message.
                 /// </summary>
-                Offer,
+                Offer = 1,
                 /// <summary>
-                /// A SDP answer message
+                /// SDP answer message.
                 /// </summary>
-                Answer,
+                Answer = 2,
                 /// <summary>
-                /// A trickle-ice or ice message
+                /// Tickle-ICE or ICE candidate message.
                 /// </summary>
-                Ice
+                Ice = 3
             }
 
             /// <summary>
@@ -77,6 +76,11 @@ namespace TestAppUwp
                 throw new ArgumentException($"Unkown signaler message type '{stringType}'");
             }
 
+            /// <summary>
+            /// Convert an SDP message type to a serialized node-dss message type.
+            /// </summary>
+            /// <param name="type">The SDP message type to convert.</param>
+            /// <returns>The equivalent node-dss serialized message type.</returns>
             public static WireMessageType TypeFromSdpMessageType(SdpMessageType type)
             {
                 switch (type)
@@ -87,6 +91,11 @@ namespace TestAppUwp
                 throw new ArgumentException($"Invalid SDP message type '{type}'.");
             }
 
+            /// <summary>
+            /// Create a node-dss message from an existing SDP offer or answer message.
+            /// </summary>
+            /// <param name="message">The SDP message to serialize.</param>
+            /// <returns>The newly create node-dss message containing the serialized SDP message.
             public static Message FromSdpMessage(SdpMessage message)
             {
                 return new Message
@@ -98,17 +107,70 @@ namespace TestAppUwp
             }
 
             /// <summary>
-            /// The message type
+            /// Create a node-dss message from an existing ICE candidate.
+            /// </summary>
+            /// <param name="candidate">The ICE candidate to serialize.</param>
+            /// <returns>The newly create node-dss message containing the serialized ICE candidate.</returns>
+            public static Message FromIceCandidate(IceCandidate candidate)
+            {
+                return new Message
+                {
+                    MessageType = WireMessageType.Ice,
+                    Data = $"{candidate.Content}|{candidate.SdpMlineIndex}|{candidate.SdpMid}",
+                    IceDataSeparator = "|"
+                };
+            }
+
+            /// <summary>
+            /// Convert the current SDP message back to an <see cref="SdpMessage"/> object.
+            /// </summary>
+            /// <returns>The newly created <see cref="SdpMessage"/> object corresponding to the current message.</returns>
+            public SdpMessage ToSdpMessage()
+            {
+                if ((MessageType != WireMessageType.Offer) && (MessageType != WireMessageType.Answer))
+                {
+                    throw new InvalidOperationException("The node-dss message it not an SDP message.");
+                }
+                return new SdpMessage
+                {
+                    Type = (MessageType == WireMessageType.Offer ? SdpMessageType.Offer : SdpMessageType.Answer),
+                    Content = Data
+                };
+            }
+
+            /// <summary>
+            /// Convert the current ICE message back to an <see cref="IceCandidate"/> object.
+            /// </summary>
+            /// <returns>The newly created <see cref="IceCandidate"/> object corresponding to the current message.</returns>
+            public IceCandidate ToIceCandidate()
+            {
+                if (MessageType != WireMessageType.Ice)
+                {
+                    throw new InvalidOperationException("The node-dss message it not an ICE candidate message.");
+                }
+                var parts = Data.Split(new string[] { IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                // Note the arguments order; candidate content is first in the node-dss protocol.
+                // The order of the arguments matches the order in which they are serialized in FromIceCandidate().
+                return new IceCandidate
+                {
+                    SdpMid = parts[2],
+                    SdpMlineIndex = int.Parse(parts[1]),
+                    Content = parts[0]
+                };
+            }
+
+            /// <summary>
+            /// Message type.
             /// </summary>
             public WireMessageType MessageType;
 
             /// <summary>
-            /// The primary message contents
+            /// Primary message content, which depends on the type of message.
             /// </summary>
             public string Data;
 
             /// <summary>
-            /// The data separator needed for proper ICE serialization
+            /// Data separator for ICE serialization.
             /// </summary>
             public string IceDataSeparator;
         }

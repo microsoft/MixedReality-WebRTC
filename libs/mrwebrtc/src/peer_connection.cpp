@@ -445,22 +445,23 @@ void PeerConnection::OnStreamChanged(
   // symchronization.
 }
 
-bool PeerConnection::AddIceCandidate(const char* sdp_mid,
-                                     const int sdp_mline_index,
-                                     const char* candidate) noexcept {
+Error PeerConnection::AddIceCandidate(
+    const mrsIceCandidate& candidate) noexcept {
   if (!peer_) {
-    return false;
+    return Error(Result::kInvalidOperation);
   }
   webrtc::SdpParseError error;
   std::unique_ptr<webrtc::IceCandidateInterface> ice_candidate(
-      webrtc::CreateIceCandidate(sdp_mid, sdp_mline_index, candidate, &error));
+      webrtc::CreateIceCandidate(candidate.sdp_mid, candidate.sdp_mline_index,
+                                 candidate.content, &error));
   if (!ice_candidate) {
-    return false;
+    return Error(Result::kInvalidParameter, error.description);
   }
   if (!peer_->AddIceCandidate(ice_candidate.get())) {
-    return false;
+    return Error(Result::kUnknownError,
+                 "Failed to add ICE candidate to peer connection");
   }
-  return true;
+  return Error(Result::kSuccess);
 }
 
 bool PeerConnection::CreateOffer() noexcept {
@@ -864,10 +865,16 @@ void PeerConnection::OnIceCandidate(
   auto cb = ice_candidate_ready_to_send_callback_;
   if (cb) {
     std::string sdp;
-    if (!candidate->ToString(&sdp))
+    if (!candidate->ToString(&sdp)) {
+      RTC_LOG(LS_ERROR) << "Failed to stringify ICE candidate into SDP format.";
       return;
+    }
     std::string sdp_mid = candidate->sdp_mid();
-    cb(sdp.c_str(), candidate->sdp_mline_index(), sdp_mid.c_str());
+    mrsIceCandidate ice_candidate{};
+    ice_candidate.sdp_mid = sdp_mid.c_str();
+    ice_candidate.sdp_mline_index = candidate->sdp_mline_index();
+    ice_candidate.content = sdp.c_str();
+    cb(&ice_candidate);
   }
 }
 
