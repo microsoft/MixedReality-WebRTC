@@ -17,7 +17,7 @@ namespace Microsoft.MixedReality.WebRTC
     ///
     /// New tracks are automatically played on the system audio device after
     /// <see cref="PeerConnection.AudioTrackAdded"/> is fired on track creation. To avoid the track
-    /// being played, call <see cref="RenderToDevice(bool)"/> in a <see cref="PeerConnection.AudioTrackAdded"/>
+    /// being played, call <see cref="OutputToDevice(bool)"/> in a <see cref="PeerConnection.AudioTrackAdded"/>
     /// handler (or later).
     /// </remarks>
     public class RemoteAudioTrack : MediaTrack, IAudioTrack
@@ -45,28 +45,28 @@ namespace Microsoft.MixedReality.WebRTC
         public event AudioFrameDelegate AudioFrameReady;
 
         /// <summary>
-        /// Render the audio track to the system audio device.
+        /// Output the audio track to the system audio device.
         /// </summary>
         /// <remarks>
         /// The default behavior is for every remote audio frame to be passed to
-        /// remote audio frame callbacks, as well as rendered automatically on the
+        /// remote audio frame callbacks, as well as output automatically on the
         /// system audio device. If |false| is passed to this function, remote audio
-        /// frames will still be received and passed to callbacks, but won't be rendered
+        /// frames will still be received and passed to callbacks, but won't be output
         /// on the system device.
         ///
         /// NOTE: Changing the default behavior is not supported on UWP.
         /// </remarks>
-        public void RenderToDevice(bool render)
+        public void OutputToDevice(bool output)
         {
-            RemoteAudioTrackInterop.RemoteAudioTrack_RenderToDevice(_nativeHandle, (mrsBool)render);
+            RemoteAudioTrackInterop.RemoteAudioTrack_OutputToDevice(_nativeHandle, (mrsBool)output);
         }
 
         /// <summary>
-        /// Returns whether the track is rendering directly to the system audio device.
+        /// Returns whether the track is output directly to the system audio device.
         /// </summary>
-        public bool IsRenderingToDevice()
+        public bool IsOutputToDevice()
         {
-            return (bool)RemoteAudioTrackInterop.RemoteAudioTrack_IsRenderingToDevice(_nativeHandle);
+            return (bool)RemoteAudioTrackInterop.RemoteAudioTrack_IsOutputToDevice(_nativeHandle);
         }
 
         /// <summary>

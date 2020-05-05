@@ -16,7 +16,7 @@ bool ToggleAudioMixer::AddSource(Source* audio_source) {
   RTC_DCHECK(audio_source);
 
   rtc::CritScope lock(&crit_);
-  // By default add the source as not rendered.
+  // By default add the source as not output.
   auto result =
       source_from_id_.insert({audio_source->Ssrc(), {audio_source, false}});
   if (!result.second) {
@@ -26,9 +26,9 @@ bool ToggleAudioMixer::AddSource(Source* audio_source) {
         << "Source " << audio_source->Ssrc() << " added twice";
     known_source.source = audio_source;
 
-    // If RenderSource(true) has been called before, start mixing the source
+    // If OutputSource(true) has been called before, start mixing the source
     // through the base impl.
-    if (known_source.is_rendered) {
+    if (known_source.is_output) {
       TryAddToBaseImpl(known_source);
     }
   }
@@ -41,7 +41,7 @@ void ToggleAudioMixer::TryAddToBaseImpl(KnownSource& known_source) {
   if (!added_succesfully) {
     RTC_LOG_F(LS_WARNING) << "Cannot mix source "
                           << known_source.source->Ssrc();
-    known_source.is_rendered = false;
+    known_source.is_output = false;
   }
 }
 
@@ -54,7 +54,7 @@ void ToggleAudioMixer::RemoveSource(Source* audio_source) {
   RTC_DCHECK(iter != source_from_id_.end())
       << "Cannot find source " << audio_source->Ssrc();
 
-  if (iter->second.is_rendered) {
+  if (iter->second.is_output) {
     // Stop mixing the source.
     base_impl_->RemoveSource(audio_source);
   }
@@ -67,22 +67,22 @@ static const int16_t zerobuf[200]{};
 void ToggleAudioMixer::Mix(size_t number_of_channels,
                            webrtc::AudioFrame* audio_frame_for_mixing) {
   std::vector<Source*> redirected_sources;
-  bool some_source_is_played = false;
+  bool some_source_is_output = false;
   {
     rtc::CritScope lock(&crit_);
 
     // Collect the redirected sources.
     for (auto&& pair : source_from_id_) {
-      if (!pair.second.is_rendered) {
+      if (!pair.second.is_output) {
         redirected_sources.push_back(pair.second.source);
       } else {
-        some_source_is_played = true;
+        some_source_is_output = true;
       }
     }
 
-    if (some_source_is_played) {
-      // Mix rendered sources using the base impl. Do inside the lock in case
-      // sources are added/removed by RenderSource on a different thread.
+    if (some_source_is_output) {
+      // Mix output sources using the base impl. Do inside the lock in case
+      // sources are added/removed by OutputSource on a different thread.
       base_impl_->Mix(number_of_channels, audio_frame_for_mixing);
     }
   }
@@ -99,7 +99,7 @@ void ToggleAudioMixer::Mix(size_t number_of_channels,
     }
   }
 
-  if (!some_source_is_played) {
+  if (!some_source_is_output) {
     // Return an empty frame.
     audio_frame_for_mixing->UpdateFrame(
         0, zerobuf, 80, 8000, webrtc::AudioFrame::kNormalSpeech,
@@ -107,26 +107,26 @@ void ToggleAudioMixer::Mix(size_t number_of_channels,
   }
 }
 
-void ToggleAudioMixer::RenderSource(int ssrc, bool render) {
+void ToggleAudioMixer::OutputSource(int ssrc, bool output) {
   rtc::CritScope lock(&crit_);
 
   // If the source is unknown add a KnownSource with null Source* to remember
   // the choice.
-  const auto result = source_from_id_.insert({ssrc, {nullptr, render}});
+  const auto result = source_from_id_.insert({ssrc, {nullptr, output}});
 
   if (!result.second) {
-    // The source has already been added through RenderSource. Modify the render
+    // The source has already been added through OutputSource. Modify the output
     // state.
     KnownSource& known_source = result.first->second;
-    if (render && !known_source.is_rendered) {
+    if (output && !known_source.is_output) {
       // Add the source to the ones mixed by the base impl.
       TryAddToBaseImpl(known_source);
-    } else if (!render && known_source.is_rendered) {
+    } else if (!output && known_source.is_output) {
       // Remove the source from the ones mixed by the base impl.
       base_impl_->RemoveSource(known_source.source);
     }
     // else the state of the source is unchanged.
-    known_source.is_rendered = render;
+    known_source.is_output = output;
   }
 }
 

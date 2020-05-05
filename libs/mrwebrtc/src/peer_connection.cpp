@@ -870,7 +870,7 @@ void PeerConnection::OnAddTrack(
         AddRemoteMediaTrack<mrsMediaKind::kAudio>(
             std::move(track), receiver.get(), &audio_track_added_callback_);
     if (audio_mixer_) {
-      // The track won't be rendered by the mixer until RenderSource is called.
+      // The track won't be output by the mixer until OutputSource is called.
       // We need to get the ssrc of the receiver in order to match the track to
       // the corresponding audio source in the AudioMixer. There doesn't seem to
       // be a way to get the ssrc from RTPReceiverInterface directly -
@@ -886,8 +886,8 @@ void PeerConnection::OnAddTrack(
           const auto& stats =
               report->GetStatsOfType<webrtc::RTCInboundRTPStreamStats>();
           RTC_DCHECK_EQ(stats.size(), 1);
-          // This starts rendering the track - or not, if the user has called
-          // RenderToDevice(false) in the track added callback.
+          // This starts to output the track - or not, if the user has called
+          // OutputToDevice(false) in the track added callback.
           track_->InitSsrc(*stats[0]->ssrc);
         }
         RefPtr<RemoteAudioTrack> track_;

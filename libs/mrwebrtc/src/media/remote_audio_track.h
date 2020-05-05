@@ -54,12 +54,12 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// See |SetEnabled(bool)|.
   [[nodiscard]] bool IsEnabled() const noexcept { return track_->enabled(); }
 
-  /// See |mrsRemoteAudioRenderToDevice|.
-  void RenderToDevice(bool render) noexcept;
+  /// See |mrsRemoteAudioOutputToDevice|.
+  void OutputToDevice(bool output) noexcept;
 
-  /// See |mrsRemoteAudioTrackIsRenderingToDevice|.
-  [[nodiscard]] bool IsRenderingToDevice() const noexcept {
-    return render_to_device_;
+  /// See |mrsRemoteAudioTrackIsOutputToDevice|.
+  [[nodiscard]] bool IsOutputToDevice() const noexcept {
+    return output_to_device_;
   }
 
   //
@@ -110,9 +110,9 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// SSRC id of the corresponding RtpReceiver.
   absl::optional<int> ssrc_;
 
-  /// Indicates whether or not this track is rendered automatically to the
+  /// Indicates whether or not this track is output automatically to the
   /// system audio device.
-  bool render_to_device_{true};
+  bool output_to_device_{true};
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

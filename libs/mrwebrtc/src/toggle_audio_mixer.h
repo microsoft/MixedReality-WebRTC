@@ -16,13 +16,13 @@ class ToggleAudioMixer : public webrtc::AudioMixer {
   void Mix(size_t number_of_channels,
            webrtc::AudioFrame* audio_frame_for_mixing) override;
 
-  // Select if the source with the given id must be played on the audio device.
-  void RenderSource(int ssrc, bool render);
+  // Select if the source with the given id must be output to the audio device.
+  void OutputSource(int ssrc, bool output);
 
  private:
   struct KnownSource {
     Source* source;
-    bool is_rendered;
+    bool is_output;
   };
 
   void TryAddToBaseImpl(KnownSource& audio_source);

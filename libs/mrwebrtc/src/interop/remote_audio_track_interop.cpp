@@ -56,17 +56,17 @@ mrsRemoteAudioTrackIsEnabled(mrsRemoteAudioTrackHandle track_handle) noexcept {
 }
 
 void MRS_CALL
-mrsRemoteAudioRenderToDevice(mrsRemoteAudioTrackHandle track_handle,
-    bool render) noexcept {
+mrsRemoteAudioOutputToDevice(mrsRemoteAudioTrackHandle track_handle,
+    bool output) noexcept {
   if (auto track = static_cast<RemoteAudioTrack*>(track_handle)) {
-      track->RenderToDevice(render);
+      track->OutputToDevice(output);
   }
 }
 
-mrsBool MRS_CALL mrsRemoteAudioTrackIsRenderingToDevice(
+mrsBool MRS_CALL mrsRemoteAudioTrackIsOutputToDevice(
     mrsRemoteAudioTrackHandle track_handle) noexcept {
   if (auto track = static_cast<const RemoteAudioTrack*>(track_handle)) {
-    return track->IsRenderingToDevice() ? mrsBool::kTrue : mrsBool::kFalse;
+    return track->IsOutputToDevice() ? mrsBool::kTrue : mrsBool::kFalse;
   }
   return mrsBool::kFalse;
 }
