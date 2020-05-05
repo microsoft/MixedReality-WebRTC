@@ -871,15 +871,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </p>
         /// </div>
         /// </summary>
-        /// <param name="type">The type of SDP message ("offer" or "answer")</param>
-        /// <param name="sdp">The content of the SDP message</param>
+        /// <param name="message">The SDP message to handle.</param>
         /// <returns>A task which completes once the remote description has been applied and transceivers
         /// have been updated.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        public async Task HandleConnectionMessageAsync(string type, string sdp)
+        public async Task HandleConnectionMessageAsync(SdpMessage message)
         {
             // First apply the remote description
-            await Peer.SetRemoteDescriptionAsync(type, sdp);
+            await Peer.SetRemoteDescriptionAsync(message);
 
             // Sort associated transceiver by media line index. The media line index is not the index of
             // the transceiver, but they are both monotonically increasing, so sorting by one or the other
@@ -891,7 +890,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             int numMatching = Math.Min(numAssociatedTransceivers, _mediaLines.Count);
 
             // Once applied, try to pair transceivers and remote tracks with the Unity receiver components
-            if (type == "offer")
+            if (message.Type == SdpMessageType.Offer)
             {
                 // Match transceivers with media line, in order
                 for (int i = 0; i < numMatching; ++i)
@@ -940,7 +939,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     });
                 }
             }
-            else if (type == "answer")
+            else if (message.Type == SdpMessageType.Answer)
             {
                 // Associate registered media senders/receivers with existing transceivers
                 for (int i = 0; i < numMatching; ++i)

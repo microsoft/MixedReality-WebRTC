@@ -62,25 +62,25 @@ TEST_P(DataChannelTests, InBand) {
   ASSERT_NE(nullptr, pc2.handle());
 
   // Setup signaling
-  SdpCallback sdp1_cb(pc1.handle(), [&pc2](const char* type,
+  SdpCallback sdp1_cb(pc1.handle(), [&pc2](mrsSdpMessageType type,
                                            const char* sdp_data) {
     Event ev;
     ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
                                     pc2.handle(), type, sdp_data,
                                     &TestUtils::SetEventOnCompleted, &ev));
     ev.Wait();
-    if (kOfferString == type) {
+    if (type == mrsSdpMessageType::kOffer) {
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc2.handle()));
     }
   });
-  SdpCallback sdp2_cb(pc2.handle(), [&pc1](const char* type,
+  SdpCallback sdp2_cb(pc2.handle(), [&pc1](mrsSdpMessageType type,
                                            const char* sdp_data) {
     Event ev;
     ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
                                     pc1.handle(), type, sdp_data,
                                     &TestUtils::SetEventOnCompleted, &ev));
     ev.Wait();
-    if (kOfferString == type) {
+    if (type == mrsSdpMessageType::kOffer) {
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionCreateAnswer(pc1.handle()));
     }
   });

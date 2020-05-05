@@ -77,6 +77,26 @@ namespace TestAppUwp
                 throw new ArgumentException($"Unkown signaler message type '{stringType}'");
             }
 
+            public static WireMessageType TypeFromSdpMessageType(SdpMessageType type)
+            {
+                switch (type)
+                {
+                case SdpMessageType.Offer: return WireMessageType.Offer;
+                case SdpMessageType.Answer: return WireMessageType.Answer;
+                }
+                throw new ArgumentException($"Invalid SDP message type '{type}'.");
+            }
+
+            public static Message FromSdpMessage(SdpMessage message)
+            {
+                return new Message
+                {
+                    MessageType = TypeFromSdpMessageType(message.Type),
+                    Data = message.Content,
+                    IceDataSeparator = "|"
+                };
+            }
+
             /// <summary>
             /// The message type
             /// </summary>

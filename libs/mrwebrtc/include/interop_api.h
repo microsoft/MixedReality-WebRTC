@@ -156,6 +156,9 @@ MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 // Peer connection
 //
 
+/// Type of SDP message.
+enum class mrsSdpMessageType : int32_t { kOffer = 1, kAnswer = 2 };
+
 /// Opaque handle to a native AudioTrackReadBuffer C++ object.
 using AudioTrackReadBufferHandle = void*;
 
@@ -165,8 +168,8 @@ using mrsPeerConnectionConnectedCallback = void(MRS_CALL*)(void* user_data);
 
 /// Callback fired when a local SDP message has been prepared and is ready to be
 /// sent by the user via the signaling service.
-using mrsPeerConnectionLocalSdpReadytoSendCallback =
-    void(MRS_CALL*)(void* user_data, const char* type, const char* sdp_data);
+using mrsPeerConnectionLocalSdpReadytoSendCallback = void(
+    MRS_CALL*)(void* user_data, mrsSdpMessageType type, const char* sdp_data);
 
 /// Callback fired when an ICE candidate has been prepared and is ready to be
 /// sent by the user via the signaling service.
@@ -718,7 +721,7 @@ using mrsRemoteDescriptionAppliedCallback = void(
 /// the negotiation, and in particular it is safe to call |CreateAnswer()|.
 MRS_API mrsResult MRS_CALL mrsPeerConnectionSetRemoteDescriptionAsync(
     mrsPeerConnectionHandle peer_handle,
-    const char* type,
+    mrsSdpMessageType type,
     const char* sdp,
     mrsRemoteDescriptionAppliedCallback callback,
     void* user_data) noexcept;

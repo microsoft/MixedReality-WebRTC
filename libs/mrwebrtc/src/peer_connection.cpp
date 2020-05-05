@@ -665,12 +665,12 @@ ErrorOr<Transceiver*> PeerConnection::AddTransceiver(
   return transceiver.get();
 }
 
-bool PeerConnection::SetRemoteDescriptionAsync(
-    const char* type,
+Error PeerConnection::SetRemoteDescriptionAsync(
+    mrsSdpMessageType type,
     const char* sdp,
     RemoteDescriptionAppliedCallback callback) noexcept {
   if (!peer_) {
-    return false;
+    return Error(mrsResult::kInvalidOperation);
   }
   {
     auto lock = std::scoped_lock{data_channel_mutex_};
@@ -678,16 +678,14 @@ bool PeerConnection::SetRemoteDescriptionAsync(
       sctp_negotiated_ = false;
     }
   }
-  std::string sdp_type_str(type);
-  auto sdp_type = SdpTypeFromString(sdp_type_str);
-  if (!sdp_type.has_value())
-    return false;
+  const webrtc::SdpType sdp_type = SdpTypeFromApiType(type);
   std::string remote_desc(sdp);
   webrtc::SdpParseError error;
   std::unique_ptr<webrtc::SessionDescriptionInterface> session_description(
-      webrtc::CreateSessionDescription(sdp_type.value(), remote_desc, &error));
-  if (!session_description)
-    return false;
+      webrtc::CreateSessionDescription(sdp_type, remote_desc, &error));
+  if (!session_description) {
+    return Error(mrsResult::kInvalidParameter, error.description.c_str());
+  }
   rtc::scoped_refptr<webrtc::SetRemoteDescriptionObserverInterface> observer =
       new rtc::RefCountedObject<SetRemoteSessionDescObserver>(
           [this, callback](mrsResult result, const char* error_message) {
@@ -714,7 +712,7 @@ bool PeerConnection::SetRemoteDescriptionAsync(
           });
   peer_->SetRemoteDescription(std::move(session_description),
                               std::move(observer));
-  return true;
+  return Error(mrsResult::kSuccess);
 }
 
 void PeerConnection::OnSignalingChange(
@@ -984,10 +982,10 @@ void PeerConnection::OnLocalDescCreated(
           auto lock = std::scoped_lock{local_sdp_ready_to_send_callback_mutex_};
           if (auto cb = local_sdp_ready_to_send_callback_) {
             auto desc = peer_->local_description();
-            std::string type{SdpTypeToString(desc->GetType())};
+            const mrsSdpMessageType type = ApiTypeFromSdpType(desc->GetType());
             std::string sdp;
             desc->ToString(&sdp);
-            cb(type.c_str(), sdp.c_str());
+            cb(type, sdp.c_str());
           }
         }
       });

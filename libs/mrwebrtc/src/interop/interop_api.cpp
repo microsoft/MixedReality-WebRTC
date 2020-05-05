@@ -589,7 +589,7 @@ void MRS_CALL mrsPeerConnectionRegisterLocalSdpReadytoSendCallback(
     void* user_data) noexcept {
   if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
     peer->RegisterLocalSdpReadytoSendCallback(
-        Callback<const char*, const char*>{callback, user_data});
+        Callback<mrsSdpMessageType, const char*>{callback, user_data});
   }
 }
 
@@ -896,23 +896,24 @@ mrsPeerConnectionSetBitrate(mrsPeerConnectionHandle peer_handle,
 
 mrsResult MRS_CALL mrsPeerConnectionSetRemoteDescriptionAsync(
     mrsPeerConnectionHandle peer_handle,
-    const char* type,
+    mrsSdpMessageType type,
     const char* sdp,
     mrsRemoteDescriptionAppliedCallback callback,
     void* user_data) noexcept {
-  if (IsStringNullOrEmpty(type) || IsStringNullOrEmpty(sdp)) {
+  if (IsStringNullOrEmpty(sdp)) {
     return mrsResult::kInvalidParameter;
   }
   auto peer = static_cast<PeerConnection*>(peer_handle);
   if (!peer) {
     return Result::kInvalidNativeHandle;
   }
-  return (
-      peer->SetRemoteDescriptionAsync(
-          type, sdp,
-          PeerConnection::RemoteDescriptionAppliedCallback{callback, user_data})
-          ? Result::kSuccess
-          : Result::kUnknownError);
+  Error result = peer->SetRemoteDescriptionAsync(
+      type, sdp,
+      PeerConnection::RemoteDescriptionAppliedCallback{callback, user_data});
+  if (!result.ok()) {
+    RTC_LOG(LS_ERROR) << result.message();
+  }
+  return result.result();
 }
 
 mrsResult MRS_CALL

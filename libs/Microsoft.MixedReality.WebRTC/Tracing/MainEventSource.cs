@@ -99,8 +99,9 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
 
         #region SDP
 
-        [Event(0x2001, Level = EventLevel.Informational, Keywords = Keywords.Sdp)]
-        public void LocalSdpReady(string type, string sdp) { WriteEvent(0x2001, type, sdp); }
+        // DEPRECATED; see 0x2006
+        //[Event(0x2001, Level = EventLevel.Informational, Keywords = Keywords.Sdp)]
+        //public void LocalSdpReady(string type, string sdp) { WriteEvent(0x2001, type, sdp); }
 
         [Event(0x2002, Level = EventLevel.Informational, Keywords = Keywords.Sdp)]
         public void IceCandidateReady(string sdpMid, int sdpMlineindex, string candidate)
@@ -119,6 +120,9 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         {
             WriteEvent(0x2005, sdpMid, sdpMlineindex, candidate);
         }
+
+        [Event(0x2006, Level = EventLevel.Informational, Keywords = Keywords.Sdp)]
+        public void LocalSdpReady(SdpMessageType type, string sdp) { WriteEvent(0x2006, (int)type, sdp); }
 
         #endregion
 

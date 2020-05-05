@@ -460,6 +460,73 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
+    /// Type of SDP message.
+    /// </summary>
+    public enum SdpMessageType : int
+    {
+        /// <summary>
+        /// Offer message used to initiate a new session.
+        /// </summary>
+        Offer = 1,
+
+        /// <summary>
+        /// Answer message used to accept a session offer.
+        /// </summary>
+        Answer = 2
+    }
+
+    /// <summary>
+    /// SDP message passed between the local and remote peers via the user's signaling solution.
+    /// </summary>
+    public class SdpMessage
+    {
+        /// <summary>
+        /// The message type.
+        /// </summary>
+        public SdpMessageType Type;
+
+        /// <summary>
+        /// The raw message content.
+        /// </summary>
+        public string Content;
+
+        /// <summary>
+        /// Convert an SDP message type to its internal string representation.
+        /// </summary>
+        /// <param name="type">The SDP message type to convert</param>
+        /// <returns>The string representation of the SDP message type</returns>
+        /// <exception xref="ArgumentException">The SDP message type was invalid.</exception>
+        public static string TypeToString(SdpMessageType type)
+        {
+            switch (type)
+            {
+            case SdpMessageType.Offer: return "offer";
+            case SdpMessageType.Answer: return "answer";
+            }
+            throw new ArgumentException($"Cannot convert invalid SdpMessageType value '{type}'.");
+        }
+
+        /// <summary>
+        /// Convert an internal string representation of an SDP message type back to its enumerated value.
+        /// </summary>
+        /// <param name="type">The internal string representation of the SDP message</param>
+        /// <returns>The SDP message type associated with the string representation</returns>
+        /// <exception xref="ArgumentException">The string does not represent any SDP message type.</exception>
+        public static SdpMessageType StringToType(string type)
+        {
+            if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
+            {
+                return SdpMessageType.Offer;
+            }
+            else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
+            {
+                return SdpMessageType.Answer;
+            }
+            throw new ArgumentException($"Cannot convert invalid SdpMessageType string '{type}'.");
+        }
+    }
+
+    /// <summary>
     /// The WebRTC peer connection object is the entry point to using WebRTC.
     /// </summary>
     public class PeerConnection : IDisposable
@@ -511,16 +578,15 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Delegate for <see cref="LocalSdpReadytoSend"/> event.
         /// </summary>
-        /// <param name="type">SDP message type, one of "offer", "answer", or "ice".</param>
-        /// <param name="sdp">Raw SDP message content.</param>
-        public delegate void LocalSdpReadyToSendDelegate(string type, string sdp);
+        /// <param name="message">SDP message to send.</param>
+        public delegate void LocalSdpReadyToSendDelegate(SdpMessage message);
 
         /// <summary>
         /// Delegate for the <see cref="IceCandidateReadytoSend"/> event.
         /// </summary>
         /// <param name="candidate">Raw SDP message describing the ICE candidate.</param>
         /// <param name="sdpMlineindex">Index of the m= line.</param>
-        /// <param name="sdpMid">Media identifier</param>
+        /// <param name="sdpMid">Media identifier.</param>
         public delegate void IceCandidateReadytoSendDelegate(string candidate, int sdpMlineindex, string sdpMid);
 
         /// <summary>
@@ -677,7 +743,7 @@ namespace Microsoft.MixedReality.WebRTC
         ///
         /// A transceiver is associated with a media line when a local or remote offer is applied
         /// to the peer connection, respectively during <see cref="CreateOffer"/> and
-        /// <see cref="SetRemoteDescriptionAsync(string, string)"/>.
+        /// <see cref="SetRemoteDescriptionAsync(SdpMessage)"/>.
         /// </summary>
         public IEnumerable<Transceiver> AssociatedTransceivers
         {
@@ -1426,7 +1492,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Create an SDP answer message to a previously-received offer, to accept a connection.
         /// Once the message is ready to be sent, the <see cref="LocalSdpReadytoSend"/> event is fired
         /// to allow the user to send that message to the remote peer via its selected signaling solution.
-        /// Note that this cannot be called before <see cref="SetRemoteDescriptionAsync(string, string)"/>
+        /// Note that this cannot be called before <see cref="SetRemoteDescriptionAsync(SdpMessage)"/>
         /// successfully completed and applied the remote offer.
         /// </summary>
         /// <returns><c>true</c> if the answer creation task was successfully submitted.</returns>
@@ -1468,15 +1534,14 @@ namespace Microsoft.MixedReality.WebRTC
         /// This must be called by the signaler when receiving a message. Once this operation
         /// has completed, it is safe to call <see cref="CreateAnswer"/>.
         /// </summary>
-        /// <param name="type">The type of SDP message ("offer" or "answer")</param>
-        /// <param name="sdp">The content of the SDP message</param>
+        /// <param name="message">The SDP message</param>
         /// <returns>Returns a task which completes once the remote description has been applied and transceivers
         /// have been updated.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not initialized, or the peer connection
         /// is not in an expected state to apply the given message.</exception>
         /// <exception xref="ArgumentException">At least one of the arguments is invalid, including a malformed SDP
         /// message that failed to be parsed.</exception>
-        public Task SetRemoteDescriptionAsync(string type, string sdp)
+        public Task SetRemoteDescriptionAsync(SdpMessage message)
         {
             ThrowIfConnectionNotOpen();
 
@@ -1484,13 +1549,13 @@ namespace Microsoft.MixedReality.WebRTC
             // to exclude other codecs if the preferred one is supported.
             // We set the local codec params by forcing them here. There seems to be no direct way to set
             // local codec params so we "pretend" that the remote endpoint is asking for them.
-            string newSdp = ForceSdpCodecs(sdp: sdp,
+            string newSdp = ForceSdpCodecs(sdp: message.Content,
                 audio: PreferredAudioCodec,
                 audioParams: PreferredAudioCodecExtraParamsLocal,
                 video: PreferredVideoCodec,
                 videoParams: PreferredVideoCodecExtraParamsLocal);
 
-            return PeerConnectionInterop.SetRemoteDescriptionAsync(_nativePeerhandle, type, newSdp);
+            return PeerConnectionInterop.SetRemoteDescriptionAsync(_nativePeerhandle, message.Type, newSdp);
         }
 
         #endregion
@@ -2135,7 +2200,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="type">The SDP message type.</param>
         /// <param name="sdp">The SDP message content.</param>
-        internal void OnLocalSdpReadytoSend(string type, string sdp)
+        internal void OnLocalSdpReadytoSend(SdpMessageType type, string sdp)
         {
             MainEventSource.Log.LocalSdpReady(type, sdp);
 
@@ -2151,7 +2216,12 @@ namespace Microsoft.MixedReality.WebRTC
                 video: PreferredVideoCodec,
                 videoParams: PreferredVideoCodecExtraParamsRemote);
 
-            LocalSdpReadytoSend?.Invoke(type, newSdp);
+            var message = new SdpMessage
+            {
+                Type = type,
+                Content = newSdp
+            };
+            LocalSdpReadytoSend?.Invoke(message);
         }
 
         internal void OnIceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)

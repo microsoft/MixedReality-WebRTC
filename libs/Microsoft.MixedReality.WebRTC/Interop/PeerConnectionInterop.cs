@@ -173,7 +173,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [MonoPInvokeCallback(typeof(LocalSdpReadytoSendDelegate))]
-        public static void LocalSdpReadytoSendCallback(IntPtr userData, string type, string sdp)
+        public static void LocalSdpReadytoSendCallback(IntPtr userData, SdpMessageType type, string sdp)
         {
             var peer = Utils.ToWrapper<PeerConnection>(userData);
             peer.OnLocalSdpReadytoSend(type, sdp);
@@ -626,7 +626,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionLocalSdpReadytoSendCallback(IntPtr userData,
-            string type, string sdp);
+            SdpMessageType type, string sdp);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionIceCandidateReadytoSendCallback(IntPtr userData,
@@ -803,7 +803,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionSetRemoteDescriptionAsync")]
         public static extern uint PeerConnection_SetRemoteDescriptionAsync(PeerConnectionHandle peerHandle,
-            string type, string sdp, PeerConnectionRemoteDescriptionAppliedDelegate callback, IntPtr callbackArgs);
+            SdpMessageType type, string sdp, PeerConnectionRemoteDescriptionAppliedDelegate callback, IntPtr callbackArgs);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionClose")]
@@ -831,7 +831,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public TaskCompletionSource<bool> tcs;
         }
 
-        public static Task SetRemoteDescriptionAsync(PeerConnectionHandle peerHandle, string type, string sdp)
+        public static Task SetRemoteDescriptionAsync(PeerConnectionHandle peerHandle, SdpMessageType type, string sdp)
         {
             var args = new RemoteDescArgs
             {

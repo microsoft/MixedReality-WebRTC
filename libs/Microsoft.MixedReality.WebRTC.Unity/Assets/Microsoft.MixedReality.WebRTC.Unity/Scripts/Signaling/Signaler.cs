@@ -176,17 +176,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Helper to split SDP offer and answer messages and dispatch to the appropriate handler.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="sdp"></param>
-        private void OnLocalSdpReadyToSend_Listener(string type, string sdp)
+        /// <param name="message">The SDP message ready to be sent to the remote peer.</param>
+        private void OnLocalSdpReadyToSend_Listener(WebRTC.SdpMessage message)
         {
-            if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
+            if (message.Type == SdpMessageType.Offer)
             {
-                _mainThreadWorkQueue.Enqueue(() => OnSdpOfferReadyToSend(sdp));
+                _mainThreadWorkQueue.Enqueue(() => OnSdpOfferReadyToSend(message.Content));
             }
-            else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
+            else if (message.Type == SdpMessageType.Answer)
             {
-                _mainThreadWorkQueue.Enqueue(() => OnSdpAnswerReadyToSend(sdp));
+                _mainThreadWorkQueue.Enqueue(() => OnSdpAnswerReadyToSend(message.Content));
             }
         }
 

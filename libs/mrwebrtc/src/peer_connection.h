@@ -95,7 +95,7 @@ class PeerConnection : public TrackedObject,
   /// - The null-terminated type of the SDP message. Valid values are "offer" or
   /// "answer".
   /// - The null-terminated SDP message content.
-  using LocalSdpReadytoSendCallback = Callback<const char*, const char*>;
+  using LocalSdpReadytoSendCallback = Callback<mrsSdpMessageType, const char*>;
 
   /// Register a custom LocalSdpReadytoSendCallback invoked when a local SDP
   /// message is ready to be sent by the user to the remote peer. Users MUST
@@ -193,8 +193,8 @@ class PeerConnection : public TrackedObject,
   /// remote peer. The parameters correspond to the SDP message data provided by
   /// the |LocalSdpReadytoSendCallback|, after being transmitted to the
   /// other peer.
-  bool SetRemoteDescriptionAsync(
-      const char* type,
+  Error SetRemoteDescriptionAsync(
+      mrsSdpMessageType type,
       const char* sdp,
       RemoteDescriptionAppliedCallback callback) noexcept;
 
