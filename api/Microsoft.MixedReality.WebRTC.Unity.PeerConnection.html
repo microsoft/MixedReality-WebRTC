@@ -459,7 +459,7 @@ is negotiated.</p>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_HandleConnectionMessageAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.HandleConnectionMessageAsync*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_HandleConnectionMessageAsync_System_String_System_String_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.HandleConnectionMessageAsync(System.String,System.String)">HandleConnectionMessageAsync(String, String)</h4>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_HandleConnectionMessageAsync_SdpMessage_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.HandleConnectionMessageAsync(SdpMessage)">HandleConnectionMessageAsync(SdpMessage)</h4>
   <div class="markdown level1 summary"><p>Pass the given SDP description received from the remote peer via signaling to the
 underlying WebRTC implementation, which will parse and use it.</p>
 <p>This must be called by the signaler when receiving a message. Once this operation
@@ -477,7 +477,7 @@ this method instead of the C# library one to ensure transceiver pairing works as
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task HandleConnectionMessageAsync(string type, string sdp)</code></pre>
+    <pre><code class="lang-csharp hljs">public Task HandleConnectionMessageAsync(SdpMessage message)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -490,15 +490,9 @@ this method instead of the C# library one to ensure transceiver pairing works as
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">type</span></td>
-        <td><p>The type of SDP message (&quot;offer&quot; or &quot;answer&quot;)</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">sdp</span></td>
-        <td><p>The content of the SDP message</p>
+        <td><span class="xref">SdpMessage</span></td>
+        <td><span class="parametername">message</span></td>
+        <td><p>The SDP message to handle.</p>
 </td>
       </tr>
     </tbody>

@@ -104,7 +104,7 @@
 <li>Implement the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_"><code>SendMessageAsync()</code></a> abstract method to send messages to the remote peer via the custom signaling solution.</li>
 <li>Handle incoming messages from the remote peer:
 <ul>
-<li>call <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_HandleConnectionMessageAsync_System_String_System_String_"><code>HandleConnectionMessageAsync()</code></a> on the Unity peer connection component when receiving an SDP offer or answer message.</li>
+<li>call <a href="xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.HandleConnectionMessageAsync(System.String,System.String)"><code>HandleConnectionMessageAsync()</code></a> on the Unity peer connection component when receiving an SDP offer or answer message.</li>
 <li>call <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddIceCandidate_System_String_System_Int32_System_String_"><code>AddIceCandidate()</code></a> on the underlying C# peer connection object to deliver ICE candidates to the local peer implementation.</li>
 </ul>
 </li>
