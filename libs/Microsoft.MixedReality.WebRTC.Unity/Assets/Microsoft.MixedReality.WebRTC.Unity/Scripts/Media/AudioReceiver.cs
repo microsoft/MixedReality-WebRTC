@@ -6,25 +6,26 @@ using UnityEngine;
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// This component represents a remote audio source receiving its audio data from a remote
-    /// peer through an audio track associated with the peer connection.
-    /// 
-    /// <div class="WARNING alert alert-warning">
-    /// <h5>WARNING</h5>
-    /// <p>
-    /// Currently the low-level WebRTC implementation automatically outputs the received audio
-    /// to a default audio device, without any user interaction. Therefore registering this receiver
-    /// with a <see cref="MediaPlayer"/> has no effect, and using the callback mechanism provided via
-    /// <see cref="RegisterCallback(AudioFrameDelegate)"/> to inject this audio in a custom audio
-    /// pipeline will lead to duplicated output : one from the WebRTC implementation, one from the
-    /// custom audio pipeline.
-    /// </p>
-    /// </div>
+    /// This component represents a remote audio source added as an audio track to an
+    /// existing WebRTC peer connection by a remote peer and received locally.
+    /// The audio track can optionally be displayed locally with a <see cref="MediaPlayer"/>.
     /// </summary>
     /// <seealso cref="MediaPlayer"/>
     [AddComponentMenu("MixedReality-WebRTC/Audio Receiver")]
+    [RequireComponent(typeof(UnityEngine.AudioSource))]
     public class AudioReceiver : MediaReceiver, IAudioSource
     {
+#if false // WIP
+        /// <summary>
+        /// Local storage of audio data to be fed to the output
+        /// </summary>
+        private AudioTrackReadBuffer _audioTrackReadBuffer = null;
+
+        /// <summary>
+        /// Cached sample rate since we can't access this in OnAudioFilterRead.
+        /// </summary>
+        private int _audioSampleRate = 0;
+#endif
         /// <inheritdoc/>
         public bool IsStreaming { get; protected set; }
 
@@ -84,10 +85,41 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
         }
 
+#if false // WIP
+        protected void Awake()
+        {
+            AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
+        }
+
+        protected void OnDestroy()
+        {
+            AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
+        }
+
+        private void OnAudioConfigurationChanged(bool deviceWasChanged)
+        {
+            _audioSampleRate = AudioSettings.outputSampleRate;
+        }
+
+        void OnAudioFilterRead(float[] data, int channels)
+        {
+            if (_audioTrackReadBuffer != null)
+            {
+                _audioTrackReadBuffer.ReadAudio(_audioSampleRate, data, channels);
+            }
+            else
+            {
+                for (int i = 0; i < data.Length; ++i)
+                {
+                    data[i] = 0.0f;
+                }
+            }
+        }
+#endif
         /// <summary>
         /// Register a frame callback to listen to incoming audio data receiving through this
         /// audio receiver from the remote peer.
-        /// 
+        ///
         /// The callback can only be registered once <see cref="Track"/> is valid, that is once
         /// the <see cref="AudioStreamStarted"/> event was raised.
         /// </summary>
@@ -101,11 +133,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// produce duplicated audio output.
         /// </p>
         /// </div>
-        /// 
+        ///
         /// A typical application might use this callback to display some feedback of audio being
         /// received, like a spectrum analyzer, but more commonly will not need that callback because
         /// of the above restriction on automated audio output.
-        /// 
+        ///
         /// Note that registering a callback does not influence the audio capture and sending
         /// to the remote peer, which occurs whether or not a callback is registered.
         /// </remarks>

@@ -42,4 +42,18 @@ mrsRemoteAudioTrackSetEnabled(mrsRemoteAudioTrackHandle track_handle,
 MRS_API mrsBool MRS_CALL
 mrsRemoteAudioTrackIsEnabled(mrsRemoteAudioTrackHandle track_handle) noexcept;
 
+/// Output the audio track to the WebRTC audio device.
+///
+/// The default behavior is for every remote audio frame to be passed to
+/// remote audio frame callbacks, as well as output automatically to the
+/// audio device used by WebRTC. If |false| is passed to this function, remote
+/// audio frames will still be received and passed to callbacks, but won't be
+/// output to the audio device.
+MRS_API void MRS_CALL
+mrsRemoteAudioTrackOutputToDevice(mrsRemoteAudioTrackHandle track_handle, bool output) noexcept;
+
+/// Returns whether the track is output directly to the system audio device.
+MRS_API mrsBool MRS_CALL
+mrsRemoteAudioTrackIsOutputToDevice(mrsRemoteAudioTrackHandle track_handle) noexcept;
+
 }  // extern "C"

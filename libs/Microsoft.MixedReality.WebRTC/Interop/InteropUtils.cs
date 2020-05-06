@@ -149,6 +149,58 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             int elem_size, int elem_count);
 
         /// <summary>
+        /// Helper to get an exception based on an error code.
+        /// </summary>
+        /// <param name="res">The error code to turn into an exception.</param>
+        /// <returns>The exception corresponding to error code <paramref name="res"/>, or <c>null</c> if
+        /// <paramref name="res"/> was <c>MRS_SUCCESS</c>.</returns>
+        public static Exception GetExceptionForErrorCode(uint res)
+        {
+            switch (res)
+            {
+            case MRS_SUCCESS:
+                return null;
+
+            case MRS_E_UNKNOWN:
+            default:
+                return new Exception();
+
+            case MRS_E_INVALID_PARAMETER:
+                return new ArgumentException();
+
+            case MRS_E_INVALID_OPERATION:
+                return new InvalidOperationException();
+
+            case MRS_E_WRONG_THREAD:
+                return new InvalidOperationException("This method cannot be called on that thread.");
+
+            case MRS_E_NOTFOUND:
+                return new Exception("Object not found.");
+
+            case MRS_E_INVALID_NATIVE_HANDLE:
+                return new InvalidInteropNativeHandleException();
+
+            case MRS_E_NOT_INITIALIZED:
+                return new InvalidOperationException("Object not initialized.");
+
+            case MRS_E_UNSUPPORTED:
+                return new NotSupportedException();
+
+            case MRS_E_OUT_OF_RANGE:
+                return new ArgumentOutOfRangeException();
+
+            case MRS_E_SCTP_NOT_NEGOTIATED:
+                return new SctpNotNegotiatedException();
+
+            case MRS_E_PEER_CONNECTION_CLOSED:
+                return new InvalidOperationException("The operation cannot complete because the peer connection was closed.");
+
+            case MRS_E_INVALID_DATA_CHANNEL_ID:
+                return new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
+            }
+        }
+
+        /// <summary>
         /// Helper to throw an exception based on an error code.
         /// </summary>
         /// <param name="res">The error code to turn into an exception, if not zero (MRS_SUCCESS).</param>
@@ -158,48 +210,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             {
                 return;
             }
-
             MainEventSource.Log.NativeError(res);
-
-            switch (res)
-            {
-            case MRS_E_UNKNOWN:
-            default:
-                throw new Exception();
-
-            case MRS_E_INVALID_PARAMETER:
-                throw new ArgumentException();
-
-            case MRS_E_INVALID_OPERATION:
-                throw new InvalidOperationException();
-
-            case MRS_E_WRONG_THREAD:
-                throw new InvalidOperationException("This method cannot be called on that thread.");
-
-            case MRS_E_NOTFOUND:
-                throw new Exception("Object not found.");
-
-            case MRS_E_INVALID_NATIVE_HANDLE:
-                throw new InvalidInteropNativeHandleException();
-
-            case MRS_E_NOT_INITIALIZED:
-                throw new InvalidOperationException("Object not initialized.");
-
-            case MRS_E_UNSUPPORTED:
-                throw new NotSupportedException();
-
-            case MRS_E_OUT_OF_RANGE:
-                throw new ArgumentOutOfRangeException();
-
-            case MRS_E_SCTP_NOT_NEGOTIATED:
-                throw new SctpNotNegotiatedException();
-
-            case MRS_E_PEER_CONNECTION_CLOSED:
-                throw new InvalidOperationException("The operation cannot complete because the peer connection was closed.");
-
-            case MRS_E_INVALID_DATA_CHANNEL_ID:
-                throw new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
-            }
+            throw GetExceptionForErrorCode(res);
         }
 
         /// <summary>

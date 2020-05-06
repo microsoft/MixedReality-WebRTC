@@ -156,6 +156,9 @@ MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
 // Peer connection
 //
 
+/// Opaque handle to a native AudioTrackReadBuffer C++ object.
+using AudioTrackReadBufferHandle = void*;
+
 /// Callback fired when the peer connection is connected, that is it finished
 /// the JSEP offer/answer exchange successfully.
 using mrsPeerConnectionConnectedCallback = void(MRS_CALL*)(void* user_data);
@@ -703,19 +706,22 @@ mrsPeerConnectionSetBitrate(mrsPeerConnectionHandle peer_handle,
                             int start_bitrate_bps,
                             int max_bitrate_bps) noexcept;
 
-/// Parameter-less callback.
-using ActionCallback = void(MRS_CALL*)(void* user_data);
+/// Callback invoked when |mrsPeerConnectionSetRemoteDescriptionAsync()|
+/// completed, successfully or not. The |error_message| parameter is only
+/// relevant if |result| contains an error code.
+using mrsRemoteDescriptionAppliedCallback = void(
+    MRS_CALL*)(void* user_data, mrsResult result, const char* error_message);
 
 /// Set a remote description received from a remote peer via the signaling
 /// solution implemented by the user. Once the remote description is applied,
 /// the action callback is invoked to signal the caller it is safe to continue
 /// the negotiation, and in particular it is safe to call |CreateAnswer()|.
-MRS_API mrsResult MRS_CALL
-mrsPeerConnectionSetRemoteDescriptionAsync(mrsPeerConnectionHandle peer_handle,
-                                           const char* type,
-                                           const char* sdp,
-                                           ActionCallback callback,
-                                           void* user_data) noexcept;
+MRS_API mrsResult MRS_CALL mrsPeerConnectionSetRemoteDescriptionAsync(
+    mrsPeerConnectionHandle peer_handle,
+    const char* type,
+    const char* sdp,
+    mrsRemoteDescriptionAppliedCallback callback,
+    void* user_data) noexcept;
 
 /// Close a peer connection, removing all tracks and disconnecting from the
 /// remote peer currently connected. This does not invalidate the handle nor

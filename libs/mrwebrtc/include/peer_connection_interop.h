@@ -71,4 +71,33 @@ mrsPeerConnectionAddTransceiver(mrsPeerConnectionHandle peer_handle,
                                 const mrsTransceiverInitConfig* config,
                                 mrsTransceiverHandle* handle) noexcept;
 
+#if 0 // WIP
+/// Experimental. Render or not remote audio tracks from a peer connection on
+/// the system audio device.
+///
+/// The default behavior is for every remote audio frame to be passed to
+/// remote audio frame callbacks, as well as rendered automatically on the
+/// system audio device. If `false` is passed to this function, remote audio
+/// frames will still be received and passed to callbacks, but won't be rendered
+/// on the system device.
+///
+/// Changing the default behavior is not supported on UWP.
+MRS_API mrsResult MRS_CALL
+mrsPeerConnectionRenderRemoteAudio(mrsPeerConnectionHandle peerHandle,
+                                   bool render);
+MRS_API mrsResult MRS_CALL
+mrsAudioTrackReadBufferCreate(mrsPeerConnectionHandle peerHandle,
+                              int bufferMs,
+                              AudioTrackReadBufferHandle* readStreamOut);
+
+MRS_API mrsResult MRS_CALL
+mrsAudioTrackReadBufferRead(AudioTrackReadBufferHandle readStream,
+                            int sampleRate,
+                            float data[],
+                            int dataLen,
+                            int numChannels);
+
+MRS_API void MRS_CALL
+mrsAudioTrackReadBufferDestroy(AudioTrackReadBufferHandle readStream);
+#endif
 }  // extern "C"

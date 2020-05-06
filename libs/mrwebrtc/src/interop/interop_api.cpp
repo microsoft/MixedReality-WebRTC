@@ -833,19 +833,25 @@ mrsPeerConnectionSetBitrate(mrsPeerConnectionHandle peer_handle,
   return Result::kInvalidNativeHandle;
 }
 
-mrsResult MRS_CALL
-mrsPeerConnectionSetRemoteDescriptionAsync(mrsPeerConnectionHandle peer_handle,
-                                           const char* type,
-                                           const char* sdp,
-                                           ActionCallback callback,
-                                           void* user_data) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(peer_handle)) {
-    return (peer->SetRemoteDescriptionAsync(type, sdp,
-                                            Callback<>{callback, user_data})
-                ? Result::kSuccess
-                : Result::kUnknownError);
+mrsResult MRS_CALL mrsPeerConnectionSetRemoteDescriptionAsync(
+    mrsPeerConnectionHandle peer_handle,
+    const char* type,
+    const char* sdp,
+    mrsRemoteDescriptionAppliedCallback callback,
+    void* user_data) noexcept {
+  if (IsStringNullOrEmpty(type) || IsStringNullOrEmpty(sdp)) {
+    return mrsResult::kInvalidParameter;
   }
-  return Result::kInvalidNativeHandle;
+  auto peer = static_cast<PeerConnection*>(peer_handle);
+  if (!peer) {
+    return Result::kInvalidNativeHandle;
+  }
+  return (
+      peer->SetRemoteDescriptionAsync(
+          type, sdp,
+          PeerConnection::RemoteDescriptionAppliedCallback{callback, user_data})
+          ? Result::kSuccess
+          : Result::kUnknownError);
 }
 
 mrsResult MRS_CALL

@@ -134,6 +134,10 @@ class GlobalFactory {
   /// outdated as soon as the call returns if other threads add/remove objects.
   uint32_t ReportLiveObjects();
 
+  rtc::scoped_refptr<ToggleAudioMixer> audio_mixer() const {
+    return custom_audio_mixer_;
+  }
+
  private:
   friend struct std::default_delete<GlobalFactory>;
 
@@ -212,6 +216,8 @@ class GlobalFactory {
   /// Collection of all tracked objects alive. This is solely used to display a
   /// debugging report with |ReportLiveObjects()|.
   std::vector<TrackedObject*> alive_objects_ RTC_GUARDED_BY(mutex_);
+
+  rtc::scoped_refptr<ToggleAudioMixer> custom_audio_mixer_;
 
 #if defined(MR_SHARING_WIN) && !defined(WINUWP)
   // Initializes and quits winsock library on Win32.
