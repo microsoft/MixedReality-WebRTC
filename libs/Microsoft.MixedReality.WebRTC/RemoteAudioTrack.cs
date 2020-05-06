@@ -53,8 +53,6 @@ namespace Microsoft.MixedReality.WebRTC
         /// audio device used by WebRTC. If |false| is passed to this function, remote
         /// audio frames will still be received and passed to callbacks, but won't be
         /// output to the audio device.
-        ///
-        /// NOTE: Changing the default behavior is not supported on UWP.
         /// </remarks>
         public void OutputToDevice(bool output)
         {

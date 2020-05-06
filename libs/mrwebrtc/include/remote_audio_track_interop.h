@@ -49,8 +49,6 @@ mrsRemoteAudioTrackIsEnabled(mrsRemoteAudioTrackHandle track_handle) noexcept;
 /// audio device used by WebRTC. If |false| is passed to this function, remote
 /// audio frames will still be received and passed to callbacks, but won't be
 /// output to the audio device.
-///
-/// NOTE: Changing the default behavior is not supported on UWP.
 MRS_API void MRS_CALL
 mrsRemoteAudioTrackOutputToDevice(mrsRemoteAudioTrackHandle track_handle, bool output) noexcept;
 
