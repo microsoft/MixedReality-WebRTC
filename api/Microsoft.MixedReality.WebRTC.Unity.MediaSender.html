@@ -152,10 +152,15 @@ with the intention to send them to the remote peer.</p>
   
   
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.AutoStartOnEnabled">AutoStartOnEnabled</h4>
-  <div class="markdown level1 summary"><p>Automatically start media capture when the component is enabled.</p>
+  <div class="markdown level1 summary"><p>Automatically start media capture when the component is enabled, and stop capture
+when the component is disabled.</p>
 <p>If <code>true</code>, then <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync">StartCaptureAsync()</a> is automatically called
 when the <see xref="UnityEngine.MonoBehaviour.OnEnabled"></see> callback is invoked
-by Unity.</p>
+by Unity, and conversely <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture">StopCapture()</a> is automatically called when
+the <see xref="UnityEngine.MonoBehaviour.OnEnabled"></see> callback is invoked by Unity.</p>
+<p>If <code>false</code>, then the user has to manually call <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync">StartCaptureAsync()</a>
+to start capture before the media sender is attached to a transceiver, and call
+<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture">StopCapture()</a> to stop capture.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -177,6 +182,12 @@ by Unity.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>When the media sender is attached to a transceiver, media capture starts automatically
+if the component is active and enabled, even if <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled">AutoStartOnEnabled</a> is false.</p>
+<p>To have complete manual control on capture, set both <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled">AutoStartOnEnabled</a> and
+<see xref="UnityEngine.MonoBehaviour.enabled"></see> to <code>false</code>.</p>
+</div>
   
   
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_TrackName" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.TrackName">TrackName</h4>
@@ -351,6 +362,16 @@ it and resume producing media frames.</p>
       </tr>
     </tbody>
   </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDestroy_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDestroy*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDestroy" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDestroy">OnDestroy()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void OnDestroy()</code></pre>
+  </div>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDisable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDisable*"></a>

@@ -858,7 +858,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioSender.html",
-          "hash": "FVaSbY3/+0o3mdtWW6mVUQ=="
+          "hash": "eYGBVIoy8dXrNUrLce0uDw=="
         }
       },
       "is_incremental": false,
@@ -918,7 +918,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSender-1.html",
-          "hash": "oF5pKRa7fjjO2o5aDndJPg=="
+          "hash": "NJefMnIgp0bu4dQttXUIzw=="
         }
       },
       "is_incremental": false,
@@ -1134,7 +1134,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaSender.html",
-          "hash": "zXXLYKj8LtmGZTVfUfBLYA=="
+          "hash": "DoFZ2+1vYqcTg74nD4YtIg=="
         }
       },
       "is_incremental": false,
@@ -1158,7 +1158,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html",
-          "hash": "gNJgVGSzRPgc5ElyZiXN7Q=="
+          "hash": "h6Aw+00/wNDgnkv1mvfnpg=="
         }
       },
       "is_incremental": false,
@@ -1194,7 +1194,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender.html",
-          "hash": "Wuzm8C2yYKv9IKcoSUNizw=="
+          "hash": "s+BSHr1ekrKR47faY0PZkg=="
         }
       },
       "is_incremental": false,
@@ -1314,7 +1314,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoSender.html",
-          "hash": "kXVLuJ16z9KgpKLM1w8HTw=="
+          "hash": "vOEkkAoB5NRtzlDgsgAG4w=="
         }
       },
       "is_incremental": false,
@@ -1362,7 +1362,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html",
-          "hash": "kmyhBUP4mbqsQMtQvSdddw=="
+          "hash": "s634gw/DC4bOScM5z8Dq0g=="
         }
       },
       "is_incremental": false,

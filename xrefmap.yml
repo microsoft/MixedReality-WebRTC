@@ -4241,6 +4241,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.MediaSender.MuteImpl
   nameWithType: MediaSender.MuteImpl
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDestroy
+  name: OnDestroy()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDestroy
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDestroy
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDestroy()
+  nameWithType: MediaSender.OnDestroy()
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDestroy*
+  name: OnDestroy
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDestroy_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDestroy
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDestroy
+  nameWithType: MediaSender.OnDestroy
 - uid: Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDisable
   name: OnDisable()
   href: api/Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDisable
