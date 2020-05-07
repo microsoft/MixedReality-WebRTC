@@ -162,10 +162,10 @@ class PCRaii {
 };
 
 // OnLocalSdpReadyToSend
-class SdpCallback : public InteropCallback<const char*, const char*> {
+class SdpCallback : public InteropCallback<mrsSdpMessageType, const char*> {
  public:
-  using Base = InteropCallback<const char*, const char*>;
-  using callback_type = void(const char*, const char*);
+  using Base = InteropCallback<mrsSdpMessageType, const char*>;
+  using callback_type = void(mrsSdpMessageType, const char*);
   SdpCallback(mrsPeerConnectionHandle pc) : pc_(pc) {}
   SdpCallback(mrsPeerConnectionHandle pc, std::function<callback_type> func)
       : Base(std::move(func)), pc_(pc) {
@@ -276,13 +276,13 @@ class LocalPeerPairRaii {
   bool is_exchange_pending_{false};
   Event exchange_completed_;
   void setup() {
-    sdp1_cb_ = [this](const char* type, const char* sdp_data) {
+    sdp1_cb_ = [this](mrsSdpMessageType type, const char* sdp_data) {
       Event ev;
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
                                       pc2_.handle(), type, sdp_data,
                                       &TestUtils::SetEventOnCompleted, &ev));
       ev.Wait();
-      if (kOfferString == type) {
+      if (type == mrsSdpMessageType::kOffer) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc2_.handle()));
       } else {
@@ -291,13 +291,13 @@ class LocalPeerPairRaii {
         exchange_completed_.Set();
       }
     };
-    sdp2_cb_ = [this](const char* type, const char* sdp_data) {
+    sdp2_cb_ = [this](mrsSdpMessageType type, const char* sdp_data) {
       Event ev;
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
                                       pc1_.handle(), type, sdp_data,
                                       &TestUtils::SetEventOnCompleted, &ev));
       ev.Wait();
-      if (kOfferString == type) {
+      if (type == mrsSdpMessageType::kOffer) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc1_.handle()));
       } else {

@@ -67,9 +67,9 @@ namespace TestNetCoreConsole
                 // Setup signaling
                 Console.WriteLine("Starting signaling...");
                 var signaler = new NamedPipeSignaler.NamedPipeSignaler(pc, "testpipe");
-                signaler.SdpMessageReceived += (string type, string sdp) => {
-                    pc.SetRemoteDescriptionAsync(type, sdp).Wait();
-                    if (type == "offer")
+                signaler.SdpMessageReceived += async (SdpMessage message) => {
+                    await pc.SetRemoteDescriptionAsync(message);
+                    if (message.Type == SdpMessageType.Offer)
                     {
                         pc.CreateAnswer();
                     }

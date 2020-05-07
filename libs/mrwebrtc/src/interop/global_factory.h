@@ -132,7 +132,7 @@ class GlobalFactory {
   mrsResult GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory);
 #endif  // defined(WINUWP)
 
-  rtc::scoped_refptr<CustomAudioMixer> custom_audio_mixer() const {
+  rtc::scoped_refptr<ToggleAudioMixer> audio_mixer() const {
     return custom_audio_mixer_;
   }
 
@@ -225,7 +225,7 @@ class GlobalFactory {
   /// debugging report with |ReportLiveObjects()|.
   std::vector<TrackedObject*> alive_objects_ RTC_GUARDED_BY(mutex_);
 
-  rtc::scoped_refptr<CustomAudioMixer> custom_audio_mixer_;
+  rtc::scoped_refptr<ToggleAudioMixer> custom_audio_mixer_;
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC;
-using Windows.UI.Xaml.Controls;
 
 namespace TestAppUwp
 {
@@ -57,53 +56,6 @@ namespace TestAppUwp
         /// <see cref="ApplyRemoteOfferAsync(string)"/>).
         /// </summary>
         HaveRemoteOffer,
-    }
-
-    /// <summary>
-    /// Model for a chat channel backed by a WebRTC data channel.
-    /// </summary>
-    public class ChatChannelModel : NotifierBase
-    {
-        /// <summary>
-        /// Backing WebRTC data channel used to transmit the chat messages.
-        /// </summary>
-        public DataChannel DataChannel { get; }
-
-        /// <summary>
-        /// Full chat text.
-        /// </summary>
-        public string FullText
-        {
-            get { return _fullText; }
-            set { SetProperty(ref _fullText, value); }
-        }
-
-        /// <summary>
-        /// Channel label.
-        /// </summary>
-        public string Label { get { return DataChannel?.Label; } }
-
-        private string _fullText = "";
-
-        public ChatChannelModel(DataChannel dataChannel)
-        {
-            DataChannel = dataChannel;
-            dataChannel.MessageReceived += (byte[] message) =>
-            {
-                string text = System.Text.Encoding.UTF8.GetString(message);
-                AppendText($"[remote] {text}\n");
-            };
-        }
-
-        /// <summary>
-        /// Append some text to <see cref="FullText"/>.
-        /// </summary>
-        /// <param name="text">The text to append.</param>
-        public void AppendText(string text)
-        {
-            _fullText += text;
-            RaisePropertyChanged("Text");
-        }
     }
 
     /// <summary>
@@ -581,35 +533,21 @@ namespace TestAppUwp
         /// </summary>
         private void OnPeerConnected()
         {
-            //RunOnMainThread(() =>
-            //{
-            //    //sessionStatusText.Text = "joined";
-            //    chatTextBox.IsEnabled = true;
-
-            //    // Reset "Create Offer" button, and re-enable if signaling is available
-            //    createOfferButton.Content = "Create Offer";
-            //    createOfferButton.IsEnabled = _isDssPolling;
-            //});
         }
 
-        private void OnLocalSdpReadyToSend(string type, string sdp)
+        private void OnLocalSdpReadyToSend(SdpMessage message)
         {
-            Logger.Log($"Local {type} ready to be sent to remote peer.");
-            if (type == "offer")
+            Logger.Log($"Local {message.Type} ready to be sent to remote peer.");
+            if (message.Type == SdpMessageType.Offer)
             {
                 NotifyLocalOfferApplied();
             }
-            else if (type == "answer")
+            if (message.Type == SdpMessageType.Answer)
             {
                 NotifyLocalAnswerApplied();
             }
-            var message = new NodeDssSignaler.Message
-            {
-                MessageType = NodeDssSignaler.Message.WireMessageTypeFromString(type),
-                Data = sdp,
-                IceDataSeparator = "|"
-            };
-            NodeDssSignaler.SendMessageAsync(message);
+            var dssMessage = NodeDssSignaler.Message.FromSdpMessage(message);
+            NodeDssSignaler.SendMessageAsync(dssMessage);
             //RunOnMainThread(() => negotiationStatusText.Text = (type == "offer" ? "Sending local offer" : "Idle (answer sent)"));
         }
 
@@ -703,8 +641,8 @@ namespace TestAppUwp
             // This slightly deviates from the WebRTC standard which says that the
             // HaveRemoteOffer state is after the remote offer was applied, not before.
             ExchangeNegotiationState(NegotiationState.Stable, NegotiationState.HaveRemoteOffer);
-
-            await _peerConnection.SetRemoteDescriptionAsync("offer", content);
+            var message = new SdpMessage { Type = SdpMessageType.Offer, Content = content };
+            await _peerConnection.SetRemoteDescriptionAsync(message);
         }
 
         /// <summary>
@@ -713,7 +651,8 @@ namespace TestAppUwp
         /// <param name="content">The SDP answer message content.</param>
         public async Task ApplyRemoteAnswerAsync(string content)
         {
-            await _peerConnection.SetRemoteDescriptionAsync("answer", content);
+            var message = new SdpMessage { Type = SdpMessageType.Answer, Content = content };
+            await _peerConnection.SetRemoteDescriptionAsync(message);
 
             ExchangeNegotiationState(NegotiationState.HaveLocalOffer, NegotiationState.Stable);
         }

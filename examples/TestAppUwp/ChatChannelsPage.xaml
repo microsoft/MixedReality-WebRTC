@@ -1,0 +1,56 @@
+<Page
+    x:Class="TestAppUwp.ChatChannelsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TestAppUwp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    NavigationCacheMode="Required">
+    <Page.Resources>
+        <DataTemplate x:Key="ChatChannelItemTemplate" x:DataType="local:ChatChannelModel">
+            <StackPanel Orientation="Vertical" Margin="2,0,0,0" AutomationProperties.Name="{x:Bind Label, Mode=OneTime}">
+                <TextBlock Text="{x:Bind Label, Mode=OneTime}"/>
+                <TextBlock Text="{x:Bind StatusText, Mode=OneWay}"
+                           Foreground="{ThemeResource SystemControlPageTextBaseMediumBrush}"/>
+            </StackPanel>
+        </DataTemplate>
+    </Page.Resources>
+    <Grid Margin="8,0,8,8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Chat Channels" Style="{StaticResource TitleTextBlockStyle}"/>
+        <Grid Grid.Row="1" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer>
+                <ListView x:Name="chatList" ItemClick="ChatList_ItemClick" IsItemClickEnabled="True"
+                          ItemsSource="{x:Bind SessionModel.ChatChannels, Mode=OneWay}"
+                          ItemTemplate="{StaticResource ChatChannelItemTemplate}"/>
+            </ScrollViewer>
+            <ScrollViewer x:Name="chatScrollViewer" Grid.Column="1" Margin="8,0,0,0">
+                <TextBox x:Name="chatTextBox" IsReadOnly="True" TextWrapping="Wrap"
+                         Text="{x:Bind SessionModel.ChatChannels.SelectedItem.FullText, Mode=OneWay}"/>
+            </ScrollViewer>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="chatSendButton" Margin="0,6,6,0" Click="ChatSendButton_Click"
+                    IsEnabled="{x:Bind SessionModel.ChatChannels.SelectedItem.CanSend, Mode=OneWay}">
+                <SymbolIcon Symbol="Send"/>
+            </Button>
+            <TextBox x:Name="chatInputBox" Margin="0,6,0,0" PlaceholderText="Type some text to send..."
+                     Grid.Column="2" KeyDown="OnChatKeyDown"
+                     IsEnabled="{x:Bind SessionModel.ChatChannels.SelectedItem.CanSend, Mode=OneWay}"/>
+        </Grid>
+    </Grid>
+</Page>

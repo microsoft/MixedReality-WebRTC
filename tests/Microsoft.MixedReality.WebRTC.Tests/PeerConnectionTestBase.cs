@@ -124,7 +124,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         }
 
         [TearDown]
-        public void TearDownConnectin()
+        public void TearDownConnection()
         {
             // Unregister all callbacks
             pc1_.LocalSdpReadytoSend -= OnLocalSdpReady1;
@@ -257,12 +257,12 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             connectedEvent2_.Set();
         }
 
-        private async void OnLocalSdpReady1(string type, string sdp)
+        private async void OnLocalSdpReady1(SdpMessage message)
         {
             Assert.IsTrue(exchangePending_);
-            await pc2_.SetRemoteDescriptionAsync(type, sdp);
+            await pc2_.SetRemoteDescriptionAsync(message);
             remoteDescAppliedEvent2_.Set();
-            if (type == "offer")
+            if (message.Type == SdpMessageType.Offer)
             {
                 pc2_.CreateAnswer();
             }
@@ -273,12 +273,12 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             }
         }
 
-        private async void OnLocalSdpReady2(string type, string sdp)
+        private async void OnLocalSdpReady2(SdpMessage message)
         {
             Assert.IsTrue(exchangePending_);
-            await pc1_.SetRemoteDescriptionAsync(type, sdp);
+            await pc1_.SetRemoteDescriptionAsync(message);
             remoteDescAppliedEvent1_.Set();
-            if (type == "offer")
+            if (message.Type == SdpMessageType.Offer)
             {
                 pc1_.CreateAnswer();
             }

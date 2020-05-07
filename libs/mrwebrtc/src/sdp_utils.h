@@ -7,6 +7,7 @@
 #include <mutex>
 
 #include "callback.h"
+#include "interop_api.h"
 
 namespace Microsoft::MixedReality::WebRTC {
 
@@ -64,5 +65,11 @@ std::string EncodeIceServers(const std::string& url,
 // representation of absl::optional as per the Abseil Compatibility Guidelines:
 // https://abseil.io/about/compatibility
 std::optional<webrtc::SdpType> SdpTypeFromString(const std::string& type_str);
+
+/// Convert an API SDP message type to an internal implementation SDP type.
+webrtc::SdpType SdpTypeFromApiType(mrsSdpMessageType api_type);
+
+/// Convert an internal implementation SDP type to an API SDP message type.
+mrsSdpMessageType ApiTypeFromSdpType(webrtc::SdpType type);
 
 }  // namespace Microsoft::MixedReality::WebRTC

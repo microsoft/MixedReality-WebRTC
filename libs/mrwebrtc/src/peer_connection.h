@@ -10,6 +10,7 @@
 #include "mrs_errors.h"
 #include "peer_connection_interop.h"
 #include "refptr.h"
+#include "toggle_audio_mixer.h"
 #include "tracked_object.h"
 #include "utils.h"
 #include "video_frame_observer.h"
@@ -34,33 +35,6 @@ struct BitrateSettings {
 
   /// Maximum bitrate in bits per seconds.
   std::optional<int> max_bitrate_bps;
-};
-
-  /// Can mix selected audio sources only.
-class CustomAudioMixer : public webrtc::AudioMixer {
- public:
-  CustomAudioMixer();
-
-  // AudioMixer implementation.
-  bool AddSource(Source* audio_source) override;
-  void RemoveSource(Source* audio_source) override;
-  void Mix(size_t number_of_channels,
-           webrtc::AudioFrame* audio_frame_for_mixing) override;
-
-  // Select if the source with the given id must be played on the audio device.
-  void RenderSource(int ssrc, bool render);
-
- private:
-  struct KnownSource {
-    Source* source;
-    bool is_rendered;
-  };
-
-  void TryAddToBaseImpl(KnownSource& audio_source);
-
-  rtc::CriticalSection crit_;
-  rtc::scoped_refptr<webrtc::AudioMixerImpl> base_impl_;
-  std::map<int, KnownSource> source_from_id_;
 };
 
 /// The PeerConnection class is the entry point to most of WebRTC.
@@ -121,7 +95,7 @@ class PeerConnection : public TrackedObject,
   /// - The null-terminated type of the SDP message. Valid values are "offer" or
   /// "answer".
   /// - The null-terminated SDP message content.
-  using LocalSdpReadytoSendCallback = Callback<const char*, const char*>;
+  using LocalSdpReadytoSendCallback = Callback<mrsSdpMessageType, const char*>;
 
   /// Register a custom LocalSdpReadytoSendCallback invoked when a local SDP
   /// message is ready to be sent by the user to the remote peer. Users MUST
@@ -209,13 +183,20 @@ class PeerConnection : public TrackedObject,
                        const int sdp_mline_index,
                        const char* candidate) noexcept;
 
+  /// Callback invoked when |SetRemoteDescriptionAsync()| finished applying a
+  /// remote description, successfully or not. The first parameter is the result
+  /// of the operation, and the second one contains the error message if the
+  /// description was not successfully applied.
+  using RemoteDescriptionAppliedCallback = Callback<mrsResult, const char*>;
+
   /// Notify the WebRTC engine that an SDP message has been received from the
   /// remote peer. The parameters correspond to the SDP message data provided by
   /// the |LocalSdpReadytoSendCallback|, after being transmitted to the
   /// other peer.
-  bool SetRemoteDescriptionAsync(const char* type,
-                                 const char* sdp,
-                                 Callback<> callback) noexcept;
+  Error SetRemoteDescriptionAsync(
+      mrsSdpMessageType type,
+      const char* sdp,
+      RemoteDescriptionAppliedCallback callback) noexcept;
 
   //
   // Connection
@@ -373,9 +354,6 @@ class PeerConnection : public TrackedObject,
     auto lock = std::scoped_lock{media_track_callback_mutex_};
     audio_track_removed_callback_ = std::move(callback);
   }
-
-  // Experimental. Render or not remote audio tracks on the audio device.
-  void RenderRemoteAudioTrack(bool render);
 
   //
   // Data channel
@@ -632,13 +610,7 @@ class PeerConnection : public TrackedObject,
   /// looks like this is only a problem for negotiated (out-of-band) channels.
   bool sctp_negotiated_ = true;
 
-  // TODO at the moment we only support one remote audio source so keep just one
-  // ssrc and one flag.
-  absl::optional<int> remote_audio_ssrc_ RTC_GUARDED_BY(remote_audio_mutex_);
-  bool render_remote_audio_ RTC_GUARDED_BY(remote_audio_mutex_) = true;
-  std::mutex remote_audio_mutex_;
-
-  rtc::scoped_refptr<CustomAudioMixer> custom_audio_mixer_;
+  rtc::scoped_refptr<ToggleAudioMixer> audio_mixer_;
 
  private:
   PeerConnection(RefPtr<GlobalFactory> global_factory);
@@ -762,7 +734,8 @@ class PeerConnection : public TrackedObject,
   /// RTP media receiver which was just created or started receiving (Unified
   /// Plan) or was created for a newly receiving track (Plan B).
   template <mrsMediaKind MEDIA_KIND>
-  void AddRemoteMediaTrack(
+  RefPtr<typename MediaTrait<MEDIA_KIND>::RemoteMediaTrackT>
+  AddRemoteMediaTrack(
       rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
       webrtc::RtpReceiverInterface* receiver,
       typename MediaTrait<MEDIA_KIND>::MediaTrackAddedCallbackT*
@@ -781,7 +754,7 @@ class PeerConnection : public TrackedObject,
     auto ret =
         GetOrCreateTransceiverForNewRemoteTrack(Media::kMediaKind, receiver);
     if (!ret.ok()) {
-      return;
+      return {};
     }
     Transceiver* const transceiver = ret.value();
 
@@ -803,6 +776,7 @@ class PeerConnection : public TrackedObject,
                               remote_media_track->GetName().c_str(), cb);
       }
     }
+    return remote_media_track;
   }
 
   /// Destroy an existing remote media (audio or video) track wrapper for an
@@ -845,8 +819,6 @@ class PeerConnection : public TrackedObject,
     }
     // |media_track| goes out of scope and destroys the C++ instance
   }
-
-  void SetRemoteAudioSsrc(int ssrc);
 };
 
 }  // namespace Microsoft::MixedReality::WebRTC

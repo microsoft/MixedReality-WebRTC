@@ -8,8 +8,8 @@
 #include "audio_frame_observer.h"
 #include "common_audio/resampler/include/resampler.h"
 #include "data_channel.h"
-#include "interop_api.h"
 #include "interop/global_factory.h"
+#include "interop_api.h"
 #include "media/local_audio_track.h"
 #include "media/local_video_track.h"
 #include "media/remote_audio_track.h"
@@ -172,6 +172,8 @@ class SessionDescObserver : public webrtc::SetSessionDescriptionObserver {
   ~SessionDescObserver() override = default;
 };
 
+/// Custom observer for SetRemoteDescription(), invoked when the call completes
+/// (successfully or not) to notify the original caller.
 struct SetRemoteSessionDescObserver
     : public webrtc::SetRemoteDescriptionObserverInterface {
  public:
@@ -180,14 +182,21 @@ struct SetRemoteSessionDescObserver
   SetRemoteSessionDescObserver(Closure&& callback)
       : callback_(std::forward<Closure>(callback)) {}
   void OnSetRemoteDescriptionComplete(webrtc::RTCError error) override {
-    RTC_LOG(LS_INFO) << "Remote description set. err=" << error.message();
-    if (error.ok() && callback_) {
-      callback_();
+    if (error.ok()) {
+      RTC_LOG(LS_INFO) << "Remote description successfully set.";
+    } else {
+      RTC_LOG(LS_ERROR) << "Error setting remote description: "
+                        << error.message();
+    }
+    // #313 - Always call the callback if provided; this is used in some interop
+    // to complete some async task / promise.
+    if (callback_) {
+      callback_(ResultFromRTCErrorType(error.type()), error.message());
     }
   }
 
  protected:
-  std::function<void()> callback_;
+  std::function<void(mrsResult, const char*)> callback_;
 };
 
 /// Convert an implementation value to a native API value of the ICE connection
@@ -656,11 +665,12 @@ ErrorOr<Transceiver*> PeerConnection::AddTransceiver(
   return transceiver.get();
 }
 
-bool PeerConnection::SetRemoteDescriptionAsync(const char* type,
-                                               const char* sdp,
-                                               Callback<> callback) noexcept {
+Error PeerConnection::SetRemoteDescriptionAsync(
+    mrsSdpMessageType type,
+    const char* sdp,
+    RemoteDescriptionAppliedCallback callback) noexcept {
   if (!peer_) {
-    return false;
+    return Error(mrsResult::kInvalidOperation);
   }
   {
     auto lock = std::scoped_lock{data_channel_mutex_};
@@ -668,40 +678,41 @@ bool PeerConnection::SetRemoteDescriptionAsync(const char* type,
       sctp_negotiated_ = false;
     }
   }
-  std::string sdp_type_str(type);
-  auto sdp_type = SdpTypeFromString(sdp_type_str);
-  if (!sdp_type.has_value())
-    return false;
+  const webrtc::SdpType sdp_type = SdpTypeFromApiType(type);
   std::string remote_desc(sdp);
   webrtc::SdpParseError error;
   std::unique_ptr<webrtc::SessionDescriptionInterface> session_description(
-      webrtc::CreateSessionDescription(sdp_type.value(), remote_desc, &error));
-  if (!session_description)
-    return false;
+      webrtc::CreateSessionDescription(sdp_type, remote_desc, &error));
+  if (!session_description) {
+    return Error(mrsResult::kInvalidParameter, error.description.c_str());
+  }
   rtc::scoped_refptr<webrtc::SetRemoteDescriptionObserverInterface> observer =
-      new rtc::RefCountedObject<SetRemoteSessionDescObserver>([this, callback] {
-        if (IsUnifiedPlan()) {
-          SynchronizeTransceiversUnifiedPlan(/*remote=*/true);
-        } else {
-          RTC_DCHECK(IsPlanB());
-          // In Plan B there is no RTP transceiver, and all remote tracks which
-          // start/stop receiving are triggering a TrackAdded or TrackRemoved
-          // event. Therefore there is no extra work to do like there was in
-          // Unified Plan above.
+      new rtc::RefCountedObject<SetRemoteSessionDescObserver>(
+          [this, callback](mrsResult result, const char* error_message) {
+            if (result == Result::kSuccess) {
+              if (IsUnifiedPlan()) {
+                SynchronizeTransceiversUnifiedPlan(/*remote=*/true);
+              } else {
+                RTC_DCHECK(IsPlanB());
+                // In Plan B there is no RTP transceiver, and all remote tracks
+                // which start/stop receiving are triggering a TrackAdded or
+                // TrackRemoved event. Therefore there is no extra work to do
+                // like there was in Unified Plan above.
 
-          // TODO - Clarify if this is really needed (and if we really need to
-          // force the update) for parity with Unified Plan and to get the
-          // transceiver update event fired once and once only.
-          for (auto&& tr : transceivers_) {
-            tr->OnSessionDescUpdated(/*remote=*/true, /*forced=*/true);
-          }
-        }
-        // Fire completed callback to signal remote description was applied.
-        callback();
-      });
+                // TODO - Clarify if this is really needed (and if we really
+                // need to force the update) for parity with Unified Plan and to
+                // get the transceiver update event fired once and once only.
+                for (auto&& tr : transceivers_) {
+                  tr->OnSessionDescUpdated(/*remote=*/true, /*forced=*/true);
+                }
+              }
+            }
+            // Fire completed callback to signal remote description was applied.
+            callback(result, error_message);
+          });
   peer_->SetRemoteDescription(std::move(session_description),
                               std::move(observer));
-  return true;
+  return Error(mrsResult::kSuccess);
 }
 
 void PeerConnection::OnSignalingChange(
@@ -866,10 +877,11 @@ void PeerConnection::OnAddTrack(
       receiver->track();
   const std::string& track_kind_str = track->kind();
   if (track_kind_str == webrtc::MediaStreamTrackInterface::kAudioKind) {
-    AddRemoteMediaTrack<mrsMediaKind::kAudio>(std::move(track), receiver.get(),
-
-                                              &audio_track_added_callback_);
-    if (custom_audio_mixer_) {
+    RefPtr<RemoteAudioTrack> track_wrapper =
+        AddRemoteMediaTrack<mrsMediaKind::kAudio>(
+            std::move(track), receiver.get(), &audio_track_added_callback_);
+    if (audio_mixer_) {
+      // The track won't be output by the mixer until OutputSource is called.
       // We need to get the ssrc of the receiver in order to match the track to
       // the corresponding audio source in the AudioMixer. There doesn't seem to
       // be a way to get the ssrc from RTPReceiverInterface directly -
@@ -877,19 +889,22 @@ void PeerConnection::OnAddTrack(
       // first frame arrives. The easiest way seems to be requesting the stats
       // for the receiver and getting it from there.
       struct SetSsrcObserver : public webrtc::RTCStatsCollectorCallback {
-        SetSsrcObserver(PeerConnection& peer_connection)
-            : peer_connection_(peer_connection) {}
+        SetSsrcObserver(RefPtr<RemoteAudioTrack> track)
+            : track_(std::move(track)) {}
         virtual void OnStatsDelivered(
             const rtc::scoped_refptr<const webrtc::RTCStatsReport>&
                 report) noexcept override {
           const auto& stats =
               report->GetStatsOfType<webrtc::RTCInboundRTPStreamStats>();
           RTC_DCHECK_EQ(stats.size(), 1);
-          peer_connection_.SetRemoteAudioSsrc(*stats[0]->ssrc);
+          // This starts to output the track - or not, if the user has called
+          // OutputToDevice(false) in the track added callback.
+          track_->InitSsrc(*stats[0]->ssrc);
         }
-        PeerConnection& peer_connection_;
+        RefPtr<RemoteAudioTrack> track_;
       };
-      auto stats_observer = new rtc::RefCountedObject<SetSsrcObserver>(*this);
+      auto stats_observer =
+          new rtc::RefCountedObject<SetSsrcObserver>(track_wrapper);
       peer_->GetStats(receiver, stats_observer);
     }
   } else if (track_kind_str == webrtc::MediaStreamTrackInterface::kVideoKind) {
@@ -967,10 +982,10 @@ void PeerConnection::OnLocalDescCreated(
           auto lock = std::scoped_lock{local_sdp_ready_to_send_callback_mutex_};
           if (auto cb = local_sdp_ready_to_send_callback_) {
             auto desc = peer_->local_description();
-            std::string type{SdpTypeToString(desc->GetType())};
+            const mrsSdpMessageType type = ApiTypeFromSdpType(desc->GetType());
             std::string sdp;
             desc->ToString(&sdp);
-            cb(type.c_str(), sdp.c_str());
+            cb(type, sdp.c_str());
           }
         }
       });
@@ -1306,24 +1321,6 @@ void PeerConnection::InvokeRenegotiationNeeded() {
 
 PeerConnection::PeerConnection(RefPtr<GlobalFactory> global_factory)
     : TrackedObject(std::move(global_factory), ObjectType::kPeerConnection),
-      custom_audio_mixer_(global_factory_->custom_audio_mixer()) {}
-
-void PeerConnection::RenderRemoteAudioTrack(bool render) {
-  RTC_DCHECK(custom_audio_mixer_);
-  const std::lock_guard<std::mutex> lock{remote_audio_mutex_};
-  render_remote_audio_ = render;
-  if (remote_audio_ssrc_) {
-    custom_audio_mixer_->RenderSource(*remote_audio_ssrc_, render);
-  }
-}
-
-void PeerConnection::SetRemoteAudioSsrc(int ssrc) {
-  RTC_DCHECK(custom_audio_mixer_);
-  const std::lock_guard<std::mutex> lock{remote_audio_mutex_};
-  if (!remote_audio_ssrc_) {
-    custom_audio_mixer_->RenderSource(ssrc, render_remote_audio_);
-  }
-  remote_audio_ssrc_ = ssrc;
-}
+      audio_mixer_(global_factory_->audio_mixer()) {}
 
 }  // namespace Microsoft::MixedReality::WebRTC

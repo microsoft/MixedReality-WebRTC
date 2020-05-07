@@ -1,5 +1,5 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See LICENSE in the project root for license information.
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
 # [TEMPLATE] Compile WebRTC Core for Desktop (Win32) platform
 
@@ -17,13 +17,21 @@ jobs:
     name: ${{parameters.buildAgent}}
     demands:
     - msbuild
-    - mr_webrtc_core
   variables:
     buildTriple: Win32-${{parameters.buildArch}}-${{parameters.buildConfig}}
     projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
   steps:
+
+  # Install Python 2.7.17 and select as default
+  - template: 'steps-install-python2x.yaml'
+    parameters:
+      tempFolder: '$(Build.BinariesDirectory)\py27'
+      pythonVersion: '2.7.17'
+
+  # Checkout
   - checkout: self
     submodules: recursive
+    clean: $(clean.git)
 
   # Compute the PDB package variables
   - task: PowerShell@2
@@ -43,15 +51,39 @@ jobs:
       filePath: tools/ci/mapVariables.ps1
       arguments: 'Win32 ${{parameters.buildArch}} ${{parameters.buildConfig}}'
 
-  # Compile webrtc.lib
-  - task: MSBuild@1
+  # Prepare build
+  - task: PythonScript@0
+    displayName: 'Prepare build'
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a prepare -t webrtc -p win --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper'
+      failOnStderr: false
+
+  # Clean-up unused files
+  - script: |
+      del /F /S /Q "depot_tools/external_bin/gsutil"
+      del /F /S /Q "chromium/third_party/protobuf/java"
+      del /F /S /Q "chromium/tools/android"
+      del /F /S /Q "chromium/tools/code_coverage"
+    workingDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform'
+    displayName: 'Clean-up unused files'
+
+  # Run component detection
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    #inputs:
+      #scanType: 'LogOnly'
+      #sourceScanPath: '$(sourcesRoot)'
+
+  # Build webrtc.lib
+  - task: PythonScript@0
     displayName: 'Build webrtc.lib ($(buildTriple))'
     inputs:
-      solution: '$(projectRoot)WebRtc.Win32.Native.Builder/WebRtc.Win32.Native.Builder.vcxproj'
-      msbuildVersion: '15.0'
-      msbuildArchitecture: x64
-      platform: ${{parameters.buildArch}}
-      configuration: ${{parameters.buildConfig}}
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a build -t webrtc -p win --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper'
+      failOnStderr: false
     timeoutInMinutes: 120
 
   # Publish webrtc.lib as pipeline artifacts (limited retention)

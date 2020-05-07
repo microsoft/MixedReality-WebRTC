@@ -58,12 +58,14 @@
                     <RadioButton x:Name="PreferredAudioCodec_Custom" GroupName="PreferredAudioCodecGroup"
                                  Checked="PreferredAudioCodecChecked" Content="Custom value"/>
                 </StackPanel>
-                <TextBlock x:Name="CustomPreferredAudioCodecHelpText" FontStyle="Italic" Margin="48,6,0,0" Visibility="Collapsed">
+                <TextBlock x:Name="CustomPreferredAudioCodecHelpText" FontStyle="Italic" Margin="48,6,0,0"
+                           Visibility="Collapsed">
                     Leave blank to use the default video codec. A partial list is
                     <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.
                     <LineBreak />Common values include "opus" or "ISAC". Names are case sensitive.
                 </TextBlock>
-                <TextBox Visibility="Collapsed" x:Name="CustomPreferredAudioCodec" Text="" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
+                <TextBox Visibility="Collapsed" x:Name="CustomPreferredAudioCodec" Text="" PlaceholderText="(use default)"
+                         Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
                 <StackPanel Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Local params:</TextBlock>
                     <TextBox Margin="16,0,0,0" Width="250" PlaceholderText="extra_audio_param_local"
@@ -84,12 +86,14 @@
                     <RadioButton x:Name="PreferredVideoCodec_Custom" GroupName="PreferredVideoCodecGroup"
                                  Checked="PreferredVideoCodecChecked" Content="Custom value"/>
                 </StackPanel>
-                <TextBlock x:Name="CustomPreferredVideoCodecHelpText" FontStyle="Italic" Margin="48,6,0,0" Visibility="Collapsed">
+                <TextBlock x:Name="CustomPreferredVideoCodecHelpText" FontStyle="Italic" Margin="48,6,0,0"
+                           Visibility="Collapsed">
                     Leave blank to use the default video codec. A partial list is
                     <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/RTP_payload_formats">available from Wikipedia</Hyperlink>.
                     <LineBreak />Common values include "H264" or "VP8". Names are case sensitive.
                 </TextBlock>
-                <TextBox Visibility="Collapsed" x:Name="CustomPreferredVideoCodec" PlaceholderText="(use default)" Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
+                <TextBox Visibility="Collapsed" x:Name="CustomPreferredVideoCodec" PlaceholderText="(use default)"
+                         Margin="48,6,0,6" Width="400" HorizontalAlignment="Left" />
                 <StackPanel Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Local params:</TextBlock>
                     <TextBox Margin="16,0,0,0" Width="250" PlaceholderText="extra_video_param_local"

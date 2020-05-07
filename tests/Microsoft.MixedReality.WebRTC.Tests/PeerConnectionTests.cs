@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -18,10 +19,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             var pc2 = new PeerConnection();
 
             var evExchangeCompleted = new ManualResetEventSlim(initialState: false);
-            pc1.LocalSdpReadytoSend += async (string type, string sdp) =>
+            pc1.LocalSdpReadytoSend += async (SdpMessage message) =>
             {
-                await pc2.SetRemoteDescriptionAsync(type, sdp);
-                if (type == "offer")
+                await pc2.SetRemoteDescriptionAsync(message);
+                if (message.Type == SdpMessageType.Offer)
                 {
                     pc2.CreateAnswer();
                 }
@@ -30,10 +31,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                     evExchangeCompleted.Set();
                 }
             };
-            pc2.LocalSdpReadytoSend += async (string type, string sdp) =>
+            pc2.LocalSdpReadytoSend += async (SdpMessage message) =>
             {
-                await pc1.SetRemoteDescriptionAsync(type, sdp);
-                if (type == "offer")
+                await pc1.SetRemoteDescriptionAsync(message);
+                if (message.Type == SdpMessageType.Offer)
                 {
                     pc1.CreateAnswer();
                 }
@@ -61,10 +62,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         protected async Task MakeICECall(PeerConnection pc1, PeerConnection pc2)
         {
             var evExchangeCompleted = new ManualResetEventSlim(initialState: false);
-            pc1.LocalSdpReadytoSend += async (string type, string sdp) =>
+            pc1.LocalSdpReadytoSend += async (SdpMessage message) =>
             {
-                await pc2.SetRemoteDescriptionAsync(type, sdp);
-                if (type == "offer")
+                await pc2.SetRemoteDescriptionAsync(message);
+                if (message.Type == SdpMessageType.Offer)
                 {
                     pc2.CreateAnswer();
                 }
@@ -73,10 +74,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                     evExchangeCompleted.Set();
                 }
             };
-            pc2.LocalSdpReadytoSend += async (string type, string sdp) =>
+            pc2.LocalSdpReadytoSend += async (SdpMessage message) =>
             {
-                await pc1.SetRemoteDescriptionAsync(type, sdp);
-                if (type == "offer")
+                await pc1.SetRemoteDescriptionAsync(message);
+                if (message.Type == SdpMessageType.Offer)
                 {
                     pc1.CreateAnswer();
                 }
@@ -161,12 +162,50 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             }
 
             // Close all remaining calls
-            pc[0].Close();
-            pc[1].Close();
+            pc[0].Dispose();
+            pc[1].Dispose();
             for (int i = 3; i < 10; ++i)
             {
-                pc[2 * i].Close();
-                pc[2 * i + 1].Close();
+                pc[2 * i].Dispose();
+                pc[2 * i + 1].Dispose();
+            }
+        }
+
+        [Test(Description = "SetRemoteDescriptionAsync() with invalid arguments")]
+        public async Task SetRemoteDescription_Null()
+        {
+            using (var pc = new PeerConnection())
+            {
+                await pc.InitializeAsync();
+                // Invalid arguments; SRD not even enqueued, fails immediately while validating arguments
+                var message = new SdpMessage { Type = SdpMessageType.Offer, Content = null };
+                Assert.ThrowsAsync<ArgumentException>(async () => await pc.SetRemoteDescriptionAsync(message));
+                message.Content = "";
+                Assert.ThrowsAsync<ArgumentException>(async () => await pc.SetRemoteDescriptionAsync(message));
+            }
+        }
+
+        [Test(Description = "SetRemoteDescriptionAsync() with valid arguments but invalid message content or peer state.")]
+        public async Task SetRemoteDescription_Invalid()
+        {
+            const string kDummyMessage = "v=0\r\n"
+                + "o=- 496134922022744986 2 IN IP4 127.0.0.1\r\n"
+                + "s=-\r\n"
+                + "t=0 0\r\n"
+                + "a=group:BUNDLE 0\r\n"
+                + "a=msid-semantic: WMS\r\n"
+                + "m=application 9 DTLS/SCTP 5000\r\n"
+                + "c=IN IP4 0.0.0.0\r\n"
+                + "a=setup:actpass\r\n"
+                + "a=mid:0\r\n"
+                + "a=sctpmap:5000 webrtc-datachannel 1024\r\n";
+
+            using (var pc = new PeerConnection())
+            {
+                await pc.InitializeAsync();
+                // Set answer without offer; SRD task enqueued, but fails when executing
+                var message = new SdpMessage { Type = SdpMessageType.Answer, Content = kDummyMessage };
+                Assert.CatchAsync<InvalidOperationException>(async () => await pc.SetRemoteDescriptionAsync(message));
             }
         }
     }
