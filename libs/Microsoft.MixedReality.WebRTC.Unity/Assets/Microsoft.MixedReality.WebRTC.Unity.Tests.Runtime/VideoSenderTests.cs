@@ -118,7 +118,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsTrue(sender.IsCapturing);
         }
 
-        [Test(Description = "Capture can be manyally started even if not active.")]
+        [Test(Description = "Capture can be manually started even if not active.")]
         public async void CaptureStartManualInactive()
         {
             // Create the peer connections
