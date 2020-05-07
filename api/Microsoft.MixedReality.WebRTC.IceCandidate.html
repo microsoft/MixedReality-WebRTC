@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class Signaler.IceMessage
+    <title>Class IceCandidate
    | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class Signaler.IceMessage
+    <meta name="title" content="Class IceCandidate
    | MixedReality-WebRTC Documentation ">
     <meta name="generator" content="docfx 2.52.0.0">
     
@@ -81,103 +81,41 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.IceCandidate">
   
   
-  <h1 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage" class="text-break">Class Signaler.IceMessage
+  <h1 id="Microsoft_MixedReality_WebRTC_IceCandidate" data-uid="Microsoft.MixedReality.WebRTC.IceCandidate" class="text-break">Class IceCandidate
   </h1>
-  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 summary"><p>ICE candidate to send to a remote peer or received from it.</p>
+</div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html">Signaler.Message</a></div>
-    <div class="level2"><span class="xref">Signaler.IceMessage</span></div>
+    <div class="level1"><span class="xref">IceCandidate</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_Type">Signaler.Message.Type</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
-  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
-  <h5 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage_syntax">Syntax</h5>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
+  <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_IceCandidate_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Serializable]
-public class IceMessage : Signaler.Message</code></pre>
+    <pre><code class="lang-csharp hljs">public class IceCandidate : object</code></pre>
   </div>
-  <h3 id="constructors">Constructors
-  </h3>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage__ctor_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage.#ctor*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage__ctor_System_String_System_Int32_System_String_" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage.#ctor(System.String,System.Int32,System.String)">IceMessage(String, Int32, String)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IceMessage(string sdpMid, int sdpMlineIndex, string candidate)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">sdpMid</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">sdpMlineIndex</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">candidate</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="fields">Fields
   </h3>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage_Data" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage.Data">Data</h4>
-  <div class="markdown level1 summary"><p>The ICE message content.</p>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_IceCandidate_Content.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.IceCandidate.Content%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L547">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_IceCandidate_Content" data-uid="Microsoft.MixedReality.WebRTC.IceCandidate.Content">Content</h4>
+  <div class="markdown level1 summary"><p>Candidate raw content.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string Data</code></pre>
+    <pre><code class="lang-csharp hljs">public string Content</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -194,15 +132,20 @@ public class IceMessage : Signaler.Message</code></pre>
       </tr>
     </tbody>
   </table>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_Signaler_IceMessage_IceDataSeparator" data-uid="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage.IceDataSeparator">IceDataSeparator</h4>
-  <div class="markdown level1 summary"><p>The data separator needed for proper ICE serialization.</p>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_IceCandidate_SdpMid.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.IceCandidate.SdpMid%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L537">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_IceCandidate_SdpMid" data-uid="Microsoft.MixedReality.WebRTC.IceCandidate.SdpMid">SdpMid</h4>
+  <div class="markdown level1 summary"><p>Media ID (m=) of the candidate.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string IceDataSeparator</code></pre>
+    <pre><code class="lang-csharp hljs">public string SdpMid</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -215,6 +158,36 @@ public class IceMessage : Signaler.Message</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_IceCandidate_SdpMlineIndex.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.IceCandidate.SdpMlineIndex%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L542">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_IceCandidate_SdpMlineIndex" data-uid="Microsoft.MixedReality.WebRTC.IceCandidate.SdpMlineIndex">SdpMlineIndex</h4>
+  <div class="markdown level1 summary"><p>Index of the media line associated with the candidate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int SdpMlineIndex</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -226,6 +199,12 @@ public class IceMessage : Signaler.Message</code></pre>
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_IceCandidate.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.IceCandidate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L532" class="contribution-link">View Source</a>
+                  </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">

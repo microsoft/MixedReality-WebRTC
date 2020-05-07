@@ -192,16 +192,10 @@ on the allowed characters it can contain, as defined in the SDP RFC.</p>
 <p>There is no requirement to use this class as a base class for a custom implementation,
 but it handles automatically registering the necessary <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html">PeerConnection</a>
 event handlers, as well as dispatching free-threaded callbacks to the main Unity app thread
-for simplicity and safety, and leaves the implementation with instead with a single sending
-method <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_">SendMessageAsync(Signaler.Message)</a> to implement, as well as handling received
-messages.</p>
+for simplicity and safety, and leaves the implementation with instead with two sending methods
+<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_SdpMessage_">SendMessageAsync(SdpMessage)</a> and <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_IceCandidate_">SendMessageAsync(IceCandidate)</a> to
+implement, as well as handling received messages.</p>
 </section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.IceMessage.html">Signaler.IceMessage</a></h4>
-      <section></section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.html">Signaler.Message</a></h4>
-      <section></section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.SdpMessage.html">Signaler.SdpMessage</a></h4>
-      <section></section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html">VideoReceiver</a></h4>
       <section><p>This component represents a remote video source added as a video track to an
 existing WebRTC peer connection by a remote peer and received locally.
@@ -253,9 +247,6 @@ expose a single video stream to a renderer (<a class="xref" href="Microsoft.Mixe
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.html">LocalVideoSourceFormatMode</a></h4>
       <section><p>Video capture format selection mode for a local video source.</p>
-</section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.Message.MessageType.html">Signaler.Message.MessageType</a></h4>
-      <section><p>Message types.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoEncoding.html">VideoEncoding</a></h4>
       <section><p>Enumeration of video encodings.</p>

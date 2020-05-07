@@ -101,15 +101,15 @@
 <p>A custom signaling solution can derive from the abstract base <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> class for simplicity, or be any other Unity component or C# class.</p>
 <p>When deriving from the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> class, a derived class needs to:</p>
 <ul>
-<li>Implement the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_"><code>SendMessageAsync()</code></a> abstract method to send messages to the remote peer via the custom signaling solution.</li>
+<li>Implement the <a href="xref:Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)"><code>SendMessageAsync()</code></a> abstract method to send messages to the remote peer via the custom signaling solution.</li>
 <li>Handle incoming messages from the remote peer:
 <ul>
 <li>call <a href="xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.HandleConnectionMessageAsync(System.String,System.String)"><code>HandleConnectionMessageAsync()</code></a> on the Unity peer connection component when receiving an SDP offer or answer message.</li>
-<li>call <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddIceCandidate_System_String_System_Int32_System_String_"><code>AddIceCandidate()</code></a> on the underlying C# peer connection object to deliver ICE candidates to the local peer implementation.</li>
+<li>call <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddIceCandidate(System.String,System.Int32,System.String)"><code>AddIceCandidate()</code></a> on the underlying C# peer connection object to deliver ICE candidates to the local peer implementation.</li>
 </ul>
 </li>
 </ul>
-<p>When implementing a custom signaling solution from scratch <strong>without</strong> using the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> class, the custom implementation must, in addition of the above message handling, replace the work done by <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_Microsoft_MixedReality_WebRTC_Unity_Signaler_Message_"><code>SendMessageAsync()</code></a>:</p>
+<p>When implementing a custom signaling solution from scratch <strong>without</strong> using the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> class, the custom implementation must, in addition of the above message handling, replace the work done by <a href="xref:Microsoft.MixedReality.WebRTC.Unity.Signaler.SendMessageAsync(Microsoft.MixedReality.WebRTC.Unity.Signaler.Message)"><code>SendMessageAsync()</code></a>:</p>
 <ul>
 <li>Listen to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend"><code>LocalSdpReadytoSend</code></a> and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend"><code>IceCandidateReadytoSend</code></a> events.</li>
 <li>Send to the remote peer, by whatever mean devised by the implementation, some messages containing the data of those events, such that the remote peer can handle them as described above.</li>
