@@ -289,12 +289,12 @@ function Build-Libwebrtc([string]$Platform, [string]$Arch, [string]$Config) {
     Write-KeyValue "  Platform      = " $Platform
     Write-KeyValue "  Architecture  = " $Arch
     Write-KeyValue "  Build config  = " $Config
+    $externalFolder = Get-ExternalFolder
     Write-KeyValue "  External root = " $externalFolder
     Write-KeyValue "  Source folder = " $(Join-Path $externalFolder "libwebrtc/src")
 
     # Write args.gn
     try {
-        $externalFolder = Get-ExternalFolder
         $libwebrtcFolder = Join-Path $externalFolder "libwebrtc/src" -Resolve
         Write-KeyValue "  Source folder = " $libwebrtcFolder
         $buildFolder = Write-GnArgs $Platform $Arch $Config $libwebrtcFolder
