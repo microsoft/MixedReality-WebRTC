@@ -33,12 +33,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public string TrackName;
 
         /// <summary>
-        /// Automatically start media capture when the component is enabled.
+        /// Automatically start media capture when the component is enabled, and stop capture
+        /// when the component is disabled.
         /// 
         /// If <c>true</c>, then <see cref="StartCaptureAsync"/> is automatically called
         /// when the <see xref="UnityEngine.MonoBehaviour.OnEnabled"/> callback is invoked
-        /// by Unity.
+        /// by Unity, and conversely <see cref="StopCapture"/> is automatically called when
+        /// the <see xref="UnityEngine.MonoBehaviour.OnEnabled"/> callback is invoked by Unity.
+        /// 
+        /// If <c>false</c>, then the user has to manually call <see cref="StartCaptureAsync"/>
+        /// to start capture before the media sender is attached to a transceiver, and call
+        /// <see cref="StopCapture"/> to stop capture.
         /// </summary>
+        /// <remarks>
+        /// When the media sender is attached to a transceiver, media capture starts automatically
+        /// if the component is active and enabled, even if <see cref="AutoStartOnEnabled"/> is false.
+        /// 
+        /// To have complete manual control on capture, set both <see cref="AutoStartOnEnabled"/> and
+        /// <see xref="UnityEngine.MonoBehaviour.enabled"/> to <c>false</c>.
+        /// </remarks>
         [Tooltip("Automatically start media capture when the component is enabled")]
         [Editor.ToggleLeft]
         public bool AutoStartOnEnabled = true;
@@ -122,6 +135,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <inheritdoc/>
         protected void OnDisable()
         {
+            if (AutoStartOnEnabled)
+            {
+                StopCapture();
+            }
+        }
+
+        /// <inheritdoc/>
+        protected void OnDestroy()
+        {
+            // Note that capture can be started manually even if inactive,
+            // so force destruction when the component is destroyed to release
+            // native resources.
             StopCapture();
         }
 

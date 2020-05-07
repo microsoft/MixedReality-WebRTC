@@ -137,12 +137,24 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     IsStreaming = true;
                 });
             }
+
+            // Attach the local track to the transceiver
+            if (Transceiver != null)
+            {
+                Transceiver.LocalAudioTrack = Track;
+            }
         }
 
         protected override void DestroyLocalTrack()
         {
             if (Track != null)
             {
+                // Detach the local track from the transceiver
+                if ((Transceiver != null) && (Transceiver.LocalAudioTrack == Track))
+                {
+                    Transceiver.LocalAudioTrack = null;
+                }
+
                 // Defer track destruction to derived classes.
                 DestroyLocalAudioTrack();
                 Debug.Assert(Track == null, "Implementation did not destroy the existing Track property yet did not throw any exception.", this);
@@ -195,17 +207,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // so that modifications to the property done after OnPeerInitialized() are
             // accounted for.
             //< FIXME - Multi-track override!!!
-            Transceiver.PeerConnection.PreferredAudioCodec = PreferredAudioCodec;
-            Debug.LogWarning("PreferredAudioCodec is currently a per-PeerConnection setting; overriding the value for peer"
-                + $" connection '{Transceiver.PeerConnection.Name}' with track's value of '{PreferredAudioCodec}'.");
-
-            // Ensure the local sender track exists
-            if (Track == null)
+            if (!string.IsNullOrWhiteSpace(PreferredAudioCodec))
             {
-                await CreateLocalTrackAsync();
+                Transceiver.PeerConnection.PreferredAudioCodec = PreferredAudioCodec;
+                Debug.LogWarning("PreferredAudioCodec is currently a per-PeerConnection setting; overriding the value for peer"
+                    + $" connection '{Transceiver.PeerConnection.Name}' with track's value of '{PreferredAudioCodec}'.");
             }
 
-            // Attach the local track to the transceiver
+            // Ensure the local sender track exists and is ready, but do not create it
+            // if the component is not active.
+            if (isActiveAndEnabled)
+            {
+                await StartCaptureAsync();
+            }
+
+            // Attach the local track to the transceiver if any
             if (Track != null)
             {
                 Transceiver.LocalAudioTrack = Track;
@@ -215,8 +231,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         internal override void DetachTrack()
         {
             Debug.Assert(Transceiver != null);
-            Debug.Assert(Transceiver.LocalTrack == Track);
-            Transceiver.LocalAudioTrack = null;
+            if (Track != null)
+            {
+                Debug.Assert(Transceiver.LocalAudioTrack == Track);
+                Transceiver.LocalAudioTrack = null;
+            }
         }
 
         /// <inheritdoc/>
