@@ -201,7 +201,6 @@ function Write-GnArgs([string]$Platform, [string]$Arch, [string]$Config, [string
     switch -Exact ($Arch) {
         "x86" { $target_cpu = "x86" }
         "x64" { $target_cpu = "x64" }
-        "ARM" { $target_cpu = "arm" }
         "ARM64" { $target_cpu = "arm64" }
         Default { throw "Unknown architecture '$Arch'" }
     }
