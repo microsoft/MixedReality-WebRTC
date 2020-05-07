@@ -286,18 +286,21 @@ rtc_win_video_capture_winrt=true
 # Build libwebrtc for the given build triplet
 function Build-Libwebrtc([string]$Platform, [string]$Arch, [string]$Config) {
     Write-TaskStart "Building libwebrtc for configuration:"
-    Write-KeyValue "  Platform     = " $Platform
-    Write-KeyValue "  Architecture = " $Arch
-    Write-KeyValue "  Build config = " $Config
+    Write-KeyValue "  Platform      = " $Platform
+    Write-KeyValue "  Architecture  = " $Arch
+    Write-KeyValue "  Build config  = " $Config
 
     # Write args.gn
     try {
         $externalFolder = Get-ExternalFolder
         $libwebrtcFolder = Join-Path $externalFolder "libwebrtc/src" -Resolve
+        Write-KeyValue "  Source folder = " $libwebrtcFolder
         $buildFolder = Write-GnArgs $Platform $Arch $Config $libwebrtcFolder
     }
     catch {
-        Write-Failure "Failed to generate args.gn"
+        $ex = $_.Exception
+        $trace = $_.ScriptStackTrace
+        Write-Failure "Failed to generate args.gn: $ex`nStack trace: $trace`n"
         throw
     }
 
