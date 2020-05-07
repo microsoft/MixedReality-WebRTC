@@ -72,10 +72,10 @@
     <TargetName>mrwebrtc</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(PlatformTarget)' == 'x86'">
-    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86</UnityPluginDirectory>
+    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\unity\library\Runtime\Plugins\Win32\x86</UnityPluginDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(PlatformTarget)' == 'x64'">
-    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86_64</UnityPluginDirectory>
+    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\unity\library\Runtime\Plugins\Win32\x86_64</UnityPluginDirectory>
   </PropertyGroup>
   <ItemGroup>
     <NativeUnityPluginSourceFiles Include="$(OutDir)\mrwebrtc.dll;$(OutDir)\mrwebrtc.pdb" />
