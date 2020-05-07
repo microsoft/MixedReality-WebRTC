@@ -21,6 +21,14 @@
 
 #include <functional>
 
+// Include implementation because we cannot access the mline index from the
+// RtpTransceiverInterface. This is a not-so-clean workaround.
+// See PeerConnection::ExtractMlineIndexFromRtpTransceiver() for details.
+#pragma warning(push, 2)
+#pragma warning(disable : 4100)
+#include "pc/rtptransceiver.h"
+#pragma warning(pop)
+
 #if defined(_M_IX86) /* x86 */ && defined(WINAPI_FAMILY) && \
     (WINAPI_FAMILY == WINAPI_FAMILY_APP) /* UWP app */ &&   \
     defined(_WIN32_WINNT_WIN10) &&                          \
@@ -1013,17 +1021,19 @@ int PeerConnection::ExtractMlineIndexFromRtpTransceiver(
     webrtc::RtpTransceiverInterface* tr) {
   RTC_DCHECK(tr);
   // We don't have access to the actual mline index, it is not exposed in the
-  // RTP transceiver API, so instead rely on the (implementation detail) fact
-  // that Google chose to use the mline index as the mid value, thankfully for
-  // us.
-  std::optional<std::string> mid_opt = tr->mid();
-  if (!mid_opt.has_value()) {
+  // RTP transceiver API, so instead we cast to the actual implementation type
+  // and retrieve the mline index from it.
+  // #295 - Note that we cannot rely on the (implementation detail) fact that
+  // Google chose to use the mline index as the mid value because this breaks
+  // interoperability with other implementations.
+  auto tr_impl =
+      (rtc::RefCountedObject<
+          webrtc::RtpTransceiverProxyWithInternal<webrtc::RtpTransceiver>>*)tr;
+  absl::optional<std::size_t> mline_index = tr_impl->internal()->mline_index();
+  if (!mline_index.has_value()) {
     return -1;
   }
-  std::string mid = mid_opt.value();
-  char* end = nullptr;
-  long value = std::strtol(mid.c_str(), &end, 10);
-  RTC_CHECK(end > mid.c_str());
+  const std::size_t value = mline_index.value();
   RTC_CHECK(value >= 0);
   RTC_CHECK(value <= (long)INT_MAX);
   return static_cast<int>(value);
