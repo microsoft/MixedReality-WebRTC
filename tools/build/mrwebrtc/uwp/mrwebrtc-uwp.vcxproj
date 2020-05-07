@@ -83,13 +83,16 @@
     <TargetName>mrwebrtc</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(PlatformTarget)' == 'x86'">
-    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\WSA\x86</UnityPluginDirectory>
+    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\unity\library\Runtime\Plugins\WSA\x86</UnityPluginDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(PlatformTarget)' == 'x64'">
-    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\WSA\x86_64</UnityPluginDirectory>
+    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\unity\library\Runtime\Plugins\WSA\x86_64</UnityPluginDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(PlatformTarget)' == 'ARM'">
-    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\WSA\ARM</UnityPluginDirectory>
+    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\unity\library\Runtime\Plugins\WSA\ARM</UnityPluginDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(PlatformTarget)' == 'ARM64'">
+    <UnityPluginDirectory>$(MRWebRTCProjectRoot)libs\unity\library\Runtime\Plugins\WSA\ARM64</UnityPluginDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <LinkIncremental>true</LinkIncremental>
