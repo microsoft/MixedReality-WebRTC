@@ -28,7 +28,7 @@ set_target_properties(
 #
 
 # Base path to mrwebrtc project.
-set(mr-webrtc-native-dir ../../../../../../../libs/Microsoft.MixedReality.WebRTC.Native)
+set(mr-webrtc-native-dir ../../../../../../../libs/mrwebrtc)
 
 # List of source files to compile.
 add_library(
@@ -44,6 +44,7 @@ add_library(
         ${mr-webrtc-native-dir}/src/interop/remote_audio_track_interop.cpp
         ${mr-webrtc-native-dir}/src/interop/remote_video_track_interop.cpp
         ${mr-webrtc-native-dir}/src/interop/transceiver_interop.cpp
+        ${mr-webrtc-native-dir}/src/media/audio_track_read_buffer.cpp
         ${mr-webrtc-native-dir}/src/media/external_video_track_source.cpp
         ${mr-webrtc-native-dir}/src/media/local_audio_track.cpp
         ${mr-webrtc-native-dir}/src/media/local_video_track.cpp
@@ -58,7 +59,9 @@ add_library(
         ${mr-webrtc-native-dir}/src/peer_connection.cpp
         ${mr-webrtc-native-dir}/src/sdp_utils.cpp
         ${mr-webrtc-native-dir}/src/str.cpp
+        ${mr-webrtc-native-dir}/src/toggle_audio_mixer.cpp
         ${mr-webrtc-native-dir}/src/tracked_object.cpp
+        ${mr-webrtc-native-dir}/src/utils.cpp
         ${mr-webrtc-native-dir}/src/video_frame_observer.cpp
         ./jni_onload.cpp
 )
