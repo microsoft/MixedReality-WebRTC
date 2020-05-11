@@ -1,24 +1,51 @@
 # Building the Chromium WebRTC base library (libwebrtc)
 
-Chromium's libwebrtc library underpins MixedReality-WebRTC. Here are the instructions to build it for the various supported platforms.
+Chromium's `libwebrtc` library underpins MixedReality-WebRTC. Here are the instructions to build it for the various supported platforms.
 
 ## Windows Desktop and UWP
 
 1. [Powershell 5.1](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-windows-powershell?view=powershell-5.1) is required to build libwebrtc. It is installed by default with Windows 10 and Windows Server 2016.
 
-2. Open a Powershell console and change directory to the folder containing this README, then run the build script `.\build.ps1`. This command automatically does all steps necessary to build `webrtc.lib`:
-   - Fetch the Google repository of libwebrtc inside `external/libwebrtc`
-   - Checkout the M80 branch
-   - Apply the UWP patches from [WinRTC](https://github.com/microsoft/winrtc) to allows building on UWP
-   - Synchronize dependencies (`gclient sync`)
-   - Make sure Python is installed, and install `pywin32`
-   - Create the output folder in `external/libwebrtc/src/out/[win|winuwp]/[x86|x64|arm|arm64]/[debug|release]`
+2. Open a Powershell console and change directory to the folder containing this README.
+
+3. On first use only, run the checkout script `checkout.ps1`.
+
+   ```powershell
+   PS> .\checkout.ps1
+   ```
+
+   This command automatically:
+   - Downloads the Google repository of libwebrtc inside `external/libwebrtc`
+   - Checks out the M80 branch
+   - Applies the UWP patches from [WinRTC](https://github.com/microsoft/winrtc) to allow building on UWP
+   - Synchronizes dependencies (`gclient sync`)
+   - Makes sure Python is installed, and install the `pywin32` module
+
+4. For each build variant needed, run the build script `build.ps1` with the appropriate arguments. This command automatically does all steps necessary to build `webrtc.lib` from the existing checkout performed in step 3. above:
+   - Create the output folder in `external/libwebrtc/src/out/[win|winuwp]/[x86|x64|arm64]/[debug|release]`
    - Generate the `args.gn` file for `gn`
    - Run `gn gen` if needed to generate the Ninja build files
    - Run `ninja` to build libwebrtc
 
-3. Next Step: Build MixedReality-WebRTC itself.
-    - Open the `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution located at the root of the MixedReality-WebRTC repository, and build it.
+   The syntax of the command is:
+
+   ```powershell
+   PS> .\build.ps1 -BuildPlatform [BuildPlatform] -BuildArch [BuildArch] -BuildConfig [BuildConfig]
+   ```
+
+   where:
+   - `[BuildPlatform]` is `Win32` or `UWP`
+   - `[BuildArch]` is one of `x86`, `x64`, or `ARM64`
+   - `[BuildConfig]` is `Debug` or `Release`
+
+   Example:
+
+   ```powershell
+   PS> .\build.ps1 -BuildPlatform Win32 -BuildArch x64 -BuildConfig Debug
+   ```
+
+5. Next Step: Build MixedReality-WebRTC itself.
+    - Open the `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution located at the root of the MixedReality-WebRTC repository, select the desired build variant, and build the solution.
 
 ## Android
 
