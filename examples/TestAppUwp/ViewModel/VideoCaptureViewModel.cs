@@ -222,8 +222,10 @@ namespace TestAppUwp
                 }
                 else
                 {
-                    int index = (int)kind;
-                    profiles = MediaCapture.FindKnownVideoProfiles(item.Id, (KnownVideoProfile)index);
+                    // VideoProfileKind and KnownVideoProfile are the same with the exception of
+                    // `Unspecified` that takes value 0.
+                    var profile = (KnownVideoProfile)((int)kind - 1);
+                    profiles = MediaCapture.FindKnownVideoProfiles(item.Id, profile);
                 }
                 foreach (var profile in profiles)
                 {
