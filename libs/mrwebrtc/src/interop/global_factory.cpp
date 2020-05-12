@@ -20,7 +20,7 @@ using namespace Microsoft::MixedReality::WebRTC;
 /// Utility to convert an ObjectType to a string, for debugging purpose. This
 /// returns a view over a global constant buffer (static storage), which is
 /// always valid, never deallocated.
-std::string_view ObjectTypeToString(ObjectType type) {
+absl::string_view ObjectTypeToString(ObjectType type) {
   switch (type) {
     case ObjectType::kPeerConnection:
       return "PeerConnection";
@@ -56,7 +56,7 @@ std::string ObjectToString(TrackedObject* obj) {
   rtc::SimpleStringBuilder builder(buffer);
   if (obj) {
     builder << "(";
-    std::string_view sv = ObjectTypeToString(obj->GetObjectType());
+    absl::string_view sv = ObjectTypeToString(obj->GetObjectType());
     builder.Append(sv.data(), sv.length());
     builder << ") " << obj->GetName();
   } else {

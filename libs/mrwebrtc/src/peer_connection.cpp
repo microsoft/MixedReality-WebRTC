@@ -275,7 +275,7 @@ namespace WebRTC {
 
 ErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
     int id,
-    std::string_view label,
+    absl::string_view label,
     bool ordered,
     bool reliable) noexcept {
   if (IsClosed()) {
