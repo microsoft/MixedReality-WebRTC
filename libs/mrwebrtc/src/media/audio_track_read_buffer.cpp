@@ -32,7 +32,7 @@ void AudioTrackReadBuffer::audioFrameCallback(const void* audio_data,
   frame.number_of_frames = number_of_frames;
   size_t size =
       (size_t)(bits_per_sample / 8) * number_of_channels * number_of_frames;
-  auto src_bytes = static_cast<const std::byte*>(audio_data);
+  auto src_bytes = static_cast<const std::uint8_t*>(audio_data);
   frame.audio_data.insert(frame.audio_data.begin(), src_bytes,
                           src_bytes + size);
 }
