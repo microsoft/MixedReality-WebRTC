@@ -15,3 +15,9 @@
 #else
 #error Unknown platform, see export.h
 #endif
+
+#if (__cplusplus >= 201703L)
+#define MRS_NODISCARD [[nodiscard]]
+#else
+#define MRS_NODISCARD
+#endif
