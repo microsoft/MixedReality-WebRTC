@@ -291,7 +291,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     // depending on what type of message we get, we'll handle it differently
                     // this is the "glue" that allows two peers to establish a connection.
-                    Debug.Log($"Received SDP message: type={msg.MessageType} data={msg.Data}");
+                    DebugLogLong($"Received SDP message: type={msg.MessageType} data={msg.Data}");
                     switch (msg.MessageType)
                     {
                     case NodeDssMessage.Type.Offer:
@@ -368,6 +368,24 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // ...begin the poll and process.
             lastGetComplete = false;
             StartCoroutine(CO_GetAndProcessFromServer());
+        }
+
+        private void DebugLogLong(string str)
+        {
+#if UNITY_ANDROID
+            // On Android, logcat truncates to ~1000 characters, so split manually instead.
+            const int maxLineSize = 1000;
+            int totalLength = str.Length;
+            int numLines = (totalLength + maxLineSize - 1) / maxLineSize;
+            for (int i = 0; i < numLines; ++i)
+            {
+                int start = i * maxLineSize;
+                int length = Math.Min(start + maxLineSize, totalLength) - start;
+                Debug.Log(str.Substring(start, length));
+            }
+#else
+            Debug.Log(str);
+#endif
         }
     }
 }
