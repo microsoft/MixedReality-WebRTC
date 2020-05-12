@@ -113,11 +113,10 @@ void ToggleAudioMixer::OutputSource(int ssrc, bool output) {
   // If the source is unknown add a KnownSource with null Source* to remember
   // the choice.
   const auto result = source_from_id_.insert({ssrc, {nullptr, output}});
-
-  if (!result.second) {
-    // The source has already been added through OutputSource. Modify the output
+  KnownSource& known_source = result.first->second;
+  if (known_source.source) {
+    // The source has already been added through AddSource. Modify the output
     // state.
-    KnownSource& known_source = result.first->second;
     if (output && !known_source.is_output) {
       // Add the source to the ones mixed by the base impl.
       TryAddToBaseImpl(known_source);
