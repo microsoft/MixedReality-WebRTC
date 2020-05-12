@@ -7,7 +7,9 @@
 #include "peer_connection.h"
 #include "utils.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// The global factory is a helper class used to initialize and shutdown the
 /// internal WebRTC library, which adds extra functionalities over a classical
@@ -228,4 +230,6 @@ class GlobalFactory {
   rtc::scoped_refptr<ToggleAudioMixer> custom_audio_mixer_;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

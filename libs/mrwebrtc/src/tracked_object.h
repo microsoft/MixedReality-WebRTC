@@ -8,7 +8,9 @@
 #include "ref_counted_base.h"
 #include "refptr.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 class GlobalFactory;
 
@@ -62,4 +64,6 @@ class TrackedObject : public RefCountedBase {
   void* user_data_{nullptr};
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

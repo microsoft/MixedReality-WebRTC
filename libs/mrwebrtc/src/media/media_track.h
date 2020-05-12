@@ -19,7 +19,9 @@ class RtpSenderInterface;
 class VideoTrackInterface;
 }  // namespace webrtc
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 class PeerConnection;
 
@@ -47,4 +49,6 @@ class MediaTrack : public TrackedObject {
   mrsTrackKind kind_ = mrsTrackKind::kUnknownTrack;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

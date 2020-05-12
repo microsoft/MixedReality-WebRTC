@@ -8,7 +8,9 @@
 #include "export.h"
 #include "result.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// Full-featured error object, containing an error code and a message.
 ///
@@ -133,4 +135,6 @@ class ErrorOr {
   T value_;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

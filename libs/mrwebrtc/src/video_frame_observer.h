@@ -13,7 +13,9 @@
 
 #include "rtc_base/memory/aligned_malloc.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// Callback fired on newly available video frame, encoded as I420.
 using I420AFrameReadyCallback = Callback<const I420AVideoFrame&>;
@@ -132,4 +134,6 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   rtc::scoped_refptr<ArgbBuffer> argb_scratch_buffer_ RTC_GUARDED_BY(mutex_);
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

@@ -9,7 +9,9 @@
 #include "callback.h"
 #include "interop_api.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// Check if the given SDP token is valid according to the RFC 4566 standard.
 /// See https://tools.ietf.org/html/rfc4566#page-43 for details.
@@ -72,4 +74,6 @@ webrtc::SdpType SdpTypeFromApiType(mrsSdpMessageType api_type);
 /// Convert an internal implementation SDP type to an API SDP message type.
 mrsSdpMessageType ApiTypeFromSdpType(webrtc::SdpType type);
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

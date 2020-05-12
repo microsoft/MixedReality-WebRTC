@@ -166,7 +166,10 @@ struct Argb32InteropVideoSource : Argb32ExternalVideoSource {
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC::detail {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
+namespace detail {
 
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromI420A(
     RefPtr<GlobalFactory> global_factory,
@@ -206,4 +209,7 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
   return track_source;
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC::detail
+}  // namespace detail
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

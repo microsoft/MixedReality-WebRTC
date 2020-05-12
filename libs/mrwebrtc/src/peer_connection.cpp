@@ -104,19 +104,27 @@ bool IsHololens() {
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode value) {
   if (IsHololens()) {
     webrtc__WinUWPH264EncoderImpl__frame_height_round_mode = (int)value;
   }
 }
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
 
 #else
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode /*value*/) {}
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
 
 #endif
 
@@ -261,7 +269,9 @@ webrtc::PeerConnectionInterface::BundlePolicy BundlePolicyToNative(
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 ErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
     int id,
@@ -1340,4 +1350,6 @@ PeerConnection::PeerConnection(RefPtr<GlobalFactory> global_factory)
     : TrackedObject(std::move(global_factory), ObjectType::kPeerConnection),
       audio_mixer_(global_factory_->audio_mixer()) {}
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

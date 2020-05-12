@@ -5,7 +5,9 @@
 
 #include <cstdint>
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// View over an existing buffer representing a video frame encoded in I420
 /// format with an extra Alpha plane for opacity.
@@ -72,4 +74,6 @@ struct Argb32VideoFrame {
   std::int32_t stride_;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

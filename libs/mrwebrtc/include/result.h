@@ -5,7 +5,9 @@
 
 #include "export.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// Result code from an operation, typically used through the interop layer
 /// instead of a full-featured Error object.
@@ -85,6 +87,8 @@ enum class Result : std::uint32_t {
   kInvalidMediaKind = 0x80000401,
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
 
 using mrsResult = Microsoft::MixedReality::WebRTC::Result;

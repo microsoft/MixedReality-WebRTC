@@ -6,7 +6,9 @@
 
 #include "export.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// Wrapper for a static callback with user data.
 /// Usage:
@@ -70,4 +72,6 @@ struct RetCallback {
   }
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

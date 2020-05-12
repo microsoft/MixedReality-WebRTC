@@ -7,7 +7,9 @@
 #include "local_video_track.h"
 #include "peer_connection.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 LocalVideoTrack::LocalVideoTrack(
     RefPtr<GlobalFactory> global_factory,
@@ -126,4 +128,6 @@ void LocalVideoTrack::RemoveFromPeerConnection(
   }
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

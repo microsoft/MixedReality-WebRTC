@@ -8,7 +8,9 @@
 #include "transceiver.h"
 #include "utils.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 struct Transceiver::PlanBEmulation {
   /// RTP sender, indicating that the transceiver wants to send and/or is
@@ -524,4 +526,6 @@ void Transceiver::FireStateUpdatedEvent(
   }
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

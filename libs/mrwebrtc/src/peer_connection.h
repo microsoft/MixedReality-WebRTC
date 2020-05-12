@@ -15,7 +15,9 @@
 #include "utils.h"
 #include "video_frame_observer.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 class PeerConnection;
 class LocalAudioTrack;
@@ -813,4 +815,6 @@ class PeerConnection : public TrackedObject,
   }
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

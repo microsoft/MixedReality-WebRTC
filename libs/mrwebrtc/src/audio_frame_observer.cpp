@@ -6,7 +6,9 @@
 
 #include "audio_frame_observer.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 void AudioFrameObserver::SetCallback(
     AudioFrameReadyCallback callback) noexcept {
@@ -32,4 +34,6 @@ void AudioFrameObserver::OnData(const void* audio_data,
   callback_(frame);
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

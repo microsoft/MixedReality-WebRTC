@@ -15,7 +15,9 @@
 // Internal
 #include "interop_api.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 class PeerConnection;
 
@@ -148,4 +150,6 @@ class DataChannel : public webrtc::DataChannelObserver {
   void* user_data_{nullptr};
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

@@ -7,7 +7,9 @@
 #include "peer_connection.h"
 #include "remote_video_track.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 RemoteVideoTrack::RemoteVideoTrack(
     RefPtr<GlobalFactory> global_factory,
@@ -65,4 +67,6 @@ void RemoteVideoTrack::OnTrackRemoved(PeerConnection& owner) {
   transceiver_ = nullptr;
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

@@ -62,7 +62,9 @@ bool TryExtractSuffix(const std::string& str,
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 bool SdpIsValidToken(std::string_view token) noexcept {
   if (token.empty()) {
@@ -245,4 +247,6 @@ mrsSdpMessageType ApiTypeFromSdpType(webrtc::SdpType type) {
   }
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
