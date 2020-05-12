@@ -305,7 +305,7 @@ ErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
     // Create the native object
     auto data_channel = std::make_shared<DataChannel>(this, std::move(impl));
     {
-      auto lock = std::scoped_lock{data_channel_mutex_};
+      std::lock_guard<std::mutex> lock(data_channel_mutex_);
       data_channels_.push_back(data_channel);
       if (!labelString.empty()) {
         data_channel_from_label_.emplace(std::move(labelString), data_channel);
@@ -336,7 +336,7 @@ void PeerConnection::RemoveDataChannel(
   // Move the channel to destroy out of the internal data structures
   std::shared_ptr<DataChannel> data_channel_ptr;
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    std::lock_guard<std::mutex> lock(data_channel_mutex_);
 
     // The channel must be owned by this PeerConnection, so must be known
     // already
@@ -371,7 +371,7 @@ void PeerConnection::RemoveDataChannel(
 
   // Invoke the DataChannelRemoved callback
   {
-    auto lock = std::scoped_lock{data_channel_removed_callback_mutex_};
+    std::lock_guard<std::mutex> lock(data_channel_removed_callback_mutex_);
     auto removed_cb = data_channel_removed_callback_;
     if (removed_cb) {
       mrsDataChannelHandle data_native_handle = (void*)&data_channel;
@@ -385,9 +385,9 @@ void PeerConnection::RemoveDataChannel(
 }
 
 void PeerConnection::RemoveAllDataChannels() noexcept {
-  auto lock_cb = std::scoped_lock{data_channel_removed_callback_mutex_};
+  std::lock_guard<std::mutex> lock_cb(data_channel_removed_callback_mutex_);
   auto removed_cb = data_channel_removed_callback_;
-  auto lock = std::scoped_lock{data_channel_mutex_};
+  std::lock_guard<std::mutex> lock(data_channel_mutex_);
   for (auto&& data_channel : data_channels_) {
     // Close the WebRTC data channel
     webrtc::DataChannelInterface* const impl = data_channel->impl();
@@ -415,7 +415,7 @@ void PeerConnection::OnDataChannelAdded(
   // It was added in AddDataChannel() when the DataChannel object was created.
 #if RTC_DCHECK_IS_ON
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    std::lock_guard<std::mutex> lock(data_channel_mutex_);
     RTC_DCHECK(std::find_if(
                    data_channels_.begin(), data_channels_.end(),
                    [&data_channel](const std::shared_ptr<DataChannel>& other) {
@@ -426,7 +426,7 @@ void PeerConnection::OnDataChannelAdded(
 
   // Invoke the DataChannelAdded callback
   {
-    auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
+    std::lock_guard<std::mutex> lock(data_channel_added_callback_mutex_);
     auto added_cb = data_channel_added_callback_;
     if (added_cb) {
       mrsDataChannelAddedInfo info{};
@@ -479,7 +479,7 @@ bool PeerConnection::CreateOffer() noexcept {
     return false;
   }
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    std::lock_guard<std::mutex> lock(data_channel_mutex_);
     if (data_channels_.empty()) {
       sctp_negotiated_ = false;
     }
@@ -562,7 +562,7 @@ void PeerConnection::Close() noexcept {
 
     // Force-remove remote tracks. It doesn't look like the TrackRemoved
     // callback is called when Close() is used, so force it here.
-    auto cb_lock = std::scoped_lock{media_track_callback_mutex_};
+    std::lock_guard<std::mutex> cb_lock{media_track_callback_mutex_};
     auto audio_cb = audio_track_removed_callback_;
     auto video_cb = video_track_removed_callback_;
     for (auto&& transceiver : transceivers_) {
@@ -668,7 +668,7 @@ ErrorOr<Transceiver*> PeerConnection::AddTransceiver(
 
   // Invoke the TransceiverAdded callback
   {
-    auto lock = std::scoped_lock{callbacks_mutex_};
+    std::lock_guard<std::mutex> lock(callbacks_mutex_);
     if (auto cb = transceiver_added_callback_) {
       mrsTransceiverAddedInfo info{};
       info.transceiver_handle = transceiver.get();
@@ -692,7 +692,7 @@ Error PeerConnection::SetRemoteDescriptionAsync(
     return Error(mrsResult::kInvalidOperation);
   }
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    std::lock_guard<std::mutex> lock(data_channel_mutex_);
     if (data_channels_.empty()) {
       sctp_negotiated_ = false;
     }
@@ -744,7 +744,7 @@ void PeerConnection::OnSignalingChange(
       // but this callback would not be invoked then because there's no
       // transition.
       {
-        auto lock = std::scoped_lock{connected_callback_mutex_};
+        std::lock_guard<std::mutex> lock(connected_callback_mutex_);
         connected_callback_();
       }
       break;
@@ -814,7 +814,7 @@ void PeerConnection::OnDataChannel(
   // Create a new native object
   auto data_channel = std::make_shared<DataChannel>(this, impl);
   {
-    auto lock = std::scoped_lock{data_channel_mutex_};
+    std::lock_guard<std::mutex> lock(data_channel_mutex_);
     data_channels_.push_back(data_channel);
     if (!label.empty()) {
       // Move |label| into the map to avoid copy
@@ -830,7 +830,7 @@ void PeerConnection::OnDataChannel(
 
   // Invoke the DataChannelAdded callback
   {
-    auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
+    std::lock_guard<std::mutex> lock(data_channel_added_callback_mutex_);
     auto added_cb = data_channel_added_callback_;
     if (added_cb) {
       mrsDataChannelAddedInfo info{};
@@ -844,7 +844,7 @@ void PeerConnection::OnDataChannel(
 }
 
 void PeerConnection::OnRenegotiationNeeded() noexcept {
-  auto lock = std::scoped_lock{renegotiation_needed_callback_mutex_};
+  std::lock_guard<std::mutex> lock(renegotiation_needed_callback_mutex_);
   auto cb = renegotiation_needed_callback_;
   if (cb) {
     cb();
@@ -853,7 +853,7 @@ void PeerConnection::OnRenegotiationNeeded() noexcept {
 
 void PeerConnection::OnIceConnectionChange(
     webrtc::PeerConnectionInterface::IceConnectionState new_state) noexcept {
-  auto lock = std::scoped_lock{ice_state_changed_callback_mutex_};
+  std::lock_guard<std::mutex> lock(ice_state_changed_callback_mutex_);
   auto cb = ice_state_changed_callback_;
   if (cb) {
     cb(IceStateFromImpl(new_state));
@@ -862,7 +862,7 @@ void PeerConnection::OnIceConnectionChange(
 
 void PeerConnection::OnIceGatheringChange(
     webrtc::PeerConnectionInterface::IceGatheringState new_state) noexcept {
-  auto lock = std::scoped_lock{ice_gathering_state_changed_callback_mutex_};
+  std::lock_guard<std::mutex> lock(ice_gathering_state_changed_callback_mutex_);
   auto cb = ice_gathering_state_changed_callback_;
   if (cb) {
     cb(IceGatheringStateFromImpl(new_state));
@@ -871,7 +871,7 @@ void PeerConnection::OnIceGatheringChange(
 
 void PeerConnection::OnIceCandidate(
     const webrtc::IceCandidateInterface* candidate) noexcept {
-  auto lock = std::scoped_lock{ice_candidate_ready_to_send_callback_mutex_};
+  std::lock_guard<std::mutex> lock(ice_candidate_ready_to_send_callback_mutex_);
   auto cb = ice_candidate_ready_to_send_callback_;
   if (cb) {
     std::string sdp;
@@ -1004,7 +1004,7 @@ void PeerConnection::OnLocalDescCreated(
 
         // Fire interop callback, if any
         {
-          auto lock = std::scoped_lock{local_sdp_ready_to_send_callback_mutex_};
+          std::lock_guard<std::mutex> lock(local_sdp_ready_to_send_callback_mutex_);
           if (auto cb = local_sdp_ready_to_send_callback_) {
             auto desc = peer_->local_description();
             const mrsSdpMessageType type = ApiTypeFromSdpType(desc->GetType());
@@ -1134,7 +1134,7 @@ ErrorOr<Transceiver*> PeerConnection::GetOrCreateTransceiverForNewRemoteTrack(
 
     // Invoke the TransceiverAdded callback
     {
-      auto lock = std::scoped_lock{callbacks_mutex_};
+      std::lock_guard<std::mutex> lock(callbacks_mutex_);
       if (auto cb = transceiver_added_callback_) {
         mrsTransceiverAddedInfo info{};
         info.transceiver_handle = transceiver.get();
@@ -1224,7 +1224,7 @@ ErrorOr<Transceiver*> PeerConnection::CreateTransceiverUnifiedPlan(
     transceivers_.push_back(transceiver);
   }
   {
-    auto lock = std::scoped_lock{callbacks_mutex_};
+    std::lock_guard<std::mutex> lock(callbacks_mutex_);
     if (auto cb = transceiver_added_callback_) {
       std::string encoded_stream_ids = Transceiver::EncodeStreamIDs(stream_ids);
       mrsTransceiverAddedInfo info{};

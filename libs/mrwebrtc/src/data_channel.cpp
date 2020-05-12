@@ -50,17 +50,17 @@ str DataChannel::label() const {
 }
 
 void DataChannel::SetMessageCallback(MessageCallback callback) noexcept {
-  auto lock = std::scoped_lock{mutex_};
+  std::lock_guard<std::mutex> lock(mutex_);
   message_callback_ = callback;
 }
 
 void DataChannel::SetBufferingCallback(BufferingCallback callback) noexcept {
-  auto lock = std::scoped_lock{mutex_};
+  std::lock_guard<std::mutex> lock(mutex_);
   buffering_callback_ = callback;
 }
 
 void DataChannel::SetStateCallback(StateCallback callback) noexcept {
-  auto lock = std::scoped_lock{mutex_};
+  std::lock_guard<std::mutex> lock(mutex_);
   state_callback_ = callback;
 }
 
@@ -101,7 +101,7 @@ void DataChannel::OnStateChange() noexcept {
 
   // Invoke the StateChanged event
   {
-    auto lock = std::scoped_lock{mutex_};
+    std::lock_guard<std::mutex> lock(mutex_);
     if (state_callback_) {
       auto apiState = apiStateFromRtcState(state);
       state_callback_((int)apiState, data_channel_->id());
@@ -110,14 +110,14 @@ void DataChannel::OnStateChange() noexcept {
 }
 
 void DataChannel::OnMessage(const webrtc::DataBuffer& buffer) noexcept {
-  auto lock = std::scoped_lock{mutex_};
+  std::lock_guard<std::mutex> lock(mutex_);
   if (message_callback_) {
     message_callback_(buffer.data.data(), buffer.data.size());
   }
 }
 
 void DataChannel::OnBufferedAmountChange(uint64_t previous_amount) noexcept {
-  auto lock = std::scoped_lock{mutex_};
+  std::lock_guard<std::mutex> lock(mutex_);
   if (buffering_callback_) {
     uint64_t current_amount = data_channel_->buffered_amount();
     constexpr uint64_t max_capacity =

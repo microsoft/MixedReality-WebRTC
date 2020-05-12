@@ -83,7 +83,7 @@ uint32_t GlobalFactory::StaticReportLiveObjects() noexcept {
 
 mrsShutdownOptions GlobalFactory::GetShutdownOptions() noexcept {
   GlobalFactory* const factory = GetInstance();
-  std::scoped_lock lock(factory->mutex_);
+  std::lock_guard<std::recursive_mutex> lock(factory->mutex_);
   return factory->shutdown_options_;
 }
 
@@ -92,13 +92,13 @@ void GlobalFactory::SetShutdownOptions(mrsShutdownOptions options) noexcept {
   // initialized. So no need to acquire the init lock.
   GlobalFactory* const factory = GetInstance();
   // However, acquire the thread-safety mutex protecting concurrent accesses.
-  std::scoped_lock lock(factory->mutex_);
+  std::lock_guard<std::recursive_mutex> lock(factory->mutex_);
   factory->shutdown_options_ = options;
 }
 
 void GlobalFactory::ForceShutdown() noexcept {
   GlobalFactory* const factory = GetInstance();
-  std::scoped_lock lock(factory->init_mutex_);
+  std::lock_guard<std::mutex> lock(factory->init_mutex_);
   if (!factory->peer_factory_) {
     return;
   }
@@ -114,7 +114,7 @@ void GlobalFactory::ForceShutdown() noexcept {
 
 bool GlobalFactory::TryShutdown() noexcept {
   GlobalFactory* const factory = GetInstance();
-  std::scoped_lock lock(factory->init_mutex_);
+  std::lock_guard<std::mutex> lock(factory->init_mutex_);
   if (!factory->peer_factory_) {
     return true;
   }
@@ -141,7 +141,7 @@ GlobalFactory* GlobalFactory::GetInstance() {
 RefPtr<GlobalFactory> GlobalFactory::GetInstancePtrImpl(
     bool ensureInitialized) {
   GlobalFactory* const factory = GetInstance();
-  std::scoped_lock lock(factory->init_mutex_);
+  std::lock_guard<std::mutex> lock(factory->init_mutex_);
   if (factory->peer_factory_) {
     RefPtr<GlobalFactory> ptr(factory);
     return ptr;  // moved
@@ -161,7 +161,7 @@ RefPtr<GlobalFactory> GlobalFactory::GetInstancePtrImpl(
 }
 
 GlobalFactory::~GlobalFactory() {
-  std::scoped_lock lock(init_mutex_);
+  std::lock_guard<std::mutex> lock(init_mutex_);
   ShutdownImplNoLock(ShutdownAction::kFromObjectDestructor);
 }
 
@@ -184,7 +184,7 @@ rtc::Thread* GlobalFactory::GetWorkerThread() const noexcept {
 
 void GlobalFactory::AddObject(TrackedObject* obj) noexcept {
   try {
-    std::scoped_lock lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     RTC_DCHECK(std::find(alive_objects_.begin(), alive_objects_.end(), obj) ==
                alive_objects_.end());
     alive_objects_.push_back(obj);
@@ -194,7 +194,7 @@ void GlobalFactory::AddObject(TrackedObject* obj) noexcept {
 
 void GlobalFactory::RemoveObject(TrackedObject* obj) noexcept {
   try {
-    std::scoped_lock lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     auto it = std::find(alive_objects_.begin(), alive_objects_.end(), obj);
     if (it != alive_objects_.end()) {
       alive_objects_.erase(it);
@@ -204,7 +204,7 @@ void GlobalFactory::RemoveObject(TrackedObject* obj) noexcept {
 }
 
 uint32_t GlobalFactory::ReportLiveObjects() {
-  std::scoped_lock lock(mutex_);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
   ReportLiveObjectsNoLock();
   return static_cast<uint32_t>(alive_objects_.size());
 }
@@ -215,7 +215,7 @@ using WebRtcFactoryPtr =
     std::shared_ptr<wrapper::impl::org::webRtc::WebRtcFactory>;
 
 WebRtcFactoryPtr GlobalFactory::get() {
-  std::scoped_lock lock(init_mutex_);
+  std::lock_guard<std::mutex> lock(init_mutex_);
   if (!impl_) {
     if (InitializeImplNoLock() != Result::kSuccess) {
       return nullptr;
@@ -226,7 +226,7 @@ WebRtcFactoryPtr GlobalFactory::get() {
 
 mrsResult GlobalFactory::GetOrCreateWebRtcFactory(WebRtcFactoryPtr& factory) {
   factory.reset();
-  std::scoped_lock lock(init_mutex_);
+  std::lock_guard<std::mutex> lock(init_mutex_);
   if (!impl_) {
     mrsResult res = InitializeImplNoLock();
     if (res != Result::kSuccess) {

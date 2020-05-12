@@ -158,7 +158,7 @@ class Transceiver : public TrackedObject {
   using AssociatedCallback = Callback<int>;
 
   void RegisterAssociatedCallback(AssociatedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{cb_mutex_};
+    std::lock_guard<std::mutex> lock(cb_mutex_);
     associated_callback_ = std::move(callback);
   }
 
@@ -168,7 +168,7 @@ class Transceiver : public TrackedObject {
       Callback<mrsTransceiverStateUpdatedReason, OptDirection, Direction>;
 
   void RegisterStateUpdatedCallback(StateUpdatedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{cb_mutex_};
+    std::lock_guard<std::mutex> lock(cb_mutex_);
     state_updated_callback_ = std::move(callback);
   }
 
