@@ -60,9 +60,9 @@ class Transceiver : public TrackedObject {
   ~Transceiver() override;
 
   /// Get the transceiver name, for debugging and logging purpose only.
-  [[nodiscard]] std::string GetName() const override { return name_; }
+  MRS_NODISCARD std::string GetName() const override { return name_; }
 
-  [[nodiscard]] constexpr int GetMlineIndex() const noexcept {
+  MRS_NODISCARD constexpr int GetMlineIndex() const noexcept {
     return mline_index_;
   }
 
@@ -70,15 +70,15 @@ class Transceiver : public TrackedObject {
   /// type to static_cast<> a |Transceiver| pointer to. If this is |kAudio| then
   /// the object is an |AudioTransceiver| instance, and if this is |kVideo| then
   /// the object is a |VideoTransceiver| instance.
-  [[nodiscard]] MediaKind GetMediaKind() const noexcept { return kind_; }
+  MRS_NODISCARD MediaKind GetMediaKind() const noexcept { return kind_; }
 
   /// Get the desired transceiver direction.
-  [[nodiscard]] Direction GetDesiredDirection() const noexcept {
+  MRS_NODISCARD Direction GetDesiredDirection() const noexcept {
     return desired_direction_;
   }
 
   /// Get the current transceiver direction.
-  [[nodiscard]] OptDirection GetDirection() const noexcept {
+  MRS_NODISCARD OptDirection GetDirection() const noexcept {
     return direction_;
   }
 
@@ -86,15 +86,15 @@ class Transceiver : public TrackedObject {
   /// offers/answers.
   Result SetDirection(Direction new_direction) noexcept;
 
-  [[nodiscard]] bool IsUnifiedPlan() const {
+  MRS_NODISCARD bool IsUnifiedPlan() const {
     RTC_DCHECK(!plan_b_ != !transceiver_);
     return (transceiver_ != nullptr);
   }
 
-  [[nodiscard]] bool IsPlanB() const { return !IsUnifiedPlan(); }
+  MRS_NODISCARD bool IsPlanB() const { return !IsUnifiedPlan(); }
 
-  [[nodiscard]] bool HasSender(webrtc::RtpSenderInterface* sender) const;
-  [[nodiscard]] bool HasReceiver(webrtc::RtpReceiverInterface* receiver) const;
+  MRS_NODISCARD bool HasSender(webrtc::RtpSenderInterface* sender) const;
+  MRS_NODISCARD bool HasReceiver(webrtc::RtpReceiverInterface* receiver) const;
 
   Result SetLocalTrack(std::nullptr_t) noexcept {
     return SetLocalTrackImpl(nullptr);
@@ -122,7 +122,7 @@ class Transceiver : public TrackedObject {
     return static_cast<LocalVideoTrack*>(local_track_.get());
   }
 
-  [[nodiscard]] MediaTrack* GetRemoteTrack() const {
+  MRS_NODISCARD MediaTrack* GetRemoteTrack() const {
     return remote_track_.get();
   }
 
@@ -182,11 +182,11 @@ class Transceiver : public TrackedObject {
   /// handle is valid until the transceiver is removed from the peer
   /// connection and destroyed, which happens during
   /// |PeerConnection::Close()|.
-  [[nodiscard]] constexpr mrsTransceiverHandle GetHandle() const noexcept {
+  MRS_NODISCARD constexpr mrsTransceiverHandle GetHandle() const noexcept {
     return (mrsTransceiverHandle)this;
   }
 
-  [[nodiscard]] rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl()
+  MRS_NODISCARD rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl()
       const;
 
   /// Synchronize the RTP sender with the desired direction when using Plan B.
@@ -223,35 +223,34 @@ class Transceiver : public TrackedObject {
   /// any is registered.
   void FireStateUpdatedEvent(mrsTransceiverStateUpdatedReason reason);
 
-  [[nodiscard]] static webrtc::RtpTransceiverDirection ToRtp(
+  MRS_NODISCARD static webrtc::RtpTransceiverDirection ToRtp(
       Direction direction);
-  [[nodiscard]] static Direction FromRtp(
+  MRS_NODISCARD static Direction FromRtp(
       webrtc::RtpTransceiverDirection rtp_direction);
-  [[nodiscard]] static OptDirection FromRtp(
-      std::optional<webrtc::RtpTransceiverDirection> rtp_direction);
-  [[nodiscard]] static Direction FromSendRecv(bool send, bool recv);
-  [[nodiscard]] static OptDirection OptFromSendRecv(bool send, bool recv);
+  MRS_NODISCARD static OptDirection FromRtp(
+  MRS_NODISCARD static Direction FromSendRecv(bool send, bool recv);
+  MRS_NODISCARD static OptDirection OptFromSendRecv(bool send, bool recv);
 
   /// Decode an encode stream ID string into the individual stream IDs.
   /// This is conceptually equivalent to a split(str, ';').
-  [[nodiscard]] static std::vector<std::string> DecodeStreamIDs(
+  MRS_NODISCARD static std::vector<std::string> DecodeStreamIDs(
       const char* encoded_stream_ids);
 
   /// Encode a list of stream IDs into a semi-colon separated string.
   /// This is conceptually equivalent to a join(str, ';').
-  [[nodiscard]] static std::string EncodeStreamIDs(
+  MRS_NODISCARD static std::string EncodeStreamIDs(
       const std::vector<std::string>& stream_ids);
 
   /// Build the encoded string used as the (single) stream ID of a Plan B
   /// track, which contains the media line index of the emulated transceiver
   /// as well as a list of stream IDs, to emulate the properties of Unified
   /// Plan.
-  [[nodiscard]] std::string BuildEncodedStreamIDForPlanB(int mline_index) const;
+  MRS_NODISCARD std::string BuildEncodedStreamIDForPlanB(int mline_index) const;
 
   /// Decode the string encoded by |BuildEncodedStreamIDForPlanB()|, and
   /// return in addition the encoded media line index string into |name| to be
   /// used as the transceiver name.
-  [[nodiscard]] static bool DecodedStreamIDForPlanB(
+  MRS_NODISCARD static bool DecodedStreamIDForPlanB(
       const std::string& encoded_string,
       int& mline_index_out,
       std::string& name,

@@ -50,7 +50,7 @@ class TrackedObject : public RefCountedBase {
   /// limitation.
   virtual std::string GetName() const = 0;
 
-  [[nodiscard]] constexpr void* GetUserData() const noexcept {
+  MRS_NODISCARD constexpr void* GetUserData() const noexcept {
     return user_data_;
   }
 
