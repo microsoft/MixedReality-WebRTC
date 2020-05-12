@@ -73,7 +73,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   /// Remove the data channel from its parent PeerConnection and close it.
   ~DataChannel() override;
 
-  [[nodiscard]] constexpr void* GetUserData() const noexcept {
+  MRS_NODISCARD constexpr void* GetUserData() const noexcept {
     return user_data_;
   }
 
@@ -82,10 +82,9 @@ class DataChannel : public webrtc::DataChannelObserver {
   }
 
   /// Get the unique channel identifier.
-  [[nodiscard]] int id() const { return data_channel_->id(); }
+  MRS_NODISCARD int id() const { return data_channel_->id(); }
 
-  [[nodiscard]] mrsDataChannelConfigFlags flags() const noexcept {
-    mrsDataChannelConfigFlags flags{0};
+  MRS_NODISCARD mrsDataChannelConfigFlags flags() const noexcept {
     if (data_channel_->ordered()) {
       flags = flags | mrsDataChannelConfigFlags::kOrdered;
     }
@@ -96,7 +95,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   }
 
   /// Get the friendly channel name.
-  [[nodiscard]] str label() const;
+  MRS_NODISCARD str label() const;
 
   void SetMessageCallback(MessageCallback callback) noexcept;
   void SetBufferingCallback(BufferingCallback callback) noexcept;
@@ -104,7 +103,7 @@ class DataChannel : public webrtc::DataChannelObserver {
 
   /// Get the maximum buffering size, in bytes, before |Send()| stops accepting
   /// data.
-  [[nodiscard]] size_t GetMaxBufferingSize() const noexcept;
+  MRS_NODISCARD size_t GetMaxBufferingSize() const noexcept;
 
   /// Send a blob of data through the data channel.
   bool Send(const void* data, size_t size) noexcept;
@@ -113,7 +112,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   // Advanced use
   //
 
-  [[nodiscard]] webrtc::DataChannelInterface* impl() const {
+  MRS_NODISCARD webrtc::DataChannelInterface* impl() const {
     return data_channel_.get();
   }
 

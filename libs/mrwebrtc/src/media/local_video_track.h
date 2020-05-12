@@ -64,9 +64,9 @@ class LocalVideoTrack : public VideoFrameObserver, public MediaTrack {
 
   /// Check if the track is enabled.
   /// See |SetEnabled(bool)|.
-  [[nodiscard]] bool IsEnabled() const noexcept;
+  MRS_NODISCARD bool IsEnabled() const noexcept;
 
-  [[nodiscard]] Transceiver* GetTransceiver() const noexcept {
+  MRS_NODISCARD Transceiver* GetTransceiver() const noexcept {
     return transceiver_;
   }
 
@@ -74,10 +74,10 @@ class LocalVideoTrack : public VideoFrameObserver, public MediaTrack {
   // Advanced use
   //
 
-  [[nodiscard]] webrtc::VideoTrackInterface* impl() const;
-  [[nodiscard]] webrtc::RtpSenderInterface* sender() const;
+  MRS_NODISCARD webrtc::VideoTrackInterface* impl() const;
+  MRS_NODISCARD webrtc::RtpSenderInterface* sender() const;
 
-  [[nodiscard]] webrtc::MediaStreamTrackInterface* GetMediaImpl()
+  MRS_NODISCARD webrtc::MediaStreamTrackInterface* GetMediaImpl()
       const override {
     return impl();
   }

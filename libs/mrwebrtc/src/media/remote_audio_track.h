@@ -54,13 +54,13 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
 
   /// Check if the track is enabled.
   /// See |SetEnabled(bool)|.
-  [[nodiscard]] bool IsEnabled() const noexcept { return track_->enabled(); }
+  MRS_NODISCARD bool IsEnabled() const noexcept { return track_->enabled(); }
 
   /// See |mrsRemoteAudioOutputToDevice|.
   void OutputToDevice(bool output) noexcept;
 
   /// See |mrsRemoteAudioTrackIsOutputToDevice|.
-  [[nodiscard]] bool IsOutputToDevice() const noexcept {
+  MRS_NODISCARD bool IsOutputToDevice() const noexcept {
     return output_to_device_;
   }
 
@@ -71,18 +71,18 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// Get a handle to the remote audio track. This handle is valid until the
   /// remote track is removed from the peer connection and destroyed, which is
   /// signaled by the |TrackRemoved| event on the peer connection.
-  [[nodiscard]] constexpr mrsRemoteAudioTrackHandle GetHandle() const noexcept {
+  MRS_NODISCARD constexpr mrsRemoteAudioTrackHandle GetHandle() const noexcept {
     return (mrsRemoteAudioTrackHandle)this;
   }
 
-  [[nodiscard]] webrtc::AudioTrackInterface* impl() const;
-  [[nodiscard]] webrtc::RtpReceiverInterface* receiver() const;
+  MRS_NODISCARD webrtc::AudioTrackInterface* impl() const;
+  MRS_NODISCARD webrtc::RtpReceiverInterface* receiver() const;
 
-  [[nodiscard]] constexpr Transceiver* GetTransceiver() const {
+  MRS_NODISCARD constexpr Transceiver* GetTransceiver() const {
     return transceiver_;
   }
 
-  [[nodiscard]] webrtc::MediaStreamTrackInterface* GetMediaImpl()
+  MRS_NODISCARD webrtc::MediaStreamTrackInterface* GetMediaImpl()
       const override {
     return impl();
   }

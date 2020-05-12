@@ -53,7 +53,7 @@ class RemoteVideoTrack : public VideoFrameObserver, public MediaTrack {
 
   /// Check if the track is enabled.
   /// See |SetEnabled(bool)|.
-  [[nodiscard]] bool IsEnabled() const noexcept;
+  MRS_NODISCARD bool IsEnabled() const noexcept;
 
   //
   // Advanced use
@@ -62,18 +62,18 @@ class RemoteVideoTrack : public VideoFrameObserver, public MediaTrack {
   /// Get a handle to the remote video track. This handle is valid until the
   /// remote track is removed from the peer connection and destroyed, which is
   /// signaled by the |TrackRemoved| event on the peer connection.
-  [[nodiscard]] constexpr mrsRemoteVideoTrackHandle GetHandle() const noexcept {
+  MRS_NODISCARD constexpr mrsRemoteVideoTrackHandle GetHandle() const noexcept {
     return (mrsRemoteVideoTrackHandle)this;
   }
 
-  [[nodiscard]] webrtc::VideoTrackInterface* impl() const;
-  [[nodiscard]] webrtc::RtpReceiverInterface* receiver() const;
+  MRS_NODISCARD webrtc::VideoTrackInterface* impl() const;
+  MRS_NODISCARD webrtc::RtpReceiverInterface* receiver() const;
 
-  [[nodiscard]] constexpr Transceiver* GetTransceiver() const {
+  MRS_NODISCARD constexpr Transceiver* GetTransceiver() const {
     return transceiver_;
   }
 
-  [[nodiscard]] webrtc::MediaStreamTrackInterface* GetMediaImpl()
+  MRS_NODISCARD webrtc::MediaStreamTrackInterface* GetMediaImpl()
       const override {
     return impl();
   }
