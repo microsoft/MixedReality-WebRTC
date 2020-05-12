@@ -30,13 +30,13 @@ struct BitrateSettings {
   /// Start bitrate in bits per seconds when the connection is established.
   /// After that the connection will monitor the network bandwidth and media
   /// quality, and automatically adjust the bitrate.
-  std::optional<int> start_bitrate_bps;
+  absl::optional<int> start_bitrate_bps;
 
   /// Minimum bitrate in bits per seconds.
-  std::optional<int> min_bitrate_bps;
+  absl::optional<int> min_bitrate_bps;
 
   /// Maximum bitrate in bits per seconds.
-  std::optional<int> max_bitrate_bps;
+  absl::optional<int> max_bitrate_bps;
 };
 
 /// The PeerConnection class is the entry point to most of WebRTC.

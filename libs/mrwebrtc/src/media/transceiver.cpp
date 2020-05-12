@@ -320,7 +320,7 @@ Transceiver::Direction Transceiver::FromRtp(
 }
 
 Transceiver::OptDirection Transceiver::FromRtp(
-    std::optional<webrtc::RtpTransceiverDirection> rtp_direction) {
+    absl::optional<webrtc::RtpTransceiverDirection> rtp_direction) {
   using RtpDir = webrtc::RtpTransceiverDirection;
   static_assert((int)OptDirection::kSendRecv == (int)RtpDir::kSendRecv, "");
   static_assert((int)OptDirection::kSendOnly == (int)RtpDir::kSendOnly, "");

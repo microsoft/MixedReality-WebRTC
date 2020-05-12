@@ -1093,7 +1093,7 @@ ErrorOr<Transceiver*> PeerConnection::GetOrCreateTransceiverForNewRemoteTrack(
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> impl = *it_impl;
     const int mline_index = ExtractMlineIndexFromRtpTransceiver(impl);
     RTC_DCHECK(mline_index >= 0);  // should be always associated here
-    std::optional<std::string> mid = impl->mid();
+    absl::optional<std::string> mid = impl->mid();
     RTC_CHECK(mid.has_value());  // should be always true here
     std::string name = mid.value();
     std::vector<std::string> stream_ids =

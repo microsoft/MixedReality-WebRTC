@@ -228,6 +228,7 @@ class Transceiver : public TrackedObject {
   MRS_NODISCARD static Direction FromRtp(
       webrtc::RtpTransceiverDirection rtp_direction);
   MRS_NODISCARD static OptDirection FromRtp(
+      absl::optional<webrtc::RtpTransceiverDirection> rtp_direction);
   MRS_NODISCARD static Direction FromSendRecv(bool send, bool recv);
   MRS_NODISCARD static OptDirection OptFromSendRecv(bool send, bool recv);
 
