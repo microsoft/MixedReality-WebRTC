@@ -23,7 +23,7 @@ mrsDataChannelGetUserData(mrsDataChannelHandle handle) noexcept;
 /// Callback fired when a message |data| of byte size |size| is received on a
 /// data channel.
 using mrsDataChannelMessageCallback = void(
-    MRS_CALL*)(void* user_data, const void* data, const uint64_t size) noexcept;
+    MRS_CALL*)(void* user_data, const void* data, const uint64_t size);
 
 /// Callback invoked when a data channel internal buffering changes.
 /// The |previous| and |current| values are the old and new sizes in bytes of
@@ -34,12 +34,12 @@ using mrsDataChannelBufferingCallback =
     void(MRS_CALL*)(void* user_data,
                     const uint64_t previous,
                     const uint64_t current,
-                    const uint64_t limit) noexcept;
+                    const uint64_t limit);
 
 /// Callback fired when the state of a data channel changed.
 using mrsDataChannelStateCallback = void(MRS_CALL*)(void* user_data,
                                                     int32_t state,
-                                                    int32_t id) noexcept;
+                                                    int32_t id);
 
 /// Helper to register a group of data channel callbacks.
 struct mrsDataChannelCallbacks {
