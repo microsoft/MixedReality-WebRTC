@@ -24,7 +24,8 @@ void AudioTrackReadBuffer::audioFrameCallback(const void* audio_data,
     frames_.pop_front();
   }
   // add the new frame
-  auto& frame = frames_.emplace_back();
+  frames_.emplace_back();
+  auto& frame = frames_.back();
   frame.bits_per_sample = bits_per_sample;
   frame.sample_rate = sample_rate;
   frame.number_of_channels = number_of_channels;
