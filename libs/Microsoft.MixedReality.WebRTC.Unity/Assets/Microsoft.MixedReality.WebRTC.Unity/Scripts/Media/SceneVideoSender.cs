@@ -77,6 +77,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected new void OnEnable()
         {
+            if (!SystemInfo.supportsAsyncGPUReadback)
+            {
+                Debug.LogError("This platform does not support async GPU readback. Cannot use the SceneVideoSender component.");
+                enabled = false;
+                return;
+            }
+
             // If no camera provided, attempt to fallback to main camera
             if (SourceCamera == null)
             {
