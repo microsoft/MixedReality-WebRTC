@@ -37,12 +37,6 @@
 
 #endif
 
-#if (__cplusplus >= 201703L)
-#define MRS_NODISCARD [[nodiscard]]
-#else
-#define MRS_NODISCARD
-#endif
-
 // Prevent external headers from triggering warnings that would break compiling
 // due to warning-as-error.
 #pragma warning(push, 2)
