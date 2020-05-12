@@ -22,6 +22,18 @@ android {
         }
     }
     buildTypes {
+        // Full debug, including debug symbols for libwebrtc.
+        // This produces a very large archive (50+ MB), but is useful
+        // to debug issues inside libwebrtc itself.
+        fulldebug {
+            minifyEnabled false
+            useProguard false
+            jniDebuggable true
+            debuggable true
+        }
+        // Regular debug with debug symbols for mrwebrtc only.
+        // This produces a much more reasonably-sized and lightly optimized
+        // archive, and should be the default for debugging.
         debug {
             minifyEnabled false
             useProguard true
@@ -29,6 +41,7 @@ android {
             jniDebuggable true
             debuggable true
         }
+        // Release version stripped from debug symbols and info
         release {
             minifyEnabled false
             useProguard true
