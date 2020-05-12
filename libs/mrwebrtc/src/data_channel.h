@@ -85,6 +85,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   MRS_NODISCARD int id() const { return data_channel_->id(); }
 
   MRS_NODISCARD mrsDataChannelConfigFlags flags() const noexcept {
+    mrsDataChannelConfigFlags flags{mrsDataChannelConfigFlags::kNone};
     if (data_channel_->ordered()) {
       flags = flags | mrsDataChannelConfigFlags::kOrdered;
     }
