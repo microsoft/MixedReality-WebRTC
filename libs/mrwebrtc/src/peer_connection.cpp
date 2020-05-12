@@ -316,7 +316,7 @@ ErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
         data_channel_from_label_.emplace(std::move(labelString), data_channel);
       }
       if (config.id >= 0) {
-        data_channel_from_id_.try_emplace(config.id, data_channel);
+        data_channel_from_id_.emplace(config.id, data_channel);
       }
     }
 
@@ -829,7 +829,7 @@ void PeerConnection::OnDataChannel(
       config.label = it->first.c_str();
     }
     if (data_channel->id() >= 0) {
-      data_channel_from_id_.try_emplace(data_channel->id(), data_channel);
+      data_channel_from_id_.emplace(data_channel->id(), data_channel);
     }
   }
 
