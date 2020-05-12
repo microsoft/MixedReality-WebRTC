@@ -48,7 +48,7 @@ class AudioTrackReadBuffer {
 
   PeerConnection* peer_ = nullptr;
   struct Frame {
-    std::vector<std::byte> audio_data;
+    std::vector<std::uint8_t> audio_data;
     uint32_t bits_per_sample;
     uint32_t sample_rate;
     uint32_t number_of_channels;
