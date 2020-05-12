@@ -222,14 +222,16 @@ mrsIceConnectionState IceStateFromImpl(
     webrtc::PeerConnectionInterface::IceConnectionState impl_state) {
   using Native = mrsIceConnectionState;
   using Impl = webrtc::PeerConnectionInterface::IceConnectionState;
-  static_assert((int)Native::kNew == (int)Impl::kIceConnectionNew);
-  static_assert((int)Native::kChecking == (int)Impl::kIceConnectionChecking);
-  static_assert((int)Native::kConnected == (int)Impl::kIceConnectionConnected);
-  static_assert((int)Native::kCompleted == (int)Impl::kIceConnectionCompleted);
-  static_assert((int)Native::kFailed == (int)Impl::kIceConnectionFailed);
-  static_assert((int)Native::kDisconnected ==
-                (int)Impl::kIceConnectionDisconnected);
-  static_assert((int)Native::kClosed == (int)Impl::kIceConnectionClosed);
+  static_assert((int)Native::kNew == (int)Impl::kIceConnectionNew, "");
+  static_assert((int)Native::kChecking == (int)Impl::kIceConnectionChecking,
+                "");
+  static_assert((int)Native::kConnected == (int)Impl::kIceConnectionConnected,
+                "");
+  static_assert((int)Native::kCompleted == (int)Impl::kIceConnectionCompleted,
+                "");
+  static_assert((int)Native::kFailed == (int)Impl::kIceConnectionFailed, "");
+  static_assert((int)Native::kDisconnected == (int)Impl::kIceConnectionDisconnected, "");
+  static_assert((int)Native::kClosed == (int)Impl::kIceConnectionClosed, "");
   return (mrsIceConnectionState)impl_state;
 }
 
@@ -240,9 +242,10 @@ mrsIceGatheringState IceGatheringStateFromImpl(
     webrtc::PeerConnectionInterface::IceGatheringState impl_state) {
   using Native = mrsIceGatheringState;
   using Impl = webrtc::PeerConnectionInterface::IceGatheringState;
-  static_assert((int)Native::kNew == (int)Impl::kIceGatheringNew);
-  static_assert((int)Native::kGathering == (int)Impl::kIceGatheringGathering);
-  static_assert((int)Native::kComplete == (int)Impl::kIceGatheringComplete);
+  static_assert((int)Native::kNew == (int)Impl::kIceGatheringNew, "");
+  static_assert((int)Native::kGathering == (int)Impl::kIceGatheringGathering,
+                "");
+  static_assert((int)Native::kComplete == (int)Impl::kIceGatheringComplete, "");
   return (mrsIceGatheringState)impl_state;
 }
 
@@ -250,10 +253,10 @@ webrtc::PeerConnectionInterface::IceTransportsType ICETransportTypeToNative(
     mrsIceTransportType value) {
   using Native = webrtc::PeerConnectionInterface::IceTransportsType;
   using Impl = mrsIceTransportType;
-  static_assert((int)Native::kNone == (int)Impl::kNone);
-  static_assert((int)Native::kNoHost == (int)Impl::kNoHost);
-  static_assert((int)Native::kRelay == (int)Impl::kRelay);
-  static_assert((int)Native::kAll == (int)Impl::kAll);
+  static_assert((int)Native::kNone == (int)Impl::kNone, "");
+  static_assert((int)Native::kNoHost == (int)Impl::kNoHost, "");
+  static_assert((int)Native::kRelay == (int)Impl::kRelay, "");
+  static_assert((int)Native::kAll == (int)Impl::kAll, "");
   return static_cast<Native>(value);
 }
 
@@ -261,9 +264,11 @@ webrtc::PeerConnectionInterface::BundlePolicy BundlePolicyToNative(
     mrsBundlePolicy value) {
   using Native = webrtc::PeerConnectionInterface::BundlePolicy;
   using Impl = mrsBundlePolicy;
-  static_assert((int)Native::kBundlePolicyBalanced == (int)Impl::kBalanced);
-  static_assert((int)Native::kBundlePolicyMaxBundle == (int)Impl::kMaxBundle);
-  static_assert((int)Native::kBundlePolicyMaxCompat == (int)Impl::kMaxCompat);
+  static_assert((int)Native::kBundlePolicyBalanced == (int)Impl::kBalanced, "");
+  static_assert((int)Native::kBundlePolicyMaxBundle == (int)Impl::kMaxBundle,
+                "");
+  static_assert((int)Native::kBundlePolicyMaxCompat == (int)Impl::kMaxCompat,
+                "");
   return static_cast<Native>(value);
 }
 
