@@ -6,7 +6,9 @@
 #include "interop_api.h"
 #include "mrs_errors.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 Error::Error(Error&& other) = default;
 Error& Error::operator=(Error&& other) = default;
@@ -49,4 +51,6 @@ std::string_view ToString(Result code) {
   }
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

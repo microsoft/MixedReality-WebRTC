@@ -20,7 +20,9 @@ namespace webrtc {
 class RtpTransceiverInterface;
 }
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 class PeerConnection;
 
@@ -346,4 +348,6 @@ class Transceiver : public TrackedObject {
   std::mutex cb_mutex_;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

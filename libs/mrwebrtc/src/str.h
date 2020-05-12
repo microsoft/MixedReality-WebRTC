@@ -11,7 +11,9 @@
 
 #include "export.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 #if defined(MRS_USE_STR_WRAPPER)
 
@@ -58,7 +60,9 @@ using str = std::string;
 
 #endif  // defined(MRS_USE_STR_WRAPPER)
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
 
 #if defined(MRS_USE_STR_WRAPPER)
 

@@ -67,7 +67,9 @@ std::string ObjectToString(TrackedObject* obj) {
 
 }  // namespace
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 uint32_t GlobalFactory::StaticReportLiveObjects() noexcept {
   // Lock the instance to prevent shutdown if it already exists, while
@@ -374,4 +376,6 @@ void GlobalFactory::ReportLiveObjectsNoLock() {
   }
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

@@ -7,7 +7,9 @@
 
 #include "toggle_audio_mixer.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 ToggleAudioMixer::ToggleAudioMixer()
     : base_impl_(webrtc::AudioMixerImpl::Create()) {}
@@ -129,4 +131,6 @@ void ToggleAudioMixer::OutputSource(int ssrc, bool output) {
   }
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

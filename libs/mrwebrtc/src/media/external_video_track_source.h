@@ -9,7 +9,9 @@
 #include "tracked_object.h"
 #include "video_frame.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 class ExternalVideoTrackSource;
 
@@ -144,4 +146,6 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
 
 }  // namespace detail
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

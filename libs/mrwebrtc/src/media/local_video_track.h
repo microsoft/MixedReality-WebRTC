@@ -20,7 +20,9 @@ class RtpSenderInterface;
 class VideoTrackInterface;
 }  // namespace webrtc
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 class PeerConnection;
 class Transceiver;
@@ -111,4 +113,6 @@ class LocalVideoTrack : public VideoFrameObserver, public MediaTrack {
   const std::string track_name_;
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

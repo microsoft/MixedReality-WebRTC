@@ -6,7 +6,9 @@
 #include "interop/global_factory.h"
 #include "tracked_object.h"
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 TrackedObject::TrackedObject(RefPtr<GlobalFactory> global_factory,
                              ObjectType object_type)
@@ -18,4 +20,6 @@ TrackedObject::~TrackedObject() noexcept {
   global_factory_->RemoveObject(this);
 }
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft

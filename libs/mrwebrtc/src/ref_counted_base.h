@@ -5,7 +5,9 @@
 
 #include <atomic>
 
-namespace Microsoft::MixedReality::WebRTC {
+namespace Microsoft {
+namespace MixedReality {
+namespace WebRTC {
 
 /// Base class for ref-counted objects.
 class RefCountedBase {
@@ -38,4 +40,6 @@ class RefCountedBase {
   mutable std::atomic_uint32_t ref_count_{0};
 };
 
-}  // namespace Microsoft::MixedReality::WebRTC
+}  // namespace WebRTC
+}  // namespace MixedReality
+}  // namespace Microsoft
