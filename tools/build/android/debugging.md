@@ -15,6 +15,8 @@ IL2CPP compiles C# code into a native `libil2cpp.so` library, and puts the debug
   - `libunity.sym.so`
 - Continue to leave the Editor open during debugging because the `.cpp` files are also in the `Temp/` folder, and for easier debugging (setting breakpoint and stepping through C++ code) they are needed. Alternatively they can be copied somewhere else outside of the `Temp/` folder.
 
+_WARNING_ : Setting a breakpoint visually on a C++ file by clicking in the left gutter or using keyboard shortcut doesn't seem to work, likely because Android Studio or LLDB uses the local path without taking into account source remapping, therefore cannot match the file/line with an actualy module, and cannot create the actual breakpoint. Use the `br set -n <function_name>` or other variants of the `breakpoint` LLDB command to set breakpoints from the LLDB console instead.
+
 The Unity support [describes some custom post-process step](https://support.unity3d.com/hc/en-us/articles/115000177543-Where-I-can-get-the-symbols-file-for-the-libil2cpp-so-library-in-an-Android-IL2CPP-build-to-symbolicate-call-stacks-from-crashes-on-my-production-builds-) to copy the debug symbols files above, which can also be used to copy the C++ files.
 
 In Android Studio:
@@ -128,6 +130,17 @@ For the setting to be taken into account at LLDB startup and be persistent acros
 
 This ensures the command is run each time LLDB starts, which makes the mapping available for all debug sessions.
 
+WARNINGS:
+
+- **Overwrite vs. append**: `settings set target.source-map` overwrites the existing map. To append an entry (_e.g._ after the first one) use `settings append target.source-map` instead. So usually use `set` on the first line and `append` on all subsequent ones. See [this lldb-dev thread](http://lists.llvm.org/pipermail/lldb-dev/2017-August/012663.html) for info.
+- **String prefix match**: The source path (first argument) is **matched by string prefix and not by path**; that is, `a/../b/x`, `b/x`, and `b\x` are all different, and only the exact match that is in the debug info should be used (see `image lookup -vn <function_name>` to find the exact path syntax).
+- **Do not use multiple rules**: The last _path match_ (match by path as any OS would do, including `..` resolve) overwrites the previous _path match_, then will fail if it is not a _string prefix match_ (as defined above). This is the most confusing rule, and looks like a bug in Android Studio and/or LLDB. Consider 2 remap rules, in order:
+
+  - `/home/user/path/to/webrtc/src/out/android/arm64/Debug/../../../../pc` -> `d:\webrtc\src\pc`
+  - `/home/user/path/to/webrtc/src/pc` -> `d:\webrtc\src\pc`
+
+  They are both _path matches_ for the `pc` folder, since both paths resolve to the same thing, and the second one will overwrite the first one (at least it seems that this is what happens internally). But then if the actual path written in the debug info has the first form (the one with `..`) then the second rule is not a _string prefix match_ (see previous warning above). As a result the remap fails and source debugging is not available, even though the first rule should make it work.
+
 ## Launch with debugger
 
 Launch the debugger by clicking on the Debug icon (Shift + F9) instead of the normal Run icon (Shift + F10).
@@ -143,13 +156,41 @@ WARNING: It may take quite a while for LLDB to load all modules. See the status 
 
 ## Visual breakpoints
 
-Opening one of the C++ files, it is possible to directly set a breakpoint on a line (red dot in left gutter).
+Opening one of the C++ files, it is possible in theory to directly set a breakpoint on a line (red dot in left gutter). This does not always work. While the debugger is attached to the running application, breakpoints that could not be set appear as a grey interdiction sign instead of the usual red dot. Conversely, breakpoints that were successfully created appear as a red dot with a tiny check mark. When LLDB is not running, all breakpoints appear the same, and there is no way to tell if LLDB will be able to bind them when the application runs. As a fallback, breakpoints can be set with the LLDB prompt and the `br` / `breapoint` command.
+
+## General tips and tricks
+
+### LLDB command shortcut
+
+LLDB commands are generally quite long to type, but most can be shortened as commands are disambiguated only on the first few characters and don't need a full match for LLDB to recognize them; LLDB will always pick the unambiguous command with a matching prefix.
+
+Examples:
+
+- `breakpoint` -> `br`
+- `image lookup` -> `im loo`
+- _etc._
+
+### Line wrap
+
+IL2CPP tends to generate very long identifiers, which in turn produce very long lines. Wrapping lines around avoids having to scroll horizontally. Toggle wrap with **View** > **Active Editor** > **Soft-Wrap**, or globally with **File** > **Settings** > **Editor** > **General** for some or all file extensions.
 
 ## Useful LLDB commands
 
-- `bt` (backtrace) - Show the current callstack
-- `br set ...` - Set a breapoint (see `help br set` for options)
-- `up 3` / `down 2` - Move the frame cursor in the current callstack
-- `l` / `source list` - Show the sources at the current frame
-- `l 59` - Show the sources at the current frame starting from line 59 of the file
-- `image lookup -vn mrsPeerConnectionCreate` - Find the given function by name. This displays some symbol info and allows checking whether LLDB found the debug symbols for that function (and therefore for the library it is contained in). Shortcut `im loo -vn <function_name>`. The `CompileUnit` results shows the original build path of the C++ file, and should be used to setup the source path remapping.
+See the [LLDB tutorial](https://lldb.llvm.org/use/tutorial.html) for some more detailed explanations. This is more of a cheat sheet / memo than an actual documentation.
+
+- `bt` / `backtrace` : Show the current callstack
+- `br` / `breapoint`
+  - `br list` : List existing breakpoints
+  - `br set ...` : Set a breapoint (see `help br set` for options)
+- `up 3` / `down 2` : Move the frame cursor in the current callstack
+- `l` / `source list` : Show the sources at the current frame
+- `l 59` : Show the sources at the current frame starting from line 59 of the file
+- `image lookup -vn mrsPeerConnectionCreate` : Find the given function by name. This displays some symbol info and allows checking whether LLDB found the debug symbols for that function (and therefore for the library it is contained in). Shortcut `im loo -vn <function_name>`. The `CompileUnit` results shows the original build path of the C++ file, and should be used to setup the source path remapping.
+- `disassemble` / `dis`
+  - `dis -f` : Disassemble the entire current frame (usually, the current function)
+  - `dis -p` : Disassemble a few lines around the current instruction (program counter PC)
+- Show disassembly, see [here](https://stackoverflow.com/questions/33333165/how-to-switch-between-source-code-debug-mode-and-disassembly-debug-mode-in-lldb)
+- `j *0x1234abcd` : Move PC to the given address (equivalent to "Jump to cursor" in Visual Studio). This is dangerous.
+- `p` / `print`
+  - `p $x0` : Print the content of the `x0` register (default = decimal value).
+  - `p/x $x1` : Print the content of the `x1` register as an hexadecimal value.
