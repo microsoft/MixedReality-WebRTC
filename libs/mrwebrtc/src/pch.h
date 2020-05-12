@@ -31,6 +31,10 @@
 #define WEBRTC_POSIX 1
 #define WEBRTC_ANDROID 1
 
+#else
+
+#error Unknown platform
+
 #endif
 
 #if (__cplusplus >= 201703L)

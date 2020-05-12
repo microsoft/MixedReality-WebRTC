@@ -107,7 +107,11 @@ function Build-CoreWebRTC
         [string]$ScriptPlatform
     )
     $cmd = "python ..\..\external\webrtc-uwp-sdk\scripts\run.py -a prepare build -t webrtc"
-    $cmd = "$cmd -p $ScriptPlatform --cpus $BuildArch -c $BuildConfig --noColor --noWrapper --cpp17"
+    $cmd = "$cmd -p $ScriptPlatform --cpus $BuildArch -c $BuildConfig --noColor --noWrapper"
+    # UWP uses C++17 due to C++/WinRT dependency (see WebRTC UWP SDK project)
+    if ($ScriptPlatform -eq "winuwp") {
+        $cmd = "$cmd --cpp17"
+    }
     Invoke-Expression $cmd | Tee-Object -Variable output
     if (Select-String -Pattern "=================== Failed" -InputObject $output -SimpleMatch -CaseSensitive -Quiet)
     {
