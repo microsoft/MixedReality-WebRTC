@@ -1018,7 +1018,8 @@ T& FindOrInsert(std::vector<std::pair<std::string, T>>& vec,
   if (it != vec.end()) {
     return it->second;
   }
-  return vec.emplace_back(id, T{}).second;
+  vec.emplace_back(id, T{});
+  return vec.back().second;
 }
 
 }  // namespace
