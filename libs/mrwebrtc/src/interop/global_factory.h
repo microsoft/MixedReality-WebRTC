@@ -91,7 +91,7 @@ class GlobalFactory {
     // pointer to the GlobalFactory (so this reference would never be the last
     // one) or calling |GetLockImpl()| to get a new pointer, which will only
     // call |AddRef()| under the lock too so will block.
-    std::scoped_lock lock(init_mutex_);
+    std::lock_guard<std::mutex> lock(init_mutex_);
     RTC_DCHECK(peer_factory_);
     // Usually this is memory_order_acq_rel, but here the |init_mutex_| forces
     // the necessary memory barrier, so only the atomicity is relevant.

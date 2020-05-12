@@ -106,7 +106,7 @@ class PeerConnection : public TrackedObject,
   /// Only one callback can be registered at a time.
   void RegisterLocalSdpReadytoSendCallback(
       LocalSdpReadytoSendCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{local_sdp_ready_to_send_callback_mutex_};
+    std::lock_guard<std::mutex> lock(local_sdp_ready_to_send_callback_mutex_);
     local_sdp_ready_to_send_callback_ = std::move(callback);
   }
 
@@ -122,7 +122,8 @@ class PeerConnection : public TrackedObject,
   /// registered at a time.
   void RegisterIceCandidateReadytoSendCallback(
       IceCandidateReadytoSendCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{ice_candidate_ready_to_send_callback_mutex_};
+    std::lock_guard<std::mutex> lock(
+        ice_candidate_ready_to_send_callback_mutex_);
     ice_candidate_ready_to_send_callback_ = std::move(callback);
   }
 
@@ -136,7 +137,7 @@ class PeerConnection : public TrackedObject,
   /// ICE connection changed. Only one callback can be registered at a time.
   void RegisterIceStateChangedCallback(
       IceStateChangedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{ice_state_changed_callback_mutex_};
+    std::lock_guard<std::mutex> lock(ice_state_changed_callback_mutex_);
     ice_state_changed_callback_ = std::move(callback);
   }
 
@@ -148,7 +149,8 @@ class PeerConnection : public TrackedObject,
   /// time.
   void RegisterIceGatheringStateChangedCallback(
       IceGatheringStateChangedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{ice_gathering_state_changed_callback_mutex_};
+    std::lock_guard<std::mutex> lock(
+        ice_gathering_state_changed_callback_mutex_);
     ice_gathering_state_changed_callback_ = std::move(callback);
   }
 
@@ -167,7 +169,7 @@ class PeerConnection : public TrackedObject,
   /// renegotiation is needed. Only one callback can be registered at a time.
   void RegisterRenegotiationNeededCallback(
       RenegotiationNeededCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{renegotiation_needed_callback_mutex_};
+    std::lock_guard<std::mutex> lock(renegotiation_needed_callback_mutex_);
     renegotiation_needed_callback_ = std::move(callback);
   }
 
@@ -204,7 +206,7 @@ class PeerConnection : public TrackedObject,
   /// Register a custom |ConnectedCallback| invoked when the connection is
   /// established. Only one callback can be registered at a time.
   void RegisterConnectedCallback(ConnectedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{connected_callback_mutex_};
+    std::lock_guard<std::mutex> lock(connected_callback_mutex_);
     connected_callback_ = std::move(callback);
   }
 
@@ -249,7 +251,7 @@ class PeerConnection : public TrackedObject,
   /// time.
   void RegisterTransceiverAddedCallback(
       TransceiverAddedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{callbacks_mutex_};
+    std::lock_guard<std::mutex> lock(callbacks_mutex_);
     transceiver_added_callback_ = std::move(callback);
   }
 
@@ -272,7 +274,7 @@ class PeerConnection : public TrackedObject,
   /// at a time.
   void RegisterVideoTrackAddedCallback(
       VideoTrackAddedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{media_track_callback_mutex_};
+    std::lock_guard<std::mutex> lock(media_track_callback_mutex_);
     video_track_added_callback_ = std::move(callback);
   }
 
@@ -286,7 +288,7 @@ class PeerConnection : public TrackedObject,
   /// registered at a time.
   void RegisterVideoTrackRemovedCallback(
       VideoTrackRemovedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{media_track_callback_mutex_};
+    std::lock_guard<std::mutex> lock(media_track_callback_mutex_);
     video_track_removed_callback_ = std::move(callback);
   }
 
@@ -331,7 +333,7 @@ class PeerConnection : public TrackedObject,
   /// registered at a time.
   void RegisterAudioTrackAddedCallback(
       AudioTrackAddedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{media_track_callback_mutex_};
+    std::lock_guard<std::mutex> lock(media_track_callback_mutex_);
     audio_track_added_callback_ = std::move(callback);
   }
 
@@ -345,7 +347,7 @@ class PeerConnection : public TrackedObject,
   /// registered at a time.
   void RegisterAudioTrackRemovedCallback(
       AudioTrackRemovedCallback&& callback) noexcept {
-    auto lock = std::scoped_lock{media_track_callback_mutex_};
+    std::lock_guard<std::mutex> lock(media_track_callback_mutex_);
     audio_track_removed_callback_ = std::move(callback);
   }
 
@@ -366,7 +368,7 @@ class PeerConnection : public TrackedObject,
   /// registered at a time.
   void RegisterDataChannelAddedCallback(
       DataChannelAddedCallback callback) noexcept {
-    auto lock = std::scoped_lock{data_channel_added_callback_mutex_};
+    std::lock_guard<std::mutex> lock(data_channel_added_callback_mutex_);
     data_channel_added_callback_ = std::move(callback);
   }
 
@@ -375,7 +377,7 @@ class PeerConnection : public TrackedObject,
   /// time.
   void RegisterDataChannelRemovedCallback(
       DataChannelRemovedCallback callback) noexcept {
-    auto lock = std::scoped_lock{data_channel_removed_callback_mutex_};
+    std::lock_guard<std::mutex> lock(data_channel_removed_callback_mutex_);
     data_channel_removed_callback_ = std::move(callback);
   }
 
@@ -762,7 +764,7 @@ class PeerConnection : public TrackedObject,
     // Invoke the TrackAdded callback, which will set the native handle on the
     // interop wrapper (if created above)
     {
-      auto lock = std::scoped_lock{media_track_callback_mutex_};
+      std::lock_guard<std::mutex> lock(media_track_callback_mutex_);
       // Read the function pointer inside the lock to avoid race condition
       auto cb = *track_added_cb;
       if (cb) {
@@ -804,7 +806,7 @@ class PeerConnection : public TrackedObject,
 
     // Invoke the TrackRemoved callback
     {
-      auto lock = std::scoped_lock{media_track_callback_mutex_};
+      std::lock_guard<std::mutex> lock(media_track_callback_mutex_);
       // Read the function pointer inside the lock to avoid race condition
       auto cb = *track_removed_cb;
       if (cb) {

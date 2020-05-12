@@ -467,7 +467,7 @@ void Transceiver::OnAssociated(int mline_index) {
   // once, from their initial non-associated state.
   assert(mline_index_ < 0);
   mline_index_ = mline_index;
-  auto lock = std::scoped_lock{cb_mutex_};
+  std::lock_guard<std::mutex> lock(cb_mutex_);
   if (auto cb = associated_callback_) {
     cb(mline_index);
   }
@@ -520,7 +520,7 @@ void Transceiver::OnSessionDescUpdated(bool remote, bool forced) {
 
 void Transceiver::FireStateUpdatedEvent(
     mrsTransceiverStateUpdatedReason reason) {
-  auto lock = std::scoped_lock{cb_mutex_};
+  std::lock_guard<std::mutex> lock(cb_mutex_);
   if (auto cb = state_updated_callback_) {
     cb(reason, direction_, desired_direction_);
   }
