@@ -820,7 +820,7 @@ mrsResult MRS_CALL mrsPeerConnectionAddDataChannel(
   }
   const bool ordered = (config->flags & mrsDataChannelConfigFlags::kOrdered);
   const bool reliable = (config->flags & mrsDataChannelConfigFlags::kReliable);
-  const std::string_view label = (config->label ? config->label : "");
+  const absl::string_view label = (config->label ? config->label : "");
   ErrorOr<std::shared_ptr<DataChannel>> data_channel =
       peer->AddDataChannel(config->id, label, ordered, reliable);
   if (data_channel.ok()) {
@@ -1012,7 +1012,7 @@ void MRS_CALL mrsMemCpyStride(void* dst,
 namespace {
 template <class T>
 T& FindOrInsert(std::vector<std::pair<std::string, T>>& vec,
-                std::string_view id) {
+                absl::string_view id) {
   auto it = std::find_if(vec.begin(), vec.end(),
                          [&](auto&& pair) { return pair.first == id; });
   if (it != vec.end()) {

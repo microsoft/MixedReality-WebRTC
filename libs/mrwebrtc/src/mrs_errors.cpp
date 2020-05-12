@@ -25,7 +25,7 @@ void Error::set_message(std::string message) {
   message_ = std::move(message);
 }
 
-std::string_view ToString(Result code) {
+absl::string_view ToString(Result code) {
   switch (code) {
     case Result::kSuccess:
       return "Success";

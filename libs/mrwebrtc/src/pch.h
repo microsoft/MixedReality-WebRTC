@@ -8,7 +8,6 @@
 #include <functional>
 #include <mutex>
 #include <string>
-#include <string_view>
 #include <unordered_set>
 
 #if defined(MR_SHARING_WIN)

@@ -81,7 +81,9 @@ class PeerConnection : public TrackedObject,
 
   /// Set the name of the peer connection. This is a friendly name opaque to the
   /// implementation, used mainly for debugging and logging.
-  void SetName(std::string_view name) { name_ = name; }
+  void SetName(absl::string_view name) {
+    name_.assign(name.data(), name.size());
+  }
 
   std::string GetName() const override { return name_; }
 
@@ -384,7 +386,7 @@ class PeerConnection : public TrackedObject,
   /// Create a new data channel and add it to the peer connection.
   /// This invokes the DataChannelAdded callback.
   ErrorOr<std::shared_ptr<DataChannel>> AddDataChannel(int id,
-                                                       std::string_view label,
+                                                       absl::string_view label,
                                                        bool ordered,
                                                        bool reliable) noexcept;
 
