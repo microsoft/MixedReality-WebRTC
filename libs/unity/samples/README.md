@@ -32,6 +32,10 @@ This installs the package and add a reference in the currently open Unity projec
 
 See Unity's documentation on [Installing a local package](https://docs.unity3d.com/Manual/upm-ui-local.html) for more details.
 
+> **⚠ Scene loading bug in Unity 2018.4 ⚠**
+>
+> Unity 2018.4 has a bug where scenes from custom packages cannot be loaded by default. [This is fixed in Unity 2019.1](https://forum.unity.com/threads/cant-save-scenes-into-packages-cant-load-scenes-from-packages.590764/#post-4127551). As a workaroud to open the sample scenes contained in this package, use **Load As Additive** (from the scene context menu, right-clicking on the scene), or upgrade to Unity 2019.1+.
+
 ## Documentation
 
 The official documentation of the MixedReality-WebRTC project is hosted at [https://microsoft.github.io/MixedReality-WebRTC/manual/unity-integration.html](https://microsoft.github.io/MixedReality-WebRTC/manual/unity-integration.html).
