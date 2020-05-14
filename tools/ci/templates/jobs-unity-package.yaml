@@ -10,6 +10,9 @@ parameters:
 - name: npmPublishFeed
   type: string
   default: ''
+- name: npmPackageVersion
+  type: string
+  default: ''
 
 jobs:
 
@@ -22,6 +25,22 @@ jobs:
   - group: MixedReality-WebRTC-ArtifactConfig
   steps:
   - checkout: self
+
+  # Update packages.json with the package version
+  - task: PowerShell@2
+    displayName: 'Set package version (library)'
+    inputs:
+      targetType: 'filePath'
+      filePath: '$(Build.SourcesDirectory)/tools/ci/computeNpmPackageVersion.ps1'
+      arguments: '-PackageJsonFile "libs/unity/library/package.json" -PackageVersion "${{parameters.npmPackageVersion}}"'
+    timeoutInMinutes: 5
+  - task: PowerShell@2
+    displayName: 'Set package version (samples)'
+    inputs:
+      targetType: 'filePath'
+      filePath: '$(Build.SourcesDirectory)/tools/ci/computeNpmPackageVersion.ps1'
+      arguments: '-PackageJsonFile "libs/unity/samples/package.json" -PackageVersion "${{parameters.npmPackageVersion}}"'
+    timeoutInMinutes: 5
 
   # Download mrwebrtc.dll
   - task: DownloadPipelineArtifact@2

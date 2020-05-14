@@ -17,6 +17,9 @@ parameters:
 - name: npmPublishFeed
   type: string
   default: ''
+- name: npmPackageVersion
+  type: string
+  default: '0.0.1-preview.1'
 
 stages:
 
@@ -85,3 +88,4 @@ stages:
     parameters:
       buildAgent: '${{parameters.buildAgent}}'
       npmPublishFeed: '${{parameters.npmPublishFeed}}'
+      npmPackageVersion: '${{parameters.npmPackageVersion}}'
