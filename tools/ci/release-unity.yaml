@@ -18,8 +18,70 @@ parameters:
   type: string
   default: ''
 
-jobs:
-- template: templates/jobs-unity-release.yaml
-  parameters:
-    buildAgent: '${{parameters.buildAgent}}'
-    npmPublishFeed: '${{parameters.npmPublishFeed}}'
+stages:
+
+# Compile all Release build variants of mrwebrtc.dll
+- stage: build_mrwebrtc
+  displayName: 'Build mrwebrtc'
+  jobs:
+  - template: templates/jobs-cpp.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildPlatform: 'Win32'
+      buildArch: 'x86'
+      msbuildPlatform: 'Win32'
+      buildConfig: 'Release'
+      withTesting: false
+  - template: templates/jobs-cpp.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildPlatform: 'Win32'
+      buildArch: 'x64'
+      msbuildPlatform: 'Win32'
+      buildConfig: 'Release'
+      withTesting: false
+  - template: templates/jobs-cpp.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildPlatform: 'UWP'
+      buildArch: 'x86'
+      msbuildPlatform: 'Win32'
+      buildConfig: 'Release'
+      withTesting: false
+  - template: templates/jobs-cpp.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildPlatform: 'UWP'
+      buildArch: 'x64'
+      msbuildPlatform: 'x64'
+      buildConfig: 'Release'
+      withTesting: false
+  - template: templates/jobs-cpp.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildPlatform: 'UWP'
+      buildArch: 'ARM'
+      msbuildPlatform: 'ARM'
+      buildConfig: 'Release'
+      withTesting: false
+
+# Compile Microsoft.MixedReality.WebRTC.dll
+- stage: build_cs
+  dependsOn: build_mrwebrtc
+  displayName: 'Build C# library'
+  jobs:
+  - template: templates/jobs-cs.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildConfig: 'Release'
+      testConfig: 'Release'
+
+# Package library and samples
+- stage: publish
+  dependsOn: build_cs
+  displayName: 'Publish'
+  jobs:
+  - template: templates/jobs-unity-package.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      npmPublishFeed: '${{parameters.npmPublishFeed}}'
