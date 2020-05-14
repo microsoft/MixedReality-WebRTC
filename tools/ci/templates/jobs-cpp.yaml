@@ -151,12 +151,20 @@ jobs:
       configuration: '${{parameters.buildConfig}}'
     timeoutInMinutes: 20
 
-  # Publish mrwebrtc.dll and associated files (PDB, ...)
+  # Stage artifacts
+  - task: CopyFiles@2
+    displayName: 'Stage mrwebrtc artifacts'
+    inputs:
+      sourceFolder: 'bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+      contents: '**/mrwebrtc.@(pdb|dll)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  # Publish mrwebrtc.dll and mrwebrtc.pdb
   - task: PublishPipelineArtifact@0
     displayName: 'Publish mrwebrtc ($(buildTriple))'
     inputs:
       artifactName: 'mrwebrtc_$(buildTriple)'
-      targetPath: 'bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+      targetPath: '$(Build.ArtifactStagingDirectory)'
 
   # Delete PDBs to save disk space, otherwise the NuGet download below fails in Debug
   - ${{ if eq(parameters.withTesting, 'true') }}:
