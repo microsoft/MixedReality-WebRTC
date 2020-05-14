@@ -73,11 +73,12 @@ stages:
   dependsOn: build_mrwebrtc
   displayName: 'Build C# library'
   jobs:
-  - template: templates/jobs-cs.yaml
+  - template: templates/jobs-cs-build.yaml
     parameters:
       buildAgent: '${{parameters.buildAgent}}'
       buildConfig: 'Release'
-      testConfig: 'Release'
+      publishArtifacts: true
+      withTesting: false
 
 # Package library and samples
 - stage: publish
