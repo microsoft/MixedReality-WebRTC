@@ -90,10 +90,21 @@ jobs:
 
   # Publish library
   - task: Npm@1
-    displayName: 'Pack Unity library'
+    displayName: 'Publish Unity library'
     inputs:
       command: 'publish'
       workingDir: 'libs/unity/library'
+      verbose: true
+      publishRegistry: 'useFeed'
+      publishFeed: '${{parameters.npmPublishFeed}}'
+      publishPackageMetadata: true
+
+  # Publish samples
+  - task: Npm@1
+    displayName: 'Publish Unity samples'
+    inputs:
+      command: 'publish'
+      workingDir: 'libs/unity/samples'
       verbose: true
       publishRegistry: 'useFeed'
       publishFeed: '${{parameters.npmPublishFeed}}'
