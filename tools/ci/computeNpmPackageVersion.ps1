@@ -8,12 +8,12 @@ param(
     [string]$PackageVersion
 )
 
-Write-Host "Modifying $PackageJsonFile for version $PackageVersion..."
+Write-Host "Modifying '$PackageJsonFile' for version '$PackageVersion'..."
 
-$content = Get-Content -Path "$PackageJsonFile" -Raw -Encoding UTF8
-$content = $content -replace "__PACKAGE_VERSION__", "$PackageVersion"
-Set-Content -Path $ProjectFile -Value $content -Force -Encoding UTF8
+$content = Get-Content -Path $PackageJsonFile -Raw -Encoding UTF8
+$content = $content -replace "__PACKAGE_VERSION__", $PackageVersion
+Set-Content -Path $PackageJsonFile -Value $content -Force -Encoding UTF8
 
 Write-Host "== $PackageJsonFile ======================================="
-Get-Content -Path "$PackageJsonFile" -Raw -Encoding UTF8
+Get-Content -Path $PackageJsonFile -Raw -Encoding UTF8
 Write-Host "==========================================================="
