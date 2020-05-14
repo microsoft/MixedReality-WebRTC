@@ -40,7 +40,7 @@ stages:
       buildAgent: '${{parameters.buildAgent}}'
       buildPlatform: 'Win32'
       buildArch: 'x64'
-      msbuildPlatform: 'Win32'
+      msbuildPlatform: 'x64'
       buildConfig: 'Release'
       withTesting: false
   - template: templates/jobs-cpp.yaml
