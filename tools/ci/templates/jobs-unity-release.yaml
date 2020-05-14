@@ -1,0 +1,69 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# [TEMPLATE] Build, package, and publish Unity library and samples for release.
+
+parameters:
+- name: buildAgent
+  type: string
+  default: ''
+- name: npmPublishFeed
+  type: string
+  default: ''
+ 
+jobs:
+
+# Compile all Release build variants of mrwebrtc.dll
+- template: jobs-cpp.yaml
+  parameters:
+    buildAgent: '${{parameters.buildAgent}}'
+    buildPlatform: 'Win32'
+    buildArch: 'x86'
+    msbuildPlatform: 'Win32'
+    buildConfig: 'Release'
+    withTesting: false
+- template: jobs-cpp.yaml
+  parameters:
+    buildAgent: '${{parameters.buildAgent}}'
+    buildPlatform: 'Win32'
+    buildArch: 'x64'
+    msbuildPlatform: 'Win32'
+    buildConfig: 'Release'
+    withTesting: false
+- template: jobs-cpp.yaml
+  parameters:
+    buildAgent: '${{parameters.buildAgent}}'
+    buildPlatform: 'UWP'
+    buildArch: 'x86'
+    msbuildPlatform: 'Win32'
+    buildConfig: 'Release'
+    withTesting: false
+- template: jobs-cpp.yaml
+  parameters:
+    buildAgent: '${{parameters.buildAgent}}'
+    buildPlatform: 'UWP'
+    buildArch: 'x64'
+    msbuildPlatform: 'x64'
+    buildConfig: 'Release'
+    withTesting: false
+- template: jobs-cpp.yaml
+  parameters:
+    buildAgent: '${{parameters.buildAgent}}'
+    buildPlatform: 'UWP'
+    buildArch: 'ARM'
+    msbuildPlatform: 'ARM'
+    buildConfig: 'Release'
+    withTesting: false
+
+# Compile Microsoft.MixedReality.WebRTC.dll
+- template: jobs-cs.yaml
+  parameters:
+    buildAgent: '${{parameters.buildAgent}}'
+    buildConfig: 'Release'
+    testConfig: 'Release'
+
+# Package library and samples
+- template: jobs-unity-package.yaml
+  parameters:
+    buildAgent: '${{parameters.buildAgent}}'
+    npmPublishFeed: '${{parameters.npmPublishFeed}}'

@@ -1,0 +1,25 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# MixedReality-WebRTC build pipeline for Unity packages release.
+
+# Disable branch and PR triggers
+trigger: none
+pr: none
+
+# Give a unique name to the build each time it runs
+name: release-unity-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+
+parameters:
+- name: buildAgent
+  type: string
+  default: 'Hosted VS2017' # vs2017-win2016
+- name: npmPublishFeed
+  type: string
+  default: ''
+
+jobs:
+- template: templates/jobs-unity-release.yaml
+  parameters:
+    buildAgent: '${{parameters.buildAgent}}'
+    npmPublishFeed: '${{parameters.npmPublishFeed}}'
