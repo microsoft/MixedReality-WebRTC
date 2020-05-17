@@ -13,6 +13,10 @@ extern "C" {
 /// 32-bit boolean for interop API.
 enum class mrsBool : int32_t { kTrue = -1, kFalse = 0 };
 
+/// 8-bit boolean with optional value for interop API.
+/// This is conceptually equivalent to std::optional<bool>.
+enum class mrsOptBool : int8_t { kTrue = -1, kFalse = 0, kUnset = 0b01010101 };
+
 //
 // Generic utilities
 //
