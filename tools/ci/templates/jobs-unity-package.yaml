@@ -1,0 +1,111 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# [TEMPLATE] Package Unity library and samples for release.
+
+parameters:
+- name: buildAgent
+  type: string
+  default: ''
+- name: npmPublishFeed
+  type: string
+  default: ''
+- name: npmPackageVersion
+  type: string
+  default: ''
+
+jobs:
+
+# Package library
+- job: unity_library
+  timeoutInMinutes: 60
+  pool:
+    name: ${{parameters.buildAgent}}
+  variables:
+  - group: MixedReality-WebRTC-ArtifactConfig
+  steps:
+  - checkout: self
+
+  # Update packages.json with the package version
+  - task: PowerShell@2
+    displayName: 'Set package version (library)'
+    inputs:
+      targetType: 'filePath'
+      filePath: '$(Build.SourcesDirectory)/tools/ci/computeNpmPackageVersion.ps1'
+      arguments: '-PackageJsonFile "libs/unity/library/package.json" -PackageVersion "${{parameters.npmPackageVersion}}"'
+    timeoutInMinutes: 5
+  - task: PowerShell@2
+    displayName: 'Set package version (samples)'
+    inputs:
+      targetType: 'filePath'
+      filePath: '$(Build.SourcesDirectory)/tools/ci/computeNpmPackageVersion.ps1'
+      arguments: '-PackageJsonFile "libs/unity/samples/package.json" -PackageVersion "${{parameters.npmPackageVersion}}"'
+    timeoutInMinutes: 5
+
+  # Download mrwebrtc.dll
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc library (Win32-x86-Release)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_Win32-x86-Release'
+      patterns: '**/*.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/Win32/x86'
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc library (Win32-x64-Release)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_Win32-x64-Release'
+      patterns: '**/*.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc library (UWP-x86-Release)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_UWP-x86-Release'
+      patterns: '**/*.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/WSA/x86'
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc library (UWP-x64-Release)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_UWP-x64-Release'
+      patterns: '**/*.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/WSA/x86_64'
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc library (UWP-ARM-Release)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_UWP-ARM-Release'
+      patterns: '**/*.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/WSA/ARM'
+
+  # Download Microsoft.MixedReality.WebRTC.dll
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download C# library'
+    inputs:
+      source: 'current'
+      artifact: 'cslib_Release'
+      patterns: '**/*.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
+
+  # Publish library
+  - task: Npm@1
+    displayName: 'Publish Unity library'
+    inputs:
+      command: 'publish'
+      workingDir: 'libs/unity/library'
+      verbose: true
+      publishRegistry: 'useFeed'
+      publishFeed: '${{parameters.npmPublishFeed}}'
+      publishPackageMetadata: true
+
+  # Publish samples
+  - task: Npm@1
+    displayName: 'Publish Unity samples'
+    inputs:
+      command: 'publish'
+      workingDir: 'libs/unity/samples'
+      verbose: true
+      publishRegistry: 'useFeed'
+      publishFeed: '${{parameters.npmPublishFeed}}'
+      publishPackageMetadata: true

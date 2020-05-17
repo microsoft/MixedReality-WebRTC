@@ -9,6 +9,7 @@ parameters:
   buildArch: ''        # x86|x64|ARM|ARM64
   msbuildPlatform: ''  # Win32|x64|ARM|ARM64
   buildConfig: ''      # Debug|Release
+  withTesting: true    # true|false
 
 jobs:
 
@@ -150,50 +151,62 @@ jobs:
       configuration: '${{parameters.buildConfig}}'
     timeoutInMinutes: 20
 
-  # Publish mrwebrtc.dll and associated files (PDB, ...)
+  # Stage artifacts
+  - task: CopyFiles@2
+    displayName: 'Stage mrwebrtc artifacts'
+    inputs:
+      sourceFolder: 'bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+      contents: '**/mrwebrtc.@(pdb|dll)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  # Publish mrwebrtc.dll and mrwebrtc.pdb
   - task: PublishPipelineArtifact@0
     displayName: 'Publish mrwebrtc ($(buildTriple))'
     inputs:
       artifactName: 'mrwebrtc_$(buildTriple)'
-      targetPath: 'bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+      targetPath: '$(Build.ArtifactStagingDirectory)'
 
   # Delete PDBs to save disk space, otherwise the NuGet download below fails in Debug
-  - powershell: |
-      Remove-Item "bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}/*" -Force -Include "*.pdb" -Exclude "Microsoft.MixedReality.WebRTC.*","NativeLib.*","NativeTests.*"
-    displayName: 'Delete PDBs after linking webrtc.lib'
-    condition: eq(variables['MRWebRTC_RestorePDBs'], 'true')
+  - ${{ if eq(parameters.withTesting, 'true') }}:
+    - powershell: |
+        Remove-Item "bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}/*" -Force -Include "*.pdb" -Exclude "Microsoft.MixedReality.WebRTC.*","NativeLib.*","NativeTests.*"
+      displayName: 'Delete PDBs after linking webrtc.lib'
+      condition: eq(variables['MRWebRTC_RestorePDBs'], 'true')
 
   # Restore the NuGet packages for the mrwebrtc tests
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
-    displayName: 'NuGet restore tests'
-    inputs:
-      command: restore
-      restoreSolution: '$(Build.SourcesDirectory)/tools/build/mrwebrtc/win32/tests/packages.config'
-      restoreDirectory: '$(Build.SourcesDirectory)/packages'
-      includeNuGetOrg: true
-      feedsToUse: 'config'
-      nugetConfigPath: '$(NuGetConfigPath)'
-    timeoutInMinutes: 10
+  - ${{ if eq(parameters.withTesting, 'true') }}:
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+      displayName: 'NuGet restore tests'
+      inputs:
+        command: restore
+        restoreSolution: '$(Build.SourcesDirectory)/tools/build/mrwebrtc/win32/tests/packages.config'
+        restoreDirectory: '$(Build.SourcesDirectory)/packages'
+        includeNuGetOrg: true
+        feedsToUse: 'config'
+        nugetConfigPath: '$(NuGetConfigPath)'
+      timeoutInMinutes: 10
 
   # Build the mrwebrtc tests
-  - task: MSBuild@1
-    condition: eq('${{parameters.buildPlatform}}', 'Win32')
-    displayName: 'Build tests ($(buildTriple))'
-    inputs:
-      solution: '$(Build.SourcesDirectory)/tools/build/mrwebrtc/win32/tests/mrwebrtc-win32-tests.vcxproj'
-      msbuildVersion: '15.0'
-      msbuildArchitecture: 'x64'
-      platform: '${{parameters.msbuildPlatform}}'
-      configuration: '${{parameters.buildConfig}}'
-      msbuildArguments: '/p:DisableDeviceTests=1' # Disable tests requiring a webcam or microphone
-    timeoutInMinutes: 15
+  - ${{ if eq(parameters.withTesting, 'true') }}:
+    - task: MSBuild@1
+      condition: eq('${{parameters.buildPlatform}}', 'Win32')
+      displayName: 'Build tests ($(buildTriple))'
+      inputs:
+        solution: '$(Build.SourcesDirectory)/tools/build/mrwebrtc/win32/tests/mrwebrtc-win32-tests.vcxproj'
+        msbuildVersion: '15.0'
+        msbuildArchitecture: 'x64'
+        platform: '${{parameters.msbuildPlatform}}'
+        configuration: '${{parameters.buildConfig}}'
+        msbuildArguments: '/p:DisableDeviceTests=1' # Disable tests requiring a webcam or microphone
+      timeoutInMinutes: 15
 
   # Run mrwebrtc test
-  - task: VSTest@2
-    condition: eq('${{parameters.buildPlatform}}', 'Win32')
-    displayName: 'Run tests ($(buildTriple))'
-    inputs:
-      testAssemblyVer2: 'mrwebrtc-win32-tests.exe'
-      searchFolder: '$(Build.SourcesDirectory)/bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}'
-      pathtoCustomTestAdapters: '$(Build.SourcesDirectory)/packages/GoogleTestAdapter.0.16.1/build/_common'
-    timeoutInMinutes: 30
+  - ${{ if eq(parameters.withTesting, 'true') }}:
+    - task: VSTest@2
+      condition: eq('${{parameters.buildPlatform}}', 'Win32')
+      displayName: 'Run tests ($(buildTriple))'
+      inputs:
+        testAssemblyVer2: 'mrwebrtc-win32-tests.exe'
+        searchFolder: '$(Build.SourcesDirectory)/bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+        pathtoCustomTestAdapters: '$(Build.SourcesDirectory)/packages/GoogleTestAdapter.0.16.1/build/_common'
+      timeoutInMinutes: 30

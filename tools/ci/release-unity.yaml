@@ -1,0 +1,92 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# MixedReality-WebRTC build pipeline for Unity packages release.
+
+# Disable branch and PR triggers
+trigger: none
+pr: none
+
+# Give a unique name to the build each time it runs
+name: release-unity-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+
+parameters:
+- name: buildAgent
+  type: string
+  default: 'Hosted VS2017' # vs2017-win2016
+- name: npmPublishFeed
+  type: string
+  default: ''
+- name: npmPackageVersion
+  type: string
+  default: '0.0.1-preview.1'
+
+stages:
+
+# Compile all Release build variants of mrwebrtc.dll
+- stage: build_mrwebrtc
+  displayName: 'Build mrwebrtc'
+  jobs:
+  - template: templates/jobs-cpp.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildPlatform: 'Win32'
+      buildArch: 'x86'
+      msbuildPlatform: 'Win32'
+      buildConfig: 'Release'
+      withTesting: false
+  - template: templates/jobs-cpp.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildPlatform: 'Win32'
+      buildArch: 'x64'
+      msbuildPlatform: 'x64'
+      buildConfig: 'Release'
+      withTesting: false
+  - template: templates/jobs-cpp.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildPlatform: 'UWP'
+      buildArch: 'x86'
+      msbuildPlatform: 'Win32'
+      buildConfig: 'Release'
+      withTesting: false
+  - template: templates/jobs-cpp.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildPlatform: 'UWP'
+      buildArch: 'x64'
+      msbuildPlatform: 'x64'
+      buildConfig: 'Release'
+      withTesting: false
+  - template: templates/jobs-cpp.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildPlatform: 'UWP'
+      buildArch: 'ARM'
+      msbuildPlatform: 'ARM'
+      buildConfig: 'Release'
+      withTesting: false
+
+# Compile Microsoft.MixedReality.WebRTC.dll
+- stage: build_cs
+  dependsOn: build_mrwebrtc
+  displayName: 'Build C# library'
+  jobs:
+  - template: templates/jobs-cs-build.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      buildConfig: 'Release'
+      publishArtifacts: true
+      withTesting: false
+
+# Package library and samples
+- stage: publish
+  dependsOn: build_cs
+  displayName: 'Publish'
+  jobs:
+  - template: templates/jobs-unity-package.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+      npmPublishFeed: '${{parameters.npmPublishFeed}}'
+      npmPackageVersion: '${{parameters.npmPackageVersion}}'
