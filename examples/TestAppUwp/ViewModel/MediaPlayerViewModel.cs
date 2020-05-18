@@ -129,7 +129,10 @@ namespace TestAppUwp
                 DisplayName = "Local webcam (default device)",
                 Factory = async () =>
                 {
-                    return await LocalVideoTrack.CreateFromDeviceAsync();
+                    // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
+                    var source = await VideoTrackSource.CreateFromDeviceAsync();
+                    var settings = new LocalVideoTrackInitConfig();
+                    return await LocalVideoTrack.CreateFromSourceAsync(source, settings);
                 }
             });
 

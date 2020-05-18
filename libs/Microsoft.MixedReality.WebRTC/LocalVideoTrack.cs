@@ -78,7 +78,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Settings for adding a local video track backed by a local video capture device (e.g. webcam).
     /// </summary>
-    public class LocalVideoTrackSettings
+    public class LocalVideoTrackInitConfig
     {
         /// <summary>
         /// Name of the track to create, as used for the SDP negotiation.
@@ -166,7 +166,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// internal video capture device, or has been removed from any peer connection
         /// (and is therefore inactive).
         /// </summary>
-        public ExternalVideoTrackSource Source { get; private set; } = null;
+        public ExternalVideoTrackSource ExternalSource { get; private set; } = null; // TODO - remove
+
+        /// <summary>
+        /// Video track source this track is pulling its video frames from.
+        /// </summary>
+        public VideoTrackSource Source { get; private set; } = null;
 
         /// <summary>
         /// Enabled status of the track. If enabled, send local video frames to the remote peer as
@@ -219,93 +224,46 @@ namespace Microsoft.MixedReality.WebRTC
         private LocalVideoTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
         /// <summary>
-        /// Create a video track from a local video capture device (webcam).
+        /// Create a video track from an existing video track source.
         /// 
-        /// The video track receives its video data from an underlying hidden source associated with
-        /// the track and producing video frames by capturing them from a capture device accessible
-        /// from the local host machine, generally a USB webcam or built-in device camera.
-        /// 
-        /// The underlying video source initially starts in the capturing state, and will remain live
-        /// for as long as the track is alive. It can be added to a peer connection by assigning it to
-        /// the <see cref="Transceiver.LocalVideoTrack"/> property of a video transceiver of that peer
-        /// connection. Once attached to the peer connection, it can temporarily be disabled and re-enabled
-        /// (see <see cref="Enabled"/>) while remaining attached to it.
-        /// 
-        /// Note that disabling the track does not release the device; the source retains exclusive access to it.
-        /// Therefore in general multiple tracks cannot be created using a single video capture device.
+        /// This does not add the track to any peer connection. Instead, the track must be added manually to
+        /// a video transceiver to be attached to a peer connection and transmitted to a remote peer.
         /// </summary>
-        /// <param name="settings">Video capture settings for configuring the capture device associated with
-        /// the underlying video track source.</param>
-        /// <returns>This returns a task which, upon successful completion, provides an instance of
-        /// <see cref="LocalVideoTrack"/> representing the newly created video track.</returns>
-        /// <remarks>
-        /// On UWP this requires the "webcam" capability.
-        /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
-        /// for more details.
-        /// 
-        /// The video capture device may be accessed several times during the initializing process,
-        /// generally once for listing and validating the capture format, and once for actually starting
-        /// the video capture.
-        /// 
-        /// Note that the capture device must support a capture format with the given constraints of profile
-        /// ID or kind, capture resolution, and framerate, otherwise the call will fail. That is, there is no
-        /// fallback mechanism selecting a closest match. Developers should use
-        /// <see cref="PeerConnection.GetVideoCaptureFormatsAsync(string)"/> to list the supported formats ahead
-        /// of calling <see cref="CreateFromDeviceAsync(LocalVideoTrackSettings)"/>, and can build their own
-        /// fallback mechanism on top of this call if needed.
-        /// </remarks>
-        /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
-        /// <example>
-        /// Create a video track called "MyTrack", with Mixed Reality Capture (MRC) enabled.
-        /// This assumes that the platform supports MRC. Note that if MRC is not available
-        /// the call will still succeed, but will return a track without MRC enabled.
-        /// <code>
-        /// var settings = new LocalVideoTrackSettings
-        /// {
-        ///     trackName = "MyTrack",
-        ///     enableMrc = true
-        /// };
-        /// var videoTrack = await LocalVideoTrack.CreateFromDeviceAsync(settings);
-        /// </code>
-        /// Create a video track from a local webcam, asking for a capture format suited for video conferencing,
-        /// and a target framerate of 30 frames per second (FPS). The implementation will select an appropriate
-        /// capture resolution. This assumes that the device supports video profiles, and has at least one capture
-        /// format supporting 30 FPS capture associated with the VideoConferencing profile. Otherwise the call
-        /// will fail.
-        /// <code>
-        /// var settings = new LocalVideoTrackSettings
-        /// {
-        ///     videoProfileKind = VideoProfileKind.VideoConferencing,
-        ///     framerate = 30.0
-        /// };
-        /// var videoTrack = await LocalVideoTrack.CreateFromDeviceAsync(settings);
-        /// </code>
-        /// </example>
-        /// <seealso cref="Transceiver.LocalVideoTrack"/>
-        public static Task<LocalVideoTrack> CreateFromDeviceAsync(LocalVideoTrackSettings settings = null)
+        /// <param name="source">The track source which provides the raw video frames to the newly created track.</param>
+        /// <param name="initConfig">Configuration to initialize the track being created.</param>
+        /// <returns>Asynchronous task completed once the track is created.</returns>
+        public static Task<LocalVideoTrack> CreateFromSourceAsync(VideoTrackSource source, LocalVideoTrackInitConfig initConfig)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException();
+            }
+
             return Task.Run(() =>
             {
-                // On UWP this cannot be called from the main UI thread, so always call it from
-                // a background worker thread.
-
-                string trackName = settings?.trackName;
+                // Parse and marshal the settings
+                string trackName = initConfig?.trackName;
                 if (string.IsNullOrEmpty(trackName))
                 {
                     trackName = Guid.NewGuid().ToString();
                 }
+                var config = new LocalVideoTrackInterop.TrackInitConfig
+                {
+                    TrackName = trackName
+                };
 
                 // Create interop wrappers
                 var track = new LocalVideoTrack(trackName);
 
-                // Parse settings
-                var config = new PeerConnectionInterop.LocalVideoTrackInteropInitConfig(track, settings);
-
                 // Create native implementation objects
-                uint res = LocalVideoTrackInterop.LocalVideoTrack_CreateFromDevice(in config, trackName,
-                    out LocalVideoTrackHandle trackHandle);
+                uint res = LocalVideoTrackInterop.LocalVideoTrack_CreateFromSource(in config,
+                    source._nativeHandle, out LocalVideoTrackHandle trackHandle);
                 Utils.ThrowOnErrorCode(res);
-                track.SetHandle(trackHandle);
+
+                // Finish creating the track, and bind it to the source
+                track.FinishCreate(trackHandle, source);
+                source.OnTrackAddedToSource(track);
+
                 return track;
             });
         }
@@ -335,33 +293,33 @@ namespace Microsoft.MixedReality.WebRTC
             // Create native implementation objects
             uint res = LocalVideoTrackInterop.LocalVideoTrack_CreateFromExternalSource(config, out LocalVideoTrackHandle trackHandle);
             Utils.ThrowOnErrorCode(res);
-            track.SetHandle(trackHandle);
+            track.FinishCreate(trackHandle, null /*TODO*/);
             return track;
         }
 
         // Constructor for interop-based creation; SetHandle() will be called later.
         // Constructor for standalone track not associated to a peer connection.
-        internal LocalVideoTrack(string trackName, ExternalVideoTrackSource source = null) : base(null, trackName)
+        internal LocalVideoTrack(string trackName, ExternalVideoTrackSource externalSource = null) : base(null, trackName)
         {
             Transceiver = null;
-            Source = source;
-            source?.OnTrackAddedToSource(this);
+            ExternalSource = externalSource;
+            externalSource?.OnTrackAddedToSource(this);
         }
 
         // Constructor for interop-based creation; SetHandle() will be called later
         // Constructor for a track associated with a peer connection.
         internal LocalVideoTrack(PeerConnection peer,
-            Transceiver transceiver, string trackName, ExternalVideoTrackSource source = null) : base(peer, trackName)
+            Transceiver transceiver, string trackName, ExternalVideoTrackSource externalSource = null) : base(peer, trackName)
         {
             Debug.Assert(transceiver.MediaKind == MediaKind.Video);
             Debug.Assert(transceiver.LocalVideoTrack == null);
             Transceiver = transceiver;
             transceiver.LocalVideoTrack = this;
-            Source = source;
-            source?.OnTrackAddedToSource(this);
+            ExternalSource = externalSource;
+            externalSource?.OnTrackAddedToSource(this);
         }
 
-        internal void SetHandle(LocalVideoTrackHandle handle)
+        internal void FinishCreate(LocalVideoTrackHandle handle, VideoTrackSource source)
         {
             Debug.Assert(!handle.IsClosed);
             // Either first-time assign or no-op (assign same value again)
@@ -371,6 +329,7 @@ namespace Microsoft.MixedReality.WebRTC
                 _nativeHandle = handle;
                 RegisterInteropCallbacks();
             }
+            Source = source;
         }
 
         private void RegisterInteropCallbacks()
@@ -401,6 +360,13 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 Source.OnTrackRemovedFromSource(this);
                 Source = null;
+            }
+
+            // Notify the source
+            if (ExternalSource != null)
+            {
+                ExternalSource.OnTrackRemovedFromSource(this);
+                ExternalSource = null;
             }
 
             // Remove the track from the peer connection, if any

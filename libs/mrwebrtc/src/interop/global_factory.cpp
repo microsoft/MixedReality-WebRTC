@@ -42,6 +42,8 @@ absl::string_view ObjectTypeToString(ObjectType type) {
       return "VideoTransceiver";
     case ObjectType::kAudioTrackSource:
       return "AudioTrackSource";
+    case ObjectType::kVideoTrackSource:
+      return "VideoTrackSource";
     default:
       RTC_NOTREACHED();
       return "<UnknownObjectType>";

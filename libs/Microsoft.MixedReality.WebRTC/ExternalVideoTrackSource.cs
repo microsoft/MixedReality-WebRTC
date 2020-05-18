@@ -198,7 +198,7 @@ namespace Microsoft.MixedReality.WebRTC
             var remainingTracks = new List<LocalVideoTrack>();
             foreach (var track in tracks)
             {
-                if (track.Source == this)
+                if (track.ExternalSource == this)
                 {
                     bool removed = Tracks.Remove(track);
                     Debug.Assert(removed);

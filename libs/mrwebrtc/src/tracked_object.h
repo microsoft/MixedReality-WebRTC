@@ -30,6 +30,7 @@ enum class ObjectType : int {
   kAudioTransceiver,
   kVideoTransceiver,
   kAudioTrackSource,
+  kVideoTrackSource,
 };
 
 /// Object tracked for interop, exposing helper methods for debugging purpose.
