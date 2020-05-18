@@ -14,6 +14,7 @@ namespace TestNetCoreConsole
         {
             Transceiver audioTransceiver = null;
             Transceiver videoTransceiver = null;
+            AudioTrackSource audioTrackSource = null;
             LocalAudioTrack localAudioTrack = null;
             LocalVideoTrack localVideoTrack = null;
 
@@ -58,7 +59,13 @@ namespace TestNetCoreConsole
                 if (needAudio)
                 {
                     Console.WriteLine("Opening local microphone...");
-                    localAudioTrack = await LocalAudioTrack.CreateFromDeviceAsync();
+                    audioTrackSource = await AudioTrackSource.CreateFromDeviceAsync();
+
+                    Console.WriteLine("Create local audio track...");
+                    var trackSettings = new LocalAudioTrackInitConfig { trackName = "mic_track" };
+                    localAudioTrack = await LocalAudioTrack.CreateFromSourceAsync(audioTrackSource, trackSettings);
+
+                    Console.WriteLine("Create audio transceiver and add mic track...");
                     audioTransceiver = pc.AddTransceiver(MediaKind.Audio);
                     audioTransceiver.DesiredDirection = Transceiver.Direction.SendReceive;
                     audioTransceiver.LocalAudioTrack = localAudioTrack;
@@ -118,6 +125,10 @@ namespace TestNetCoreConsole
             localVideoTrack?.Dispose();
 
             Console.WriteLine("Program termined.");
+
+            localAudioTrack.Dispose();
+            localVideoTrack.Dispose();
+            audioTrackSource.Dispose();
         }
     }
 }

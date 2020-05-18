@@ -12,7 +12,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Settings for adding a local audio track backed by a local audio capture device (e.g. microphone).
     /// </summary>
-    public class LocalAudioTrackSettings
+    public class LocalAudioTrackInitConfig
     {
         /// <summary>
         /// Name of the track to create, as used for the SDP negotiation.
@@ -53,6 +53,11 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
+        /// Audio track source this track is pulling its audio frames from.
+        /// </summary>
+        public AudioTrackSource Source { get; private set; } = null;
+
+        /// <summary>
         /// Event that occurs when a audio frame has been produced by the underlying source and is available.
         /// </summary>
         public event AudioFrameDelegate AudioFrameReady;
@@ -77,55 +82,62 @@ namespace Microsoft.MixedReality.WebRTC
         private LocalAudioTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
         /// <summary>
-        /// Create an audio track from a local audio capture device (microphone).
+        /// Create an audio track from an existing audio track source.
+        /// 
         /// This does not add the track to any peer connection. Instead, the track must be added manually to
         /// an audio transceiver to be attached to a peer connection and transmitted to a remote peer.
         /// </summary>
-        /// <param name="settings">Settings to initialize the local audio track.</param>
-        /// <returns>Asynchronous task completed once the device is capturing and the track is created.</returns>
-        /// <remarks>
-        /// On UWP this requires the "microphone" capability.
-        /// See <see href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations"/>
-        /// for more details.
-        /// </remarks>
-        public static Task<LocalAudioTrack> CreateFromDeviceAsync(LocalAudioTrackSettings settings = null)
+        /// <param name="source">The track source which provides the raw audio frames to the newly created track.</param>
+        /// <param name="initConfig">Configuration to initialize the track being created.</param>
+        /// <returns>Asynchronous task completed once the track is created.</returns>
+        public static Task<LocalAudioTrack> CreateFromSourceAsync(AudioTrackSource source, LocalAudioTrackInitConfig initConfig)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException();
+            }
+
             return Task.Run(() =>
             {
-                // On UWP this cannot be called from the main UI thread, so always call it from
-                // a background worker thread.
-
-                string trackName = settings?.trackName;
+                // Parse and marshal the settings
+                string trackName = initConfig?.trackName;
                 if (string.IsNullOrEmpty(trackName))
                 {
                     trackName = Guid.NewGuid().ToString();
                 }
+                var config = new LocalAudioTrackInterop.TrackInitConfig
+                {
+                    TrackName = trackName
+                };
 
                 // Create interop wrappers
                 var track = new LocalAudioTrack(trackName);
 
-                // Parse settings
-                var config = new PeerConnectionInterop.LocalAudioTrackInteropInitConfig(track, settings);
-
                 // Create native implementation objects
-                uint res = LocalAudioTrackInterop.LocalAudioTrack_CreateFromDevice(config, trackName,
-                    out LocalAudioTrackHandle trackHandle);
+                uint res = LocalAudioTrackInterop.LocalAudioTrack_CreateFromSource(in config,
+                    source._nativeHandle, out LocalAudioTrackHandle trackHandle);
                 Utils.ThrowOnErrorCode(res);
-                track.SetHandle(trackHandle);
+
+                // Finish creating the track, and bind it to the source
+                track.FinishCreate(trackHandle, source);
+                source.OnTrackAddedToSource(track);
+
                 return track;
             });
         }
 
-        // Constructor for interop-based creation; SetHandle() will be called later.
+        // Constructor for interop-based creation; FinishCreate() will be called later.
         // Constructor for standalone track not associated to a peer connection.
-        internal LocalAudioTrack(string trackName) : base(null, trackName)
+        internal LocalAudioTrack(string trackName)
+            : base(null, trackName)
         {
             Transceiver = null;
         }
 
-        // Constructor for interop-based creation; SetHandle() will be called later.
+        // Constructor for interop-based creation; FinishCreate() will be called later.
         // Constructor for a track associated with a peer connection.
-        internal LocalAudioTrack(PeerConnection peer, Transceiver transceiver, string trackName) : base(peer, trackName)
+        internal LocalAudioTrack(PeerConnection peer, Transceiver transceiver, string trackName)
+            : base(peer, trackName)
         {
             Debug.Assert(transceiver.MediaKind == MediaKind.Audio);
             Debug.Assert(transceiver.LocalAudioTrack == null);
@@ -133,7 +145,7 @@ namespace Microsoft.MixedReality.WebRTC
             transceiver.LocalAudioTrack = this;
         }
 
-        internal void SetHandle(LocalAudioTrackHandle handle)
+        internal void FinishCreate(LocalAudioTrackHandle handle, AudioTrackSource source)
         {
             Debug.Assert(!handle.IsClosed);
             // Either first-time assign or no-op (assign same value again)
@@ -143,6 +155,7 @@ namespace Microsoft.MixedReality.WebRTC
                 _nativeHandle = handle;
                 RegisterInteropCallbacks();
             }
+            Source = source;
         }
 
         private void RegisterInteropCallbacks()
@@ -174,6 +187,13 @@ namespace Microsoft.MixedReality.WebRTC
             }
             Debug.Assert(PeerConnection == null);
             Debug.Assert(Transceiver == null);
+
+            // Notify the source
+            if (Source != null)
+            {
+                Source.OnTrackRemovedFromSource(this);
+                Source = null;
+            }
 
             // Unregister interop callbacks
             if (_selfHandle != IntPtr.Zero)

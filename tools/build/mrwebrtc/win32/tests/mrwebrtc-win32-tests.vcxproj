@@ -63,6 +63,7 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_test_utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\audio_track_source_tests.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\audio_track_tests.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\external_video_track_source_tests.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\library_tests.cpp" />

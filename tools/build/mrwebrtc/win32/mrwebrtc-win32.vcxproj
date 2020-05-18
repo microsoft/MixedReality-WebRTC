@@ -123,6 +123,7 @@
   <ItemGroup>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\pch.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\audio_frame.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\audio_track_source_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\data_channel_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\export.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\external_video_track_source_interop.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\tracked_object.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\utils.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\video_frame_observer.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\audio_track_source.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_audio_track.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\media_track.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_audio_track.h" />
@@ -167,6 +169,7 @@
     </ClCompile>
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\audio_frame_observer.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\data_channel.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\audio_track_source_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\data_channel_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\external_video_track_source_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\global_factory.cpp" />
@@ -180,6 +183,7 @@
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\local_audio_track_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\remote_audio_track_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\remote_video_track_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\audio_track_source.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_audio_track.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\media_track.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_audio_track.cpp" />

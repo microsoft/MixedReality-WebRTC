@@ -4,14 +4,18 @@
 #pragma once
 
 #include "audio_frame_observer.h"
+#include "audio_track_source_interop.h"
 #include "export.h"
 #include "interop_api.h"
 
 extern "C" {
 
-/// Configuration for opening a local audio capture device and creating a local
-/// audio track.
-struct mrsLocalAudioTrackInitConfig {};
+/// Configuration for creating a local audio track.
+struct mrsLocalAudioTrackInitSettings {
+  /// Track name. This must be a valid SDP token (see |mrsSdpTokenIsValid()|), or
+  /// |nullptr| to let the implementation generate a valid unique track name.
+  const char* track_name{};
+};
 
 /// Add a reference to the native object associated with the given handle.
 MRS_API void MRS_CALL
@@ -21,11 +25,10 @@ mrsLocalAudioTrackAddRef(mrsLocalAudioTrackHandle handle) noexcept;
 MRS_API void MRS_CALL
 mrsLocalAudioTrackRemoveRef(mrsLocalAudioTrackHandle handle) noexcept;
 
-/// Create a new local audio track by opening a local audio capture device
-/// (webcam).
-MRS_API mrsResult MRS_CALL mrsLocalAudioTrackCreateFromDevice(
-    const mrsLocalAudioTrackInitConfig* config,
-    const char* track_name,
+/// Create a new local audio track from an audio track source.
+MRS_API mrsResult MRS_CALL mrsLocalAudioTrackCreateFromSource(
+    const mrsLocalAudioTrackInitSettings* init_settings,
+    mrsAudioTrackSourceHandle source_handle,
     mrsLocalAudioTrackHandle* track_handle_out) noexcept;
 
 /// Register a custom callback to be called when the local audio track captured
