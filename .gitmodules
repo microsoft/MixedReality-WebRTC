@@ -4,4 +4,3 @@
 [submodule "external/winrtc"]
 	path = external/winrtc
 	url = https://github.com/microsoft/winrtc.git
-	branch = user/LoadLibrary/Arm64
