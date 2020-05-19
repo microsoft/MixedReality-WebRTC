@@ -54,7 +54,7 @@ namespace TestNetCoreConsole
 
                     Console.WriteLine("Create local video track...");
                     var trackSettings = new LocalVideoTrackInitConfig { trackName = "webcam_track" };
-                    localVideoTrack = await LocalVideoTrack.CreateFromSourceAsync(videoTrackSource, trackSettings);
+                    localVideoTrack = LocalVideoTrack.CreateFromSource(videoTrackSource, trackSettings);
 
                     Console.WriteLine("Create video transceiver and add webcam track...");
                     videoTransceiver = pc.AddTransceiver(MediaKind.Video);
@@ -70,7 +70,7 @@ namespace TestNetCoreConsole
 
                     Console.WriteLine("Create local audio track...");
                     var trackSettings = new LocalAudioTrackInitConfig { trackName = "mic_track" };
-                    localAudioTrack = await LocalAudioTrack.CreateFromSourceAsync(audioTrackSource, trackSettings);
+                    localAudioTrack = LocalAudioTrack.CreateFromSource(audioTrackSource, trackSettings);
 
                     Console.WriteLine("Create audio transceiver and add mic track...");
                     audioTransceiver = pc.AddTransceiver(MediaKind.Audio);

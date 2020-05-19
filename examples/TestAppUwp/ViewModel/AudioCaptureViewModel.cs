@@ -41,7 +41,7 @@ namespace TestAppUwp
             {
                 trackName = trackName
             };
-            var track = await LocalAudioTrack.CreateFromSourceAsync(source, settings);
+            var track = LocalAudioTrack.CreateFromSource(source, settings);
 
             SessionModel.Current.AudioTracks.Add(new AudioTrackViewModel
             {

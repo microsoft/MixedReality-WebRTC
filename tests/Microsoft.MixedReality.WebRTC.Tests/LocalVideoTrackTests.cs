@@ -122,7 +122,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Create local video track
             var settings = new LocalVideoTrackInitConfig();
-            LocalVideoTrack track1 = await LocalVideoTrack.CreateFromSourceAsync(source1, settings);
+            LocalVideoTrack track1 = LocalVideoTrack.CreateFromSource(source1, settings);
             Assert.IsNotNull(track1);
 
             // Add local video track channel to #1
@@ -244,7 +244,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             // Create local video track
             renegotiationEvent1_.Reset();
             var settings = new LocalVideoTrackInitConfig();
-            LocalVideoTrack track1 = await LocalVideoTrack.CreateFromSourceAsync(source1, settings);
+            LocalVideoTrack track1 = LocalVideoTrack.CreateFromSource(source1, settings);
             Assert.IsNotNull(track1);
             Assert.IsNull(track1.PeerConnection);
             Assert.IsNull(track1.Transceiver);

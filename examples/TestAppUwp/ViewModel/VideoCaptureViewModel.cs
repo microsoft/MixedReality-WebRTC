@@ -315,7 +315,7 @@ namespace TestAppUwp
                 settings.height = formatInfo.Format.height;
                 settings.framerate = formatInfo.Format.framerate;
             }
-            var track = await LocalVideoTrack.CreateFromSourceAsync(source, settings);
+            var track = LocalVideoTrack.CreateFromSource(source, settings);
             // FIXME - this probably leaks the track, never disposed
 
             SessionModel.Current.VideoTracks.Add(new VideoTrackViewModel

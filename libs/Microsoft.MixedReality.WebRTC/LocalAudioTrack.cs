@@ -90,40 +90,37 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="source">The track source which provides the raw audio frames to the newly created track.</param>
         /// <param name="initConfig">Configuration to initialize the track being created.</param>
         /// <returns>Asynchronous task completed once the track is created.</returns>
-        public static Task<LocalAudioTrack> CreateFromSourceAsync(AudioTrackSource source, LocalAudioTrackInitConfig initConfig)
+        public static LocalAudioTrack CreateFromSource(AudioTrackSource source, LocalAudioTrackInitConfig initConfig)
         {
             if (source == null)
             {
                 throw new ArgumentNullException();
             }
 
-            return Task.Run(() =>
+            // Parse and marshal the settings
+            string trackName = initConfig?.trackName;
+            if (string.IsNullOrEmpty(trackName))
             {
-                // Parse and marshal the settings
-                string trackName = initConfig?.trackName;
-                if (string.IsNullOrEmpty(trackName))
-                {
-                    trackName = Guid.NewGuid().ToString();
-                }
-                var config = new LocalAudioTrackInterop.TrackInitConfig
-                {
-                    TrackName = trackName
-                };
+                trackName = Guid.NewGuid().ToString();
+            }
+            var config = new LocalAudioTrackInterop.TrackInitConfig
+            {
+                TrackName = trackName
+            };
 
-                // Create interop wrappers
-                var track = new LocalAudioTrack(trackName);
+            // Create interop wrappers
+            var track = new LocalAudioTrack(trackName);
 
-                // Create native implementation objects
-                uint res = LocalAudioTrackInterop.LocalAudioTrack_CreateFromSource(in config,
-                    source._nativeHandle, out LocalAudioTrackHandle trackHandle);
-                Utils.ThrowOnErrorCode(res);
+            // Create native implementation objects
+            uint res = LocalAudioTrackInterop.LocalAudioTrack_CreateFromSource(in config,
+                source._nativeHandle, out LocalAudioTrackHandle trackHandle);
+            Utils.ThrowOnErrorCode(res);
 
-                // Finish creating the track, and bind it to the source
-                track.FinishCreate(trackHandle, source);
-                source.OnTrackAddedToSource(track);
+            // Finish creating the track, and bind it to the source
+            track.FinishCreate(trackHandle, source);
+            source.OnTrackAddedToSource(track);
 
-                return track;
-            });
+            return track;
         }
 
         // Constructor for interop-based creation; FinishCreate() will be called later.
