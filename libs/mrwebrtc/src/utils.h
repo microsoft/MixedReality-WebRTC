@@ -4,7 +4,10 @@
 #pragma once
 
 #include <cstdint>
+
 #include "mrs_errors.h"
+
+enum class mrsAudioTrackReadBufferPadBehavior;
 
 inline bool IsStringNullOrEmpty(const char* str) noexcept {
   return ((str == nullptr) || (str[0] == '\0'));
@@ -44,6 +47,9 @@ cricket::MediaType MediaKindToRtc(mrsMediaKind media_kind);
 const char* ToString(cricket::MediaType media_type);
 const char* ToString(webrtc::RtpTransceiverDirection dir);
 const char* ToString(bool value);
+
+bool IsValidAudioTrackBufferPadBehavior(
+    mrsAudioTrackReadBufferPadBehavior pad_behavior);
 
 }  // namespace WebRTC
 }  // namespace MixedReality

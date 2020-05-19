@@ -1305,19 +1305,6 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
-#if false //WIP
-        /// <summary>
-        /// High level interface for consuming WebRTC audio streams.
-        /// The implementation builds on top of the low-level AudioFrame callbacks
-        /// and handles all buffering and resampling.
-        /// </summary>
-        /// <param name="bufferMs">Size of the buffer in milliseconds or -1 for default.</param>
-        public AudioTrackReadBuffer CreateAudioTrackReadBuffer(int bufferMs = -1)
-        {
-            return new AudioTrackReadBuffer(_nativePeerhandle, bufferMs);
-        }
-#endif
-
         #endregion
 
 
@@ -2139,27 +2126,6 @@ namespace Microsoft.MixedReality.WebRTC
         {
             Utils.SetFrameHeightRoundMode(value);
         }
-
-#if false // WIP
-        /// <summary>
-        /// Experimental. Render or not remote audio tracks from a peer connection on
-        /// the system audio device.
-        /// </summary>
-        /// <remarks>
-        /// The default behavior is for every remote audio frame to be passed to
-        /// remote audio frame callbacks, as well as rendered automatically on the
-        /// system audio device. If `false` is passed to this function, remote audio
-        /// frames will still be received and passed to callbacks, but won't be rendered
-        /// on the system device.
-        ///
-        /// Changing the default behavior is not supported on UWP.
-        /// </remarks>
-        public void RenderRemoteAudio(bool render)
-        {
-            uint res = PeerConnectionInterop.PeerConnection_RenderRemoteAudio(_nativePeerhandle, render);
-            Utils.ThrowOnErrorCode(res);
-        }
-#endif
 
         internal void OnConnected()
         {

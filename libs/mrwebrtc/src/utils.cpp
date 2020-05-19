@@ -6,6 +6,7 @@
 #include "interop_api.h"
 #include "mrs_errors.h"
 #include "result.h"
+#include "remote_audio_track_interop.h"
 #include "utils.h"
 
 namespace Microsoft {
@@ -101,6 +102,11 @@ const char* ToString(webrtc::RtpTransceiverDirection dir) {
 
 const char* ToString(bool value) {
   return (value ? "true" : "false");
+}
+bool IsValidAudioTrackBufferPadBehavior(
+    mrsAudioTrackReadBufferPadBehavior pad_behavior) {
+  return pad_behavior >= mrsAudioTrackReadBufferPadBehavior::kDoNotPad &&
+         pad_behavior < mrsAudioTrackReadBufferPadBehavior::kCount;
 }
 
 }  // namespace WebRTC

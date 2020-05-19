@@ -7,6 +7,8 @@
 
 #include "media/remote_audio_track.h"
 #include "remote_audio_track_interop.h"
+#include "media/audio_track_read_buffer.h"
+#include "utils.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
@@ -69,4 +71,53 @@ mrsBool MRS_CALL mrsRemoteAudioTrackIsOutputToDevice(
     return track->IsOutputToDevice() ? mrsBool::kTrue : mrsBool::kFalse;
   }
   return mrsBool::kFalse;
+}
+
+mrsResult MRS_CALL
+mrsRemoteAudioTrackCreateReadBuffer(mrsRemoteAudioTrackHandle track_handle,
+                              mrsAudioTrackReadBufferHandle* audioBufferOut) {
+  if (!audioBufferOut) {
+      return Result::kInvalidParameter;
+  }
+
+  *audioBufferOut = nullptr;
+  if (auto track = static_cast<RemoteAudioTrack*>(track_handle)) {
+    auto buffer = track->CreateReadBuffer();
+    *audioBufferOut = buffer.release();
+    return Result::kSuccess;
+  }
+  return Result::kInvalidNativeHandle;
+}
+
+mrsResult MRS_CALL
+mrsAudioTrackReadBufferRead(mrsAudioTrackReadBufferHandle buffer,
+                            int sample_rate,
+                            int num_channels,
+                            mrsAudioTrackReadBufferPadBehavior pad_behavior,
+                            float* data_out,
+                            int* data_len_in_out,
+                            mrsBool* has_overrun_out) {
+  if (!sample_rate || !num_channels ||
+      !IsValidAudioTrackBufferPadBehavior(pad_behavior) || !data_len_in_out ||
+      *data_len_in_out < 0 || (*data_len_in_out && !data_out) ||
+      !has_overrun_out)
+  {
+    return Result::kInvalidParameter;
+  }
+
+  if (auto stream = static_cast<AudioTrackReadBuffer*>(buffer)) {
+    bool has_overrun;
+    stream->Read(sample_rate, num_channels, pad_behavior, data_out,
+                 data_len_in_out, &has_overrun);
+    *has_overrun_out = has_overrun ? mrsBool::kTrue : mrsBool::kFalse;
+    return Result::kSuccess;
+  }
+  return Result::kInvalidNativeHandle;
+}
+
+void MRS_CALL
+mrsAudioTrackReadBufferDestroy(mrsAudioTrackReadBufferHandle buffer) {
+  if (auto ars = static_cast<AudioTrackReadBuffer*>(buffer)) {
+    delete ars;
+  }
 }

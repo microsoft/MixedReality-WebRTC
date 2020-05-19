@@ -10,22 +10,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// existing WebRTC peer connection by a remote peer and received locally.
     /// The audio track can optionally be displayed locally with a <see cref="MediaPlayer"/>.
     /// </summary>
+    /// <remarks>
+    /// This component will play audio only while it is active and a remote track is associated
+    /// to the paired <see cref="WebRTC.Transceiver"/>.
+    /// </remarks>
     /// <seealso cref="MediaPlayer"/>
     [AddComponentMenu("MixedReality-WebRTC/Audio Receiver")]
     [RequireComponent(typeof(UnityEngine.AudioSource))]
     public class AudioReceiver : MediaReceiver, IAudioSource
     {
-#if false // WIP
-        /// <summary>
-        /// Local storage of audio data to be fed to the output
-        /// </summary>
-        private AudioTrackReadBuffer _audioTrackReadBuffer = null;
-
-        /// <summary>
-        /// Cached sample rate since we can't access this in OnAudioFilterRead.
-        /// </summary>
-        private int _audioSampleRate = 0;
-#endif
         /// <inheritdoc/>
         public bool IsStreaming { get; protected set; }
 
@@ -47,7 +40,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Event raised when the audio stream stopped.
         ///
         /// When this event is raised, the followings are true:
-        /// - The <see cref="Track"/> property is <c>null</c>.
         /// - The <see cref="MediaReceiver.IsLive"/> property is <c>false</c>.
         /// - The <see cref="IsStreaming"/> has just become <c>false</c> right before the event
         ///   was raised, by design.
@@ -74,21 +66,42 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Remote audio track receiving data from the remote peer.
-        ///
+        /// </summary>
+        /// <remarks>
         /// This is <c>null</c> until <see cref="Transceiver"/> is set to a non-null value and a
         /// remote track is added to that transceiver.
+        /// </remarks>
+        public RemoteAudioTrack Track => _track;
+
+        // This is set outside the main thread, make volatile so changes to this and other
+        // public properties are correctly ordered.
+        private volatile RemoteAudioTrack _track = null;
+
+        /// <summary>
+        /// If true, pad buffer underruns with a sine wave. This will cause artifacts on underruns.
+        /// Use for debugging.
         /// </summary>
-        public RemoteAudioTrack Track { get; private set; }
+        public bool PadWithSine = false;
+
+        // Local storage of audio data to be fed to the output
+        private AudioTrackReadBuffer _readBuffer = null;
+
+        // _readBuffer can be accessed concurrently by audio thread (OnAudioFilterRead)
+        // and main thread (StartStreaming, StopStreaming).
+        private readonly object _readBufferLock = new object();
+
+        // Cached sample rate since we can't access this in OnAudioFilterRead.
+        private int _audioSampleRate = 0;
 
         /// <inheritdoc/>
         public AudioReceiver() : base(MediaKind.Audio)
         {
         }
 
-#if false // WIP
         protected void Awake()
         {
             AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
+            OnAudioConfigurationChanged(deviceWasChanged: true);
         }
 
         protected void OnDestroy()
@@ -101,21 +114,102 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _audioSampleRate = AudioSettings.outputSampleRate;
         }
 
-        void OnAudioFilterRead(float[] data, int channels)
+        // Must be called within Unity main thread.
+        private void StartStreaming()
         {
-            if (_audioTrackReadBuffer != null)
+            Debug.Assert(_readBuffer == null);
+
+            // OnAudioFilterRead reads the variable concurrently, but the update is atomic
+            // so we don't need a lock.
+            _readBuffer = Track.CreateReadBuffer();
+
+            IsLive = true;
+            AudioStreamStarted.Invoke(this);
+            IsStreaming = true;
+        }
+
+        // Must be called within Unity main thread.
+        private void StopStreaming()
+        {
+            IsLive = false;
+            IsStreaming = false;
+            AudioStreamStopped.Invoke(this);
+
+            lock (_readBufferLock)
             {
-                _audioTrackReadBuffer.ReadAudio(_audioSampleRate, data, channels);
-            }
-            else
-            {
-                for (int i = 0; i < data.Length; ++i)
-                {
-                    data[i] = 0.0f;
-                }
+                // Under lock so OnAudioFilterRead won't use the buffer while/after it is disposed.
+                _readBuffer.Dispose();
+                _readBuffer = null;
             }
         }
-#endif
+
+        protected new void Update()
+        {
+            base.Update();
+
+            // Check if _track has been changed by OnPaired/OnUnpaired and
+            // we need to start/stop streaming.
+            if (_track != null && !IsStreaming)
+            {
+                StartStreaming();
+            }
+            else if (_track == null && IsStreaming)
+            {
+                StopStreaming();
+            }
+        }
+
+        protected void OnDisable()
+        {
+            if (IsStreaming)
+            {
+                StopStreaming();
+            }
+        }
+
+        protected void OnAudioFilterRead(float[] data, int channels)
+        {
+            var behavior = PadWithSine ?
+                AudioTrackReadBuffer.PadBehavior.PadWithSine :
+                AudioTrackReadBuffer.PadBehavior.PadWithZero;
+            bool hasRead = false;
+            bool hasOverrun = false;
+            bool hasUnderrun = false;
+
+            lock (_readBufferLock)
+            {
+                // Read and use buffer under lock to prevent disposal while in use.
+                if (_readBuffer != null)
+                {
+                    _readBuffer.Read(_audioSampleRate, channels, data,
+                        out int readSamplesNum, out hasOverrun, behavior);
+                    hasRead = true;
+                    hasUnderrun = readSamplesNum < data.Length;
+                }
+            }
+
+            if (hasRead)
+            {
+                // Uncomment for debugging.
+                //if (hasOverrun)
+                //{
+                //    Debug.LogWarning($"Overrun in track {Track.Name}");
+                //}
+                //if (hasUnderrun)
+                //{
+                //    Debug.LogWarning($"Underrun in track {Track.Name}");
+                //}
+
+                return;
+            }
+
+            // If there is no track/buffer, fill array with 0s.
+            for (int i = 0; i < data.Length; ++i)
+            {
+                data[i] = 0.0f;
+            }
+        }
+
         /// <summary>
         /// Register a frame callback to listen to incoming audio data receiving through this
         /// audio receiver from the remote peer.
@@ -125,14 +219,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         /// <param name="callback">The new frame callback to register.</param>
         /// <remarks>
-        /// <div class="WARNING alert alert-warning">
-        /// <h5>WARNING</h5>
-        /// <p>
-        /// Currently audio output is done automatically, so this callback is not needed to output
-        /// the remote audio, and using it to inject the audio in a custom audio pipeline will
-        /// produce duplicated audio output.
-        /// </p>
-        /// </div>
+        /// Note that audio is output automatically through the <see cref="UnityEngine.AudioSource"/>
+        /// on the game object, so the data passed to the callback shouldn't be using for audio output.
         ///
         /// A typical application might use this callback to display some feedback of audio being
         /// received, like a spectrum analyzer, but more commonly will not need that callback because
@@ -190,46 +278,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Free-threaded callback invoked by the owning peer connection when a track is paired
-        /// with this receiver, which enqueues the <see cref="AudioSource.AudioStreamStarted"/>
-        /// event to be fired from the main Unity app thread.
+        /// with this receiver.
         /// </summary>
         internal override void OnPaired(MediaTrack track)
         {
             var remoteAudioTrack = (RemoteAudioTrack)track;
 
-            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
+            Debug.Assert(Track == null);
+            _track = remoteAudioTrack;
+            // Streaming will be started from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.
-            _mainThreadWorkQueue.Enqueue(() =>
-            {
-                Debug.Assert(Track == null);
-                Track = remoteAudioTrack;
-                IsLive = true;
-                AudioStreamStarted.Invoke(this);
-                IsStreaming = true;
-            });
         }
 
         /// <summary>
         /// Free-threaded callback invoked by the owning peer connection when a track is unpaired
-        /// from this receiver, which enqueues the <see cref="AudioSource.AudioStreamStopped"/>
-        /// event to be fired from the main Unity app thread.
+        /// from this receiver.
         /// </summary>
         internal override void OnUnpaired(MediaTrack track)
         {
             Debug.Assert(track is RemoteAudioTrack);
-
-            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
+            Debug.Assert(Track == track);
+            _track = null;
+            // Streaming will be stopped from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.
-            _mainThreadWorkQueue.Enqueue(() =>
-            {
-                Debug.Assert(Track == track);
-                Track = null;
-                IsStreaming = false;
-                IsLive = false;
-                AudioStreamStopped.Invoke(this);
-            });
         }
     }
 }

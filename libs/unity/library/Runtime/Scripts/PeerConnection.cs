@@ -1079,13 +1079,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _nativePeer.AudioTrackRemoved += Peer_AudioTrackRemoved;
             _nativePeer.VideoTrackRemoved += Peer_VideoTrackRemoved;
 
-            // TODO uncomment when remote audio is played through AudioReceiver
-            //_nativePeer.AudioTrackAdded +=
-            //    (RemoteAudioTrack track) =>
-            //    {
-            //        // Tracks will be rendered by AudioReceivers, so avoid rendering them twice.
-            //        track.RenderToDevice(false);
-            //    };
+            _nativePeer.AudioTrackAdded +=
+                (RemoteAudioTrack track) =>
+                {
+                    // Tracks will be output by AudioReceivers, so avoid outputting them twice.
+                    track.OutputToDevice(false);
+                };
         }
 
         /// <summary>

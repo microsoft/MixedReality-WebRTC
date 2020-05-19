@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-#if false // WIP
 using Microsoft.MixedReality.WebRTC.Interop;
 using System;
 
@@ -9,35 +8,100 @@ namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
     /// High level interface for consuming WebRTC audio tracks.
-    /// The implementation builds on top of the low-level AudioFrame callbacks
-    /// and handles all buffering and resampling.
+    /// Enqueues audio frames for a <see cref="RemoteAudioTrack"/> in an internal buffer as they
+    /// arrive. Users should call
+    /// <see cref="Read(int, int, float[], out int, out bool, AudioTrackReadBuffer.PadBehavior)"/>
+    /// to read samples from the buffer when needed.
     /// </summary>
-    /// <seealso cref="PeerConnection.CreateAudioTrackReadBuffer(int)"/>
+    /// <seealso cref="RemoteAudioTrack.CreateReadBuffer()"/>
     public class AudioTrackReadBuffer : IDisposable
     {
-        private AudioTrackReadBufferInterop.Handle _nativeHandle;
+        private readonly RemoteAudioTrackInterop.ReadBufferHandle _nativeHandle;
 
-        internal AudioTrackReadBuffer(PeerConnectionHandle peerHandle, int bufferMs)
+        /// <summary>
+        /// Controls the padding behavior of
+        /// <see cref="Read(int, int, float[], out int, out bool, PadBehavior)"/>
+        /// on underrun.
+        /// </summary>
+        public enum PadBehavior
         {
-            uint res = AudioTrackReadBufferInterop.Create(peerHandle, bufferMs, out _nativeHandle);
-            Utils.ThrowOnErrorCode(res);
+            /// <summary>
+            /// Do not pad the samples array.
+            /// </summary>
+            DoNotPad = 0,
+
+            /// <summary>
+            /// Pad with zeros (silence).
+            /// </summary>
+            PadWithZero = 1,
+
+            /// <summary>
+            /// Pad with a sine function.
+            /// </summary>
+            /// <remarks>
+            /// Generates audible artifacts on underrun. Use for debugging.
+            /// </remarks>
+            PadWithSine = 2
+        }
+
+        internal AudioTrackReadBuffer(RemoteAudioTrackInterop.ReadBufferHandle handle)
+        {
+            _nativeHandle = handle;
         }
 
         /// <summary>
-        /// Fill data with samples at the given sampleRate and number of channels.
+        /// Fill <paramref name="data"/> with samples from the internal buffer.
         /// </summary>
         /// <remarks>
-        /// If the internal buffer overruns, the oldest data will be dropped.
-        /// If the internal buffer is exhausted, the data is padded with white noise.
-        /// In any case the entire data array is filled.
+        /// This method reads the internal buffer starting from the oldest data.
+        /// If the internal buffer is exhausted (underrun), <paramref name="data"/>
+        /// is padded according to the value of <paramref name="padBehavior"/>.
+        ///
+        /// This method should be called regularly to consume the audio data as it is
+        /// received. Note that the internal buffer can overrun (and some frames can be
+        /// dropped) if this is not called frequently enough.
         /// </remarks>
-        public void ReadAudio(int sampleRate, float[] data, int channels)
+        /// <param name="sampleRate">
+        /// Desired sample rate. Data in the buffer is resampled if this is different from
+        /// the native track rate.
+        /// </param>
+        /// <param name="numChannels">
+        /// Desired number of channels. Should be 1 or 2. Data in the buffer is split/averaged
+        /// if this is different from the native track channels number.
+        /// </param>
+        /// <param name="data">Will be filled with the samples read from the internal buffer. </param>
+        /// <param name="numReadSamples">
+        /// Set to the effective number of samples read.
+        /// This will be generally equal to the length of <paramref name="data"/>, but can be less in
+        /// case of underrun.
+        /// </param>
+        /// <param name="hasOverrun">
+        /// Set to <c>true</c> if frames have been dropped from the internal
+        /// buffer between the previous call to <c>Read</c> and this.
+        /// </param>
+        /// <param name="padBehavior">Controls how <paramref name="data"/> is padded in case of underrun.</param>
+        public void Read(int sampleRate, int numChannels,
+            float[] data, out int numReadSamples, out bool hasOverrun,
+            PadBehavior padBehavior = PadBehavior.PadWithZero)
         {
-            AudioTrackReadBufferInterop.Read(_nativeHandle, sampleRate, data, data.Length, channels);
+            int dataLen = data.Length;
+            RemoteAudioTrackInterop.ReadBufferRead(_nativeHandle, sampleRate, numChannels, padBehavior, data, ref dataLen, out mrsBool has_overrun_res);
+            numReadSamples = dataLen;
+            hasOverrun = (bool)has_overrun_res;
         }
 
         /// <summary>
-        /// Release the buffer and unregister the remote audio callback on the associated PeerConnection.
+        /// Fill <paramref name="data"/> with samples from the internal buffer.
+        /// See <see cref="Read(int, int, float[], out int, out bool, PadBehavior)"/>.
+        /// </summary>
+        public void Read(int sampleRate, int channels,
+            float[] data, PadBehavior padBehavior = PadBehavior.PadWithZero)
+        {
+            Read(sampleRate, channels, data, out int _, out bool _, padBehavior);
+        }
+
+        /// <summary>
+        /// Release the buffer.
         /// </summary>
         public void Dispose()
         {
@@ -45,4 +109,3 @@ namespace Microsoft.MixedReality.WebRTC
         }
     }
 }
-#endif
