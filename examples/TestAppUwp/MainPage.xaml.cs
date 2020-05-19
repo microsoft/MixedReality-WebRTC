@@ -193,10 +193,6 @@ namespace TestAppUwp
                     sessionModel.NodeDssSignaler.LocalPeerId = str;
                 }
             }
-            if (string.IsNullOrWhiteSpace(sessionModel.NodeDssSignaler.LocalPeerId))
-            {
-                sessionModel.NodeDssSignaler.LocalPeerId = GetDeviceName();
-            }
             if (localSettings.Values.TryGetValue("RemotePeerID", out object remoteObj))
             {
                 if (remoteObj is string str)
@@ -219,6 +215,13 @@ namespace TestAppUwp
                 var tmp = sessionModel.NodeDssSignaler.LocalPeerId;
                 sessionModel.NodeDssSignaler.LocalPeerId = sessionModel.NodeDssSignaler.RemotePeerId;
                 sessionModel.NodeDssSignaler.RemotePeerId = tmp;
+            }
+
+            // Ensure the local peer is not empty, otherwise the signaler will throw an exception
+            // during OnLoaded(), which will crash the application.
+            if (string.IsNullOrWhiteSpace(sessionModel.NodeDssSignaler.LocalPeerId))
+            {
+                sessionModel.NodeDssSignaler.LocalPeerId = GetDeviceName();
             }
 
             if (localSettings.Values.TryGetValue("PreferredAudioCodec", out object preferredAudioObj))
