@@ -232,40 +232,37 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="source">The track source which provides the raw video frames to the newly created track.</param>
         /// <param name="initConfig">Configuration to initialize the track being created.</param>
         /// <returns>Asynchronous task completed once the track is created.</returns>
-        public static Task<LocalVideoTrack> CreateFromSourceAsync(VideoTrackSource source, LocalVideoTrackInitConfig initConfig)
+        public static LocalVideoTrack CreateFromSource(VideoTrackSource source, LocalVideoTrackInitConfig initConfig)
         {
             if (source == null)
             {
                 throw new ArgumentNullException();
             }
 
-            return Task.Run(() =>
+            // Parse and marshal the settings
+            string trackName = initConfig?.trackName;
+            if (string.IsNullOrEmpty(trackName))
             {
-                // Parse and marshal the settings
-                string trackName = initConfig?.trackName;
-                if (string.IsNullOrEmpty(trackName))
-                {
-                    trackName = Guid.NewGuid().ToString();
-                }
-                var config = new LocalVideoTrackInterop.TrackInitConfig
-                {
-                    TrackName = trackName
-                };
+                trackName = Guid.NewGuid().ToString();
+            }
+            var config = new LocalVideoTrackInterop.TrackInitConfig
+            {
+                TrackName = trackName
+            };
 
-                // Create interop wrappers
-                var track = new LocalVideoTrack(trackName);
+            // Create interop wrappers
+            var track = new LocalVideoTrack(trackName);
 
-                // Create native implementation objects
-                uint res = LocalVideoTrackInterop.LocalVideoTrack_CreateFromSource(in config,
-                    source._nativeHandle, out LocalVideoTrackHandle trackHandle);
-                Utils.ThrowOnErrorCode(res);
+            // Create native implementation objects
+            uint res = LocalVideoTrackInterop.LocalVideoTrack_CreateFromSource(in config,
+                source._nativeHandle, out LocalVideoTrackHandle trackHandle);
+            Utils.ThrowOnErrorCode(res);
 
-                // Finish creating the track, and bind it to the source
-                track.FinishCreate(trackHandle, source);
-                source.OnTrackAddedToSource(track);
+            // Finish creating the track, and bind it to the source
+            track.FinishCreate(trackHandle, source);
+            source.OnTrackAddedToSource(track);
 
-                return track;
-            });
+            return track;
         }
 
         /// <summary>

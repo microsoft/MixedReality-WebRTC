@@ -120,7 +120,7 @@ namespace TestAppUwp
                     // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
                     var source = await AudioTrackSource.CreateFromDeviceAsync();
                     var settings = new LocalAudioTrackInitConfig();
-                    return await LocalAudioTrack.CreateFromSourceAsync(source, settings);
+                    return LocalAudioTrack.CreateFromSource(source, settings);
                 }
             });
 
@@ -132,7 +132,7 @@ namespace TestAppUwp
                     // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
                     var source = await VideoTrackSource.CreateFromDeviceAsync();
                     var settings = new LocalVideoTrackInitConfig();
-                    return await LocalVideoTrack.CreateFromSourceAsync(source, settings);
+                    return LocalVideoTrack.CreateFromSource(source, settings);
                 }
             });
 

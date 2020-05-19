@@ -26,7 +26,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 Assert.IsNotNull(source);
 
                 var settings = new LocalAudioTrackInitConfig { trackName = "track_name" };
-                using (LocalAudioTrack track = await LocalAudioTrack.CreateFromSourceAsync(source, settings))
+                using (LocalAudioTrack track = LocalAudioTrack.CreateFromSource(source, settings))
                 {
                     Assert.IsNotNull(track);
                 }
