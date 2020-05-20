@@ -7,9 +7,6 @@ parameters:
 - name: buildAgent
   type: string
   default: ''
-- name: npmPublishFeed
-  type: string
-  default: ''
 - name: npmPackageVersion
   type: string
   default: ''
@@ -18,6 +15,7 @@ jobs:
 
 # Package library
 - job: unity_library
+  displayName: "Publish"
   timeoutInMinutes: 60
   pool:
     name: ${{parameters.buildAgent}}
@@ -88,24 +86,52 @@ jobs:
       patterns: '**/*.@(pdb|dll)'
       path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
 
-  # Publish library
-  - task: Npm@1
-    displayName: 'Publish Unity library'
+  # Write .npmrc
+  - task: PowerShell@2
+    displayName: 'Write .npmrc (library)'
     inputs:
-      command: 'publish'
-      workingDir: 'libs/unity/library'
-      verbose: true
-      publishRegistry: 'useFeed'
-      publishFeed: '${{parameters.npmPublishFeed}}'
-      publishPackageMetadata: true
+      targetType: 'filePath'
+      filePath: '$(Build.SourcesDirectory)/tools/ci/writeNpmrc.ps1'
+      arguments: '-Target "libs/unity/library/.npmrc"'
+    env:
+      NPM_PUBLISH_REGISTER: $(NPM_PUBLISH_REGISTER)
+      NPM_PUBLISH_AUTH: $(NPM_PUBLISH_AUTH)
+      NPM_PUBLISH_EMAIL: $(NPM_PUBLISH_EMAIL)
+    timeoutInMinutes: 5
+
+  # Publish library
+  - script: |
+      cd libs/unity/library
+      npm publish --registry $(NPM_PUBLISH_REGISTER)
+    displayName: 'Publish NPM (library)'
+
+  # Delete .npmrc
+  - pwsh: |
+      Remove-Item -Path '$(Build.SourcesDirectory)/libs/unity/library/.npmrc' -Force -ErrorAction Ignore
+    displayName: 'Delete .npmrc (library)'
+    condition: always()
+
+  # Write .npmrc
+  - task: PowerShell@2
+    displayName: 'Write .npmrc (samples)'
+    inputs:
+      targetType: 'filePath'
+      filePath: '$(Build.SourcesDirectory)/tools/ci/writeNpmrc.ps1'
+      arguments: '-Target "libs/unity/samples/.npmrc"'
+    env:
+      NPM_PUBLISH_REGISTER: $(NPM_PUBLISH_REGISTER)
+      NPM_PUBLISH_AUTH: $(NPM_PUBLISH_AUTH)
+      NPM_PUBLISH_EMAIL: $(NPM_PUBLISH_EMAIL)
+    timeoutInMinutes: 5
 
   # Publish samples
-  - task: Npm@1
-    displayName: 'Publish Unity samples'
-    inputs:
-      command: 'publish'
-      workingDir: 'libs/unity/samples'
-      verbose: true
-      publishRegistry: 'useFeed'
-      publishFeed: '${{parameters.npmPublishFeed}}'
-      publishPackageMetadata: true
+  - script: |
+      cd libs/unity/samples
+      npm publish --registry $(NPM_PUBLISH_REGISTER)
+    displayName: 'Publish NPM (samples)'
+
+  # Delete .npmrc
+  - pwsh: |
+      Remove-Item -Path '$(Build.SourcesDirectory)/libs/unity/samples/.npmrc' -Force -ErrorAction Ignore
+    displayName: 'Delete .npmrc (samples)'
+    condition: always()
