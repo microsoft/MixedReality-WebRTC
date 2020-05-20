@@ -25,7 +25,11 @@ void MRS_CALL mrsExternalVideoTrackSourceAddRef(
 void MRS_CALL mrsExternalVideoTrackSourceRemoveRef(
     mrsExternalVideoTrackSourceHandle handle) noexcept {
   if (auto track = static_cast<ExternalVideoTrackSource*>(handle)) {
-    track->RemoveRef();
+    const std::string name = track->GetName();
+    if (track->RemoveRef() == 0) {
+      RTC_LOG(LS_VERBOSE) << "Destroyed ExternalVideoTrackSource \""
+                          << name.c_str() << "\" (0 ref).";
+    }
   } else {
     RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
                            "ExternalVideoTrackSource object.";
