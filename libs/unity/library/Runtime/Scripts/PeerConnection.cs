@@ -220,7 +220,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Transceiver attached with this media line.
         ///
         /// On the offering peer this changes during <see cref="PeerConnection.StartConnection"/>, while this is updated by
-        /// <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/> when receiving an offer on the answering peer.
+        /// <see cref="PeerConnection.HandleConnectionMessageAsync(SdpMessage)"/> when receiving an offer on the answering peer.
         ///
         /// Because transceivers cannot be destroyed, once this property is assigned a non-<c>null</c> value it keeps that
         /// value until the peer connection owning the media line is closed.
@@ -228,14 +228,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public Transceiver Transceiver { get; private set; }
 
         /// <summary>
-        /// Sender actually attached during <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/>.
+        /// Sender actually attached during <see cref="PeerConnection.HandleConnectionMessageAsync(SdpMessage)"/>.
         /// This is different from <see cref="Sender"/> until a negotiation is achieved.
         /// </summary>
         [NonSerialized]
         private MediaSender _attachedSender;
 
         /// <summary>
-        /// Receiver actually paired during <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/>.
+        /// Receiver actually paired during <see cref="PeerConnection.HandleConnectionMessageAsync(SdpMessage)"/>.
         /// This is different from <see cref="Receiver"/> until a negotiation is achieved.
         /// </summary>
         [NonSerialized]
