@@ -25,7 +25,11 @@ void MRS_CALL mrsPeerConnectionAddRef(mrsPeerConnectionHandle handle) noexcept {
 void MRS_CALL
 mrsPeerConnectionRemoveRef(mrsPeerConnectionHandle handle) noexcept {
   if (auto peer = static_cast<PeerConnection*>(handle)) {
-    peer->RemoveRef();
+    const std::string name = peer->GetName();
+    if (peer->RemoveRef() == 0) {
+      RTC_LOG(LS_VERBOSE) << "Destroyed PeerConnection \"" << name.c_str()
+                          << "\" (0 ref).";
+    }
   } else {
     RTC_LOG(LS_WARNING)
         << "Trying to remove reference from NULL PeerConnection object.";
