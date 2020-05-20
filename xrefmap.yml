@@ -152,6 +152,37 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.AudioFrameDelegate
   fullName: Microsoft.MixedReality.WebRTC.AudioFrameDelegate
   nameWithType: AudioFrameDelegate
+- uid: Microsoft.MixedReality.WebRTC.BufferTooSmallException
+  name: BufferTooSmallException
+  href: api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.html
+  commentId: T:Microsoft.MixedReality.WebRTC.BufferTooSmallException
+  fullName: Microsoft.MixedReality.WebRTC.BufferTooSmallException
+  nameWithType: BufferTooSmallException
+- uid: Microsoft.MixedReality.WebRTC.BufferTooSmallException.#ctor
+  name: BufferTooSmallException()
+  href: api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.html#Microsoft_MixedReality_WebRTC_BufferTooSmallException__ctor
+  commentId: M:Microsoft.MixedReality.WebRTC.BufferTooSmallException.#ctor
+  fullName: Microsoft.MixedReality.WebRTC.BufferTooSmallException.BufferTooSmallException()
+  nameWithType: BufferTooSmallException.BufferTooSmallException()
+- uid: Microsoft.MixedReality.WebRTC.BufferTooSmallException.#ctor(System.String)
+  name: BufferTooSmallException(String)
+  href: api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.html#Microsoft_MixedReality_WebRTC_BufferTooSmallException__ctor_System_String_
+  commentId: M:Microsoft.MixedReality.WebRTC.BufferTooSmallException.#ctor(System.String)
+  fullName: Microsoft.MixedReality.WebRTC.BufferTooSmallException.BufferTooSmallException(System.String)
+  nameWithType: BufferTooSmallException.BufferTooSmallException(String)
+- uid: Microsoft.MixedReality.WebRTC.BufferTooSmallException.#ctor(System.String,Exception)
+  name: BufferTooSmallException(String, Exception)
+  href: api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.html#Microsoft_MixedReality_WebRTC_BufferTooSmallException__ctor_System_String_Exception_
+  commentId: M:Microsoft.MixedReality.WebRTC.BufferTooSmallException.#ctor(System.String,Exception)
+  fullName: Microsoft.MixedReality.WebRTC.BufferTooSmallException.BufferTooSmallException(System.String, Exception)
+  nameWithType: BufferTooSmallException.BufferTooSmallException(String, Exception)
+- uid: Microsoft.MixedReality.WebRTC.BufferTooSmallException.#ctor*
+  name: BufferTooSmallException
+  href: api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.html#Microsoft_MixedReality_WebRTC_BufferTooSmallException__ctor_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.BufferTooSmallException.#ctor
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.BufferTooSmallException.BufferTooSmallException
+  nameWithType: BufferTooSmallException.BufferTooSmallException
 - uid: Microsoft.MixedReality.WebRTC.BundlePolicy
   name: BundlePolicy
   href: api/Microsoft.MixedReality.WebRTC.BundlePolicy.html

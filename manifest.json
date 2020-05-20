@@ -86,6 +86,18 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.html",
+          "hash": "kzJk2xUWgyRC8T0kzktkvQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.BundlePolicy.yml",
       "output": {
         ".html": {
@@ -138,7 +150,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannelNotOpenException.html",
-          "hash": "3i7TYte8mKWj6Ucziix2JQ=="
+          "hash": "A/uzG5atQSiFvZeVu7qXtA=="
         }
       },
       "is_incremental": false,
@@ -330,7 +342,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.html",
-          "hash": "63UR6gpLYx/E65ZvFTudwA=="
+          "hash": "TQzEAUL2/Hgmj2QL9MmKSg=="
         }
       },
       "is_incremental": false,
@@ -738,7 +750,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html",
-          "hash": "gf+/2jC3ZUextzCBxUIfNQ=="
+          "hash": "V+W+gKcoMfs2i0xFLDmlxw=="
         }
       },
       "is_incremental": false,
@@ -906,7 +918,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "Ihv89ktrqEDhByTWwr1Yhg=="
+          "hash": "DgElw5h+U0yXYm30tIVgZw=="
         }
       },
       "is_incremental": false,
@@ -918,7 +930,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "+bNQP/faprB9BlgPmSoCLg=="
+          "hash": "oVVFoJ9TAnLOU+1cQRddSA=="
         }
       },
       "is_incremental": false,
@@ -2161,7 +2173,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 75,
+          "total_file_count": 76,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
