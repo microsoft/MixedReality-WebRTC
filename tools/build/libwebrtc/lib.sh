@@ -63,6 +63,9 @@ function read-config() {
         exit 1
     fi
     source "$BUILD_DIR/.config.sh"
+    # Ensure SRC_DIR is an absolute path. Since it may not exist, we need to
+    # know what to create, and the variable alone cannot carry info about what
+    # a path is relative to. So use absolute path always.
     SRC_DIR=$WORK_DIR/webrtc
     # Print a config summary
     echo -e "\e[39m\e[1mActive config:\e[0m\e[39m"
@@ -71,6 +74,9 @@ function read-config() {
 
 #-----------------------------------------------------------------------------
 function write-config() {
+    # Ensure WORK_DIR is an absolute path so that various operations after
+    # config do not depend on the location where config was called.
+    WORK_DIR=$(realpath $WORK_DIR)
     local filename="$BUILD_DIR/$1"
     cat >$filename <<EOF
 # Generated file. Do not edit.
