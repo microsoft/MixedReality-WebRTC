@@ -55,6 +55,10 @@ enum class Result : std::uint32_t {
   /// expected range.
   kOutOfRange = 0x80000008,
 
+  /// The buffer provided by the caller was too small for the operation to
+  /// complete successfully.
+  kBufferTooSmall = 0x80000009,
+
   //
   // Peer connection (0x1xx)
   //

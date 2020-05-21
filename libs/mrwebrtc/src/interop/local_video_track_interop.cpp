@@ -26,7 +26,11 @@ mrsLocalVideoTrackAddRef(mrsLocalVideoTrackHandle handle) noexcept {
 void MRS_CALL
 mrsLocalVideoTrackRemoveRef(mrsLocalVideoTrackHandle handle) noexcept {
   if (auto track = static_cast<LocalVideoTrack*>(handle)) {
-    track->RemoveRef();
+    const std::string name = track->GetName();
+    if (track->RemoveRef() == 0) {
+      RTC_LOG(LS_VERBOSE) << "Destroyed LocalVideoTrack \"" << name.c_str()
+                          << "\" (0 ref).";
+    }
   } else {
     RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
                            "LocalVideoTrack object.";
