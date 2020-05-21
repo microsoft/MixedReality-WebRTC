@@ -31,7 +31,7 @@ jobs:
   # Checkout libwebrtc
   - script: |
       cd $(toolsDir)/libwebrtc
-      ./config.sh -v -d $(workDir) -b "branch-heads/71" -t android -c arm64 -s
+      ./config.sh -v -d $(workDir) -b "branch-heads/71" -t android -c arm64 -s -f
       ./checkout.sh -v
     displayName: 'Checkout libwebrtc'
 
