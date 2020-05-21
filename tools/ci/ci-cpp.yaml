@@ -56,14 +56,14 @@ jobs:
 #     buildConfig: 'Release'
 #     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
 #     runComponentDetection: ${{parameters.runComponentDetection}}
-# - template: templates/jobs-cpp.yaml
-#   parameters:
-#     buildAgent: ${{parameters.buildAgent}}
-#     buildPlatform: 'Win32'
-#     buildArch: 'x64'
-#     buildConfig: 'Debug'
-#     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
-#     runComponentDetection: ${{parameters.runComponentDetection}}
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: ${{parameters.buildAgent}}
+    buildPlatform: 'Win32'
+    buildArch: 'x64'
+    buildConfig: 'Debug'
+    restoreCorePdbs: ${{parameters.restoreCorePdbs}}
+    runComponentDetection: ${{parameters.runComponentDetection}}
 # - template: templates/jobs-cpp.yaml
 #   parameters:
 #     buildAgent: ${{parameters.buildAgent}}
