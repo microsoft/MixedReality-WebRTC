@@ -32,13 +32,13 @@ parameters:
 - name: restoreCorePdbs
   displayName: 'Restore core PDBs'
   type: boolean
-  default: true
+  default: false
 # Run Component Governance detection and submit results.
 # This require the CG task, which is not available on CI.
 - name: runComponentDetection
   displayName: 'Run component detection'
   type: boolean
-  default: false
+  default: true
 
 jobs:
 - template: templates/jobs-cpp.yaml
