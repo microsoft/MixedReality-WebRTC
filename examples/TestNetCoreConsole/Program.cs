@@ -114,6 +114,9 @@ namespace TestNetCoreConsole
                 Console.WriteLine(e.Message);
             }
 
+            localAudioTrack?.Dispose();
+            localVideoTrack?.Dispose();
+
             Console.WriteLine("Program termined.");
         }
     }
