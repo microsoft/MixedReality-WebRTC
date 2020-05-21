@@ -45,6 +45,8 @@ try {
                         # Discard line - mismatching platform or arch or config
                     }
                 }
+            } elseif ($RemoveAll -and ($line -match "packages\\Microsoft\.MixedReality\.WebRTC\.Native\.Core\.UWP")) {
+                # Discard line - Remove the Microsoft.MixedReality.WebRTC.Native.Core.UWP package with the WinRT headers
             } else {
                 # Copy any other line as is
                 $content += $line + "`n";
@@ -68,6 +70,8 @@ try {
                         # Discard line - mismatching platform or arch or config
                     }
                 }
+            } elseif ($RemoveAll -and ($line -match "packages\\Microsoft\.MixedReality\.WebRTC\.Native\.Core\.UWP")) {
+                # Discard line - Remove the Microsoft.MixedReality.WebRTC.Native.Core.UWP package with the WinRT headers
             } else {
                 # Copy any other line as is
                 $content += $line + "`n";
