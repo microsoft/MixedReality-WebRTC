@@ -66,7 +66,7 @@ function verify-arguments() {
 # Main
 
 # Read command line
-while getopts d:b:t:c:vsuh OPTION; do
+while getopts d:b:t:c:vsufh OPTION; do
     case ${OPTION} in
     d) WORK_DIR=$OPTARG ;;
     b) BRANCH=$OPTARG ;;
