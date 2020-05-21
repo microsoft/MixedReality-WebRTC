@@ -194,6 +194,7 @@ function checkout-webrtc() {
     local extra_fetch=""
     [[ "$FAST_CLONE" == "1" ]] && extra_fetch+="--no-history" || true
     if [ ! -d src ]; then
+        echo -e "\e[39mDoing first-time WebRTC clone -- this may take a long time\e[39m"
         case $TARGET_OS in
         android)
             yes | fetch --nohooks $extra_fetch webrtc_android
@@ -208,6 +209,7 @@ function checkout-webrtc() {
     fi
 
     # Checkout the specific revision after fetch.
+    echo -e "\e[39mSyncing WebRTC deps -- this may take a long time\e[39m"
     local extra_sync=""
     [[ "$FAST_CLONE" == "1" ]] && extra_sync+=" --no-history --shallow --nohooks" || true
     gclient sync --force --revision $REVISION $extra_sync
