@@ -46,7 +46,7 @@ jobs:
       versionSpec: 5.2.0
 
   # Download all binaries from the previous stage
-  - ${{ if eq('${{parameters.packagePlatform}}', 'Desktop') }}:
+  - ${{ if eq(parameters.packagePlatform, 'Desktop') }}:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download mrwebrtc library (Win32-x86-Debug)'
       inputs:
@@ -75,7 +75,7 @@ jobs:
         artifact: 'mrwebrtc_Win32-x64-Release'
         patterns: '**/*.@(pdb|lib|dll)'
         path: '$(Build.BinariesDirectory)/unsigned/$(packageName)/runtimes/win10-x64/native/release'
-  - ${{ if eq('${{parameters.packagePlatform}}', 'UWP') }}:
+  - ${{ if eq(parameters.packagePlatform, 'UWP') }}:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download mrwebrtc library (UWP-x86-Debug)'
       inputs:
