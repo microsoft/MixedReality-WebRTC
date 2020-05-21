@@ -80,6 +80,15 @@ jobs:
     submodules: recursive
     fetchDepth: '50'
     clean: $(clean.git)
+  
+  # Generate custom .vcxproj to skip any NuGet package related to webrtc.lib, since this pipeline
+  # is recompiling libwebrtc from sources. This saves both build time and disk space.
+  - task: PowerShell@2
+    displayName: 'Strip .vcxproj from Core NuGet'
+    inputs:
+      targetType: 'filePath'
+      filePath: 'tools/ci/modifyCppProject.ps1'
+      arguments: '-BuildConfig ${{parameters.buildConfig}} -BuildPlatform ${{parameters.buildPlatform}} -BuildArch ${{parameters.buildArch}} -ProjectFile "tools/build/mrwebrtc/${{parameters.buildPlatform}}/mrwebrtc-${{parameters.buildPlatform}}.vcxproj" -RemoveAll'
 
   # Map build* variables to script* ones
   - task: PowerShell@2
