@@ -20,7 +20,8 @@ jobs:
   pool:
     vmImage: 'ubuntu-18.04'
   variables:
-    rootDir: 'tools/build/libwebrtc'
+    rootDir: '$(Build.SourcesDirectory)/tools/build/libwebrtc'
+    workDir: '$(Build.SourcesDirectory)/external/libwebrtc'
   steps:
 
   # Checkout MixedReality-WebRTC
@@ -30,7 +31,7 @@ jobs:
   # Checkout libwebrtc
   - script: |
       cd $(rootDir)
-      ./config.sh -v -d external/libwebrtc -b "branch-heads/71" -t android -c arm64 -s
+      ./config.sh -v -d $(workDir) -b "branch-heads/71" -t android -c arm64 -s
       ./checkout.sh -v
 
   # Build libwebrtc
