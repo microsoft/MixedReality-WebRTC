@@ -25,74 +25,76 @@ parameters:
 
 stages:
 
+# Build mrwebrtc.dll for all build variants
 - stage: build_mrwebrtc
   displayName: 'Build mrwebrtc'
   jobs:
 
   # Build all variants of mrwebrtc.dll for Windows Desktop
-  # - template: templates/jobs-mrwebrtc-release.yaml
-  #   parameters:
-  #     buildPlatform: 'Win32'
-  #     buildAgent: '${{parameters.buildAgent}}'
-  #     buildArch: 'x86'
-  #     buildConfig: 'Debug'
-  # - template: templates/jobs-mrwebrtc-release.yaml
-  #   parameters:
-  #     buildPlatform: 'Win32'
-  #     buildAgent: '${{parameters.buildAgent}}'
-  #     buildArch: 'x86'
-  #     buildConfig: 'Release'
+  - template: templates/jobs-mrwebrtc-release.yaml
+    parameters:
+      buildPlatform: 'Win32'
+      buildAgent: '${{parameters.buildAgent}}'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+  - template: templates/jobs-mrwebrtc-release.yaml
+    parameters:
+      buildPlatform: 'Win32'
+      buildAgent: '${{parameters.buildAgent}}'
+      buildArch: 'x86'
+      buildConfig: 'Release'
   - template: templates/jobs-mrwebrtc-release.yaml
     parameters:
       buildPlatform: 'Win32'
       buildAgent: '${{parameters.buildAgent}}'
       buildArch: 'x64'
       buildConfig: 'Debug'
-  # - template: templates/jobs-mrwebrtc-release.yaml
-  #   parameters:
-  #     buildPlatform: 'Win32'
-  #     buildAgent: '${{parameters.buildAgent}}'
-  #     buildArch: 'x64'
-  #     buildConfig: 'Release'
+  - template: templates/jobs-mrwebrtc-release.yaml
+    parameters:
+      buildPlatform: 'Win32'
+      buildAgent: '${{parameters.buildAgent}}'
+      buildArch: 'x64'
+      buildConfig: 'Release'
 
   # Build all variants of mrwebrtc.dll for Windows UWP
-  # - template: templates/jobs-mrwebrtc-release.yaml
-  #   parameters:
-  #     buildPlatform: 'UWP'
-  #     buildAgent: '${{parameters.buildAgent}}'
-  #     buildArch: 'x86'
-  #     buildConfig: 'Debug'
-  # - template: templates/jobs-mrwebrtc-release.yaml
-  #   parameters:
-  #     buildPlatform: 'UWP'
-  #     buildAgent: '${{parameters.buildAgent}}'
-  #     buildArch: 'x86'
-  #     buildConfig: 'Release'
-  # - template: templates/jobs-mrwebrtc-release.yaml
-  #   parameters:
-  #     buildPlatform: 'UWP'
-  #     buildAgent: '${{parameters.buildAgent}}'
-  #     buildArch: 'x64'
-  #     buildConfig: 'Debug'
-  # - template: templates/jobs-mrwebrtc-release.yaml
-  #   parameters:
-  #     buildPlatform: 'UWP'
-  #     buildAgent: '${{parameters.buildAgent}}'
-  #     buildArch: 'x64'
-  #     buildConfig: 'Release'
+  - template: templates/jobs-mrwebrtc-release.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '${{parameters.buildAgent}}'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+  - template: templates/jobs-mrwebrtc-release.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '${{parameters.buildAgent}}'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+  - template: templates/jobs-mrwebrtc-release.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '${{parameters.buildAgent}}'
+      buildArch: 'x64'
+      buildConfig: 'Debug'
+  - template: templates/jobs-mrwebrtc-release.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '${{parameters.buildAgent}}'
+      buildArch: 'x64'
+      buildConfig: 'Release'
   - template: templates/jobs-mrwebrtc-release.yaml
     parameters:
       buildPlatform: 'UWP'
       buildAgent: '${{parameters.buildAgent}}'
       buildArch: 'ARM'
       buildConfig: 'Debug'
-  # - template: templates/jobs-mrwebrtc-release.yaml
-  #   parameters:
-  #     buildPlatform: 'UWP'
-  #     buildAgent: '${{parameters.buildAgent}}'
-  #     buildArch: 'ARM'
-  #     buildConfig: 'Release'
+  - template: templates/jobs-mrwebrtc-release.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '${{parameters.buildAgent}}'
+      buildArch: 'ARM'
+      buildConfig: 'Release'
 
+# Pack the 2 native NuGet packages (Desktop and UWP)
 - stage: pack_mrwebrtc
   dependsOn: build_mrwebrtc
   displayName: 'Pack mrwebrtc'
@@ -109,8 +111,6 @@ stages:
     parameters:
       packagePlatform: 'UWP'
       packageAgent: '${{parameters.packageAgent}}'
-
-
 
 # # Build 
 # - stage
