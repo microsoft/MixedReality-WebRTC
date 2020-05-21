@@ -7,7 +7,7 @@
 
 set -o errexit
 set -o nounset
-set -o pipefail
+#set -o pipefail # This breaks checkout on ADO
 
 #-----------------------------------------------------------------------------
 function check-err() {
