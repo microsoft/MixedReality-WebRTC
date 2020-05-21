@@ -182,9 +182,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 if (_readBuffer != null)
                 {
                     _readBuffer.Read(_audioSampleRate, channels, data,
-                        out int readSamplesNum, out hasOverrun, behavior);
+                        out int numSamplesRead, out hasOverrun, behavior);
                     hasRead = true;
-                    hasUnderrun = readSamplesNum < data.Length;
+                    hasUnderrun = numSamplesRead < data.Length;
                 }
             }
 

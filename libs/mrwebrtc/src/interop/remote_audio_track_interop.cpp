@@ -89,30 +89,55 @@ mrsRemoteAudioTrackCreateReadBuffer(mrsRemoteAudioTrackHandle track_handle,
   return Result::kInvalidNativeHandle;
 }
 
+#define LOG_ERROR_IF(...) \
+  (__VA_ARGS__) && ((RTC_LOG_F(LS_ERROR) << #__VA_ARGS__), true)
+
 mrsResult MRS_CALL
 mrsAudioTrackReadBufferRead(mrsAudioTrackReadBufferHandle buffer,
                             int sample_rate,
                             int num_channels,
                             mrsAudioTrackReadBufferPadBehavior pad_behavior,
-                            float* data_out,
-                            int* data_len_in_out,
+                            float* samples_out,
+                            int num_samples_max,
+                            int* num_samples_read_out,
                             mrsBool* has_overrun_out) {
-  if (!sample_rate || !num_channels ||
-      !IsValidAudioTrackBufferPadBehavior(pad_behavior) || !data_len_in_out ||
-      *data_len_in_out < 0 || (*data_len_in_out && !data_out) ||
-      !has_overrun_out)
-  {
+  if (!buffer) {
+    return Result::kInvalidNativeHandle;
+  }
+  if (LOG_ERROR_IF(sample_rate <= 0)) {
     return Result::kInvalidParameter;
   }
 
-  if (auto stream = static_cast<AudioTrackReadBuffer*>(buffer)) {
-    bool has_overrun;
-    stream->Read(sample_rate, num_channels, pad_behavior, data_out,
-                 data_len_in_out, &has_overrun);
-    *has_overrun_out = has_overrun ? mrsBool::kTrue : mrsBool::kFalse;
-    return Result::kSuccess;
+  if (LOG_ERROR_IF(num_channels <= 0)) {
+    return Result::kInvalidParameter;
   }
-  return Result::kInvalidNativeHandle;
+
+  if (LOG_ERROR_IF(!IsValidAudioTrackBufferPadBehavior(pad_behavior))) {
+    return Result::kInvalidParameter;
+  }
+
+  if (LOG_ERROR_IF(num_samples_max < 0)) {
+    return Result::kInvalidParameter;
+  }
+
+  if (LOG_ERROR_IF(num_samples_max > 0 && !samples_out)) {
+    return Result::kInvalidParameter;
+  }
+
+  if (LOG_ERROR_IF(!num_samples_read_out)) {
+    return Result::kInvalidParameter;
+  }
+
+  if(LOG_ERROR_IF(!has_overrun_out)) {
+    return Result::kInvalidParameter;
+  }
+
+  auto stream = static_cast<AudioTrackReadBuffer*>(buffer);
+  bool has_overrun;
+  stream->Read(sample_rate, num_channels, pad_behavior, samples_out,
+               num_samples_max, num_samples_read_out, &has_overrun);
+  *has_overrun_out = has_overrun ? mrsBool::kTrue : mrsBool::kFalse;
+  return Result::kSuccess;
 }
 
 void MRS_CALL

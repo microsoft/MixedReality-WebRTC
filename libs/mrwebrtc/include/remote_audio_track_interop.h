@@ -123,22 +123,27 @@ mrsRemoteAudioTrackCreateReadBuffer(mrsRemoteAudioTrackHandle track_handle,
 ///
 /// |pad_behavior|: Controls how |data| is padded in case of underrun.
 ///
-/// |data_out|: Will be filled with the samples read from the internal buffer.
+/// |samples_out|: Must point to an array of at least |num_samples_max|
+/// elements. Will be filled with the samples read from the internal buffer.
+/// The function will try to fill the entire length of the array.
 ///
-/// |num_read_samples_out|: Set to the effective number
-/// of samples read. This will be generally equal to the length of |data|,
+/// |num_samples_max|: Capacity of |samples_out|.
+///
+/// |num_samples_read_out|: Must not be null. Set to the effective number
+/// of samples read. This will be generally equal to |num_samples_max|,
 /// but can be less in case of underrun.
 ///
-/// |has_overrun_out|
-/// Set to true if frames have been dropped from the internal
-/// buffer between the previous call to |mrsAudioTrackReadBufferRead| and this.
+/// |has_overrun_out|: Must not be null. Set to true if frames have been dropped
+/// from the internal buffer between the previous call to
+/// |mrsAudioTrackReadBufferRead| and this.
 MRS_API mrsResult MRS_CALL
 mrsAudioTrackReadBufferRead(mrsAudioTrackReadBufferHandle buffer,
                             int sample_rate,
                             int num_channels,
                             mrsAudioTrackReadBufferPadBehavior pad_behavior,
-                            float* data_out,
-                            int* num_read_samples_out,
+                            float* samples_out,
+                            int num_samples_max,
+                            int* num_samples_read_out,
                             mrsBool* has_overrun_out);
 
 /// Release the buffer.

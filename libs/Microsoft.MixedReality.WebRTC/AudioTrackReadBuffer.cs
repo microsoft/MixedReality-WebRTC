@@ -50,11 +50,11 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Fill <paramref name="data"/> with samples from the internal buffer.
+        /// Fill <paramref name="samplesOut"/> with samples from the internal buffer.
         /// </summary>
         /// <remarks>
         /// This method reads the internal buffer starting from the oldest data.
-        /// If the internal buffer is exhausted (underrun), <paramref name="data"/>
+        /// If the internal buffer is exhausted (underrun), <paramref name="samplesOut"/>
         /// is padded according to the value of <paramref name="padBehavior"/>.
         ///
         /// This method should be called regularly to consume the audio data as it is
@@ -69,35 +69,37 @@ namespace Microsoft.MixedReality.WebRTC
         /// Desired number of channels. Should be 1 or 2. Data in the buffer is split/averaged
         /// if this is different from the native track channels number.
         /// </param>
-        /// <param name="data">Will be filled with the samples read from the internal buffer. </param>
-        /// <param name="numReadSamples">
+        /// <param name="samplesOut">
+        /// Will be filled with the samples read from the internal buffer. The function will
+        /// try to fill the entire length of the array.
+        /// </param>
+        /// <param name="numSamplesRead">
         /// Set to the effective number of samples read.
-        /// This will be generally equal to the length of <paramref name="data"/>, but can be less in
+        /// This will be generally equal to the length of <paramref name="samplesOut"/>, but can be less in
         /// case of underrun.
         /// </param>
         /// <param name="hasOverrun">
         /// Set to <c>true</c> if frames have been dropped from the internal
         /// buffer between the previous call to <c>Read</c> and this.
         /// </param>
-        /// <param name="padBehavior">Controls how <paramref name="data"/> is padded in case of underrun.</param>
+        /// <param name="padBehavior">Controls how <paramref name="samplesOut"/> is padded in case of underrun.</param>
         public void Read(int sampleRate, int numChannels,
-            float[] data, out int numReadSamples, out bool hasOverrun,
+            float[] samplesOut, out int numSamplesRead, out bool hasOverrun,
             PadBehavior padBehavior = PadBehavior.PadWithZero)
         {
-            int dataLen = data.Length;
-            RemoteAudioTrackInterop.ReadBufferRead(_nativeHandle, sampleRate, numChannels, padBehavior, data, ref dataLen, out mrsBool has_overrun_res);
-            numReadSamples = dataLen;
+            RemoteAudioTrackInterop.AudioTrackReadBuffer_Read(_nativeHandle,
+                sampleRate, numChannels, padBehavior, samplesOut, samplesOut.Length, out numSamplesRead, out mrsBool has_overrun_res);
             hasOverrun = (bool)has_overrun_res;
         }
 
         /// <summary>
-        /// Fill <paramref name="data"/> with samples from the internal buffer.
+        /// Fill <paramref name="samplesOut"/> with samples from the internal buffer.
         /// See <see cref="Read(int, int, float[], out int, out bool, PadBehavior)"/>.
         /// </summary>
         public void Read(int sampleRate, int channels,
-            float[] data, PadBehavior padBehavior = PadBehavior.PadWithZero)
+            float[] samplesOut, PadBehavior padBehavior = PadBehavior.PadWithZero)
         {
-            Read(sampleRate, channels, data, out int _, out bool _, padBehavior);
+            Read(sampleRate, channels, samplesOut, out int _, out bool _, padBehavior);
         }
 
         /// <summary>

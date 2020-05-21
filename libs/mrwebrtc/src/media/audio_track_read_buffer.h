@@ -33,8 +33,9 @@ class AudioTrackReadBuffer : public webrtc::AudioTrackSinkInterface {
   void Read(int sample_rate,
             int num_channels,
             mrsAudioTrackReadBufferPadBehavior pad_behavior,
-            float data_out[],
-            int* data_len_in_out,
+            float* samples_out,
+            int num_samples_max,
+            int* num_samples_read_out,
             bool* has_overrun_out) noexcept;
 
   /// AudioTrackSinkInterface implementation.
@@ -59,7 +60,7 @@ class AudioTrackReadBuffer : public webrtc::AudioTrackSinkInterface {
   // protects frames_ and has_overrun_ in Read() and audioFrameCallback()
   std::mutex frames_mutex_;
   // max ms of audio data stored in frames_
-  int buffer_ms_{};
+  int buffer_size_ms_{};
   // for debugging, we emit a sin on underrun.
   int sinwave_iter_{};
   // Have frames been dropped due to overrun after last call to Read()?

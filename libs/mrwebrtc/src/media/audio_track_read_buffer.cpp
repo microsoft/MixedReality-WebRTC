@@ -20,7 +20,7 @@ void AudioTrackReadBuffer::OnData(const void* audio_data,
                                   size_t number_of_frames) {
   std::lock_guard<std::mutex> lock(frames_mutex_);
   // maintain buffering limits, after adding this frame
-  const size_t maxFrames = std::max(buffer_ms_ / 10, 1);
+  const size_t maxFrames = std::max(buffer_size_ms_ / 10, 1);
   while (frames_.size() > maxFrames) {
     frames_.pop_front();
     has_overrun_ = true;
@@ -43,7 +43,7 @@ AudioTrackReadBuffer::AudioTrackReadBuffer(
     rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
     int bufferMs)
     : track_(std::move(track)),
-      buffer_ms_(bufferMs >= 10 ? bufferMs : 500) {
+      buffer_size_ms_(bufferMs >= 10 ? bufferMs : 500) {
   track_->AddSink(this);
 }
 
@@ -141,12 +141,12 @@ void AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
 void AudioTrackReadBuffer::Read(int sample_rate,
                                 int num_channels,
                                 mrsAudioTrackReadBufferPadBehavior pad_behavior,
-                                float data_out[],
-                                int* data_len_in_out,
+                                float* samples_out,
+                                int num_samples_max,
+                                int* num_samples_read_out,
                                 bool* has_overrun_out) noexcept {
-  float* dst = data_out;
-  const int data_len_orig = *data_len_in_out;
-  int dst_len = data_len_orig;  // number of points remaining
+  float* dst = samples_out;
+  int dst_len = num_samples_max;  // number of points remaining
 
   *has_overrun_out = false;
 
@@ -187,9 +187,7 @@ void AudioTrackReadBuffer::Read(int sample_rate,
           case mrsAudioTrackReadBufferPadBehavior::kDoNotPad:
             break;
           case mrsAudioTrackReadBufferPadBehavior::kPadWithZero:
-            for (int i = 0; i < dst_len; ++i) {
-              dst[i] = 0;
-            }
+            std::memset(dst, 0, dst_len * sizeof(float));
             break;
           case mrsAudioTrackReadBufferPadBehavior::kPadWithSine:
             for (int i = 0; i < dst_len; ++i) {
@@ -204,12 +202,12 @@ void AudioTrackReadBuffer::Read(int sample_rate,
             break;
         }
 
-        *data_len_in_out = data_len_orig - dst_len;
+        *num_samples_read_out = num_samples_max - dst_len;
         return;  // and return
       }
     }
   }
-  *data_len_in_out = data_len_orig;
+  *num_samples_read_out = num_samples_max;
 }
 
 }  // namespace WebRTC

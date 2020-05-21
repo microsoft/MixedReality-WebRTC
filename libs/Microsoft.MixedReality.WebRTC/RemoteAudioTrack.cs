@@ -90,7 +90,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </remarks>
         public AudioTrackReadBuffer CreateReadBuffer()
         {
-            uint res = RemoteAudioTrackInterop.CreateReadBuffer(_nativeHandle,
+            uint res = RemoteAudioTrackInterop.RemoteAudioTrack_CreateReadBuffer(_nativeHandle,
                 out RemoteAudioTrackInterop.ReadBufferHandle readBufferHandle);
             Utils.ThrowOnErrorCode(res);
             return new AudioTrackReadBuffer(readBufferHandle);
