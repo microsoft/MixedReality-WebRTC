@@ -191,24 +191,26 @@ function checkout-webrtc() {
     pushd $SRC_DIR >/dev/null
 
     # Fetch only the first-time, otherwise sync.
+    local extra_fetch=""
+    [[ "$FAST_CLONE" == "1" ]] && extra_fetch+=" --no-history" || true
     if [ ! -d src ]; then
         case $TARGET_OS in
         android)
-            yes | fetch --nohooks webrtc_android
+            yes | fetch --nohooks webrtc_android $extra_fetch
             ;;
         ios)
-            fetch --nohooks webrtc_ios
+            fetch --nohooks webrtc_ios $extra_fetch
             ;;
         *)
-            fetch --nohooks webrtc
+            fetch --nohooks webrtc $extra_fetch
             ;;
         esac
     fi
 
     # Checkout the specific revision after fetch.
-    local extra=""
-    [[ "$FAST_CLONE" == "1" ]] && extra+=" --no-history --shallow --nohooks" || true
-    gclient sync --force --revision $REVISION $extra
+    local extra_sync=""
+    [[ "$FAST_CLONE" == "1" ]] && extra_sync+=" --no-history --shallow --nohooks" || true
+    gclient sync --force --revision $REVISION $extra_sync
 
     popd >/dev/null
 }
