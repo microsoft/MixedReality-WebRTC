@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 # Copy all PDBs into a single folder for packaging as Universal Package
 
 param(
