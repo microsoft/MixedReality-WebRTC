@@ -18,11 +18,18 @@ parameters:
 
 stages:
 
-# Compile all Release build variants on Windows (Desktop and UWP).
-# This is done as a separate stage from packing to ensure all builds
-# for all variants succeeded before starting to pack anything.
-- stage: build
-  displayName: 'Build'
+# Build libwebrtc
+- stage: build_libwebrtc
+  displayName: 'Build libwebrtc'
+  jobs:
+  - template: templates/jobs-libwebrtc-android.yaml
+    parameters:
+      buildConfig: 'release'
+
+# Compile all Release build variants of mrwebrtc.dll
+- stage: build_mrwebrtc
+  dependsOn: build_libwebrtc
+  displayName: 'Build mrwebrtc'
   jobs:
 
   # Build all Release variants of mrwebrtc.dll for Windows Desktop
@@ -66,7 +73,7 @@ stages:
 
 # Package library and samples
 - stage: publish
-  dependsOn: build
+  dependsOn: build_mrwebrtc
   displayName: 'Publish'
   jobs:
   - template: templates/jobs-unity-package.yaml

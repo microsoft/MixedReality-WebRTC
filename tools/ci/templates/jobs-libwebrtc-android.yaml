@@ -1,0 +1,39 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# [TEMPLATE] Compile libwebrtc on Android
+
+parameters:
+- name: buildConfig
+  type: string
+  default: ''
+  values:
+  - fulldebug
+  - debug
+  - release
+
+jobs:
+
+# Compile libwebrtc
+- job: libwebrtc_${{parameters.buildConfig}}
+  timeoutInMinutes: 360
+  pool:
+    vmImage: 'ubuntu-18.04'
+  variables:
+    rootDir: 'tools/build/libwebrtc'
+  steps:
+
+  # Checkout MixedReality-WebRTC
+  - checkout: self
+    clean: $(clean.git)
+
+  # Checkout libwebrtc
+  - script: |
+      cd $(rootDir)
+      ./config.sh -v -d external/libwebrtc -b "branch-heads/71" -t android -c arm64
+      ./checkout.sh -v
+
+  # Build libwebrtc
+  - script: |
+      cd $(rootDir)
+      ./build.sh -v -c ${{parameters.buildConfig}}
