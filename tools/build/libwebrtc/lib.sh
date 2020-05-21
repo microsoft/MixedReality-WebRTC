@@ -192,17 +192,17 @@ function checkout-webrtc() {
 
     # Fetch only the first-time, otherwise sync.
     local extra_fetch=""
-    [[ "$FAST_CLONE" == "1" ]] && extra_fetch+=" --no-history" || true
+    [[ "$FAST_CLONE" == "1" ]] && extra_fetch+="--no-history" || true
     if [ ! -d src ]; then
         case $TARGET_OS in
         android)
-            yes | fetch --nohooks webrtc_android $extra_fetch
+            yes | fetch --nohooks $extra_fetch webrtc_android
             ;;
         ios)
-            fetch --nohooks webrtc_ios $extra_fetch
+            fetch --nohooks $extra_fetch webrtc_ios
             ;;
         *)
-            fetch --nohooks webrtc $extra_fetch
+            fetch --nohooks $extra_fetch webrtc
             ;;
         esac
     fi
