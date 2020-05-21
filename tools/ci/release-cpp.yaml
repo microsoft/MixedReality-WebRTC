@@ -69,12 +69,12 @@ stages:
       publishArtifacts: true
       withTesting: false
 
-# Package library and samples
-- stage: publish
-  dependsOn: build_cs
-  displayName: 'Publish'
-  jobs:
-  - template: templates/jobs-unity-package.yaml
-    parameters:
-      buildAgent: '${{parameters.buildAgent}}'
-      npmPackageVersion: '${{parameters.npmPackageVersion}}'
+# # Package library and samples
+# - stage: publish
+#   dependsOn: build_cs
+#   displayName: 'Publish'
+#   jobs:
+#   - template: templates/jobs-unity-package.yaml
+#     parameters:
+#       buildAgent: '${{parameters.buildAgent}}'
+#       npmPackageVersion: '${{parameters.npmPackageVersion}}'
