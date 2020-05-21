@@ -20,7 +20,7 @@ jobs:
   pool:
     vmImage: 'ubuntu-18.04'
   variables:
-    rootDir: '$(Build.SourcesDirectory)/tools/build/libwebrtc'
+    toolsDir: '$(Build.SourcesDirectory)/tools/build'
     workDir: '$(Build.SourcesDirectory)/external/libwebrtc'
   steps:
 
@@ -30,11 +30,34 @@ jobs:
 
   # Checkout libwebrtc
   - script: |
-      cd $(rootDir)
+      cd $(toolsDir)/libwebrtc
       ./config.sh -v -d $(workDir) -b "branch-heads/71" -t android -c arm64 -s
       ./checkout.sh -v
+    displayName: 'Checkout libwebrtc'
 
   # Build libwebrtc
   - script: |
-      cd $(rootDir)
+      cd $(toolsDir)/libwebrtc
       ./build.sh -v -c ${{parameters.buildConfig}}
+    displayName: 'Build libwebrtc'
+
+  # Build mrwebrtc
+  - script: |
+      cd $(toolsDir)/android
+      /gradlew assembleRelease
+    displayName: 'Build mrwebrtc'
+
+  # Stage artifacts
+  - task: CopyFiles@2
+    displayName: 'Stage mrwebrtc artifacts'
+    inputs:
+      sourceFolder: '$(toolsDir)/android/webrtc-native/build/outputs/aar'
+      contents: 'mrwebrtc.aar'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  # Publish mrwebrtc.dll and mrwebrtc.pdb
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish mrwebrtc'
+    inputs:
+      artifactName: 'mrwebrtc_android_arm64_release'
+      targetPath: '$(Build.ArtifactStagingDirectory)'
