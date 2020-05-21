@@ -123,10 +123,6 @@
 <pre><code class="lang-shell">dotnet add TestNetCoreConsole.csproj package Microsoft.MixedReality.WebRTC
 </code></pre>
 <p>This will download from <a href="https://www.nuget.org/">nuget.org</a> and install the <code>Microsoft.MixedReality.WebRTC.nupkg</code> NuGet package, which contains the same-named assembly, as well as its native dependencies (x86 and x64) for the Windows Desktop platform.</p>
-<div class="NOTE">
-<h5>Note</h5>
-<p><code>dotnet</code> may complain about being unable to find a stable package, if no stable package has been released yet. Remember that <code>dotnet</code> only install stable packages by default, you can force a specific non-stable version with the <code>--version</code> option.</p>
-</div>
 <p>After that, <code>TestNetCoreConsole.csproj</code> should contain a reference to the package, with a version corresponding to the latest stable version found on <a href="https://www.nuget.org/">nuget.org</a>, or the one you specified with the <code>--version</code> option.</p>
 <pre><code class="lang-xml">&lt;ItemGroup&gt;
   &lt;PackageReference Include=&quot;Microsoft.MixedReality.WebRTC&quot; Version=&quot;...&quot; /&gt;
@@ -141,7 +137,7 @@
 using Microsoft.MixedReality.WebRTC;
 </code></pre>
 </li>
-<li><p>Modify the signature of the <code>Main</code> function to make it asynchronous, by changing its return type from <code>void</code> to <code>Task</code> and adding the <code>async</code> keyword. This allows using the <code>await</code> keyword inside its body.</p>
+<li><p>Modify the signature of the <code>Main</code> function to make it asynchronous, by changing its return type from <code>void</code> to <code>Task</code> and adding the <code>async</code> keyword. This allows using the <code>await</code> keyword inside its body, which greatly simplifies the writing for asynchronous code.</p>
 <pre><code class="lang-cs">static async Task Main(string[] args)
 </code></pre>
 </li>

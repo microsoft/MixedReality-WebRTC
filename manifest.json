@@ -1298,7 +1298,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-connection-core3.html",
-          "hash": "Q4cbCEizN07g8x7OztVTsg=="
+          "hash": "WmEsvRZPo5yW9pGnPKWWPQ=="
         }
       },
       "is_incremental": false,
@@ -1317,15 +1317,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "InvalidFileLink"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-core3.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-core3.html",
-          "hash": "roT8ouBmgRFdccEWF4E84g=="
+          "hash": "PhdA1zs8512Qo20bUrjw4g=="
         }
       },
       "is_incremental": false,
@@ -1337,7 +1334,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-core3.html",
-          "hash": "9IbUpkvqhnA57joEX7k05A=="
+          "hash": "+ub84X4WjZ7sdZ+lV5mtfQ=="
         }
       },
       "is_incremental": false,
@@ -1364,7 +1361,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-peerconnection-core3.html",
-          "hash": "ql8qHpLr8kLzpLpOT+bAsw=="
+          "hash": "JODFiAhX+iCVTr2NP3eeyw=="
         }
       },
       "is_incremental": false,
@@ -1388,7 +1385,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-setup-core3.html",
-          "hash": "QXKKA75DSJR+u9Yq+JUbxg=="
+          "hash": "WMDz4E9fJ/IhjzsTx8o1+A=="
         }
       },
       "is_incremental": false,
@@ -1412,7 +1409,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-signaling-core3.html",
-          "hash": "9K0HcULL4FDIEJVfLApaHw=="
+          "hash": "FdM+CeN4bZy5kwLlwHth1Q=="
         }
       },
       "is_incremental": false,
