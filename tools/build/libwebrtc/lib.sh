@@ -53,6 +53,7 @@ function print-config() {
     echo -e "\e[39mTarget CPU \e[96m$TARGET_CPU\e[39m"
     echo -e "\e[39mGit Branch: \e[96m$BRANCH\e[39m"
     echo -e "\e[39mWorking dir: \e[96m$WORK_DIR\e[39m"
+    [[ "$FAST_CLONE" == "1" ]] && echo -e "\e[96mUsing fast clone for CI\e[39m" || true
 }
 
 #-----------------------------------------------------------------------------
@@ -84,6 +85,7 @@ TARGET_OS=$TARGET_OS
 TARGET_CPU=$TARGET_CPU
 BRANCH=$BRANCH
 WORK_DIR=$WORK_DIR
+FAST_CLONE=$FAST_CLONE
 EOF
 }
 
@@ -202,8 +204,11 @@ function checkout-webrtc() {
             ;;
         esac
     fi
+
     # Checkout the specific revision after fetch.
-    gclient sync --force --revision $REVISION
+    local extra=""
+    [[ "$FAST_CLONE" == "1" ]] && extra+=" --no-history --shallow --nohooks" || true
+    gclient sync --force --revision $REVISION $extra
 
     popd >/dev/null
 }
