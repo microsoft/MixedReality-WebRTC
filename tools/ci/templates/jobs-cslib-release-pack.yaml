@@ -83,7 +83,7 @@ jobs:
      foreach ($f in $(Get-ChildItem -Path $(Build.BinariesDirectory)/signed -Recurse)) {
        Write-Host $f.FullName
      }
-    displayName: 'List signed content'
+    displayName: 'List package content'
 
   # Run component detection before signing (mandatory by policy)
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -113,7 +113,7 @@ jobs:
      foreach ($f in $(Get-ChildItem -Path $(Build.BinariesDirectory)/signed -Recurse)) {
        Write-Host $f.FullName
      }
-    displayName: 'List signed content'
+    displayName: 'List package content'
 
   # Update package version in .nuspec file. This needs to be a valid version
   # otherwise "nuget pack" will fail, even if we override the version.
