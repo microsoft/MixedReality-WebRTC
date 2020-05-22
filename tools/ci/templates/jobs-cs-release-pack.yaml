@@ -74,18 +74,6 @@ jobs:
      Copy-Item $srcFile $dstFile -Force
     displayName: 'Copy NOTICE'
 
-  # Copy the .props file to signed/
-  - powershell: |
-     $srcFile = Join-Path "$(Build.SourcesDirectory)" "tools/nuget/${{parameters.packagePlatform}}/$(packageName).props" -Resolve
-     $dstFile = Join-Path "$(Build.BinariesDirectory)" "signed/$(packageName).${{parameters.nugetPackageVersion}}/build/native/$env:PROPSFILE"
-     $dstDir = Split-Path -Path $dstFile -Parent
-     New-Item -Path $dstDir -ItemType Directory -ErrorAction Ignore | Out-Null
-     Write-Host "Copying $srcFile -> $dstFile"
-     Copy-Item $srcFile $dstFile -Force
-    displayName: 'Copy .props file'
-    env:
-      PROPSFILE: '$(packageName).props'
-
   # Copy the mrwebrtc API headers to signed/
   - powershell: |
      $srcFile = Join-Path "$(Build.SourcesDirectory)" "libs/mrwebrtc/include/*.h"
