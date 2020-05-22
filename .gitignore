@@ -18,6 +18,9 @@ examples/TestNetCoreConsole/bin
 *.suo
 launchSettings.json
 
+# Python
+*.pyc
+
 # UWP packages
 /examples/TestAppUwp/AppPackages
 
@@ -27,9 +30,9 @@ project.json
 project.lock.json
 
 # Unity package binaries
-libs/unity/*.dll
-libs/unity/*.pdb
-libs/unity/*.aar
+libs/unity/**/*.dll
+libs/unity/**/*.pdb
+libs/unity/**/*.aar
 
 # Legacy Unity library location
 libs/Microsoft.MixedReality.WebRTC.Unity
