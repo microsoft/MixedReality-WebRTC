@@ -232,7 +232,7 @@ jobs:
         artifactName: 'mrwebrtc_$(buildTriple)'
         targetPath: '$(Build.ArtifactStagingDirectory)'
 
-  - ${{ if and(eq(parameters.withTesting, 'true'), eq('${{parameters.buildPlatform}}', 'Win32')) }}:
+  - ${{ if and(eq(parameters.withTesting, 'true'), eq(parameters.buildPlatform, 'Win32')) }}:
     # # Delete PDBs to save disk space, otherwise the NuGet download for tests below fails in Debug
     # - powershell: |
     #     Remove-Item "bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}/*" -Force -Include "*.pdb" -Exclude "Microsoft.MixedReality.WebRTC.*","NativeLib.*","NativeTests.*"
