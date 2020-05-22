@@ -173,9 +173,6 @@ struct mrsIceCandidate {
   int32_t sdp_mline_index{-1};
 };
 
-/// Opaque handle to a native AudioTrackReadBuffer C++ object.
-using AudioTrackReadBufferHandle = void*;
-
 /// Callback fired when the peer connection is connected, that is it finished
 /// the JSEP offer/answer exchange successfully.
 using mrsPeerConnectionConnectedCallback = void(MRS_CALL*)(void* user_data);

@@ -23,7 +23,11 @@ mrsLocalAudioTrackAddRef(mrsLocalAudioTrackHandle handle) noexcept {
 void MRS_CALL
 mrsLocalAudioTrackRemoveRef(mrsLocalAudioTrackHandle handle) noexcept {
   if (auto track = static_cast<LocalAudioTrack*>(handle)) {
-    track->RemoveRef();
+    const std::string name = track->GetName();
+    if (track->RemoveRef() == 0) {
+      RTC_LOG(LS_VERBOSE) << "Destroyed LocalAudioTrack \"" << name.c_str()
+                          << "\" (0 ref).";
+    }
   } else {
     RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
                            "LocalAudioTrack object.";

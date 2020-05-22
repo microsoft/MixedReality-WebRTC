@@ -14,9 +14,6 @@ parameters:
 - name: buildAgent
   type: string
   default: 'Hosted VS2017' # vs2017-win2016
-- name: npmPublishFeed
-  type: string
-  default: ''
 - name: npmPackageVersion
   type: string
   default: '0.0.1-preview.1'
@@ -88,5 +85,4 @@ stages:
   - template: templates/jobs-unity-package.yaml
     parameters:
       buildAgent: '${{parameters.buildAgent}}'
-      npmPublishFeed: '${{parameters.npmPublishFeed}}'
       npmPackageVersion: '${{parameters.npmPackageVersion}}'

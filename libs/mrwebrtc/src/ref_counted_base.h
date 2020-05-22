@@ -18,9 +18,15 @@ class RefCountedBase {
     ref_count_.fetch_add(1, std::memory_order_relaxed);
   }
 
-  void RemoveRef() const noexcept {
-    if (ref_count_.fetch_sub(1, std::memory_order_acq_rel) == 1)
+  /// Remove a reference, and return the number of references left after the
+  /// call. If zero is returned, the object has been destroyed.
+  uint32_t RemoveRef() const noexcept {
+    const uint32_t num_ref_before =
+        ref_count_.fetch_sub(1, std::memory_order_acq_rel);
+    if (num_ref_before == 1) {
       delete this;
+    }
+    return (num_ref_before - 1);
   }
 
   /// Get an approximate reference count at the time of the call. This value can

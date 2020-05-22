@@ -109,6 +109,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         internal const uint MRS_E_NOT_INITIALIZED = 0x80000006u;
         internal const uint MRS_E_UNSUPPORTED = 0x80000007u;
         internal const uint MRS_E_OUT_OF_RANGE = 0x80000008u;
+        internal const uint MRS_E_BUFFER_TOO_SMALL = 0x80000009u;
         internal const uint MRS_E_PEER_CONNECTION_CLOSED = 0x80000101u;
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
         internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
@@ -242,6 +243,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
             case MRS_E_OUT_OF_RANGE:
                 return new ArgumentOutOfRangeException();
+
+            case MRS_E_BUFFER_TOO_SMALL:
+                return new BufferTooSmallException();
 
             case MRS_E_SCTP_NOT_NEGOTIATED:
                 return new SctpNotNegotiatedException();
