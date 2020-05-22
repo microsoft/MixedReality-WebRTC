@@ -242,5 +242,4 @@ jobs:
     - template: 'steps-mrwebrtc-test-win32.yaml'
       parameters:
         buildArch: '${{parameters.buildArch}}'
-        msbuildPlatform: '$(msbuildPlatform)'
         buildConfig: '${{parameters.buildConfig}}'

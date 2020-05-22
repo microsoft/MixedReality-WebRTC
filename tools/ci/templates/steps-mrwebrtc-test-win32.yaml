@@ -14,15 +14,6 @@ parameters:
   - 'x64'
   - 'ARM'
   - 'ARM64'
-# Build architecture for MSBuild (named "platform" in MSBuild terminology)
-- name: msbuildPlatform
-  type: string
-  default: ''
-  values:
-  - 'Win32'
-  - 'x64'
-  - 'ARM'
-  - 'ARM64'
 # Build configuration
 - name: buildConfig
   displayName: 'Build Configuration'
@@ -53,7 +44,7 @@ steps:
     solution: '$(Build.SourcesDirectory)/tools/build/mrwebrtc/win32/tests/mrwebrtc-win32-tests.vcxproj'
     msbuildVersion: '15.0'
     msbuildArchitecture: 'x64'
-    platform: '${{parameters.msbuildPlatform}}'
+    platform: '$(msbuildPlatform)'
     configuration: '${{parameters.buildConfig}}'
     msbuildArguments: '/p:DisableDeviceTests=1' # Disable tests requiring a webcam or microphone
   timeoutInMinutes: 15
