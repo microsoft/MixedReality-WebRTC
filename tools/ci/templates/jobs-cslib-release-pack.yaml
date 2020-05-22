@@ -207,5 +207,5 @@ jobs:
   - task: PublishPipelineArtifact@1
     displayName: 'Publish'
     inputs:
-      path: '$(Build.ArtifactStagingDirectory)/signed'
+      path: '$(Build.ArtifactStagingDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}'
       artifact: 'nuget_cslib_${{parameters.packagePlatform}}'
