@@ -42,15 +42,19 @@ jobs:
     inputs:
       versionSpec: 5.2.0
 
-  # Compute package name
+  # Compute package name and lib folder
   - pwsh: |
       $packageName = "Microsoft.MixedReality.WebRTC"
+      $libFolder = "lib\netstandard2.0\"
       if ("$env:PACKAGE_PLATFORM" -eq "UWP") {
         $packageName += ".UWP"
+        $libFolder = "lib\uap10.0\"
       }
       Write-Host "Package name = $packageName"
+      Write-Host "Library folder = $libFolder"
       Write-Host "##vso[task.setvariable variable=packageName;]$packageName"
-    displayName: 'Compute package name'
+      Write-Host "##vso[task.setvariable variable=libFolder;]$libFolder"
+    displayName: 'Compute variables'
     env:
       PACKAGE_PLATFORM: '${{parameters.packagePlatform}}'
     timeoutInMinutes: 5
@@ -62,7 +66,7 @@ jobs:
       source: 'current'
       artifact: 'cslib'
       patterns: '**/*.@(pdb|dll|xml)'
-      path: '$(Build.BinariesDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}'
+      path: '$(Build.BinariesDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}/$(libFolder)'
 
   # Copy the NOTICE file to signed/
   - powershell: |
