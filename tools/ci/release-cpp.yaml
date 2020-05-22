@@ -25,7 +25,9 @@ parameters:
 
 stages:
 
-# Build mrwebrtc.dll for all build variants
+# Build mrwebrtc.dll for all build variants.
+# This is done as a separate stage from packing to ensure all builds
+# for all variants succeeded before starting to pack anything for release.
 - stage: build_mrwebrtc
   displayName: 'Build mrwebrtc'
   jobs:
@@ -94,7 +96,12 @@ stages:
       buildArch: 'ARM'
       buildConfig: 'Release'
 
-# Pack the 2 native NuGet packages (Desktop and UWP)
+  # Build all variants of Microsoft.MixedReality.WebRTC.dll
+  - template: templates/jobs-cs-release.yaml
+    parameters:
+      buildAgent: '${{parameters.buildAgent}}'
+
+# Pack the NuGet packages
 - stage: pack_mrwebrtc
   dependsOn: build_mrwebrtc
   displayName: 'Pack mrwebrtc'
@@ -105,25 +112,25 @@ stages:
     parameters:
       packagePlatform: 'Desktop'
       packageAgent: '${{parameters.packageAgent}}'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Package mrwebrtc (UWP)
   - template: templates/jobs-mrwebrtc-release-pack.yaml
     parameters:
       packagePlatform: 'UWP'
       packageAgent: '${{parameters.packageAgent}}'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
-# # Build 
-# - stage
-#   # C# library
-#   - template: templates/jobs-cs-build.yaml
-#     parameters:
-#       buildAgent: '${{parameters.buildAgent}}'
-#       buildConfig: 'Debug'
-#       publishArtifacts: true
-#       withTesting: false
-#   - template: templates/jobs-cs-build.yaml
-#     parameters:
-#       buildAgent: '${{parameters.buildAgent}}'
-#       buildConfig: 'Release'
-#       publishArtifacts: true
-#       withTesting: false
+  # Package C# library (Desktop)
+  - template: templates/jobs-cs-release-pack.yaml
+    parameters:
+      packagePlatform: 'Desktop'
+      packageAgent: '${{parameters.packageAgent}}'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+  # Package C# library (UWP)
+  - template: templates/jobs-cs-release-pack.yaml
+    parameters:
+      packagePlatform: 'UWP'
+      packageAgent: '${{parameters.packageAgent}}'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
