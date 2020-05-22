@@ -180,11 +180,11 @@ jobs:
     inputs:
       sourceFolder: 'bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}'
       contents: '**/mrwebrtc.@(pdb|dll|lib)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)/mrwebrtc'
 
   # Publish artifacts
   - task: PublishPipelineArtifact@0
     displayName: 'Publish mrwebrtc ($(buildTriple))'
     inputs:
       artifactName: 'mrwebrtc_$(buildTriple)'
-      targetPath: '$(Build.ArtifactStagingDirectory)'
+      targetPath: '$(Build.ArtifactStagingDirectory)/mrwebrtc'
