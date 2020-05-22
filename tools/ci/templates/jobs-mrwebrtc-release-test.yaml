@@ -48,7 +48,7 @@ jobs:
     inputs:
       source: 'current'
       artifact: 'nuget_mrwebrtc_${{parameters.testPlatform}}'
-      patterns: '**/$(packageName).nupkg'
+      patterns: '**/$(packageName).${{parameters.nugetPackageVersion}}.nupkg'
       path: '$(Build.BinariesDirectory)/nuget/$(packageName)'
 
   # Check package signing
