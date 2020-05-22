@@ -25,11 +25,11 @@ parameters:
 
 stages:
 
-# Build mrwebrtc.dll for all build variants.
+# Build for all build variants.
 # This is done as a separate stage from packing to ensure all builds
 # for all variants succeeded before starting to pack anything for release.
-- stage: build_mrwebrtc
-  displayName: 'Build mrwebrtc'
+- stage: build
+  displayName: 'Build'
   jobs:
 
   # Build all variants of mrwebrtc.dll for Windows Desktop
@@ -102,9 +102,9 @@ stages:
       buildAgent: '${{parameters.buildAgent}}'
 
 # Pack the NuGet packages
-- stage: pack_mrwebrtc
-  dependsOn: build_mrwebrtc
-  displayName: 'Pack mrwebrtc'
+- stage: pack
+  dependsOn: build
+  displayName: 'Pack'
   jobs:
 
   # Package mrwebrtc (Desktop)
