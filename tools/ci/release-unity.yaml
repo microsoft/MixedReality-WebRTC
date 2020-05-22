@@ -32,6 +32,7 @@ stages:
       msbuildPlatform: 'Win32'
       buildConfig: 'Release'
       withTesting: false
+      publishArtifacts: true
   - template: templates/jobs-cpp.yaml
     parameters:
       buildAgent: '${{parameters.buildAgent}}'
@@ -40,6 +41,7 @@ stages:
       msbuildPlatform: 'x64'
       buildConfig: 'Release'
       withTesting: false
+      publishArtifacts: true
   - template: templates/jobs-cpp.yaml
     parameters:
       buildAgent: '${{parameters.buildAgent}}'
@@ -48,6 +50,7 @@ stages:
       msbuildPlatform: 'Win32'
       buildConfig: 'Release'
       withTesting: false
+      publishArtifacts: true
   - template: templates/jobs-cpp.yaml
     parameters:
       buildAgent: '${{parameters.buildAgent}}'
@@ -56,6 +59,7 @@ stages:
       msbuildPlatform: 'x64'
       buildConfig: 'Release'
       withTesting: false
+      publishArtifacts: true
   - template: templates/jobs-cpp.yaml
     parameters:
       buildAgent: '${{parameters.buildAgent}}'
@@ -64,6 +68,7 @@ stages:
       msbuildPlatform: 'ARM'
       buildConfig: 'Release'
       withTesting: false
+      publishArtifacts: true
 
 # Compile Microsoft.MixedReality.WebRTC.dll
 - stage: build_cs

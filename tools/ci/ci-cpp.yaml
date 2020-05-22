@@ -48,6 +48,8 @@ jobs:
     buildConfig: 'Debug'
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
+    withTesting: true
+    publishArtifacts: false
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
@@ -56,6 +58,8 @@ jobs:
     buildConfig: 'Release'
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
+    withTesting: true
+    publishArtifacts: false
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
@@ -64,6 +68,8 @@ jobs:
     buildConfig: 'Debug'
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
+    withTesting: true
+    publishArtifacts: false
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
@@ -72,6 +78,8 @@ jobs:
     buildConfig: 'Release'
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
+    withTesting: true
+    publishArtifacts: false
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
@@ -80,6 +88,8 @@ jobs:
     buildConfig: 'Debug'
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
+    withTesting: true
+    publishArtifacts: false
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
@@ -88,6 +98,8 @@ jobs:
     buildConfig: 'Release'
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
+    withTesting: true
+    publishArtifacts: false
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
@@ -96,6 +108,8 @@ jobs:
     buildConfig: 'Debug'
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
+    withTesting: true
+    publishArtifacts: false
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
@@ -104,6 +118,8 @@ jobs:
     buildConfig: 'Release'
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
+    withTesting: true
+    publishArtifacts: false
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
@@ -112,6 +128,8 @@ jobs:
     buildConfig: 'Debug'
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
+    withTesting: true
+    publishArtifacts: false
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
@@ -120,3 +138,5 @@ jobs:
     buildConfig: 'Release'
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
+    withTesting: true
+    publishArtifacts: false

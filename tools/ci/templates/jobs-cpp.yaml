@@ -50,6 +50,11 @@ parameters:
   displayName: 'Enable testing'
   type: boolean
   default: true
+# Publish artifacts after building
+- name: publishArtifacts
+  displayName: 'Publish artifacts'
+  type: boolean
+  default: false
 
 jobs:
 
@@ -213,20 +218,19 @@ jobs:
       configuration: '${{parameters.buildConfig}}'
     timeoutInMinutes: 20
 
-  # Stage artifacts
-  - task: CopyFiles@2
-    displayName: 'Stage mrwebrtc artifacts'
-    inputs:
-      sourceFolder: 'bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}'
-      contents: '**/mrwebrtc.@(pdb|dll)'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
-
   # Publish mrwebrtc.dll and mrwebrtc.pdb
-  - task: PublishPipelineArtifact@0
-    displayName: 'Publish mrwebrtc ($(buildTriple))'
-    inputs:
-      artifactName: 'mrwebrtc_$(buildTriple)'
-      targetPath: '$(Build.ArtifactStagingDirectory)'
+  - ${{ if eq(parameters.publishArtifacts, 'true') }}:
+    - task: CopyFiles@2
+      displayName: 'Stage mrwebrtc artifacts'
+      inputs:
+        sourceFolder: 'bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+        contents: '**/mrwebrtc.@(pdb|dll)'
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: PublishPipelineArtifact@0
+      displayName: 'Publish mrwebrtc ($(buildTriple))'
+      inputs:
+        artifactName: 'mrwebrtc_$(buildTriple)'
+        targetPath: '$(Build.ArtifactStagingDirectory)'
 
   - ${{ if and(eq(parameters.withTesting, 'true'), eq('${{parameters.buildPlatform}}', 'Win32')) }}:
     # # Delete PDBs to save disk space, otherwise the NuGet download for tests below fails in Debug
