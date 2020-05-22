@@ -18,15 +18,6 @@ pr: none
 name: release-windows-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 parameters:
-- name: buildAgent
-  type: string
-  default: ''
-- name: packageAgent
-  type: string
-  default: ''
-- name: testAgent
-  type: string
-  default: ''
 - name: nugetPackageVersion
   type: string
   default: '0.0.1-preview.1'
@@ -44,25 +35,25 @@ stages:
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'Win32'
-      buildAgent: '${{parameters.buildAgent}}'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x86'
       buildConfig: 'Debug'
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'Win32'
-      buildAgent: '${{parameters.buildAgent}}'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x86'
       buildConfig: 'Release'
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'Win32'
-      buildAgent: '${{parameters.buildAgent}}'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x64'
       buildConfig: 'Debug'
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'Win32'
-      buildAgent: '${{parameters.buildAgent}}'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x64'
       buildConfig: 'Release'
 
@@ -70,37 +61,37 @@ stages:
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'UWP'
-      buildAgent: '${{parameters.buildAgent}}'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x86'
       buildConfig: 'Debug'
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'UWP'
-      buildAgent: '${{parameters.buildAgent}}'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x86'
       buildConfig: 'Release'
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'UWP'
-      buildAgent: '${{parameters.buildAgent}}'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x64'
       buildConfig: 'Debug'
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'UWP'
-      buildAgent: '${{parameters.buildAgent}}'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x64'
       buildConfig: 'Release'
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'UWP'
-      buildAgent: '${{parameters.buildAgent}}'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'ARM'
       buildConfig: 'Debug'
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'UWP'
-      buildAgent: '${{parameters.buildAgent}}'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'ARM'
       buildConfig: 'Release'
 
@@ -108,7 +99,7 @@ stages:
   # This builds only the Release build config; the Debug config is not published.
   - template: templates/jobs-cslib-release-build.yaml
     parameters:
-      buildAgent: '${{parameters.buildAgent}}'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
 
 # Pack and sign the NuGet packages
 - stage: pack
@@ -121,7 +112,7 @@ stages:
   - template: templates/jobs-mrwebrtc-release-pack.yaml
     parameters:
       packagePlatform: 'Desktop'
-      packageAgent: '${{parameters.packageAgent}}'
+      packageAgent: '$(MRWebRTC.PackageAgent)'
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Package mrwebrtc (UWP)
@@ -129,7 +120,7 @@ stages:
   - template: templates/jobs-mrwebrtc-release-pack.yaml
     parameters:
       packagePlatform: 'UWP'
-      packageAgent: '${{parameters.packageAgent}}'
+      packageAgent: '$(MRWebRTC.PackageAgent)'
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Package C# library (Desktop)
@@ -137,7 +128,7 @@ stages:
   - template: templates/jobs-cslib-release-pack.yaml
     parameters:
       packagePlatform: 'Desktop'
-      packageAgent: '${{parameters.packageAgent}}'
+      packageAgent: '$(MRWebRTC.PackageAgent)'
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Package C# library (UWP)
@@ -145,7 +136,7 @@ stages:
   - template: templates/jobs-cslib-release-pack.yaml
     parameters:
       packagePlatform: 'UWP'
-      packageAgent: '${{parameters.packageAgent}}'
+      packageAgent: '$(MRWebRTC.PackageAgent)'
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
 # Test packages before publishing
@@ -158,28 +149,28 @@ stages:
   - template: templates/jobs-mrwebrtc-release-test.yaml
     parameters:
       testPlatform: 'Desktop'
-      testAgent: '${{parameters.testAgent}}'
+      testAgent: '$(MRWebRTC.TestAgent)'
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Test mrwebrtc native library (UWP)
   - template: templates/jobs-mrwebrtc-release-test.yaml
     parameters:
       testPlatform: 'UWP'
-      testAgent: '${{parameters.testAgent}}'
+      testAgent: '$(MRWebRTC.TestAgent)'
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Test C# library (Desktop)
   - template: templates/jobs-cslib-release-test.yaml
     parameters:
       testPlatform: 'Desktop'
-      testAgent: '${{parameters.testAgent}}'
+      testAgent: '$(MRWebRTC.TestAgent)'
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Test C# library (UWP)
   - template: templates/jobs-cslib-release-test.yaml
     parameters:
       testPlatform: 'UWP'
-      testAgent: '${{parameters.testAgent}}'
+      testAgent: '$(MRWebRTC.TestAgent)'
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
 # # Publish packages
