@@ -74,15 +74,6 @@ jobs:
      Copy-Item $srcFile $dstFile -Force
     displayName: 'Copy NOTICE'
 
-  # Copy the mrwebrtc API headers to signed/
-  - powershell: |
-     $srcFile = Join-Path "$(Build.SourcesDirectory)" "libs/mrwebrtc/include/*.h"
-     $dstDir = Join-Path "$(Build.BinariesDirectory)" "signed/$(packageName).${{parameters.nugetPackageVersion}}/build/native/include/mrwebrtc"
-     New-Item -Path $dstDir -ItemType Directory -ErrorAction Ignore | Out-Null
-     Write-Host "Copying $srcFile -> $dstDir"
-     Copy-Item $srcFile $dstDir -Force
-    displayName: 'Copy API headers'
-
   # For debugging, list the content of signed/ before starting to sign
   - powershell: |
      foreach ($f in $(Get-ChildItem -Path $(Build.BinariesDirectory)/signed -Recurse)) {
