@@ -65,8 +65,45 @@ jobs:
     inputs:
       source: 'current'
       artifact: 'cslib'
-      patterns: '**/*.@(pdb|dll|xml)'
+      patterns: '**/Microsoft.MixedReality.WebRTC.@(dll|xml)'
       path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/$(libFolder)'
+  - ${{ if eq(parameters.packagePlatform, 'Desktop') }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (Win32-x86-Release)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_Win32-x86-Release'
+        patterns: '**/mrwebrtc.dll'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x86/native'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (Win32-x64-Release)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_Win32-x64-Release'
+        patterns: '**/mrwebrtc.dll'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x64/native'
+  - ${{ if eq(parameters.packagePlatform, 'UWP') }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (UWP-x86-Release)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_UWP-x86-Release'
+        patterns: '**/mrwebrtc.dll'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x86/native'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (UWP-x64-Release)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_UWP-x64-Release'
+        patterns: '**/mrwebrtc.dll'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x64/native'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (UWP-ARM-Release)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_UWP-ARM-Release'
+        patterns: '**/mrwebrtc.dll'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-arm/native'
 
   # Copy the NOTICE file
   - powershell: |
@@ -110,7 +147,7 @@ jobs:
 
   # For debugging, list the package content after signing
   - powershell: |
-     foreach ($f in $(Get-ChildItem -Path $(Build.BinariesDirectory)/signed -Recurse)) {
+     foreach ($f in $(Get-ChildItem -Path $(Build.BinariesDirectory) -Recurse)) {
        Write-Host $f.FullName
      }
     displayName: 'List package content'
@@ -136,7 +173,7 @@ jobs:
       packDestination: '$(Build.ArtifactStagingDirectory)/unsigned/$(packageName)'
       versioningScheme: 'byEnvVar'
       versionEnvVar: 'NUGET_VERSION'
-      basePath: '$(Build.BinariesDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}'
+      basePath: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
     env:
       NUGET_VERSION: '${{parameters.nugetPackageVersion}}'
 
