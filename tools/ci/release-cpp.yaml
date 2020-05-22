@@ -97,7 +97,7 @@ stages:
       buildConfig: 'Release'
 
   # Build all variants of Microsoft.MixedReality.WebRTC.dll
-  - template: templates/jobs-cs-release-build.yaml
+  - template: templates/jobs-cslib-release-build.yaml
     parameters:
       buildAgent: '${{parameters.buildAgent}}'
 
@@ -122,14 +122,14 @@ stages:
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Package C# library (Desktop)
-  - template: templates/jobs-cs-release-pack.yaml
+  - template: templates/jobs-cslib-release-pack.yaml
     parameters:
       packagePlatform: 'Desktop'
       packageAgent: '${{parameters.packageAgent}}'
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Package C# library (UWP)
-  - template: templates/jobs-cs-release-pack.yaml
+  - template: templates/jobs-cslib-release-pack.yaml
     parameters:
       packagePlatform: 'UWP'
       packageAgent: '${{parameters.packageAgent}}'
