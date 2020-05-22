@@ -9,6 +9,13 @@
 
 enum class mrsAudioTrackReadBufferPadBehavior;
 
+inline absl::optional<bool> ToOptional(mrsOptBool optBool) noexcept {
+  if (optBool == mrsOptBool::kUnset) {
+    return absl::nullopt;
+  }
+  return absl::optional<bool>(optBool != mrsOptBool::kFalse);
+}
+
 inline bool IsStringNullOrEmpty(const char* str) noexcept {
   return ((str == nullptr) || (str[0] == '\0'));
 }

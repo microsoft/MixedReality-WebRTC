@@ -24,6 +24,60 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     }
 
     /// <summary>
+    /// Interop optional boolean, conceptually equivalent to <c>bool?</c>.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Size = 1)]
+    internal struct mrsOptBool
+    {
+        public static readonly mrsOptBool Unset = new mrsOptBool { _value = kUnsetValue };
+        public static readonly mrsOptBool True = new mrsOptBool { _value = -1 };
+        public static readonly mrsOptBool False = new mrsOptBool { _value = 0 };
+
+        private sbyte _value;
+
+        private const sbyte kUnsetValue = 0b01010101;
+
+        public bool HasValue => (_value != kUnsetValue);
+        public bool Value
+        {
+            get
+            {
+                if (!HasValue)
+                {
+                    throw new InvalidOperationException();
+                }
+                return (bool)this;
+            }
+        }
+
+        public static explicit operator mrsOptBool(bool b) { return (b ? True : False); }
+        public static explicit operator mrsOptBool(bool? b)
+        {
+            if (b.HasValue)
+            {
+                return (b.Value ? True : False);
+            }
+            return Unset;
+        }
+        public static explicit operator bool(mrsOptBool b)
+        {
+            if (!b.HasValue)
+            {
+                throw new InvalidOperationException();
+            }
+            return (b._value != 0);
+        }
+        public static explicit operator bool?(mrsOptBool b)
+        {
+            if (b.HasValue)
+            {
+                return (b._value != 0);
+            }
+            return null;
+        }
+    }
+
+    /// <summary>
     /// Attribute to decorate managed delegates used as native callbacks (reverse P/Invoke).
     /// Required by Mono in Ahead-Of-Time (AOT) compiling, and Unity with the IL2CPP backend.
     /// </summary>
