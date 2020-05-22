@@ -1,0 +1,299 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class AudioTrackReadBuffer
+   | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class AudioTrackReadBuffer
+   | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.53.1.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer">
+  
+  
+  <h1 id="Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer" data-uid="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer" class="text-break">Class AudioTrackReadBuffer
+  </h1>
+  <div class="markdown level0 summary"><p>High level interface for consuming WebRTC audio tracks.
+Enqueues audio frames for a <a class="xref" href="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html">RemoteAudioTrack</a> in an internal buffer as they
+arrive. Users should call
+<a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___System_Int32__System_Boolean__Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_">Read(Int32, Int32, Single[], out Int32, out Boolean, AudioTrackReadBuffer.PadBehavior)</a>
+to read samples from the buffer when needed.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">AudioTrackReadBuffer</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
+  <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class AudioTrackReadBuffer : IDisposable</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Dispose.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/AudioTrackReadBuffer.cs/#L108">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Dispose_" data-uid="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Dispose*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Dispose" data-uid="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Release the buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32%2CSystem.Int32%2CSystem.Single%5B%5D%2CMicrosoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/AudioTrackReadBuffer.cs/#L99">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_" data-uid="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_" data-uid="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32,System.Int32,System.Single[],Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)">Read(Int32, Int32, Single[], AudioTrackReadBuffer.PadBehavior)</h4>
+  <div class="markdown level1 summary"><p>Fill <code data-dev-comment-type="paramref" class="paramref">samplesOut</code> with samples from the internal buffer.
+See <a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___System_Int32__System_Boolean__Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_">Read(Int32, Int32, Single[], out Int32, out Boolean, AudioTrackReadBuffer.PadBehavior)</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Read(int sampleRate, int channels, float[] samplesOut, AudioTrackReadBuffer.PadBehavior padBehavior = default(AudioTrackReadBuffer.PadBehavior))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">sampleRate</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">channels</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>[]</td>
+        <td><span class="parametername">samplesOut</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.html">AudioTrackReadBuffer.PadBehavior</a></td>
+        <td><span class="parametername">padBehavior</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___System_Int32__System_Boolean__Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32%2CSystem.Int32%2CSystem.Single%5B%5D%2CSystem.Int32%40%2CSystem.Boolean%40%2CMicrosoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/AudioTrackReadBuffer.cs/#L86">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_" data-uid="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___System_Int32__System_Boolean__Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_" data-uid="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32,System.Int32,System.Single[],System.Int32@,System.Boolean@,Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)">Read(Int32, Int32, Single[], out Int32, out Boolean, AudioTrackReadBuffer.PadBehavior)</h4>
+  <div class="markdown level1 summary"><p>Fill <code data-dev-comment-type="paramref" class="paramref">samplesOut</code> with samples from the internal buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Read(int sampleRate, int numChannels, float[] samplesOut, out int numSamplesRead, out bool hasOverrun, AudioTrackReadBuffer.PadBehavior padBehavior = default(AudioTrackReadBuffer.PadBehavior))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">sampleRate</span></td>
+        <td><p>Desired sample rate. Data in the buffer is resampled if this is different from
+the native track rate.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">numChannels</span></td>
+        <td><p>Desired number of channels. Should be 1 or 2. Data in the buffer is split/averaged
+if this is different from the native track channels number.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>[]</td>
+        <td><span class="parametername">samplesOut</span></td>
+        <td><p>Will be filled with the samples read from the internal buffer. The function will
+try to fill the entire length of the array.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">numSamplesRead</span></td>
+        <td><p>Set to the effective number of samples read.
+This will be generally equal to the length of <code data-dev-comment-type="paramref" class="paramref">samplesOut</code>, but can be less in
+case of underrun.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">hasOverrun</span></td>
+        <td><p>Set to <code>true</code> if frames have been dropped from the internal
+buffer between the previous call to <code>Read</code> and this.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.html">AudioTrackReadBuffer.PadBehavior</a></td>
+        <td><span class="parametername">padBehavior</span></td>
+        <td><p>Controls how <code data-dev-comment-type="paramref" class="paramref">samplesOut</code> is padded in case of underrun.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___System_Int32__System_Boolean__Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method reads the internal buffer starting from the oldest data.
+If the internal buffer is exhausted (underrun), <code data-dev-comment-type="paramref" class="paramref">samplesOut</code>
+is padded according to the value of <code data-dev-comment-type="paramref" class="paramref">padBehavior</code>.</p>
+<p>This method should be called regularly to consume the audio data as it is
+received. Note that the internal buffer can overrun (and some frames can be
+dropped) if this is not called frequently enough.</p>
+</div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_CreateReadBuffer">CreateReadBuffer()</a></div>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/AudioTrackReadBuffer.cs/#L17" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

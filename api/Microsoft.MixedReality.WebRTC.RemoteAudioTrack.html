@@ -168,10 +168,49 @@ The remote audio track enabled status is controlled by the remote peer only.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_RemoteAudioTrack_CreateReadBuffer.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.RemoteAudioTrack.CreateReadBuffer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteAudioTrack.cs/#L91">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_RemoteAudioTrack_CreateReadBuffer_" data-uid="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.CreateReadBuffer*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_RemoteAudioTrack_CreateReadBuffer" data-uid="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.CreateReadBuffer">CreateReadBuffer()</h4>
+  <div class="markdown level1 summary"><p>Starts buffering the audio data from the remote track in an <a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html">AudioTrackReadBuffer</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AudioTrackReadBuffer CreateReadBuffer()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html">AudioTrackReadBuffer</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_RemoteAudioTrack_CreateReadBuffer_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>WebRTC audio tracks produce an audio frame every 10 ms.
+If you want the audio frames to be buffered (and optionally resampled) automatically,
+and you want the application to control when new audio data is read, create an
+<a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html">AudioTrackReadBuffer</a> using <a class="xref" href="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_CreateReadBuffer">CreateReadBuffer()</a>.
+If you want to process the audio frames as soon as they are received, without conversions,
+subscribe to <a class="xref" href="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_AudioFrameReady">AudioFrameReady</a> instead.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_RemoteAudioTrack_IsOutputToDevice.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.RemoteAudioTrack.IsOutputToDevice%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteAudioTrack.cs/#L67">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteAudioTrack.cs/#L75">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_RemoteAudioTrack_IsOutputToDevice_" data-uid="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.IsOutputToDevice*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_RemoteAudioTrack_IsOutputToDevice" data-uid="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.IsOutputToDevice">IsOutputToDevice()</h4>
@@ -202,7 +241,7 @@ The remote audio track enabled status is controlled by the remote peer only.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_RemoteAudioTrack_OutputToDevice_System_Boolean_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.RemoteAudioTrack.OutputToDevice(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteAudioTrack.cs/#L59">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteAudioTrack.cs/#L67">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_RemoteAudioTrack_OutputToDevice_" data-uid="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.OutputToDevice*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_RemoteAudioTrack_OutputToDevice_System_Boolean_" data-uid="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.OutputToDevice(System.Boolean)">OutputToDevice(Boolean)</h4>
@@ -243,7 +282,7 @@ output to the audio device.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_RemoteAudioTrack_ToString.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.RemoteAudioTrack.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteAudioTrack.cs/#L150">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteAudioTrack.cs/#L177">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_RemoteAudioTrack_ToString_" data-uid="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.ToString*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_RemoteAudioTrack_ToString" data-uid="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.ToString">ToString()</h4>
@@ -277,10 +316,10 @@ output to the audio device.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_RemoteAudioTrack_AudioFrameReady.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.RemoteAudioTrack.AudioFrameReady%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteAudioTrack.cs/#L45">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteAudioTrack.cs/#L53">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_RemoteAudioTrack_AudioFrameReady" data-uid="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.AudioFrameReady">AudioFrameReady</h4>
-  <div class="markdown level1 summary"><p>Event that occurs when a audio frame has been received from the remote peer.</p>
+  <div class="markdown level1 summary"><p>Event that occurs when an audio frame has been received from the remote peer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -302,6 +341,14 @@ output to the audio device.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_RemoteAudioTrack_AudioFrameReady_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>WebRTC audio tracks produce an audio frame every 10 ms.
+If you want to process the audio frames as soon as they are received, without conversions,
+subscribe to <a class="xref" href="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_AudioFrameReady">AudioFrameReady</a>.
+If you want the audio frames to be buffered (and optionally resampled) automatically,
+and you want the application to control when new audio data is read, create an
+<a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html">AudioTrackReadBuffer</a> using <a class="xref" href="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_CreateReadBuffer">CreateReadBuffer()</a>.</p>
+</div>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="Microsoft.MixedReality.WebRTC.IAudioTrack.html">IAudioTrack</a>

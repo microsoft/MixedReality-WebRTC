@@ -152,6 +152,74 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.AudioFrameDelegate
   fullName: Microsoft.MixedReality.WebRTC.AudioFrameDelegate
   nameWithType: AudioFrameDelegate
+- uid: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer
+  name: AudioTrackReadBuffer
+  href: api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html
+  commentId: T:Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer
+  fullName: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer
+  nameWithType: AudioTrackReadBuffer
+- uid: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Dispose
+  name: Dispose()
+  href: api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Dispose
+  commentId: M:Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Dispose
+  fullName: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Dispose()
+  nameWithType: AudioTrackReadBuffer.Dispose()
+- uid: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Dispose*
+  name: Dispose
+  href: api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Dispose_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Dispose
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Dispose
+  nameWithType: AudioTrackReadBuffer.Dispose
+- uid: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior
+  name: AudioTrackReadBuffer.PadBehavior
+  href: api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.html
+  commentId: T:Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior
+  fullName: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior
+  nameWithType: AudioTrackReadBuffer.PadBehavior
+- uid: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.DoNotPad
+  name: DoNotPad
+  href: api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_DoNotPad
+  commentId: F:Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.DoNotPad
+  fullName: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.DoNotPad
+  nameWithType: AudioTrackReadBuffer.PadBehavior.DoNotPad
+- uid: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.PadWithSine
+  name: PadWithSine
+  href: api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_PadWithSine
+  commentId: F:Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.PadWithSine
+  fullName: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.PadWithSine
+  nameWithType: AudioTrackReadBuffer.PadBehavior.PadWithSine
+- uid: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.PadWithZero
+  name: PadWithZero
+  href: api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_PadWithZero
+  commentId: F:Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.PadWithZero
+  fullName: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.PadWithZero
+  nameWithType: AudioTrackReadBuffer.PadBehavior.PadWithZero
+- uid: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32,System.Int32,System.Single[],Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)
+  name: Read(Int32, Int32, Single[], AudioTrackReadBuffer.PadBehavior)
+  href: api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_
+  commentId: M:Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32,System.Int32,System.Single[],Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)
+  name.vb: Read(Int32, Int32, Single(), AudioTrackReadBuffer.PadBehavior)
+  fullName: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32, System.Int32, System.Single[], Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)
+  fullName.vb: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32, System.Int32, System.Single(), Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)
+  nameWithType: AudioTrackReadBuffer.Read(Int32, Int32, Single[], AudioTrackReadBuffer.PadBehavior)
+  nameWithType.vb: AudioTrackReadBuffer.Read(Int32, Int32, Single(), AudioTrackReadBuffer.PadBehavior)
+- uid: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32,System.Int32,System.Single[],System.Int32@,System.Boolean@,Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)
+  name: Read(Int32, Int32, Single[], out Int32, out Boolean, AudioTrackReadBuffer.PadBehavior)
+  href: api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___System_Int32__System_Boolean__Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_
+  commentId: M:Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32,System.Int32,System.Single[],System.Int32@,System.Boolean@,Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)
+  name.vb: Read(Int32, Int32, Single(), ByRef Int32, ByRef Boolean, AudioTrackReadBuffer.PadBehavior)
+  fullName: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32, System.Int32, System.Single[], out System.Int32, out System.Boolean, Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)
+  fullName.vb: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read(System.Int32, System.Int32, System.Single(), ByRef System.Int32, ByRef System.Boolean, Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior)
+  nameWithType: AudioTrackReadBuffer.Read(Int32, Int32, Single[], out Int32, out Boolean, AudioTrackReadBuffer.PadBehavior)
+  nameWithType.vb: AudioTrackReadBuffer.Read(Int32, Int32, Single(), ByRef Int32, ByRef Boolean, AudioTrackReadBuffer.PadBehavior)
+- uid: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read*
+  name: Read
+  href: api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.Read
+  nameWithType: AudioTrackReadBuffer.Read
 - uid: Microsoft.MixedReality.WebRTC.BufferTooSmallException
   name: BufferTooSmallException
   href: api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.html
@@ -2492,6 +2560,19 @@ references:
   commentId: E:Microsoft.MixedReality.WebRTC.RemoteAudioTrack.AudioFrameReady
   fullName: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.AudioFrameReady
   nameWithType: RemoteAudioTrack.AudioFrameReady
+- uid: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.CreateReadBuffer
+  name: CreateReadBuffer()
+  href: api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_CreateReadBuffer
+  commentId: M:Microsoft.MixedReality.WebRTC.RemoteAudioTrack.CreateReadBuffer
+  fullName: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.CreateReadBuffer()
+  nameWithType: RemoteAudioTrack.CreateReadBuffer()
+- uid: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.CreateReadBuffer*
+  name: CreateReadBuffer
+  href: api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_CreateReadBuffer_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.RemoteAudioTrack.CreateReadBuffer
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.CreateReadBuffer
+  nameWithType: RemoteAudioTrack.CreateReadBuffer
 - uid: Microsoft.MixedReality.WebRTC.RemoteAudioTrack.Enabled
   name: Enabled
   href: api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html#Microsoft_MixedReality_WebRTC_RemoteAudioTrack_Enabled

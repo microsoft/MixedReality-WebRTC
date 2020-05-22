@@ -93,6 +93,13 @@
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html">Argb32VideoFrameStorage</a></h4>
       <section><p>Storage for a video frame encoded in ARGB format.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html">AudioTrackReadBuffer</a></h4>
+      <section><p>High level interface for consuming WebRTC audio tracks.
+Enqueues audio frames for a <a class="xref" href="Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html">RemoteAudioTrack</a> in an internal buffer as they
+arrive. Users should call
+<a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___System_Int32__System_Boolean__Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_">Read(Int32, Int32, Single[], out Int32, out Boolean, AudioTrackReadBuffer.PadBehavior)</a>
+to read samples from the buffer when needed.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.BufferTooSmallException.html">BufferTooSmallException</a></h4>
       <section><p>Exception raised when a buffer is too small to perform the current operation.</p>
 <p>Generally the buffer was provided by the caller, and this indicates that the caller
@@ -288,6 +295,11 @@ and <a href="https://www.w3.org/TR/webrtc-stats/#sentrtpstats-dict*">https://www
 </section>
     <h3 id="enums">Enums
   </h3>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.html">AudioTrackReadBuffer.PadBehavior</a></h4>
+      <section><p>Controls the padding behavior of
+<a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___System_Int32__System_Boolean__Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_">Read(Int32, Int32, Single[], out Int32, out Boolean, AudioTrackReadBuffer.PadBehavior)</a>
+on underrun.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.BundlePolicy.html">BundlePolicy</a></h4>
       <section><p>Bundle policy.
 See <a href="https://www.w3.org/TR/webrtc/#rtcbundlepolicy-enum">https://www.w3.org/TR/webrtc/#rtcbundlepolicy-enum</a>.</p>
