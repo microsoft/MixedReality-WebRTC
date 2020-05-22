@@ -66,21 +66,21 @@ jobs:
       source: 'current'
       artifact: 'cslib'
       patterns: '**/*.@(pdb|dll|xml)'
-      path: '$(Build.BinariesDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}/$(libFolder)'
+      path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/$(libFolder)'
 
-  # Copy the NOTICE file to signed/
+  # Copy the NOTICE file
   - powershell: |
      $srcFile = Join-Path "$(Build.SourcesDirectory)" "NOTICE" -Resolve
-     $dstFile = Join-Path "$(Build.BinariesDirectory)" "signed/$(packageName).${{parameters.nugetPackageVersion}}/content/NOTICE"
+     $dstFile = Join-Path "$(Build.BinariesDirectory)" "$(packageName).${{parameters.nugetPackageVersion}}/content/NOTICE"
      $dstDir = Split-Path -Path $dstFile -Parent
      New-Item -Path $dstDir -ItemType Directory -ErrorAction Ignore | Out-Null
      Write-Host "Copying $srcFile -> $dstFile"
      Copy-Item $srcFile $dstFile -Force
     displayName: 'Copy NOTICE'
 
-  # For debugging, list the content of signed/ before starting to sign
+  # For debugging, list the package content before signing
   - powershell: |
-     foreach ($f in $(Get-ChildItem -Path $(Build.BinariesDirectory)/signed -Recurse)) {
+     foreach ($f in $(Get-ChildItem -Path $(Build.BinariesDirectory) -Recurse)) {
        Write-Host $f.FullName
      }
     displayName: 'List package content'
@@ -90,7 +90,7 @@ jobs:
     displayName: 'Component Detection before signing'
     inputs:
       scanType: LogOnly
-      sourceScanPath: '$(Build.BinariesDirectory)/signed'
+      sourceScanPath: '$(Build.BinariesDirectory)'
 
   # Sign package content
   - task: DownloadSecureFile@1
@@ -103,12 +103,12 @@ jobs:
     displayName: 'Sign package content'
     inputs:
       signConfigXml: '$(SignConfigFile_Content.secureFilePath)'
-      inPathRoot: '$(Build.BinariesDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}'
-      outPathRoot: '$(Build.BinariesDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}'
+      inPathRoot: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
+      outPathRoot: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-  # For debugging, list the content of signed/ after sign task
+  # For debugging, list the package content after signing
   - powershell: |
      foreach ($f in $(Get-ChildItem -Path $(Build.BinariesDirectory)/signed -Recurse)) {
        Write-Host $f.FullName
