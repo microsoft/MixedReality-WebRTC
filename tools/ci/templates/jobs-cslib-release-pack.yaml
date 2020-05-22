@@ -126,7 +126,6 @@ jobs:
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection before signing'
     inputs:
-      scanType: LogOnly
       sourceScanPath: '$(Build.BinariesDirectory)'
 
   # Sign package content
