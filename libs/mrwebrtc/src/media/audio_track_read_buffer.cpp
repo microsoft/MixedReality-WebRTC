@@ -7,29 +7,31 @@
 #include "audio_frame_observer.h"
 #include "audio_track_read_buffer.h"
 #include "peer_connection.h"
+#include "remote_audio_track_interop.h"
 
 namespace Microsoft {
 namespace MixedReality {
 namespace WebRTC {
 
-void AudioTrackReadBuffer::audioFrameCallback(const void* audio_data,
-                                              const uint32_t bits_per_sample,
-                                              const uint32_t sample_rate,
-                                              const uint32_t number_of_channels,
-                                              const uint32_t number_of_frames) {
+void AudioTrackReadBuffer::OnData(const void* audio_data,
+                                  int bits_per_sample,
+                                  int sample_rate,
+                                  size_t number_of_channels,
+                                  size_t number_of_frames) {
   std::lock_guard<std::mutex> lock(frames_mutex_);
   // maintain buffering limits, after adding this frame
-  const size_t maxFrames = std::max(buffer_ms_ / 10, 1);
+  const size_t maxFrames = std::max(buffer_size_ms_ / 10, 1);
   while (frames_.size() > maxFrames) {
     frames_.pop_front();
+    has_overrun_ = true;
   }
   // add the new frame
   frames_.emplace_back();
   auto& frame = frames_.back();
   frame.bits_per_sample = bits_per_sample;
   frame.sample_rate = sample_rate;
-  frame.number_of_channels = number_of_channels;
-  frame.number_of_frames = number_of_frames;
+  frame.number_of_channels = rtc::checked_cast<uint32_t>(number_of_channels);
+  frame.number_of_frames = rtc::checked_cast<uint32_t>(number_of_frames);
   size_t size =
       (size_t)(bits_per_sample / 8) * number_of_channels * number_of_frames;
   auto src_bytes = static_cast<const std::uint8_t*>(audio_data);
@@ -37,25 +39,16 @@ void AudioTrackReadBuffer::audioFrameCallback(const void* audio_data,
                           src_bytes + size);
 }
 
-void AudioTrackReadBuffer::staticAudioFrameCallback(void* user_data,
-                                                    const AudioFrame& frame) {
-  auto ars = static_cast<AudioTrackReadBuffer*>(user_data);
-  ars->audioFrameCallback(frame.data_, frame.bits_per_sample_,
-                          frame.sampling_rate_hz_, frame.channel_count_,
-                          frame.sample_count_);
-}
-
-AudioTrackReadBuffer::AudioTrackReadBuffer(PeerConnection* peer, int bufferMs)
-    : peer_(peer),
-      buffer_ms_(bufferMs >= 10 ? bufferMs : 500 /*TODO good value?*/) {
-    // FIXME
-  //peer->RegisterRemoteAudioFrameCallback(
-  //    AudioFrameReadyCallback{&staticAudioFrameCallback, this});
+AudioTrackReadBuffer::AudioTrackReadBuffer(
+    rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
+    int bufferMs)
+    : track_(std::move(track)),
+      buffer_size_ms_(bufferMs >= 10 ? bufferMs : 500) {
+  track_->AddSink(this);
 }
 
 AudioTrackReadBuffer::~AudioTrackReadBuffer() {
-    // FIXME
-  //peer_->RegisterRemoteAudioFrameCallback(AudioFrameReadyCallback{});
+  track_->RemoveSink(this);
 }
 
 AudioTrackReadBuffer::Buffer::Buffer() {
@@ -145,49 +138,76 @@ void AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
   rate_ = dst_sample_rate;
 }
 
-void AudioTrackReadBuffer::Read(int sampleRate,
-                                float dataOrig[],
-                                int dataLenOrig,
-                                int channels) noexcept {
-  float* dst = dataOrig;
-  int dstLen = dataLenOrig;  // number of points remaining
+void AudioTrackReadBuffer::Read(int sample_rate,
+                                int num_channels,
+                                mrsAudioTrackReadBufferPadBehavior pad_behavior,
+                                float* samples_out,
+                                int num_samples_max,
+                                int* num_samples_read_out,
+                                bool* has_overrun_out) noexcept {
+  float* dst = samples_out;
+  int dst_len = num_samples_max;  // number of points remaining
 
-  while (dstLen > 0) {
-    if (sampleRate == buffer_.rate_ && channels == buffer_.channels_ &&
+  *has_overrun_out = false;
+
+  while (dst_len > 0) {
+    if (sample_rate == buffer_.rate_ && num_channels == buffer_.channels_ &&
         buffer_.available()) {
-      // format matches, fill some from the buffer. If the format doesn't
-      // match we will fall through and ensure the next frame matches. This
-      // may drop some data but will only happen when the output
-      // sampleRate/channels change (i.e. rarely)
-      int len = buffer_.readSome(dst, dstLen);
+      // There is still data in the buffer and the format matches, read some.
+      int len = buffer_.readSome(dst, dst_len);
       dst += len;
-      dstLen -= len;
+      dst_len -= len;
     } else {
-      Frame frame;
+      // Buffer is empty or the format has changed.
+      // If the format doesn't match we drop what's left in the buffer and
+      // ensure the next frame matches. This may drop some data but will only
+      // happen when the output sample rate/channels change (i.e. rarely)
+
+      std::optional<Frame> frame;
       {
         std::unique_lock<std::mutex> lock(frames_mutex_);
-        if (frames_.empty()) {  // no more input! fill with sin wave
-          lock.unlock();
-          constexpr float freq = 2 * 222 * float(M_PI);
-          for (int i = 0; i < dstLen; ++i) {
-            dst[i] = 0.15f * sinf((freq * (sinwave_iter_ + i)) /
-                                  (sampleRate * channels));
-          }
-          sinwave_iter_ = (sinwave_iter_ + dstLen) % 628318530 /*twopi*/;
-          sinwave_iter_ += dstLen;
-          return;  // and return
+
+        // Read and reset the overrun flag.
+        *has_overrun_out = *has_overrun_out || has_overrun_;
+        has_overrun_ = false;
+
+        // Pop the next frame.
+        if (!frames_.empty()) {
+          frame = std::move(frames_.front());
+          frames_.pop_front();
         }
-        Frame& f = frames_.front();
-        frame.audio_data.swap(f.audio_data);
-        frame.bits_per_sample = f.bits_per_sample;
-        frame.sample_rate = f.sample_rate;
-        frame.number_of_channels = f.number_of_channels;
-        frame.number_of_frames = f.number_of_frames;
-        frames_.pop_front();
       }
-      buffer_.addFrame(frame, sampleRate, channels);
+
+      if (frame) {
+        buffer_.addFrame(*frame, sample_rate, num_channels);
+      } else {
+        // no more input! fill with sin wave
+        constexpr float freq = 2 * 222 * float(M_PI);
+        switch (pad_behavior) {
+          case mrsAudioTrackReadBufferPadBehavior::kDoNotPad:
+            break;
+          case mrsAudioTrackReadBufferPadBehavior::kPadWithZero:
+            std::memset(dst, 0, dst_len * sizeof(float));
+            break;
+          case mrsAudioTrackReadBufferPadBehavior::kPadWithSine:
+            for (int i = 0; i < dst_len; ++i) {
+              dst[i] = 0.15f * sinf((freq * (sinwave_iter_ + i)) /
+                                    (sample_rate * num_channels));
+            }
+            sinwave_iter_ = (sinwave_iter_ + dst_len) % 628318530 /*twopi*/;
+            sinwave_iter_ += dst_len;
+            break;
+          default:
+            RTC_NOTREACHED();
+            break;
+        }
+
+        *num_samples_read_out = num_samples_max - dst_len;
+        return;  // and return
+      }
     }
   }
+  *num_samples_read_out = num_samples_max;
 }
 
 }  // namespace WebRTC

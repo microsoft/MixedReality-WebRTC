@@ -10,6 +10,21 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 {
     internal class RemoteAudioTrackInterop
     {
+        internal class ReadBufferHandle : SafeHandle
+        {
+            /// <summary>
+            /// Used internally by <see cref="RemoteAudioTrack_CreateReadBuffer(IntPtr, out ReadBufferHandle)"/>.
+            /// </summary>
+            internal ReadBufferHandle() : base(IntPtr.Zero, true) { }
+
+            public override bool IsInvalid => handle == IntPtr.Zero;
+            protected override bool ReleaseHandle()
+            {
+                AudioTrackReadBuffer_Destroy(handle);
+                return true;
+            }
+        }
+
         #region Native functions
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
@@ -36,6 +51,20 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsRemoteAudioTrackIsOutputToDevice")]
         public static extern mrsBool RemoteAudioTrack_IsOutputToDevice(IntPtr trackHandle);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsRemoteAudioTrackCreateReadBuffer")]
+        public static extern uint RemoteAudioTrack_CreateReadBuffer(IntPtr trackHandle, out ReadBufferHandle audioTrackReadBufferOut);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsAudioTrackReadBufferRead")]
+        public static extern uint AudioTrackReadBuffer_Read(ReadBufferHandle audioTrackReadBuffer,
+                            int sampleRate, int numChannels, AudioTrackReadBuffer.PadBehavior padBehavior,
+                            float[] samplesOut, int numSamplesMax, out int numSamplesRead, out mrsBool hasOverrun);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsAudioTrackReadBufferDestroy")]
+        public static extern void AudioTrackReadBuffer_Destroy(IntPtr audioTrackReadBuffer);
 
         #endregion
 

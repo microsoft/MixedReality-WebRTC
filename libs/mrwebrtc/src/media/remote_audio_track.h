@@ -4,6 +4,7 @@
 #pragma once
 
 #include "audio_frame_observer.h"
+#include "audio_track_read_buffer.h"
 #include "callback.h"
 #include "interop_api.h"
 #include "media_track.h"
@@ -63,6 +64,9 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
   MRS_NODISCARD bool IsOutputToDevice() const noexcept {
     return output_to_device_;
   }
+
+  /// See |mrsAudioTrackReadBufferCreate|.
+  std::unique_ptr<AudioTrackReadBuffer> CreateReadBuffer() const noexcept;
 
   //
   // Advanced use
