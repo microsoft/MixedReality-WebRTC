@@ -20,14 +20,6 @@ jobs:
   steps:
   - checkout: self
 
-  # Build Microsoft.MixedReality.WebRTC (Debug)
-  - task: DotNetCoreCLI@2
-    displayName: 'Build C# WebRTC lib (Debug)'
-    inputs:
-      projects: 'libs/Microsoft.MixedReality.WebRTC/Microsoft.MixedReality.WebRTC.csproj'
-      arguments: '-f netstandard2.0 --no-incremental -c Debug'
-      workingDirectory: 'libs/Microsoft.MixedReality.WebRTC'
-
   # Build Microsoft.MixedReality.WebRTC (Release)
   - task: DotNetCoreCLI@2
     displayName: 'Build C# WebRTC lib (Release)'
@@ -68,7 +60,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'Stage artifacts'
     inputs:
-      sourceFolder: 'bin/netstandard2.0'
+      sourceFolder: 'bin/netstandard2.0/Release'
       contents: '**/Microsoft.MixedReality.WebRTC.@(pdb|dll|xml)'
       targetFolder: '$(Build.ArtifactStagingDirectory)/Microsoft.MixedReality.WebRTC'
 

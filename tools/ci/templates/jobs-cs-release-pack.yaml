@@ -52,7 +52,7 @@ jobs:
       Write-Host "##vso[task.setvariable variable=packageName;]$packageName"
     displayName: 'Compute package name'
     env:
-      PACKAGE_PLATFORM: ${{parameters.packagePlatform}}
+      PACKAGE_PLATFORM: '${{parameters.packagePlatform}}'
     timeoutInMinutes: 5
 
   # Download all binaries from the previous stage
@@ -63,7 +63,7 @@ jobs:
       artifact: 'cslib'
       patterns: '**/*.@(pdb|dll|xml)'
       path: '$(Build.BinariesDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}'
-    
+
   # Copy the NOTICE file to signed/
   - powershell: |
      $srcFile = Join-Path "$(Build.SourcesDirectory)" "NOTICE" -Resolve
