@@ -89,8 +89,8 @@ mrsRemoteAudioTrackCreateReadBuffer(mrsRemoteAudioTrackHandle track_handle,
   return Result::kInvalidNativeHandle;
 }
 
-#define LOG_ERROR_IF(...) \
-  (__VA_ARGS__) && ((RTC_LOG_F(LS_ERROR) << #__VA_ARGS__), true)
+#define LOG_INVALID_ARG_IF(...) \
+  (__VA_ARGS__) && ((RTC_LOG_F(LS_ERROR) << "Invalid argument: " #__VA_ARGS__), true)
 
 mrsResult MRS_CALL
 mrsAudioTrackReadBufferRead(mrsAudioTrackReadBufferHandle buffer,
@@ -104,31 +104,31 @@ mrsAudioTrackReadBufferRead(mrsAudioTrackReadBufferHandle buffer,
   if (!buffer) {
     return Result::kInvalidNativeHandle;
   }
-  if (LOG_ERROR_IF(sample_rate <= 0)) {
+  if (LOG_INVALID_ARG_IF(sample_rate <= 0)) {
     return Result::kInvalidParameter;
   }
 
-  if (LOG_ERROR_IF(num_channels <= 0)) {
+  if (LOG_INVALID_ARG_IF(num_channels <= 0)) {
     return Result::kInvalidParameter;
   }
 
-  if (LOG_ERROR_IF(!IsValidAudioTrackBufferPadBehavior(pad_behavior))) {
+  if (LOG_INVALID_ARG_IF(!IsValidAudioTrackBufferPadBehavior(pad_behavior))) {
     return Result::kInvalidParameter;
   }
 
-  if (LOG_ERROR_IF(num_samples_max < 0)) {
+  if (LOG_INVALID_ARG_IF(num_samples_max < 0)) {
     return Result::kInvalidParameter;
   }
 
-  if (LOG_ERROR_IF(num_samples_max > 0 && !samples_out)) {
+  if (LOG_INVALID_ARG_IF(num_samples_max > 0 && !samples_out)) {
     return Result::kInvalidParameter;
   }
 
-  if (LOG_ERROR_IF(!num_samples_read_out)) {
+  if (LOG_INVALID_ARG_IF(!num_samples_read_out)) {
     return Result::kInvalidParameter;
   }
 
-  if(LOG_ERROR_IF(!has_overrun_out)) {
+  if(LOG_INVALID_ARG_IF(!has_overrun_out)) {
     return Result::kInvalidParameter;
   }
 
