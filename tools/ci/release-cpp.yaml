@@ -1,16 +1,21 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-# MixedReality-WebRTC release pipeline for mrwebrtc on Windows.
-# This builds libwebrtc and mrwebrtc, then create signed NuGet packages
-# of mrwebrtc (Microsoft.MixedReality.WebRTC.Native.*.nupkg).
+# MixedReality-WebRTC release pipeline for the native and C# libraries on Windows.
+# This builds libwebrtc and mrwebrtc, then creates signed NuGet packages of mrwebrtc
+# (Microsoft.MixedReality.WebRTC.Native.*.nupkg). This also builds the C# library,
+# and creates signed NuGet packages of it (Microsoft.MixedReality.WebRTC(.UWP).nupkg)
+# which embed the Release build config of mrwebrtc.dll to be self-contained.
+
+# FIXME - Rename file to 'release-windows.yaml' (and update pipeline using it), it is
+#         not limited to the native mrwebrtc library anymore.
 
 # Disable branch and PR triggers
 trigger: none
 pr: none
 
 # Give a unique name to the build each time it runs
-name: release-mrwebrtc-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+name: release-windows-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 parameters:
 - name: buildAgent
@@ -25,9 +30,9 @@ parameters:
 
 stages:
 
-# Build for all build variants.
+# Compile all build variants on Windows (Desktop and UWP).
 # This is done as a separate stage from packing to ensure all builds
-# for all variants succeeded before starting to pack anything for release.
+# for all variants succeeded before starting to pack anything.
 - stage: build
   displayName: 'Build'
   jobs:
@@ -96,18 +101,20 @@ stages:
       buildArch: 'ARM'
       buildConfig: 'Release'
 
-  # Build all variants of Microsoft.MixedReality.WebRTC.dll
+  # Build all variants of Microsoft.MixedReality.WebRTC.dll for release.
+  # This builds only the Release build config; the Debug config is not published.
   - template: templates/jobs-cslib-release-build.yaml
     parameters:
       buildAgent: '${{parameters.buildAgent}}'
 
-# Pack the NuGet packages
+# Pack and sign the NuGet packages
 - stage: pack
   dependsOn: build
   displayName: 'Pack'
   jobs:
 
   # Package mrwebrtc (Desktop)
+  # => Microsoft.MixedReality.WebRTC.Native.Desktop.nupkg
   - template: templates/jobs-mrwebrtc-release-pack.yaml
     parameters:
       packagePlatform: 'Desktop'
@@ -115,6 +122,7 @@ stages:
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Package mrwebrtc (UWP)
+  # => Microsoft.MixedReality.WebRTC.Native.UWP.nupkg
   - template: templates/jobs-mrwebrtc-release-pack.yaml
     parameters:
       packagePlatform: 'UWP'
@@ -122,6 +130,7 @@ stages:
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Package C# library (Desktop)
+  # => Microsoft.MixedReality.WebRTC.nupkg
   - template: templates/jobs-cslib-release-pack.yaml
     parameters:
       packagePlatform: 'Desktop'
@@ -129,8 +138,25 @@ stages:
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Package C# library (UWP)
+  # => Microsoft.MixedReality.WebRTC.UWP.nupkg
   - template: templates/jobs-cslib-release-pack.yaml
     parameters:
       packagePlatform: 'UWP'
       packageAgent: '${{parameters.packageAgent}}'
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+# # Test packages before publishing
+# - stage: test
+#   dependsOn: pack
+#   displayName: 'Test'
+#   jobs:
+
+#   # Install Nuget package into a test project
+#   # TODO...
+
+# # Publish packages
+# - stage: publish
+#   dependsOn: test
+#   displayName: 'Publish'
+#   jobs:
+#   # TODO...
