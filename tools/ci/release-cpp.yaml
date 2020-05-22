@@ -24,6 +24,9 @@ parameters:
 - name: packageAgent
   type: string
   default: ''
+- name: testAgent
+  type: string
+  default: ''
 - name: nugetPackageVersion
   type: string
   default: '0.0.1-preview.1'
@@ -145,14 +148,39 @@ stages:
       packageAgent: '${{parameters.packageAgent}}'
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
-# # Test packages before publishing
-# - stage: test
-#   dependsOn: pack
-#   displayName: 'Test'
-#   jobs:
+# Test packages before publishing
+- stage: test
+  dependsOn: pack
+  displayName: 'Test'
+  jobs:
 
-#   # Install Nuget package into a test project
-#   # TODO...
+  # Test mrwebrtc native library (Desktop)
+  - template: templates/jobs-mrwebrtc-release-test.yaml
+    parameters:
+      testPlatform: 'Desktop'
+      testAgent: '${{parameters.testAgent}}'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+  # Test mrwebrtc native library (UWP)
+  - template: templates/jobs-mrwebrtc-release-test.yaml
+    parameters:
+      testPlatform: 'UWP'
+      testAgent: '${{parameters.testAgent}}'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+  # Test C# library (Desktop)
+  - template: templates/jobs-cslib-release-test.yaml
+    parameters:
+      testPlatform: 'Desktop'
+      testAgent: '${{parameters.testAgent}}'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+  # Test C# library (UWP)
+  - template: templates/jobs-cslib-release-test.yaml
+    parameters:
+      testPlatform: 'UWP'
+      testAgent: '${{parameters.testAgent}}'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
 # # Publish packages
 # - stage: publish
