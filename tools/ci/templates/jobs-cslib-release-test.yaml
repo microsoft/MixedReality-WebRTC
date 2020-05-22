@@ -55,10 +55,10 @@ jobs:
 
   # Download NuGet package
   - task: DownloadPipelineArtifact@2
-    displayName: 'Download mrwebrtc library (${{parameters.testPlatform}})'
+    displayName: 'Download C# library (${{parameters.testPlatform}})'
     inputs:
       source: 'current'
-      artifact: 'nuget_mrwebrtc_${{parameters.testPlatform}}'
+      artifact: 'nuget_cslib_${{parameters.testPlatform}}'
       patterns: '**/$(packageName).${{parameters.nugetPackageVersion}}.nupkg'
       path: '$(Build.BinariesDirectory)/nuget/$(packageName)'
 
