@@ -30,8 +30,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     internal struct mrsOptBool
     {
         public static readonly mrsOptBool Unset = new mrsOptBool { _value = kUnsetValue };
-        public static readonly mrsOptBool True = new mrsOptBool(true);
-        public static readonly mrsOptBool False = new mrsOptBool(false);
+        public static readonly mrsOptBool True = new mrsOptBool { _value = -1 };
+        public static readonly mrsOptBool False = new mrsOptBool { _value = 0 };
 
         private sbyte _value;
 
@@ -50,18 +50,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             }
         }
 
-        public mrsOptBool(bool value) { _value = (sbyte)(value ? -1 : 0); }
-        public mrsOptBool(bool? value)
-        {
-            if (value.HasValue)
-            {
-                _value = (sbyte)(value.Value ? -1 : 0);
-            }
-            else
-            {
-                _value = kUnsetValue;
-            }
-        }
         public static explicit operator mrsOptBool(bool b) { return (b ? True : False); }
         public static explicit operator mrsOptBool(bool? b)
         {
