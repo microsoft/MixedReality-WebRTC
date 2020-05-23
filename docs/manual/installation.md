@@ -92,9 +92,9 @@ Copy all the `mrwebrtc.dll` variants as indicated in the table below.
 The Unity integration also references the C# library. Copy the `Microsoft.MixedReality.WebRTC.dll` assembly from either the Desktop package `Microsoft.MixedReality.WebRTC.nupkg` or the UWP package `Microsoft.MixedReality.WebRTC.UWP.nupkg`; both packages have the same copy of the C# assembly, and only differ by the associated native DLLs.
 
 - Source: `<package_root>/lib/netstandard2.0/Microsoft.MixedReality.WebRTC.dll`
-- Destination: `<unity_project>/Assets/Plugins/Win32/x86_64/`
+- Destination: `<unity_project>/Assets/Plugins/`
 
-In theory the managed assembly could be copied anywhere in the `Assets/Plugins/` folder of the target Unity project. Practice however shows that Unity tends to stop its DLL search in the first folder that contains at least one DLL, instead of continuing to recurse into the parent folders. For this reason, we arbitrarily choose the `Assets/Plugins/Win32/x86_64/` as the destination for the C# assembly.
+In theory the managed assembly could be copied anywhere in the `Assets/Plugins/` folder of the target Unity project. Practice however shows that Unity tends to stop its DLL search in the first folder that contains at least one DLL, instead of continuing to recurse into the parent folders. As there are multiple architectures supported (Win32 and WSA), it is best to choose the `Assets/Plugins/` as the destination for the C# assembly.
 
 ### Summary
 
@@ -102,6 +102,8 @@ The above steps should result in the following hierarchy on disk:
 
 ```sh
 MyAwesomeUnityProject/Assets/Plugins/
++ Microsoft.MixedReality.WebRTC.dll
++ Microsoft.MixedReality.WebRTC.dll.meta
 + Win32.meta
 + Win32/
 | + x86.meta
@@ -112,8 +114,6 @@ MyAwesomeUnityProject/Assets/Plugins/
 | + x86_64/
 |   + mrwebrtc.dll
 |   + mrwebrtc.dll.meta
-|   + Microsoft.MixedReality.WebRTC.dll
-|   + Microsoft.MixedReality.WebRTC.dll.meta
 + WSA.meta
 + WSA/
   + x86.meta
