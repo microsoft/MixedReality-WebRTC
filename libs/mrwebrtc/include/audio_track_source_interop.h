@@ -71,6 +71,6 @@ MRS_API mrsResult MRS_CALL mrsAudioTrackSourceCreateFromDevice(
 MRS_API void MRS_CALL mrsAudioTrackSourceRegisterFrameCallback(
     mrsAudioTrackSourceHandle source_handle,
     mrsAudioFrameCallback callback,
-    void* user_data) noexcept
+    void* user_data) noexcept;
 
 }  // extern "C"
