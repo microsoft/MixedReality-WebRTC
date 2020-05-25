@@ -65,7 +65,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             /// <seealso cref="AudioTrackSource.CreateFromDeviceAsync(LocalAudioDeviceInitConfig)"/>
             public LocalAudioDeviceMarshalInitConfig(LocalAudioDeviceInitConfig settings)
             {
-                AutoGainControl = new mrsOptBool(settings?.AutoGainControl);
+                AutoGainControl = (mrsOptBool)settings?.AutoGainControl;
             }
         }
 
