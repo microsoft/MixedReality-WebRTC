@@ -247,3 +247,61 @@ article h4 {
 .level1.summary {
   margin: 1em 0 1em 0;
 }
+
+/** Glossary **/
+
+#_content[data-uid="glossary"] a em {
+  color: #337ac4;
+}
+
+#_content[data-uid="glossary"] h2 {
+  border-bottom: 1px solid #777;
+}
+
+#_content[data-uid="glossary"] h3 {
+  color: #337ac4;
+  border-left: 8px solid #337ac4;
+  margin-top: 30px;
+  padding-top: 0;
+  padding-left: 10px;
+}
+
+#_content[data-uid="glossary"] h3 .anchorjs-link {
+  left: 15px;
+}
+
+#_content[data-uid="glossary"] h4 {
+  font-weight: 600;
+  font-size: 90%;
+  color: #777;
+  margin-top: 1em;
+}
+
+#_content[data-uid="glossary"] blockquote {
+  padding: 0;
+  border: 0;
+  font-size: 90%;
+}
+
+#_content[data-uid="glossary"] blockquote p {
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+}
+
+#_content[data-uid="glossary"] blockquote p::after {
+  content: ":";
+}
+
+#_content[data-uid="glossary"] blockquote ul {
+  padding-left: 0;
+}
+
+#_content[data-uid="glossary"] blockquote li {
+  list-style-type: none;
+  display: inline;
+  margin-right: 3px;
+  background-color: #eee;
+  padding: 2px 5px;
+  border-radius: 5px;
+}
