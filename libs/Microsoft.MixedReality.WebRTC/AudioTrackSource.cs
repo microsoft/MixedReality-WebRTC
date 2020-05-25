@@ -30,7 +30,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// 
     /// The user owns the audio track source, and is in charge of keeping it alive until after all tracks using it
     /// are destroyed, and then dispose of it. The behavior of disposing of the track source while a track is still
-    /// using it is undefined. The <see cref="_tracks"/> property contains the list of tracks currently using the
+    /// using it is undefined. The <see cref="Tracks"/> property contains the list of tracks currently using the
     /// source.
     /// </summary>
     /// <seealso cref="LocalAudioTrack"/>
