@@ -85,7 +85,7 @@
 <p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html"><code>PeerConnection</code></a> class is the entry point to using WebRTC. It encapsulates a connection between a local peer on the local physical device, and a remote peer on the same or, more generally, another physical device.</p>
 <div class="NOTE">
 <h5>Note</h5>
-<p>The Unity integration also has a <a href="xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection"><code>PeerConnection</code></a> component, which is based on this class.</p>
+<p>The Unity integration also has a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> component, which is based on this class.</p>
 </div>
 <h2 id="initialization">Initialization</h2>
 <p>A <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html"><code>PeerConnection</code></a> instance can be created with the default constructor, but initially most of its properties, methods, and events, cannot be used until it is initialized with a call to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_"><code>InitializeAsync()</code></a>. Once intialized, the  <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Initialized"><code>Initialized</code></a> property returns <code>true</code> and it is safe to use the peer connection.</p>
@@ -170,7 +170,7 @@
 <tr>
 <td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_TransceiverAdded"><code>TransceiverAdded</code></a></td>
 <td>Optional</td>
-<td>Raised when a transceiver was added to the peer connection, either manually by calling <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>AddTransceiver()</code></a>, or automatically by the implementation when a remote session description is applied with <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescriptionAsync(System.String,System.String)"><code>SetRemoteDescriptionAsync()</code></a> and the remote peer added a new transceiver.</td>
+<td>Raised when a transceiver was added to the peer connection, either manually by calling <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>AddTransceiver()</code></a>, or automatically by the implementation when a remote session description is applied with <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_Microsoft_MixedReality_WebRTC_SdpMessage_"><code>SetRemoteDescriptionAsync()</code></a> and the remote peer added a new transceiver.</td>
 </tr>
 <tr>
 <td><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AudioTrackAdded"><code>AudioTrackAdded</code></a></td>

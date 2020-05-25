@@ -1,0 +1,347 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class MediaLine
+   | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class MediaLine
+   | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.54.0.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine">
+  
+  
+  <h1 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine" class="text-break">Class MediaLine
+  </h1>
+  <div class="markdown level0 summary"><p>Media line abstraction for a peer connection.</p>
+<p>This container binds together a sender component (<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html">MediaSender</a>) and/or a receiver component
+(<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html">MediaReceiver</a>) on one side, with a transceiver on the other side. The media line is a
+declarative representation of this association, which is then turned into a binding by the implementation
+during an SDP negotiation. This forms the core of the algorithm allowing automatic transceiver pairing
+between the two peers based on the declaration of intent of the user.</p>
+<p>Assigning Unity components to the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Sender">Sender</a> and <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Receiver">Receiver</a> fields serves
+as an indication of the user intent to send and/or receive media through the transceiver, and is
+used during the SDP exchange to derive the <see xref="WebRTC.Transceiver.Direction"></see> to negotiate.
+After the SDP negotiation is completed, the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a> property refers to the transceiver
+associated with this media line, and which the sender and receiver will use.</p>
+<p>Users typically interact with this class through the peer connection transceiver collection in the Unity
+inspector window, though direct manipulation via code is also possible.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">MediaLine</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
+  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Serializable]
+public class MediaLine</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine__ctor_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.#ctor*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine__ctor_MediaKind_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.#ctor(MediaKind)">MediaLine(MediaKind)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MediaLine(MediaKind kind)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MediaKind</span></td>
+        <td><span class="parametername">kind</span></td>
+        <td><p>Immutable value assigned to the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Kind">Kind</a> property on construction.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Kind_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Kind*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Kind" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Kind">Kind</h4>
+  <div class="markdown level1 summary"><p>Kind of media of the media line and its attached transceiver.</p>
+<p>This is assiged when the media line is created with <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AddMediaLine_MediaKind_">AddMediaLine(MediaKind)</a>
+and is immutable for the lifetime of the peer connection.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MediaKind Kind { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MediaKind</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Receiver_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Receiver*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Receiver" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Receiver">Receiver</h4>
+  <div class="markdown level1 summary"><p>Media receiver consuming the media received through the transceiver attached to this media line.
+This must be an instance of a class derived from <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html">AudioReceiver</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html">VideoReceiver</a>
+depending on whether <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Kind">Kind</a> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"></see>
+or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"></see>, respectively.</p>
+<p>If this is non-<code>null</code> then the peer connection will negotiate receiving some media, otherwise
+it will signal the remote peer that it does not wish to receive (send-only or inactive).</p>
+<p>If <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a> is valid, that is a first session negotiation has already been conducted,
+then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"></see> event on the
+peer connection of <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MediaReceiver Receiver { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html">MediaReceiver</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Sender_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Sender*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Sender" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Sender">Sender</h4>
+  <div class="markdown level1 summary"><p>Media sender producing the media to send through the transceiver attached to this media line.
+This must be an instance of a class derived from <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSender.html">AudioSender</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html">VideoSender</a>
+depending on whether <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Kind">Kind</a> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"></see>
+or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"></see>, respectively.</p>
+<p>If this is non-<code>null</code> then the peer connection will negotiate sending some media, otherwise
+it will signal the remote peer that it does not wish to send (receive-only or inactive).</p>
+<p>If <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a> is valid, that is a first session negotiation has already been completed,
+then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"></see> event on the
+peer connection of <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MediaSender Sender { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html">MediaSender</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Transceiver*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Transceiver">Transceiver</h4>
+  <div class="markdown level1 summary"><p>Transceiver attached with this media line.</p>
+<p>On the offering peer this changes during <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_StartConnection">StartConnection()</a>, while this is updated by
+<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_HandleConnectionMessageAsync_SdpMessage_">HandleConnectionMessageAsync(SdpMessage)</a> when receiving an offer on the answering peer.</p>
+<p>Because transceivers cannot be destroyed, once this property is assigned a non-<code>null</code> value it keeps that
+value until the peer connection owning the media line is closed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Transceiver Transceiver { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transceiver</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_UpdateTransceiverDesiredDirection_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateTransceiverDesiredDirection*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_UpdateTransceiverDesiredDirection" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateTransceiverDesiredDirection">UpdateTransceiverDesiredDirection()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void UpdateTransceiverDesiredDirection()</code></pre>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

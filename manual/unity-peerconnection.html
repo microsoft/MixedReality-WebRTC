@@ -82,7 +82,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="unity-peerconnection-component">Unity <code>PeerConnection</code> component</h1>
 
-<p>The <a href="xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection"><code>PeerConnection</code></a> Unity component encapsulates a single peer connection between the local application and another remote Unity peer application.</p>
+<p>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> Unity component encapsulates a single peer connection between the local application and another remote Unity peer application.</p>
 <div class="NOTE">
 <h5>Note</h5>
 <p>The C# library also has a <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html"><code>PeerConnection</code></a> class, which this components build upon.</p>
@@ -102,11 +102,11 @@
 </tr>
 <tr>
 <td>Auto Initialize On Start</td>
-<td>Automatically initialize the peer connection when the <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html"><code>MonoBehaviour.Start()</code></a>. If not set, the user need to call <a href="xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(System.Threading.CancellationToken)"><code>InitializeAsync()</code></a> manually before using the component.</td>
+<td>Automatically initialize the peer connection when the <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html"><code>MonoBehaviour.Start()</code></a>. If not set, the user need to call <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_System_Threading_CancellationToken_"><code>InitializeAsync()</code></a> manually before using the component.</td>
 </tr>
 <tr>
 <td>Auto Log Errors To Unity Console</td>
-<td>Add an event listener to the <a href="xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.OnError"><code>OnError</code></a> event which calls <a href="https://docs.unity3d.com/ScriptReference/Debug.LogError.html"><code>Debug.LogError()</code></a> to display the error message in the Unity console.</td>
+<td>Add an event listener to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_OnError"><code>OnError</code></a> event which calls <a href="https://docs.unity3d.com/ScriptReference/Debug.LogError.html"><code>Debug.LogError()</code></a> to display the error message in the Unity console.</td>
 </tr>
 <tr>
 <td><strong>ICE servers</strong></td>
@@ -114,7 +114,7 @@
 </tr>
 <tr>
 <td>Ice Servers</td>
-<td>A list of <a href="xref:Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer"><code>ConfigurableIceServer</code></a> elements representing the list of ICE servers to use to establish the peer connection. The list can be empty, in which case only a local connection will be possible.</td>
+<td>A list of <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.html"><code>ConfigurableIceServer</code></a> elements representing the list of ICE servers to use to establish the peer connection. The list can be empty, in which case only a local connection will be possible.</td>
 </tr>
 <tr>
 <td>Ice Username</td>
@@ -130,11 +130,11 @@
 </tr>
 <tr>
 <td>On Initialized</td>
-<td>Event fired once the <a href="xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(System.Threading.CancellationToken)"><code>InitializeAsync()</code></a> method returned successfully, to indicate that the peer connection component is ready for use.</td>
+<td>Event fired once the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_System_Threading_CancellationToken_"><code>InitializeAsync()</code></a> method returned successfully, to indicate that the peer connection component is ready for use.</td>
 </tr>
 <tr>
 <td>On Shutdown</td>
-<td>Event fired when <a href="xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Uninitialize"><code>Uninitialize()</code></a> is called, usually automatically during <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDestroy.html"><code>MonoBehaviour.OnDestroy()</code></a></td>
+<td>Event fired when <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Uninitialize"><code>Uninitialize()</code></a> is called, usually automatically during <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDestroy.html"><code>MonoBehaviour.OnDestroy()</code></a></td>
 </tr>
 <tr>
 <td>On Error</td>

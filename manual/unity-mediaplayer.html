@@ -82,10 +82,10 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="unity-mediaplayer-component">Unity <code>MediaPlayer</code> component</h1>
 
-<p>The <a href="xref:Microsoft.MixedReality.WebRTC.Unity.MediaPlayer"><code>MediaPlayer</code></a> Unity component is a utility component mixing an audio source and a video source for local rendering.</p>
+<p>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html"><code>MediaPlayer</code></a> Unity component is a utility component mixing an audio source and a video source for local rendering.</p>
 <div class="IMPORTANT">
 <h5>Important</h5>
-<p>FIXME: This component is not currently fully functional. The remote audio data is currently sent directly to the local audio out device by the internal WebRTC implementation without any configuration possible. And the local audio is never rendered. So the <a href="xref:Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.AudioSource"><code>MediaPlayer.AudioSource</code></a> property is unused. The video however capability works as intended. See issue <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/92">#92</a> for details.</p>
+<p>FIXME: This component is not currently fully functional. The remote audio data is currently sent directly to the local audio out device by the internal WebRTC implementation without any configuration possible. And the local audio is never rendered. So the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html#Microsoft_MixedReality_WebRTC_Unity_MediaPlayer_AudioSource"><code>MediaPlayer.AudioSource</code></a> property is unused. The video however capability works as intended. See issue <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/92">#92</a> for details.</p>
 </div>
 <p><img src="unity-mediaplayer.png" alt="The MediaPlayer Unity component"></p>
 <table>
@@ -102,11 +102,11 @@
 </tr>
 <tr>
 <td>AudioSource</td>
-<td>Reference to the <a href="xref:Microsoft.MixedReality.WebRTC.Unity.AudioSender"><code>AudioSender</code></a> or <a href="xref:Microsoft.MixedReality.WebRTC.Unity.AudioSender"><code>AudioReceiver</code></a> instance that the media player outputs the audio of. This property is of type <a href="xref:Microsoft.MixedReality.WebRTC.Unity.MediaSource"><code>MediaSource</code></a>, but only instances of classes implementing the <a href="xref:Microsoft.MixedReality.WebRTC.Unity.IAudioSource"><code>IAudioSource</code></a> interface are valid.</td>
+<td>Reference to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioSender.html"><code>AudioSender</code></a> or <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioSender.html"><code>AudioReceiver</code></a> instance that the media player outputs the audio of. This property is of type <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaSource.html"><code>MediaSource</code></a>, but only instances of classes implementing the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.IAudioSource.html"><code>IAudioSource</code></a> interface are valid.</td>
 </tr>
 <tr>
 <td>VideoSource</td>
-<td>Reference to the <a href="xref:Microsoft.MixedReality.WebRTC.Unity.VideoSender"><code>VideoSender</code></a> or <a href="xref:Microsoft.MixedReality.WebRTC.Unity.VideoReceiver"><code>VideoReceiver</code></a> instance that the media player renders the video of. This property is of type <a href="xref:Microsoft.MixedReality.WebRTC.Unity.MediaSource"><code>MediaSource</code></a>, but only instances of classes implementing the <a href="xref:Microsoft.MixedReality.WebRTC.Unity.IVideoSource"><code>IVideoSource</code></a> interface are valid.</td>
+<td>Reference to the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoSender.html"><code>VideoSender</code></a> or <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html"><code>VideoReceiver</code></a> instance that the media player renders the video of. This property is of type <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MediaSource.html"><code>MediaSource</code></a>, but only instances of classes implementing the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html"><code>IVideoSource</code></a> interface are valid.</td>
 </tr>
 <tr>
 <td>MaxVideoFramerate</td>

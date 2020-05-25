@@ -1,0 +1,640 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class AudioSender
+   | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class AudioSender
+   | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.54.0.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender">
+  
+  
+  <h1 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender" class="text-break">Class AudioSender
+  </h1>
+  <div class="markdown level0 summary"><p>This component represents a local audio source added as an audio track to an
+existing WebRTC peer connection and sent to the remote peer.</p>
+<div class="WARNING alert alert-warning">
+<h5>WARNING</h5>
+<p>
+Currently the low-level WebRTC implementation does not support registering
+local audio callbacks, therefore the audio track cannot be rendered locally
+with a <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html">MediaPlayer</a>.
+</p>
+</div>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html">MediaSource</a></div>
+    <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html">MediaSender</a></div>
+    <div class="level3"><span class="xref">AudioSender</span></div>
+      <div class="level4"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html">MicrophoneSource</a></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IAudioSource.html">IAudioSource</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_TrackName">MediaSender.TrackName</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled">MediaSender.AutoStartOnEnabled</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_IsCapturing">MediaSender.IsCapturing</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync">MediaSender.StartCaptureAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture">MediaSender.StopCapture()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_Mute_System_Boolean_">MediaSender.Mute(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_Unmute">MediaSender.Unmute()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnEnable">MediaSender.OnEnable()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDisable">MediaSender.OnDisable()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDestroy">MediaSender.OnDestroy()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource_MediaKind">MediaSource.MediaKind</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource__mainThreadWorkQueue">MediaSource._mainThreadWorkQueue</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource_Update">MediaSource.Update()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
+  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract class AudioSender : MediaSender, IAudioSource</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender__ctor_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.#ctor*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender__ctor" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.#ctor">AudioSender()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AudioSender()</code></pre>
+  </div>
+  <h3 id="fields">Fields
+  </h3>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_AudioStreamStarted" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.AudioStreamStarted">AudioStreamStarted</h4>
+  <div class="markdown level1 summary"><p>Event raised when the audio stream started.</p>
+<p>When this event is raised, the followings are true:</p>
+<ul>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSender.html#Microsoft_MixedReality_WebRTC_Unity_AudioSender_Track">Track</a> property is a valid local audio track.</li>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSender.html#Microsoft_MixedReality_WebRTC_Unity_AudioSender_IsStreaming">IsStreaming</a> will become <code>true</code> just after the event
+is raised, by design.</li>
+</ul>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AudioStreamStartedEvent AudioStreamStarted</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent.html">AudioStreamStartedEvent</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_AudioStreamStarted_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This event is raised from the main Unity thread to allow Unity object access.</p>
+</div>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_AudioStreamStopped" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.AudioStreamStopped">AudioStreamStopped</h4>
+  <div class="markdown level1 summary"><p>Event raised when the audio stream stopped.</p>
+<p>When this event is raised, the followings are true:</p>
+<ul>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSender.html#Microsoft_MixedReality_WebRTC_Unity_AudioSender_Track">Track</a> property is <code>null</code>.</li>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSender.html#Microsoft_MixedReality_WebRTC_Unity_AudioSender_IsStreaming">IsStreaming</a> has just become <code>false</code> right before the event
+was raised, by design.</li>
+</ul>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AudioStreamStoppedEvent AudioStreamStopped</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent.html">AudioStreamStoppedEvent</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_AudioStreamStopped_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This event is raised from the main Unity thread to allow Unity object access.</p>
+</div>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_PreferredAudioCodec" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.PreferredAudioCodec">PreferredAudioCodec</h4>
+  <div class="markdown level1 summary"><p>Name of the preferred audio codec, or empty to let WebRTC decide.
+See <a href="https://en.wikipedia.org/wiki/RTP_audio_video_profile">https://en.wikipedia.org/wiki/RTP_audio_video_profile</a> for the standard SDP names.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string PreferredAudioCodec</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_IsStreaming_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.IsStreaming*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_IsStreaming" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.IsStreaming">IsStreaming</h4>
+  <div class="markdown level1 summary"><p>Is the audio source currently streaming some audio frames?
+This must be <code>true</code> between the invoking of the audio stream started
+and stopped events. That is, this becomes <code>true</code> after the stream started
+event and becomes <code>false</code> before the stream stopped event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsStreaming { get; protected set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_Track_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.Track*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_Track" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.Track">Track</h4>
+  <div class="markdown level1 summary"><p>Local audio track that this component encapsulates, which if paired sends data to
+the remote peer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public LocalAudioTrack Track { get; protected set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">LocalAudioTrack</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_Transceiver_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.Transceiver*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_Transceiver" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.Transceiver">Transceiver</h4>
+  <div class="markdown level1 summary"><p>Audio transceiver this sender is paired with, if any.</p>
+<p>This is <code>null</code> until a remote description is applied which pairs the media line
+the sender is associated with to a transceiver.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Transceiver Transceiver { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transceiver</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_CreateLocalAudioTrackAsyncImpl_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.CreateLocalAudioTrackAsyncImpl*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_CreateLocalAudioTrackAsyncImpl" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.CreateLocalAudioTrackAsyncImpl">CreateLocalAudioTrackAsyncImpl()</h4>
+  <div class="markdown level1 summary"><p>Implement this callback to create the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSender.html#Microsoft_MixedReality_WebRTC_Unity_AudioSender_Track">Track</a> instance.
+On failure, this method must throw an exception. Otherwise it must set the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSender.html#Microsoft_MixedReality_WebRTC_Unity_AudioSender_Track">Track</a>
+property to a non-<code>null</code> instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract Task CreateLocalAudioTrackAsyncImpl()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_CreateLocalTrackAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.CreateLocalTrackAsync*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_CreateLocalTrackAsync" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.CreateLocalTrackAsync">CreateLocalTrackAsync()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override Task CreateLocalTrackAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_CreateLocalTrackAsync">MediaSender.CreateLocalTrackAsync()</a></div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_DestroyLocalAudioTrack_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.DestroyLocalAudioTrack*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_DestroyLocalAudioTrack" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.DestroyLocalAudioTrack">DestroyLocalAudioTrack()</h4>
+  <div class="markdown level1 summary"><p>Re-implement this callback to destroy the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSender.html#Microsoft_MixedReality_WebRTC_Unity_AudioSender_Track">Track</a> instance
+and other associated resources.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected virtual void DestroyLocalAudioTrack()</code></pre>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_DestroyLocalTrack_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.DestroyLocalTrack*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_DestroyLocalTrack" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.DestroyLocalTrack">DestroyLocalTrack()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void DestroyLocalTrack()</code></pre>
+  </div>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_DestroyLocalTrack">MediaSender.DestroyLocalTrack()</a></div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_GetAudioStreamStarted_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.GetAudioStreamStarted*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_GetAudioStreamStarted" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.GetAudioStreamStarted">GetAudioStreamStarted()</h4>
+  <div class="markdown level1 summary"><p>Get the event notifying the user that the audio stream started.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AudioStreamStartedEvent GetAudioStreamStarted()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent.html">AudioStreamStartedEvent</a></td>
+        <td><p>The event associated with the audio source.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_GetAudioStreamStopped_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.GetAudioStreamStopped*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_GetAudioStreamStopped" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.GetAudioStreamStopped">GetAudioStreamStopped()</h4>
+  <div class="markdown level1 summary"><p>Get the event notifying the user that the audio stream stopped.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AudioStreamStoppedEvent GetAudioStreamStopped()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent.html">AudioStreamStoppedEvent</a></td>
+        <td><p>The event associated with the audio source.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_MuteImpl_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.MuteImpl*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_MuteImpl_System_Boolean_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.MuteImpl(System.Boolean)">MuteImpl(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Derived classes implement the mute/unmute action on the track.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void MuteImpl(bool mute)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">mute</span></td>
+        <td><p><code>true</code> to mute the track, or <code>false</code> to unmute it.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_MuteImpl_System_Boolean_">MediaSender.MuteImpl(Boolean)</a></div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_RegisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.RegisterCallback*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_RegisterCallback_AudioFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.RegisterCallback(AudioFrameDelegate)">RegisterCallback(AudioFrameDelegate)</h4>
+  <div class="markdown level1 summary"><p>Register a frame callback to listen to outgoing audio data produced by this audio sender
+and sent to the remote peer.</p>
+<div class="WARNING alert alert-warning">
+<h5>WARNING</h5>
+<p>
+Currently the low-level WebRTC implementation does not support registering local audio callbacks,
+therefore this is not implemented and will throw a <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.notimplementedexception">NotImplementedException</a>.
+</p>
+</div>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void RegisterCallback(AudioFrameDelegate callback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">AudioFrameDelegate</span></td>
+        <td><span class="parametername">callback</span></td>
+        <td><p>The new frame callback to register.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_RegisterCallback_AudioFrameDelegate__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Unlike for video, where a typical application might display some local feedback of a local
+webcam recording, local audio feedback is rare, so this callback is not typically used.
+One possible use case would be to display some visual feedback, like an audio spectrum analyzer.</p>
+<p>Note that registering a callback does not influence the audio capture and sending to the
+remote peer, which occur whether or not a callback is registered.</p>
+</div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_UnregisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.UnregisterCallback*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioSender_UnregisterCallback_AudioFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioSender.UnregisterCallback(AudioFrameDelegate)">UnregisterCallback(AudioFrameDelegate)</h4>
+  <div class="markdown level1 summary"><p>Unregister a frame callback previously registered with <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSender.html#Microsoft_MixedReality_WebRTC_Unity_AudioSender_RegisterCallback_AudioFrameDelegate_">RegisterCallback(AudioFrameDelegate)</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void UnregisterCallback(AudioFrameDelegate callback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">AudioFrameDelegate</span></td>
+        <td><span class="parametername">callback</span></td>
+        <td><p>The frame callback to unregister.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IAudioSource.html">IAudioSource</a>
+  </div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html">MicrophoneSource</a></div>
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html">MediaPlayer</a></div>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

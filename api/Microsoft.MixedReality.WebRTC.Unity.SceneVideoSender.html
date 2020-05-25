@@ -1,0 +1,365 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class SceneVideoSender
+   | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class SceneVideoSender
+   | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.54.0.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender">
+  
+  
+  <h1 id="Microsoft_MixedReality_WebRTC_Unity_SceneVideoSender" data-uid="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender" class="text-break">Class SceneVideoSender
+  </h1>
+  <div class="markdown level0 summary"><p>Custom video source capturing the Unity scene content as rendered by a given camera,
+and sending it as a video track through the selected peer connection.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html">MediaSource</a></div>
+    <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html">MediaSender</a></div>
+    <div class="level3"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html">VideoSender</a></div>
+    <div class="level4"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.CustomVideoSender-1.html">CustomVideoSender</a>&lt;<span class="xref">Argb32VideoFrameStorage</span>&gt;</div>
+    <div class="level5"><span class="xref">SceneVideoSender</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.CustomVideoSender-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSender_1_Source">CustomVideoSender&lt;Argb32VideoFrameStorage&gt;.Source</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.CustomVideoSender-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSender_1_CreateLocalVideoTrackAsync">CustomVideoSender&lt;Argb32VideoFrameStorage&gt;.CreateLocalVideoTrackAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.CustomVideoSender-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSender_1_DestroyLocalVideoTrack">CustomVideoSender&lt;Argb32VideoFrameStorage&gt;.DestroyLocalVideoTrack()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_PreferredVideoCodec">VideoSender.PreferredVideoCodec</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_VideoStreamStarted">VideoSender.VideoStreamStarted</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_VideoStreamStopped">VideoSender.VideoStreamStopped</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_IsStreaming">VideoSender.IsStreaming</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_GetVideoStreamStarted">VideoSender.GetVideoStreamStarted()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_GetVideoStreamStopped">VideoSender.GetVideoStreamStopped()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_Transceiver">VideoSender.Transceiver</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_FrameEncoding">VideoSender.FrameEncoding</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_Track">VideoSender.Track</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_RegisterCallback_I420AVideoFrameDelegate_">VideoSender.RegisterCallback(I420AVideoFrameDelegate)</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_UnregisterCallback_I420AVideoFrameDelegate_">VideoSender.UnregisterCallback(I420AVideoFrameDelegate)</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_RegisterCallback_Argb32VideoFrameDelegate_">VideoSender.RegisterCallback(Argb32VideoFrameDelegate)</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_UnregisterCallback_Argb32VideoFrameDelegate_">VideoSender.UnregisterCallback(Argb32VideoFrameDelegate)</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_CreateLocalTrackAsync">VideoSender.CreateLocalTrackAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_DestroyLocalTrack">VideoSender.DestroyLocalTrack()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_MuteImpl_System_Boolean_">VideoSender.MuteImpl(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_TrackName">MediaSender.TrackName</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled">MediaSender.AutoStartOnEnabled</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_IsCapturing">MediaSender.IsCapturing</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync">MediaSender.StartCaptureAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture">MediaSender.StopCapture()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_Mute_System_Boolean_">MediaSender.Mute(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_Unmute">MediaSender.Unmute()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDestroy">MediaSender.OnDestroy()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource_MediaKind">MediaSource.MediaKind</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource__mainThreadWorkQueue">MediaSource._mainThreadWorkQueue</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource_Update">MediaSource.Update()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
+  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_SceneVideoSender_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class SceneVideoSender : CustomVideoSender&lt;Argb32VideoFrameStorage&gt;, IVideoSource</code></pre>
+  </div>
+  <h3 id="fields">Fields
+  </h3>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_SceneVideoSender_CameraEvent" data-uid="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender.CameraEvent">CameraEvent</h4>
+  <div class="markdown level1 summary"><p>Camera event indicating the point in time during the Unity frame rendering
+when the camera rendering is to be captured.</p>
+<p>This defaults to <see xref="CameraEvent.AfterEverything"></see>, which is a reasonable
+default to capture the entire scene rendering, but can be customized to achieve
+other effects like capturing only a part of the scene.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CameraEvent CameraEvent</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">CameraEvent</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_SceneVideoSender_SourceCamera" data-uid="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender.SourceCamera">SourceCamera</h4>
+  <div class="markdown level1 summary"><p>Camera used to capture the scene content, whose rendering is used as
+video content for the track.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Camera SourceCamera</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Camera</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_SceneVideoSender_SourceCamera_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the project uses Multi-Pass stereoscopic rendering, then this camera needs to
+render to a single eye to produce a single video frame. Generally this means that
+this needs to be a separate Unity camera from the one used for XR rendering, which
+is generally rendering to both eyes.</p>
+<p>If the project uses Single-Pass Instanced stereoscopic rendering, then Unity 2019.1+
+is required to make this component work, due to the fact earlier versions of Unity
+are missing some command buffer API calls to be able to efficiently access the camera
+backbuffer in this mode. For Unity 2018.3 users who cannot upgrade, use Single-Pass
+(non-instanced) instead.</p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_SceneVideoSender_OnDisable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender.OnDisable*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_SceneVideoSender_OnDisable" data-uid="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender.OnDisable">OnDisable()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void OnDisable()</code></pre>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_SceneVideoSender_OnEnable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender.OnEnable*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_SceneVideoSender_OnEnable" data-uid="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender.OnEnable">OnEnable()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void OnEnable()</code></pre>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_SceneVideoSender_OnFrameRequested_" data-uid="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender.OnFrameRequested*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_SceneVideoSender_OnFrameRequested_FrameRequest__" data-uid="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender.OnFrameRequested(FrameRequest@)">OnFrameRequested(FrameRequest)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void OnFrameRequested(in FrameRequest request)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">FrameRequest</span></td>
+        <td><span class="parametername">request</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">Microsoft.MixedReality.WebRTC.Unity.CustomVideoSender&lt;Argb32VideoFrameStorage&gt;.OnFrameRequested(FrameRequest)</span></div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

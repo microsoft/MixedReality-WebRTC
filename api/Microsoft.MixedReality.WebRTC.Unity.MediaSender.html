@@ -1,0 +1,510 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class MediaSender
+   | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class MediaSender
+   | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.54.0.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender">
+  
+  
+  <h1 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender" class="text-break">Class MediaSender
+  </h1>
+  <div class="markdown level0 summary"><p>Base class for media sources generating their media frames locally,
+with the intention to send them to the remote peer.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html">MediaSource</a></div>
+    <div class="level2"><span class="xref">MediaSender</span></div>
+      <div class="level3"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioSender.html">AudioSender</a></div>
+      <div class="level3"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html">VideoSender</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource_MediaKind">MediaSource.MediaKind</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource__mainThreadWorkQueue">MediaSource._mainThreadWorkQueue</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource_Update">MediaSource.Update()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
+  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract class MediaSender : MediaSource</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender__ctor_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.#ctor*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender__ctor_MediaKind_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.#ctor(MediaKind)">MediaSender(MediaKind)</h4>
+  <div class="markdown level1 summary"><p>Create a new media source of the given <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource_MediaKind">MediaKind</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MediaSender(MediaKind mediaKind)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MediaKind</span></td>
+        <td><span class="parametername">mediaKind</span></td>
+        <td><p>The media kind of the source.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="fields">Fields
+  </h3>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.AutoStartOnEnabled">AutoStartOnEnabled</h4>
+  <div class="markdown level1 summary"><p>Automatically start media capture when the component is enabled, and stop capture
+when the component is disabled.</p>
+<p>If <code>true</code>, then <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync">StartCaptureAsync()</a> is automatically called
+when the <see xref="UnityEngine.MonoBehaviour.OnEnabled"></see> callback is invoked
+by Unity, and conversely <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture">StopCapture()</a> is automatically called when
+the <see xref="UnityEngine.MonoBehaviour.OnEnabled"></see> callback is invoked by Unity.</p>
+<p>If <code>false</code>, then the user has to manually call <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync">StartCaptureAsync()</a>
+to start capture before the media sender is attached to a transceiver, and call
+<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture">StopCapture()</a> to stop capture.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AutoStartOnEnabled</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>When the media sender is attached to a transceiver, media capture starts automatically
+if the component is active and enabled, even if <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled">AutoStartOnEnabled</a> is false.</p>
+<p>To have complete manual control on capture, set both <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled">AutoStartOnEnabled</a> and
+<see xref="UnityEngine.MonoBehaviour.enabled"></see> to <code>false</code>.</p>
+</div>
+  
+  
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_TrackName" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.TrackName">TrackName</h4>
+  <div class="markdown level1 summary"><p>Name of the local media track this component will create when calling <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync">StartCaptureAsync()</a>.
+If left empty, the implementation will generate a unique name for the track (generally a GUID).</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string TrackName</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_TrackName_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This value must comply with the 'msid' attribute rules as defined in
+<a href="https://tools.ietf.org/html/draft-ietf-mmusic-msid-05#section-2">https://tools.ietf.org/html/draft-ietf-mmusic-msid-05#section-2</a>, which in
+particular constraints the set of allowed characters to those allowed for a
+'token' element as specified in <a href="https://tools.ietf.org/html/rfc4566#page-43">https://tools.ietf.org/html/rfc4566#page-43</a>:</p>
+<ul>
+<li>Symbols [!#$%'*+-.^_`{|}~] and ampersand &amp;</li>
+<li>Alphanumerical characters [A-Za-z0-9]</li>
+</ul>
+<p>Users can manually test if a string is a valid SDP token with the utility
+method <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.html#Microsoft_MixedReality_WebRTC_Unity_SdpTokenAttribute_Validate_System_String_System_Boolean_">Validate(String, Boolean)</a>.</p>
+</div>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_TrackName_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.html#Microsoft_MixedReality_WebRTC_Unity_SdpTokenAttribute_Validate_System_String_System_Boolean_">Validate(String, Boolean)</a></div>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_IsCapturing_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.IsCapturing*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_IsCapturing" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.IsCapturing">IsCapturing</h4>
+  <div class="markdown level1 summary"><p>Is the media source currently generating frames from local capture?
+The concept of <em>capture</em> is described in the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync">StartCaptureAsync()</a> function.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsCapturing { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_IsCapturing_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync">StartCaptureAsync()</a></div>
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture">StopCapture()</a></div>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_CreateLocalTrackAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.CreateLocalTrackAsync*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_CreateLocalTrackAsync" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.CreateLocalTrackAsync">CreateLocalTrackAsync()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract Task CreateLocalTrackAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_DestroyLocalTrack_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.DestroyLocalTrack*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_DestroyLocalTrack" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.DestroyLocalTrack">DestroyLocalTrack()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract void DestroyLocalTrack()</code></pre>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_Mute_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.Mute*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_Mute_System_Boolean_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.Mute(System.Boolean)">Mute(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Mute or unmute the media. For audio, muting turns the source to silence. For video, this
+produces black frames. This is transparent to the SDP session and does not requite any
+renegotiation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Mute(bool mute = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">mute</span></td>
+        <td><p><code>true</code> to mute the local media track, or <code>false</code> to unmute
+it and resume producing media frames.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_MuteImpl_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.MuteImpl*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_MuteImpl_System_Boolean_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.MuteImpl(System.Boolean)">MuteImpl(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Derived classes implement the mute/unmute action on the track.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract void MuteImpl(bool mute)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">mute</span></td>
+        <td><p><code>true</code> to mute the track, or <code>false</code> to unmute it.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDestroy_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDestroy*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDestroy" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDestroy">OnDestroy()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void OnDestroy()</code></pre>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDisable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDisable*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDisable" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnDisable">OnDisable()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void OnDisable()</code></pre>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnEnable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnEnable*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnEnable" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.OnEnable">OnEnable()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected Task OnEnable()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.StartCaptureAsync*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.StartCaptureAsync">StartCaptureAsync()</h4>
+  <div class="markdown level1 summary"><p>Manually start capture of the local media by creating a local media track.</p>
+<p>If <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled">AutoStartOnEnabled</a> is <code>true</code> then this is called automatically
+as soon as the component is enabled. Otherwise the user must call this method to create
+the underlying local media track.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task StartCaptureAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture">StopCapture()</a></div>
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_IsCapturing">IsCapturing</a></div>
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled">AutoStartOnEnabled</a></div>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.StopCapture*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.StopCapture">StopCapture()</h4>
+  <div class="markdown level1 summary"><p>Stop capture of the local video track and destroy it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void StopCapture()</code></pre>
+  </div>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync">StartCaptureAsync()</a></div>
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_IsCapturing">IsCapturing</a></div>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_Unmute_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.Unmute*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaSender_Unmute" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaSender.Unmute">Unmute()</h4>
+  <div class="markdown level1 summary"><p>Unmute the media and resume normal source playback.
+This is equivalent to <code>Mute(false)</code>, and provided for code clarity.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Unmute()</code></pre>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
