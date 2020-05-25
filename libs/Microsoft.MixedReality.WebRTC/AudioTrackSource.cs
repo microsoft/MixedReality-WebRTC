@@ -30,7 +30,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// 
     /// The user owns the audio track source, and is in charge of keeping it alive until after all tracks using it
     /// are destroyed, and then dispose of it. The behavior of disposing of the track source while a track is still
-    /// using it is undefined. The <see cref="Tracks"/> property contains the list of tracks currently using the
+    /// using it is undefined. The <see cref="_tracks"/> property contains the list of tracks currently using the
     /// source.
     /// </summary>
     /// <seealso cref="LocalAudioTrack"/>
@@ -57,7 +57,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// List of local audio tracks this source is providing raw audio frames to.
         /// </summary>
-        public List<LocalAudioTrack> Tracks { get; private set; } = new List<LocalAudioTrack>();
+        public IReadOnlyList<LocalAudioTrack> Tracks => _tracks;
 
         /// <summary>
         /// Handle to the native AudioTrackSource object.
@@ -73,6 +73,11 @@ namespace Microsoft.MixedReality.WebRTC
         /// internal name of the native object, by design.
         /// </summary>
         private string _name = string.Empty;
+
+        /// <summary>
+        /// Backing field for <see cref="Tracks"/>.
+        /// </summary>
+        private List<LocalAudioTrack> _tracks = new List<LocalAudioTrack>();
 
         /// <summary>
         /// Create an audio track source using a local audio capture device (microphone).
@@ -107,7 +112,7 @@ namespace Microsoft.MixedReality.WebRTC
             }
 
             // TODO - Can we support destroying the source and leaving tracks with silence instead?
-            if (Tracks.Count > 0)
+            if (_tracks.Count > 0)
             {
                 throw new InvalidOperationException($"Trying to dispose of AudioTrackSource '{Name}' while still in use by one or more audio tracks.");
             }
@@ -128,8 +133,8 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnTrackAddedToSource(LocalAudioTrack track)
         {
             Debug.Assert(!_nativeHandle.IsClosed);
-            Debug.Assert(!Tracks.Contains(track));
-            Tracks.Add(track);
+            Debug.Assert(!_tracks.Contains(track));
+            _tracks.Add(track);
         }
 
         /// <summary>
@@ -139,7 +144,7 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnTrackRemovedFromSource(LocalAudioTrack track)
         {
             Debug.Assert(!_nativeHandle.IsClosed);
-            bool removed = Tracks.Remove(track);
+            bool removed = _tracks.Remove(track);
             Debug.Assert(removed);
         }
 
@@ -148,7 +153,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// as a result of a peer connection owning said tracks being closed.
         /// </summary>
         /// <param name="tracks">The list of tracks not using this source anymore.</param>
-        internal void OnTracksRemovedFromSource(List<LocalAudioTrack> tracks)
+        internal void OnTracksRemovedFromSource(IEnumerable<LocalAudioTrack> tracks)
         {
             Debug.Assert(!_nativeHandle.IsClosed);
             var remainingTracks = new List<LocalAudioTrack>();
@@ -156,15 +161,14 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 if (track.Source == this)
                 {
-                    bool removed = Tracks.Remove(track);
-                    Debug.Assert(removed);
+                    Debug.Assert(_tracks.Contains(track));
                 }
                 else
                 {
                     remainingTracks.Add(track);
                 }
             }
-            Tracks = remainingTracks;
+            _tracks = remainingTracks;
         }
 
         /// <inheritdoc/>
