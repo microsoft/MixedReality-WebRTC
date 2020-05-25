@@ -1,32 +1,181 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See LICENSE in the project root for license information.
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
-# MixedReality-WebRTC build pipeline for Release
-# Build the project's libraries as needed
+# MixedReality-WebRTC release pipeline for the native and C# libraries on Windows.
+# This builds libwebrtc and mrwebrtc, then creates signed NuGet packages of mrwebrtc
+# (Microsoft.MixedReality.WebRTC.Native.*.nupkg). This also builds the C# library,
+# and creates signed NuGet packages of it (Microsoft.MixedReality.WebRTC(.UWP).nupkg)
+# which embed the Release build config of mrwebrtc.dll to be self-contained.
+
+# FIXME - Rename file to 'release-windows.yaml' (and update pipeline using it), it is
+#         not limited to the native mrwebrtc library anymore.
 
 # Disable branch and PR triggers
 trigger: none
 pr: none
 
 # Give a unique name to the build each time it runs
-name: release-cpp-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+name: release-windows-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
-jobs:
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
-    buildPlatform: 'Win32'
-    buildArch: 'x64'
-    buildConfig: 'Release'
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: 'Hosted VS2017' # vs2017-win2016
-    buildPlatform: 'UWP'
-    buildArch: 'x64'
-    buildConfig: 'Release'
-# - template: templates/jobs-cpp.yaml
-#   parameters:
-#     buildAgent: 'Hosted VS2017' # vs2017-win2016
-#     buildPlatform: 'UWP'
-#     buildArch: 'ARM'
-#     buildConfig: 'Release'
+parameters:
+- name: nugetPackageVersion
+  type: string
+  default: '0.0.1-preview.1'
+
+stages:
+
+# Compile all build variants on Windows (Desktop and UWP).
+# This is done as a separate stage from packing to ensure all builds
+# for all variants succeeded before starting to pack anything.
+- stage: build
+  displayName: 'Build'
+  jobs:
+
+  # Build all variants of mrwebrtc.dll for Windows Desktop
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'Win32'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'Win32'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'Win32'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x64'
+      buildConfig: 'Debug'
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'Win32'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x64'
+      buildConfig: 'Release'
+
+  # Build all variants of mrwebrtc.dll for Windows UWP
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x64'
+      buildConfig: 'Debug'
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x64'
+      buildConfig: 'Release'
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'ARM'
+      buildConfig: 'Debug'
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'ARM'
+      buildConfig: 'Release'
+
+  # Build all variants of Microsoft.MixedReality.WebRTC.dll for release.
+  # This builds only the Release build config; the Debug config is not published.
+  - template: templates/jobs-cslib-release-build.yaml
+    parameters:
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+
+# Pack and sign the NuGet packages
+- stage: pack
+  dependsOn: build
+  displayName: 'Pack'
+  jobs:
+
+  # Package mrwebrtc (Desktop)
+  # => Microsoft.MixedReality.WebRTC.Native.Desktop.nupkg
+  - template: templates/jobs-mrwebrtc-release-pack.yaml
+    parameters:
+      packagePlatform: 'Desktop'
+      packageAgent: '$(MRWebRTC.PackageAgent)'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+  # Package mrwebrtc (UWP)
+  # => Microsoft.MixedReality.WebRTC.Native.UWP.nupkg
+  - template: templates/jobs-mrwebrtc-release-pack.yaml
+    parameters:
+      packagePlatform: 'UWP'
+      packageAgent: '$(MRWebRTC.PackageAgent)'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+  # Package C# library (Desktop)
+  # => Microsoft.MixedReality.WebRTC.nupkg
+  - template: templates/jobs-cslib-release-pack.yaml
+    parameters:
+      packagePlatform: 'Desktop'
+      packageAgent: '$(MRWebRTC.PackageAgent)'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+  # Package C# library (UWP)
+  # => Microsoft.MixedReality.WebRTC.UWP.nupkg
+  - template: templates/jobs-cslib-release-pack.yaml
+    parameters:
+      packagePlatform: 'UWP'
+      packageAgent: '$(MRWebRTC.PackageAgent)'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+# Test packages before publishing
+- stage: test
+  dependsOn: pack
+  displayName: 'Test'
+  jobs:
+
+  # Test mrwebrtc native library (Desktop)
+  - template: templates/jobs-mrwebrtc-release-test.yaml
+    parameters:
+      testPlatform: 'Desktop'
+      testAgent: '$(MRWebRTC.TestAgent)'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+  # Test mrwebrtc native library (UWP)
+  - template: templates/jobs-mrwebrtc-release-test.yaml
+    parameters:
+      testPlatform: 'UWP'
+      testAgent: '$(MRWebRTC.TestAgent)'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+  # Test C# library (Desktop)
+  - template: templates/jobs-cslib-release-test.yaml
+    parameters:
+      testPlatform: 'Desktop'
+      testAgent: '$(MRWebRTC.TestAgent)'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+  # Test C# library (UWP)
+  - template: templates/jobs-cslib-release-test.yaml
+    parameters:
+      testPlatform: 'UWP'
+      testAgent: '$(MRWebRTC.TestAgent)'
+      nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
+
+# # Publish packages
+# - stage: publish
+#   dependsOn: test
+#   displayName: 'Publish'
+#   jobs:
+#   # TODO...

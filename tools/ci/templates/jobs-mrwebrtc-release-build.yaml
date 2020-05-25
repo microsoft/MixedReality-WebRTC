@@ -1,0 +1,190 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# [TEMPLATE] Compile webrtc.lib and mrwebrtc.dll
+
+parameters:
+# Build agent pool
+- name: buildAgent
+  displayName: 'Build Agent Pool'
+  type: string
+  default: ''
+# Build platform
+- name: buildPlatform
+  displayName: 'Build Platform'
+  type: string
+  default: ''
+  values:
+  - 'Win32'
+  - 'UWP'
+# Build architecture
+- name: buildArch
+  displayName: 'Build Architecture'
+  type: string
+  default: ''
+  values:
+  - 'x86'
+  - 'x64'
+  - 'ARM'
+  - 'ARM64'
+# Build configuration
+- name: buildConfig
+  displayName: 'Build Configuration'
+  type: string
+  default: ''
+  values:
+  - 'Debug'
+  - 'Release'
+
+jobs:
+- job: mrwebrtc_${{parameters.buildPlatform}}_${{parameters.buildArch}}_${{parameters.buildConfig}}
+  timeoutInMinutes: 360
+  pool:
+    name: ${{parameters.buildAgent}}
+    demands:
+    - msbuild
+  variables:
+    buildTriple: ${{parameters.buildPlatform}}-${{parameters.buildArch}}-${{parameters.buildConfig}}
+    projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
+  steps:
+
+  # Install Python 2.7.17 and select as default
+  - template: 'steps-install-python2x.yaml'
+    parameters:
+      tempFolder: '$(Build.BinariesDirectory)\py27'
+      pythonVersion: '2.7.17'
+
+  # Use NuGet 5.2.0
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 5.2.0'
+    inputs:
+      versionSpec: 5.2.0
+    timeoutInMinutes: 5
+
+  # Calculate MSBuild platform
+  - powershell: |
+      if ("$env:BUILD_ARCH" -eq "x86") {
+        $msbuildPlatform = "Win32"
+      } else {
+        $msbuildPlatform = $env:BUILD_ARCH
+      }
+      Write-Host "MSBuild platform = $msbuildPlatform"
+      Write-Host "##vso[task.setvariable variable=msbuildPlatform;]$msbuildPlatform"
+    displayName: 'Compute MSBuild platform'
+    env:
+      BUILD_ARCH: ${{parameters.buildArch}}
+    timeoutInMinutes: 5
+
+  # Checkout
+  - checkout: self
+    submodules: recursive
+    fetchDepth: '50'
+    clean: $(clean.git)
+  
+  # Generate custom .vcxproj to skip any NuGet package related to webrtc.lib, since this pipeline
+  # is recompiling libwebrtc from sources. This saves both build time and disk space.
+  - task: PowerShell@2
+    displayName: 'Strip .vcxproj from Core NuGet'
+    inputs:
+      targetType: 'filePath'
+      filePath: 'tools/ci/modifyCppProject.ps1'
+      arguments: '-BuildConfig ${{parameters.buildConfig}} -BuildPlatform ${{parameters.buildPlatform}} -BuildArch ${{parameters.buildArch}} -ProjectFile "tools/build/mrwebrtc/${{parameters.buildPlatform}}/mrwebrtc-${{parameters.buildPlatform}}.vcxproj" -RemoveAll'
+
+  # Map build* variables to script* ones
+  - task: PowerShell@2
+    displayName: 'Map script variables'
+    inputs:
+      targetType: 'filePath'
+      filePath: 'tools/ci/mapVariables.ps1'
+      arguments: '${{parameters.buildPlatform}} ${{parameters.buildArch}} ${{parameters.buildConfig}}'
+
+  - ${{ if eq(parameters.buildPlatform, 'UWP') }}:
+    # Clean IDLs
+    - task: PythonScript@0
+      displayName: Clean IDLs
+      condition: variables['clean.idls']
+      inputs:
+        scriptSource: 'filePath'
+        scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+        arguments: '-a clean --cleanOptions cleanidls'
+        failOnStderr: false
+    # Restore any NuGet package (C++/WinRT, ...)
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+      displayName: 'Restore NuGet packages for Org.WebRtc'
+      inputs:
+        command: restore
+        restoreSolution: '$(projectRoot)Org.WebRtc.Universal/packages.config'
+        restoreDirectory: '../../../solutions/packages'
+      timeoutInMinutes: 10
+
+  # Prepare build
+  - task: PythonScript@0
+    displayName: 'Prepare build'
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a prepare -t webrtc -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper'
+      failOnStderr: false
+
+  # Clean-up unused files
+  - script: |
+      del /F /S /Q "depot_tools/external_bin/gsutil"
+      del /F /S /Q "chromium/third_party/protobuf/java"
+      del /F /S /Q "chromium/tools/android"
+      del /F /S /Q "chromium/tools/code_coverage"
+    workingDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform'
+    displayName: 'Clean-up unused files'
+
+  # Run component detection
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      sourceScanPath: '$(Build.SourcesDirectory)'
+
+  # Build webrtc.lib
+  - task: PythonScript@0
+    displayName: 'Build webrtc.lib'
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a build -t webrtc -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper'
+      failOnStderr: false
+    timeoutInMinutes: 120
+
+  - ${{ if eq(parameters.buildPlatform, 'UWP') }}:
+    # Build the UWP wrapper
+    - task: MSBuild@1
+      displayName: 'Build Org.WebRTC WinRT wrappers'
+      inputs:
+        solution: '$(projectRoot)Org.WebRtc.Universal/Org.WebRtc.vcxproj'
+        msbuildVersion: '15.0'
+        msbuildArchitecture: x64
+        platform: ${{parameters.buildArch}}
+        configuration: ${{parameters.buildConfig}}
+      timeoutInMinutes: 180
+
+  # Build mrwebrtc.dll
+  - task: MSBuild@1
+    displayName: 'Build mrwebrtc ($(buildTriple))'
+    inputs:
+      solution: 'tools/build/mrwebrtc/${{parameters.buildPlatform}}/mrwebrtc-${{parameters.buildPlatform}}.vcxproj'
+      msbuildVersion: '15.0'
+      msbuildArchitecture: 'x64'
+      platform: '$(msbuildPlatform)'
+      configuration: '${{parameters.buildConfig}}'
+    timeoutInMinutes: 20
+
+  # Stage artifacts
+  - task: CopyFiles@2
+    displayName: 'Stage mrwebrtc artifacts'
+    inputs:
+      sourceFolder: 'bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+      contents: '**/mrwebrtc.@(pdb|dll|lib)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)/mrwebrtc'
+
+  # Publish artifacts
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish mrwebrtc ($(buildTriple))'
+    inputs:
+      artifactName: 'mrwebrtc_$(buildTriple)'
+      targetPath: '$(Build.ArtifactStagingDirectory)/mrwebrtc'
