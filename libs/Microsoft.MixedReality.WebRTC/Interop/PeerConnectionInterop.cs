@@ -774,11 +774,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             PeerConnectionDataChannelRemovedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsPeerConnectionRenderRemoteAudio")]
-        public static extern uint PeerConnection_RenderRemoteAudio(PeerConnectionHandle peerHandle,
-            bool render);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddTransceiver")]
         public static extern uint PeerConnection_AddTransceiver(PeerConnectionHandle peerHandle,
             in TransceiverInterop.InitConfig config, out IntPtr transceiverHandle);
