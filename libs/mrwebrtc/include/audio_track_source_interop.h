@@ -68,9 +68,9 @@ MRS_API mrsResult MRS_CALL mrsAudioTrackSourceCreateFromDevice(
 /// not hook those callbacks, and therefore the callback will never be called.
 /// This is a limitation of the underlying implementation.
 /// See https://bugs.chromium.org/p/webrtc/issues/detail?id=11602
-MRS_API void MRS_CALL mrsAudioTrackSourceRegisterFrameCallback(
-    mrsAudioTrackSourceHandle source_handle,
-    mrsAudioFrameCallback callback,
-    void* user_data) noexcept;
+//MRS_API void MRS_CALL mrsAudioTrackSourceRegisterFrameCallback(
+//    mrsAudioTrackSourceHandle source_handle,
+//    mrsAudioFrameCallback callback,
+//    void* user_data) noexcept;
 
 }  // extern "C"

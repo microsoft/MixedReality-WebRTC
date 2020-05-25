@@ -120,11 +120,11 @@ mrsResult MRS_CALL mrsAudioTrackSourceCreateFromDevice(
   return Result::kSuccess;
 }
 
-void MRS_CALL mrsAudioTrackSourceRegisterFrameCallback(
-    mrsAudioTrackSourceHandle source_handle,
-    mrsAudioFrameCallback callback,
-    void* user_data) noexcept {
-  if (auto source = static_cast<AudioTrackSource*>(source_handle)) {
-    source->SetCallback(AudioFrameReadyCallback{callback, user_data});
-  }
-}
+//void MRS_CALL mrsAudioTrackSourceRegisterFrameCallback(
+//    mrsAudioTrackSourceHandle source_handle,
+//    mrsAudioFrameCallback callback,
+//    void* user_data) noexcept {
+//  if (auto source = static_cast<AudioTrackSource*>(source_handle)) {
+//    source->SetCallback(AudioFrameReadyCallback{callback, user_data});
+//  }
+//}
