@@ -25,7 +25,7 @@ A local media track is a [_media track_](#media-track) whose source is local to 
 
 ### Media
 
-The term _media_ refers to either or both of _audio_ and _video_. It does **not** encapsulate [_data channels_](#data-channel).
+The term _media_ refers to either or both of _audio_ and _video_. It does **not** include [_data channels_](#data-channel).
 
 ### Media track
 
