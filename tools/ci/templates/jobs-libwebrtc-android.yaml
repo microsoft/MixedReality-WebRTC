@@ -24,6 +24,13 @@ jobs:
     workDir: '$(Build.SourcesDirectory)/external/libwebrtc'
   steps:
 
+  # Force problematic dependencies
+  - bash: |
+      sudo apt-get update
+      sudo apt-get remove -y lighttpd
+      sudo apt-get install -y libssl1.1 python-pexpect python-ptyprocess
+    displayName: 'Force problematic dependencies'
+
   # List available disk space before clean-up
   - bash: df -h
     displayName: 'Available Disk Space'
