@@ -163,7 +163,7 @@ void AudioTrackReadBuffer::Read(int sample_rate,
       // ensure the next frame matches. This may drop some data but will only
       // happen when the output sample rate/channels change (i.e. rarely)
 
-      std::optional<Frame> frame;
+      absl::optional<Frame> frame;
       {
         std::unique_lock<std::mutex> lock(frames_mutex_);
 
