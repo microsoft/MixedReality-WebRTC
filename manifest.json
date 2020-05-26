@@ -1971,6 +1971,18 @@
       "version": ""
     },
     {
+      "type": "Conceptual",
+      "source_relative_path": "manual/glossary.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/glossary.html",
+          "hash": "G/OIDMi/0xkdZ8VCu8zcaQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Resource",
       "source_relative_path": "manual/helloworld-unity-1.png",
       "output": {
@@ -2350,7 +2362,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/toc.html",
-          "hash": "ICpC/vSrRr3fsnGbESPgbA=="
+          "hash": "mldIZCIl9pIuwsQ/dCsAXw=="
         }
       },
       "is_incremental": false,
@@ -2623,7 +2635,7 @@
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 40,
+          "total_file_count": 41,
           "skipped_file_count": 0
         },
         "ManagedReferenceDocumentProcessor": {

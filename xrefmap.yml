@@ -1,6 +1,9 @@
 ### YamlMime:XRefMap
 sorted: true
 references:
+- uid: glossary
+  name: Glossary
+  href: manual/glossary.html
 - uid: index
   name: Index
   href: index.html
