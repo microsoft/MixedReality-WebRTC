@@ -41,15 +41,12 @@ class AudioSourceAdapter : public webrtc::AudioSourceInterface {
   //
 
   // Sets the volume of the source. |volume| is in  the range of [0, 10].
-  // TODO(tommi): This method should be on the track and ideally volume should
-  // be applied in the track in a way that does not affect clones of the track.
   void SetVolume(double /*volume*/) override {}
 
   // Registers/unregisters observers to the audio source.
   void RegisterAudioObserver(AudioObserver* /*observer*/) override {}
   void UnregisterAudioObserver(AudioObserver* /*observer*/) override {}
 
-  // TODO(tommi): Make pure virtual.
   void AddSink(webrtc::AudioTrackSinkInterface* sink) override;
   void RemoveSink(webrtc::AudioTrackSinkInterface* sink) override;
 
