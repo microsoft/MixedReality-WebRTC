@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-# MixedReality-WebRTC build pipeline for Unity packages release.
+# MixedReality-WebRTC build pipeline for Unity packages release
 
 # Disable branch and PR triggers
 trigger: none
