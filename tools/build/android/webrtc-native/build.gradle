@@ -68,7 +68,7 @@ task copyToUnitySample {
     copy {
         from './build/outputs/aar'
         include "*.aar"
-        into '../../../../libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Plugins/arm64-v8a'
+        into '../../../../libs/unity/library/Runtime/Plugins/arm64-v8a'
     }    
 }
 
@@ -76,6 +76,8 @@ tasks.whenTaskAdded { task ->
     if (task.name == 'externalNativeBuildRelease') {
         task.finalizedBy copyToUnitySample
     } else if (task.name == 'externalNativeBuildDebug') {
+        task.finalizedBy copyToUnitySample
+    } else if (task.name == 'externalNativeBuildFulldebug') {
         task.finalizedBy copyToUnitySample
     }
 }
