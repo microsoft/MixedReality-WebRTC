@@ -7,7 +7,7 @@ parameters:
 - name: buildAgent
   type: string
   default: ''
-- name: npmPackageVersion
+- name: upmPackageVersion
   type: string
   default: ''
 
@@ -30,14 +30,14 @@ jobs:
     inputs:
       targetType: 'filePath'
       filePath: '$(Build.SourcesDirectory)/tools/ci/computeNpmPackageVersion.ps1'
-      arguments: '-PackageJsonFile "libs/unity/library/package.json" -PackageVersion "${{parameters.npmPackageVersion}}"'
+      arguments: '-PackageJsonFile "libs/unity/library/package.json" -PackageVersion "${{parameters.upmPackageVersion}}"'
     timeoutInMinutes: 5
   - task: PowerShell@2
     displayName: 'Set package version (samples)'
     inputs:
       targetType: 'filePath'
       filePath: '$(Build.SourcesDirectory)/tools/ci/computeNpmPackageVersion.ps1'
-      arguments: '-PackageJsonFile "libs/unity/samples/package.json" -PackageVersion "${{parameters.npmPackageVersion}}"'
+      arguments: '-PackageJsonFile "libs/unity/samples/package.json" -PackageVersion "${{parameters.upmPackageVersion}}"'
     timeoutInMinutes: 5
 
   # Download mrwebrtc.dll
@@ -46,35 +46,35 @@ jobs:
     inputs:
       source: 'current'
       artifact: 'mrwebrtc_Win32-x86-Release'
-      patterns: '**/*.@(pdb|dll)'
+      patterns: '**/mrwebrtc.@(pdb|dll)'
       path: 'libs/unity/library/Runtime/Plugins/Win32/x86'
   - task: DownloadPipelineArtifact@2
     displayName: 'Download mrwebrtc library (Win32-x64-Release)'
     inputs:
       source: 'current'
       artifact: 'mrwebrtc_Win32-x64-Release'
-      patterns: '**/*.@(pdb|dll)'
+      patterns: '**/mrwebrtc.@(pdb|dll)'
       path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
   - task: DownloadPipelineArtifact@2
     displayName: 'Download mrwebrtc library (UWP-x86-Release)'
     inputs:
       source: 'current'
       artifact: 'mrwebrtc_UWP-x86-Release'
-      patterns: '**/*.@(pdb|dll)'
+      patterns: '**/mrwebrtc.@(pdb|dll)'
       path: 'libs/unity/library/Runtime/Plugins/WSA/x86'
   - task: DownloadPipelineArtifact@2
     displayName: 'Download mrwebrtc library (UWP-x64-Release)'
     inputs:
       source: 'current'
       artifact: 'mrwebrtc_UWP-x64-Release'
-      patterns: '**/*.@(pdb|dll)'
+      patterns: '**/mrwebrtc.@(pdb|dll)'
       path: 'libs/unity/library/Runtime/Plugins/WSA/x86_64'
   - task: DownloadPipelineArtifact@2
     displayName: 'Download mrwebrtc library (UWP-ARM-Release)'
     inputs:
       source: 'current'
       artifact: 'mrwebrtc_UWP-ARM-Release'
-      patterns: '**/*.@(pdb|dll)'
+      patterns: '**/mrwebrtc.@(pdb|dll)'
       path: 'libs/unity/library/Runtime/Plugins/WSA/ARM'
 
   # Download Microsoft.MixedReality.WebRTC.dll
@@ -82,56 +82,120 @@ jobs:
     displayName: 'Download C# library'
     inputs:
       source: 'current'
-      artifact: 'cslib_Release'
-      patterns: '**/*.@(pdb|dll)'
+      artifact: 'cslib'
+      patterns: '**/Microsoft.MixedReality.WebRTC.@(pdb|dll)'
       path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
 
-  # Write .npmrc
-  - task: PowerShell@2
-    displayName: 'Write .npmrc (library)'
+  # For debugging, list the packages content before signing
+  - powershell: |
+     foreach ($f in $(Get-ChildItem -Path libs/unity -Recurse)) {
+       Write-Host $f.FullName
+     }
+    displayName: 'List packages content'
+
+  # Run component detection before signing (mandatory by policy)
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection before signing'
     inputs:
-      targetType: 'filePath'
-      filePath: '$(Build.SourcesDirectory)/tools/ci/writeNpmrc.ps1'
-      arguments: '-Target "libs/unity/library/.npmrc"'
-    env:
-      NPM_PUBLISH_REGISTER: $(NPM_PUBLISH_REGISTER)
-      NPM_PUBLISH_AUTH: $(NPM_PUBLISH_AUTH)
-      NPM_PUBLISH_EMAIL: $(NPM_PUBLISH_EMAIL)
-    timeoutInMinutes: 5
+      sourceScanPath: 'libs/unity'
 
-  # Publish library
-  - script: |
-      cd libs/unity/library
-      npm publish --registry $(NPM_PUBLISH_REGISTER)
-    displayName: 'Publish NPM (library)'
-
-  # Delete .npmrc
-  - pwsh: |
-      Remove-Item -Path '$(Build.SourcesDirectory)/libs/unity/library/.npmrc' -Force -ErrorAction Ignore
-    displayName: 'Delete .npmrc (library)'
-    condition: always()
-
-  # Write .npmrc
-  - task: PowerShell@2
-    displayName: 'Write .npmrc (samples)'
+  # Sign library package content
+  - task: DownloadSecureFile@1
+    name: SignConfigFile_Content
+    displayName: 'Download signing file (content)'
     inputs:
-      targetType: 'filePath'
-      filePath: '$(Build.SourcesDirectory)/tools/ci/writeNpmrc.ps1'
-      arguments: '-Target "libs/unity/samples/.npmrc"'
+      secureFile: 'mr-webrtc-unity-signconfig-content.xml'
+    timeoutInMinutes: 10
+  - task: PkgESCodeSign@10
+    displayName: 'Sign library package content'
+    inputs:
+      signConfigXml: '$(SignConfigFile_Content.secureFilePath)'
+      inPathRoot: 'libs/unity/library'
+      outPathRoot: 'libs/unity/library'
     env:
-      NPM_PUBLISH_REGISTER: $(NPM_PUBLISH_REGISTER)
-      NPM_PUBLISH_AUTH: $(NPM_PUBLISH_AUTH)
-      NPM_PUBLISH_EMAIL: $(NPM_PUBLISH_EMAIL)
-    timeoutInMinutes: 5
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-  # Publish samples
-  - script: |
-      cd libs/unity/samples
-      npm publish --registry $(NPM_PUBLISH_REGISTER)
-    displayName: 'Publish NPM (samples)'
+  # For debugging, list the packages content after signing
+  - powershell: |
+     foreach ($f in $(Get-ChildItem -Path libs/unity -Recurse)) {
+       Write-Host $f.FullName
+     }
+    displayName: 'List packages content'
 
-  # Delete .npmrc
+  # Pack the NPM package (library)
   - pwsh: |
-      Remove-Item -Path '$(Build.SourcesDirectory)/libs/unity/samples/.npmrc' -Force -ErrorAction Ignore
-    displayName: 'Delete .npmrc (samples)'
-    condition: always()
+      Set-Location "libs/unity/library"
+      Invoke-Expression "npm pack ." | Tee-Object -Variable PackageName | Out-Null
+      Write-Host "##vso[task.setvariable variable=PackedLibraryFilename]$PackageName"
+    displayName: 'Pack NPM (library)'
+
+  # Pack the NPM package (samples)
+  - pwsh: |
+      Set-Location "libs/unity/samples"
+      Invoke-Expression "npm pack ." | Tee-Object -Variable PackageName | Out-Null
+      Write-Host "##vso[task.setvariable variable=PackedSamplesFilename]$PackageName"
+    displayName: 'Pack NPM (samples)'
+
+  # Publish the UPM package (library)
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish artifact (library)'
+    inputs:
+      path: '$PackedLibraryFilename'
+      artifact: 'upm_library'
+
+  # Publish the UPM package (samples)
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish artifact (samples)'
+    inputs:
+      path: '$PackedSamplesFilename'
+      artifact: 'upm_samples'
+
+  # # Write .npmrc
+  # - task: PowerShell@2
+  #   displayName: 'Write .npmrc (library)'
+  #   inputs:
+  #     targetType: 'filePath'
+  #     filePath: '$(Build.SourcesDirectory)/tools/ci/writeNpmrc.ps1'
+  #     arguments: '-Target "libs/unity/library/.npmrc"'
+  #   env:
+  #     NPM_PUBLISH_REGISTER: $(NPM_PUBLISH_REGISTER)
+  #     NPM_PUBLISH_AUTH: $(NPM_PUBLISH_AUTH)
+  #     NPM_PUBLISH_EMAIL: $(NPM_PUBLISH_EMAIL)
+  #   timeoutInMinutes: 5
+
+  # # Publish library
+  # - script: |
+  #     cd libs/unity/library
+  #     npm publish --registry $(NPM_PUBLISH_REGISTER)
+  #   displayName: 'Publish NPM (library)'
+
+  # # Delete .npmrc
+  # - pwsh: |
+  #     Remove-Item -Path '$(Build.SourcesDirectory)/libs/unity/library/.npmrc' -Force -ErrorAction Ignore
+  #   displayName: 'Delete .npmrc (library)'
+  #   condition: always()
+
+  # # Write .npmrc
+  # - task: PowerShell@2
+  #   displayName: 'Write .npmrc (samples)'
+  #   inputs:
+  #     targetType: 'filePath'
+  #     filePath: '$(Build.SourcesDirectory)/tools/ci/writeNpmrc.ps1'
+  #     arguments: '-Target "libs/unity/samples/.npmrc"'
+  #   env:
+  #     NPM_PUBLISH_REGISTER: $(NPM_PUBLISH_REGISTER)
+  #     NPM_PUBLISH_AUTH: $(NPM_PUBLISH_AUTH)
+  #     NPM_PUBLISH_EMAIL: $(NPM_PUBLISH_EMAIL)
+  #   timeoutInMinutes: 5
+
+  # # Publish samples
+  # - script: |
+  #     cd libs/unity/samples
+  #     npm publish --registry $(NPM_PUBLISH_REGISTER)
+  #   displayName: 'Publish NPM (samples)'
+
+  # # Delete .npmrc
+  # - pwsh: |
+  #     Remove-Item -Path '$(Build.SourcesDirectory)/libs/unity/samples/.npmrc' -Force -ErrorAction Ignore
+  #   displayName: 'Delete .npmrc (samples)'
+  #   condition: always()

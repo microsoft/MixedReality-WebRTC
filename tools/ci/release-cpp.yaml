@@ -19,6 +19,7 @@ name: release-windows-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 parameters:
 - name: nugetPackageVersion
+  displayName: 'NuGet package version (semver)'
   type: string
   default: '0.0.1-preview.1'
 
