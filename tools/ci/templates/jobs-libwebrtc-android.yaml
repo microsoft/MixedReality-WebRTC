@@ -24,9 +24,11 @@ jobs:
     workDir: '$(Build.SourcesDirectory)/external/libwebrtc'
   steps:
 
+  # List available disk space before clean-up
   - bash: df -h
     displayName: 'Available Disk Space'
 
+  # List installed packages sorted by size before clean-up
   - bash: |
       echo "List all packages in reverse sorted order by their installed size (MB):"
       dpkg-query --show --showformat='${Installed-Size}\t${Package}\n' | sort -rh | awk '{print $1/1024, $2}'
@@ -38,43 +40,53 @@ jobs:
   # Clean the base image to recover disk space
   - template: steps-linux-clean-image.yaml
 
+  # List available disk space after clean-up
   - bash: df -h
     displayName: 'Available Disk Space'
 
-  # # Checkout MixedReality-WebRTC
-  # - checkout: self
-  #   clean: $(clean.git)
+  # List installed packages sorted by size after clean-up
+  - bash: |
+      echo "List all packages in reverse sorted order by their installed size (MB):"
+      dpkg-query --show --showformat='${Installed-Size}\t${Package}\n' | sort -rh | awk '{print $1/1024, $2}'
+      echo "-----------------------------------------------------------------"
+      echo "List all packages in alphabetical order (including version numbers):"
+      apt list --installed
+    displayName: 'List installed packages'
 
-  # # Checkout libwebrtc
-  # - script: |
-  #     cd $(toolsDir)/libwebrtc
-  #     ./config.sh -v -d $(workDir) -b "branch-heads/71" -t android -c arm64 -s -f
-  #     ./checkout.sh -v
-  #   displayName: 'Checkout libwebrtc'
+  # Checkout MixedReality-WebRTC
+  - checkout: self
+    clean: $(clean.git)
 
-  # # Build libwebrtc
-  # - script: |
-  #     cd $(toolsDir)/libwebrtc
-  #     ./build.sh -v -c ${{parameters.buildConfig}}
-  #   displayName: 'Build libwebrtc'
+  # Checkout libwebrtc
+  - script: |
+      cd $(toolsDir)/libwebrtc
+      ./config.sh -v -d $(workDir) -b "branch-heads/71" -t android -c arm64 -s -f
+      ./checkout.sh -v
+    displayName: 'Checkout libwebrtc'
 
-  # # Build mrwebrtc
-  # - script: |
-  #     cd $(toolsDir)/android
-  #     /gradlew assembleRelease
-  #   displayName: 'Build mrwebrtc'
+  # Build libwebrtc
+  - script: |
+      cd $(toolsDir)/libwebrtc
+      ./build.sh -v -c ${{parameters.buildConfig}}
+    displayName: 'Build libwebrtc'
 
-  # # Stage artifacts
-  # - task: CopyFiles@2
-  #   displayName: 'Stage mrwebrtc artifacts'
-  #   inputs:
-  #     sourceFolder: '$(toolsDir)/android/webrtc-native/build/outputs/aar'
-  #     contents: 'mrwebrtc.aar'
-  #     targetFolder: '$(Build.ArtifactStagingDirectory)'
+  # Build mrwebrtc
+  - script: |
+      cd $(toolsDir)/android
+      /gradlew assembleRelease
+    displayName: 'Build mrwebrtc'
 
-  # # Publish mrwebrtc.dll and mrwebrtc.pdb
-  # - task: PublishPipelineArtifact@0
-  #   displayName: 'Publish mrwebrtc'
-  #   inputs:
-  #     artifactName: 'mrwebrtc_android_arm64_release'
-  #     targetPath: '$(Build.ArtifactStagingDirectory)'
+  # Stage artifacts
+  - task: CopyFiles@2
+    displayName: 'Stage mrwebrtc artifacts'
+    inputs:
+      sourceFolder: '$(toolsDir)/android/webrtc-native/build/outputs/aar'
+      contents: 'mrwebrtc.aar'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  # Publish mrwebrtc.dll and mrwebrtc.pdb
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish mrwebrtc'
+    inputs:
+      artifactName: 'mrwebrtc_android_arm64_release'
+      targetPath: '$(Build.ArtifactStagingDirectory)'

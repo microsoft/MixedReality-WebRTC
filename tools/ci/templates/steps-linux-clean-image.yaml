@@ -3,6 +3,8 @@
 
 # [TEMPLATE] Clean up the Linux base image by removing packages and dependencies that the build does not require
 
+# On 18.04 over a disk of ~84GB this brings free disk space from ~16BG to ~38GB.
+
 steps:
   - bash: |
       # Remove Android SDKs and tools. To see what is installed, check the following script:
@@ -75,7 +77,7 @@ steps:
       # and Chrome.
       sudo apt-get remove -y kubectl mercurial ansible moby-engine moby-cli firefox gfortran-8 gfortran-9 google-chrome-stable \
         google-cloud-sdk mysql-client libmysqlclient-dev mysql-server mssql-tools unixodbc-dev yarn pollinate libpq-dev \
-        postgresql-client ruby-full sphinxsearch subversion vim* zulu* heroku imagemagick* ghc-* openjdk* 'php[0-9].[0-9]-*'
+        postgresql-client ruby-full sphinxsearch subversion vim* zulu* heroku imagemagick* ghc-* openjdk* 'php[0-9].[0-9]-*' hhvm
       ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
 
       # Cleanup package manager
