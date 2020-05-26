@@ -56,6 +56,14 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
     internal class LocalAudioTrackInterop
     {
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        internal ref struct TrackInitConfig
+        {
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string TrackName;
+        }
+
+
         #region Native functions
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
@@ -68,9 +76,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static unsafe extern void LocalAudioTrack_RemoveRef(IntPtr handle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsLocalAudioTrackCreateFromDevice")]
-        public static unsafe extern uint LocalAudioTrack_CreateFromDevice(in PeerConnectionInterop.LocalAudioTrackInteropInitConfig config,
-            string trackName, out LocalAudioTrackHandle trackHandle);
+            EntryPoint = "mrsLocalAudioTrackCreateFromSource")]
+        public static unsafe extern uint LocalAudioTrack_CreateFromSource(in TrackInitConfig initSettings,
+            AudioTrackSourceHandle sourceHandle, out LocalAudioTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsLocalAudioTrackRegisterFrameCallback")]
@@ -86,6 +94,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static extern uint LocalAudioTrack_SetEnabled(LocalAudioTrackHandle trackHandle, int enabled);
 
         #endregion
+
 
         public class InteropCallbackArgs
         {

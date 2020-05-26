@@ -33,14 +33,19 @@ namespace TestAppUwp
 
             await RequestMediaAccessAsync(StreamingCaptureMode.Audio);
 
-            var settings = new LocalAudioTrackSettings
+                    // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
+            var initConfig = new LocalAudioDeviceInitConfig();
+            var source = await AudioTrackSource.CreateFromDeviceAsync(initConfig);
+
+            var settings = new LocalAudioTrackInitConfig
             {
                 trackName = trackName
             };
-            var track = await LocalAudioTrack.CreateFromDeviceAsync(settings);
+            var track = await LocalAudioTrack.CreateFromSourceAsync(source, settings);
 
             SessionModel.Current.AudioTracks.Add(new AudioTrackViewModel
             {
+                Source = source,
                 Track = track,
                 TrackImpl = track,
                 IsRemote = false,

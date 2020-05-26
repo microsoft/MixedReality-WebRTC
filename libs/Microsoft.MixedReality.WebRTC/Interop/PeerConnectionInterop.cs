@@ -351,23 +351,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         /// <summary>
-        /// Helper structure to pass parameters to the native implementation when creating a local audio track.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        internal ref struct LocalAudioTrackInteropInitConfig
-        {
-            /// <summary>
-            /// Constructor for creating a local audio track.
-            /// </summary>
-            /// <param name="track">The newly created track wrapper.</param>
-            /// <param name="settings">The settings to initialize the newly created native track.</param>
-            /// <seealso cref="LocalAudioTrack.CreateFromDeviceAsync(LocalAudioTrackSettings)"/>
-            public LocalAudioTrackInteropInitConfig(LocalAudioTrack track, LocalAudioTrackSettings settings)
-            {
-            }
-        }
-
-        /// <summary>
         /// Helper structure to pass parameters to the native implementation when creating a local video track
         /// by opening a local video capture device.
         /// </summary>

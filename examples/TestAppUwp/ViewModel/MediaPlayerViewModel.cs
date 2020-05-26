@@ -117,7 +117,10 @@ namespace TestAppUwp
                 DisplayName = "Local microphone (default device)",
                 Factory = async () =>
                 {
-                    return await LocalAudioTrack.CreateFromDeviceAsync();
+                    // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
+                    var source = await AudioTrackSource.CreateFromDeviceAsync();
+                    var settings = new LocalAudioTrackInitConfig();
+                    return await LocalAudioTrack.CreateFromSourceAsync(source, settings);
                 }
             });
 

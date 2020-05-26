@@ -7,6 +7,7 @@
 
 #include "api/stats/rtcstats_objects.h"
 
+#include "audio_track_source_interop.h"
 #include "data_channel.h"
 #include "data_channel_interop.h"
 #include "external_video_track_source_interop.h"
@@ -14,6 +15,7 @@
 #include "interop_api.h"
 #include "local_audio_track_interop.h"
 #include "local_video_track_interop.h"
+#include "media/audio_track_source.h"
 #include "media/external_video_track_source_impl.h"
 #include "media/local_audio_track.h"
 #include "media/local_video_track.h"
@@ -682,49 +684,6 @@ void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
     peer->RegisterDataChannelRemovedCallback(
         Callback<mrsDataChannelHandle>{callback, user_data});
   }
-}
-
-mrsResult MRS_CALL mrsLocalAudioTrackCreateFromDevice(
-    const mrsLocalAudioTrackInitConfig* /*config*/,
-    const char* track_name,
-    mrsLocalAudioTrackHandle* track_handle_out) noexcept {
-  if (IsStringNullOrEmpty(track_name)) {
-    RTC_LOG(LS_ERROR) << "Invalid empty local audio track name.";
-    return Result::kInvalidParameter;
-  }
-  if (!track_handle_out) {
-    RTC_LOG(LS_ERROR) << "Invalid NULL local audio track handle.";
-    return Result::kInvalidParameter;
-  }
-  *track_handle_out = nullptr;
-
-  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
-  auto pc_factory = global_factory->GetPeerConnectionFactory();
-  if (!pc_factory) {
-    return Result::kInvalidOperation;
-  }
-
-  // Create the audio track source
-  rtc::scoped_refptr<webrtc::AudioSourceInterface> audio_source =
-      pc_factory->CreateAudioSource(cricket::AudioOptions());
-  if (!audio_source) {
-    RTC_LOG(LS_ERROR) << "Failed to create local audio source.";
-    return Result::kUnknownError;
-  }
-
-  // Create the audio track
-  rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track =
-      pc_factory->CreateAudioTrack(track_name, audio_source);
-  if (!audio_track) {
-    RTC_LOG(LS_ERROR) << "Failed to create local audio track.";
-    return Result::kUnknownError;
-  }
-
-  // Create the audio track wrapper
-  RefPtr<LocalAudioTrack> track =
-      new LocalAudioTrack(std::move(global_factory), std::move(audio_track));
-  *track_handle_out = track.release();
-  return Result::kSuccess;
 }
 
 mrsResult MRS_CALL mrsLocalVideoTrackCreateFromDevice(

@@ -89,6 +89,9 @@ using mrsMediaTrackHandle = void*;
 /// Opaque handle to a native Transceiver interop object.
 using mrsTransceiverHandle = void*;
 
+/// Opaque handle to a native AudioTrackSource interop object.
+using mrsAudioTrackSourceHandle = void*;
+
 /// Opaque handle to a native LocalAudioTrack interop object.
 using mrsLocalAudioTrackHandle = void*;
 

@@ -127,11 +127,20 @@ TEST_P(AudioTrackTests, Simple) {
                                             &audio_transceiver1));
   ASSERT_NE(nullptr, audio_transceiver1);
 
+  // Create the audio source #1
+  mrsLocalAudioDeviceInitConfig device_config{};
+  mrsAudioTrackSourceHandle audio_source1{};
+  ASSERT_EQ(Result::kSuccess, mrsAudioTrackSourceCreateFromDevice(
+                                  &device_config, &audio_source1));
+  ASSERT_NE(nullptr, audio_source1);
+
   // Create the local audio track #1
-  mrsLocalAudioTrackInitConfig config{};
+  mrsLocalAudioTrackInitSettings init_settings{};
+  init_settings.track_name = "test_audio_track";
   mrsLocalAudioTrackHandle audio_track1{};
-  ASSERT_EQ(Result::kSuccess, mrsLocalAudioTrackCreateFromDevice(
-                                  &config, "test_audio_track", &audio_track1));
+  ASSERT_EQ(Result::kSuccess,
+            mrsLocalAudioTrackCreateFromSource(&init_settings, audio_source1,
+                                               &audio_track1));
   ASSERT_NE(nullptr, audio_track1);
 
   // Audio tracks start enabled
@@ -242,6 +251,7 @@ TEST_P(AudioTrackTests, Simple) {
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);
   mrsLocalAudioTrackRemoveRef(audio_track1);
+  mrsAudioTrackSourceRemoveRef(audio_source1);
 }
 
 TEST_P(AudioTrackTests, Muted) {
@@ -274,11 +284,20 @@ TEST_P(AudioTrackTests, Muted) {
                                             &audio_transceiver1));
   ASSERT_NE(nullptr, audio_transceiver1);
 
+  // Create the audio source #1
+  mrsLocalAudioDeviceInitConfig device_config{};
+  mrsAudioTrackSourceHandle audio_source1{};
+  ASSERT_EQ(Result::kSuccess, mrsAudioTrackSourceCreateFromDevice(
+                                  &device_config, &audio_source1));
+  ASSERT_NE(nullptr, audio_source1);
+
   // Create the local audio track #1
-  mrsLocalAudioTrackInitConfig config{};
+  mrsLocalAudioTrackInitSettings init_settings{};
+  init_settings.track_name = "test_audio_track";
   mrsLocalAudioTrackHandle audio_track1{};
-  ASSERT_EQ(Result::kSuccess, mrsLocalAudioTrackCreateFromDevice(
-                                  &config, "test_audio_track", &audio_track1));
+  ASSERT_EQ(Result::kSuccess,
+            mrsLocalAudioTrackCreateFromSource(&init_settings, audio_source1,
+                                               &audio_track1));
   ASSERT_NE(nullptr, audio_track1);
 
   // Audio tracks start enabled
@@ -377,6 +396,7 @@ TEST_P(AudioTrackTests, Muted) {
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);
   mrsLocalAudioTrackRemoveRef(audio_track1);
+  mrsAudioTrackSourceRemoveRef(audio_source1);
 }
 
 #endif  // MRSW_EXCLUDE_DEVICE_TESTS
