@@ -27,8 +27,21 @@ jobs:
   # Force problematic dependencies
   - bash: |
       sudo apt-get update
-      sudo apt-get remove -y lighttpd
-      sudo apt-get install -y libssl1.1 python-pexpect python-ptyprocess
+      sudo apt-cache show lighttpd
+      sudo apt-cache show libssl1.1
+      sudo apt-cache show python-pexpect
+      sudo apt-cache show python-ptyprocess
+      sudo apt-cache showpkg lighttpd
+      sudo apt-cache showpkg libssl1.1
+      sudo apt-cache showpkg python-pexpect
+      sudo apt-cache showpkg python-ptyprocess
+      sudo apt-cache policy lighttpd
+      sudo apt-cache policy libssl1.1
+      sudo apt-cache policy python-pexpect
+      sudo apt-cache policy python-ptyprocess
+      sudo apt-get install -y libssl1.1=1.1.1-1ubuntu2.1~18.04.5
+      sudo apt-get install -y lighttpd
+      sudo apt-get install -y python-pexpect python-ptyprocess
     displayName: 'Force problematic dependencies'
 
   # List available disk space before clean-up
