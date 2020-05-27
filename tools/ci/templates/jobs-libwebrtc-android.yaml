@@ -29,17 +29,20 @@ jobs:
       sudo apt-get update
       sudo apt-cache show lighttpd
       sudo apt-cache show libssl1.1
+      sudo apt-cache show libssl-dev
       sudo apt-cache show python-pexpect
       sudo apt-cache show python-ptyprocess
       sudo apt-cache showpkg lighttpd
       sudo apt-cache showpkg libssl1.1
+      sudo apt-cache showpkg libssl-dev
       sudo apt-cache showpkg python-pexpect
       sudo apt-cache showpkg python-ptyprocess
       sudo apt-cache policy lighttpd
       sudo apt-cache policy libssl1.1
+      sudo apt-cache policy libssl-dev
       sudo apt-cache policy python-pexpect
       sudo apt-cache policy python-ptyprocess
-      sudo apt-get install -y --allow-downgrades libssl1.1=1.1.1-1ubuntu2.1~18.04.5 libssl-dev
+      sudo apt-get install -y --allow-downgrades libssl1.1=1.1.1-1ubuntu2.1~18.04.5 libssl-dev=1.1.1-1ubuntu2.1~18.04.5
       ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
       sudo apt-get install -y lighttpd
       ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
