@@ -53,6 +53,8 @@ jobs:
       ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
       sudo apt-get install -y python-pexpect python-ptyprocess
       ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
+      # Pin packages to avoid any further issue
+      sudo apt-mark hold libssl1.1 libssl-dev lighttpd
     displayName: 'Force problematic dependencies'
 
   # List available disk space before clean-up
