@@ -31,7 +31,12 @@ jobs:
   #   installed (which the Google scripts will do when installing Chromium dependencies).
   # - python-pexpect : Depends: python-ptyprocess but it is not going to be installed
   - bash: |
+      # Remove PPAs
+      sudo ls /etc/apt/sources.list.d
+      sudo add-apt-repository --remove ppa:ondrej/php
+      # Update
       sudo apt-get update
+      # Display various info
       sudo apt-cache show lighttpd
       sudo apt-cache show libssl1.1
       sudo apt-cache show libssl-dev
@@ -47,6 +52,7 @@ jobs:
       sudo apt-cache policy libssl-dev
       sudo apt-cache policy python-pexpect
       sudo apt-cache policy python-ptyprocess
+      # Force-install safe versions
       sudo apt-get install -y --allow-downgrades libssl1.1=1.1.1-1ubuntu2.1~18.04.5 libssl-dev=1.1.1-1ubuntu2.1~18.04.5
       ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
       sudo apt-get install -y lighttpd
