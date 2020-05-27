@@ -25,6 +25,11 @@ jobs:
   steps:
 
   # Force problematic dependencies
+  # - libssl1.1 : Breaks: lighttpd (< 1.4.49-2) but 1.4.45-1ubuntu3.18.04 is to be installed
+  #   On the Azure agent image, recent versions of libssl1.1 and libssl-dev are installed,
+  #   which are too recent for lighttpd. Downgrade to a safe version to allow lighttpd to be
+  #   installed (which the Google scripts will do when installing Chromium dependencies).
+  # - python-pexpect : Depends: python-ptyprocess but it is not going to be installed
   - bash: |
       sudo apt-get update
       sudo apt-cache show lighttpd
