@@ -39,9 +39,12 @@ jobs:
       sudo apt-cache policy libssl1.1
       sudo apt-cache policy python-pexpect
       sudo apt-cache policy python-ptyprocess
-      sudo apt-get install -y libssl1.1=1.1.1-1ubuntu2.1~18.04.5
+      sudo apt-get install -y --allow-downgrades libssl1.1=1.1.1-1ubuntu2.1~18.04.5 libssl-dev
+      ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
       sudo apt-get install -y lighttpd
+      ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
       sudo apt-get install -y python-pexpect python-ptyprocess
+      ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
     displayName: 'Force problematic dependencies'
 
   # List available disk space before clean-up
