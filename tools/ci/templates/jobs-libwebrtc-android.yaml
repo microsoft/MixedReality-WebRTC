@@ -8,9 +8,9 @@ parameters:
   type: string
   default: ''
   values:
-  - fulldebug
-  - debug
-  - release
+  - Fulldebug
+  - Debug
+  - Release
 
 jobs:
 
@@ -112,7 +112,7 @@ jobs:
   # Build mrwebrtc
   - script: |
       cd $(toolsDir)/android
-      /gradlew assembleRelease
+      /gradlew assemble${{parameters.buildConfig}}
     displayName: 'Build mrwebrtc'
 
   # Stage artifacts
@@ -127,5 +127,5 @@ jobs:
   - task: PublishPipelineArtifact@0
     displayName: 'Publish mrwebrtc'
     inputs:
-      artifactName: 'mrwebrtc_android_arm64_release'
+      artifactName: 'mrwebrtc_android_arm64_${{parameters.buildConfig}}'
       targetPath: '$(Build.ArtifactStagingDirectory)'
