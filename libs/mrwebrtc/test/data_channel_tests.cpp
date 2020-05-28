@@ -199,14 +199,6 @@ TEST_P(DataChannelTests, Send) {
   pc_config.sdp_semantic = GetParam();
   LocalPeerPairRaii pair(pc_config);
 
-  const int kId = 42;
-
-  mrsDataChannelConfig config{};
-  config.id = kId;
-  config.label = "data";
-  config.flags = mrsDataChannelConfigFlags::kOrdered |
-                 mrsDataChannelConfigFlags::kReliable;
-
   const char msg1_data[] = "test message";
   const uint64_t msg1_size = sizeof(msg1_data);
   const char msg2_data[] =
@@ -214,6 +206,7 @@ TEST_P(DataChannelTests, Send) {
       "previous message, just to make sure longer messages are also supported.";
   const uint64_t msg2_size = sizeof(msg2_data);
 
+  int expected_id = -1;
   Event ev_msg1, ev_state1;
   std::function<void(const void*, const uint64_t)> message1_cb(
       [&](const void* data, const uint64_t size) {
@@ -224,21 +217,13 @@ TEST_P(DataChannelTests, Send) {
       });
   std::function<void(int32_t, int32_t)> state1_cb(
       [&](int32_t state, int32_t id) {
-        ASSERT_EQ(kId, id);
+        if (expected_id >= 0) {
+          ASSERT_EQ(expected_id, id);
+        }
         if (state == 1) {  // kOpen
           ev_state1.Set();
         }
       });
-  mrsDataChannelHandle handle1;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionAddDataChannel(pair.pc1(), &config, &handle1));
-
-  mrsDataChannelCallbacks callbacks1{};
-  callbacks1.message_callback = &StaticMessageCallback;
-  callbacks1.message_user_data = &message1_cb;
-  callbacks1.state_callback = &StaticStateCallback;
-  callbacks1.state_user_data = &state1_cb;
-  mrsDataChannelRegisterCallbacks(handle1, &callbacks1);
 
   Event ev_msg2, ev_state2;
   std::function<void(const void*, const uint64_t)> message2_cb(
@@ -250,42 +235,137 @@ TEST_P(DataChannelTests, Send) {
       });
   std::function<void(int32_t, int32_t)> state2_cb(
       [&](int32_t state, int32_t id) {
-        ASSERT_EQ(kId, id);
+        if (expected_id >= 0) {
+          ASSERT_EQ(expected_id, id);
+        }
         if (state == 1) {  // kOpen
           ev_state2.Set();
         }
       });
-  mrsDataChannelHandle handle2;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionAddDataChannel(pair.pc2(), &config, &handle2));
+  mrsDataChannelCallbacks callbacks1{};
+  callbacks1.message_callback = &StaticMessageCallback;
+  callbacks1.message_user_data = &message1_cb;
+  callbacks1.state_callback = &StaticStateCallback;
+  callbacks1.state_user_data = &state1_cb;
 
   mrsDataChannelCallbacks callbacks2{};
   callbacks2.message_callback = &StaticMessageCallback;
   callbacks2.message_user_data = &message2_cb;
   callbacks2.state_callback = &StaticStateCallback;
   callbacks2.state_user_data = &state2_cb;
-  mrsDataChannelRegisterCallbacks(handle2, &callbacks2);
 
-  // Connect and waitfor channels to be ready
-  pair.ConnectAndWait();
-  ASSERT_TRUE(ev_state1.WaitFor(60s));
-  ASSERT_TRUE(ev_state2.WaitFor(60s));
+  // Send messages through an out-of-band channel.
+  {
+    const int kId = 42;
+    expected_id = kId;
+    mrsDataChannelConfig config{};
+    config.id = kId;
+    config.label = "data";
+    config.flags = mrsDataChannelConfigFlags::kOrdered |
+                   mrsDataChannelConfigFlags::kReliable;
 
-  // Send message 1 -> 2
-  ASSERT_EQ(Result::kSuccess,
-            mrsDataChannelSendMessage(handle1, msg1_data, msg1_size));
-  ASSERT_TRUE(ev_msg2.WaitFor(60s));
+    // Create channels.
+    mrsDataChannelHandle handle1;
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionAddDataChannel(pair.pc1(), &config, &handle1));
+    mrsDataChannelRegisterCallbacks(handle1, &callbacks1);
+    mrsDataChannelHandle handle2;
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionAddDataChannel(pair.pc2(), &config, &handle2));
+    mrsDataChannelRegisterCallbacks(handle2, &callbacks2);
 
-  // Send message 2 -> 1
-  ASSERT_EQ(Result::kSuccess,
-            mrsDataChannelSendMessage(handle2, msg2_data, msg2_size));
-  ASSERT_TRUE(ev_msg1.WaitFor(60s));
+    // Connect and wait for channels to be ready
+    pair.ConnectAndWait();
+    ASSERT_TRUE(ev_state1.WaitFor(60s));
+    ASSERT_TRUE(ev_state2.WaitFor(60s));
 
-  // Clean-up
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionRemoveDataChannel(pair.pc1(), handle1));
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionRemoveDataChannel(pair.pc2(), handle2));
+    // Send message 1 -> 2
+    ASSERT_EQ(Result::kSuccess,
+              mrsDataChannelSendMessage(handle1, msg1_data, msg1_size));
+    ASSERT_TRUE(ev_msg2.WaitFor(60s));
+
+    // Send message 2 -> 1
+    ASSERT_EQ(Result::kSuccess,
+              mrsDataChannelSendMessage(handle2, msg2_data, msg2_size));
+    ASSERT_TRUE(ev_msg1.WaitFor(60s));
+
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionRemoveDataChannel(pair.pc1(), handle1));
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionRemoveDataChannel(pair.pc2(), handle2));
+  }
+
+  // Send messages through an in-band channel.
+  {
+    mrsDataChannelConfig inband_config{};
+    inband_config.label = "in-band";
+    inband_config.flags = mrsDataChannelConfigFlags::kOrdered |
+                          mrsDataChannelConfigFlags::kReliable;
+    expected_id = -1;
+
+    mrsDataChannelHandle inband_handle1{};
+    mrsDataChannelHandle inband_handle2{};
+
+    Event ev_inband1, ev_inband2;
+    ev_state1.Reset();
+    ev_state2.Reset();
+    ev_msg1.Reset();
+    ev_msg2.Reset();
+
+    // Create channel on pc1 and wait for callback on both ends.
+    mrsDataChannelHandle inband1_handle_from_callback{};
+    DataAddedCallback inband_added_cb1 =
+        [&](const mrsDataChannelAddedInfo* info) {
+          ASSERT_NE(nullptr, info->handle);
+          inband1_handle_from_callback = info->handle;
+          ASSERT_STREQ(inband_config.label, info->label);
+          mrsDataChannelRegisterCallbacks(info->handle, &callbacks1);
+          ev_inband1.Set();
+        };
+    DataAddedCallback inband_added_cb2 =
+        [&](const mrsDataChannelAddedInfo* info) {
+          ASSERT_NE(nullptr, info->handle);
+          inband_handle2 = info->handle;
+          ASSERT_STREQ(inband_config.label, info->label);
+          mrsDataChannelRegisterCallbacks(inband_handle2, &callbacks2);
+          ev_inband2.Set();
+        };
+    mrsPeerConnectionRegisterDataChannelAddedCallback(pair.pc1(),
+                                                      CB(inband_added_cb1));
+    mrsPeerConnectionRegisterDataChannelAddedCallback(pair.pc2(),
+                                                      CB(inband_added_cb2));
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionAddDataChannel(pair.pc1(), &inband_config,
+                                              &inband_handle1));
+    ASSERT_TRUE(ev_inband1.WaitFor(60s));
+    ASSERT_TRUE(ev_inband2.WaitFor(60s));
+    ASSERT_EQ(inband_handle1, inband1_handle_from_callback);
+
+    // Wait for the channel to be open on both ends.
+    ASSERT_TRUE(ev_state1.WaitFor(60s));
+    ASSERT_TRUE(ev_state2.WaitFor(60s));
+
+    // Send message 1 -> 2
+    ASSERT_EQ(Result::kSuccess,
+              mrsDataChannelSendMessage(inband_handle1, msg1_data, msg1_size));
+    ASSERT_TRUE(ev_msg2.WaitFor(60s));
+
+    // Send message 2 -> 1
+    ASSERT_EQ(Result::kSuccess,
+              mrsDataChannelSendMessage(inband_handle2, msg2_data, msg2_size));
+    ASSERT_TRUE(ev_msg1.WaitFor(60s));
+
+    // Clean-up
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionRemoveDataChannel(pair.pc1(), inband_handle1));
+    ASSERT_EQ(Result::kSuccess,
+              mrsPeerConnectionRemoveDataChannel(pair.pc2(), inband_handle2));
+
+    mrsPeerConnectionRegisterDataChannelAddedCallback(pair.pc1(), nullptr,
+                                                      nullptr);
+    mrsPeerConnectionRegisterDataChannelAddedCallback(pair.pc2(), nullptr,
+                                                      nullptr);
+  }
 }
 
 TEST_F(DataChannelTests, Send_InvalidHandle) {

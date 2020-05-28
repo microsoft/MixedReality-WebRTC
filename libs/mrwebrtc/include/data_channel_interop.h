@@ -6,6 +6,21 @@
 #include "interop_api.h"
 
 extern "C" {
+/// Data channel state as marshaled through the public API.
+enum class mrsDataChannelState : int32_t {
+  /// The data channel is being connected, but is not yet ready to send nor
+  /// received any data.
+  kConnecting = 0,
+
+  /// The data channel is ready for read and write operations.
+  kOpen = 1,
+
+  /// The data channel is being closed, and cannot send any more data.
+  kClosing = 2,
+
+  /// The data channel is closed, and cannot be used again anymore.
+  kClosed = 3
+};
 
 /// Assign some opaque user data to the data channel. The implementation will
 /// store the pointer in the data channel object and not touch it. It can be
@@ -38,7 +53,7 @@ using mrsDataChannelBufferingCallback =
 
 /// Callback fired when the state of a data channel changed.
 using mrsDataChannelStateCallback = void(MRS_CALL*)(void* user_data,
-                                                    int32_t state,
+                                                    mrsDataChannelState state,
                                                     int32_t id);
 
 /// Helper to register a group of data channel callbacks.
@@ -52,6 +67,14 @@ struct mrsDataChannelCallbacks {
 };
 
 /// Register callbacks for managing a data channel.
+///
+/// Should be called in a |mrsPeerConnectionDataChannelAddedCallback| to start
+/// listening for state changes/messages. Registered callbacks will be called
+/// after the end of the DataChannelAdded callback. Note that if this is not
+/// called during the DataChannelAdded callback some state changes/messages
+/// might be lost.
+///
+/// Callbacks can be replaced later as long as the channel is alive.
 MRS_API void MRS_CALL mrsDataChannelRegisterCallbacks(
     mrsDataChannelHandle handle,
     const mrsDataChannelCallbacks* callbacks) noexcept;

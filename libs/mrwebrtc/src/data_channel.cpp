@@ -10,7 +10,7 @@
 namespace {
 
 using RtcDataState = webrtc::DataChannelInterface::DataState;
-using ApiDataState = Microsoft::MixedReality::WebRTC::DataChannel::State;
+using ApiDataState = mrsDataChannelState;
 
 inline ApiDataState apiStateFromRtcState(RtcDataState rtcState) {
   // API values have been chosen to match the current WebRTC values. If the
@@ -74,19 +74,27 @@ bool DataChannel::Send(const void* data, size_t size) noexcept {
   if (data_channel_->buffered_amount() + size > GetMaxBufferingSize()) {
     return false;
   }
+
+  auto state = data_channel_->state();
+  RTC_LOG_F(LS_INFO) << state;
+
   rtc::CopyOnWriteBuffer bufferStorage((const char*)data, size);
   webrtc::DataBuffer buffer(bufferStorage, /* binary = */ true);
   return data_channel_->Send(buffer);
 }
 
-void DataChannel::OnStateChange() noexcept {
+void DataChannel::FireOnStateChange() const noexcept {
   std::lock_guard<std::mutex> lock(mutex_);
   if (state_callback_) {
     const webrtc::DataChannelInterface::DataState state =
         data_channel_->state();
     auto apiState = apiStateFromRtcState(state);
-    state_callback_((int)apiState, data_channel_->id());
+    state_callback_(apiState, data_channel_->id());
   }
+}
+
+void DataChannel::OnStateChange() noexcept {
+  FireOnStateChange();
 }
 
 void DataChannel::OnMessage(const webrtc::DataBuffer& buffer) noexcept {

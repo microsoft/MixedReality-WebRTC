@@ -182,6 +182,16 @@ rtc::Thread* GlobalFactory::GetWorkerThread() const noexcept {
 #endif  // defined(WINUWP)
 }
 
+rtc::Thread* GlobalFactory::GetSignalingThread() const noexcept {
+  // This only requires init_mutex_ read lock, which must be acquired to access
+  // the singleton instance.
+#if defined(WINUWP)
+  return impl_->signalingThread.get();
+#else   // defined(WINUWP)
+  return signaling_thread_.get();
+#endif  // defined(WINUWP)
+}
+
 void GlobalFactory::AddObject(TrackedObject* obj) noexcept {
   try {
     std::lock_guard<std::recursive_mutex> lock(mutex_);

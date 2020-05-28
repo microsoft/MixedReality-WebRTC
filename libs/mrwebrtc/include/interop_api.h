@@ -312,12 +312,22 @@ struct mrsDataChannelAddedInfo {
   const char* label{nullptr};
 };
 
-/// Callback fired when a data channel is added to the peer connection after
-/// being negotiated with the remote peer.
+/// Callback fired when a data channel is added to the peer connection. This is
+/// called for both channels that are created locally and ones that are created
+/// by the remote peer.
+///
+/// Use this callback to call |mrsDataChannelRegisterCallbacks| on new data
+/// channels and to start listening for messages/state changes.
+///
+/// The data channel is initially in the |mrsDataChannelState::kConnecting|
+/// state and will transition to |mrsDataChannelState::kOpen| when it is ready
+/// for use. In order to know when the channel state changes you must call
+/// pass a valid |mrsDataChannelStateCallback| to
+/// |mrsDataChannelRegisterCallbacks|.
 using mrsPeerConnectionDataChannelAddedCallback =
     void(MRS_CALL*)(void* user_data, const mrsDataChannelAddedInfo* info);
 
-/// Callback fired when a data channel is remoted from the peer connection.
+/// Callback fired when a data channel is removed from the peer connection.
 using mrsPeerConnectionDataChannelRemovedCallback =
     void(MRS_CALL*)(void* user_data, mrsDataChannelHandle data_channel);
 
