@@ -1,0 +1,15 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# Export the MixedReality-WebRTC API (mrs*) and the JNI functions
+# as global symbols, and hide everything else as local ones.
+
+{
+  global:
+    JNI_OnLoad;
+    JNI_OnUnLoad;
+    Java_*;
+    mrs*;
+  local:
+    *;
+};

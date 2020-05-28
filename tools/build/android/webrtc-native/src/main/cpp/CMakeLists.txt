@@ -80,9 +80,24 @@ target_include_directories(
 # Build and link libmrwebrtc.so.
 target_link_libraries(
         mrwebrtc
+        # Link dependencies
         log
         android
         dl
         OpenSLES
+        # Tell the linker which symbols to actually make global and which to keep local
+        # in the final libmrwebrtc.so, instead of keeping all the global (public) ones.
+        # Not strictly necessary, but much cleaner as we control the API and prevent
+        # inadvertent leaking of internal symbols.
+        -Wl,--version-script=${CMAKE_CURRENT_LIST_DIR}/mrwebrtc_exports.lst
+        # Import all public symbols from libwebrtc as if they were public in mrwebrtc too.
+        # This is necessary to get the Java_* functions for JNI.
+        -Wl,--whole-archive
+        # Link libwebrtc as a whole archive, importing all its global symbols as global
+        # symbols of libmrwebrtc.so (before version script changes that)
         libwebrtc
+        # Disable the --whole-archive option in case (and that happens) some library is
+        # appended to the linker command line. Currently "-lm -latomic" follows this, and
+        # will make the link fail without this.
+        -Wl,--no-whole-archive
 )
