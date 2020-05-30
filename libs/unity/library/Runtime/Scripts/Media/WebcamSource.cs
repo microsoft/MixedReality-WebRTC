@@ -17,6 +17,10 @@ using global::Windows.Media.Capture;
 using global::Windows.ApplicationModel.Core;
 #endif
 
+#if PLATFORM_ANDROID
+using UnityEngine.Android;
+#endif
+
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
@@ -134,6 +138,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             framerate = 0.0
         };
 
+#if PLATFORM_ANDROID
+        protected bool _androidCameraRequestPending = false;
+        protected bool _androidEnabledRequestPending = false;
+#endif
+
+
         public WebcamSource() : base(frameEncoding: VideoEncoding.I420A)
         {
         }
@@ -144,6 +154,26 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 return;
             }
+
+#if PLATFORM_ANDROID
+            // Check for permission to access the camera
+            _androidEnabledRequestPending = false;
+            if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
+            {
+                if (!_androidCameraRequestPending)
+                {
+                    _androidCameraRequestPending = true;
+
+                    // Display dialog requesting user permission. This will return immediately,
+                    // and unfortunately there's no good way to tell when this completes. As a rule
+                    // of thumb, application should lose focus, so check when focus resumes should
+                    // be sufficient without having to poll every frame.
+                    Permission.RequestUserPermission(Permission.Camera);
+                }
+                _androidEnabledRequestPending = true;
+                return;
+            }
+#endif
 
 #if UNITY_WSA && !UNITY_EDITOR
             // Request UWP access to video capture. The OS may show some popup dialog to the
@@ -261,6 +291,37 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             IsStreaming = true;
             VideoStreamStarted.Invoke(this);
         }
+
+#if PLATFORM_ANDROID
+        protected void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus)
+            {
+                return;
+            }
+
+            // If focus is restored after a pending request, check the permission again
+            if (_androidCameraRequestPending)
+            {
+                _androidCameraRequestPending = false;
+
+                if (Permission.HasUserAuthorizedPermission(Permission.Camera))
+                {
+                    // If now authorized, start capture as if just enabled
+                    if (_androidEnabledRequestPending)
+                    {
+                        OnEnable();
+                    }
+                }
+                else
+                {
+                    // If still denied, disable this component
+                    Debug.LogError("User denied Camera permission; cannot use WebcamSource.");
+                    enabled = false;
+                }
+            }
+        }
+#endif
 
 #if UNITY_WSA && !UNITY_EDITOR
         /// <summary>
