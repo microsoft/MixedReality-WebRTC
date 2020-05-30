@@ -64,20 +64,31 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
 }
 
-task copyToUnitySample {
-    copy {
-        from './build/outputs/aar'
-        include "*.aar"
-        into '../../../../libs/unity/library/Runtime/Plugins/arm64-v8a'
-    }    
+// Merge the libwebrtc.aar containing the Java interop classes for WebRTC
+// into the mrwebrtc.aar archive containing the native JNI library.
+task mergeLibwebrtcArchive(type: Exec) {
+   workingDir "$projectDir"
+   commandLine 'bash','./merge-archives.sh','-m',"$projectDir/build/outputs/aar/mrwebrtc.aar",'-o','./build/outputs/aar/merged/mrwebrtc.aar'
 }
 
+// Copy the final AAR archive to the Plugins folder of the Unity library.
+// This is currently only used when building with WSL2 on Windows, since
+// there is no Linux version of the Unity editor so building on Linux
+// requires a manual copy to the Windows machine hosting the Unity editor.
+task copyToUnitySample {
+    copy {
+        from './build/outputs/aar/merged'
+        include "*.aar"
+        into '../../../../libs/unity/library/Runtime/Plugins/arm64-v8a'
+    }
+}
+
+copyToUnitySample.dependsOn mergeLibwebrtcArchive
+
+// Inject the copyToUnitySample task as a dependency of existing build tasks
 tasks.whenTaskAdded { task ->
-    if (task.name == 'externalNativeBuildRelease') {
-        task.finalizedBy copyToUnitySample
-    } else if (task.name == 'externalNativeBuildDebug') {
-        task.finalizedBy copyToUnitySample
-    } else if (task.name == 'externalNativeBuildFulldebug') {
+    // Once AAR bundling is done, merge the AAR archives
+    if ((task.name == 'bundleReleaseAar') || (task.name == 'bundleDebugAar') || (task.name == 'bundleFulldebugAar')) {
         task.finalizedBy copyToUnitySample
     }
 }
