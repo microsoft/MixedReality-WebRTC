@@ -126,6 +126,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <inheritdoc/>
         protected async Task OnEnable()
         {
+            // Media senders are standalone objects, therefore can be created before any peer connection.
+            // Ensure Android binding is initialized before accessing the native implementation.
+            Android.Initialize();
+
             if (AutoStartOnEnabled)
             {
                 await StartCaptureAsync();
