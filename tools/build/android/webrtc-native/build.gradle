@@ -62,6 +62,12 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    // See e.g. examples/aarproject/app/build.gradle
+    // Note: com.google.code.findbugs is for @Nullable,
+    // see https://stackoverflow.com/questions/19030954/cant-find-nullable-inside-javax-annotation
+    // FIXME - This uses published packages, not locally-built ones!!!
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'org.webrtc:google-webrtc:1.0.+'
 }
 
 // Merge the libwebrtc.aar containing the Java interop classes for WebRTC

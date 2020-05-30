@@ -221,6 +221,10 @@ ErrorOr<RefPtr<DeviceVideoTrackSource>> DeviceVideoTrackSource::Create(
     return Error(Result::kInvalidOperation);
   }
 
+  rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source;
+
+#if !defined(MR_SHARING_ANDROID)
+
   // Open the video capture device
   std::unique_ptr<cricket::VideoCapturer> video_capturer;
   auto res = OpenVideoCaptureDevice(init_config, video_capturer);
@@ -252,16 +256,67 @@ ErrorOr<RefPtr<DeviceVideoTrackSource>> DeviceVideoTrackSource::Create(
   }
 
   // Create the video track source
-  rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
-      pc_factory->CreateVideoSource(std::move(video_capturer),
-                                    videoConstraints.get());
+  video_source = pc_factory->CreateVideoSource(std::move(video_capturer),
+                                               videoConstraints.get());
+
+#else  // !defined(MR_SHARING_ANDROID)
+
+  // Make sure the current thread is attached to the JVM. Since this method
+  // is often called asynchronously (as it takes some time to initialize the
+  // video capture device) it is likely to run on a background worker thread.
+  RTC_DCHECK(webrtc::jni::GetJVM()) << "JavaVM not initialized.";
+  JNIEnv* env = webrtc::jni::AttachCurrentThreadIfNeeded();
+
+  // Create the surface texture helper, which manages the surface texture the camera renders to.
+  webrtc::ScopedJavaLocalRef<jclass> android_camera_interop_class =
+      webrtc::GetClass(env, "com/microsoft/mixedreality/webrtc/AndroidCameraInterop");
+  RTC_DCHECK(android_camera_interop_class.obj() != nullptr) << "Failed to find AndroidCameraInterop Java class.";
+  jmethodID create_texture_helper_method = webrtc::GetStaticMethodID(
+      env, android_camera_interop_class.obj(), "CreateSurfaceTextureHelper",
+      "()Lorg/webrtc/SurfaceTextureHelper;");
+  jobject texture_helper = env->CallStaticObjectMethod(
+      android_camera_interop_class.obj(), create_texture_helper_method);
+  CHECK_EXCEPTION(env);
+  RTC_DCHECK(texture_helper != nullptr)
+      << "Cannot get the Surface Texture Helper.";
+
+  // Create the video track source which wraps the Android camera capturer
+  rtc::scoped_refptr<webrtc::jni::AndroidVideoTrackSource> impl_source(
+      new rtc::RefCountedObject<webrtc::jni::AndroidVideoTrackSource>(
+          global_factory->GetSignalingThread(), env, false));
+  rtc::scoped_refptr<webrtc::VideoTrackSourceProxy> proxy_source =
+      webrtc::VideoTrackSourceProxy::Create(
+          global_factory->GetSignalingThread(),
+          global_factory->GetWorkerThread(), impl_source);
+
+  // Create the camera capturer and bind it to the surface texture and the video source, then start capturing.
+  jmethodID start_capture_method = webrtc::GetStaticMethodID(
+      env, android_camera_interop_class.obj(), "StartCapture",
+      "(JLorg/webrtc/SurfaceTextureHelper;)Lorg/webrtc/VideoCapturer;");
+  jobject camera_tmp =
+      env->CallStaticObjectMethod(android_camera_interop_class.obj(), start_capture_method,
+                                  (jlong)proxy_source.get(), texture_helper);
+  CHECK_EXCEPTION(env);
+
+  // Java objects created are always returned as local references; create a new global reference to keep the camera capturer alive.
+  jobject java_video_capturer = (jobject)env->NewGlobalRef(camera_tmp);
+
+  video_source = proxy_source;
+
+#endif  // !defined(MR_SHARING_ANDROID)
+
   if (!video_source) {
+    RTC_LOG(LS_ERROR) << "Failed to create video track source.";
     return Error(Result::kUnknownError);
   }
 
   // Create the wrapper
   RefPtr<DeviceVideoTrackSource> wrapper =
-      new DeviceVideoTrackSource(global_factory, std::move(video_source));
+      new DeviceVideoTrackSource(global_factory, std::move(video_source)
+#if defined(MR_SHARING_ANDROID)
+      , java_video_capturer
+#endif  // defined(MR_SHARING_ANDROID)
+      );
   if (!wrapper) {
     RTC_LOG(LS_ERROR) << "Failed to create device video track source.";
     return Error(Result::kUnknownError);
@@ -271,10 +326,34 @@ ErrorOr<RefPtr<DeviceVideoTrackSource>> DeviceVideoTrackSource::Create(
 
 DeviceVideoTrackSource::DeviceVideoTrackSource(
     RefPtr<GlobalFactory> global_factory,
-    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source) noexcept
+    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source
+#if defined(MR_SHARING_ANDROID)
+    ,
+    java_video_capturer_(java_video_capturer)
+#endif  // defined(MR_SHARING_ANDROID)
+    ) noexcept
     : VideoTrackSource(std::move(global_factory),
                        ObjectType::kDeviceVideoTrackSource,
                        std::move(source)) {}
+
+DeviceVideoTrackSource::~DeviceVideoTrackSource() {
+#if defined(MR_SHARING_ANDROID)
+  // Stop video capture and release Java capturer
+  if (java_video_capturer_) {
+    JNIEnv* env = webrtc::jni::GetEnv();
+    RTC_DCHECK(env);
+    webrtc::ScopedJavaLocalRef<jclass> pc_factory_class =
+        webrtc::GetClass(env, "org/webrtc/UnityUtility");
+    jmethodID stop_camera_method =
+        webrtc::GetStaticMethodID(env, pc_factory_class.obj(), "StopCamera",
+                                  "(Lorg/webrtc/VideoCapturer;)V");
+    env->CallStaticVoidMethod(pc_factory_class.obj(), stop_camera_method,
+                              java_video_capturer_);
+    CHECK_EXCEPTION(env);
+    java_video_capturer_ = nullptr;
+  }
+#endif  // defined(MR_SHARING_ANDROID)
+}
 
 }  // namespace WebRTC
 }  // namespace MixedReality
