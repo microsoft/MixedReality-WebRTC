@@ -53,7 +53,7 @@ jobs:
       sudo apt-cache policy python-pexpect
       sudo apt-cache policy python-ptyprocess
       # Force-install safe versions
-      sudo apt-get install -y --allow-downgrades libssl1.1=1.1.1-1ubuntu2.1~18.04.5 libssl-dev=1.1.1-1ubuntu2.1~18.04.5
+      sudo apt-get install -y --allow-downgrades libssl1.1=1.1.1-1ubuntu2.1 libssl-dev=1.1.1-1ubuntu2.1
       ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
       sudo apt-get install -y lighttpd
       ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
