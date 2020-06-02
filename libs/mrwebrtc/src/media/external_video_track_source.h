@@ -17,7 +17,7 @@ class ExternalVideoTrackSource;
 
 namespace detail {
 
-/// Adapater for the frame buffer of an external video track source,
+/// Adapter for the frame buffer of an external video track source,
 /// to support various frame encodings in a unified way.
 class BufferAdapter {
  public:
