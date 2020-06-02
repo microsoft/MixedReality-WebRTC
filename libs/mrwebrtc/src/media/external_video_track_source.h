@@ -142,9 +142,6 @@ class ExternalVideoTrackSource : public TrackedObject,
 
   ~ExternalVideoTrackSource() override;
 
-  void SetName(std::string name) { name_ = std::move(name); }
-  std::string GetName() const override { return name_; }
-
   /// Finish the creation of the video track source, and start capturing.
   /// See |mrsExternalVideoTrackSourceFinishCreation()| for details.
   void FinishCreation();
@@ -195,9 +192,6 @@ class ExternalVideoTrackSource : public TrackedObject,
 
   /// Lock for frame requests.
   rtc::CriticalSection request_lock_;
-
-  /// Friendly track source name, for debugging.
-  std::string name_;
 };
 
 namespace detail {

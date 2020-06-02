@@ -157,7 +157,9 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\interop_api.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\local_audio_track_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\local_video_track_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\object_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\peer_connection_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\ref_counted_object_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\remote_audio_track_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\remote_video_track_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\result.h" />
@@ -203,7 +205,9 @@
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\interop_api.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\local_audio_track_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\local_video_track_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\object_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\peer_connection_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\ref_counted_object_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\remote_audio_track_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\remote_video_track_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\transceiver_interop.cpp" />

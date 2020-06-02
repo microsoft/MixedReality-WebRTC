@@ -12,22 +12,6 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-MRS_API void MRS_CALL
-mrsRemoteAudioTrackSetUserData(mrsRemoteAudioTrackHandle handle,
-                               void* user_data) noexcept {
-  if (auto track = static_cast<RemoteAudioTrack*>(handle)) {
-    track->SetUserData(user_data);
-  }
-}
-
-MRS_API void* MRS_CALL
-mrsRemoteAudioTrackGetUserData(mrsRemoteAudioTrackHandle handle) noexcept {
-  if (auto track = static_cast<RemoteAudioTrack*>(handle)) {
-    return track->GetUserData();
-  }
-  return nullptr;
-}
-
 void MRS_CALL
 mrsRemoteAudioTrackRegisterFrameCallback(mrsRemoteAudioTrackHandle trackHandle,
                                          mrsAudioFrameCallback callback,

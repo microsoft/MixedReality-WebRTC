@@ -109,7 +109,7 @@ namespace Microsoft.MixedReality.WebRTC
             }
             set
             {
-                VideoTrackSourceInterop.VideoTrackSource_SetName(_nativeHandle, value);
+                ObjectInterop.Object_SetName(_nativeHandle, value);
                 _name = value;
             }
         }

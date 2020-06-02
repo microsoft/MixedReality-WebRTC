@@ -10,43 +10,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     /// <summary>
     /// Handle to a native video track source object.
     /// </summary>
-    internal sealed class VideoTrackSourceHandle : SafeHandle
-    {
-        /// <summary>
-        /// Check if the current handle is invalid, which means it is not referencing
-        /// an actual native object. Note that a valid handle only means that the internal
-        /// handle references a native object, but does not guarantee that the native
-        /// object is still accessible. It is only safe to access the native object if
-        /// the handle is not closed, which implies it being valid.
-        /// </summary>
-        public override bool IsInvalid => (handle == IntPtr.Zero);
-
-        /// <summary>
-        /// Default constructor for an invalid handle.
-        /// </summary>
-        public VideoTrackSourceHandle() : base(IntPtr.Zero, ownsHandle: true)
-        {
-        }
-
-        /// <summary>
-        /// Constructor for a valid handle referencing the given native object.
-        /// </summary>
-        /// <param name="handle">The valid internal handle to the native object.</param>
-        public VideoTrackSourceHandle(IntPtr handle) : base(IntPtr.Zero, ownsHandle: true)
-        {
-            SetHandle(handle);
-        }
-
-        /// <summary>
-        /// Release the native object while the handle is being closed.
-        /// </summary>
-        /// <returns>Return <c>true</c> if the native object was successfully released.</returns>
-        protected override bool ReleaseHandle()
-        {
-            VideoTrackSourceInterop.VideoTrackSource_RemoveRef(handle);
-            return true;
-        }
-    }
+    internal class VideoTrackSourceHandle : RefCountedObjectHandle { }
 
     internal class VideoTrackSourceInterop
     {
@@ -155,32 +119,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         #endregion
 
         #region P/Invoke static functions
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsVideoTrackSourceAddRef")]
-        public static unsafe extern void VideoTrackSource_AddRef(VideoTrackSourceHandle handle);
-
-        // Note - This is used during SafeHandle.ReleaseHandle(), so cannot use VideoTrackSourceHandle
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsVideoTrackSourceRemoveRef")]
-        public static unsafe extern void VideoTrackSource_RemoveRef(IntPtr handle);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsVideoTrackSourceSetName")]
-        public static unsafe extern void VideoTrackSource_SetName(VideoTrackSourceHandle handle, string name);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsVideoTrackSourceGetName")]
-        public static unsafe extern uint VideoTrackSource_GetName(VideoTrackSourceHandle handle, StringBuilder buffer,
-            ref ulong bufferCapacity);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsVideoTrackSourceSetUserData")]
-        public static unsafe extern void VideoTrackSource_SetUserData(VideoTrackSourceHandle handle, IntPtr userData);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsVideoTrackSourceGetUserData")]
-        public static unsafe extern IntPtr VideoTrackSource_GetUserData(VideoTrackSourceHandle handle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsVideoTrackSourceCreateFromDevice")]

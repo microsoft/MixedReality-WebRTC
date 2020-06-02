@@ -93,3 +93,32 @@
 #endif  // defined(WINUWP)
 
 #pragma warning(pop)
+
+/// Macro to add a reference to an existing object, with extra logging. Only
+/// useable with types deriving from TrackedObject.
+#define MRS_SAFE_ADD_REF(TYPE, handle)                              \
+  static_assert(std::is_base_of<TrackedObject, TYPE>::value, "");   \
+  if (auto obj = static_cast<TrackedObject*>(handle)) {             \
+    RTC_DCHECK(obj->GetObjectType() == ObjectType::k##TYPE);        \
+    obj->AddRef();                                                  \
+  } else {                                                          \
+    RTC_LOG(LS_WARNING) << "Trying to add reference to NULL " #TYPE \
+                           " object.";                              \
+  }
+
+/// Macro to remove a reference and automatically delete an object on last
+/// reference removed, with extra logging. Only useable with types deriving from
+/// TrackedObject.
+#define MRS_SAFE_REMOVE_REF(TYPE, handle)                                \
+  static_assert(std::is_base_of<TrackedObject, TYPE>::value, "");        \
+  if (auto obj = static_cast<TrackedObject*>(handle)) {                  \
+    RTC_DCHECK(obj->GetObjectType() == ObjectType::k##TYPE);             \
+    const std::string name = obj->GetName();                             \
+    if (obj->RemoveRef() == 0) {                                         \
+      RTC_LOG(LS_VERBOSE) << "Destroyed " #TYPE " \"" << name.c_str()    \
+                          << "\" (0 ref).";                              \
+    }                                                                    \
+  } else {                                                               \
+    RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL " #TYPE \
+                           " object.";                                   \
+  }

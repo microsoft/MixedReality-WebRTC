@@ -13,30 +13,6 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL
-mrsLocalAudioTrackAddRef(mrsLocalAudioTrackHandle handle) noexcept {
-  if (auto track = static_cast<LocalAudioTrack*>(handle)) {
-    track->AddRef();
-  } else {
-    RTC_LOG(LS_WARNING)
-        << "Trying to add reference to NULL LocalAudioTrack object.";
-  }
-}
-
-void MRS_CALL
-mrsLocalAudioTrackRemoveRef(mrsLocalAudioTrackHandle handle) noexcept {
-  if (auto track = static_cast<LocalAudioTrack*>(handle)) {
-    const std::string name = track->GetName();
-    if (track->RemoveRef() == 0) {
-      RTC_LOG(LS_VERBOSE) << "Destroyed LocalAudioTrack \"" << name.c_str()
-                          << "\" (0 ref).";
-    }
-  } else {
-    RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
-                           "LocalAudioTrack object.";
-  }
-}
-
 mrsResult MRS_CALL mrsLocalAudioTrackCreateFromSource(
     const mrsLocalAudioTrackInitSettings* init_settings,
     mrsAudioTrackSourceHandle source_handle,

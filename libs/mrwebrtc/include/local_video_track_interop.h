@@ -20,14 +20,6 @@ struct mrsLocalVideoTrackFromExternalSourceInitConfig {
   const char* track_name;
 };
 
-/// Add a reference to the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsLocalVideoTrackAddRef(mrsLocalVideoTrackHandle handle) noexcept;
-
-/// Remove a reference from the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsLocalVideoTrackRemoveRef(mrsLocalVideoTrackHandle handle) noexcept;
-
 /// Create a new local video track from a video track source.
 MRS_API mrsResult MRS_CALL mrsLocalVideoTrackCreateFromSource(
     const mrsLocalVideoTrackInitSettings* init_settings,

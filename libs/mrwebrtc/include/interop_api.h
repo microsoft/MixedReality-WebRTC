@@ -80,38 +80,41 @@ struct mrsRemoteVideoTrackConfig;
 struct mrsDataChannelConfig;
 struct mrsDataChannelCallbacks;
 
-/// Opaque handle to a native PeerConnection interop object.
-using mrsPeerConnectionHandle = void*;
+/// Opaque handle to a native interop object.
+using mrsObjectHandle = void*;
 
-/// Opaque handle to a native MediaTrack interop object.
-using mrsMediaTrackHandle = void*;
+/// Opaque handle to a native reference-counted interop object.
+using mrsRefCountedObjectHandle = mrsObjectHandle;
+
+/// Opaque handle to a native PeerConnection interop object.
+using mrsPeerConnectionHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native Transceiver interop object.
-using mrsTransceiverHandle = void*;
+using mrsTransceiverHandle = mrsObjectHandle;
 
 /// Opaque handle to a native AudioTrackSource interop object.
-using mrsAudioTrackSourceHandle = void*;
+using mrsAudioTrackSourceHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native VideoTrackSource interop object.
-using mrsVideoTrackSourceHandle = void*;
+using mrsVideoTrackSourceHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native LocalAudioTrack interop object.
-using mrsLocalAudioTrackHandle = void*;
+using mrsLocalAudioTrackHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native LocalVideoTrack interop object.
-using mrsLocalVideoTrackHandle = void*;
+using mrsLocalVideoTrackHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native RemoteAudioTrack interop object.
-using mrsRemoteAudioTrackHandle = void*;
+using mrsRemoteAudioTrackHandle = mrsObjectHandle;
 
 /// Opaque handle to a native RemoteVideoTrack interop object.
-using mrsRemoteVideoTrackHandle = void*;
+using mrsRemoteVideoTrackHandle = mrsObjectHandle;
 
 /// Opaque handle to a native DataChannel interop object.
-using mrsDataChannelHandle = void*;
+using mrsDataChannelHandle = mrsObjectHandle;
 
 /// Opaque handle to a native ExternalVideoTrackSource interop object.
-using mrsExternalVideoTrackSourceHandle = void*;
+using mrsExternalVideoTrackSourceHandle = mrsRefCountedObjectHandle;
 
 //
 // Video capture enumeration

@@ -17,14 +17,6 @@ struct mrsLocalAudioTrackInitSettings {
   const char* track_name{};
 };
 
-/// Add a reference to the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsLocalAudioTrackAddRef(mrsLocalAudioTrackHandle handle) noexcept;
-
-/// Remove a reference from the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsLocalAudioTrackRemoveRef(mrsLocalAudioTrackHandle handle) noexcept;
-
 /// Create a new local audio track from an audio track source.
 MRS_API mrsResult MRS_CALL mrsLocalAudioTrackCreateFromSource(
     const mrsLocalAudioTrackInitSettings* init_settings,

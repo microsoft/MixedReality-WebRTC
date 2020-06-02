@@ -73,13 +73,6 @@ class AudioTrackSource : public TrackedObject {
       rtc::scoped_refptr<webrtc::AudioSourceInterface> source) noexcept;
   ~AudioTrackSource() override;
 
-  void SetName(absl::string_view name) {
-    name_.assign(name.data(), name.size());
-  }
-
-  /// Get the name of the audio track source.
-  std::string GetName() const noexcept override { return name_; }
-
   void SetCallback(AudioFrameReadyCallback callback) noexcept;
 
   inline rtc::scoped_refptr<webrtc::AudioSourceInterface> impl() const
@@ -89,7 +82,6 @@ class AudioTrackSource : public TrackedObject {
 
  protected:
   rtc::scoped_refptr<webrtc::AudioSourceInterface> source_;
-  std::string name_;
   std::unique_ptr<AudioFrameObserver> observer_;
   std::mutex observer_mutex_;
 };

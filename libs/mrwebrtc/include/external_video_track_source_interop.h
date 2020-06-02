@@ -7,14 +7,6 @@
 
 extern "C" {
 
-/// Add a reference to the native object associated with the given handle.
-MRS_API void MRS_CALL mrsExternalVideoTrackSourceAddRef(
-    mrsExternalVideoTrackSourceHandle handle) noexcept;
-
-/// Remove a reference from the native object associated with the given handle.
-MRS_API void MRS_CALL mrsExternalVideoTrackSourceRemoveRef(
-    mrsExternalVideoTrackSourceHandle handle) noexcept;
-
 /// Create a custom video track source external to the implementation. This
 /// allows feeding into WebRTC frames from any source, including generated or
 /// synthetic frames, for example for testing. The frame is provided from a

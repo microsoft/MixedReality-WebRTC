@@ -14,30 +14,6 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL
-mrsLocalVideoTrackAddRef(mrsLocalVideoTrackHandle handle) noexcept {
-  if (auto track = static_cast<LocalVideoTrack*>(handle)) {
-    track->AddRef();
-  } else {
-    RTC_LOG(LS_WARNING)
-        << "Trying to add reference to NULL LocalVideoTrack object.";
-  }
-}
-
-void MRS_CALL
-mrsLocalVideoTrackRemoveRef(mrsLocalVideoTrackHandle handle) noexcept {
-  if (auto track = static_cast<LocalVideoTrack*>(handle)) {
-    const std::string name = track->GetName();
-    if (track->RemoveRef() == 0) {
-      RTC_LOG(LS_VERBOSE) << "Destroyed LocalVideoTrack \"" << name.c_str()
-                          << "\" (0 ref).";
-    }
-  } else {
-    RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
-                           "LocalVideoTrack object.";
-  }
-}
-
 mrsResult MRS_CALL mrsLocalVideoTrackCreateFromSource(
     const mrsLocalVideoTrackInitSettings* init_settings,
     mrsVideoTrackSourceHandle source_handle,

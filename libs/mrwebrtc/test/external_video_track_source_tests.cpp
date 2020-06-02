@@ -215,9 +215,9 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
   // Clean-up
   mrsRemoteVideoTrackRegisterArgb32FrameCallback(track_handle2, nullptr,
                                                  nullptr);
-  mrsLocalVideoTrackRemoveRef(track_handle1);
+  mrsRefCountedObjectRemoveRef(track_handle1);
   mrsExternalVideoTrackSourceShutdown(source_handle1);
-  mrsExternalVideoTrackSourceRemoveRef(source_handle1);
+  mrsRefCountedObjectRemoveRef(source_handle1);
 }
 
 #endif  // MRSW_EXCLUDE_DEVICE_TESTS

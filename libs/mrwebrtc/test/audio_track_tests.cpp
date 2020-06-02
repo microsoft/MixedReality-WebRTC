@@ -105,13 +105,6 @@ TEST_P(AudioTrackTests, Simple) {
        &track_added2_ev](const mrsRemoteAudioTrackAddedInfo* info) {
         audio_track2 = info->track_handle;
         audio_transceiver2 = info->audio_transceiver_handle;
-        // Test user data here
-        {
-          ASSERT_EQ(nullptr, mrsRemoteAudioTrackGetUserData(audio_track2));
-          mrsRemoteAudioTrackSetUserData(audio_track2, audio_transceiver2);
-          ASSERT_EQ(audio_transceiver2,
-                    mrsRemoteAudioTrackGetUserData(audio_track2));
-        }
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterAudioTrackAddedCallback(pair.pc2(),
@@ -250,8 +243,8 @@ TEST_P(AudioTrackTests, Simple) {
 
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);
-  mrsLocalAudioTrackRemoveRef(audio_track1);
-  mrsAudioTrackSourceRemoveRef(audio_source1);
+  mrsRefCountedObjectRemoveRef(audio_track1);
+  mrsRefCountedObjectRemoveRef(audio_source1);
 }
 
 TEST_P(AudioTrackTests, Muted) {
@@ -395,8 +388,8 @@ TEST_P(AudioTrackTests, Muted) {
 
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);
-  mrsLocalAudioTrackRemoveRef(audio_track1);
-  mrsAudioTrackSourceRemoveRef(audio_source1);
+  mrsRefCountedObjectRemoveRef(audio_track1);
+  mrsRefCountedObjectRemoveRef(audio_source1);
 }
 
 #endif  // MRSW_EXCLUDE_DEVICE_TESTS

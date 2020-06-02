@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using static Microsoft.MixedReality.WebRTC.Interop.AudioTrackInterop;
 
@@ -10,10 +9,15 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 {
     internal class RemoteAudioTrackInterop
     {
-        internal class ReadBufferHandle : SafeHandle
+        internal sealed class RemoteAudioTrackHandle : ObjectHandle
+        {
+            public RemoteAudioTrackHandle(IntPtr value) : base(value) { }
+        }
+
+        internal sealed class ReadBufferHandle : SafeHandle
         {
             /// <summary>
-            /// Used internally by <see cref="RemoteAudioTrack_CreateReadBuffer(IntPtr, out ReadBufferHandle)"/>.
+            /// Used internally by <see cref="RemoteAudioTrack_CreateReadBuffer(RemoteAudioTrackHandle, out ReadBufferHandle)"/>.
             /// </summary>
             internal ReadBufferHandle() : base(IntPtr.Zero, true) { }
 
@@ -28,33 +32,25 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         #region Native functions
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsRemoteAudioTrackSetUserData")]
-        public static unsafe extern void RemoteAudioTrack_SetUserData(IntPtr handle, IntPtr userData);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsRemoteAudioTrackGetUserData")]
-        public static unsafe extern IntPtr RemoteAudioTrack_GetUserData(IntPtr handle);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsRemoteAudioTrackRegisterFrameCallback")]
-        public static extern void RemoteAudioTrack_RegisterFrameCallback(IntPtr trackHandle,
+        public static extern void RemoteAudioTrack_RegisterFrameCallback(RemoteAudioTrackHandle trackHandle,
             AudioFrameUnmanagedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsRemoteAudioTrackIsEnabled")]
-        public static extern int RemoteAudioTrack_IsEnabled(IntPtr trackHandle);
+        public static extern int RemoteAudioTrack_IsEnabled(RemoteAudioTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsRemoteAudioTrackOutputToDevice")]
-        public static extern void RemoteAudioTrack_OutputToDevice(IntPtr trackHandle, mrsBool output);
+        public static extern void RemoteAudioTrack_OutputToDevice(RemoteAudioTrackHandle trackHandle, mrsBool output);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsRemoteAudioTrackIsOutputToDevice")]
-        public static extern mrsBool RemoteAudioTrack_IsOutputToDevice(IntPtr trackHandle);
+        public static extern mrsBool RemoteAudioTrack_IsOutputToDevice(RemoteAudioTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsRemoteAudioTrackCreateReadBuffer")]
-        public static extern uint RemoteAudioTrack_CreateReadBuffer(IntPtr trackHandle, out ReadBufferHandle audioTrackReadBufferOut);
+        public static extern uint RemoteAudioTrack_CreateReadBuffer(RemoteAudioTrackHandle trackHandle, out ReadBufferHandle audioTrackReadBufferOut);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsAudioTrackReadBufferRead")]
@@ -103,11 +99,11 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static RemoteAudioTrack CreateWrapper(PeerConnection parent, in PeerConnectionInterop.RemoteAudioTrackAddedInfo config)
         {
             // Create a new wrapper
-            var wrapper = new RemoteAudioTrack(config.trackHandle, parent, config.trackName);
+            var wrapper = new RemoteAudioTrack(new RemoteAudioTrackHandle(config.trackHandle), parent, config.trackName);
 
             // Assign a reference to it inside the UserData of the native object so it can be retrieved whenever needed
             IntPtr wrapperRef = Utils.MakeWrapperRef(wrapper);
-            RemoteAudioTrack_SetUserData(config.trackHandle, wrapperRef);
+            ObjectInterop.Object_SetUserData(wrapper._nativeHandle, wrapperRef);
 
             return wrapper;
         }
