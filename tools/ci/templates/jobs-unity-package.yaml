@@ -126,6 +126,7 @@ jobs:
   - pwsh: |
       Set-Location "libs/unity/library"
       Invoke-Expression "npm pack ." | Tee-Object -Variable PackageName | Out-Null
+      Write-Host "Produced package '$PackageName'"
       Write-Host "##vso[task.setvariable variable=PackedLibraryFilename]$PackageName"
     displayName: 'Pack NPM (library)'
 
@@ -133,6 +134,7 @@ jobs:
   - pwsh: |
       Set-Location "libs/unity/samples"
       Invoke-Expression "npm pack ." | Tee-Object -Variable PackageName | Out-Null
+      Write-Host "Produced package '$PackageName'"
       Write-Host "##vso[task.setvariable variable=PackedSamplesFilename]$PackageName"
     displayName: 'Pack NPM (samples)'
 
@@ -140,14 +142,14 @@ jobs:
   - task: PublishPipelineArtifact@1
     displayName: 'Publish artifact (library)'
     inputs:
-      path: '$(PackedLibraryFilename)'
+      path: '$(Build.SourcesDirectory)/libs/unity/library/$(PackedLibraryFilename)'
       artifact: 'upm_library'
 
   # Publish the UPM package (samples)
   - task: PublishPipelineArtifact@1
     displayName: 'Publish artifact (samples)'
     inputs:
-      path: '$(PackedSamplesFilename)'
+      path: '$(Build.SourcesDirectory)/libs/unity/samples/$(PackedSamplesFilename)'
       artifact: 'upm_samples'
 
   # # Write .npmrc
