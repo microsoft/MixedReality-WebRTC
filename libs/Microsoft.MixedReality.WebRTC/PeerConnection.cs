@@ -1965,9 +1965,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <returns>The list of available video capture devices.</returns>
         /// <remarks>
-        /// Assign one of the returned <see cref="VideoCaptureDevice"/> to the <see cref="LocalVideoTrackSettings.videoDevice"/>
+        /// Assign one of the returned <see cref="VideoCaptureDevice"/> to the <see cref="LocalVideoDeviceInitConfig.videoDevice"/>
         /// field to force a local video track to use that device when creating it with
-        /// <see cref="LocalVideoTrack.CreateFromDeviceAsync(LocalVideoTrackSettings)"/>.
+        /// <see cref="VideoTrackSource.CreateFromDeviceAsync(LocalVideoDeviceInitConfig)"/>.
         /// </remarks>
         public static Task<List<VideoCaptureDevice>> GetVideoCaptureDevicesAsync()
         {

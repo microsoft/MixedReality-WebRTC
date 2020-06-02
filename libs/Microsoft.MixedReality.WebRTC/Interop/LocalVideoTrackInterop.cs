@@ -55,6 +55,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
     internal class LocalVideoTrackInterop
     {
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        internal ref struct TrackInitConfig
+        {
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string TrackName;
+        }
+
         #region Unmanaged delegates
 
         // Note - none of those method arguments can be SafeHandle; use IntPtr instead.
@@ -80,9 +87,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static unsafe extern void LocalVideoTrack_RemoveRef(IntPtr handle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsLocalVideoTrackCreateFromDevice")]
-        public static unsafe extern uint LocalVideoTrack_CreateFromDevice(in PeerConnectionInterop.LocalVideoTrackInteropInitConfig config,
-            string trackName, out LocalVideoTrackHandle trackHandle);
+            EntryPoint = "mrsLocalVideoTrackCreateFromSource")]
+        public static unsafe extern uint LocalVideoTrack_CreateFromSource(in TrackInitConfig initSettings,
+            VideoTrackSourceHandle sourceHandle, out LocalVideoTrackHandle trackHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsLocalVideoTrackCreateFromExternalSource")]

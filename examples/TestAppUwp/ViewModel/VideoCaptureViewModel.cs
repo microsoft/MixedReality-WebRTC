@@ -290,15 +290,23 @@ namespace TestAppUwp
         {
             await RequestMediaAccessAsync(StreamingCaptureMode.Video);
 
+            // Create the source
             VideoCaptureDeviceInfo deviceInfo = VideoCaptureDevices.SelectedItem;
             if (deviceInfo == null)
             {
                 throw new InvalidOperationException("No video capture device selected");
             }
-            var settings = new LocalVideoTrackSettings
+            var deviceConfig = new LocalVideoDeviceInitConfig
+            {
+                videoDevice = new VideoCaptureDevice { id = deviceInfo.Id },
+            };
+            var source = await VideoTrackSource.CreateFromDeviceAsync(deviceConfig);
+            // FIXME - this leaks the source, never disposed
+
+            // Crate the track
+            var settings = new LocalVideoTrackInitConfig
             {
                 trackName = trackName,
-                videoDevice = new VideoCaptureDevice { id = deviceInfo.Id },
             };
             VideoCaptureFormatViewModel formatInfo = VideoCaptureFormats.SelectedItem;
             if (formatInfo != null)
@@ -307,10 +315,12 @@ namespace TestAppUwp
                 settings.height = formatInfo.Format.height;
                 settings.framerate = formatInfo.Format.framerate;
             }
-            var track = await LocalVideoTrack.CreateFromDeviceAsync(settings);
+            var track = await LocalVideoTrack.CreateFromSourceAsync(source, settings);
+            // FIXME - this probably leaks the track, never disposed
 
             SessionModel.Current.VideoTracks.Add(new VideoTrackViewModel
             {
+                Source = source,
                 Track = track,
                 TrackImpl = track,
                 IsRemote = false,

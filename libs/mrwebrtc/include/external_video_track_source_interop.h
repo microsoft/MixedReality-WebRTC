@@ -7,10 +7,6 @@
 
 extern "C" {
 
-//
-// Wrapper
-//
-
 /// Add a reference to the native object associated with the given handle.
 MRS_API void MRS_CALL mrsExternalVideoTrackSourceAddRef(
     mrsExternalVideoTrackSourceHandle handle) noexcept;

@@ -19,6 +19,7 @@ namespace TestAppUwp
     /// </summary>
     public class VideoTrackViewModel
     {
+        public VideoTrackSource Source;
         public IVideoTrack Track;
         public MediaTrack TrackImpl;
         public bool IsRemote;

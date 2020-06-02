@@ -8,6 +8,7 @@
 #include "local_video_track_interop.h"
 #include "remote_video_track_interop.h"
 #include "transceiver_interop.h"
+#include "video_track_source_interop.h"
 
 #include "simple_interop.h"
 #include "test_utils.h"
@@ -92,13 +93,22 @@ TEST_P(VideoTrackTests, Simple) {
     ASSERT_EQ(nullptr, track_handle_remote);
   }
 
+  // Create the video source #1
+  mrsVideoTrackSourceHandle source_handle1{};
+  {
+    mrsLocalVideoDeviceInitConfig device_config{};
+    ASSERT_EQ(Result::kSuccess, mrsVideoTrackSourceCreateFromDevice(
+                                    &device_config, &source_handle1));
+    ASSERT_NE(nullptr, source_handle1);
+  }
+
   // Create the local video track #1
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    mrsLocalVideoTrackInitConfig config{};
-    ASSERT_EQ(Result::kSuccess,
-              mrsLocalVideoTrackCreateFromDevice(&config, "local_video_track",
-                                                 &track_handle1));
+    mrsLocalVideoTrackInitSettings config{};
+    config.track_name = "local_video_track";
+    ASSERT_EQ(Result::kSuccess, mrsLocalVideoTrackCreateFromSource(
+                                    &config, source_handle1, &track_handle1));
     ASSERT_NE(nullptr, track_handle1);
   }
 
@@ -174,6 +184,7 @@ TEST_P(VideoTrackTests, Simple) {
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
   mrsLocalVideoTrackRemoveRef(track_handle1);
+  mrsVideoTrackSourceRemoveRef(source_handle1);
 }
 
 TEST_P(VideoTrackTests, Muted) {
@@ -208,13 +219,22 @@ TEST_P(VideoTrackTests, Muted) {
     ASSERT_NE(nullptr, transceiver_handle1);
   }
 
+  // Create the video source #1
+  mrsVideoTrackSourceHandle source_handle1{};
+  {
+    mrsLocalVideoDeviceInitConfig device_config{};
+    ASSERT_EQ(Result::kSuccess, mrsVideoTrackSourceCreateFromDevice(
+                                    &device_config, &source_handle1));
+    ASSERT_NE(nullptr, source_handle1);
+  }
+
   // Create the local video track #1
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    mrsLocalVideoTrackInitConfig config{};
-    ASSERT_EQ(Result::kSuccess,
-              mrsLocalVideoTrackCreateFromDevice(&config, "local_video_track",
-                                                 &track_handle1));
+    mrsLocalVideoTrackInitSettings config{};
+    config.track_name = "local_video_track";
+    ASSERT_EQ(Result::kSuccess, mrsLocalVideoTrackCreateFromSource(
+                                    &config, source_handle1, &track_handle1));
     ASSERT_NE(nullptr, track_handle1);
   }
 
@@ -269,6 +289,7 @@ TEST_P(VideoTrackTests, Muted) {
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
   mrsLocalVideoTrackRemoveRef(track_handle1);
+  mrsVideoTrackSourceRemoveRef(source_handle1);
 }
 
 void MRS_CALL enumDeviceCallback(const char* id,
@@ -300,15 +321,6 @@ void MRS_CALL enumDeviceCallbackCompleted(void* user_data) {
 //              mrsPeerConnectionAddLocalVideoTrack(pair.pc1(), config));
 //  }
 //}
-
-TEST_F(VideoTrackTests, DeviceIdInvalid) {
-  mrsLocalVideoTrackInitConfig config{};
-  mrsLocalVideoTrackHandle track_handle{};
-  config.video_device_id = "[[INVALID DEVICE ID]]";
-  ASSERT_EQ(Result::kNotFound, mrsLocalVideoTrackCreateFromDevice(
-                                   &config, "invalid_track", &track_handle));
-  ASSERT_EQ(nullptr, track_handle);
-}
 
 #endif  // MRSW_EXCLUDE_DEVICE_TESTS
 

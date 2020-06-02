@@ -15,6 +15,7 @@ namespace TestNetCoreConsole
             Transceiver audioTransceiver = null;
             Transceiver videoTransceiver = null;
             AudioTrackSource audioTrackSource = null;
+            VideoTrackSource videoTrackSource = null;
             LocalAudioTrack localAudioTrack = null;
             LocalVideoTrack localVideoTrack = null;
 
@@ -29,7 +30,7 @@ namespace TestNetCoreConsole
                 // For example, print them to the standard output
                 foreach (var device in deviceList)
                 {
-                   Console.WriteLine($"Found webcam {device.name} (id: {device.id})");
+                    Console.WriteLine($"Found webcam {device.name} (id: {device.id})");
                 }
 
                 // Create a new peer connection automatically disposed at the end of the program
@@ -49,7 +50,13 @@ namespace TestNetCoreConsole
                 if (needVideo)
                 {
                     Console.WriteLine("Opening local webcam...");
-                    localVideoTrack = await LocalVideoTrack.CreateFromDeviceAsync();
+                    videoTrackSource = await VideoTrackSource.CreateFromDeviceAsync();
+
+                    Console.WriteLine("Create local video track...");
+                    var trackSettings = new LocalVideoTrackInitConfig { trackName = "webcam_track" };
+                    localVideoTrack = await LocalVideoTrack.CreateFromSourceAsync(videoTrackSource, trackSettings);
+
+                    Console.WriteLine("Create video transceiver and add webcam track...");
                     videoTransceiver = pc.AddTransceiver(MediaKind.Video);
                     videoTransceiver.DesiredDirection = Transceiver.Direction.SendReceive;
                     videoTransceiver.LocalVideoTrack = localVideoTrack;
@@ -74,14 +81,16 @@ namespace TestNetCoreConsole
                 // Setup signaling
                 Console.WriteLine("Starting signaling...");
                 var signaler = new NamedPipeSignaler.NamedPipeSignaler(pc, "testpipe");
-                signaler.SdpMessageReceived += async (SdpMessage message) => {
+                signaler.SdpMessageReceived += async (SdpMessage message) =>
+                {
                     await pc.SetRemoteDescriptionAsync(message);
                     if (message.Type == SdpMessageType.Offer)
                     {
                         pc.CreateAnswer();
                     }
                 };
-                signaler.IceCandidateReceived += (IceCandidate candidate) => {
+                signaler.IceCandidateReceived += (IceCandidate candidate) =>
+                {
                     pc.AddIceCandidate(candidate);
                 };
                 await signaler.StartAsync();
@@ -129,6 +138,7 @@ namespace TestNetCoreConsole
             localAudioTrack.Dispose();
             localVideoTrack.Dispose();
             audioTrackSource.Dispose();
+            videoTrackSource.Dispose();
         }
     }
 }
