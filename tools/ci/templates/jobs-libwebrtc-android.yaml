@@ -106,6 +106,10 @@ jobs:
       gclient runhooks
     displayName: 'Checkout libwebrtc'
 
+  # List available disk space after clean-up
+  - bash: df -h
+    displayName: 'Available Disk Space'
+
   # Build libwebrtc
   - script: |
       cd $(toolsDir)/libwebrtc
