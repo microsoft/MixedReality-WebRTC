@@ -140,14 +140,14 @@ jobs:
   - task: PublishPipelineArtifact@1
     displayName: 'Publish artifact (library)'
     inputs:
-      path: '$PackedLibraryFilename'
+      path: '$(PackedLibraryFilename)'
       artifact: 'upm_library'
 
   # Publish the UPM package (samples)
   - task: PublishPipelineArtifact@1
     displayName: 'Publish artifact (samples)'
     inputs:
-      path: '$PackedSamplesFilename'
+      path: '$(PackedSamplesFilename)'
       artifact: 'upm_samples'
 
   # # Write .npmrc
