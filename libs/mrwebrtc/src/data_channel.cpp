@@ -10,7 +10,7 @@
 namespace {
 
 using RtcDataState = webrtc::DataChannelInterface::DataState;
-using ApiDataState = Microsoft::MixedReality::WebRTC::DataChannel::State;
+using ApiDataState = mrsDataChannelState;
 
 inline ApiDataState apiStateFromRtcState(RtcDataState rtcState) {
   // API values have been chosen to match the current WebRTC values. If the
@@ -74,38 +74,24 @@ bool DataChannel::Send(const void* data, size_t size) noexcept {
   if (data_channel_->buffered_amount() + size > GetMaxBufferingSize()) {
     return false;
   }
+
   rtc::CopyOnWriteBuffer bufferStorage((const char*)data, size);
   webrtc::DataBuffer buffer(bufferStorage, /* binary = */ true);
   return data_channel_->Send(buffer);
 }
 
-void DataChannel::OnStateChange() noexcept {
-  const webrtc::DataChannelInterface::DataState state = data_channel_->state();
-  switch (state) {
-    case webrtc::DataChannelInterface::DataState::kOpen:
-      // Negotiated (out-of-band) data channels never generate an
-      // OnDataChannel() message, so simulate it for the DataChannelAdded event
-      // to be consistent.
-      if (data_channel_->negotiated()) {
-        owner_->OnDataChannelAdded(*this);
-      }
-      break;
-    case webrtc::DataChannelInterface::DataState::kClosed:
-      break;
-    case webrtc::DataChannelInterface::DataState::kClosing:
-      break;
-    case webrtc::DataChannelInterface::DataState::kConnecting:
-      break;
+void DataChannel::InvokeOnStateChange() const noexcept {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (state_callback_) {
+    const webrtc::DataChannelInterface::DataState state =
+        data_channel_->state();
+    auto apiState = apiStateFromRtcState(state);
+    state_callback_(apiState, data_channel_->id());
   }
+}
 
-  // Invoke the StateChanged event
-  {
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (state_callback_) {
-      auto apiState = apiStateFromRtcState(state);
-      state_callback_((int)apiState, data_channel_->id());
-    }
-  }
+void DataChannel::OnStateChange() noexcept {
+  InvokeOnStateChange();
 }
 
 void DataChannel::OnMessage(const webrtc::DataBuffer& buffer) noexcept {
