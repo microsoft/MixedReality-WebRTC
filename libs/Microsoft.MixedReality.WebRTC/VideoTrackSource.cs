@@ -179,7 +179,7 @@ namespace Microsoft.MixedReality.WebRTC
         private event I420AVideoFrameDelegate _videoFrameReady;
 
         /// <summary>
-        /// Create an video track source using a local video capture device (webcam).
+        /// Create a video track source using a local video capture device (webcam).
         /// 
         /// The video track source produces raw video frames by capturing them from a capture device accessible
         /// from the local host machine, generally a USB webcam or built-in device camera. The video source
@@ -187,12 +187,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// Once the source is not live anymore (ended), it cannot be restarted. A new source must be created to
         /// use the same video capture device again.
         /// 
-        /// The source can used to create one or more local video tracks (<see cref="LocalVideoTrack"/>), which
+        /// The source can be used to create one or more local video tracks (<see cref="LocalVideoTrack"/>), which
         /// once added to a video transceiver allow the video frames to be sent to a remote peer. The source itself
         /// is not associated with any peer connection, and can be used to create local video tracks from multiple
         /// peer connections at once, thereby being shared amongst those peer connections.
         /// 
-        /// The source is owned by the user, who muse ensure it stays alive while being in use by at least one local
+        /// The source is owned by the user, who must ensure it stays alive while being in use by at least one local
         /// video track. Once it is not used anymore, the user is in charge of disposing of the source. Disposing of
         /// a source still in use by a local video track is undefined behavior.
         /// </summary>

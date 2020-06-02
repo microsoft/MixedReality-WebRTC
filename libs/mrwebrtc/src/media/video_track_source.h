@@ -17,7 +17,7 @@ namespace WebRTC {
 
 class VideoTrackSource;
 
-/// Adapter for a local audio source backing one or more local audio tracks.
+/// Adapter for a local video source backing one or more local video tracks.
 class VideoSourceAdapter : public webrtc::VideoTrackSourceInterface {
  public:
   VideoSourceAdapter(
@@ -43,16 +43,11 @@ class VideoSourceAdapter : public webrtc::VideoTrackSourceInterface {
 
   // Indicates that parameters suitable for screencasts should be automatically
   // applied to RtpSenders.
-  // TODO(perkj): Remove these once all known applications have moved to
-  // explicitly setting suitable parameters for screencasts and don't need this
-  // implicit behavior.
   bool is_screencast() const override { return false; }
 
   // Indicates that the encoder should denoise video before encoding it.
   // If it is not set, the default configuration is used which is different
   // depending on video codec.
-  // TODO(perkj): Remove this once denoising is done by the source, and not by
-  // the encoder.
   absl::optional<bool> needs_denoising() const { return absl::nullopt; }
 
   // Returns false if no stats are available, e.g, for a remote source, or a
