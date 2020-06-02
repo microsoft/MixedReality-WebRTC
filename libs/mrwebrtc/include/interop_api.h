@@ -321,9 +321,8 @@ struct mrsDataChannelAddedInfo {
 ///
 /// The data channel is initially in the |mrsDataChannelState::kConnecting|
 /// state and will transition to |mrsDataChannelState::kOpen| when it is ready
-/// for use. In order to know when the channel state changes you must call
-/// pass a valid |mrsDataChannelStateCallback| to
-/// |mrsDataChannelRegisterCallbacks|.
+/// for use. In order to know when the channel state changes you must pass
+/// a valid |mrsDataChannelStateCallback| to |mrsDataChannelRegisterCallbacks|.
 using mrsPeerConnectionDataChannelAddedCallback =
     void(MRS_CALL*)(void* user_data, const mrsDataChannelAddedInfo* info);
 

@@ -176,7 +176,7 @@ rtc::Thread* GlobalFactory::GetWorkerThread() const noexcept {
   // This only requires init_mutex_ read lock, which must be acquired to access
   // the singleton instance.
 #if defined(WINUWP)
-  return impl_->workerThread.get();
+  return impl_ ? impl_->workerThread.get() : nullptr;
 #else   // defined(WINUWP)
   return worker_thread_.get();
 #endif  // defined(WINUWP)
@@ -186,7 +186,7 @@ rtc::Thread* GlobalFactory::GetSignalingThread() const noexcept {
   // This only requires init_mutex_ read lock, which must be acquired to access
   // the singleton instance.
 #if defined(WINUWP)
-  return impl_->signalingThread.get();
+  return impl_ ? impl_->signalingThread.get() : nullptr;
 #else   // defined(WINUWP)
   return signaling_thread_.get();
 #endif  // defined(WINUWP)

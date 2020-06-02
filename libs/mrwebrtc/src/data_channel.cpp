@@ -75,9 +75,6 @@ bool DataChannel::Send(const void* data, size_t size) noexcept {
     return false;
   }
 
-  auto state = data_channel_->state();
-  RTC_LOG_F(LS_INFO) << state;
-
   rtc::CopyOnWriteBuffer bufferStorage((const char*)data, size);
   webrtc::DataBuffer buffer(bufferStorage, /* binary = */ true);
   return data_channel_->Send(buffer);

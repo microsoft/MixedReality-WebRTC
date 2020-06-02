@@ -207,6 +207,8 @@ TEST_P(DataChannelTests, Send) {
       "previous message, just to make sure longer messages are also supported.";
   const uint64_t msg2_size = sizeof(msg2_data);
 
+  // Id expected by the state callbacks below for newly created channels.
+  // -1 means "no specific id".
   int expected_id = -1;
   Event ev_msg1, ev_state1;
   std::function<void(const void*, const uint64_t)> message1_cb(
@@ -258,12 +260,14 @@ TEST_P(DataChannelTests, Send) {
   // Send messages through an out-of-band channel.
   {
     const int kId = 42;
-    expected_id = kId;
     mrsDataChannelConfig config{};
     config.id = kId;
     config.label = "data";
     config.flags = mrsDataChannelConfigFlags::kOrdered |
                    mrsDataChannelConfigFlags::kReliable;
+
+    // Out-of-band channel; expect same id as passed.
+    expected_id = kId;
 
     // Create channels.
     mrsDataChannelHandle handle1;
@@ -302,6 +306,8 @@ TEST_P(DataChannelTests, Send) {
     inband_config.label = "in-band";
     inband_config.flags = mrsDataChannelConfigFlags::kOrdered |
                           mrsDataChannelConfigFlags::kReliable;
+
+    // In-band channel; do not expect a specific id.
     expected_id = -1;
 
     mrsDataChannelHandle inband_handle1{};
