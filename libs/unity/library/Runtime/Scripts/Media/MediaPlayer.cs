@@ -179,15 +179,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             var videoSrc = (IVideoSource)VideoSource;
             switch (videoSrc.FrameEncoding)
             {
-                case VideoEncoding.I420A:
-                    _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(frameQueueSize);
-                    videoSrc.RegisterCallback(I420AVideoFrameReady);
-                    break;
+            case VideoEncoding.I420A:
+                _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(frameQueueSize);
+                videoSrc.RegisterCallback(I420AVideoFrameReady);
+                break;
 
-                case VideoEncoding.Argb32:
-                    _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(frameQueueSize);
-                    videoSrc.RegisterCallback(Argb32VideoFrameReady);
-                    break;
+            case VideoEncoding.Argb32:
+                _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(frameQueueSize);
+                videoSrc.RegisterCallback(Argb32VideoFrameReady);
+                break;
             }
         }
 
@@ -330,7 +330,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
                 // Copy data from C# buffer into system memory managed by Unity.
                 // Note: This only "looks right" in Unity because we apply the 
-                // "YUVFeedShader" to the texture (converting YUV planar to RGB).
+                // "YUVFeedShader(Unlit)" to the texture (converting YUV planar to RGB).
+                // Note: Texture2D.LoadRawTextureData() expects some bottom-up texture data but
+                // the WebRTC video frame is top-down, so the image is uploaded vertically flipped,
+                // and needs to be flipped by in the shader used to sample it. See #388.
                 using (var profileScope = loadTextureDataMarker.Auto())
                 {
                     unsafe
@@ -378,6 +381,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 }
 
                 // Copy data from C# buffer into system memory managed by Unity.
+                // Note: Texture2D.LoadRawTextureData() expects some bottom-up texture data but
+                // the WebRTC video frame is top-down, so the image is uploaded vertically flipped,
+                // and needs to be flipped by in the shader used to sample it. See #388.
                 using (var profileScope = loadTextureDataMarker.Auto())
                 {
                     unsafe

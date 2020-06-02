@@ -46,10 +46,15 @@ Shader "Video/YUVFeedShader (standard lit)"
         void surf(Input IN, inout SurfaceOutput o)
         {
             half3 yuv;
-#if UNITY_UV_STARTS_AT_TOP
+            
+            // Flip texture coordinates vertically.
+            // Texture2D.LoadRawTextureData() always expects a bottom-up image, but the MediaPlayer
+            // upload code always get a top-down frame from WebRTC. The most efficient is to upload
+            // as is (inverted) and revert here.
             IN.uv_YPlane.y = 1 - IN.uv_YPlane.y;
-#endif
+
 #ifdef MIRROR
+            // Optional left-right mirroring (horizontal flipping)
             IN.uv_YPlane.x = 1 - IN.uv_YPlane.x;
 #endif
             yuv.x = tex2D(_YPlane, IN.uv_YPlane).r;

@@ -45,10 +45,15 @@ Shader "Video/YUVFeedShader (unlit)"
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
-#if UNITY_UV_STARTS_AT_TOP
+
+                // Flip texture coordinates vertically.
+                // Texture2D.LoadRawTextureData() always expects a bottom-up image, but the MediaPlayer
+                // upload code always get a top-down frame from WebRTC. The most efficient is to upload
+                // as is (inverted) and revert here.
                 o.uv.y = 1 - v.uv.y;
-#endif
+
 #ifdef MIRROR
+                // Optional left-right mirroring (horizontal flipping)
                 o.uv.x = 1 - v.uv.x;
 #endif
                 return o;
