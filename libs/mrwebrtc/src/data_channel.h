@@ -105,7 +105,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   void OnRemovedFromPeerConnection() noexcept { owner_ = nullptr; }
 
   /// Fire the event now.
-  void FireOnStateChange() const noexcept;
+  void InvokeOnStateChange() const noexcept;
 
  protected:
   // DataChannelObserver interface

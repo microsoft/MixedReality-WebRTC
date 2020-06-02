@@ -454,7 +454,7 @@ void PeerConnection::OnDataChannelAdded(
       // registered.
       if (data_channel.impl()->state() !=
           webrtc::DataChannelInterface::kConnecting) {
-        data_channel.FireOnStateChange();
+        data_channel.InvokeOnStateChange();
       }
     }
   }

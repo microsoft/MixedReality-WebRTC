@@ -83,7 +83,7 @@ bool DataChannel::Send(const void* data, size_t size) noexcept {
   return data_channel_->Send(buffer);
 }
 
-void DataChannel::FireOnStateChange() const noexcept {
+void DataChannel::InvokeOnStateChange() const noexcept {
   std::lock_guard<std::mutex> lock(mutex_);
   if (state_callback_) {
     const webrtc::DataChannelInterface::DataState state =
@@ -94,7 +94,7 @@ void DataChannel::FireOnStateChange() const noexcept {
 }
 
 void DataChannel::OnStateChange() noexcept {
-  FireOnStateChange();
+  InvokeOnStateChange();
 }
 
 void DataChannel::OnMessage(const webrtc::DataBuffer& buffer) noexcept {
