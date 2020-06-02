@@ -110,8 +110,8 @@ jobs:
     displayName: 'Sign library package content'
     inputs:
       signConfigXml: '$(SignConfigFile_Content.secureFilePath)'
-      inPathRoot: 'libs/unity/library'
-      outPathRoot: 'libs/unity/library'
+      inPathRoot: '$(Build.SourcesDirectory)/libs/unity/library'
+      outPathRoot: '$(Build.SourcesDirectory)/libs/unity/library'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
