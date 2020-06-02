@@ -25,9 +25,10 @@ void MRS_CALL StaticMessageCallback(void* user_data,
 }
 
 void MRS_CALL StaticStateCallback(void* user_data,
-                                  int32_t state,
+                                  mrsDataChannelState state,
                                   int32_t id) noexcept {
-  auto func = *static_cast<std::function<void(int32_t, int32_t)>*>(user_data);
+  auto func = *static_cast<std::function<void(mrsDataChannelState, int32_t)>*>(
+      user_data);
   func(state, id);
 }
 
@@ -215,12 +216,12 @@ TEST_P(DataChannelTests, Send) {
         ASSERT_EQ(0, memcmp(data, msg2_data, msg2_size));
         ev_msg1.Set();
       });
-  std::function<void(int32_t, int32_t)> state1_cb(
-      [&](int32_t state, int32_t id) {
+  std::function<void(mrsDataChannelState, int32_t)> state1_cb(
+      [&](mrsDataChannelState state, int32_t id) {
         if (expected_id >= 0) {
           ASSERT_EQ(expected_id, id);
         }
-        if (state == 1) {  // kOpen
+        if (state == mrsDataChannelState::kOpen) {
           ev_state1.Set();
         }
       });
@@ -233,12 +234,12 @@ TEST_P(DataChannelTests, Send) {
         ASSERT_EQ(0, memcmp(data, msg1_data, msg1_size));
         ev_msg2.Set();
       });
-  std::function<void(int32_t, int32_t)> state2_cb(
-      [&](int32_t state, int32_t id) {
+  std::function<void(mrsDataChannelState, int32_t)> state2_cb(
+      [&](mrsDataChannelState state, int32_t id) {
         if (expected_id >= 0) {
           ASSERT_EQ(expected_id, id);
         }
-        if (state == 1) {  // kOpen
+        if (state == mrsDataChannelState::kOpen) {
           ev_state2.Set();
         }
       });
