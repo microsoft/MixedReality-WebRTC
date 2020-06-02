@@ -105,9 +105,6 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\external_video_track_source.h">
       <Filter>src\media</Filter>
     </ClInclude>
-    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\external_video_track_source_impl.h">
-      <Filter>src\media</Filter>
-    </ClInclude>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_video_track.h">
       <Filter>src\media</Filter>
     </ClInclude>

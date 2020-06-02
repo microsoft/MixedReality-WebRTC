@@ -16,7 +16,7 @@
 #include "local_audio_track_interop.h"
 #include "local_video_track_interop.h"
 #include "media/audio_track_source.h"
-#include "media/external_video_track_source_impl.h"
+#include "media/external_video_track_source.h"
 #include "media/local_audio_track.h"
 #include "media/local_video_track.h"
 #include "peer_connection.h"

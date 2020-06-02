@@ -7,7 +7,7 @@
 
 #include "global_factory.h"
 #include "local_video_track_interop.h"
-#include "media/external_video_track_source_impl.h"
+#include "media/external_video_track_source.h"
 #include "media/local_video_track.h"
 #include "media/video_track_source.h"
 #include "utils.h"
@@ -93,7 +93,7 @@ mrsResult MRS_CALL mrsLocalVideoTrackCreateFromExternalSource(
   *track_handle_out = nullptr;
 
   auto track_source =
-      static_cast<detail::ExternalVideoTrackSourceImpl*>(config->source_handle);
+      static_cast<ExternalVideoTrackSource*>(config->source_handle);
   if (!track_source) {
     return Result::kInvalidNativeHandle;
   }
