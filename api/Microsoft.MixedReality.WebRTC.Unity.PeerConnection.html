@@ -141,7 +141,7 @@ property was still <code>false</code> or not.</p>
   
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AutoInitializeOnStart" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoInitializeOnStart">AutoInitializeOnStart</h4>
   <div class="markdown level1 summary"><p>Initialize the peer connection on <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
-If this field is <code>false</code> then the user needs to call <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_System_Threading_CancellationToken_">InitializeAsync(CancellationToken)</a>
+If this field is <code>false</code> then the user needs to call <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_CancellationToken_">InitializeAsync(CancellationToken)</a>
 to manually initialize the peer connection before it can be used for any purpose.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -234,7 +234,7 @@ to manually initialize the peer connection before it can be used for any purpose
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.list-1">List</a>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.html">ConfigurableIceServer</a>&gt;</td>
+        <td><span class="xref">List</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.html">ConfigurableIceServer</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -450,7 +450,7 @@ is negotiated.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.list-1">List</a>&lt;<span class="xref">VideoCaptureDevice</span>&gt;&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">List</span>&lt;<span class="xref">VideoCaptureDevice</span>&gt;&gt;</td>
         <td><p>The list of local video capture devices available to WebRTC.</p>
 </td>
       </tr>
@@ -507,7 +507,7 @@ this method instead of the C# library one to ensure transceiver pairing works as
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><span class="xref">Task</span></td>
         <td><p>A task which completes once the remote description has been applied and transceivers
 have been updated.</p>
 </td>
@@ -517,13 +517,13 @@ have been updated.</p>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_System_Threading_CancellationToken_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(System.Threading.CancellationToken)">InitializeAsync(CancellationToken)</h4>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_CancellationToken_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(CancellationToken)">InitializeAsync(CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Initialize the underlying WebRTC peer connection.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task InitializeAsync(CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public Task InitializeAsync(CancellationToken token = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -536,7 +536,7 @@ have been updated.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
         <td></td>
       </tr>
@@ -552,12 +552,12 @@ have been updated.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><span class="xref">Task</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_CancellationToken__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method must be called once before using the peer connection. If <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AutoInitializeOnStart">AutoInitializeOnStart</a>
 is <code>true</code> then it is automatically called during <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.</p>
 <p>This method is asynchronous and completes its task when the initializing completed.

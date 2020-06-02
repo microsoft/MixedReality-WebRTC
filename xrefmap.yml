@@ -3159,6 +3159,38 @@ references:
   commentId: N:Microsoft.MixedReality.WebRTC.Unity
   fullName: Microsoft.MixedReality.WebRTC.Unity
   nameWithType: Microsoft.MixedReality.WebRTC.Unity
+- uid: Microsoft.MixedReality.WebRTC.Unity.Android
+  name: Android
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Android.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.Android
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Android
+  nameWithType: Android
+- uid: Microsoft.MixedReality.WebRTC.Unity.Android.Initialize
+  name: Initialize()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Android.html#Microsoft_MixedReality_WebRTC_Unity_Android_Initialize
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.Android.Initialize
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Android.Initialize()
+  nameWithType: Android.Initialize()
+- uid: Microsoft.MixedReality.WebRTC.Unity.Android.Initialize*
+  name: Initialize
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Android.html#Microsoft_MixedReality_WebRTC_Unity_Android_Initialize_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.Android.Initialize
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Android.Initialize
+  nameWithType: Android.Initialize
+- uid: Microsoft.MixedReality.WebRTC.Unity.Android.IsInitialized
+  name: IsInitialized
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Android.html#Microsoft_MixedReality_WebRTC_Unity_Android_IsInitialized
+  commentId: P:Microsoft.MixedReality.WebRTC.Unity.Android.IsInitialized
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Android.IsInitialized
+  nameWithType: Android.IsInitialized
+- uid: Microsoft.MixedReality.WebRTC.Unity.Android.IsInitialized*
+  name: IsInitialized
+  href: api/Microsoft.MixedReality.WebRTC.Unity.Android.html#Microsoft_MixedReality_WebRTC_Unity_Android_IsInitialized_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.Android.IsInitialized
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.Android.IsInitialized
+  nameWithType: Android.IsInitialized
 - uid: Microsoft.MixedReality.WebRTC.Unity.AudioReceiver
   name: AudioReceiver
   href: api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html
@@ -4047,11 +4079,11 @@ references:
   commentId: M:Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.#ctor(System.String)
   fullName: Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.InvalidTransceiverMediaKindException(System.String)
   nameWithType: InvalidTransceiverMediaKindException.InvalidTransceiverMediaKindException(String)
-- uid: Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.#ctor(System.String,System.Exception)
+- uid: Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.#ctor(System.String,Exception)
   name: InvalidTransceiverMediaKindException(String, Exception)
-  href: api/Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.html#Microsoft_MixedReality_WebRTC_Unity_InvalidTransceiverMediaKindException__ctor_System_String_System_Exception_
-  commentId: M:Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.#ctor(System.String,System.Exception)
-  fullName: Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.InvalidTransceiverMediaKindException(System.String, System.Exception)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.html#Microsoft_MixedReality_WebRTC_Unity_InvalidTransceiverMediaKindException__ctor_System_String_Exception_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.#ctor(System.String,Exception)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.InvalidTransceiverMediaKindException(System.String, Exception)
   nameWithType: InvalidTransceiverMediaKindException.InvalidTransceiverMediaKindException(String, Exception)
 - uid: Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.#ctor*
   name: InvalidTransceiverMediaKindException
@@ -4750,11 +4782,11 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.IceUsername
   fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.IceUsername
   nameWithType: PeerConnection.IceUsername
-- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(System.Threading.CancellationToken)
+- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(CancellationToken)
   name: InitializeAsync(CancellationToken)
-  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_System_Threading_CancellationToken_
-  commentId: M:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(System.Threading.CancellationToken)
-  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(System.Threading.CancellationToken)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_CancellationToken_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(CancellationToken)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(CancellationToken)
   nameWithType: PeerConnection.InitializeAsync(CancellationToken)
 - uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync*
   name: InitializeAsync
