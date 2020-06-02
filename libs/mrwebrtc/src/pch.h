@@ -55,6 +55,7 @@
 #include "api/transport/bitrate_settings.h"
 #include "api/video/i420_buffer.h"
 #include "api/videosourceproxy.h"
+#include "media/base/adaptedvideotracksource.h"
 #include "media/engine/internaldecoderfactory.h"
 #include "media/engine/internalencoderfactory.h"
 #include "media/engine/multiplexcodecfactory.h"
