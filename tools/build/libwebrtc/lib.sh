@@ -214,6 +214,9 @@ function checkout-webrtc() {
     [[ "$FAST_CLONE" == "1" ]] && extra_sync+=" --no-history --shallow --nohooks" || true
     gclient sync --force --revision $REVISION $extra_sync
 
+    # Run hooks on specific revision to e.g. download the prebuilt gn
+    gclient runhooks
+
     popd >/dev/null
 }
 

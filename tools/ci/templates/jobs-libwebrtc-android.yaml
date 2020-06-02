@@ -101,9 +101,6 @@ jobs:
       cd $(toolsDir)/libwebrtc
       ./config.sh -v -d $(workDir) -b "branch-heads/71" -t android -c arm64 -s -f
       ./checkout.sh -v
-      # Run hooks to download src/buildtools/linux64/gn
-      echo "Running hooks with gclient to download gn"
-      gclient runhooks
     displayName: 'Checkout libwebrtc'
 
   # List available disk space after clean-up
