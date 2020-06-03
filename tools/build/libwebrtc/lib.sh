@@ -215,7 +215,7 @@ function checkout-webrtc() {
     gclient sync --force --revision $REVISION $extra_sync
 
     # Run hooks on specific revision to e.g. download the prebuilt gn
-    gclient runhooks
+    yes | gclient runhooks
 
     popd >/dev/null
 }
