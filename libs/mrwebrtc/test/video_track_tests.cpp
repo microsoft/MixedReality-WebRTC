@@ -3,12 +3,12 @@
 
 #include "pch.h"
 
+#include "device_video_track_source_interop.h"
 #include "external_video_track_source_interop.h"
 #include "interop_api.h"
 #include "local_video_track_interop.h"
 #include "remote_video_track_interop.h"
 #include "transceiver_interop.h"
-#include "video_track_source_interop.h"
 
 #include "simple_interop.h"
 #include "test_utils.h"
@@ -97,8 +97,8 @@ TEST_P(VideoTrackTests, Simple) {
   mrsVideoTrackSourceHandle source_handle1{};
   {
     mrsLocalVideoDeviceInitConfig device_config{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTrackSourceCreateFromDevice(
-                                    &device_config, &source_handle1));
+    ASSERT_EQ(Result::kSuccess,
+              mrsDeviceVideoTrackSourceCreate(&device_config, &source_handle1));
     ASSERT_NE(nullptr, source_handle1);
   }
 
@@ -223,8 +223,8 @@ TEST_P(VideoTrackTests, Muted) {
   mrsVideoTrackSourceHandle source_handle1{};
   {
     mrsLocalVideoDeviceInitConfig device_config{};
-    ASSERT_EQ(Result::kSuccess, mrsVideoTrackSourceCreateFromDevice(
-                                    &device_config, &source_handle1));
+    ASSERT_EQ(Result::kSuccess,
+              mrsDeviceVideoTrackSourceCreate(&device_config, &source_handle1));
     ASSERT_NE(nullptr, source_handle1);
   }
 
@@ -374,8 +374,6 @@ TEST_P(VideoTrackTests, Multi) {
   mrsExternalVideoTrackSourceFinishCreation(source_handle1);
 
   // Create local video tracks on the local peer (#1)
-  mrsLocalVideoTrackFromExternalSourceInitConfig track_config{};
-  track_config.source_handle = source_handle1;
   int idx = 0;
   for (auto&& track : tracks) {
     std::stringstream strstr;
@@ -392,9 +390,11 @@ TEST_P(VideoTrackTests, Multi) {
     strstr.clear();
     strstr << "track_1_" << idx;
     str = strstr.str();  // keep alive
-    track_config.track_name = str.c_str();
-    ASSERT_EQ(Result::kSuccess, mrsLocalVideoTrackCreateFromExternalSource(
-                                    &track_config, &track.local_handle));
+    mrsLocalVideoTrackInitSettings track_settings{};
+    track_settings.track_name = str.c_str();
+    ASSERT_EQ(Result::kSuccess,
+              mrsLocalVideoTrackCreateFromSource(
+                  &track_settings, source_handle1, &track.local_handle));
     ASSERT_NE(nullptr, track.local_handle);
     ASSERT_EQ(Result::kSuccess,
               mrsTransceiverSetLocalVideoTrack(track.local_transceiver_handle,
@@ -502,11 +502,11 @@ TEST_P(VideoTrackTests, ExternalI420) {
   // Create the local video track (#1)
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    mrsLocalVideoTrackFromExternalSourceInitConfig config{};
-    config.source_handle = source_handle1;
-    config.track_name = "simulated_video_track";
-    ASSERT_EQ(mrsResult::kSuccess, mrsLocalVideoTrackCreateFromExternalSource(
-                                       &config, &track_handle1));
+    mrsLocalVideoTrackInitSettings settings{};
+    settings.track_name = "simulated_video_track";
+    ASSERT_EQ(mrsResult::kSuccess,
+              mrsLocalVideoTrackCreateFromSource(&settings, source_handle1,
+                                                 &track_handle1));
     ASSERT_NE(nullptr, track_handle1);
     ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle1));
   }

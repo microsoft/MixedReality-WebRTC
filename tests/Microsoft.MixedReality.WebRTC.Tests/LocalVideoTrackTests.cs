@@ -108,6 +108,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             var transceiver_settings = new TransceiverInitSettings
             {
                 Name = "transceiver1",
+                InitialDesiredDirection = Transceiver.Direction.SendReceive
             };
             var transceiver1 = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
             Assert.NotNull(transceiver1);
@@ -117,7 +118,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
 
             // Create video track source
-            var source1 = await VideoTrackSource.CreateFromDeviceAsync();
+            var source1 = await DeviceVideoTrackSource.CreateAsync();
             Assert.IsNotNull(source1);
 
             // Create local video track
@@ -125,7 +126,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             LocalVideoTrack track1 = LocalVideoTrack.CreateFromSource(source1, settings);
             Assert.IsNotNull(track1);
 
-            // Add local video track channel to #1
+            // Add local video track to #1
             renegotiationEvent1_.Reset();
             transceiver1.LocalVideoTrack = track1;
             Assert.IsFalse(renegotiationEvent1_.IsSet); // renegotiation not needed
@@ -164,6 +165,11 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             // Destroy the video source
             source1.Dispose();
 
+            // SetLocalTrack() does not change the transceiver directions, even when the local
+            // sending track is disposed of.
+            Assert.AreEqual(Transceiver.Direction.SendReceive, transceiver1.DesiredDirection);
+            Assert.AreEqual(Transceiver.Direction.SendOnly, transceiver1.NegotiatedDirection);
+
             // Remote peer #2 still has a track, because the transceiver is still receiving,
             // even if there is no track on the sending side (so effectively it receives only
             // black frames).
@@ -172,13 +178,18 @@ namespace Microsoft.MixedReality.WebRTC.Tests
 
             // Change the transceiver direction to stop receiving. This requires a renegotiation
             // to take effect, so nothing changes for now.
+            // Note: In Plan B, a renegotiation needed event is manually forced for parity with
+            // Unified Plan. However setting the transceiver to inactive removes the remote peer's
+            // remote track, which causes another renegotiation needed event. So we suspend the
+            // automatic offer to trigger it manually.
+            suspendOffer1_ = true;
             remoteDescAppliedEvent1_.Reset();
             remoteDescAppliedEvent2_.Reset();
             transceiver1.DesiredDirection = Transceiver.Direction.Inactive;
-
-            // Wait for renegotiate to complete
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
-            WaitForSdpExchangeCompleted();
+
+            // Renegotiate
+            await DoNegotiationStartFrom(pc1_);
             Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
             Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
 
@@ -214,6 +225,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             var transceiver_settings = new TransceiverInitSettings
             {
                 Name = "transceiver1",
+                InitialDesiredDirection = Transceiver.Direction.SendReceive
             };
             var transceiver1 = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
             Assert.NotNull(transceiver1);
@@ -232,13 +244,13 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
             Assert.AreEqual(1, pc2_.RemoteVideoTracks.Count());
 
-            // Transceiver has been updated to Send+Receive (default desired direction when added), but
-            // since peer #2 doesn't intend to send, the actually negotiated direction on #1 is Send only.
+            // Transceiver has been updated to Send+Receive (desired direction when added), but since peer #2
+            // doesn't intend to send, the actually negotiated direction on #1 is Send only.
             Assert.AreEqual(Transceiver.Direction.SendReceive, transceiver1.DesiredDirection);
             Assert.AreEqual(Transceiver.Direction.SendOnly, transceiver1.NegotiatedDirection);
 
             // Create video track source
-            var source1 = await VideoTrackSource.CreateFromDeviceAsync();
+            var source1 = await DeviceVideoTrackSource.CreateAsync();
             Assert.IsNotNull(source1);
 
             // Create local video track
@@ -304,9 +316,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             transceiver1.DesiredDirection = Transceiver.Direction.Inactive;
             Assert.True(renegotiationEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
 
-            // Wait for renegotiate to complete
-            StartOfferWith(pc1_);
-            WaitForSdpExchangeCompleted();
+            // Renegotiate
+            await DoNegotiationStartFrom(pc1_);
+            Assert.True(remoteDescAppliedEvent1_.Wait(TimeSpan.FromSeconds(60.0)));
+            Assert.True(remoteDescAppliedEvent2_.Wait(TimeSpan.FromSeconds(60.0)));
 
             // Now the remote track got removed from #2
             Assert.AreEqual(0, pc2_.LocalVideoTracks.Count());
@@ -359,9 +372,13 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             WaitForSdpExchangeCompleted();
 
             // Create external I420A track
-            var track1 = LocalVideoTrack.CreateFromExternalSource("custom_i420a", source1);
+            var track_config1 = new LocalVideoTrackInitConfig
+            {
+                trackName = "custom_i420a"
+            };
+            var track1 = LocalVideoTrack.CreateFromSource(source1, track_config1);
             Assert.NotNull(track1);
-            Assert.AreEqual(source1, track1.ExternalSource);
+            Assert.AreEqual(source1, track1.Source);
             Assert.IsNull(track1.PeerConnection);
             Assert.IsNull(track1.Transceiver);
             Assert.IsFalse(pc1_.LocalVideoTracks.Contains(track1));
@@ -435,9 +452,13 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             WaitForSdpExchangeCompleted();
 
             // Create external ARGB32 track
-            var track1 = LocalVideoTrack.CreateFromExternalSource("custom_argb32", source1);
+            var track_config1 = new LocalVideoTrackInitConfig
+            {
+                trackName = "custom_argb32"
+            };
+            var track1 = LocalVideoTrack.CreateFromSource(source1, track_config1);
             Assert.NotNull(track1);
-            Assert.AreEqual(source1, track1.ExternalSource);
+            Assert.AreEqual(source1, track1.Source);
             Assert.IsNull(track1.PeerConnection);
             Assert.IsNull(track1.Transceiver);
             Assert.IsFalse(pc1_.LocalVideoTracks.Contains(track1));
@@ -504,7 +525,11 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                 transceivers[i] = pc1_.AddTransceiver(MediaKind.Video, transceiver_settings);
                 Assert.NotNull(transceivers[i]);
 
-                tracks[i] = LocalVideoTrack.CreateFromExternalSource($"track_i420a_{i}", source1);
+                var track_config = new LocalVideoTrackInitConfig
+                {
+                    trackName = $"track_i420a_{i}"
+                };
+                tracks[i] = LocalVideoTrack.CreateFromSource(source1, track_config);
                 Assert.NotNull(tracks[i]);
                 Assert.IsTrue(source1.Tracks.Contains(tracks[i]));
 

@@ -37,10 +37,13 @@ void VideoSourceAdapter::UnregisterObserver(
 
 VideoTrackSource::VideoTrackSource(
     RefPtr<GlobalFactory> global_factory,
+    ObjectType video_track_source_type,
     rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source) noexcept
-    : TrackedObject(std::move(global_factory), ObjectType::kVideoTrackSource),
+    : TrackedObject(std::move(global_factory), video_track_source_type),
       source_(std::move(source)) {
   RTC_CHECK(source_);
+  RTC_CHECK((video_track_source_type == ObjectType::kDeviceVideoTrackSource) ||
+            (video_track_source_type == ObjectType::kExternalVideoTrackSource));
 }
 
 VideoTrackSource::~VideoTrackSource() {

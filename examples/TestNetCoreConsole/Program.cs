@@ -50,7 +50,7 @@ namespace TestNetCoreConsole
                 if (needVideo)
                 {
                     Console.WriteLine("Opening local webcam...");
-                    videoTrackSource = await VideoTrackSource.CreateFromDeviceAsync();
+                    videoTrackSource = await DeviceVideoTrackSource.CreateAsync();
 
                     Console.WriteLine("Create local video track...");
                     var trackSettings = new LocalVideoTrackInitConfig { trackName = "webcam_track" };

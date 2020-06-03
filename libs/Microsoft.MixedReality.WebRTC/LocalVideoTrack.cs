@@ -76,7 +76,7 @@ namespace Microsoft.MixedReality.WebRTC
     };
 
     /// <summary>
-    /// Settings for adding a local video track backed by a local video capture device (e.g. webcam).
+    /// Settings for creating a new local video track.
     /// </summary>
     public class LocalVideoTrackInitConfig
     {
@@ -89,70 +89,6 @@ namespace Microsoft.MixedReality.WebRTC
         /// random track name.
         /// </summary>
         public string trackName = string.Empty;
-
-        /// <summary>
-        /// Optional video capture device to use for capture.
-        /// Use the default device if not specified.
-        /// </summary>
-        public VideoCaptureDevice videoDevice = default;
-
-        /// <summary>
-        /// Optional unique identifier of the video profile to use for capture,
-        /// if the device supports video profiles, as retrieved by one of:
-        /// - <see xref="MediaCapture.FindAllVideoProfiles"/>
-        /// - <see xref="MediaCapture.FindKnownVideoProfiles"/>
-        /// This requires <see cref="videoDevice"/> to be specified.
-        /// </summary>
-        public string videoProfileId = string.Empty;
-
-        /// <summary>
-        /// Optional video profile kind to restrict the list of video profiles to consider.
-        /// Note that this is not exclusive with <see cref="videoProfileId"/>, although in
-        /// practice it is recommended to specify only one or the other.
-        /// This requires <see cref="videoDevice"/> to be specified.
-        /// </summary>
-        public VideoProfileKind videoProfileKind = VideoProfileKind.Unspecified;
-
-        /// <summary>
-        /// Enable Mixed Reality Capture (MRC) on devices supporting the feature.
-        /// This setting is silently ignored on device not supporting MRC.
-        /// </summary>
-        /// <remarks>
-        /// This is only supported on UWP.
-        /// </remarks>
-        public bool enableMrc = true;
-
-        /// <summary>
-        /// Display the on-screen recording indicator while MRC is enabled.
-        /// This setting is silently ignored on device not supporting MRC, or if
-        /// <see cref="enableMrc"/> is set to <c>false</c>.
-        /// </summary>
-        /// <remarks>
-        /// This is only supported on UWP.
-        /// </remarks>
-        public bool enableMrcRecordingIndicator = true;
-
-        /// <summary>
-        /// Optional capture resolution width, in pixels.
-        /// This must be a resolution width the device supports.
-        /// </summary>
-        public uint? width;
-
-        /// <summary>
-        /// Optional capture resolution height, in pixels.
-        /// This must be a resolution width the device supports.
-        /// </summary>
-        public uint? height;
-
-        /// <summary>
-        /// Optional capture frame rate, in frames per second (FPS).
-        /// This must be a capture framerate the device supports.
-        /// </summary>
-        /// <remarks>
-        /// This is compared by strict equality, so is best left unspecified or to an exact value
-        /// retrieved by <see cref="PeerConnection.GetVideoCaptureFormatsAsync"/>.
-        /// </remarks>
-        public double? framerate;
     }
 
     /// <summary>
@@ -161,13 +97,6 @@ namespace Microsoft.MixedReality.WebRTC
     /// </summary>
     public class LocalVideoTrack : MediaTrack, IVideoTrack, IDisposable
     {
-        /// <summary>
-        /// External source for this video track, or <c>null</c> if the source is some
-        /// internal video capture device, or has been removed from any peer connection
-        /// (and is therefore inactive).
-        /// </summary>
-        public ExternalVideoTrackSource ExternalSource { get; private set; } = null; // TODO - remove
-
         /// <summary>
         /// Video track source this track is pulling its video frames from.
         /// </summary>
@@ -260,60 +189,14 @@ namespace Microsoft.MixedReality.WebRTC
 
             // Finish creating the track, and bind it to the source
             track.FinishCreate(trackHandle, source);
-            source.OnTrackAddedToSource(track);
 
-            return track;
-        }
-
-        /// <summary>
-        /// Create a new local video track backed by an existing external video source.
-        /// The track can be added to a peer connection by setting the <see cref="Transceiver.LocalVideoTrack"/>
-        /// property.
-        /// </summary>
-        /// <param name="trackName">Name of the new local video track.</param>
-        /// <param name="source">External video track source providing some video frames to the track.</param>
-        /// <returns>The newly created local video track.</returns>
-        /// <seealso cref="Transceiver.LocalVideoTrack"/>
-        public static LocalVideoTrack CreateFromExternalSource(string trackName, ExternalVideoTrackSource source)
-        {
-            if (string.IsNullOrEmpty(trackName))
-            {
-                trackName = Guid.NewGuid().ToString();
-            }
-
-            // Create interop wrappers
-            var track = new LocalVideoTrack(trackName, source);
-
-            // Parse settings
-            var config = new PeerConnectionInterop.LocalVideoTrackFromExternalSourceInteropInitConfig(trackName, source);
-
-            // Create native implementation objects
-            uint res = LocalVideoTrackInterop.LocalVideoTrack_CreateFromExternalSource(config, out LocalVideoTrackHandle trackHandle);
-            Utils.ThrowOnErrorCode(res);
-            track.FinishCreate(trackHandle, null /*TODO*/);
             return track;
         }
 
         // Constructor for interop-based creation; SetHandle() will be called later.
-        // Constructor for standalone track not associated to a peer connection.
-        internal LocalVideoTrack(string trackName, ExternalVideoTrackSource externalSource = null) : base(null, trackName)
+        internal LocalVideoTrack(string trackName) : base(null, trackName)
         {
             Transceiver = null;
-            ExternalSource = externalSource;
-            externalSource?.OnTrackAddedToSource(this);
-        }
-
-        // Constructor for interop-based creation; SetHandle() will be called later
-        // Constructor for a track associated with a peer connection.
-        internal LocalVideoTrack(PeerConnection peer,
-            Transceiver transceiver, string trackName, ExternalVideoTrackSource externalSource = null) : base(peer, trackName)
-        {
-            Debug.Assert(transceiver.MediaKind == MediaKind.Video);
-            Debug.Assert(transceiver.LocalVideoTrack == null);
-            Transceiver = transceiver;
-            transceiver.LocalVideoTrack = this;
-            ExternalSource = externalSource;
-            externalSource?.OnTrackAddedToSource(this);
         }
 
         internal void FinishCreate(LocalVideoTrackHandle handle, VideoTrackSource source)
@@ -326,7 +209,10 @@ namespace Microsoft.MixedReality.WebRTC
                 _nativeHandle = handle;
                 RegisterInteropCallbacks();
             }
+
+            Debug.Assert(source != null);
             Source = source;
+            source.OnTrackAddedToSource(this);
         }
 
         private void RegisterInteropCallbacks()
@@ -357,13 +243,6 @@ namespace Microsoft.MixedReality.WebRTC
             {
                 Source.OnTrackRemovedFromSource(this);
                 Source = null;
-            }
-
-            // Notify the source
-            if (ExternalSource != null)
-            {
-                ExternalSource.OnTrackRemovedFromSource(this);
-                ExternalSource = null;
             }
 
             // Remove the track from the peer connection, if any

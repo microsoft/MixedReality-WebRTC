@@ -119,8 +119,9 @@ constexpr const size_t kMaxPendingRequestCount = 64;
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSource::create(
     RefPtr<GlobalFactory> global_factory,
     std::unique_ptr<detail::BufferAdapter> adapter) {
-  auto source = new ExternalVideoTrackSource(std::move(global_factory),
-                                             std::move(adapter));
+  auto source = new ExternalVideoTrackSource(
+      std::move(global_factory), std::move(adapter),
+      new rtc::RefCountedObject<detail::CustomTrackSourceAdapter>());
   // Note: Video track sources always start already capturing; there is no
   // start/stop mechanism at the track level in WebRTC. A source is either being
   // initialized, or is already live. However because of wrappers and interop
@@ -130,11 +131,12 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSource::create(
 
 ExternalVideoTrackSource::ExternalVideoTrackSource(
     RefPtr<GlobalFactory> global_factory,
-    std::unique_ptr<detail::BufferAdapter> adapter)
-    : TrackedObject(std::move(global_factory),
-                    ObjectType::kExternalVideoTrackSource),
-      track_source_(
-          new rtc::RefCountedObject<detail::CustomTrackSourceAdapter>()),
+    std::unique_ptr<detail::BufferAdapter> adapter,
+    rtc::scoped_refptr<detail::CustomTrackSourceAdapter> source)
+    : VideoTrackSource(std::move(global_factory),
+                       ObjectType::kExternalVideoTrackSource,
+                       source),
+      track_source_(std::move(source)),
       adapter_(std::forward<std::unique_ptr<detail::BufferAdapter>>(adapter)),
       capture_thread_(rtc::Thread::Create()) {
   capture_thread_->SetName("ExternalVideoTrackSource capture thread", this);

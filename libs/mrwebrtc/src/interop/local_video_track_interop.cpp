@@ -60,49 +60,6 @@ mrsResult MRS_CALL mrsLocalVideoTrackCreateFromSource(
   return Result::kSuccess;
 }
 
-mrsResult MRS_CALL mrsLocalVideoTrackCreateFromExternalSource(
-    const mrsLocalVideoTrackFromExternalSourceInitConfig* config,
-    mrsLocalVideoTrackHandle* track_handle_out) noexcept {
-  if (!config || !track_handle_out || !config->source_handle) {
-    return Result::kInvalidParameter;
-  }
-  *track_handle_out = nullptr;
-
-  auto track_source =
-      static_cast<ExternalVideoTrackSource*>(config->source_handle);
-  if (!track_source) {
-    return Result::kInvalidNativeHandle;
-  }
-
-  std::string track_name_str;
-  if (!IsStringNullOrEmpty(config->track_name)) {
-    track_name_str = config->track_name;
-  } else {
-    track_name_str = "external_track";
-  }
-
-  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
-  auto pc_factory = global_factory->GetPeerConnectionFactory();
-  if (!pc_factory) {
-    return Result::kUnknownError;
-  }
-
-  // The video track keeps a reference to the video source; let's hope this
-  // does not change, because this is not explicitly mentioned in the docs,
-  // and the video track is the only one keeping the video source alive.
-  rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
-      pc_factory->CreateVideoTrack(track_name_str, track_source->impl());
-  if (!video_track) {
-    return Result::kUnknownError;
-  }
-
-  // Create the video track wrapper
-  RefPtr<LocalVideoTrack> track =
-      new LocalVideoTrack(std::move(global_factory), std::move(video_track));
-  *track_handle_out = track.release();
-  return Result::kSuccess;
-}
-
 void MRS_CALL mrsLocalVideoTrackRegisterI420AFrameCallback(
     mrsLocalVideoTrackHandle trackHandle,
     mrsI420AVideoFrameCallback callback,

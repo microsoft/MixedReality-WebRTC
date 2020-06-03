@@ -3,11 +3,12 @@
 
 #pragma once
 
-#include "external_video_track_source_interop.h"
 #include "mrs_errors.h"
 #include "refptr.h"
 #include "tracked_object.h"
 #include "video_frame.h"
+#include "video_frame_observer.h"
+#include "video_track_source_interop.h"
 
 #include "api/mediastreaminterface.h"
 
@@ -66,14 +67,9 @@ class VideoSourceAdapter : public webrtc::VideoTrackSourceInterface {
 /// video tracks.
 class VideoTrackSource : public TrackedObject {
  public:
-  ///// Helper to create an audio track source from a custom audio frame request
-  ///// callback.
-  // static RefPtr<VideoTrackSource> createFromCustom(
-  //    RefPtr<GlobalFactory> global_factory,
-  //    RefPtr<CustomAudioSource> audio_source);
-
   VideoTrackSource(
       RefPtr<GlobalFactory> global_factory,
+      ObjectType video_track_source_type,
       rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source) noexcept;
   ~VideoTrackSource() override;
 
@@ -89,20 +85,6 @@ class VideoTrackSource : public TrackedObject {
   std::unique_ptr<VideoFrameObserver> observer_;
   std::mutex observer_mutex_;
 };
-
-namespace detail {
-
-//
-// Helpers
-//
-
-///// Create a custom audio track source wrapping the given interop callback.
-// RefPtr<VideoTrackSource> VideoTrackSourceCreateFromCustom(
-//    RefPtr<GlobalFactory> global_factory,
-//    mrsRequestCustomAudioFrameCallback callback,
-//    void* user_data);
-
-}  // namespace detail
 
 }  // namespace WebRTC
 }  // namespace MixedReality

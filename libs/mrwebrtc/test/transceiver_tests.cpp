@@ -227,11 +227,11 @@ void Test_SetLocalTrack(mrsSdpSemantic sdp_semantic,
   // Create the local video track (#1)
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    mrsLocalVideoTrackFromExternalSourceInitConfig config{};
-    config.source_handle = source_handle1;
-    config.track_name = "simulated_video_track1";
-    ASSERT_EQ(mrsResult::kSuccess, mrsLocalVideoTrackCreateFromExternalSource(
-                                       &config, &track_handle1));
+    mrsLocalVideoTrackInitSettings settings{};
+    settings.track_name = "simulated_video_track1";
+    ASSERT_EQ(mrsResult::kSuccess,
+              mrsLocalVideoTrackCreateFromSource(&settings, source_handle1,
+                                                 &track_handle1));
     ASSERT_NE(nullptr, track_handle1);
     ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle1));
   }

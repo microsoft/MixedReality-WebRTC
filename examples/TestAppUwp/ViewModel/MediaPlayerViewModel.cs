@@ -130,7 +130,7 @@ namespace TestAppUwp
                 Factory = async () =>
                 {
                     // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
-                    var source = await VideoTrackSource.CreateFromDeviceAsync();
+                    var source = await DeviceVideoTrackSource.CreateAsync();
                     var settings = new LocalVideoTrackInitConfig();
                     return LocalVideoTrack.CreateFromSource(source, settings);
                 }
