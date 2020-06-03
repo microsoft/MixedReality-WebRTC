@@ -12,31 +12,6 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL mrsObjectAddRef(mrsObjectHandle handle) noexcept {
-  if (auto obj = static_cast<TrackedObject*>(handle)) {
-    obj->AddRef();
-  } else {
-    RTC_LOG(LS_WARNING) << "Trying to add reference to NULL "
-                        << ObjectTypeToString(obj->GetObjectType())
-                        << " object.";
-  }
-}
-
-void MRS_CALL mrsObjectRemoveRef(mrsObjectHandle handle) noexcept {
-  if (auto obj = static_cast<TrackedObject*>(handle)) {
-    const std::string name = obj->GetName();
-    if (obj->RemoveRef() == 0) {
-      RTC_LOG(LS_VERBOSE) << "Destroyed "
-                          << ObjectTypeToString(obj->GetObjectType()) << " "
-                          << name.c_str() << "\" (0 ref).";
-    }
-  } else {
-    RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
-                        << ObjectTypeToString(obj->GetObjectType())
-                        << " object.";
-  }
-}
-
 void MRS_CALL mrsObjectSetName(mrsObjectHandle handle,
                                const char* name) noexcept {
   if (auto obj = static_cast<TrackedObject*>(handle)) {
