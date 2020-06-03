@@ -12,49 +12,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     /// <summary>
     /// Handle to a native peer connection object.
     /// </summary>
-    internal sealed class PeerConnectionHandle : SafeHandle
-    {
-        /// <summary>
-        /// Check if the current handle is invalid, which means it is not referencing
-        /// an actual native object. Note that a valid handle only means that the internal
-        /// handle references a native object, but does not guarantee that the native
-        /// object is still accessible. It is only safe to access the native object if
-        /// the handle is not closed, which implies it being valid.
-        /// </summary>
-        public override bool IsInvalid
-        {
-            get
-            {
-                return (handle == IntPtr.Zero);
-            }
-        }
-
-        /// <summary>
-        /// Default constructor for an invalid handle.
-        /// </summary>
-        public PeerConnectionHandle() : base(IntPtr.Zero, ownsHandle: true)
-        {
-        }
-
-        /// <summary>
-        /// Constructor for a valid handle referencing the given native object.
-        /// </summary>
-        /// <param name="handle">The valid internal handle to the native object.</param>
-        public PeerConnectionHandle(IntPtr handle) : base(IntPtr.Zero, ownsHandle: true)
-        {
-            SetHandle(handle);
-        }
-
-        /// <summary>
-        /// Release the native object while the handle is being closed.
-        /// </summary>
-        /// <returns>Return <c>true</c> if the native object was successfully released.</returns>
-        protected override bool ReleaseHandle()
-        {
-            PeerConnectionInterop.PeerConnection_RemoveRef(handle);
-            return true;
-        }
-    }
+    internal sealed class PeerConnectionHandle : RefCountedObjectHandle { }
 
     internal class PeerConnectionInterop
     {
@@ -219,7 +177,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void AudioTrackAddedCallback(IntPtr peer, in RemoteAudioTrackAddedInfo info)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
-            IntPtr transceiver = TransceiverInterop.Transceiver_GetUserData(info.audioTransceiverHandle);
+            IntPtr transceiver = ObjectInterop.Object_GetUserData(new TransceiverInterop.TransceiverHandle(info.audioTransceiverHandle));
             Debug.Assert(transceiver != IntPtr.Zero); // must have been set by the TransceiverAdded event
             var transceiverWrapper = Utils.ToWrapper<Transceiver>(transceiver);
             var remoteAudioTrackWrapper = RemoteAudioTrackInterop.CreateWrapper(peerWrapper, in info);
@@ -230,7 +188,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void AudioTrackRemovedCallback(IntPtr userData, IntPtr audioTrackHandle, IntPtr audioTransceiverHandle)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(userData);
-            IntPtr audioTrackRef = RemoteAudioTrackInterop.RemoteAudioTrack_GetUserData(audioTrackHandle);
+            IntPtr audioTrackRef = ObjectInterop.Object_GetUserData(new RemoteAudioTrackInterop.RemoteAudioTrackHandle(audioTrackHandle));
             var audioTrackWrapper = Utils.ToWrapper<RemoteAudioTrack>(audioTrackRef);
             peerWrapper.OnAudioTrackRemoved(audioTrackWrapper);
         }
@@ -239,7 +197,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void VideoTrackAddedCallback(IntPtr peer, in RemoteVideoTrackAddedInfo info)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
-            IntPtr transceiver = TransceiverInterop.Transceiver_GetUserData(info.videoTransceiverHandle);
+            IntPtr transceiver = ObjectInterop.Object_GetUserData(new TransceiverInterop.TransceiverHandle(info.videoTransceiverHandle));
             Debug.Assert(transceiver != IntPtr.Zero); // must have been set by the TransceiverAdded event
             var transceiverWrapper = Utils.ToWrapper<Transceiver>(transceiver);
             var remoteVideoTrackWrapper = RemoteVideoTrackInterop.CreateWrapper(peerWrapper, in info);
@@ -250,7 +208,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void VideoTrackRemovedCallback(IntPtr userData, IntPtr videoTrackHandle, IntPtr videoTransceiverHandle)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(userData);
-            IntPtr videoTrackRef = RemoteVideoTrackInterop.RemoteVideoTrack_GetUserData(videoTrackHandle);
+            IntPtr videoTrackRef = ObjectInterop.Object_GetUserData(new RemoteVideoTrackInterop.RemoteVideoTrackHandle(videoTrackHandle));
             var videoTrackWrapper = Utils.ToWrapper<RemoteVideoTrack>(videoTrackRef);
             peerWrapper.OnVideoTrackRemoved(videoTrackWrapper);
         }
@@ -582,15 +540,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             IntPtr userData, VideoCaptureFormatEnumCompletedCallback completedCallback, IntPtr completedUserData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsPeerConnectionAddRef")]
-        public static unsafe extern void PeerConnection_AddRef(PeerConnectionHandle handle);
-
-        // Note - This is used during SafeHandle.ReleaseHandle(), so cannot use PeerConnectionHandle
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsPeerConnectionRemoveRef")]
-        public static unsafe extern void PeerConnection_RemoveRef(IntPtr handle);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionCreate")]
         public static extern uint PeerConnection_Create(in PeerConnectionConfiguration config, out PeerConnectionHandle peerHandleOut);
 
@@ -660,14 +609,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             PeerConnectionDataChannelRemovedCallback callback, IntPtr userData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsPeerConnectionRenderRemoteAudio")]
-        public static extern uint PeerConnection_RenderRemoteAudio(PeerConnectionHandle peerHandle,
-            bool render);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddTransceiver")]
         public static extern uint PeerConnection_AddTransceiver(PeerConnectionHandle peerHandle,
-            in TransceiverInterop.InitConfig config, out IntPtr transceiverHandle);
+            in TransceiverInterop.InitConfig config, out TransceiverInterop.TransceiverHandle transceiverHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddDataChannel")]

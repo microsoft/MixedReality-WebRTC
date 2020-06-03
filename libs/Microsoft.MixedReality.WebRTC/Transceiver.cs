@@ -301,7 +301,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>
         /// In native land this is a <code>mrsTransceiverHandle</code>.
         /// </remarks>
-        internal IntPtr _nativeHandle = IntPtr.Zero;
+        internal TransceiverInterop.TransceiverHandle _nativeHandle = null;
 
         /// <summary>
         /// Reference to the struct keeping the callback delegates alive while registered with
@@ -324,10 +324,10 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="name">The transceiver name.</param>
         /// <param name="streamIDs">Collection of stream IDs the transceiver is associated with, as set by the peer which created it.</param>
         /// <param name="initialDesiredDirection">Initial value to initialize <see cref="DesiredDirection"/> with.</param>
-        internal Transceiver(IntPtr handle, MediaKind mediaKind, PeerConnection peerConnection, int mlineIndex,
+        internal Transceiver(TransceiverInterop.TransceiverHandle handle, MediaKind mediaKind, PeerConnection peerConnection, int mlineIndex,
             string name, string[] streamIDs, Direction initialDesiredDirection)
         {
-            Debug.Assert(handle != IntPtr.Zero);
+            Debug.Assert(!handle.IsClosed);
             _nativeHandle = handle;
             MediaKind = mediaKind;
             PeerConnection = peerConnection;
@@ -436,7 +436,7 @@ namespace Microsoft.MixedReality.WebRTC
             // The native peer connection was destroyed, therefore all its transceivers and remote
             // tracks too, since it was owning them. However local tracks are owned by the user, so
             // are possibly still alive.
-            Debug.Assert(_nativeHandle != IntPtr.Zero);
+            Debug.Assert(!_nativeHandle.IsClosed);
             Debug.Assert(_remoteTrack == null);
             if (_localTrack != null)
             {
@@ -444,7 +444,7 @@ namespace Microsoft.MixedReality.WebRTC
                 _localTrack.Transceiver = null;
                 _localTrack = null;
             }
-            _nativeHandle = IntPtr.Zero;
+            _nativeHandle.Dispose();
             // No need (and can't) unregister callbacks, the native transceiver is already destroyed
             Utils.ReleaseWrapperRef(_argsRef);
             _argsRef = IntPtr.Zero;

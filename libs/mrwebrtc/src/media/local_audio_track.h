@@ -56,9 +56,6 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
 
   ~LocalAudioTrack() override;
 
-  /// Get the name of the local audio track.
-  std::string GetName() const noexcept override { return track_name_; }
-
   /// Enable or disable the audio track. An enabled track streams its content
   /// from its source to the remote peer. A disabled audio track only sends
   /// black frames.
@@ -110,9 +107,6 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// Weak back-pointer to the Transceiver this track is associated with, if
   /// any. This avoids a circular reference with the transceiver itself.
   Transceiver* transceiver_{nullptr};
-
-  /// Cached track name, to avoid dispatching on signaling thread.
-  const std::string track_name_;
 };
 
 }  // namespace WebRTC

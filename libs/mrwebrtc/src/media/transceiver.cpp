@@ -69,11 +69,11 @@ Transceiver::Transceiver(RefPtr<GlobalFactory> global_factory,
       owner_(&owner),
       kind_(kind),
       mline_index_(mline_index),
-      name_(std::move(name)),
       stream_ids_(std::move(stream_ids)),
       desired_direction_(desired_direction),
       plan_b_(new PlanBEmulation) {
   RTC_CHECK(owner_);
+  name_ = std::move(name);
   //< TODO
   // RTC_CHECK(owner.sdp_semantic == webrtc::SdpSemantics::kPlanB);
 }
@@ -93,7 +93,6 @@ Transceiver::Transceiver(
       owner_(&owner),
       kind_(kind),
       mline_index_(mline_index),
-      name_(std::move(name)),
       stream_ids_(std::move(stream_ids)),
       desired_direction_(desired_direction),
       transceiver_(std::move(transceiver)) {
@@ -104,6 +103,7 @@ Transceiver::Transceiver(
        (kind == MediaKind::kAudio)) ||
       ((transceiver_->media_type() == cricket::MediaType::MEDIA_TYPE_VIDEO) &&
        (kind == MediaKind::kVideo)));
+  name_ = std::move(name);
   //< TODO
   // RTC_CHECK(owner.sdp_semantic == webrtc::SdpSemantics::kUnifiedPlan);
 }

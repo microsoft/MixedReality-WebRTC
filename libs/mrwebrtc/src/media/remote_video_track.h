@@ -43,9 +43,6 @@ class RemoteVideoTrack : public VideoFrameObserver, public MediaTrack {
       rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) noexcept;
   ~RemoteVideoTrack() override;
 
-  /// Get the name of the remote video track.
-  std::string GetName() const noexcept override { return track_name_; }
-
   /// Enable or disable the video track. An enabled track streams its content
   /// from its source to the remote peer. A disabled video track only sends
   /// black frames.
@@ -93,9 +90,6 @@ class RemoteVideoTrack : public VideoFrameObserver, public MediaTrack {
   /// Note that unlike local tracks, this is never NULL since the remote track
   /// gets destroyed when detached from the transceiver.
   Transceiver* transceiver_{nullptr};
-
-  /// Cached track name, to avoid dispatching on signaling thread.
-  const std::string track_name_;
 };
 
 }  // namespace WebRTC

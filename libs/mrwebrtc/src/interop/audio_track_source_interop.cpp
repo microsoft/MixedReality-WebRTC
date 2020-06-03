@@ -13,76 +13,6 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL
-mrsAudioTrackSourceAddRef(mrsAudioTrackSourceHandle handle) noexcept {
-  if (auto source = static_cast<AudioTrackSource*>(handle)) {
-    source->AddRef();
-  } else {
-    RTC_LOG(LS_WARNING)
-        << "Trying to add reference to NULL AudioTrackSource object.";
-  }
-}
-
-void MRS_CALL
-mrsAudioTrackSourceRemoveRef(mrsAudioTrackSourceHandle handle) noexcept {
-  if (auto source = static_cast<AudioTrackSource*>(handle)) {
-    source->RemoveRef();
-  } else {
-    RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
-                           "AudioTrackSource object.";
-  }
-}
-
-void MRS_CALL mrsAudioTrackSourceSetName(mrsAudioTrackSourceHandle handle,
-                                         const char* name) noexcept {
-  if (auto source = static_cast<AudioTrackSource*>(handle)) {
-    source->SetName(name);
-  }
-}
-
-mrsResult MRS_CALL mrsAudioTrackSourceGetName(mrsAudioTrackSourceHandle handle,
-                                              char* buffer,
-                                              uint64_t* buffer_size) noexcept {
-  auto source = static_cast<AudioTrackSource*>(handle);
-  if (!source) {
-    RTC_LOG(LS_ERROR) << "Invalid handle to audio track source.";
-    return mrsResult::kInvalidNativeHandle;
-  }
-  if (!buffer) {
-    RTC_LOG(LS_ERROR) << "Invalid NULL string buffer.";
-    return mrsResult::kInvalidParameter;
-  }
-  if (!buffer_size) {
-    RTC_LOG(LS_ERROR) << "Invalid NULL string buffer size reference.";
-    return mrsResult::kInvalidParameter;
-  }
-  const std::string name = source->GetName();
-  const size_t capacity = *buffer_size;
-  const size_t size_with_terminator = name.size() + 1;
-  // Always assign size, even if buffer too small
-  *buffer_size = size_with_terminator;
-  if (size_with_terminator <= capacity) {
-    memcpy(buffer, name.c_str(), size_with_terminator);
-    return mrsResult::kSuccess;
-  }
-  return mrsResult::kBufferTooSmall;
-}
-
-void MRS_CALL mrsAudioTrackSourceSetUserData(mrsAudioTrackSourceHandle handle,
-                                             void* user_data) noexcept {
-  if (auto source = static_cast<AudioTrackSource*>(handle)) {
-    source->SetUserData(user_data);
-  }
-}
-
-void* MRS_CALL
-mrsAudioTrackSourceGetUserData(mrsAudioTrackSourceHandle handle) noexcept {
-  if (auto source = static_cast<AudioTrackSource*>(handle)) {
-    return source->GetUserData();
-  }
-  return nullptr;
-}
-
 mrsResult MRS_CALL mrsAudioTrackSourceCreateFromDevice(
     const mrsLocalAudioDeviceInitConfig* init_config,
     mrsAudioTrackSourceHandle* source_handle_out) noexcept {
@@ -120,7 +50,7 @@ mrsResult MRS_CALL mrsAudioTrackSourceCreateFromDevice(
   return Result::kSuccess;
 }
 
-//void MRS_CALL mrsAudioTrackSourceRegisterFrameCallback(
+// void MRS_CALL mrsAudioTrackSourceRegisterFrameCallback(
 //    mrsAudioTrackSourceHandle source_handle,
 //    mrsAudioFrameCallback callback,
 //    void* user_data) noexcept {

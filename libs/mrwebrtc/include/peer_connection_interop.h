@@ -7,18 +7,6 @@
 
 extern "C" {
 
-//
-// Wrapper
-//
-
-/// Add a reference to the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsPeerConnectionAddRef(mrsPeerConnectionHandle handle) noexcept;
-
-/// Remove a reference from the native object associated with the given handle.
-MRS_API void MRS_CALL
-mrsPeerConnectionRemoveRef(mrsPeerConnectionHandle handle) noexcept;
-
 /// Information provided to the TransceiverAdded event handler about a
 /// transceiver newly created as a result of applying a remote description on
 /// the local peer connection, and newly added to that peer connection.

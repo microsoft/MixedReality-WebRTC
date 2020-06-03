@@ -8,20 +8,6 @@
 
 extern "C" {
 
-/// Assign some opaque user data to the remote video track. The implementation
-/// will store the pointer in the remote video track object and not touch it. It
-/// can be retrieved with |mrsRemoteVideoTrackGetUserData()| at any point during
-/// the remote video track lifetime. This is not multithread-safe.
-MRS_API void MRS_CALL
-mrsRemoteVideoTrackSetUserData(mrsRemoteVideoTrackHandle handle,
-                               void* user_data) noexcept;
-
-/// Get the opaque user data pointer previously assigned to the remote video
-/// track with |mrsRemoteVideoTrackSetUserData()|. If no value was previously
-/// assigned, return |nullptr|. This is not multithread-safe.
-MRS_API void* MRS_CALL
-mrsRemoteVideoTrackGetUserData(mrsRemoteVideoTrackHandle handle) noexcept;
-
 /// Register a custom callback to be called when the remote video track received
 /// a frame. The received frames is passed to the registered callback in I420
 /// encoding.

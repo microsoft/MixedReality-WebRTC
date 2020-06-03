@@ -102,7 +102,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>
         /// In native land this is a <code>mrsRemoteAudioTrackHandle</code>.
         /// </remarks>
-        internal IntPtr _nativeHandle = IntPtr.Zero;
+        internal RemoteAudioTrackInterop.RemoteAudioTrackHandle _nativeHandle = null;
 
         /// <summary>
         /// Handle to self for interop callbacks. This adds a reference to the current object, preventing
@@ -116,8 +116,10 @@ namespace Microsoft.MixedReality.WebRTC
         private RemoteAudioTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
         // Constructor for interop-based creation; SetHandle() will be called later
-        internal RemoteAudioTrack(IntPtr handle, PeerConnection peer, string trackName) : base(peer, trackName)
+        internal RemoteAudioTrack(RemoteAudioTrackInterop.RemoteAudioTrackHandle handle, PeerConnection peer, string trackName)
+            : base(peer, trackName)
         {
+            Debug.Assert(!handle.IsClosed);
             _nativeHandle = handle;
             RegisterInteropCallbacks();
         }
@@ -150,7 +152,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         internal void DestroyNative()
         {
-            if (_nativeHandle == IntPtr.Zero)
+            if (_nativeHandle.IsClosed)
             {
                 return;
             }
@@ -159,7 +161,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             UnregisterInteropCallbacks();
 
-            _nativeHandle = IntPtr.Zero;
+            _nativeHandle.Dispose();
         }
 
         internal void OnFrameReady(AudioFrame frame)

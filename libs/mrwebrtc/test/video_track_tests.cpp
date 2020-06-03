@@ -183,8 +183,8 @@ TEST_P(VideoTrackTests, Simple) {
   // Clean-up
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
-  mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsVideoTrackSourceRemoveRef(source_handle1);
+  mrsRefCountedObjectRemoveRef(track_handle1);
+  mrsRefCountedObjectRemoveRef(source_handle1);
 }
 
 TEST_P(VideoTrackTests, Muted) {
@@ -288,8 +288,8 @@ TEST_P(VideoTrackTests, Muted) {
   // Clean-up
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
-  mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsVideoTrackSourceRemoveRef(source_handle1);
+  mrsRefCountedObjectRemoveRef(track_handle1);
+  mrsRefCountedObjectRemoveRef(source_handle1);
 }
 
 void MRS_CALL enumDeviceCallback(const char* id,
@@ -454,9 +454,9 @@ TEST_P(VideoTrackTests, Multi) {
   for (auto&& track : tracks) {
     mrsRemoteVideoTrackRegisterI420AFrameCallback(track.remote_handle, nullptr,
                                                   nullptr);
-    mrsLocalVideoTrackRemoveRef(track.local_handle);
+    mrsRefCountedObjectRemoveRef(track.local_handle);
   }
-  mrsExternalVideoTrackSourceRemoveRef(source_handle1);
+  mrsRefCountedObjectRemoveRef(source_handle1);
 }
 
 TEST_P(VideoTrackTests, ExternalI420) {
@@ -474,13 +474,6 @@ TEST_P(VideoTrackTests, ExternalI420) {
        &track_added2_ev](const mrsRemoteVideoTrackAddedInfo* info) {
         track_handle2 = info->track_handle;
         transceiver_handle2 = info->audio_transceiver_handle;
-        // Test user data here
-        {
-          ASSERT_EQ(nullptr, mrsRemoteVideoTrackGetUserData(track_handle2));
-          mrsRemoteVideoTrackSetUserData(track_handle2, transceiver_handle2);
-          ASSERT_EQ(transceiver_handle2,
-                    mrsRemoteVideoTrackGetUserData(track_handle2));
-        }
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterVideoTrackAddedCallback(pair.pc2(),
@@ -561,7 +554,7 @@ TEST_P(VideoTrackTests, ExternalI420) {
 
   mrsRemoteVideoTrackRegisterI420AFrameCallback(track_handle2, nullptr,
                                                 nullptr);
-  mrsLocalVideoTrackRemoveRef(track_handle1);
+  mrsRefCountedObjectRemoveRef(track_handle1);
   mrsExternalVideoTrackSourceShutdown(source_handle1);
-  mrsExternalVideoTrackSourceRemoveRef(source_handle1);
+  mrsRefCountedObjectRemoveRef(source_handle1);
 }

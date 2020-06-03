@@ -8,19 +8,6 @@
 
 extern "C" {
 
-/// Assign some opaque user data to the transceiver. The implementation will
-/// store the pointer in the transceiver object and not touch it. It can be
-/// retrieved with |mrsTransceiverGetUserData()| at any point during the
-/// transceiver lifetime. This is not multithread-safe.
-MRS_API void MRS_CALL mrsTransceiverSetUserData(mrsTransceiverHandle handle,
-                                                void* user_data) noexcept;
-
-/// Get the opaque user data pointer previously assigned to the transceiver with
-/// |mrsTransceiverSetUserData()|. If no value was previously assigned, return
-/// |nullptr|. This is not multithread-safe.
-MRS_API void* MRS_CALL
-mrsTransceiverGetUserData(mrsTransceiverHandle handle) noexcept;
-
 using mrsTransceiverAssociatedCallback = void(MRS_CALL*)(void* user_data,
                                                          int mlineIndex);
 

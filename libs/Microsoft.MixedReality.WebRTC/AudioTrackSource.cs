@@ -49,7 +49,7 @@ namespace Microsoft.MixedReality.WebRTC
             }
             set
             {
-                AudioTrackSourceInterop.AudioTrackSource_SetName(_nativeHandle, value);
+                ObjectInterop.Object_SetName(_nativeHandle, value);
                 _name = value;
             }
         }

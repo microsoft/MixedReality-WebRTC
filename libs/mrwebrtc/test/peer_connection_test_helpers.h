@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../include/interop_api.h"
+#include "../include/ref_counted_object_interop.h"
 #include "../include/peer_connection_interop.h"
 
 #include "test_utils.h"
@@ -150,7 +151,7 @@ class PCRaii {
   }
   /// Create a peer connection with a specific configuration.
   PCRaii(const mrsPeerConnectionConfiguration& config) { create(config); }
-  ~PCRaii() { mrsPeerConnectionRemoveRef(handle_); }
+  ~PCRaii() { mrsRefCountedObjectRemoveRef(handle_); }
   mrsPeerConnectionHandle handle() const { return handle_; }
 
  protected:

@@ -100,6 +100,12 @@
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\video_track_source.cpp">
       <Filter>src\media</Filter>
     </ClCompile>
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\object_interop.cpp">
+      <Filter>src\interop</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\ref_counted_object_interop.cpp">
+      <Filter>src\interop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\global_factory.h">
@@ -210,7 +216,9 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\toggle_audio_mixer.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\pch.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\pch.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\video_track_source_interop.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -222,6 +230,12 @@
     </ClInclude>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\video_track_source.h">
       <Filter>src\media</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\object_interop.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\ref_counted_object_interop.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
