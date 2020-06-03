@@ -39,7 +39,7 @@ class Transceiver;
 /// typically a audio capture device (e.g. webcam), but can also be a source
 /// producing programmatically generated frames. The local audio track itself
 /// has no knowledge about how the source produces the frames.
-class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
+class LocalAudioTrack : public MediaTrack, public AudioFrameObserver {
  public:
   /// Constructor for a track not added to any peer connection.
   LocalAudioTrack(

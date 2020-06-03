@@ -39,7 +39,7 @@ class Transceiver;
 /// typically a video capture device (e.g. webcam), but can	also be a source
 /// producing programmatically generated frames. The local video track itself
 /// has no knowledge about how the source produces the frames.
-class LocalVideoTrack : public VideoFrameObserver, public MediaTrack {
+class LocalVideoTrack : public MediaTrack, public VideoFrameObserver {
  public:
   /// Constructor for a track not added to any peer connection.
   LocalVideoTrack(RefPtr<GlobalFactory> global_factory,

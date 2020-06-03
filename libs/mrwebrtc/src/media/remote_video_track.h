@@ -33,7 +33,7 @@ class Transceiver;
 /// The remote nature of the track implies that the remote peer has control on
 /// it, including enabling or disabling the track, and removing it from the peer
 /// connection. The local peer only has limited control over the track.
-class RemoteVideoTrack : public VideoFrameObserver, public MediaTrack {
+class RemoteVideoTrack : public MediaTrack, public VideoFrameObserver {
  public:
   RemoteVideoTrack(
       RefPtr<GlobalFactory> global_factory,
