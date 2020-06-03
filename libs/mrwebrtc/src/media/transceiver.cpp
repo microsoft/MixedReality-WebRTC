@@ -251,29 +251,37 @@ Result Transceiver::SetLocalTrackImpl(RefPtr<MediaTrack> local_track) noexcept {
 void Transceiver::OnLocalTrackAdded(RefPtr<LocalAudioTrack> track) {
   RTC_DCHECK(GetMediaKind() == MediaKind::kAudio);
   // this may be called multiple times with the same track
-  RTC_DCHECK(!local_track_ || (local_track_ == track));
-  local_track_ = std::move(track);
+  if (local_track_ != track) {
+    RTC_DCHECK(!local_track_);
+    local_track_ = std::move(track);
+  }
 }
 
 void Transceiver::OnLocalTrackAdded(RefPtr<LocalVideoTrack> track) {
   RTC_DCHECK(GetMediaKind() == MediaKind::kVideo);
   // this may be called multiple times with the same track
-  RTC_DCHECK(!local_track_ || (local_track_ == track));
-  local_track_ = std::move(track);
+  if (local_track_ != track) {
+    RTC_DCHECK(!local_track_);
+    local_track_ = std::move(track);
+  }
 }
 
 void Transceiver::OnRemoteTrackAdded(RefPtr<RemoteAudioTrack> track) {
   RTC_DCHECK(GetMediaKind() == MediaKind::kAudio);
   // this may be called multiple times with the same track
-  RTC_DCHECK(!remote_track_ || (remote_track_ == track));
-  remote_track_ = std::move(track);
+  if (remote_track_ != track) {
+    RTC_DCHECK(!remote_track_);
+    remote_track_ = std::move(track);
+  }
 }
 
 void Transceiver::OnRemoteTrackAdded(RefPtr<RemoteVideoTrack> track) {
   RTC_DCHECK(GetMediaKind() == MediaKind::kVideo);
   // this may be called multiple times with the same track
-  RTC_DCHECK(!remote_track_ || (remote_track_ == track));
-  remote_track_ = std::move(track);
+  if (remote_track_ != track) {
+    RTC_DCHECK(!remote_track_);
+    remote_track_ = std::move(track);
+  }
 }
 
 void Transceiver::OnLocalTrackRemoved(LocalAudioTrack* track) {
