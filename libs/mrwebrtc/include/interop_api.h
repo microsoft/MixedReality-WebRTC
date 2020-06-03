@@ -264,16 +264,14 @@ struct mrsRemoteVideoTrackAddedInfo {
 /// Callback fired when a remote audio track is added to a connection.
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsRefCountedObjectRemoveRef()| and
-/// |mrsRefCountedObjectRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionAudioTrackAddedCallback =
     void(MRS_CALL*)(void* user_data, const mrsRemoteAudioTrackAddedInfo* info);
 
 /// Callback fired when a remote audio track is removed from a connection.
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsRefCountedObjectRemoveRef()| and
-/// |mrsRefCountedObjectRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionAudioTrackRemovedCallback =
     void(MRS_CALL*)(void* user_data,
                     mrsRemoteAudioTrackHandle audio_track,
@@ -282,16 +280,14 @@ using mrsPeerConnectionAudioTrackRemovedCallback =
 /// Callback fired when a remote video track is added to a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsLocalVideoTrackRemoveRef()| and
-/// |mrsRefCountedObjectRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionVideoTrackAddedCallback =
     void(MRS_CALL*)(void* user_data, const mrsRemoteVideoTrackAddedInfo* info);
 
 /// Callback fired when a remote video track is removed from a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsLocalVideoTrackRemoveRef()| and
-/// |mrsRefCountedObjectRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionVideoTrackRemovedCallback =
     void(MRS_CALL*)(void* user_data,
                     mrsRemoteVideoTrackHandle video_track,
