@@ -14,9 +14,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
     [CanEditMultipleObjects]
     public class WebcamSourceEditor : UnityEditor.Editor
     {
-        SerializedProperty _trackName;
-        SerializedProperty _autoStartOnEnabled;
-        SerializedProperty _preferredVideoCodec;
         SerializedProperty _enableMixedRealityCapture;
         SerializedProperty _enableMrcRecordingIndicator;
         SerializedProperty _formatMode;
@@ -74,9 +71,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
         void OnEnable()
         {
-            _trackName = serializedObject.FindProperty("TrackName");
-            _autoStartOnEnabled = serializedObject.FindProperty("AutoStartOnEnabled");
-            _preferredVideoCodec = serializedObject.FindProperty("PreferredVideoCodec");
             _enableMixedRealityCapture = serializedObject.FindProperty("EnableMixedRealityCapture");
             _enableMrcRecordingIndicator = serializedObject.FindProperty("EnableMRCRecordingIndicator");
             _formatMode = serializedObject.FindProperty("FormatMode");
@@ -108,11 +102,23 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
             serializedObject.Update();
 
+            if (!PlayerSettings.WSA.GetCapability(PlayerSettings.WSACapability.WebCam))
+            {
+                EditorGUILayout.HelpBox("The UWP player is missing the WebCam capability. The WebcamSource component will not function correctly."
+                    + " Add the WebCam capability in Project Settings > Player > UWP > Publishing Settings > Capabilities.", MessageType.Error);
+                if (GUILayout.Button("Open Player Settings"))
+                {
+                    SettingsService.OpenProjectSettings("Project/Player");
+                }
+                if (GUILayout.Button("Add WebCam Capability"))
+                {
+                    PlayerSettings.WSA.SetCapability(PlayerSettings.WSACapability.WebCam, true);
+                }
+            }
+
             GUILayout.Space(10);
 
             EditorGUILayout.LabelField("Video capture", EditorStyles.boldLabel);
-            ToggleLeft(_autoStartOnEnabled,
-                    new GUIContent("Start capture when enabled", "Automatically start video capture when this component is enabled."));
             EditorGUILayout.PropertyField(_formatMode, new GUIContent("Capture format",
                 "Decide how to obtain the constraints used to select the best capture format."));
             if ((LocalVideoSourceFormatMode)_formatMode.intValue == LocalVideoSourceFormatMode.Manual)
@@ -163,77 +169,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     }
                 }
             }
-            EditorGUILayout.PropertyField(_videoStreamStarted);
-            EditorGUILayout.PropertyField(_videoStreamStopped);
 
             GUILayout.Space(10);
 
-            EditorGUILayout.LabelField("WebRTC track", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_trackName);
-
-            var rect = EditorGUILayout.GetControlRect();
-            using (new EditorGUI.PropertyScope(rect, new GUIContent(), _preferredVideoCodec))
-            {
-                // Convert the selected codec name to an enum value.
-                // This may throw an exception if this is a custom name, which will be handled below.
-                SdpVideoCodecs codecValue;
-                string customCodecValue = string.Empty;
-                if (_preferredVideoCodec.stringValue.Length == 0)
-                {
-                    codecValue = SdpVideoCodecs.None;
-                }
-                else
-                {
-                    try
-                    {
-                        codecValue = (SdpVideoCodecs)Enum.Parse(typeof(SdpVideoCodecs), _preferredVideoCodec.stringValue);
-                    }
-                    catch
-                    {
-                        codecValue = SdpVideoCodecs.Custom;
-                        customCodecValue = _preferredVideoCodec.stringValue;
-                        // Hide internal marker
-                        if (customCodecValue == "__CUSTOM")
-                        {
-                            customCodecValue = string.Empty;
-                        }
-                    }
-                }
-
-                // Display the edit field for the enum
-                var newCodecValue = (SdpVideoCodecs)EditorGUI.EnumPopup(rect, _preferredVideoCodec.displayName, codecValue);
-                if (newCodecValue == SdpVideoCodecs.H264)
-                {
-                    EditorGUILayout.HelpBox("H.264 is only supported on UWP platforms.", MessageType.Warning);
-                }
-
-                // Update the value if changed or custom
-                if ((newCodecValue != codecValue) || (newCodecValue == SdpVideoCodecs.Custom))
-                {
-                    if (newCodecValue == SdpVideoCodecs.None)
-                    {
-                        _preferredVideoCodec.stringValue = string.Empty;
-                    }
-                    else if (newCodecValue == SdpVideoCodecs.Custom)
-                    {
-                        ++EditorGUI.indentLevel;
-                        string newValue = EditorGUILayout.TextField("SDP codec name", customCodecValue);
-                        if (newValue == string.Empty)
-                        {
-                            EditorGUILayout.HelpBox("The SDP codec name must be non-empty. See https://en.wikipedia.org/wiki/RTP_audio_video_profile for valid names.", MessageType.Error);
-
-                            // Force a non-empty value now, otherwise the field will reset to None
-                            newValue = "__CUSTOM";
-                        }
-                        _preferredVideoCodec.stringValue = newValue;
-                        --EditorGUI.indentLevel;
-                    }
-                    else
-                    {
-                        _preferredVideoCodec.stringValue = Enum.GetName(typeof(SdpVideoCodecs), newCodecValue);
-                    }
-                }
-            }
+            EditorGUILayout.PropertyField(_videoStreamStarted);
+            EditorGUILayout.PropertyField(_videoStreamStopped);
 
             serializedObject.ApplyModifiedProperties();
         }

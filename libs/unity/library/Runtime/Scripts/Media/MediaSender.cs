@@ -1,16 +1,20 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
+using System;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// Base class for media sources generating their media frames locally,
-    /// with the intention to send them to the remote peer.
+    /// Base class for media senders acting as automated bridges between a media track source
+    /// (frame producer) and a transceiver of a peer connection. The media sender is managed
+    /// by the peer connection automatically, so users typically do not use this class or one
+    /// of its derived classes directly.
     /// </summary>
-    public abstract class MediaSender : MediaSource
+    /// <seealso cref="AudioSender"/>
+    /// <seealso cref="VideoSender"/>
+    public abstract class MediaSender
     {
         /// <summary>
         /// Name of the local media track this component will create when calling <see cref="StartCaptureAsync"/>.
@@ -33,73 +37,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public string TrackName;
 
         /// <summary>
-        /// Automatically start media capture when the component is enabled, and stop capture
-        /// when the component is disabled.
-        /// 
-        /// If <c>true</c>, then <see cref="StartCaptureAsync"/> is automatically called
-        /// when the <see xref="UnityEngine.MonoBehaviour.OnEnabled"/> callback is invoked
-        /// by Unity, and conversely <see cref="StopCapture"/> is automatically called when
-        /// the <see xref="UnityEngine.MonoBehaviour.OnEnabled"/> callback is invoked by Unity.
-        /// 
-        /// If <c>false</c>, then the user has to manually call <see cref="StartCaptureAsync"/>
-        /// to start capture before the media sender is attached to a transceiver, and call
-        /// <see cref="StopCapture"/> to stop capture.
+        /// Kind of media the sender is managing. This field is immutable, and determines whether the
+        /// concrete class is <see cref="AudioSender"/> or <see cref="VideoSender"/>.
         /// </summary>
-        /// <remarks>
-        /// When the media sender is attached to a transceiver, media capture starts automatically
-        /// if the component is active and enabled, even if <see cref="AutoStartOnEnabled"/> is false.
-        /// 
-        /// To have complete manual control on capture, set both <see cref="AutoStartOnEnabled"/> and
-        /// <see xref="UnityEngine.MonoBehaviour.enabled"/> to <c>false</c>.
-        /// </remarks>
-        [Tooltip("Automatically start media capture when the component is enabled")]
-        [Editor.ToggleLeft]
-        public bool AutoStartOnEnabled = true;
+        public readonly MediaKind MediaKind;
 
         /// <summary>
-        /// Is the media source currently generating frames from local capture?
-        /// The concept of _capture_ is described in the <see cref="StartCaptureAsync"/> function.
-        /// </summary>
-        /// <seealso cref="StartCaptureAsync"/>
-        /// <seealso cref="StopCapture()"/>
-        public bool IsCapturing { get; private set; }
-
-        /// <inheritdoc/>
-        public MediaSender(MediaKind mediaKind) : base(mediaKind)
-        {
-        }
-
-        /// <summary>
-        /// Manually start capture of the local media by creating a local media track.
+        /// Transceiver this sender is paired with, if any.
         /// 
-        /// If <see cref="AutoStartOnEnabled"/> is <c>true</c> then this is called automatically
-        /// as soon as the component is enabled. Otherwise the user must call this method to create
-        /// the underlying local media track.
+        /// This is <c>null</c> until a remote description is applied which pairs the media line
+        /// the sender is associated with to a transceiver.
         /// </summary>
-        /// <seealso cref="StopCapture()"/>
-        /// <seealso cref="IsCapturing"/>
-        /// <seealso cref="AutoStartOnEnabled"/>
-        public async Task StartCaptureAsync()
-        {
-            if (!IsCapturing)
-            {
-                await CreateLocalTrackAsync();
-                IsCapturing = true;
-            }
-        }
+        public Transceiver Transceiver { get; private set; }
 
-        /// <summary>
-        /// Stop capture of the local video track and destroy it.
-        /// </summary>
-        /// <seealso cref="StartCaptureAsync()"/>
-        /// <seealso cref="IsCapturing"/>
-        public void StopCapture()
+        public MediaSender(MediaKind mediaKind)
         {
-            if (IsCapturing)
-            {
-                DestroyLocalTrack();
-                IsCapturing = false;
-            }
+            MediaKind = mediaKind;
         }
 
         /// <summary>
@@ -123,38 +76,41 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             MuteImpl(false);
         }
 
-        /// <inheritdoc/>
-        protected async Task OnEnable()
+        /// <summary>
+        /// Internal callback invoked when the sender is attached to a transceiver created
+        /// just before the peer connection creates an SDP offer.
+        /// </summary>
+        /// <param name="transceiver">The transceiver this sender is attached with.</param>
+        internal void AttachToTransceiver(Transceiver transceiver)
         {
-            if (AutoStartOnEnabled)
-            {
-                await StartCaptureAsync();
-            }
+            Debug.Assert((Transceiver == null) || (Transceiver == transceiver));
+            Transceiver = transceiver;
         }
 
-        /// <inheritdoc/>
-        protected void OnDisable()
+        /// <summary>
+        /// Internal callback invoked when the sender is detached from a transceiver about to be
+        /// destroyed by the native implementation.
+        /// </summary>
+        /// <param name="transceiver">The transceiver this sender is attached with.</param>
+        internal void DetachFromTransceiver(Transceiver transceiver)
         {
-            if (AutoStartOnEnabled)
-            {
-                StopCapture();
-            }
+            Debug.Assert((Transceiver == null) || (Transceiver == transceiver));
+            Transceiver = null;
         }
 
-        /// <inheritdoc/>
-        protected void OnDestroy()
-        {
-            // Note that capture can be started manually even if inactive,
-            // so force destruction when the component is destroyed to release
-            // native resources.
-            StopCapture();
-        }
+        /// <summary>
+        /// Internal callback invoked when a peer connection is about to create an offer, and
+        /// determines that the media track needs to be attache to a new transceiver. The media
+        /// sender must attach the local media track to <see cref="Transceiver"/>.
+        /// </summary>
+        internal abstract void AttachTrack();
 
-        internal abstract Task AttachTrackAsync();
+        /// <summary>
+        /// Internal callback invoked when a peer connection is about to create an offer,
+        /// and determines that the media track needs to be detached from its current transceiver.
+        /// The media sender must detach the local media track from <see cref="Transceiver"/>.
+        /// </summary>
         internal abstract void DetachTrack();
-
-        protected abstract Task CreateLocalTrackAsync();
-        protected abstract void DestroyLocalTrack();
 
         /// <summary>
         /// Derived classes implement the mute/unmute action on the track.

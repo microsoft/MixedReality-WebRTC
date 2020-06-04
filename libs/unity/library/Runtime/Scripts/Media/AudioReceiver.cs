@@ -8,13 +8,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <summary>
     /// This component represents a remote audio source added as an audio track to an
     /// existing WebRTC peer connection by a remote peer and received locally.
-    /// The audio track can optionally be displayed locally with a <see cref="MediaPlayer"/>.
+    /// The audio track can optionally be displayed locally with a <see cref="VideoRenderer"/>.
     /// </summary>
     /// <remarks>
     /// This component will play audio only while it is active and a remote track is associated
     /// to the paired <see cref="WebRTC.Transceiver"/>.
     /// </remarks>
-    /// <seealso cref="MediaPlayer"/>
+    /// <seealso cref="VideoRenderer"/>
     [AddComponentMenu("MixedReality-WebRTC/Audio Receiver")]
     [RequireComponent(typeof(UnityEngine.AudioSource))]
     public class AudioReceiver : MediaReceiver, IAudioSource
@@ -54,15 +54,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <inheritdoc/>
         public AudioStreamStoppedEvent GetAudioStreamStopped() { return AudioStreamStopped; }
-
-        /// <summary>
-        /// Audio transceiver this receiver is paired with, if any.
-        ///
-        /// This is <c>null</c> until a remote description is applied which pairs the media line
-        /// this receiver is associated with to a transceiver, or until the peer connection of this
-        /// receiver's media line creates the audio receiver right before creating an SDP offer.
-        /// </summary>
-        public Transceiver Transceiver { get; private set; }
 
         /// <summary>
         /// Remote audio track receiving data from the remote peer.
@@ -250,35 +241,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Internal callback invoked when the audio receiver is attached to a transceiver created
-        /// just before the peer connection creates an SDP offer.
-        /// </summary>
-        /// <param name="audioTransceiver">The audio transceiver this receiver is attached with.</param>
-        /// <remarks>
-        /// At this time the transceiver does not yet contain a remote track. The remote track will be
-        /// created when receiving an answer from the remote peer, if it agreed to send media data through
-        /// that transceiver, and <see cref="OnPaired"/> will be invoked at that time.
-        /// </remarks>
-        internal void AttachToTransceiver(Transceiver audioTransceiver)
-        {
-            Debug.Assert((Transceiver == null) || (Transceiver == audioTransceiver));
-            Transceiver = audioTransceiver;
-        }
-
-        /// <summary>
-        /// Internal callback invoked when the audio receiver is detached from a transceiver about to be
-        /// destroyed by the native implementation.
-        /// </summary>
-        /// <param name="audioTransceiver">The audio transceiver this receiver is attached with.</param>
-        internal void DetachFromTransceiver(Transceiver audioTransceiver)
-        {
-            Debug.Assert((Transceiver == null) || (Transceiver == audioTransceiver));
-            Transceiver = null;
-        }
-
-        /// <summary>
         /// Free-threaded callback invoked by the owning peer connection when a track is paired
-        /// with this receiver.
+        /// with this receiver, which enqueues the <see cref="AudioTrackSource.AudioStreamStarted"/>
+        /// event to be raised from the main Unity app thread.
         /// </summary>
         internal override void OnPaired(MediaTrack track)
         {
@@ -293,7 +258,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Free-threaded callback invoked by the owning peer connection when a track is unpaired
-        /// from this receiver.
+        /// from this receiver, which enqueues the <see cref="AudioTrackSource.AudioStreamStopped"/>
+        /// event to be raised from the main Unity app thread.
         /// </summary>
         internal override void OnUnpaired(MediaTrack track)
         {

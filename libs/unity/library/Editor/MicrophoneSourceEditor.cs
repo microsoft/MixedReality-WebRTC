@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,19 +13,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
     [CanEditMultipleObjects]
     public class MicrophoneSourceEditor : UnityEditor.Editor
     {
-        SerializedProperty _trackName;
-        SerializedProperty _autoStartOnEnabled;
-        SerializedProperty _preferredAudioCodec;
-        SerializedProperty _audioStreamStarted;
-        SerializedProperty _audioStreamStopped;
+        SerializedProperty _autoGainControl;
+        SerializedProperty _audioSourceStarted;
+        SerializedProperty _audioSourceStopped;
 
         void OnEnable()
         {
-            _trackName = serializedObject.FindProperty("TrackName");
-            _autoStartOnEnabled = serializedObject.FindProperty("AutoStartOnEnabled");
-            _preferredAudioCodec = serializedObject.FindProperty("PreferredAudioCodec");
-            _audioStreamStarted = serializedObject.FindProperty("AudioStreamStarted");
-            _audioStreamStopped = serializedObject.FindProperty("AudioStreamStopped");
+            _autoGainControl = serializedObject.FindProperty("_autoGainControl");
+            _audioSourceStarted = serializedObject.FindProperty("AudioSourceStarted");
+            _audioSourceStopped = serializedObject.FindProperty("AudioSourceStopped");
         }
 
         /// <summary>
@@ -37,19 +32,29 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         {
             serializedObject.Update();
 
+            if (!PlayerSettings.WSA.GetCapability(PlayerSettings.WSACapability.Microphone))
+            {
+                EditorGUILayout.HelpBox("The UWP player is missing the Microphone capability. The MicrophoneSource component will not function correctly."
+                    + " Add the Microphone capability in Project Settings > Player > UWP > Publishing Settings > Capabilities.", MessageType.Error);
+                if (GUILayout.Button("Open Player Settings"))
+                {
+                    SettingsService.OpenProjectSettings("Project/Player");
+                }
+                if (GUILayout.Button("Add Microphone Capability"))
+                {
+                    PlayerSettings.WSA.SetCapability(PlayerSettings.WSACapability.Microphone, true);
+                }
+            }
+
             GUILayout.Space(10);
 
-            EditorGUILayout.LabelField("Audio capture", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_autoStartOnEnabled,
-                new GUIContent("Start capture when enabled", "Automatically start audio capture when this component is enabled."));
-            EditorGUILayout.PropertyField(_audioStreamStarted);
-            EditorGUILayout.PropertyField(_audioStreamStopped);
+            EditorGUILayout.LabelField("Audio processing", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(_autoGainControl);
 
             GUILayout.Space(10);
 
-            EditorGUILayout.LabelField("WebRTC track", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_trackName);
-            EditorGUILayout.PropertyField(_preferredAudioCodec);
+            EditorGUILayout.PropertyField(_audioSourceStarted);
+            EditorGUILayout.PropertyField(_audioSourceStopped);
 
             serializedObject.ApplyModifiedProperties();
         }

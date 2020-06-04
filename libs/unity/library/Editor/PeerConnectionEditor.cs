@@ -7,6 +7,9 @@ using UnityEditorInternal;
 
 namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 {
+    /// <summary>
+    /// Custom editor for the <see cref="Microsoft.MixedReality.WebRTC.Unity.PeerConnection"/> component.
+    /// </summary>
     [CustomEditor(typeof(PeerConnection))]
     [CanEditMultipleObjects]
     public class PeerConnectionEditor : UnityEditor.Editor
@@ -138,13 +141,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     System.Type senderType, receiverType;
                     if (kind == MediaKind.Audio)
                     {
-                        senderType = typeof(AudioSender);
+                        senderType = typeof(AudioTrackSource);
                         receiverType = typeof(AudioReceiver);
                         DrawSpriteIcon(IconType.Audio, new Rect(x1, rect.y, 20, 20));
                     }
                     else
                     {
-                        senderType = typeof(VideoSender);
+                        senderType = typeof(VideoTrackSource);
                         receiverType = typeof(VideoReceiver);
                         DrawSpriteIcon(IconType.Video, new Rect(x1, rect.y, 20, 20));
                     }
@@ -160,7 +163,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     bool hasReceiver = false;
                     {
 
-                        var p = element.FindPropertyRelative("_sender");
+                        var p = element.FindPropertyRelative("_source");
                         Object obj = p.objectReferenceValue;
                         obj = EditorGUI.ObjectField(
                             new Rect(rect.x, y0, fieldWidth, EditorGUIUtility.singleLineHeight),
@@ -208,6 +211,23 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
+
+#if UNITY_WSA
+            if (!PlayerSettings.WSA.GetCapability(PlayerSettings.WSACapability.Microphone))
+            {
+                EditorGUILayout.HelpBox("The UWP player is missing the Microphone capability. Currently on UWP the native WebRTC implementation always tries to"
+                    + " open the microphone while initialzing the audio subsystem at startup. Not granting access will fail initialization, and generally crash the app."
+                    + " Add the Microphone capability in Project Settings > Player > UWP > Publishing Settings > Capabilities.", MessageType.Error);
+                if (GUILayout.Button("Open Player Settings"))
+                {
+                    SettingsService.OpenProjectSettings("Project/Player");
+                }
+                if (GUILayout.Button("Add Microphone Capability"))
+                {
+                    PlayerSettings.WSA.SetCapability(PlayerSettings.WSACapability.Microphone, true);
+                }
+            }
+#endif
 
             EditorGUILayout.Space();
 

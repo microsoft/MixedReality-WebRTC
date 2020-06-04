@@ -22,7 +22,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
     /// <summary>
     /// Interface for audio sources plugging into the internal peer connection API to
-    /// expose a single audio stream to a renderer (<see cref="MediaPlayer"/> or custom).
+    /// expose a single audio stream to a renderer (<see cref="VideoRenderer"/> or custom).
     /// </summary>
     public interface IAudioSource
     {

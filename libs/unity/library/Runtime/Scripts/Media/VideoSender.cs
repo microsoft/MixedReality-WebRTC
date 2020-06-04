@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -8,13 +9,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
     /// This component represents a local video source added as a video track to an
-    /// existing WebRTC peer connection and sent to the remote peer. The video track
-    /// can optionally be displayed locally with a <see cref="MediaPlayer"/>.
+    /// existing WebRTC peer connection and sent to the remote peer. It wraps a video
+    /// track source and bridges it with a video transceiver. Internally it manages
+    /// a local video track (<see cref="LocalVideoTrack"/>).
+    /// 
+    /// This class is typically instantiated and managed by the peer connection automatically
+    /// where needed, and users typically do not have to interact directly with it.
     /// </summary>
-    /// <seealso cref="WebcamSource"/>
-    /// <seealso cref="CustomVideoSender{T}"/>
-    /// <seealso cref="SceneVideoSender"/>
-    public abstract class VideoSender : MediaSender, IVideoSource
+    public class VideoSender : MediaSender, IDisposable
     {
         /// <summary>
         /// Name of the preferred video codec, or empty to let WebRTC decide.
@@ -25,116 +27,33 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public string PreferredVideoCodec = string.Empty;
 
         /// <summary>
-        /// Event raised when the video stream started.
-        ///
-        /// When this event is raised, the followings are true:
-        /// - The <see cref="Track"/> property is a valid local video track.
-        /// - The <see cref="IsStreaming"/> will become <c>true</c> just after the event
-        ///   is raised, by design.
+        /// Video source providing frames to this video sender.
         /// </summary>
-        /// <remarks>
-        /// This event is raised from the main Unity thread to allow Unity object access.
-        /// </remarks>
-        public VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
-
-        /// <summary>
-        /// Event raised when the video stream stopped.
-        ///
-        /// When this event is raised, the followings are true:
-        /// - The <see cref="Track"/> property is <c>null</c>.
-        /// - The <see cref="IsStreaming"/> has just become <c>false</c> right before the event
-        ///   was raised, by design.
-        /// </summary>
-        /// <remarks>
-        /// This event is raised from the main Unity thread to allow Unity object access.
-        /// </remarks>
-        public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
-
-        public bool IsStreaming { get; protected set; }
-
-        public VideoStreamStartedEvent GetVideoStreamStarted() { return VideoStreamStarted; }
-        public VideoStreamStoppedEvent GetVideoStreamStopped() { return VideoStreamStopped; }
-
-        /// <summary>
-        /// Video transceiver this sender is paired with, if any.
-        /// 
-        /// This is <c>null</c> until a remote description is applied which pairs the media line
-        /// the sender is associated with to a transceiver.
-        /// </summary>
-        public Transceiver Transceiver { get; private set; }
-
-        /// <inheritdoc/>
-        public VideoEncoding FrameEncoding { get; } = VideoEncoding.I420A;
+        public VideoTrackSource Source { get; private set; } = null;
 
         /// <summary>
         /// Video track that this component encapsulates.
         /// </summary>
         public LocalVideoTrack Track { get; protected set; } = null;
 
-        public VideoSender(VideoEncoding frameEncoding) : base(MediaKind.Video)
+        public static VideoSender CreateFromSource(VideoTrackSource source, string trackName)
         {
-            FrameEncoding = frameEncoding;
+            var initConfig = new LocalVideoTrackInitConfig
+            {
+                trackName = trackName
+            };
+            var track = LocalVideoTrack.CreateFromSource(source.Source, initConfig);
+            return new VideoSender(source, track);
         }
 
-        public void RegisterCallback(I420AVideoFrameDelegate callback)
+        protected VideoSender(VideoTrackSource source, LocalVideoTrack track) : base(MediaKind.Video)
         {
-            if (Track != null)
-            {
-                Track.I420AVideoFrameReady += callback;
-            }
+            Source = source;
+            Track = track;
+            Source.OnSenderAdded(this);
         }
 
-        public void UnregisterCallback(I420AVideoFrameDelegate callback)
-        {
-            if (Track != null)
-            {
-                Track.I420AVideoFrameReady -= callback;
-            }
-        }
-
-        public void RegisterCallback(Argb32VideoFrameDelegate callback)
-        {
-            if (Track != null)
-            {
-                Track.Argb32VideoFrameReady += callback;
-            }
-        }
-
-        public void UnregisterCallback(Argb32VideoFrameDelegate callback)
-        {
-            if (Track != null)
-            {
-                Track.Argb32VideoFrameReady -= callback;
-            }
-        }
-
-        protected override async Task CreateLocalTrackAsync()
-        {
-            if (Track == null)
-            {
-                // Defer track creation to derived classes, which will invoke some methods like
-                // LocalVideoTrack.CreateFromDeviceAsync() or LocalVideoTrack.CreateFromExternalSourceAsync().
-                await CreateLocalVideoTrackAsync();
-                Debug.Assert(Track != null, "Implementation did not create a valid Track property yet did not throw any exception.", this);
-
-                // Dispatch the event to the main Unity app thread to allow Unity object access
-                _mainThreadWorkQueue.Enqueue(() =>
-                {
-                    VideoStreamStarted.Invoke(this);
-
-                    // Only clear this after the event handlers ran
-                    IsStreaming = true;
-                });
-            }
-
-            // Attach the local track to the transceiver
-            if (Transceiver != null)
-            {
-                Transceiver.LocalVideoTrack = Track;
-            }
-        }
-
-        protected override void DestroyLocalTrack()
+        public void Dispose()
         {
             if (Track != null)
             {
@@ -144,46 +63,23 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     Transceiver.LocalVideoTrack = null;
                 }
 
-                // Defer track destruction to derived classes.
-                DestroyLocalVideoTrack();
-                Debug.Assert(Track == null, "Implementation did not destroy the existing Track property yet did not throw any exception.", this);
+                // Detach from source
+                Debug.Assert(Source != null);
+                Source.OnSenderRemoved(this);
+                Source = null;
 
-                // Clear this already to make sure it is false when the event is raised.
-                IsStreaming = false;
-
-                // Dispatch the event to the main Unity app thread to allow Unity object access
-                _mainThreadWorkQueue.Enqueue(() =>
-                {
-                    VideoStreamStopped.Invoke(this);
-                });
+                // Local tracks are disposable objects owned by the user (this component)
+                Track.Dispose();
+                Track = null;
             }
+
+            Source = null;
         }
 
-        /// <summary>
-        /// Internal callback invoked when the video sender is attached to a transceiver created
-        /// just before the peer connection creates an SDP offer.
-        /// </summary>
-        /// <param name="videoTransceiver">The video transceiver this sender is attached with.</param>
-        internal void AttachToTransceiver(Transceiver videoTransceiver)
-        {
-            Debug.Assert((Transceiver == null) || (Transceiver == videoTransceiver));
-            Transceiver = videoTransceiver;
-        }
-
-        /// <summary>
-        /// Internal callback invoked when the video sender is detached from a transceiver about to be
-        /// destroyed by the native implementation.
-        /// </summary>
-        /// <param name="videoTransceiver">The video transceiver this sender is attached with.</param>
-        internal void DetachFromTransceiver(Transceiver videoTransceiver)
-        {
-            Debug.Assert((Transceiver == null) || (Transceiver == videoTransceiver));
-            Transceiver = null;
-        }
-
-        internal override async Task AttachTrackAsync()
+        internal override void AttachTrack()
         {
             Debug.Assert(Transceiver != null);
+            Debug.Assert(Track != null);
 
             // Force again PreferredVideoCodec right before starting the local capture,
             // so that modifications to the property done after OnPeerInitialized() are
@@ -196,18 +92,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     + $" connection '{Transceiver.PeerConnection.Name}' with track's value of '{PreferredVideoCodec}'.");
             }
 
-            // Ensure the local sender track exists and is ready, but do not create it
-            // if the component is not active.
-            if (isActiveAndEnabled)
-            {
-                await StartCaptureAsync();
-            }
-
-            // Attach the local track to the transceiver if any
-            if (Track != null)
-            {
-                Transceiver.LocalVideoTrack = Track;
-            }
+            // Attach the local track to the transceiver
+            Transceiver.LocalVideoTrack = Track;
         }
 
         internal override void DetachTrack()
@@ -226,40 +112,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (Track != null)
             {
                 Track.Enabled = mute;
-            }
-        }
-
-        /// <summary>
-        /// Implement this callback to create the <see cref="Track"/> instance.
-        /// On failure, this method must throw an exception. Otherwise it must set the <see cref="Track"/>
-        /// property to a non-<c>null</c> instance.
-        /// </summary>
-        protected abstract Task CreateLocalVideoTrackAsync();
-
-        /// <summary>
-        /// Re-implement this callback to destroy the <see cref="Track"/> instance
-        /// and other associated resources.
-        /// </summary>
-        protected virtual void DestroyLocalVideoTrack()
-        {
-            if (Track != null)
-            {
-                // Track may not be added to any transceiver (e.g. no connection), or the
-                // transceiver is about to be destroyed so the DetachFromTransceiver() already
-                // cleared it.
-                var transceiver = Transceiver;
-                if (transceiver != null)
-                {
-                    if (transceiver.LocalVideoTrack != null)
-                    {
-                        Debug.Assert(transceiver.LocalVideoTrack == Track);
-                        transceiver.LocalVideoTrack = null;
-                    }
-                }
-
-                // Local tracks are disposable objects owned by the user (this component)
-                Track.Dispose();
-                Track = null;
             }
         }
     }

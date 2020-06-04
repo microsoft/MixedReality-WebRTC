@@ -66,6 +66,7 @@
 #include "modules/audio_mixer/audio_mixer_impl.h"
 #include "modules/audio_processing/include/audio_processing.h"
 #include "modules/video_capture/video_capture_factory.h"
+#include "rtc_base/bind.h"
 #include "rtc_base/memory/aligned_malloc.h"
 
 // libyuv from WebRTC repository for color conversion

@@ -101,7 +101,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             CreateCommandBuffer();
             SourceCamera.AddCommandBuffer(CameraEvent, _commandBuffer);
 
-            _ = base.OnEnable();
+            base.OnEnable();
         }
 
         protected new void OnDisable()

@@ -8,7 +8,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <summary>
     /// This component represents a remote video source added as a video track to an
     /// existing WebRTC peer connection by a remote peer and received locally.
-    /// The video track can optionally be displayed locally with a <see cref="MediaPlayer"/>.
+    /// The video track can optionally be displayed locally with a <see cref="VideoRenderer"/>.
     /// </summary>
     [AddComponentMenu("MixedReality-WebRTC/Video Receiver")]
     public class VideoReceiver : MediaReceiver, IVideoSource
@@ -49,15 +49,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <inheritdoc/>
         public VideoStreamStoppedEvent GetVideoStreamStopped() { return VideoStreamStopped; }
-
-        /// <summary>
-        /// Video transceiver this receiver is paired with, if any.
-        ///
-        /// This is <c>null</c> until a remote description is applied which pairs the media line
-        /// this receiver is associated with to a transceiver, or until the peer connection of this
-        /// receiver's media line creates the video receiver right before creating an SDP offer.
-        /// </summary>
-        public Transceiver Transceiver { get; private set; }
 
         /// <summary>
         /// Remote video track receiving data from the remote peer.
@@ -133,33 +124,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 Track.Argb32VideoFrameReady -= callback;
             }
-        }
-
-        /// <summary>
-        /// Internal callback invoked when the video receiver is attached to a transceiver created
-        /// just before the peer connection creates an SDP offer.
-        /// </summary>
-        /// <param name="videoTransceiver">The video transceiver this receiver is attached with.</param>
-        /// <remarks>
-        /// At this time the transceiver does not yet contain a remote track. The remote track will be
-        /// created when receiving an answer from the remote peer, if it agreed to send media data through
-        /// that transceiver, and <see cref="OnPaired"/> will be invoked at that time.
-        /// </remarks>
-        internal void AttachToTransceiver(Transceiver videoTransceiver)
-        {
-            Debug.Assert((Transceiver == null) || (Transceiver == videoTransceiver));
-            Transceiver = videoTransceiver;
-        }
-
-        /// <summary>
-        /// Internal callback invoked when the video receiver is detached from a transceiver about to be
-        /// destroyed by the native implementation.
-        /// </summary>
-        /// <param name="videoTransceiver">The video transceiver this receiver is attached with.</param>
-        internal void DetachFromTransceiver(Transceiver videoTransceiver)
-        {
-            Debug.Assert((Transceiver == null) || (Transceiver == videoTransceiver));
-            Transceiver = null;
         }
 
         /// <summary>

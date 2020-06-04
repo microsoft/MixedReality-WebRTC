@@ -10,21 +10,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <summary>
     /// Base class for media data source components producing some media frames
     /// 
-    /// This component encapsulates one of 4 types of media tracks, depending on the actual
+    /// This component encapsulates one of 4 types of media frame producers, depending on the actual
     /// class deriving from it:
-    /// - <see cref="AudioSender"/> : produces audio frames locally, to be sent to the remote peer
+    /// - <see cref="AudioTrackSource"/> : produces audio frames locally, to be sent to the remote peer
+    /// - <see cref="VideoTrackSource"/> : produces video frames locally, to be sent to the remote peer
     /// - <see cref="AudioReceiver"/> : receives audio frames from the remote peer
-    /// - <see cref="VideoSender"/> : produces video frames locally, to be sent to the remote peer
     /// - <see cref="VideoReceiver"/> : receives video frames from the remote peer
-    /// 
-    /// The media source can be conveniently played using a <see cref="MediaPlayer"/>.
+    ///
+    /// The media source can be conveniently played using a <see cref="VideoRenderer"/>.
     /// </summary>
     /// <seealso cref="AudioSender"/>
     /// <seealso cref="AudioReceiver"/>
     /// <seealso cref="VideoSender"/>
     /// <seealso cref="VideoReceiver"/>
-    /// <seealso cref="MediaPlayer"/>
-    public abstract class MediaSource : MonoBehaviour
+    /// <seealso cref="VideoRenderer"/>
+    public abstract class MediaProducer : MonoBehaviour
     {
         /// <summary>
         /// Kind of media (audio or video) the source produces.
@@ -43,7 +43,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Create a new media source of the given <see cref="MediaKind"/>.
         /// </summary>
         /// <param name="mediaKind">The media kind of the source.</param>
-        public MediaSource(MediaKind mediaKind)
+        public MediaProducer(MediaKind mediaKind)
         {
             MediaKind = mediaKind;
         }
