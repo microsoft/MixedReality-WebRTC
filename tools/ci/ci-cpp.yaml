@@ -69,7 +69,7 @@ jobs:
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
     withTesting: true
-    publishArtifacts: false
+    publishArtifacts: true
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
@@ -109,7 +109,7 @@ jobs:
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
     withTesting: true
-    publishArtifacts: false
+    publishArtifacts: true
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
@@ -119,7 +119,7 @@ jobs:
     restoreCorePdbs: ${{parameters.restoreCorePdbs}}
     runComponentDetection: ${{parameters.runComponentDetection}}
     withTesting: true
-    publishArtifacts: false
+    publishArtifacts: true
 - template: templates/jobs-cpp.yaml
   parameters:
     buildAgent: ${{parameters.buildAgent}}
