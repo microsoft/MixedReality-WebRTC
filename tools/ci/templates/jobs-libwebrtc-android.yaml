@@ -109,6 +109,9 @@ jobs:
 
   # Build libwebrtc
   - script: |
+      # Unset JAVA_HOME, which points to the install removed by the image clean step
+      unset JAVA_HOME
+      # Build
       cd $(toolsDir)/libwebrtc
       ./build.sh -v -c ${{parameters.buildConfig}}
     displayName: 'Build libwebrtc'
