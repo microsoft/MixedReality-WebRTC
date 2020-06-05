@@ -220,6 +220,9 @@ function checkout-webrtc() {
     # Download gn prebuilt executable (skipped glcient hooks which does that)
     download_from_google_storage --no_resume --platform=linux\* --no_auth --bucket chromium-gn -s src/buildtools/linux64/gn.sha1
 
+    # Install sysroot
+    python src/build/linux/sysroot_scripts/install-sysroot.py --arch=amd64
+
     popd >/dev/null
 }
 
