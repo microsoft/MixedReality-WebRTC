@@ -215,10 +215,16 @@ function checkout-webrtc() {
     gclient sync --force --revision $REVISION $extra_sync
 
     # Run hooks on specific revision to e.g. download the prebuilt gn
+    # This takes 3.5 GB of disk, and most of it is useless for the build
     #yes | gclient runhooks
 
-    # Download gn prebuilt executable (skipped glcient hooks which does that)
+    # Run a selected set of hooks manually
+
+    # Download gn prebuilt executable
     download_from_google_storage --no_resume --platform=linux\* --no_auth --bucket chromium-gn -s src/buildtools/linux64/gn.sha1
+
+    # Download clang prebuilt executable
+    python src/tools/clang/scripts/update.py
 
     # Install sysroot
     python src/build/linux/sysroot_scripts/install-sysroot.py --arch=amd64
