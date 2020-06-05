@@ -131,6 +131,11 @@ while getopts l:m:o:vh OPTION; do
     esac
 done
 
+# Replace C:/ for /mnt/c/ if using gradle in windows
+MRWEBRTC_AAR=${MRWEBRTC_AAR/C://mnt/c}
+MRWEBRTC_AAR=${MRWEBRTC_AAR//\\//}
+echo $MRWEBRTC_AAR
+
 # Ensure all arguments have reasonable values
 verify-arguments
 
