@@ -119,7 +119,7 @@ jobs:
   # Build mrwebrtc
   - script: |
       cd $(toolsDir)/android
-      /gradlew assemble${{parameters.buildConfig}}
+      ./gradlew assemble${{parameters.buildConfig}}
     displayName: 'Build mrwebrtc'
 
   # Stage artifacts
