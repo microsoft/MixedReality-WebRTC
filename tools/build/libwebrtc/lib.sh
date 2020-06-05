@@ -223,6 +223,9 @@ function checkout-webrtc() {
     # Install sysroot
     python src/build/linux/sysroot_scripts/install-sysroot.py --arch=amd64
 
+    # Create LASTCHANGE and LASTCHANGE.committime
+    python src/build/util/lastchange.py -o src/build/util/LASTCHANGE
+
     popd >/dev/null
 }
 
