@@ -215,7 +215,10 @@ function checkout-webrtc() {
     gclient sync --force --revision $REVISION $extra_sync
 
     # Run hooks on specific revision to e.g. download the prebuilt gn
-    yes | gclient runhooks
+    #yes | gclient runhooks
+
+    # Download gn prebuilt executable (skipped glcient hooks which does that)
+    download_from_google_storage --no_resume --platform=linux\* --no_auth --bucket chromium-gn -s src/buildtools/linux64/gn.sha1
 
     popd >/dev/null
 }
