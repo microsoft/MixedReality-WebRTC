@@ -119,6 +119,7 @@ jobs:
   # Build mrwebrtc
   - script: |
       cd $(toolsDir)/android
+      chmod +x ./gradlew
       ./gradlew assemble${{parameters.buildConfig}}
     displayName: 'Build mrwebrtc'
 
