@@ -152,6 +152,13 @@ jobs:
       path: '$(Build.SourcesDirectory)/libs/unity/samples/$(PackedSamplesFilename)'
       artifact: 'upm_samples'
 
+  # The tasks below can replace the publish tasks above to publish directly to an NPM register
+  # instead of as an Azure Pipeline Artifact. Unfortunately Azure DevOps currently does not
+  # support manual gates ("approve button") for publishing, so to ensure more control we publish
+  # as artifacts and then manually upload those artifacts after a last quick manual check.
+  # Leaving the tasks below commented for reference, as correct auth was tricky to figure out;
+  # the built-in NPM tasks were not able to auth correctly with our test NPM register (private).
+
   # # Write .npmrc
   # - task: PowerShell@2
   #   displayName: 'Write .npmrc (library)'
