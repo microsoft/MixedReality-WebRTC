@@ -10,6 +10,9 @@ parameters:
 - name: upmPackageVersion
   type: string
   default: ''
+- name: withPdbs
+  type: boolean
+  default: true
 
 jobs:
 
@@ -94,6 +97,17 @@ jobs:
       artifact: 'cslib'
       patterns: '**/Microsoft.MixedReality.WebRTC.@(pdb|dll)'
       path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
+
+  # Delete PDBs if not needed
+  - ${{ if eq(parameters.withPdbs, 'false') }}:
+    - pwsh: 
+        Write-Host "Removing PDBs from Unity package Plugins/ folder..."
+        Get-ChildItem -Recurse '$(Build.SourcesDirectory)/libs/unity/library/Runtime/Plugins/*.pdb' | ForEach-Object {
+          $file = $_
+          Write-Host $file
+          Remove-Item -Path $file -Force
+        }
+      displayName: 'Delete PDBs'
 
   # For debugging, list the packages content before signing
   - powershell: |
