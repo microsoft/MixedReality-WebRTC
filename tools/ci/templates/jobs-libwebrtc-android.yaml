@@ -118,6 +118,9 @@ jobs:
 
   # Build mrwebrtc
   - script: |
+      # Unset JAVA_HOME, which points to the install removed by the image clean step
+      unset JAVA_HOME
+      # Build
       cd $(toolsDir)/android
       chmod +x ./gradlew
       ./gradlew assemble${{parameters.buildConfig}}
