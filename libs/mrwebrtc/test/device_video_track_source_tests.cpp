@@ -3,15 +3,15 @@
 
 #include "pch.h"
 
+#include "device_video_track_source_interop.h"
 #include "interop_api.h"
 #include "video_frame.h"
-#include "video_track_source_interop.h"
 
 #include "test_utils.h"
 
 namespace {
 
-class VideoTrackSourceTests
+class DeviceVideoTrackSourceTests
     : public TestUtils::TestBase,
       public testing::WithParamInterface<mrsSdpSemantic> {};
 
@@ -20,25 +20,25 @@ class VideoTrackSourceTests
 #if !defined(MRSW_EXCLUDE_DEVICE_TESTS)
 
 INSTANTIATE_TEST_CASE_P(,
-                        VideoTrackSourceTests,
+                        DeviceVideoTrackSourceTests,
                         testing::ValuesIn(TestUtils::TestSemantics),
                         TestUtils::SdpSemanticToString);
 
-TEST_P(VideoTrackSourceTests, CreateFromDevice) {
+TEST_P(DeviceVideoTrackSourceTests, Create) {
   mrsLocalVideoDeviceInitConfig config{};
   mrsVideoTrackSourceHandle source_handle{};
   ASSERT_EQ(mrsResult::kSuccess,
-            mrsVideoTrackSourceCreateFromDevice(&config, &source_handle));
+            mrsDeviceVideoTrackSourceCreate(&config, &source_handle));
   ASSERT_NE(nullptr, source_handle);
   mrsRefCountedObjectRemoveRef(source_handle);
 }
 
-TEST_P(VideoTrackSourceTests, DeviceIdInvalid) {
+TEST_P(DeviceVideoTrackSourceTests, DeviceIdInvalid) {
   mrsLocalVideoDeviceInitConfig device_config{};
   device_config.video_device_id = "[[INVALID DEVICE ID]]";
   mrsVideoTrackSourceHandle source_handle{};
-  ASSERT_EQ(Result::kNotFound, mrsVideoTrackSourceCreateFromDevice(
-                                   &device_config, &source_handle));
+  ASSERT_EQ(Result::kNotFound,
+            mrsDeviceVideoTrackSourceCreate(&device_config, &source_handle));
   ASSERT_EQ(nullptr, source_handle);
 }
 

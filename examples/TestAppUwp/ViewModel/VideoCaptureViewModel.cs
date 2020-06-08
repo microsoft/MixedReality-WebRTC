@@ -300,22 +300,22 @@ namespace TestAppUwp
             {
                 videoDevice = new VideoCaptureDevice { id = deviceInfo.Id },
             };
-            var source = await VideoTrackSource.CreateFromDeviceAsync(deviceConfig);
-            // FIXME - this leaks the source, never disposed
-
-            // Crate the track
-            var settings = new LocalVideoTrackInitConfig
-            {
-                trackName = trackName,
-            };
             VideoCaptureFormatViewModel formatInfo = VideoCaptureFormats.SelectedItem;
             if (formatInfo != null)
             {
-                settings.width = formatInfo.Format.width;
-                settings.height = formatInfo.Format.height;
-                settings.framerate = formatInfo.Format.framerate;
+                deviceConfig.width = formatInfo.Format.width;
+                deviceConfig.height = formatInfo.Format.height;
+                deviceConfig.framerate = formatInfo.Format.framerate;
             }
-            var track = LocalVideoTrack.CreateFromSource(source, settings);
+            var source = await DeviceVideoTrackSource.CreateAsync(deviceConfig);
+            // FIXME - this leaks the source, never disposed
+
+            // Crate the track
+            var trackConfig = new LocalVideoTrackInitConfig
+            {
+                trackName = trackName,
+            };
+            var track = LocalVideoTrack.CreateFromSource(source, trackConfig);
             // FIXME - this probably leaks the track, never disposed
 
             SessionModel.Current.VideoTracks.Add(new VideoTrackViewModel

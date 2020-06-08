@@ -80,7 +80,7 @@
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\transceiver_tests.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_frame_observer_tests.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_test_utils.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_track_source_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\device_video_track_source_tests.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_track_tests.cpp" />
   </ItemGroup>
   <ItemGroup>

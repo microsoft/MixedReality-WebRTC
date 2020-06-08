@@ -8,6 +8,7 @@
 #include "refptr.h"
 #include "tracked_object.h"
 #include "video_frame.h"
+#include "video_track_source.h"
 
 namespace Microsoft {
 namespace MixedReality {
@@ -119,7 +120,7 @@ class Argb32ExternalVideoSource : public RefCountedBase {
 
 /// Video track source acting as an adapter for an external source of raw
 /// frames.
-class ExternalVideoTrackSource : public TrackedObject,
+class ExternalVideoTrackSource : public VideoTrackSource,
                                  public rtc::MessageHandler {
  public:
   using SourceState = webrtc::MediaSourceInterface::SourceState;
@@ -170,15 +171,16 @@ class ExternalVideoTrackSource : public TrackedObject,
   /// Shutdown the source and release the buffer adapter and its callback.
   void Shutdown() noexcept;
 
-  webrtc::VideoTrackSourceInterface* impl() const { return track_source_; }
-
  protected:
-  ExternalVideoTrackSource(RefPtr<GlobalFactory> global_factory,
-                           std::unique_ptr<detail::BufferAdapter> adapter);
+  ExternalVideoTrackSource(
+      RefPtr<GlobalFactory> global_factory,
+      std::unique_ptr<detail::BufferAdapter> adapter,
+      rtc::scoped_refptr<detail::CustomTrackSourceAdapter> source);
   // void Run(rtc::Thread* thread) override;
   void OnMessage(rtc::Message* message) override;
-
-  rtc::scoped_refptr<detail::CustomTrackSourceAdapter> track_source_;
+  detail::CustomTrackSourceAdapter* GetSourceImpl() const {
+    return (detail::CustomTrackSourceAdapter*)source_.get();
+  }
 
   std::unique_ptr<detail::BufferAdapter> adapter_;
   std::unique_ptr<rtc::Thread> capture_thread_;

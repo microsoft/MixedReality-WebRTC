@@ -118,7 +118,6 @@ namespace Microsoft.MixedReality.WebRTC
 
             // Finish creating the track, and bind it to the source
             track.FinishCreate(trackHandle, source);
-            source.OnTrackAddedToSource(track);
 
             return track;
         }
@@ -152,7 +151,10 @@ namespace Microsoft.MixedReality.WebRTC
                 _nativeHandle = handle;
                 RegisterInteropCallbacks();
             }
+
+            Debug.Assert(source != null);
             Source = source;
+            source.OnTrackAddedToSource(this);
         }
 
         private void RegisterInteropCallbacks()

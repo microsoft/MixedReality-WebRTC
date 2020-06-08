@@ -114,7 +114,10 @@ using mrsRemoteVideoTrackHandle = mrsObjectHandle;
 using mrsDataChannelHandle = mrsObjectHandle;
 
 /// Opaque handle to a native ExternalVideoTrackSource interop object.
-using mrsExternalVideoTrackSourceHandle = mrsRefCountedObjectHandle;
+using mrsExternalVideoTrackSourceHandle = mrsVideoTrackSourceHandle;
+
+/// Opaque handle to a native DeviceVideoTrackSource interop object.
+using mrsDeviceVideoTrackSourceHandle = mrsVideoTrackSourceHandle;
 
 //
 // Video capture enumeration

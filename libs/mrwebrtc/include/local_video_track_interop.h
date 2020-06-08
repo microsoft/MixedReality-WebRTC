@@ -14,21 +14,10 @@ struct mrsLocalVideoTrackInitSettings {
   const char* track_name{};
 };
 
-/// Configuration for creating a local video track from an external source.
-struct mrsLocalVideoTrackFromExternalSourceInitConfig {
-  mrsExternalVideoTrackSourceHandle source_handle;
-  const char* track_name;
-};
-
 /// Create a new local video track from a video track source.
 MRS_API mrsResult MRS_CALL mrsLocalVideoTrackCreateFromSource(
     const mrsLocalVideoTrackInitSettings* init_settings,
     mrsVideoTrackSourceHandle source_handle,
-    mrsLocalVideoTrackHandle* track_handle_out) noexcept;
-
-/// Create a new local video track by using an existing external video source.
-MRS_API mrsResult MRS_CALL mrsLocalVideoTrackCreateFromExternalSource(
-    const mrsLocalVideoTrackFromExternalSourceInitConfig* config,
     mrsLocalVideoTrackHandle* track_handle_out) noexcept;
 
 /// Register a custom callback to be called when the local video track captured

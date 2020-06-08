@@ -106,6 +106,12 @@
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\ref_counted_object_interop.cpp">
       <Filter>src\interop</Filter>
     </ClCompile>
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\device_video_track_source.cpp">
+      <Filter>src\media</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\device_video_track_source_interop.cpp">
+      <Filter>src\interop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\external_video_track_source.h">
@@ -235,6 +241,12 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\ref_counted_object_interop.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\device_video_track_source.h">
+      <Filter>src\media</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\device_video_track_source_interop.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

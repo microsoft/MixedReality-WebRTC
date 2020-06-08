@@ -119,8 +119,9 @@ constexpr const size_t kMaxPendingRequestCount = 64;
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSource::create(
     RefPtr<GlobalFactory> global_factory,
     std::unique_ptr<detail::BufferAdapter> adapter) {
-  auto source = new ExternalVideoTrackSource(std::move(global_factory),
-                                             std::move(adapter));
+  auto source = new ExternalVideoTrackSource(
+      std::move(global_factory), std::move(adapter),
+      new rtc::RefCountedObject<detail::CustomTrackSourceAdapter>());
   // Note: Video track sources always start already capturing; there is no
   // start/stop mechanism at the track level in WebRTC. A source is either being
   // initialized, or is already live. However because of wrappers and interop
@@ -130,11 +131,11 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSource::create(
 
 ExternalVideoTrackSource::ExternalVideoTrackSource(
     RefPtr<GlobalFactory> global_factory,
-    std::unique_ptr<detail::BufferAdapter> adapter)
-    : TrackedObject(std::move(global_factory),
-                    ObjectType::kExternalVideoTrackSource),
-      track_source_(
-          new rtc::RefCountedObject<detail::CustomTrackSourceAdapter>()),
+    std::unique_ptr<detail::BufferAdapter> adapter,
+    rtc::scoped_refptr<detail::CustomTrackSourceAdapter> source)
+    : VideoTrackSource(std::move(global_factory),
+                       ObjectType::kExternalVideoTrackSource,
+                       source),
       adapter_(std::forward<std::unique_ptr<detail::BufferAdapter>>(adapter)),
       capture_thread_(rtc::Thread::Create()) {
   capture_thread_->SetName("ExternalVideoTrackSource capture thread", this);
@@ -155,7 +156,7 @@ void ExternalVideoTrackSource::StartCapture() {
   }
 
   // Start capture thread
-  track_source_->state_ = SourceState::kLive;
+  GetSourceImpl()->state_ = SourceState::kLive;
   pending_requests_.clear();
   capture_thread_->Start();
 
@@ -198,7 +199,7 @@ Result ExternalVideoTrackSource::CompleteRequest(
           .set_video_frame_buffer(adapter_->FillBuffer(frame_view))
           .set_timestamp_ms(timestamp_ms)
           .build()};
-  track_source_->DispatchFrame(frame);
+  GetSourceImpl()->DispatchFrame(frame);
   return Result::kSuccess;
 }
 
@@ -236,14 +237,15 @@ Result ExternalVideoTrackSource::CompleteRequest(
           .set_video_frame_buffer(adapter_->FillBuffer(frame_view))
           .set_timestamp_ms(timestamp_ms)
           .build()};
-  track_source_->DispatchFrame(frame);
+  GetSourceImpl()->DispatchFrame(frame);
   return Result::kSuccess;
 }
 
 void ExternalVideoTrackSource::StopCapture() {
-  if (track_source_->state_ != SourceState::kEnded) {
+  detail::CustomTrackSourceAdapter* const src = GetSourceImpl();
+  if (src->state_ != SourceState::kEnded) {
     capture_thread_->Stop();
-    track_source_->state_ = SourceState::kEnded;
+    src->state_ = SourceState::kEnded;
   }
   pending_requests_.clear();
 }

@@ -1294,12 +1294,12 @@ namespace Microsoft.MixedReality.WebRTC
                 settings = settings ?? new TransceiverInitSettings();
                 TransceiverInterop.InitConfig config = new TransceiverInterop.InitConfig(mediaKind, settings);
                 uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, config,
-                    out TransceiverInterop.TransceiverHandle transceiverHandle);
+                    out IntPtr transceiverHandle);
                 Utils.ThrowOnErrorCode(res);
 
                 // The implementation fires the TransceiverAdded event, which creates the wrapper and
                 // stores a reference in the UserData of the native object.
-                IntPtr transceiver = ObjectInterop.Object_GetUserData(transceiverHandle);
+                IntPtr transceiver = ObjectInterop.Object_GetUserData(new TransceiverInterop.TransceiverHandle(transceiverHandle));
                 Debug.Assert(transceiver != IntPtr.Zero);
                 var wrapper = Utils.ToWrapper<Transceiver>(transceiver);
                 return wrapper;
@@ -1968,7 +1968,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>
         /// Assign one of the returned <see cref="VideoCaptureDevice"/> to the <see cref="LocalVideoDeviceInitConfig.videoDevice"/>
         /// field to force a local video track to use that device when creating it with
-        /// <see cref="VideoTrackSource.CreateFromDeviceAsync(LocalVideoDeviceInitConfig)"/>.
+        /// <see cref="DeviceVideoTrackSource.CreateAsync(LocalVideoDeviceInitConfig)"/>.
         /// </remarks>
         public static Task<List<VideoCaptureDevice>> GetVideoCaptureDevicesAsync()
         {

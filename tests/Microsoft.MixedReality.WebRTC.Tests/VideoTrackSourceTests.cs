@@ -20,7 +20,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         [Test]
         public async Task CreateFromDevice()
         {
-            using (VideoTrackSource source = await VideoTrackSource.CreateFromDeviceAsync())
+            using (VideoTrackSource source = await DeviceVideoTrackSource.CreateAsync())
             {
                 Assert.IsNotNull(source);
                 Assert.AreEqual(string.Empty, source.Name);
@@ -32,7 +32,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         [Test]
         public async Task Name()
         {
-            using (VideoTrackSource source = await VideoTrackSource.CreateFromDeviceAsync())
+            using (VideoTrackSource source = await DeviceVideoTrackSource.CreateAsync())
             {
                 Assert.IsNotNull(source);
 

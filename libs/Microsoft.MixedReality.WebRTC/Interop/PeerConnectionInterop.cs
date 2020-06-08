@@ -309,37 +309,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         /// <summary>
-        /// Helper structure to pass parameters to the native implementation when creating a local video track
-        /// from an existing external video track source.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        internal ref struct LocalVideoTrackFromExternalSourceInteropInitConfig
-        {
-            /// <summary>
-            /// Handle to native external video track source.
-            /// </summary>
-            public IntPtr SourceHandle;
-
-            /// <summary>
-            /// Name of the newly-created track. This must be a valid SDP token.
-            /// </summary>
-            [MarshalAs(UnmanagedType.LPStr)]
-            public string TrackName;
-
-            /// <summary>
-            /// Constructor for creating a local video track from a wrapper and an existing external source.
-            /// </summary>
-            /// <param name="source">The external source to use with the newly created native track.</param>
-            /// <param name="trackName">The newly created track name. This must be a valid SDP token.</param>
-            /// <seealso cref="LocalVideoTrack.CreateFromExternalSource(string, ExternalVideoTrackSource)"/>
-            public LocalVideoTrackFromExternalSourceInteropInitConfig(string trackName, ExternalVideoTrackSource source)
-            {
-                SourceHandle = source._nativeHandle.DangerousGetHandle();
-                TrackName = trackName;
-            }
-        }
-
-        /// <summary>
         /// Marshalling structure to receive information about a newly created data channel
         /// just added to the peer connection after a remote description was applied.
         /// </summary>
@@ -611,7 +580,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddTransceiver")]
         public static extern uint PeerConnection_AddTransceiver(PeerConnectionHandle peerHandle,
-            in TransceiverInterop.InitConfig config, out TransceiverInterop.TransceiverHandle transceiverHandle);
+            in TransceiverInterop.InitConfig config, out IntPtr transceiverHandle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionAddDataChannel")]
