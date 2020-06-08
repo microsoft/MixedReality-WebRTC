@@ -136,7 +136,6 @@ ExternalVideoTrackSource::ExternalVideoTrackSource(
     : VideoTrackSource(std::move(global_factory),
                        ObjectType::kExternalVideoTrackSource,
                        source),
-      track_source_(std::move(source)),
       adapter_(std::forward<std::unique_ptr<detail::BufferAdapter>>(adapter)),
       capture_thread_(rtc::Thread::Create()) {
   capture_thread_->SetName("ExternalVideoTrackSource capture thread", this);
@@ -157,7 +156,7 @@ void ExternalVideoTrackSource::StartCapture() {
   }
 
   // Start capture thread
-  track_source_->state_ = SourceState::kLive;
+  GetSourceImpl()->state_ = SourceState::kLive;
   pending_requests_.clear();
   capture_thread_->Start();
 
@@ -200,7 +199,7 @@ Result ExternalVideoTrackSource::CompleteRequest(
           .set_video_frame_buffer(adapter_->FillBuffer(frame_view))
           .set_timestamp_ms(timestamp_ms)
           .build()};
-  track_source_->DispatchFrame(frame);
+  GetSourceImpl()->DispatchFrame(frame);
   return Result::kSuccess;
 }
 
@@ -238,14 +237,15 @@ Result ExternalVideoTrackSource::CompleteRequest(
           .set_video_frame_buffer(adapter_->FillBuffer(frame_view))
           .set_timestamp_ms(timestamp_ms)
           .build()};
-  track_source_->DispatchFrame(frame);
+  GetSourceImpl()->DispatchFrame(frame);
   return Result::kSuccess;
 }
 
 void ExternalVideoTrackSource::StopCapture() {
-  if (track_source_->state_ != SourceState::kEnded) {
+  detail::CustomTrackSourceAdapter* const src = GetSourceImpl();
+  if (src->state_ != SourceState::kEnded) {
     capture_thread_->Stop();
-    track_source_->state_ = SourceState::kEnded;
+    src->state_ = SourceState::kEnded;
   }
   pending_requests_.clear();
 }

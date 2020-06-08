@@ -178,11 +178,9 @@ class ExternalVideoTrackSource : public VideoTrackSource,
       rtc::scoped_refptr<detail::CustomTrackSourceAdapter> source);
   // void Run(rtc::Thread* thread) override;
   void OnMessage(rtc::Message* message) override;
-
-  // Keep a second reference (in addition of VideoTrackSource::source_) as a
-  // pointer to the specific type of adapter source, to simplify access and
-  // avoid having to cast everywhere.
-  rtc::scoped_refptr<detail::CustomTrackSourceAdapter> track_source_;
+  detail::CustomTrackSourceAdapter* GetSourceImpl() const {
+    return (detail::CustomTrackSourceAdapter*)source_.get();
+  }
 
   std::unique_ptr<detail::BufferAdapter> adapter_;
   std::unique_ptr<rtc::Thread> capture_thread_;
