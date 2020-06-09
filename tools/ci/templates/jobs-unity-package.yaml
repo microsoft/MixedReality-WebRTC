@@ -100,12 +100,12 @@ jobs:
 
   # Delete PDBs if not needed
   - ${{ if eq(parameters.withPdbs, false) }}:
-    - pwsh: 
+    - pwsh: |
         Write-Host "Removing PDBs from Unity package Plugins/ folder..."
         Get-ChildItem -Recurse '$(Build.SourcesDirectory)/libs/unity/library/Runtime/Plugins/*.pdb' | ForEach-Object {
-          $file = $_;
-          Write-Host $file;
-          Remove-Item -Path $file -Force;
+          $file = $_
+          Write-Host $file
+          Remove-Item -Path $file -Force
         }
       displayName: 'Delete PDBs'
 
