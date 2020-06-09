@@ -1,0 +1,12 @@
+LIBRARY
+
+EXPORTS
+	OnGraphicsDeviceEvent
+	UnityPluginLoad
+	UnityPluginUnload
+	mrsNativeRenderer_Create
+	mrsNativeRenderer_Destroy
+	mrsNativeRenderer_EnableRemoteVideo
+	mrsNativeRenderer_DisableRemoteVideo
+	mrsNativeRenderer_GetVideoUpdateMethod
+	mrsNativeRenderer_SetLoggingFunctions

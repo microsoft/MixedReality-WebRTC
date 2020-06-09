@@ -12,7 +12,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     /// <summary>
     /// Handle to a native peer connection object.
     /// </summary>
-    internal sealed class PeerConnectionHandle : SafeHandle
+    public sealed class PeerConnectionHandle : SafeHandle
     {
         /// <summary>
         /// Check if the current handle is invalid, which means it is not referencing

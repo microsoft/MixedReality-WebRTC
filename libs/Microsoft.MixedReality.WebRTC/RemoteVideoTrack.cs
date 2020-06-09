@@ -59,6 +59,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private RemoteVideoTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
+        public IntPtr NativeHandle => _nativeHandle;
+
         // Constructor for interop-based creation; SetHandle() will be called later
         internal RemoteVideoTrack(IntPtr handle, PeerConnection peer, string trackName) : base(peer, trackName)
         {

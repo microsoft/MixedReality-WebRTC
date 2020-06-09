@@ -5,8 +5,8 @@
 
 #include <string>
 
-#include "export.h"
-#include "result.h"
+#include "../include/export.h"
+#include "../include/result.h"
 
 namespace Microsoft {
 namespace MixedReality {
