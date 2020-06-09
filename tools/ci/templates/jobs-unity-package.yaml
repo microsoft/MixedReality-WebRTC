@@ -148,13 +148,13 @@ jobs:
   # Pack the NPM package (library)
   - pwsh: |
       Set-Location "libs/unity/library"
-      $ec = -1
       $oldEAPreference = $ErrorActionPreference
       $ErrorActionPreference = "SilentlyContinue"
       try {
-        $PackageName = & "npm pack ."
+        $PackageName = (Invoke-Expression "npm pack .") 2>&1
         $ec = $LASTEXITCODE
       } catch {
+        $ec = -1
       } finally {
         $ErrorActionPreference = $oldEAPreference
       }
@@ -170,7 +170,7 @@ jobs:
   # Pack the NPM package (samples)
   - pwsh: |
       Set-Location "libs/unity/samples"
-      $PackageName = & "npm pack ."
+      $PackageName = (Invoke-Expression "npm pack .") 2>&1
       $ec = $LASTEXITCODE
       if ($ec -ne 0) {
         Write-Host "##vso[task.complete result=Failed;]npm pack failed with exit code #$ec"
