@@ -22,62 +22,62 @@ parameters:
 
 stages:
 
-# Build libwebrtc
-- stage: build_libwebrtc
-  displayName: 'Build libwebrtc'
-  jobs:
-  - template: templates/jobs-libwebrtc-android.yaml
-    parameters:
-      buildConfig: 'Release'
+# # Build libwebrtc
+# - stage: build_libwebrtc
+#   displayName: 'Build libwebrtc'
+#   jobs:
+#   - template: templates/jobs-libwebrtc-android.yaml
+#     parameters:
+#       buildConfig: 'Release'
 
-# Compile all Release build variants of mrwebrtc.dll
-- stage: build_mrwebrtc
-  dependsOn: build_libwebrtc
-  displayName: 'Build mrwebrtc'
-  jobs:
+# # Compile all Release build variants of mrwebrtc.dll
+# - stage: build_mrwebrtc
+#   dependsOn: build_libwebrtc
+#   displayName: 'Build mrwebrtc'
+#   jobs:
 
-  # Build all Release variants of mrwebrtc.dll for Windows Desktop
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'Win32'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x86'
-      buildConfig: 'Release'
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'Win32'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x64'
-      buildConfig: 'Release'
+#   # Build all Release variants of mrwebrtc.dll for Windows Desktop
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'Win32'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x86'
+#       buildConfig: 'Release'
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'Win32'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x64'
+#       buildConfig: 'Release'
 
-  # Build all Release variants of mrwebrtc.dll for Windows UWP
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'UWP'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x86'
-      buildConfig: 'Release'
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'UWP'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x64'
-      buildConfig: 'Release'
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'UWP'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'ARM'
-      buildConfig: 'Release'
+#   # Build all Release variants of mrwebrtc.dll for Windows UWP
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'UWP'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x86'
+#       buildConfig: 'Release'
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'UWP'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x64'
+#       buildConfig: 'Release'
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'UWP'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'ARM'
+#       buildConfig: 'Release'
 
-  # Build the Release variant of Microsoft.MixedReality.WebRTC.dll for release.
-  - template: templates/jobs-cslib-release-build.yaml
-    parameters:
-      buildAgent: '$(MRWebRTC.BuildAgent)'
+#   # Build the Release variant of Microsoft.MixedReality.WebRTC.dll for release.
+#   - template: templates/jobs-cslib-release-build.yaml
+#     parameters:
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
 
 # Package library and samples
 - stage: publish
-  dependsOn: build_mrwebrtc
+  #dependsOn: build_mrwebrtc
   displayName: 'Publish'
   jobs:
   - template: templates/jobs-unity-package.yaml
