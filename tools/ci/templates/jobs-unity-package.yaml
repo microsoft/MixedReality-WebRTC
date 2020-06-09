@@ -148,7 +148,12 @@ jobs:
   # Pack the NPM package (library)
   - pwsh: |
       Set-Location "libs/unity/library"
-      Invoke-Expression "npm pack ." | Tee-Object -Variable PackageName | Out-Null
+      $PackageName = Invoke-Expression "& npm pack . 2>&1"
+      $ec = $LASTEXITCODE
+      if ($ec -ne 0) {
+        Write-Host "##vso[task.complete result=Failed;]npm pack failed with exit code #$ec"
+        exit 1
+      }
       Write-Host "Produced package '$PackageName'"
       Write-Host "##vso[task.setvariable variable=PackedLibraryFilename]$PackageName"
     displayName: 'Pack NPM (library)'
@@ -156,7 +161,12 @@ jobs:
   # Pack the NPM package (samples)
   - pwsh: |
       Set-Location "libs/unity/samples"
-      Invoke-Expression "npm pack ." | Tee-Object -Variable PackageName | Out-Null
+      $PackageName = Invoke-Expression "& npm pack . 2>&1"
+      $ec = $LASTEXITCODE
+      if ($ec -ne 0) {
+        Write-Host "##vso[task.complete result=Failed;]npm pack failed with exit code #$ec"
+        exit 1
+      }
       Write-Host "Produced package '$PackageName'"
       Write-Host "##vso[task.setvariable variable=PackedSamplesFilename]$PackageName"
     displayName: 'Pack NPM (samples)'
