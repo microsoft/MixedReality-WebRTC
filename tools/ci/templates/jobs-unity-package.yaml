@@ -157,6 +157,7 @@ jobs:
       Write-Host "Produced package '$PackageName'"
       Write-Host "##vso[task.setvariable variable=PackedLibraryFilename]$PackageName"
     displayName: 'Pack NPM (library)'
+    failOnStderr: false
 
   # Pack the NPM package (samples)
   - pwsh: |
@@ -170,6 +171,7 @@ jobs:
       Write-Host "Produced package '$PackageName'"
       Write-Host "##vso[task.setvariable variable=PackedSamplesFilename]$PackageName"
     displayName: 'Pack NPM (samples)'
+    failOnStderr: false
 
   # Publish the UPM package (library)
   - task: PublishPipelineArtifact@1
