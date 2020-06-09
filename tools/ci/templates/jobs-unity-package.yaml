@@ -99,7 +99,7 @@ jobs:
       path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
 
   # Delete PDBs if not needed
-  - ${{ if eq(parameters.withPdbs, 'false') }}:
+  - ${{ if eq(parameters.withPdbs, false) }}:
     - pwsh: 
         Write-Host "Removing PDBs from Unity package Plugins/ folder..."
         Get-ChildItem -Recurse '$(Build.SourcesDirectory)/libs/unity/library/Runtime/Plugins/*.pdb' | ForEach-Object {
