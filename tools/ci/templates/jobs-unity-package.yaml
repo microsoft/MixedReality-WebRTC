@@ -151,7 +151,7 @@ jobs:
       $oldEAPreference = $ErrorActionPreference
       $ErrorActionPreference = "SilentlyContinue"
       try {
-        $PackageName = (Invoke-Expression "npm pack .") 2>&1
+        $PackageName = (Invoke-Expression "npm pack .")
         $ec = $LASTEXITCODE
       } catch {
         $ec = -1
