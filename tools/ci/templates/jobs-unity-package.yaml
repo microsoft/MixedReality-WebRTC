@@ -151,12 +151,9 @@ jobs:
       $oldEAPreference = $ErrorActionPreference
       $ErrorActionPreference = "SilentlyContinue"
       try {
-        $PackageName = &{ npm pack . 2>err.txt }
+        $PackageName = &{ npm pack . }
         $ec = $LASTEXITCODE
         Write-Host "npm pack terminated with exit code #$ec"
-        Write-Host ("*"*40)
-        Get-Content err.txt
-        Write-Host ("*"*40)
       } catch {
         $ec = -1
       } finally {
