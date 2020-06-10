@@ -153,15 +153,16 @@ jobs:
       try {
         $PackageName = Invoke-Expression "& npm pack . 2>err.txt"
         $ec = $LASTEXITCODE
+        Write-Host "npm pack terminated with exit code #$ec"
+        Write-Host ("*"*40)
         Get-Content err.txt
+        Write-Host ("*"*40)
       } catch {
         $ec = -1
       } finally {
         $ErrorActionPreference = $oldEAPreference
       }
       if ($ec -ne 0) {
-        Write-Host "npm pack returned some error (#$ec)"
-        Get-Content err.txt
         Write-Host "##vso[task.complete result=Failed;]npm pack failed with exit code #$ec"
         exit 1
       }
