@@ -153,6 +153,7 @@ jobs:
       try {
         $PackageName = Invoke-Expression "& npm pack . 2>err.txt"
         $ec = $LASTEXITCODE
+        Get-Content err.txt
       } catch {
         $ec = -1
       } finally {
