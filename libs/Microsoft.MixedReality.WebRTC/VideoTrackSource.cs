@@ -57,21 +57,26 @@ namespace Microsoft.MixedReality.WebRTC
         {
             add
             {
-                bool isFirstHandler = (_videoFrameReady == null);
-                _videoFrameReady += value;
-                if (isFirstHandler)
+                lock (_videoFrameReadyLock)
                 {
-                    RegisterVideoFrameCallback();
+                    bool isFirstHandler = (_videoFrameReady == null);
+                    _videoFrameReady += value;
+                    if (isFirstHandler)
+                    {
+                        RegisterVideoFrameCallback();
+                    }
                 }
             }
             remove
             {
-                // FIXME - ideally unregister first so no need to check for NULL event in handler
-                _videoFrameReady -= value;
-                bool isLastHandler = (_videoFrameReady == null);
-                if (isLastHandler)
+                lock (_videoFrameReadyLock)
                 {
-                    UnregisterVideoFrameCallback();
+                    _videoFrameReady -= value;
+                    bool isLastHandler = (_videoFrameReady == null);
+                    if (isLastHandler)
+                    {
+                        UnregisterVideoFrameCallback();
+                    }
                 }
             }
         }
@@ -85,21 +90,26 @@ namespace Microsoft.MixedReality.WebRTC
             // utility to convert from ARGB to I420 when needed (to be called by the user).
             add
             {
-                bool isFirstHandler = (_argb32videoFrameReady == null);
-                _argb32videoFrameReady += value;
-                if (isFirstHandler)
+                lock (_videoFrameReadyLock)
                 {
-                    RegisterArgb32VideoFrameCallback();
+                    bool isFirstHandler = (_argb32videoFrameReady == null);
+                    _argb32videoFrameReady += value;
+                    if (isFirstHandler)
+                    {
+                        RegisterArgb32VideoFrameCallback();
+                    }
                 }
             }
             remove
             {
-                // FIXME - ideally unregister first so no need to check for NULL event in handler
-                _argb32videoFrameReady -= value;
-                bool isLastHandler = (_argb32videoFrameReady == null);
-                if (isLastHandler)
+                lock (_videoFrameReadyLock)
                 {
-                    UnregisterArgb32VideoFrameCallback();
+                    _argb32videoFrameReady -= value;
+                    bool isLastHandler = (_argb32videoFrameReady == null);
+                    if (isLastHandler)
+                    {
+                        UnregisterArgb32VideoFrameCallback();
+                    }
                 }
             }
         }
@@ -135,6 +145,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private List<LocalVideoTrack> _tracks = new List<LocalVideoTrack>();
 
+        private readonly object _videoFrameReadyLock = new object();
         private event I420AVideoFrameDelegate _videoFrameReady;
         private event Argb32VideoFrameDelegate _argb32videoFrameReady;
 
@@ -263,13 +274,19 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnI420AFrameReady(I420AVideoFrame frame)
         {
             MainEventSource.Log.I420ALocalVideoFrameReady(frame.width, frame.height);
-            _videoFrameReady?.Invoke(frame);
+            lock (_videoFrameReadyLock)
+            {
+                _videoFrameReady?.Invoke(frame);
+            }
         }
 
         internal void OnArgb32FrameReady(Argb32VideoFrame frame)
         {
             MainEventSource.Log.Argb32LocalVideoFrameReady(frame.width, frame.height);
-            _argb32videoFrameReady?.Invoke(frame);
+            lock (_videoFrameReadyLock)
+            {
+                _argb32videoFrameReady?.Invoke(frame);
+            }
         }
 
         /// <inheritdoc/>
