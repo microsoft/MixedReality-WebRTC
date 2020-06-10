@@ -171,8 +171,17 @@ jobs:
   # Pack the NPM package (samples)
   - pwsh: |
       Set-Location "libs/unity/samples"
-      $PackageName = Invoke-Expression "& cmd /c 'npm pack .' 2>&1"
-      $ec = $LASTEXITCODE
+      $oldEAPreference = $ErrorActionPreference
+      $ErrorActionPreference = "SilentlyContinue"
+      try {
+        $PackageName = &{ npm pack . }
+        $ec = $LASTEXITCODE
+        Write-Host "npm pack terminated with exit code #$ec"
+      } catch {
+        $ec = -1
+      } finally {
+        $ErrorActionPreference = $oldEAPreference
+      }
       if ($ec -ne 0) {
         Write-Host "##vso[task.complete result=Failed;]npm pack failed with exit code #$ec"
         exit 1
