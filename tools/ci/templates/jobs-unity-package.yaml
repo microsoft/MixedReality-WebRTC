@@ -151,7 +151,7 @@ jobs:
       $oldEAPreference = $ErrorActionPreference
       $ErrorActionPreference = "SilentlyContinue"
       try {
-        $PackageName = Invoke-Expression "& cmd /c 'npm pack .' 2>&1"
+        $PackageName = Invoke-Expression "& npm pack . 2>err.txt"
         $ec = $LASTEXITCODE
       } catch {
         $ec = -1
@@ -159,6 +159,8 @@ jobs:
         $ErrorActionPreference = $oldEAPreference
       }
       if ($ec -ne 0) {
+        Write-Host "npm pack returned some error (#$ec)"
+        Get-Content err.txt
         Write-Host "##vso[task.complete result=Failed;]npm pack failed with exit code #$ec"
         exit 1
       }
