@@ -64,9 +64,6 @@ function read-config() {
         exit 1
     fi
     source "$BUILD_DIR/.config.sh"
-    # Ensure SRC_DIR is an absolute path. Since it may not exist, we need to
-    # know what to create, and the variable alone cannot carry info about what
-    # a path is relative to. So use absolute path always.
     SRC_DIR=$WORK_DIR/webrtc
     # Print a config summary
     echo -e "\e[39m\e[1mActive config:\e[0m\e[39m"
@@ -216,9 +213,15 @@ function checkout-webrtc() {
 
     # Run hooks on specific revision to e.g. download the prebuilt gn
     # This takes 3.5 GB of disk, and most of it is useless for the build
+    # Leaving commented for reference in case the below cause issue, as
+    # this is ideally the proper (and only supported) way.
+    # Note also that this upgrades the Google Play SDK and therefore
+    # requires accepting a license ('yes |'), but we don't want to blindly
+    # accept instead of the user, and can't manually accept on CI.
     #yes | gclient runhooks
 
-    # Run a selected set of hooks manually
+    # Alternative version with smaller disk footprint: run a selected
+    # set of hooks manually
 
     # Download gn prebuilt executable
     download_from_google_storage --no_resume --platform=linux\* --no_auth --bucket chromium-gn -s src/buildtools/linux64/gn.sha1
