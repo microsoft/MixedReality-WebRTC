@@ -43,100 +43,100 @@ jobs:
       arguments: '-PackageJsonFile "libs/unity/samples/package.json" -PackageVersion "${{parameters.upmPackageVersion}}"'
     timeoutInMinutes: 5
 
-  # # Download mrwebrtc.aar
-  # - task: DownloadPipelineArtifact@2
-  #   displayName: 'Download mrwebrtc.aar (Android arm64-v8a)'
-  #   inputs:
-  #     source: 'current'
-  #     artifact: 'mrwebrtc_android_arm64_Release'
-  #     patterns: '**/mrwebrtc.aar'
-  #     path: 'libs/unity/library/Runtime/Plugins/arm64-v8a'
+  # Download mrwebrtc.aar
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc.aar (Android arm64-v8a)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_android_arm64_Release'
+      patterns: '**/mrwebrtc.aar'
+      path: 'libs/unity/library/Runtime/Plugins/arm64-v8a'
 
-  # # Download mrwebrtc.dll
-  # - task: DownloadPipelineArtifact@2
-  #   displayName: 'Download mrwebrtc library (Win32-x86-Release)'
-  #   inputs:
-  #     source: 'current'
-  #     artifact: 'mrwebrtc_Win32-x86-Release'
-  #     patterns: '**/mrwebrtc.@(pdb|dll)'
-  #     path: 'libs/unity/library/Runtime/Plugins/Win32/x86'
-  # - task: DownloadPipelineArtifact@2
-  #   displayName: 'Download mrwebrtc library (Win32-x64-Release)'
-  #   inputs:
-  #     source: 'current'
-  #     artifact: 'mrwebrtc_Win32-x64-Release'
-  #     patterns: '**/mrwebrtc.@(pdb|dll)'
-  #     path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
-  # - task: DownloadPipelineArtifact@2
-  #   displayName: 'Download mrwebrtc library (UWP-x86-Release)'
-  #   inputs:
-  #     source: 'current'
-  #     artifact: 'mrwebrtc_UWP-x86-Release'
-  #     patterns: '**/mrwebrtc.@(pdb|dll)'
-  #     path: 'libs/unity/library/Runtime/Plugins/WSA/x86'
-  # - task: DownloadPipelineArtifact@2
-  #   displayName: 'Download mrwebrtc library (UWP-x64-Release)'
-  #   inputs:
-  #     source: 'current'
-  #     artifact: 'mrwebrtc_UWP-x64-Release'
-  #     patterns: '**/mrwebrtc.@(pdb|dll)'
-  #     path: 'libs/unity/library/Runtime/Plugins/WSA/x86_64'
-  # - task: DownloadPipelineArtifact@2
-  #   displayName: 'Download mrwebrtc library (UWP-ARM-Release)'
-  #   inputs:
-  #     source: 'current'
-  #     artifact: 'mrwebrtc_UWP-ARM-Release'
-  #     patterns: '**/mrwebrtc.@(pdb|dll)'
-  #     path: 'libs/unity/library/Runtime/Plugins/WSA/ARM'
+  # Download mrwebrtc.dll
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc library (Win32-x86-Release)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_Win32-x86-Release'
+      patterns: '**/mrwebrtc.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/Win32/x86'
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc library (Win32-x64-Release)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_Win32-x64-Release'
+      patterns: '**/mrwebrtc.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc library (UWP-x86-Release)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_UWP-x86-Release'
+      patterns: '**/mrwebrtc.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/WSA/x86'
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc library (UWP-x64-Release)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_UWP-x64-Release'
+      patterns: '**/mrwebrtc.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/WSA/x86_64'
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc library (UWP-ARM-Release)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_UWP-ARM-Release'
+      patterns: '**/mrwebrtc.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/WSA/ARM'
 
-  # # Download Microsoft.MixedReality.WebRTC.dll
-  # - task: DownloadPipelineArtifact@2
-  #   displayName: 'Download C# library'
-  #   inputs:
-  #     source: 'current'
-  #     artifact: 'cslib'
-  #     patterns: '**/Microsoft.MixedReality.WebRTC.@(pdb|dll)'
-  #     path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
+  # Download Microsoft.MixedReality.WebRTC.dll
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download C# library'
+    inputs:
+      source: 'current'
+      artifact: 'cslib'
+      patterns: '**/Microsoft.MixedReality.WebRTC.@(pdb|dll)'
+      path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
 
-  # # Delete PDBs if not needed
-  # - ${{ if eq(parameters.withPdbs, false) }}:
-  #   - pwsh: |
-  #       Write-Host "Removing PDBs from Unity package Plugins/ folder..."
-  #       Get-ChildItem -Recurse '$(Build.SourcesDirectory)/libs/unity/library/Runtime/Plugins/*.pdb' | ForEach-Object {
-  #         $file = $_
-  #         Write-Host $file
-  #         Remove-Item -Path $file -Force
-  #       }
-  #     displayName: 'Delete PDBs'
+  # Delete PDBs if not needed
+  - ${{ if eq(parameters.withPdbs, false) }}:
+    - pwsh: |
+        Write-Host "Removing PDBs from Unity package Plugins/ folder..."
+        Get-ChildItem -Recurse '$(Build.SourcesDirectory)/libs/unity/library/Runtime/Plugins/*.pdb' | ForEach-Object {
+          $file = $_
+          Write-Host $file
+          Remove-Item -Path $file -Force
+        }
+      displayName: 'Delete PDBs'
 
-  # # For debugging, list the packages content before signing
-  # - powershell: |
-  #    foreach ($f in $(Get-ChildItem -Path libs/unity -Recurse)) {
-  #      Write-Host $f.FullName
-  #    }
-  #   displayName: 'List packages content'
+  # For debugging, list the packages content before signing
+  - powershell: |
+     foreach ($f in $(Get-ChildItem -Path libs/unity -Recurse)) {
+       Write-Host $f.FullName
+     }
+    displayName: 'List packages content'
 
-  # # Run component detection before signing (mandatory by policy)
-  # - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  #   displayName: 'Component Detection before signing'
-  #   inputs:
-  #     sourceScanPath: 'libs/unity'
+  # Run component detection before signing (mandatory by policy)
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection before signing'
+    inputs:
+      sourceScanPath: 'libs/unity'
 
-  # # Sign library package content
-  # - task: DownloadSecureFile@1
-  #   name: SignConfigFile_Content
-  #   displayName: 'Download signing file (content)'
-  #   inputs:
-  #     secureFile: 'mr-webrtc-unity-signconfig-content.xml'
-  #   timeoutInMinutes: 10
-  # - task: PkgESCodeSign@10
-  #   displayName: 'Sign library package content'
-  #   inputs:
-  #     signConfigXml: '$(SignConfigFile_Content.secureFilePath)'
-  #     inPathRoot: '$(Build.SourcesDirectory)/libs/unity/library'
-  #     outPathRoot: '$(Build.SourcesDirectory)/libs/unity/library'
-  #   env:
-  #     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  # Sign library package content
+  - task: DownloadSecureFile@1
+    name: SignConfigFile_Content
+    displayName: 'Download signing file (content)'
+    inputs:
+      secureFile: 'mr-webrtc-unity-signconfig-content.xml'
+    timeoutInMinutes: 10
+  - task: PkgESCodeSign@10
+    displayName: 'Sign library package content'
+    inputs:
+      signConfigXml: '$(SignConfigFile_Content.secureFilePath)'
+      inPathRoot: '$(Build.SourcesDirectory)/libs/unity/library'
+      outPathRoot: '$(Build.SourcesDirectory)/libs/unity/library'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
   # For debugging, list the packages content after signing
   - powershell: |
