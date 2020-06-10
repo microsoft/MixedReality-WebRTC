@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
@@ -75,13 +76,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private VideoFrameQueue<Argb32VideoFrameStorage> _frameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(3);
 
-        protected new void OnEnable()
+        protected override Task OnEnable()
         {
             if (!SystemInfo.supportsAsyncGPUReadback)
             {
                 Debug.LogError("This platform does not support async GPU readback. Cannot use the SceneVideoSender component.");
                 enabled = false;
-                return;
+                return base.OnEnable();
             }
 
             // If no camera provided, attempt to fallback to main camera
@@ -101,7 +102,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             CreateCommandBuffer();
             SourceCamera.AddCommandBuffer(CameraEvent, _commandBuffer);
 
-            base.OnEnable();
+            return base.OnEnable();
         }
 
         protected new void OnDisable()

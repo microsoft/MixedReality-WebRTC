@@ -17,12 +17,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <seealso cref="WebcamSource"/>
     /// <seealso cref="CustomVideoSender{T}"/>
     /// <seealso cref="SceneVideoSender"/>
-    public abstract class VideoTrackSource : MediaTrackSource, IVideoSource
+    public abstract class VideoTrackSource : VideoRendererSource, IVideoSource, IMediaTrackSource
     {
-        #region IVideoSource interface
+        /// <summary>
+        /// Video track source object from the underlying C# library that this component encapsulates.
+        /// 
+        /// The object is owned by this component, which will create it and dispose of it automatically.
+        /// </summary>
+        public WebRTC.VideoTrackSource Source { get; protected set; } = null;
 
-        /// <inheritdoc/>
-        public bool IsStreaming { get; protected set; }
+        /// <summary>
+        /// List of video senders (tracks) using this source.
+        /// </summary>
+        public List<VideoSender> Senders { get; } = new List<VideoSender>();
 
         /// <summary>
         /// Event raised when the video stream started.
@@ -50,6 +57,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
 
+
+        #region IVideoSource interface
+
+        /// <inheritdoc/>
+        public bool IsStreaming { get; protected set; }
+
         /// <inheritdoc/>
         public VideoStreamStartedEvent GetVideoStreamStarted() { return VideoStreamStarted; }
 
@@ -59,6 +72,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <inheritdoc/>
         public VideoEncoding FrameEncoding { get; } = VideoEncoding.I420A;
 
+        /// <inheritdoc/>
         public void RegisterCallback(I420AVideoFrameDelegate callback)
         {
             if (Source != null)
@@ -67,6 +81,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
+        /// <inheritdoc/>
         public void UnregisterCallback(I420AVideoFrameDelegate callback)
         {
             if (Source != null)
@@ -75,6 +90,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
+        /// <inheritdoc/>
         public void RegisterCallback(Argb32VideoFrameDelegate callback)
         {
             if (Source != null)
@@ -83,6 +99,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
+        /// <inheritdoc/>
         public void UnregisterCallback(Argb32VideoFrameDelegate callback)
         {
             if (Source != null)
@@ -94,27 +111,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #endregion
 
 
-        /// <summary>
-        /// Video track source object from the underlying C# library that this component encapsulates.
-        /// 
-        /// The object is owned by this component, which will create it and dispose of it automatically.
-        /// </summary>
-        public WebRTC.VideoTrackSource Source { get; protected set; } = null;
+        #region IMediaTrackSource
 
-        /// <summary>
-        /// List of video senders (tracks) using this source.
-        /// </summary>
-        public List<VideoSender> Senders { get; } = new List<VideoSender>();
+        /// <inheritdoc/>
+        MediaKind IMediaTrackSource.MediaKind => MediaKind.Video;
 
-        public VideoTrackSource(VideoEncoding frameEncoding) : base(MediaKind.Video)
+        #endregion
+
+
+
+        public VideoTrackSource(VideoEncoding frameEncoding)
         {
             FrameEncoding = frameEncoding;
         }
 
-
-        #region MediaTrackSource implementation
-
-        protected override async Task CreateSourceAsync()
+        protected virtual async Task OnEnable()
         {
             if (Source == null)
             {
@@ -124,7 +135,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Debug.Assert(Source != null, "Implementation did not create a valid Source property yet did not throw any exception.", this);
 
                 // Dispatch the event to the main Unity app thread to allow Unity object access
-                _mainThreadWorkQueue.Enqueue(() =>
+                InvokeOnAppThread(() =>
                 {
                     VideoStreamStarted.Invoke(this);
 
@@ -134,7 +145,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        protected override void DestroySource()
+        protected virtual void OnDisable()
         {
             if (Source != null)
             {
@@ -146,14 +157,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 IsStreaming = false;
 
                 // Dispatch the event to the main Unity app thread to allow Unity object access
-                _mainThreadWorkQueue.Enqueue(() =>
-                {
-                    VideoStreamStopped.Invoke(this);
-                });
+                InvokeOnAppThread(() => VideoStreamStopped.Invoke(this));
             }
         }
-
-        #endregion
 
 
         /// <summary>

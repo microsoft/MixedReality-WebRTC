@@ -870,11 +870,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     msg = $"Peer connection \"{name}\" received {transceiver.MediaKind} transceiver #{transceiver.MlineIndex} \"{transceiver.Name}\", but local peer expected some {mediaLine.Kind} transceiver instead.";
                     if (mediaLine.Source != null)
                     {
-                        msg += $" Sender \"{mediaLine.Source.name}\" will be ignored.";
+                        msg += $" Sender \"{(mediaLine.Source as MonoBehaviour).name}\" will be ignored.";
                     }
-                    if (mediaLine.Receiver)
+                    if (mediaLine.Receiver != null)
                     {
-                        msg += $" Receiver \"{mediaLine.Receiver.name}\" will be ignored.";
+                        msg += $" Receiver \"{(mediaLine.Receiver as MonoBehaviour).name}\" will be ignored.";
                     }
                 }
                 else

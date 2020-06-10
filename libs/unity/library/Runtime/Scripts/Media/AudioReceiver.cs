@@ -17,10 +17,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <seealso cref="VideoRenderer"/>
     [AddComponentMenu("MixedReality-WebRTC/Audio Receiver")]
     [RequireComponent(typeof(UnityEngine.AudioSource))]
-    public class AudioReceiver : MediaReceiver, IAudioSource
+    public class AudioReceiver : WorkQueue, IAudioSource, IMediaReceiver, IMediaReceiverInternal
     {
-        /// <inheritdoc/>
-        public bool IsStreaming { get; protected set; }
+        /// <summary>
+        /// Remote audio track receiving data from the remote peer.
+        /// </summary>
+        /// <remarks>
+        /// This is <c>null</c> until <see cref="IMediaReceiver.Transceiver"/> is set to a non-null
+        /// value and a remote track is added to that transceiver.
+        /// </remarks>
+        public RemoteAudioTrack Track { get; private set; }
+
+        /// <summary>
+        /// If true, pad buffer underruns with a sine wave. This will cause artifacts on underruns.
+        /// Use for debugging.
+        /// </summary>
+        public bool PadWithSine = false;
 
         /// <summary>
         /// Event raised when the audio stream started.
@@ -49,6 +61,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public AudioStreamStoppedEvent AudioStreamStopped = new AudioStreamStoppedEvent();
 
+
+        #region IAudioSource interface
+
+        /// <inheritdoc/>
+        public bool IsStreaming { get; protected set; }
+
         /// <inheritdoc/>
         public AudioStreamStartedEvent GetAudioStreamStarted() { return AudioStreamStarted; }
 
@@ -56,23 +74,57 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public AudioStreamStoppedEvent GetAudioStreamStopped() { return AudioStreamStopped; }
 
         /// <summary>
-        /// Remote audio track receiving data from the remote peer.
+        /// Register a frame callback to listen to incoming audio data receiving through this
+        /// audio receiver from the remote peer.
+        ///
+        /// The callback can only be registered once <see cref="Track"/> is valid, that is once
+        /// the <see cref="AudioStreamStarted"/> event was raised.
         /// </summary>
+        /// <param name="callback">The new frame callback to register.</param>
         /// <remarks>
-        /// This is <c>null</c> until <see cref="Transceiver"/> is set to a non-null value and a
-        /// remote track is added to that transceiver.
+        /// Note that audio is output automatically through the <see cref="UnityEngine.AudioSource"/>
+        /// on the game object, so the data passed to the callback shouldn't be using for audio output.
+        ///
+        /// A typical application might use this callback to display some feedback of audio being
+        /// received, like a spectrum analyzer, but more commonly will not need that callback because
+        /// of the above restriction on automated audio output.
+        ///
+        /// Note that registering a callback does not influence the audio capture and sending
+        /// to the remote peer, which occurs whether or not a callback is registered.
         /// </remarks>
-        public RemoteAudioTrack Track => _track;
+        public void RegisterCallback(AudioFrameDelegate callback)
+        {
+            if (Track != null)
+            {
+                Track.AudioFrameReady += callback;
+            }
+        }
 
-        // This is set outside the main thread, make volatile so changes to this and other
-        // public properties are correctly ordered.
-        private volatile RemoteAudioTrack _track = null;
+        /// <inheritdoc/>
+        public void UnregisterCallback(AudioFrameDelegate callback)
+        {
+            if (Track != null)
+            {
+                Track.AudioFrameReady -= callback;
+            }
+        }
 
-        /// <summary>
-        /// If true, pad buffer underruns with a sine wave. This will cause artifacts on underruns.
-        /// Use for debugging.
-        /// </summary>
-        public bool PadWithSine = false;
+        #endregion
+
+
+        #region IMediaReceiver interface
+
+        /// <inheritdoc/>
+        MediaKind IMediaReceiver.MediaKind => MediaKind.Audio;
+
+        /// <inheritdoc/>
+        bool IMediaReceiver.IsLive => _isLive;
+
+        /// <inheritdoc/>
+        Transceiver IMediaReceiver.Transceiver => _transceiver;
+
+        #endregion
+
 
         // Local storage of audio data to be fed to the output
         private AudioTrackReadBuffer _readBuffer = null;
@@ -84,10 +136,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         // Cached sample rate since we can't access this in OnAudioFilterRead.
         private int _audioSampleRate = 0;
 
-        /// <inheritdoc/>
-        public AudioReceiver() : base(MediaKind.Audio)
-        {
-        }
+        private bool _isLive = false;
+        private Transceiver _transceiver = null;
 
         protected void Awake()
         {
@@ -98,56 +148,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         protected void OnDestroy()
         {
             AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
-        }
-
-        private void OnAudioConfigurationChanged(bool deviceWasChanged)
-        {
-            _audioSampleRate = AudioSettings.outputSampleRate;
-        }
-
-        // Must be called within Unity main thread.
-        private void StartStreaming()
-        {
-            Debug.Assert(_readBuffer == null);
-
-            // OnAudioFilterRead reads the variable concurrently, but the update is atomic
-            // so we don't need a lock.
-            _readBuffer = Track.CreateReadBuffer();
-
-            IsLive = true;
-            AudioStreamStarted.Invoke(this);
-            IsStreaming = true;
-        }
-
-        // Must be called within Unity main thread.
-        private void StopStreaming()
-        {
-            IsLive = false;
-            IsStreaming = false;
-            AudioStreamStopped.Invoke(this);
-
-            lock (_readBufferLock)
-            {
-                // Under lock so OnAudioFilterRead won't use the buffer while/after it is disposed.
-                _readBuffer.Dispose();
-                _readBuffer = null;
-            }
-        }
-
-        protected new void Update()
-        {
-            base.Update();
-
-            // Check if _track has been changed by OnPaired/OnUnpaired and
-            // we need to start/stop streaming.
-            if (_track != null && !IsStreaming)
-            {
-                StartStreaming();
-            }
-            else if (_track == null && IsStreaming)
-            {
-                StopStreaming();
-            }
         }
 
         protected void OnDisable()
@@ -201,74 +201,93 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        /// <summary>
-        /// Register a frame callback to listen to incoming audio data receiving through this
-        /// audio receiver from the remote peer.
-        ///
-        /// The callback can only be registered once <see cref="Track"/> is valid, that is once
-        /// the <see cref="AudioStreamStarted"/> event was raised.
-        /// </summary>
-        /// <param name="callback">The new frame callback to register.</param>
-        /// <remarks>
-        /// Note that audio is output automatically through the <see cref="UnityEngine.AudioSource"/>
-        /// on the game object, so the data passed to the callback shouldn't be using for audio output.
-        ///
-        /// A typical application might use this callback to display some feedback of audio being
-        /// received, like a spectrum analyzer, but more commonly will not need that callback because
-        /// of the above restriction on automated audio output.
-        ///
-        /// Note that registering a callback does not influence the audio capture and sending
-        /// to the remote peer, which occurs whether or not a callback is registered.
-        /// </remarks>
-        public void RegisterCallback(AudioFrameDelegate callback)
+        private void OnAudioConfigurationChanged(bool deviceWasChanged)
         {
-            if (Track != null)
+            _audioSampleRate = AudioSettings.outputSampleRate;
+        }
+
+        // Must be called within Unity main thread.
+        private void StartStreaming()
+        {
+            Debug.Assert(_readBuffer == null);
+
+            // OnAudioFilterRead reads the variable concurrently, but the update is atomic
+            // so we don't need a lock.
+            _readBuffer = Track.CreateReadBuffer();
+
+            _isLive = true;
+            AudioStreamStarted.Invoke(this);
+            IsStreaming = true;
+        }
+
+        // Must be called within Unity main thread.
+        private void StopStreaming()
+        {
+            _isLive = false;
+            IsStreaming = false;
+            AudioStreamStopped.Invoke(this);
+
+            lock (_readBufferLock)
             {
-                Track.AudioFrameReady += callback;
+                // Under lock so OnAudioFilterRead won't use the buffer while/after it is disposed.
+                _readBuffer.Dispose();
+                _readBuffer = null;
             }
         }
 
-        /// <summary>
-        /// Unregister a frame callback previously registered with <see cref="RegisterCallback(AudioFrameDelegate)"/>.
-        /// </summary>
-        /// <param name="callback">The frame callback to unregister.</param>
-        public void UnregisterCallback(AudioFrameDelegate callback)
-        {
-            if (Track != null)
-            {
-                Track.AudioFrameReady -= callback;
-            }
-        }
 
-        /// <summary>
-        /// Free-threaded callback invoked by the owning peer connection when a track is paired
-        /// with this receiver, which enqueues the <see cref="AudioTrackSource.AudioStreamStarted"/>
-        /// event to be raised from the main Unity app thread.
-        /// </summary>
-        internal override void OnPaired(MediaTrack track)
+        #region IMediaReceiverInternal interface
+
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.OnPaired(MediaTrack track)
         {
             var remoteAudioTrack = (RemoteAudioTrack)track;
 
-            Debug.Assert(Track == null);
-            _track = remoteAudioTrack;
-            // Streaming will be started from the main Unity app thread, both to avoid locks on public
+            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.
+            InvokeOnAppThread(() =>
+            {
+                Debug.Assert(Track == null);
+                Track = remoteAudioTrack;
+                _isLive = true;
+                AudioStreamStarted.Invoke(this);
+                IsStreaming = true;
+            });
         }
 
-        /// <summary>
-        /// Free-threaded callback invoked by the owning peer connection when a track is unpaired
-        /// from this receiver, which enqueues the <see cref="AudioTrackSource.AudioStreamStopped"/>
-        /// event to be raised from the main Unity app thread.
-        /// </summary>
-        internal override void OnUnpaired(MediaTrack track)
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.OnUnpaired(MediaTrack track)
         {
             Debug.Assert(track is RemoteAudioTrack);
-            Debug.Assert(Track == track);
-            _track = null;
-            // Streaming will be stopped from the main Unity app thread, both to avoid locks on public
+
+            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.
+            InvokeOnAppThread(() =>
+            {
+                Debug.Assert(Track == track);
+                Track = null;
+                IsStreaming = false;
+                _isLive = false;
+                AudioStreamStopped.Invoke(this);
+            });
         }
+
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.AttachToTransceiver(Transceiver transceiver)
+        {
+            Debug.Assert((_transceiver == null) || (_transceiver == transceiver));
+            _transceiver = transceiver;
+        }
+
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.DetachFromTransceiver(Transceiver transceiver)
+        {
+            Debug.Assert((_transceiver == null) || (_transceiver == transceiver));
+            _transceiver = null;
+        }
+
+        #endregion
     }
 }

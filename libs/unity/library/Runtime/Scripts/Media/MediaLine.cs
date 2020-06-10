@@ -50,11 +50,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public MediaKind Kind => _kind;
 
         /// <summary>
-        /// Backing field to serialize the <see cref="Source"/> property.
+        /// Backing field to serialize the <see cref="Source"/> property. Because this needs to serialize a
+        /// polymorphic type, use the base class <see cref="MonoBehaviour"/>; this is a Unity restriction.
         /// </summary>
         /// <seealso cref="Source"/>
         [SerializeField]
-        private MediaTrackSource _source;
+        private MonoBehaviour _source;
 
         /// <summary>
         /// Media source producing the media to send through the transceiver attached to this media line.
@@ -72,16 +73,27 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
         /// </summary>
-        public MediaTrackSource Source
+        public IMediaTrackSource Source
         {
-            get { return _source; }
+            get { return (_source as IMediaTrackSource); }
             set
             {
-                if (_source != value)
+                if (value.MediaKind != Kind)
                 {
-                    _source = value;
-                    UpdateSenderOnSourceChanged();
-                    UpdateTransceiverDesiredDirection();
+                    throw new ArgumentException("Wrong media kind", nameof(Source));
+                }
+                if (value is MonoBehaviour mediaTrackSource)
+                {
+                    if (_source != mediaTrackSource)
+                    {
+                        _source = mediaTrackSource;
+                        UpdateSenderOnSourceChanged();
+                        UpdateTransceiverDesiredDirection();
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException(nameof(Source) + " is not a MonoBehaviour component", nameof(Source));
                 }
             }
         }
@@ -95,11 +107,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public MediaSender Sender { get; private set; } = null;
 
         /// <summary>
-        /// Backing field to serialize the <see cref="Receiver"/> property.
+        /// Backing field to serialize the <see cref="Receiver"/> property. Because this needs to serialize a
+        /// polymorphic type, use the base class <see cref="MonoBehaviour"/>; this is a Unity restriction.
         /// </summary>
         /// <seealso cref="Receiver"/>
         [SerializeField]
-        private MediaReceiver _receiver;
+        private MonoBehaviour _receiver;
 
         /// <summary>
         /// Media receiver consuming the media received through the transceiver attached to this media line.
@@ -114,15 +127,30 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
         /// </summary>
-        public MediaReceiver Receiver
+        public IMediaReceiver Receiver
         {
-            get { return _receiver; }
+            get { return (_receiver as IMediaReceiver); }
             set
             {
-                if (_receiver != value)
+                if (value.MediaKind != Kind)
                 {
-                    _receiver = value;
-                    UpdateTransceiverDesiredDirection();
+                    throw new ArgumentException("Wrong media kind", nameof(Receiver));
+                }
+                if (!(value is IMediaReceiverInternal))
+                {
+                    throw new ArgumentException("Missing interface IMediaReceiverInternal", nameof(Receiver));
+                }
+                if (value is MonoBehaviour mediaReceiver)
+                {
+                    if (_receiver != mediaReceiver)
+                    {
+                        _receiver = mediaReceiver;
+                        UpdateTransceiverDesiredDirection();
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException(nameof(Receiver) + " is not a MonoBehaviour component", nameof(Receiver));
                 }
             }
         }
@@ -150,7 +178,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// This is different from <see cref="Receiver"/> until a negotiation is achieved.
         /// </summary>
         [NonSerialized]
-        private MediaReceiver _pairedReceiver;
+        private IMediaReceiverInternal _pairedReceiver;
 
         /// <param name="kind">Immutable value assigned to the <see cref="Kind"/> property on construction.</param>
         public MediaLine(MediaKind kind)
@@ -212,16 +240,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Note the extra "isReceiving" check, which ensures that when the remote track was
             // just removed by OnUnpaired(RemoteTrack) from the TrackRemoved event then it is not
             // immediately re-added by mistake.
+            var receiverInternal = (_receiver as IMediaReceiverInternal);
             if (wantsRecv && isReceiving && !wasReceiving)
             {
                 // Transceiver started receiving, and user actually wants to receive
-                Receiver.OnPaired(transceiver.RemoteTrack);
-                _pairedReceiver = Receiver;
+                receiverInternal.OnPaired(transceiver.RemoteTrack);
+                _pairedReceiver = receiverInternal;
             }
             else if (!isReceiving && wasReceiving)
             {
                 // Transceiver stopped receiving (user intent does not matter here)
-                Receiver.OnUnpaired(transceiver.RemoteTrack);
+                receiverInternal.OnUnpaired(transceiver.RemoteTrack);
                 _pairedReceiver = null;
             }
         }
@@ -247,8 +276,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void CreateSender()
         {
-            Debug.Assert(Source != null);
-            if (Source.isActiveAndEnabled)
+            Debug.Assert(_source != null);
+            if (_source.isActiveAndEnabled)
             {
                 if (Kind == MediaKind.Audio)
                 {
@@ -320,7 +349,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
             if (wantsRecv)
             {
-                Receiver.AttachToTransceiver(Transceiver);
+                (_receiver as IMediaReceiverInternal).AttachToTransceiver(Transceiver);
             }
         }
 
@@ -338,7 +367,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
             if (wasReceiving)
             {
-                Receiver.DetachFromTransceiver(Transceiver);
+                (_receiver as IMediaReceiverInternal).DetachFromTransceiver(Transceiver);
             }
         }
 

@@ -13,12 +13,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// audio tracks.
     /// </summary>
     /// <seealso cref="MicrophoneSource"/>
-    public abstract class AudioTrackSource : MediaTrackSource, IAudioSource
+    public abstract class AudioTrackSource : WorkQueue, IAudioSource, IMediaTrackSource
     {
-        #region IAudioSource interface
+        /// <summary>
+        /// Audio track source object from the underlying C# library that this component encapsulates.
+        /// 
+        /// The object is owned by this component, which will create it and dispose of it automatically.
+        /// </summary>
+        public WebRTC.AudioTrackSource Source { get; protected set; } = null;
 
-        /// <inheritdoc/>
-        public bool IsStreaming { get; protected set; }
+        /// <summary>
+        /// List of audio senders (tracks) using this source.
+        /// </summary>
+        public List<AudioSender> Senders { get; } = new List<AudioSender>();
 
         /// <summary>
         /// Event raised when the audio stream started.
@@ -45,6 +52,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// This event is raised from the main Unity thread to allow Unity object access.
         /// </remarks>
         public AudioStreamStoppedEvent AudioSourceStopped = new AudioStreamStoppedEvent();
+
+
+        #region IAudioSource interface
+
+        /// <inheritdoc/>
+        public bool IsStreaming { get; protected set; }
 
         /// <inheritdoc/>
         public AudioStreamStartedEvent GetAudioStreamStarted() { return AudioSourceStarted; }
@@ -78,10 +91,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             throw new NotImplementedException("Local audio callbacks are not currently implemented.");
         }
 
-        /// <summary>
-        /// Unregister a frame callback previously registered with <see cref="RegisterCallback(AudioFrameDelegate)"/>.
-        /// </summary>
-        /// <param name="callback">The frame callback to unregister.</param>
+        /// <inheritdoc/>
         public void UnregisterCallback(AudioFrameDelegate callback)
         {
             throw new NotImplementedException("Local audio callbacks are not currently implemented.");
@@ -90,26 +100,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #endregion
 
 
-        /// <summary>
-        /// Audio track source object from the underlying C# library that this component encapsulates.
-        /// 
-        /// The object is owned by this component, which will create it and dispose of it automatically.
-        /// </summary>
-        public WebRTC.AudioTrackSource Source { get; protected set; } = null;
+        #region IMediaTrackSource
 
-        /// <summary>
-        /// List of audio senders (tracks) using this source.
-        /// </summary>
-        public List<AudioSender> Senders { get; } = new List<AudioSender>();
+        /// <inheritdoc/>
+        MediaKind IMediaTrackSource.MediaKind => MediaKind.Audio;
 
-        public AudioTrackSource() : base(MediaKind.Audio)
-        {
-        }
+        #endregion
 
 
-        #region MediaTrackSource implementation
-
-        protected override async Task CreateSourceAsync()
+        protected virtual async Task OnEnable()
         {
             if (Source == null)
             {
@@ -119,7 +118,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Debug.Assert(Source != null, "Implementation did not create a valid Source property yet did not throw any exception.", this);
 
                 // Dispatch the event to the main Unity app thread to allow Unity object access
-                _mainThreadWorkQueue.Enqueue(() =>
+                InvokeOnAppThread(() =>
                 {
                     AudioSourceStarted.Invoke(this);
 
@@ -129,7 +128,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        protected override void DestroySource()
+        protected virtual void OnDisable()
         {
             if (Source != null)
             {
@@ -141,14 +140,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 IsStreaming = false;
 
                 // Dispatch the event to the main Unity app thread to allow Unity object access
-                _mainThreadWorkQueue.Enqueue(() =>
-                {
-                    AudioSourceStopped.Invoke(this);
-                });
+                InvokeOnAppThread(() => AudioSourceStopped.Invoke(this));
             }
         }
-
-        #endregion
 
 
         /// <summary>

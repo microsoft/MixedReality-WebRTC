@@ -23,13 +23,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         // Unfortunately Unity before 2019.3 does not support serialized interfaces, and more generally ignores
         // polymorphism in serialization. And although there are ways to make that work with a custom inspector,
         // this disables support for object picker, so only drag-and-drop works, which is very impractical.
-        // So we use a class deriving from MonoBehaviour, which is the only entity for which Unity handles polymorphism.
-        // This makes the UI slightly confusing because we cannot filter audio vs. video sources, since C# supports only
-        // single inheritance and we already need to divide senders from receivers, so cannot also split by media kind.
-        // Instead we use OnValidate() to make sure the media source is a video source.
-
+        // So we use a base class derived from MonoBehaviour, which is the only entity for which Unity handles
+        // polymorphism.
         [SerializeField]
-        protected MediaProducer Source;
+        protected VideoRendererSource Source;
 
         [Tooltip("Max playback framerate, in frames per second")]
         [Range(0.001f, 120f)]
@@ -90,7 +87,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void OnValidate()
         {
-            // Ensure that VideoSource implements IVideoSource
+            // Ensure that Source implements IVideoSource
             if (!(Source is IVideoSource))
             {
                 Source = null;
