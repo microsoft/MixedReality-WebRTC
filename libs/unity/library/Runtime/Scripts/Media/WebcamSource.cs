@@ -208,6 +208,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 }
             }
 #endif
+
+            // TODO - Fix codec selection (was as below before change)
+
             // Force again PreferredVideoCodec right before starting the local capture,
             // so that modifications to the property done after OnPeerInitialized() are
             // accounted for.
