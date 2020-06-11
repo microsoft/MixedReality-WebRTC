@@ -438,7 +438,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         Name = $"mrsw#{index}",
                         InitialDesiredDirection = wantsDir
                     };
-                    tr = _nativePeer.AddTransceiver(mediaLine.Kind, settings);
+                    tr = _nativePeer.AddTransceiver(mediaLine.MediaKind, settings);
                 }
                 Debug.Assert(tr != null);
                 Debug.Assert(transceivers[index++] == tr);
@@ -810,7 +810,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (mediaLine != null)
             {
                 Debug.Assert(mediaLine != null);
-                Debug.Assert(mediaLine.Kind == MediaKind.Audio);
+                Debug.Assert(mediaLine.MediaKind == MediaKind.Audio);
                 mediaLine.OnUnpaired(track);
             }
         }
@@ -825,7 +825,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (mediaLine != null)
             {
                 Debug.Assert(mediaLine != null);
-                Debug.Assert(mediaLine.Kind == MediaKind.Video);
+                Debug.Assert(mediaLine.MediaKind == MediaKind.Video);
                 mediaLine.OnUnpaired(track);
             }
         }
@@ -867,7 +867,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 string msg;
                 if (ex is InvalidTransceiverMediaKindException)
                 {
-                    msg = $"Peer connection \"{name}\" received {transceiver.MediaKind} transceiver #{transceiver.MlineIndex} \"{transceiver.Name}\", but local peer expected some {mediaLine.Kind} transceiver instead.";
+                    msg = $"Peer connection \"{name}\" received {transceiver.MediaKind} transceiver #{transceiver.MlineIndex} \"{transceiver.Name}\", but local peer expected some {mediaLine.MediaKind} transceiver instead.";
                     if (mediaLine.Source != null)
                     {
                         msg += $" Sender \"{(mediaLine.Source as MonoBehaviour).name}\" will be ignored.";

@@ -16,7 +16,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// This class is typically instantiated and managed by the peer connection automatically
     /// where needed, and users typically do not have to interact directly with it.
     /// </summary>
-    public class VideoSender : MediaSender, IDisposable
+    internal class VideoSender : MediaSender, IDisposable
     {
         /// <summary>
         /// Name of the preferred video codec, or empty to let WebRTC decide.
@@ -50,7 +50,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             Source = source;
             Track = track;
-            Source.OnSenderAdded(this);
+            //Source.OnSenderAdded(this);
         }
 
         public void Dispose()
@@ -65,7 +65,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
                 // Detach from source
                 Debug.Assert(Source != null);
-                Source.OnSenderRemoved(this);
+                //Source.OnSenderRemoved(this);
                 Source = null;
 
                 // Local tracks are disposable objects owned by the user (this component)

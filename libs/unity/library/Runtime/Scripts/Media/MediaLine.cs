@@ -2,27 +2,20 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Events;
-using System.Collections.Concurrent;
-using System.Text;
-using System.Data;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
     /// Media line abstraction for a peer connection.
     ///
-    /// This container binds together a sender component (<see cref="MediaSender"/>) and/or a receiver component
-    /// (<see cref="MediaReceiver"/>) on one side, with a transceiver on the other side. The media line is a
-    /// declarative representation of this association, which is then turned into a binding by the implementation
+    /// This container binds together a source component (<see cref="IMediaTrackSource"/>) and/or a receiver
+    /// component (<see cref="IMediaReceiver"/>) on one side, with a transceiver on the other side. The media line
+    /// is a declarative representation of this association, which is then turned into a binding by the implementation
     /// during an SDP negotiation. This forms the core of the algorithm allowing automatic transceiver pairing
     /// between the two peers based on the declaration of intent of the user.
     ///
-    /// Assigning Unity components to the <see cref="Source"/> and <see cref="Receiver"/> fields serves
+    /// Assigning Unity components to the <see cref="Source"/> and <see cref="Receiver"/> properties serves
     /// as an indication of the user intent to send and/or receive media through the transceiver, and is
     /// used during the SDP exchange to derive the <see xref="WebRTC.Transceiver.Direction"/> to negotiate.
     /// After the SDP negotiation is completed, the <see cref="Transceiver"/> property refers to the transceiver
@@ -35,32 +28,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     public class MediaLine
     {
         /// <summary>
-        /// Backing field to serialize the <see cref="Kind"/> property.
-        /// </summary>
-        /// <seealso cref="Kind"/>
-        [SerializeField]
-        private MediaKind _kind;
-
-        /// <summary>
         /// Kind of media of the media line and its attached transceiver.
         ///
         /// This is assiged when the media line is created with <see cref="PeerConnection.AddMediaLine(MediaKind)"/>
         /// and is immutable for the lifetime of the peer connection.
         /// </summary>
-        public MediaKind Kind => _kind;
-
-        /// <summary>
-        /// Backing field to serialize the <see cref="Source"/> property. Because this needs to serialize a
-        /// polymorphic type, use the base class <see cref="MonoBehaviour"/>; this is a Unity restriction.
-        /// </summary>
-        /// <seealso cref="Source"/>
-        [SerializeField]
-        private MonoBehaviour _source;
+        public MediaKind MediaKind => _mediaKind;
 
         /// <summary>
         /// Media source producing the media to send through the transceiver attached to this media line.
         /// This must be an instance of a class derived from <see cref="AudioTrackSource"/> or <see cref="VideoTrackSource"/>
-        /// depending on whether <see cref="Kind"/> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"/>
+        /// depending on whether <see cref="MediaKind"/> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"/>
         /// or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"/>, respectively.
         /// 
         /// Internally the peer connection will automatically create and manage a media track to bridge the
@@ -78,7 +56,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             get { return (_source as IMediaTrackSource); }
             set
             {
-                if (value.MediaKind != Kind)
+                if (value.MediaKind != MediaKind)
                 {
                     throw new ArgumentException("Wrong media kind", nameof(Source));
                 }
@@ -98,26 +76,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        /// <summary>
-        /// Media sender (track) bridging the <see cref="Source"/> with the underlying <see cref="Transceiver"/>.
-        /// 
-        /// The media track is automatically managed when <see cref="Source"/> changes or the transceiver direction
-        /// is renegotiated, as needed.
-        /// </summary>
-        public MediaSender Sender { get; private set; } = null;
-
-        /// <summary>
-        /// Backing field to serialize the <see cref="Receiver"/> property. Because this needs to serialize a
-        /// polymorphic type, use the base class <see cref="MonoBehaviour"/>; this is a Unity restriction.
-        /// </summary>
-        /// <seealso cref="Receiver"/>
-        [SerializeField]
-        private MonoBehaviour _receiver;
 
         /// <summary>
         /// Media receiver consuming the media received through the transceiver attached to this media line.
         /// This must be an instance of a class derived from <see cref="AudioReceiver"/> or <see cref="VideoReceiver"/>
-        /// depending on whether <see cref="Kind"/> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"/>
+        /// depending on whether <see cref="MediaKind"/> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"/>
         /// or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"/>, respectively.
         ///
         /// If this is non-<c>null</c> then the peer connection will negotiate receiving some media, otherwise
@@ -132,7 +95,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             get { return (_receiver as IMediaReceiver); }
             set
             {
-                if (value.MediaKind != Kind)
+                if (value.MediaKind != MediaKind)
                 {
                     throw new ArgumentException("Wrong media kind", nameof(Receiver));
                 }
@@ -166,33 +129,71 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         public Transceiver Transceiver { get; private set; }
 
+
+        #region Private fields
+
+        /// <summary>
+        /// Backing field to serialize the <see cref="MediaKind"/> property.
+        /// </summary>
+        /// <seealso cref="MediaKind"/>
+        [SerializeField]
+        private MediaKind _mediaKind;
+
+        /// <summary>
+        /// Backing field to serialize the <see cref="Source"/> property. Because this needs to serialize a
+        /// polymorphic type, use the base class <see cref="MonoBehaviour"/>; this is a Unity restriction.
+        /// </summary>
+        /// <seealso cref="Source"/>
+        [SerializeField]
+        private MonoBehaviour _source;
+
+        /// <summary>
+        /// Backing field to serialize the <see cref="Receiver"/> property. Because this needs to serialize a
+        /// polymorphic type, use the base class <see cref="MonoBehaviour"/>; this is a Unity restriction.
+        /// </summary>
+        /// <seealso cref="Receiver"/>
+        [SerializeField]
+        private MonoBehaviour _receiver;
+
+        /// <summary>
+        /// Media sender (track) bridging the <see cref="Source"/> with the underlying <see cref="Transceiver"/>.
+        /// 
+        /// The media track is automatically managed when <see cref="Source"/> changes or the transceiver direction
+        /// is renegotiated, as needed.
+        /// </summary>
+        private MediaSender _sender = null;
+
         /// <summary>
         /// Sender actually attached during <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/>.
         /// This is different from <see cref="Source"/> until a negotiation is achieved.
         /// </summary>
-        [NonSerialized]
         private MediaSender _attachedSender;
 
         /// <summary>
         /// Receiver actually paired during <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/>.
         /// This is different from <see cref="Receiver"/> until a negotiation is achieved.
         /// </summary>
-        [NonSerialized]
         private IMediaReceiverInternal _pairedReceiver;
 
-        /// <param name="kind">Immutable value assigned to the <see cref="Kind"/> property on construction.</param>
-        public MediaLine(MediaKind kind)
+        #endregion
+
+
+        /// <summary>
+        /// Constructor called internally by <see cref="PeerConnection.AddMediaLine(MediaKind)"/>.
+        /// </summary>
+        /// <param name="kind">Immutable value assigned to the <see cref="MediaKind"/> property on construction.</param>
+        internal MediaLine(MediaKind kind)
         {
-            _kind = kind;
+            _mediaKind = kind;
         }
 
         protected void UpdateSenderOnSourceChanged()
         {
-            if ((_source != null) && (Sender == null))
+            if ((_source != null) && (_sender == null))
             {
                 CreateSender();
             }
-            else if ((_source == null) && (Sender != null))
+            else if ((_source == null) && (_sender != null))
             {
                 DestroySender();
             }
@@ -214,10 +215,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(Source != null);
             Debug.Assert(_attachedSender == null);
             // Note: Sender is null if the source was inactive
-            if (Sender != null)
+            if (_sender != null)
             {
-                Sender.AttachTrack();
-                _attachedSender = Sender;
+                _sender.AttachTrack();
+                _attachedSender = _sender;
             }
         }
 
@@ -279,31 +280,35 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(_source != null);
             if (_source.isActiveAndEnabled)
             {
-                if (Kind == MediaKind.Audio)
+                if (MediaKind == MediaKind.Audio)
                 {
-                    Sender = AudioSender.CreateFromSource((AudioTrackSource)Source, trackName: /*TODO*/string.Empty);
+                    _sender = AudioSender.CreateFromSource((AudioTrackSource)Source, trackName: /*TODO*/string.Empty);
+                    (Source as AudioTrackSource).OnMediaLineAdded(this);
                 }
                 else
                 {
-                    Debug.Assert(Kind == MediaKind.Video);
-                    Sender = VideoSender.CreateFromSource((VideoTrackSource)Source, trackName: /*TODO*/string.Empty);
+                    Debug.Assert(MediaKind == MediaKind.Video);
+                    _sender = VideoSender.CreateFromSource((VideoTrackSource)Source, trackName: /*TODO*/string.Empty);
+                    (Source as VideoTrackSource).OnMediaLineAdded(this);
                 }
             }
         }
 
         private void DestroySender()
         {
-            Debug.Assert(Sender != null);
-            if (Kind == MediaKind.Audio)
+            Debug.Assert(_sender != null);
+            if (MediaKind == MediaKind.Audio)
             {
-                ((AudioSender)Sender).Dispose();
+                (Source as AudioTrackSource).OnMediaLineRemoved(this);
+                ((AudioSender)_sender).Dispose();
             }
             else
             {
-                Debug.Assert(Kind == MediaKind.Video);
-                ((VideoSender)Sender).Dispose();
+                Debug.Assert(MediaKind == MediaKind.Video);
+                (Source as VideoTrackSource).OnMediaLineRemoved(this);
+                ((VideoSender)_sender).Dispose();
             }
-            Sender = null;
+            _sender = null;
         }
 
         /// <summary>
@@ -321,7 +326,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert((Transceiver == null) || (Transceiver == tr));
 
             // Check consistency before assigning
-            if (tr.MediaKind != Kind)
+            if (tr.MediaKind != MediaKind)
             {
                 throw new InvalidTransceiverMediaKindException();
             }
@@ -337,14 +342,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             bool wantsRecv = (Receiver != null);
             if (wantsSend)
             {
-                if (Sender == null)
+                if (_sender == null)
                 {
                     CreateSender();
                 }
                 // CreateSender() might do nothing if the source is inactive
-                if (Sender != null)
+                if (_sender != null)
                 {
-                    Sender.AttachToTransceiver(Transceiver);
+                    _sender.AttachToTransceiver(Transceiver);
                 }
             }
             if (wantsRecv)
@@ -358,11 +363,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Note: using Sender here and not Source to test actual applied state
             // and not user intended state. So this deal naturally with inactive sources,
             // since a sender was not created in that case.
-            bool wasSending = (Sender != null);
+            bool wasSending = (_sender != null);
             bool wasReceiving = (Receiver != null);
             if (wasSending)
             {
-                Sender.DetachFromTransceiver(Transceiver);
+                _sender.DetachFromTransceiver(Transceiver);
                 DestroySender();
             }
             if (wasReceiving)
@@ -442,6 +447,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         internal void UpdateOnReceiveAnswer()
         {
             UpdateReceiver();
+        }
+
+        internal void OnSourceDestroyed()
+        {
+            if (_sender is AudioSender audioSender)
+            {
+                audioSender.Dispose();
+            }
+            else if (_sender is VideoSender videoSender)
+            {
+                videoSender.Dispose();
+            }
         }
     }
 }

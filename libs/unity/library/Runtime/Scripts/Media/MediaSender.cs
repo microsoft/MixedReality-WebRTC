@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -14,7 +13,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// </summary>
     /// <seealso cref="AudioSender"/>
     /// <seealso cref="VideoSender"/>
-    public abstract class MediaSender
+    internal abstract class MediaSender
     {
         /// <summary>
         /// Name of the local media track this component will create when calling <see cref="StartCaptureAsync"/>.

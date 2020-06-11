@@ -23,9 +23,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public WebRTC.AudioTrackSource Source { get; protected set; } = null;
 
         /// <summary>
-        /// List of audio senders (tracks) using this source.
+        /// List of audio media lines using this source.
         /// </summary>
-        public List<AudioSender> Senders { get; } = new List<AudioSender>();
+        public IReadOnlyList<MediaLine> MediaLines => _mediaLines;
 
         /// <summary>
         /// Event raised when the audio stream started.
@@ -108,6 +108,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #endregion
 
 
+        private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
+
         protected virtual async Task OnEnable()
         {
             if (Source == null)
@@ -160,10 +162,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Source != null)
             {
-                // Notify senders using that source
-                while (Senders.Count > 0) // Dispose() calls OnSenderRemoved() which will modify the collection
+                // Notify media lines using that source. OnSourceDestroyed() calls
+                // OnMediaLineRemoved() which will modify the collection.
+                while (_mediaLines.Count > 0)
                 {
-                    Senders[Senders.Count - 1].Dispose();
+                    _mediaLines[_mediaLines.Count - 1].OnSourceDestroyed();
                 }
 
                 // Audio track sources are disposable objects owned by the user (this component)
@@ -172,15 +175,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        internal void OnSenderAdded(AudioSender sender)
+        internal void OnMediaLineAdded(MediaLine mediaLine)
         {
-            Debug.Assert(!Senders.Contains(sender));
-            Senders.Add(sender);
+            Debug.Assert(!_mediaLines.Contains(mediaLine));
+            _mediaLines.Add(mediaLine);
         }
 
-        internal void OnSenderRemoved(AudioSender sender)
+        internal void OnMediaLineRemoved(MediaLine mediaLine)
         {
-            bool removed = Senders.Remove(sender);
+            bool removed = _mediaLines.Remove(mediaLine);
             Debug.Assert(removed);
         }
     }

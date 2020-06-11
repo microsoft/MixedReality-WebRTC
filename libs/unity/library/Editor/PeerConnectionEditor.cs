@@ -127,36 +127,32 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                 (Rect rect, int index, bool isActive, bool isFocused) =>
                 {
                     var element = transceiverList_.serializedProperty.GetArrayElementAtIndex(index);
-
                     float x0 = rect.x;
                     float x1 = x0 + 16;
                     float y0 = rect.y + 2;
                     float y1 = y0 + kLineHeight;
 
                     // MID value
-                    EditorGUI.LabelField(new Rect(x0, y0, 20, 20), $"{index}");
+                    EditorGUI.LabelField(new Rect(x0 - 14, y1, 20, 20), $"{index}");
 
                     // Audio or video icon for transceiver kind
-                    MediaKind kind = (MediaKind)element.FindPropertyRelative("_kind").intValue;
+                    MediaKind mediaKind = (MediaKind)element.FindPropertyRelative("_mediaKind").intValue;
                     System.Type senderType, receiverType;
-                    if (kind == MediaKind.Audio)
+                    if (mediaKind == MediaKind.Audio)
                     {
                         senderType = typeof(AudioTrackSource);
                         receiverType = typeof(AudioReceiver);
-                        DrawSpriteIcon(IconType.Audio, new Rect(x1, rect.y, 20, 20));
+                        DrawSpriteIcon(IconType.Audio, new Rect(x0, rect.y, 20, 20));
                     }
                     else
                     {
                         senderType = typeof(VideoTrackSource);
                         receiverType = typeof(VideoReceiver);
-                        DrawSpriteIcon(IconType.Video, new Rect(x1, rect.y, 20, 20));
+                        DrawSpriteIcon(IconType.Video, new Rect(x0, rect.y, 20, 20));
                     }
 
-                    rect.x += kIconSpacing;
-                    rect.width -= kIconSpacing;
-
-                    rect.x += 18;
-                    rect.width -= 18;
+                    rect.x += (kIconSpacing + 10);
+                    rect.width -= (kIconSpacing + 10);
 
                     float fieldWidth = rect.width;
                     bool hasSender = false;
@@ -170,12 +166,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                             obj, senderType, true);
                         hasSender = (obj != null);
                         p.objectReferenceValue = obj;
+                        y0 += kLineHeight;
                     }
                     {
                         var p = element.FindPropertyRelative("_receiver");
                         Object obj = p.objectReferenceValue;
                         obj = EditorGUI.ObjectField(
-                            new Rect(rect.x, y1, fieldWidth, EditorGUIUtility.singleLineHeight),
+                            new Rect(rect.x, y0, fieldWidth, EditorGUIUtility.singleLineHeight),
                             obj, receiverType, true);
                         hasReceiver = (obj != null);
                         p.objectReferenceValue = obj;
@@ -197,7 +194,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     {
                         iconType = IconType.RecvOnly;
                     }
-                    DrawSpriteIcon(iconType, new Rect(x0 + 8, y1, 16, 16));
+                    DrawSpriteIcon(iconType, new Rect(x0, y1, 16, 16));
                 };
             transceiverList_.drawNoneElementCallback = (Rect rect) =>
             {
@@ -205,7 +202,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                 style.alignment = TextAnchor.MiddleCenter;
                 EditorGUI.LabelField(rect, "(empty)", style);
             };
-            transceiverList_.displayAdd = false;
         }
 
         public override void OnInspectorGUI()
