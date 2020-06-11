@@ -15,15 +15,22 @@ parameters:
   displayName: 'UPM package version (semver)'
   type: string
   default: '0.0.1-preview.1'
+- name: withPdbs
+  displayName: 'Include PDBs in UPM packages'
+  type: boolean
+  default: true
 
 stages:
 
-# Compile all Release build variants on Windows (Desktop and UWP).
-# This is done as a separate stage from packing to ensure all builds
-# for all variants succeeded before starting to pack anything.
+# Compile all Release build variants of mrwebrtc.dll
 - stage: build
-  displayName: 'Build'
+  displayName: 'Build mrwebrtc'
   jobs:
+
+  # Build mrwebrtc.aar for Android
+  - template: templates/jobs-libwebrtc-android.yaml
+    parameters:
+      buildConfig: 'Release'
 
   # Build all Release variants of mrwebrtc.dll for Windows Desktop
   - template: templates/jobs-mrwebrtc-release-build.yaml
@@ -73,3 +80,4 @@ stages:
     parameters:
       buildAgent: '$(MRWebRTC.PackageAgent)'
       upmPackageVersion: '${{parameters.upmPackageVersion}}'
+      withPdbs: '${{parameters.withPdbs}}'

@@ -53,6 +53,7 @@ function print-config() {
     echo -e "\e[39mTarget CPU \e[96m$TARGET_CPU\e[39m"
     echo -e "\e[39mGit Branch: \e[96m$BRANCH\e[39m"
     echo -e "\e[39mWorking dir: \e[96m$WORK_DIR\e[39m"
+    [[ "$FAST_CLONE" == "1" ]] && echo -e "\e[96mUsing fast clone for CI\e[39m" || true
 }
 
 #-----------------------------------------------------------------------------
@@ -71,6 +72,9 @@ function read-config() {
 
 #-----------------------------------------------------------------------------
 function write-config() {
+    # Ensure WORK_DIR is an absolute path so that various operations after
+    # config do not depend on the location where config was called.
+    WORK_DIR=$(realpath $WORK_DIR)
     local filename="$BUILD_DIR/$1"
     cat >$filename <<EOF
 # Generated file. Do not edit.
@@ -78,6 +82,7 @@ TARGET_OS=$TARGET_OS
 TARGET_CPU=$TARGET_CPU
 BRANCH=$BRANCH
 WORK_DIR=$WORK_DIR
+FAST_CLONE=$FAST_CLONE
 EOF
 }
 
@@ -183,21 +188,52 @@ function checkout-webrtc() {
     pushd $SRC_DIR >/dev/null
 
     # Fetch only the first-time, otherwise sync.
+    local extra_fetch=""
+    [[ "$FAST_CLONE" == "1" ]] && extra_fetch+="--no-history" || true
     if [ ! -d src ]; then
+        echo -e "\e[39mDoing first-time WebRTC clone -- this may take a long time\e[39m"
         case $TARGET_OS in
         android)
-            yes | fetch --nohooks webrtc_android
+            yes | fetch --nohooks $extra_fetch webrtc_android
             ;;
         ios)
-            fetch --nohooks webrtc_ios
+            fetch --nohooks $extra_fetch webrtc_ios
             ;;
         *)
-            fetch --nohooks webrtc
+            fetch --nohooks $extra_fetch webrtc
             ;;
         esac
     fi
+
     # Checkout the specific revision after fetch.
-    gclient sync --force --revision $REVISION
+    echo -e "\e[39mSyncing WebRTC deps -- this may take a long time\e[39m"
+    local extra_sync=""
+    [[ "$FAST_CLONE" == "1" ]] && extra_sync+=" --no-history --shallow --nohooks" || true
+    gclient sync --force --revision $REVISION $extra_sync
+
+    # Run hooks on specific revision to e.g. download the prebuilt gn
+    # This takes 3.5 GB of disk, and most of it is useless for the build
+    # Leaving commented for reference in case the below cause issue, as
+    # this is ideally the proper (and only supported) way.
+    # Note also that this upgrades the Google Play SDK and therefore
+    # requires accepting a license ('yes |'), but we don't want to blindly
+    # accept instead of the user, and can't manually accept on CI.
+    #yes | gclient runhooks
+
+    # Alternative version with smaller disk footprint: run a selected
+    # set of hooks manually
+
+    # Download gn prebuilt executable
+    download_from_google_storage --no_resume --platform=linux\* --no_auth --bucket chromium-gn -s src/buildtools/linux64/gn.sha1
+
+    # Download clang prebuilt executable
+    python src/tools/clang/scripts/update.py
+
+    # Install sysroot
+    python src/build/linux/sysroot_scripts/install-sysroot.py --arch=amd64
+
+    # Create LASTCHANGE and LASTCHANGE.committime
+    python src/build/util/lastchange.py -o src/build/util/LASTCHANGE
 
     popd >/dev/null
 }

@@ -10,6 +10,9 @@ parameters:
 - name: upmPackageVersion
   type: string
   default: ''
+- name: withPdbs
+  type: boolean
+  default: true
 
 jobs:
 
@@ -39,6 +42,15 @@ jobs:
       filePath: '$(Build.SourcesDirectory)/tools/ci/computeNpmPackageVersion.ps1'
       arguments: '-PackageJsonFile "libs/unity/samples/package.json" -PackageVersion "${{parameters.upmPackageVersion}}"'
     timeoutInMinutes: 5
+
+  # Download mrwebrtc.aar
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc.aar (Android arm64-v8a)'
+    inputs:
+      source: 'current'
+      artifact: 'mrwebrtc_android_arm64_Release'
+      patterns: '**/mrwebrtc.aar'
+      path: 'libs/unity/library/Runtime/Plugins/arm64-v8a'
 
   # Download mrwebrtc.dll
   - task: DownloadPipelineArtifact@2
@@ -86,6 +98,17 @@ jobs:
       patterns: '**/Microsoft.MixedReality.WebRTC.@(pdb|dll)'
       path: 'libs/unity/library/Runtime/Plugins/Win32/x86_64'
 
+  # Delete PDBs if not needed
+  - ${{ if eq(parameters.withPdbs, false) }}:
+    - pwsh: |
+        Write-Host "Removing PDBs from Unity package Plugins/ folder..."
+        Get-ChildItem -Recurse '$(Build.SourcesDirectory)/libs/unity/library/Runtime/Plugins/*.pdb' | ForEach-Object {
+          $file = $_
+          Write-Host $file
+          Remove-Item -Path $file -Force
+        }
+      displayName: 'Delete PDBs'
+
   # For debugging, list the packages content before signing
   - powershell: |
      foreach ($f in $(Get-ChildItem -Path libs/unity -Recurse)) {
@@ -125,18 +148,48 @@ jobs:
   # Pack the NPM package (library)
   - pwsh: |
       Set-Location "libs/unity/library"
-      Invoke-Expression "npm pack ." | Tee-Object -Variable PackageName | Out-Null
+      $oldEAPreference = $ErrorActionPreference
+      $ErrorActionPreference = "SilentlyContinue"
+      try {
+        $PackageName = &{ npm pack . }
+        $ec = $LASTEXITCODE
+        Write-Host "npm pack terminated with exit code #$ec"
+      } catch {
+        $ec = -1
+      } finally {
+        $ErrorActionPreference = $oldEAPreference
+      }
+      if ($ec -ne 0) {
+        Write-Host "##vso[task.complete result=Failed;]npm pack failed with exit code #$ec"
+        exit 1
+      }
       Write-Host "Produced package '$PackageName'"
       Write-Host "##vso[task.setvariable variable=PackedLibraryFilename]$PackageName"
     displayName: 'Pack NPM (library)'
+    failOnStderr: false
 
   # Pack the NPM package (samples)
   - pwsh: |
       Set-Location "libs/unity/samples"
-      Invoke-Expression "npm pack ." | Tee-Object -Variable PackageName | Out-Null
+      $oldEAPreference = $ErrorActionPreference
+      $ErrorActionPreference = "SilentlyContinue"
+      try {
+        $PackageName = &{ npm pack . }
+        $ec = $LASTEXITCODE
+        Write-Host "npm pack terminated with exit code #$ec"
+      } catch {
+        $ec = -1
+      } finally {
+        $ErrorActionPreference = $oldEAPreference
+      }
+      if ($ec -ne 0) {
+        Write-Host "##vso[task.complete result=Failed;]npm pack failed with exit code #$ec"
+        exit 1
+      }
       Write-Host "Produced package '$PackageName'"
       Write-Host "##vso[task.setvariable variable=PackedSamplesFilename]$PackageName"
     displayName: 'Pack NPM (samples)'
+    failOnStderr: false
 
   # Publish the UPM package (library)
   - task: PublishPipelineArtifact@1

@@ -1,0 +1,142 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# [TEMPLATE] Compile libwebrtc on Android
+
+parameters:
+- name: buildConfig
+  type: string
+  default: ''
+  values:
+  - Fulldebug
+  - Debug
+  - Release
+
+jobs:
+
+# Compile libwebrtc
+- job: libwebrtc_${{parameters.buildConfig}}
+  timeoutInMinutes: 360
+  pool:
+    vmImage: 'ubuntu-18.04'
+  variables:
+    toolsDir: '$(Build.SourcesDirectory)/tools/build'
+    workDir: '$(Build.SourcesDirectory)/external/libwebrtc'
+  steps:
+
+  # Force problematic dependencies
+  # - libssl1.1 : Breaks: lighttpd (< 1.4.49-2) but 1.4.45-1ubuntu3.18.04 is to be installed
+  #   On the Azure agent image, recent versions of libssl1.1 and libssl-dev are installed,
+  #   which are too recent for lighttpd. Downgrade to a safe version to allow lighttpd to be
+  #   installed (which the Google scripts will do when installing Chromium dependencies).
+  # - python-pexpect : Depends: python-ptyprocess but it is not going to be installed
+  - bash: |
+      # Remove PPAs
+      sudo ls /etc/apt/sources.list.d
+      sudo add-apt-repository --remove ppa:ondrej/php
+      # Update
+      sudo apt-get update
+      # Display various info
+      sudo apt-cache show lighttpd
+      sudo apt-cache show libssl1.1
+      sudo apt-cache show libssl-dev
+      sudo apt-cache show python-pexpect
+      sudo apt-cache show python-ptyprocess
+      sudo apt-cache showpkg lighttpd
+      sudo apt-cache showpkg libssl1.1
+      sudo apt-cache showpkg libssl-dev
+      sudo apt-cache showpkg python-pexpect
+      sudo apt-cache showpkg python-ptyprocess
+      sudo apt-cache policy lighttpd
+      sudo apt-cache policy libssl1.1
+      sudo apt-cache policy libssl-dev
+      sudo apt-cache policy python-pexpect
+      sudo apt-cache policy python-ptyprocess
+      # Force-install safe versions
+      sudo apt-get install -y --allow-downgrades libssl1.1=1.1.1-1ubuntu2.1\* libssl-dev=1.1.1-1ubuntu2.1\*
+      ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
+      sudo apt-get install -y lighttpd
+      ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
+      sudo apt-get install -y python-pexpect python-ptyprocess
+      ec=$?; if [ $ec -ne 0 ]; then { echo Failed with error code=$ec; exit $ec; } fi
+      # Pin packages to avoid any further issue
+      sudo apt-mark hold libssl1.1 libssl-dev lighttpd
+    displayName: 'Force problematic dependencies'
+
+  # List available disk space before clean-up
+  - bash: df -h
+    displayName: 'Available Disk Space'
+
+  # List installed packages sorted by size before clean-up
+  - bash: |
+      echo "List all packages in reverse sorted order by their installed size (MB):"
+      dpkg-query --show --showformat='${Installed-Size}\t${Package}\n' | sort -rh | awk '{print $1/1024, $2}'
+      echo "-----------------------------------------------------------------"
+      echo "List all packages in alphabetical order (including version numbers):"
+      apt list --installed
+    displayName: 'List installed packages'
+
+  # Clean the base image to recover disk space
+  - template: steps-linux-clean-image.yaml
+
+  # List available disk space after clean-up
+  - bash: df -h
+    displayName: 'Available Disk Space'
+
+  # List installed packages sorted by size after clean-up
+  - bash: |
+      echo "List all packages in reverse sorted order by their installed size (MB):"
+      dpkg-query --show --showformat='${Installed-Size}\t${Package}\n' | sort -rh | awk '{print $1/1024, $2}'
+      echo "-----------------------------------------------------------------"
+      echo "List all packages in alphabetical order (including version numbers):"
+      apt list --installed
+    displayName: 'List installed packages'
+
+  # Checkout MixedReality-WebRTC
+  - checkout: self
+    clean: $(clean.git)
+
+  # Checkout libwebrtc
+  - script: |
+      cd $(toolsDir)/libwebrtc
+      ./config.sh -v -d $(workDir) -b "branch-heads/71" -t android -c arm64 -s -f
+      ./checkout.sh -v
+    displayName: 'Checkout libwebrtc'
+
+  # List available disk space after clean-up
+  - bash: df -h
+    displayName: 'Available Disk Space'
+
+  # Build libwebrtc
+  - script: |
+      # Unset JAVA_HOME, which points to the install removed by the image clean step
+      unset JAVA_HOME
+      # Build
+      cd $(toolsDir)/libwebrtc
+      ./build.sh -v -c ${{parameters.buildConfig}}
+    displayName: 'Build libwebrtc'
+
+  # Build mrwebrtc
+  - script: |
+      # Unset JAVA_HOME, which points to the install removed by the image clean step
+      unset JAVA_HOME
+      # Build
+      cd $(toolsDir)/android
+      chmod +x ./gradlew
+      ./gradlew assemble${{parameters.buildConfig}}
+    displayName: 'Build mrwebrtc'
+
+  # Stage artifacts
+  - task: CopyFiles@2
+    displayName: 'Stage mrwebrtc artifacts'
+    inputs:
+      sourceFolder: '$(toolsDir)/android/webrtc-native/build/outputs/aar'
+      contents: 'mrwebrtc.aar'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  # Publish mrwebrtc.dll and mrwebrtc.pdb
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish mrwebrtc'
+    inputs:
+      artifactName: 'mrwebrtc_android_arm64_${{parameters.buildConfig}}'
+      targetPath: '$(Build.ArtifactStagingDirectory)'
