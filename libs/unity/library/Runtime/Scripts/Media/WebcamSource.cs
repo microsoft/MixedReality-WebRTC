@@ -168,8 +168,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 #endif
 
-        protected override async Task CreateVideoTrackSourceAsync()
+        protected virtual async Task OnEnable()
         {
+            if (Source != null)
+            {
+                return;
+            }
+
             string videoProfileId = VideoProfileId;
             var videoProfileKind = VideoProfileKind;
             int width = Constraints.width;
@@ -253,6 +258,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 throw new Exception("Failed ot create webcam video source.");
             }
+
+            VideoStreamStarted.Invoke(this);
+            IsStreaming = true;
         }
 
 #if UNITY_WSA && !UNITY_EDITOR

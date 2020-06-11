@@ -16,7 +16,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// </summary>
     /// <seealso cref="WebcamSource"/>
     /// <seealso cref="CustomVideoSender{T}"/>
-    /// <seealso cref="SceneVideoSender"/>
+    /// <seealso cref="SceneVideoSource"/>
     public abstract class VideoTrackSource : VideoRendererSource, IVideoSource, IMediaTrackSource
     {
         /// <summary>
@@ -127,55 +127,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
 
-        protected virtual async Task OnEnable()
-        {
-            if (Source == null)
-            {
-                // Defer track creation to derived classes, which will invoke some methods like
-                // VideoTrackSource.CreateFromDeviceAsync() or VideoTrackSource.CreateFromExternalSourceAsync().
-                await CreateVideoTrackSourceAsync();
-                Debug.Assert(Source != null, "Implementation did not create a valid Source property yet did not throw any exception.", this);
-
-                // Dispatch the event to the main Unity app thread to allow Unity object access
-                InvokeOnAppThread(() =>
-                {
-                    VideoStreamStarted.Invoke(this);
-
-                    // Only clear this after the event handlers ran
-                    IsStreaming = true;
-                });
-            }
-        }
-
         protected virtual void OnDisable()
-        {
-            if (Source != null)
-            {
-                // Defer track destruction to derived classes.
-                DestroyVideoTrackSource();
-                Debug.Assert(Source == null, "Implementation did not destroy the existing Source property yet did not throw any exception.", this);
-
-                // Clear this already to make sure it is false when the event is raised.
-                IsStreaming = false;
-
-                // Dispatch the event to the main Unity app thread to allow Unity object access
-                InvokeOnAppThread(() => VideoStreamStopped.Invoke(this));
-            }
-        }
-
-
-        /// <summary>
-        /// Implement this callback to create the <see cref="Track"/> instance.
-        /// On failure, this method must throw an exception. Otherwise it must set the <see cref="Track"/>
-        /// property to a non-<c>null</c> instance.
-        /// </summary>
-        protected abstract Task CreateVideoTrackSourceAsync();
-
-        /// <summary>
-        /// Re-implement this callback to destroy the <see cref="Track"/> instance
-        /// and other associated resources.
-        /// </summary>
-        protected virtual void DestroyVideoTrackSource()
         {
             if (Source != null)
             {
@@ -189,6 +141,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // Video track sources are disposable objects owned by the user (this component)
                 Source.Dispose();
                 Source = null;
+
+                // Clear this already to make sure it is false when the event is raised.
+                IsStreaming = false;
+
+                VideoStreamStopped.Invoke(this);
             }
         }
 

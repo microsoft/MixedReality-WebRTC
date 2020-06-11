@@ -61,17 +61,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 #endif
 
-        protected override async Task CreateAudioTrackSourceAsyncImpl()
+        protected virtual async Task OnEnable()
         {
+            if (Source != null)
+            {
+                return;
+            }
+
+            var initConfig = new LocalAudioDeviceInitConfig
+            {
+                AutoGainControl = _autoGainControl,
+            };
+            Source = await WebRTC.AudioTrackSource.CreateFromDeviceAsync(initConfig);
             if (Source == null)
             {
-                // Create the local track
-                var initConfig = new LocalAudioDeviceInitConfig
-                {
-                    AutoGainControl = _autoGainControl,
-                };
-                Source = await WebRTC.AudioTrackSource.CreateFromDeviceAsync(initConfig);
+                throw new Exception("Failed ot create microphone audio source.");
             }
+
+            AudioSourceStarted.Invoke(this);
+            IsStreaming = true;
         }
 
 #if UNITY_WSA && !UNITY_EDITOR

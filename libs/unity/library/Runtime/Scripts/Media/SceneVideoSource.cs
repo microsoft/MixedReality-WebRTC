@@ -15,7 +15,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// Custom video source capturing the Unity scene content as rendered by a given camera,
     /// and sending it as a video track through the selected peer connection.
     /// </summary>
-    public class SceneVideoSender : CustomVideoSender<Argb32VideoFrameStorage>
+    public class SceneVideoSource : CustomVideoSender<Argb32VideoFrameStorage>
     {
         /// <summary>
         /// Camera used to capture the scene content, whose rendering is used as
@@ -76,13 +76,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private VideoFrameQueue<Argb32VideoFrameStorage> _frameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(3);
 
-        protected override Task OnEnable()
+        protected override void OnEnable()
         {
             if (!SystemInfo.supportsAsyncGPUReadback)
             {
                 Debug.LogError("This platform does not support async GPU readback. Cannot use the SceneVideoSender component.");
                 enabled = false;
-                return base.OnEnable();
+                return;
             }
 
             // If no camera provided, attempt to fallback to main camera
@@ -102,10 +102,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             CreateCommandBuffer();
             SourceCamera.AddCommandBuffer(CameraEvent, _commandBuffer);
 
-            return base.OnEnable();
+            // Create the track source
+            base.OnEnable();
         }
 
-        protected new void OnDisable()
+        protected override void OnDisable()
         {
             base.OnDisable();
 

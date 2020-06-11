@@ -110,55 +110,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
 
-        protected virtual async Task OnEnable()
-        {
-            if (Source == null)
-            {
-                // Defer track creation to derived classes, which will invoke some methods like
-                // AudioTrackSource.CreateFromDeviceAsync().
-                await CreateAudioTrackSourceAsyncImpl();
-                Debug.Assert(Source != null, "Implementation did not create a valid Source property yet did not throw any exception.", this);
-
-                // Dispatch the event to the main Unity app thread to allow Unity object access
-                InvokeOnAppThread(() =>
-                {
-                    AudioSourceStarted.Invoke(this);
-
-                    // Only clear this after the event handlers ran
-                    IsStreaming = true;
-                });
-            }
-        }
-
         protected virtual void OnDisable()
-        {
-            if (Source != null)
-            {
-                // Defer track destruction to derived classes.
-                DestroyAudioTrackSource();
-                Debug.Assert(Source == null, "Implementation did not destroy the existing Source property yet did not throw any exception.", this);
-
-                // Clear this already to make sure it is false when the event is raised.
-                IsStreaming = false;
-
-                // Dispatch the event to the main Unity app thread to allow Unity object access
-                InvokeOnAppThread(() => AudioSourceStopped.Invoke(this));
-            }
-        }
-
-
-        /// <summary>
-        /// Implement this callback to create the <see cref="Source"/> instance.
-        /// On failure, this method must throw an exception. Otherwise it must set the <see cref="Source"/>
-        /// property to a non-<c>null</c> instance.
-        /// </summary>
-        protected abstract Task CreateAudioTrackSourceAsyncImpl();
-
-        /// <summary>
-        /// Re-implement this callback to destroy the <see cref="Source"/> instance
-        /// and other associated resources.
-        /// </summary>
-        protected virtual void DestroyAudioTrackSource()
         {
             if (Source != null)
             {
@@ -172,6 +124,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // Audio track sources are disposable objects owned by the user (this component)
                 Source.Dispose();
                 Source = null;
+
+                // Clear this already to make sure it is false when the event is raised.
+                IsStreaming = false;
+
+                AudioSourceStopped.Invoke(this);
             }
         }
 

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading.Tasks;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
@@ -17,8 +16,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
         }
 
-        protected override Task CreateVideoTrackSourceAsync()
+        protected virtual void OnEnable()
         {
+            if (Source != null)
+            {
+                return;
+            }
+
             // Create the external source
             //< TODO - Better abstraction
             if (typeof(T) == typeof(I420AVideoFrameStorage))
@@ -38,8 +42,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 throw new Exception("Failed to create external video track source.");
             }
 
-            // This implementation is fast, so executes synchronously.
-            return Task.CompletedTask;
+            VideoStreamStarted.Invoke(this);
+            IsStreaming = true;
         }
 
         protected abstract void OnFrameRequested(in FrameRequest request);
