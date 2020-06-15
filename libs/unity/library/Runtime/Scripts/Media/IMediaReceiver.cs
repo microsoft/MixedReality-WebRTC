@@ -33,6 +33,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     internal interface IMediaReceiverInternal : IMediaReceiver
     {
         /// <summary>
+        /// Internal callback invoked when the media receiver is assigned to a media line.
+        /// </summary>
+        /// <param name="mediaLine">The new media line this receiver is assigned to.</param>
+        void OnAddedToMediaLine(MediaLine mediaLine);
+
+        /// <summary>
+        /// Internal callback invoked when the media receiver is de-assigned from a media line.
+        /// </summary>
+        /// <param name="mediaLine">The old media line this receiver was assigned to.</param>
+        void OnRemoveFromMediaLine(MediaLine mediaLine);
+
+        /// <summary>
         /// Internal callback invoked when the receiver is paired with a media track.
         /// </summary>
         /// <param name="track">The media track this receiver is paired with.</param>

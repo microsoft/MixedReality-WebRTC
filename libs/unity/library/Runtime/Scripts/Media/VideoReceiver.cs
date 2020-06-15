@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -22,6 +23,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public RemoteVideoTrack Track { get; private set; }
 
         /// <summary>
+        /// List of video media lines using this source.
+        /// </summary>
+        public IReadOnlyList<MediaLine> MediaLines => _mediaLines;
+
+        /// <summary>
         /// Event raised when the video stream started.
         ///
         /// When this event is raised, the followings are true:
@@ -33,7 +39,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
         /// </remarks>
-        public VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
+        public readonly VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
 
         /// <summary>
         /// Event raised when the video stream stopped.
@@ -47,7 +53,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
         /// </remarks>
-        public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
+        public readonly VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
 
 
         #region IVideoSource interface
@@ -139,9 +145,24 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private bool _isLive = false;
         private Transceiver _transceiver = null;
+        private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
 
 
         #region IMediaReceiverInternal interface
+
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.OnAddedToMediaLine(MediaLine mediaLine)
+        {
+            Debug.Assert(!_mediaLines.Contains(mediaLine));
+            _mediaLines.Add(mediaLine);
+        }
+
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.OnRemoveFromMediaLine(MediaLine mediaLine)
+        {
+            bool removed = _mediaLines.Remove(mediaLine);
+            Debug.Assert(removed);
+        }
 
         /// <inheritdoc/>
         void IMediaReceiverInternal.OnPaired(MediaTrack track)
@@ -156,8 +177,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Debug.Assert(Track == null);
                 Track = remoteVideoTrack;
                 _isLive = true;
-                VideoStreamStarted.Invoke(this);
                 IsStreaming = true;
+                VideoStreamStarted.Invoke(this);
             });
         }
 
@@ -173,9 +194,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 Debug.Assert(Track == track);
                 Track = null;
-                IsStreaming = false;
                 _isLive = false;
                 VideoStreamStopped.Invoke(this);
+                IsStreaming = false;
             });
         }
 

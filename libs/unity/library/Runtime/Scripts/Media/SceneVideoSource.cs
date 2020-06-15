@@ -15,7 +15,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// Custom video source capturing the Unity scene content as rendered by a given camera,
     /// and sending it as a video track through the selected peer connection.
     /// </summary>
-    public class SceneVideoSource : CustomVideoSender<Argb32VideoFrameStorage>
+    public class SceneVideoSource : CustomVideoSource<Argb32VideoFrameStorage>
     {
         /// <summary>
         /// Camera used to capture the scene content, whose rendering is used as

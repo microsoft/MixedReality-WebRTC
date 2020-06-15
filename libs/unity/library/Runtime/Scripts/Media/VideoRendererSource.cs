@@ -4,7 +4,7 @@
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// Base class video-producing entities which can be rendered using a <see cref="VideoRenderer"/>.
+    /// Base class for video-producing entities which can be rendered using a <see cref="VideoRenderer"/>.
     /// 
     /// This class is only used because Unity requires a common base class between <see cref="VideoTrackSource"/>
     /// and <see cref="VideoReceiver"/> to be able to serialize a polymorphic property to either of those producers

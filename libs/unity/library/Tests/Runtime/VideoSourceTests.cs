@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -51,38 +52,36 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             sig.Peer2 = pc2;
 
             // Create the video sources on peer #1
-            VideoSender sender1 = null;
+            VideoTrackSource source1 = null;
             VideoReceiver receiver1 = null;
             if (withSender1)
             {
-                sender1 = pc1_go.AddComponent<UniformColorVideoSource>();
-                sender1.AutoStartOnEnabled = true;
-                sender1.TrackName = "track_name";
+                source1 = pc1_go.AddComponent<UniformColorVideoSource>();
             }
             if (withReceiver1)
             {
                 receiver1 = pc1_go.AddComponent<VideoReceiver>();
             }
-            MediaLine tr1 = pc1.AddMediaLine(MediaKind.Video);
-            tr1.Sender = sender1;
-            tr1.Receiver = receiver1;
+            MediaLine ml1 = pc1.AddMediaLine(MediaKind.Video);
+            ml1.SenderTrackName = "video_track_1";
+            ml1.Source = source1;
+            ml1.Receiver = receiver1;
 
             // Create the video sources on peer #2
-            VideoSender sender2 = null;
+            VideoTrackSource source2 = null;
             VideoReceiver receiver2 = null;
             if (withSender2)
             {
-                sender2 = pc2_go.AddComponent<UniformColorVideoSource>();
-                sender2.AutoStartOnEnabled = true;
-                sender2.TrackName = "track_name";
+                source2 = pc2_go.AddComponent<UniformColorVideoSource>();
             }
             if (withReceiver2)
             {
                 receiver2 = pc1_go.AddComponent<VideoReceiver>();
             }
-            MediaLine tr2 = pc2.AddMediaLine(MediaKind.Video);
-            tr2.Sender = sender2;
-            tr2.Receiver = receiver2;
+            MediaLine ml2 = pc2.AddMediaLine(MediaKind.Video);
+            ml2.SenderTrackName = "video_track_2";
+            ml2.Source = source2;
+            ml2.Receiver = receiver2;
 
             // Activate
             pc1_go.SetActive(true);
@@ -107,15 +106,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsTrue(initializedEvent2.Wait(millisecondsTimeout: 50000));
             Assert.IsNotNull(pc2.Peer);
 
-            // Confirm the senders are ready
+            // Confirm the sources are ready
             if (withSender1)
             {
-                Assert.IsNotNull(sender1.Track);
+                Assert.IsTrue(source1.IsStreaming);
             }
             if (withSender2)
             {
-                Assert.IsNotNull(sender2.Track);
+                Assert.IsTrue(source2.IsStreaming);
             }
+
+            // Confirm the sender track is not created yet; it will be when the connection starts
+            Assert.IsNull(ml1.SenderTrack);
+            Assert.IsNull(ml2.SenderTrack);
 
             // Confirm the receiver track is not added yet, since remote tracks are only instantiated
             // as the result of a session negotiation.
@@ -129,7 +132,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             }
 
             // Connect
-            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+            Assert.IsTrue(sig.StartConnection());
+            yield return sig.WaitForConnection(millisecondsTimeout: 10000);
+            Assert.IsTrue(sig.IsConnected);
 
             // Wait a frame so that the Unity events for streams started can propagate
             yield return null;
@@ -149,11 +154,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 if (withReceiver1 && withSender2) // R <= S
                 {
                     Assert.IsNotNull(receiver1.Track);
+                    Assert.IsNotNull(ml2.SenderTrack);
                     hasRecv1 = true;
                     hasSend2 = true;
                 }
                 if (withSender1 && withReceiver2) // S => R
                 {
+                    Assert.IsNotNull(ml1.SenderTrack);
                     Assert.IsNotNull(receiver2.Track);
                     hasSend1 = true;
                     hasRecv2 = true;
@@ -162,12 +169,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 Assert.AreEqual(hasRecv2 ? 1 : 0, pc2.Peer.RemoteVideoTracks.Count());
 
                 // Transceivers are consistent with pairing
-                Assert.IsTrue(tr1.Transceiver.NegotiatedDirection.HasValue);
-                Assert.AreEqual(hasSend1, Transceiver.HasSend(tr1.Transceiver.NegotiatedDirection.Value));
-                Assert.AreEqual(hasRecv1, Transceiver.HasRecv(tr1.Transceiver.NegotiatedDirection.Value));
-                Assert.IsTrue(tr2.Transceiver.NegotiatedDirection.HasValue);
-                Assert.AreEqual(hasSend2, Transceiver.HasSend(tr2.Transceiver.NegotiatedDirection.Value));
-                Assert.AreEqual(hasRecv2, Transceiver.HasRecv(tr2.Transceiver.NegotiatedDirection.Value));
+                Assert.IsTrue(ml1.Transceiver.NegotiatedDirection.HasValue);
+                Assert.AreEqual(hasSend1, Transceiver.HasSend(ml1.Transceiver.NegotiatedDirection.Value));
+                Assert.AreEqual(hasRecv1, Transceiver.HasRecv(ml1.Transceiver.NegotiatedDirection.Value));
+                Assert.IsTrue(ml2.Transceiver.NegotiatedDirection.HasValue);
+                Assert.AreEqual(hasSend2, Transceiver.HasSend(ml2.Transceiver.NegotiatedDirection.Value));
+                Assert.AreEqual(hasRecv2, Transceiver.HasRecv(ml2.Transceiver.NegotiatedDirection.Value));
             }
         }
 
@@ -230,7 +237,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Input
             public Transceiver.Direction desiredDirection;
             public MediaLine mediaLine;
-            public UniformColorVideoSource sender;
+            public UniformColorVideoSource source;
             public VideoReceiver receiver;
 
             // Output
@@ -357,42 +364,40 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 var cfg = cfgs[i];
 
                 {
-                    MediaLine tr1 = pc1.AddMediaLine(MediaKind.Video);
+                    MediaLine ml1 = pc1.AddMediaLine(MediaKind.Video);
                     var peer = cfg.peer1;
-                    peer.mediaLine = tr1;
+                    peer.mediaLine = ml1;
                     if (Transceiver.HasSend(peer.desiredDirection))
                     {
-                        var sender1 = pc1_go.AddComponent<UniformColorVideoSource>();
-                        sender1.AutoStartOnEnabled = true;
-                        sender1.TrackName = $"track{i}";
-                        peer.sender = sender1;
-                        tr1.Sender = sender1;
+                        var source1 = pc1_go.AddComponent<UniformColorVideoSource>();
+                        peer.source = source1;
+                        ml1.Source = source1;
+                        ml1.SenderTrackName = $"track{i}";
                     }
                     if (Transceiver.HasRecv(peer.desiredDirection))
                     {
                         var receiver1 = pc1_go.AddComponent<VideoReceiver>();
                         peer.receiver = receiver1;
-                        tr1.Receiver = receiver1;
+                        ml1.Receiver = receiver1;
                     }
                 }
 
                 {
-                    MediaLine tr2 = pc2.AddMediaLine(MediaKind.Video);
+                    MediaLine ml2 = pc2.AddMediaLine(MediaKind.Video);
                     var peer = cfg.peer2;
-                    peer.mediaLine = tr2;
+                    peer.mediaLine = ml2;
                     if (Transceiver.HasSend(peer.desiredDirection))
                     {
-                        var sender2 = pc2_go.AddComponent<UniformColorVideoSource>();
-                        sender2.AutoStartOnEnabled = true;
-                        sender2.TrackName = $"track{i}";
-                        peer.sender = sender2;
-                        tr2.Sender = sender2;
+                        var source2 = pc2_go.AddComponent<UniformColorVideoSource>();
+                        peer.source = source2;
+                        ml2.Source = source2;
+                        ml2.SenderTrackName = $"track{i}";
                     }
                     if (Transceiver.HasRecv(peer.desiredDirection))
                     {
                         var receiver2 = pc2_go.AddComponent<VideoReceiver>();
                         peer.receiver = receiver2;
-                        tr2.Receiver = receiver2;
+                        ml2.Receiver = receiver2;
                     }
                 }
             }
@@ -420,22 +425,28 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsTrue(initializedEvent2.Wait(millisecondsTimeout: 50000));
             Assert.IsNotNull(pc2.Peer);
 
-            // Confirm the senders are ready
+            // Confirm the sources are ready
             for (int i = 0; i < NumTransceivers; ++i)
             {
                 var cfg = cfgs[i];
                 if (cfg.peer1.expectSender)
                 {
-                    Assert.IsNotNull(cfg.peer1.sender.Track, $"Transceiver #{i} missing local track on Peer #1");
+                    Assert.IsNotNull(cfg.peer1.source, $"Missing source #{i} on Peer #1");
+                    Assert.IsNotNull(cfg.peer1.source.IsStreaming, $"Source #{i} is not ready on Peer #1");
+                    Assert.IsNull(cfg.peer1.mediaLine.SenderTrack); // created during connection
                 }
                 if (cfg.peer2.expectSender)
                 {
-                    Assert.IsNotNull(cfg.peer2.sender.Track, $"Transceiver #{i} missing local track on Peer #2");
+                    Assert.IsNotNull(cfg.peer2.source, $"Missing source #{i} on Peer #2");
+                    Assert.IsNotNull(cfg.peer2.source.IsStreaming, $"Source #{i} is not ready on Peer #2");
+                    Assert.IsNull(cfg.peer2.mediaLine.SenderTrack); // created during connection
                 }
             }
 
             // Connect
-            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+            Assert.IsTrue(sig.StartConnection());
+            yield return sig.WaitForConnection(millisecondsTimeout: 60000);
+            Assert.IsTrue(sig.IsConnected);
 
             // Wait a frame so that the Unity events for streams started can propagate
             yield return null;
@@ -448,9 +459,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             for (int i = 0; i < NumTransceivers; ++i)
             {
                 var cfg = cfgs[i];
+                if (cfg.peer1.expectSender)
+                {
+                    Assert.IsNotNull(cfg.peer1.mediaLine.SenderTrack, $"Transceiver #{i} missing local sender track on Peer #1");
+                }
                 if (cfg.peer1.expectReceiver)
                 {
                     Assert.IsNotNull(cfg.peer1.receiver.Track, $"Transceiver #{i} missing remote track on Peer #1");
+                }
+                if (cfg.peer2.expectSender)
+                {
+                    Assert.IsNotNull(cfg.peer2.mediaLine.SenderTrack, $"Transceiver #{i} missing local sender track on Peer #2");
                 }
                 if (cfg.peer2.expectReceiver)
                 {
@@ -475,7 +494,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // #0 - P1 stops sending
             {
                 var cfg = cfgs[0];
-                cfg.peer1.mediaLine.Sender = null;
+                cfg.peer1.mediaLine.Source = null;
                 cfg.peer1.expectSender = false;
                 cfg.peer1.expectReceiver = false;
                 cfg.peer2.expectSender = false;
@@ -485,7 +504,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // #1 - P2 stops sending
             {
                 var cfg = cfgs[1];
-                cfg.peer2.mediaLine.Sender = null;
+                cfg.peer2.mediaLine.Source = null;
                 cfg.peer1.expectSender = true;
                 cfg.peer1.expectReceiver = false;
                 cfg.peer2.expectSender = false;
@@ -507,11 +526,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // #3 - P1 starts sending
             {
                 var cfg = cfgs[3];
-                var sender1 = pc1_go.AddComponent<UniformColorVideoSource>();
-                sender1.AutoStartOnEnabled = true;
-                sender1.TrackName = $"track3";
-                cfg.peer1.sender = sender1;
-                cfg.peer1.mediaLine.Sender = sender1;
+                var source1 = pc1_go.AddComponent<UniformColorVideoSource>();
+                cfg.peer1.source = source1;
+                cfg.peer1.mediaLine.Source = source1;
                 cfg.peer1.expectSender = true;
                 cfg.peer1.expectReceiver = true;
                 cfg.peer2.expectSender = true;
@@ -529,7 +546,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             }
 
             // Renegotiate
-            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+            Assert.IsTrue(sig.StartConnection());
+            yield return sig.WaitForConnection(millisecondsTimeout: 60000);
+            Assert.IsTrue(sig.IsConnected);
 
             // Wait a frame so that the Unity events for streams started can propagate
             yield return null;
@@ -582,19 +601,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             sig.Peer2 = pc2;
 
             // Create the sender video source
-            var sender1 = pc1_go.AddComponent<UniformColorVideoSource>();
-            sender1.AutoStartOnEnabled = true;
-            sender1.TrackName = "track_name";
+            var source1 = pc1_go.AddComponent<UniformColorVideoSource>();
+            //source1.SenderTrackName = "track_name";
             MediaLine ml1 = pc1.AddMediaLine(MediaKind.Video);
             Assert.IsNotNull(ml1);
-            Assert.AreEqual(MediaKind.Video, ml1.Kind);
-            ml1.Sender = sender1;
+            Assert.AreEqual(MediaKind.Video, ml1.MediaKind);
+            ml1.Source = source1;
 
             // Create the receiver video source
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
             MediaLine ml2 = pc2.AddMediaLine(MediaKind.Video);
             Assert.IsNotNull(ml2);
-            Assert.AreEqual(MediaKind.Video, ml2.Kind);
+            Assert.AreEqual(MediaKind.Video, ml2.MediaKind);
             ml2.Receiver = receiver2;
 
             // Activate
@@ -620,11 +638,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsTrue(initializedEvent2.Wait(millisecondsTimeout: 50000));
             Assert.IsNotNull(pc2.Peer);
 
-            // Confirm the sender is ready
-            Assert.IsNotNull(sender1.Track);
+            // Confirm the source is ready, but the sender track is not created yet
+            Assert.IsNotNull(source1.IsStreaming);
+            Assert.IsNull(ml1.SenderTrack);
 
             // Connect
-            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+            Assert.IsTrue(sig.StartConnection());
+            yield return sig.WaitForConnection(millisecondsTimeout: 60000);
+            Assert.IsTrue(sig.IsConnected);
 
             // Wait a frame so that the Unity events for streams started can propagate
             yield return null;
@@ -638,8 +659,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsTrue(ml2.Transceiver.NegotiatedDirection.HasValue);
             Assert.AreEqual(Transceiver.Direction.SendOnly, ml1.Transceiver.NegotiatedDirection.Value);
             Assert.AreEqual(Transceiver.Direction.ReceiveOnly, ml2.Transceiver.NegotiatedDirection.Value);
-            Assert.AreEqual(ml1.Transceiver, sender1.Transceiver); // paired on first negotiation
-            Assert.AreEqual(ml2.Transceiver, receiver2.Transceiver); // paired on first negotiation
             var video_tr1 = ml1.Transceiver;
             Assert.IsNotNull(video_tr1);
             Assert.AreEqual(MediaKind.Video, video_tr1.MediaKind);
@@ -648,17 +667,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(MediaKind.Video, video_tr2.MediaKind);
 
             // Check track pairing
+            Assert.IsNotNull(ml1.SenderTrack); // created during connection
             Assert.IsNotNull(receiver2.Track); // paired
-            Assert.AreEqual(video_tr1.LocalTrack, sender1.Track); // sender attached
+            Assert.AreEqual(video_tr1.LocalTrack, ml1.SenderTrack); // sender attached
             Assert.AreEqual(video_tr2.RemoteTrack, receiver2.Track); // receiver paired
 
             // ====== Remove sender ==============================
 
             // Remove the sender from #1
-            ml1.Sender = null;
+            ml1.Source = null;
 
             // Renegotiate
-            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+            Assert.IsTrue(sig.StartConnection());
+            yield return sig.WaitForConnection(millisecondsTimeout: 60000);
+            Assert.IsTrue(sig.IsConnected);
 
             // Wait a frame so that the Unity events for streams started can propagate
             yield return null;
@@ -674,23 +696,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(Transceiver.Direction.Inactive, ml2.Transceiver.NegotiatedDirection.Value); // inactive * recvonly = inactive
             Assert.AreEqual(video_tr1, ml1.Transceiver); // immutable
             Assert.AreEqual(video_tr2, ml2.Transceiver); // immutable
-            Assert.IsNotNull(sender1.Transceiver); // immutable
-            Assert.IsNotNull(receiver2.Transceiver); // immutable
 
             // Check track pairing
-            Assert.IsNotNull(sender1.Track); // no change on sender itself (owns the track)...
-            Assert.Null(sender1.Track.Transceiver); // ...but the track is detached from transceiver...
-            Assert.Null(video_tr1.LocalTrack); // ...and conversely
-            Assert.Null(receiver2.Track); // transceiver is inactive and remote tracks are not owned
-            Assert.Null(video_tr2.RemoteTrack); // unpaired
+            Assert.IsNull(ml1.SenderTrack); // no source, so media line destroyed its sender track...
+            Assert.IsNull(video_tr1.LocalTrack); // ...after detaching it from the transceiver
+            Assert.IsNull(receiver2.Track); // transceiver is inactive and remote tracks are not owned
+            Assert.IsNull(video_tr2.RemoteTrack); // unpaired
 
             // ====== Re-add sender ==============================
 
             // Re-add the sender on #1
-            ml1.Sender = sender1;
+            ml1.Source = source1;
 
             // Renegotiate
-            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+            Assert.IsTrue(sig.StartConnection());
+            yield return sig.WaitForConnection(millisecondsTimeout: 60000);
+            Assert.IsTrue(sig.IsConnected);
 
             // Wait a frame so that the Unity events for streams started can propagate
             yield return null;
@@ -706,15 +727,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(Transceiver.Direction.ReceiveOnly, ml2.Transceiver.NegotiatedDirection.Value); // accepted
             Assert.AreEqual(video_tr1, ml1.Transceiver); // immutable
             Assert.AreEqual(video_tr2, ml2.Transceiver); // immutable
-            Assert.IsNotNull(sender1.Transceiver); // immutable
-            Assert.IsNotNull(receiver2.Transceiver); // immutable
 
             // Check track pairing
-            Assert.IsNotNull(sender1.Track); // no change on sender itself (owns the track)...
-            Assert.IsNotNull(sender1.Track.Transceiver); // ...but the track is re-attached to transceiver...
-            Assert.AreEqual(video_tr1, sender1.Track.Transceiver);
+            Assert.IsNotNull(ml1.SenderTrack); // new source again, media line re-created a sender track
+            Assert.IsNotNull(ml1.SenderTrack.Transceiver); // ...and attached it to the transceiver...
+            Assert.AreEqual(video_tr1, ml1.SenderTrack.Transceiver);
             Assert.IsNotNull(video_tr1.LocalTrack); // ...and conversely
-            Assert.AreEqual(sender1.Track, video_tr1.LocalTrack);
+            Assert.AreEqual(ml1.SenderTrack, video_tr1.LocalTrack);
             Assert.IsNotNull(receiver2.Track); // transceiver is active again and remote track was re-created
             Assert.IsNotNull(receiver2.Track.Transceiver);
             Assert.AreEqual(video_tr2, receiver2.Track.Transceiver);
@@ -751,12 +770,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             sig.Peer2 = pc2;
 
             // Create the sender video source
-            var sender1 = pc1_go.AddComponent<UniformColorVideoSource>();
-            sender1.AutoStartOnEnabled = true;
-            sender1.TrackName = "track_name";
+            var source1 = pc1_go.AddComponent<UniformColorVideoSource>();
+            //sender1.SenderTrackName = "track_name";
             MediaLine ml1 = pc1.AddMediaLine(MediaKind.Video);
             Assert.IsNotNull(ml1);
-            ml1.Sender = sender1;
+            ml1.Source = source1;
 
             // Create the receiver video source
             var receiver2 = pc2_go.AddComponent<VideoReceiver>();
@@ -789,8 +807,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsTrue(initializedEvent2.Wait(millisecondsTimeout: 50000));
             Assert.IsNotNull(pc2.Peer);
 
-            // Confirm the sender is ready
-            Assert.IsNotNull(sender1.Track);
+            // Confirm the source is ready, but the sender track is not created yet
+            Assert.IsNotNull(source1.IsStreaming);
+            Assert.IsNull(ml1.SenderTrack);
 
             // Create some dummy out-of-band data channel to force SCTP negotiation
             // during the first offer, and be able to add some in-band data channels
@@ -803,7 +822,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             }
 
             // Connect
-            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+            Assert.IsTrue(sig.StartConnection());
+            yield return sig.WaitForConnection(millisecondsTimeout: 60000);
+            Assert.IsTrue(sig.IsConnected);
 
             // Wait a frame so that the Unity events for streams started can propagate
             yield return null;
@@ -832,7 +853,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             pc2.Peer.DataChannelAdded += (DataChannel channel) => { dc2 = channel; dc2_added_ev.Set(); };
 
             // Renegotiate; data channel will consume media line #1
-            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+            Assert.IsTrue(sig.StartConnection());
+            yield return sig.WaitForConnection(millisecondsTimeout: 60000);
+            Assert.IsTrue(sig.IsConnected);
 
             // Do not assume that connecting is enough to get the data channel, as callbacks are
             // asynchronously invoked. Instead explicitly wait for the created event to be raised.
@@ -853,15 +876,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             ml1b.Receiver = receiver1b;
 
             // Create the sender video source
-            var sender2b = pc2_go.AddComponent<UniformColorVideoSource>();
-            sender2b.AutoStartOnEnabled = true;
-            sender2b.TrackName = "track_name_2";
+            var source2b = pc2_go.AddComponent<UniformColorVideoSource>();
+            //sender2b.SenderTrackName = "track_name_2";
             MediaLine ml2b = pc2.AddMediaLine(MediaKind.Video);
             Assert.IsNotNull(ml2b);
-            ml2b.Sender = sender2b;
+            ml2b.Source = source2b;
 
             // Renegotiate
-            Assert.IsTrue(sig.Connect(millisecondsTimeout: 60000));
+            Assert.IsTrue(sig.StartConnection());
+            yield return sig.WaitForConnection(millisecondsTimeout: 60000);
+            Assert.IsTrue(sig.IsConnected);
 
             // Wait a frame so that the Unity events for streams started can propagate
             yield return null;

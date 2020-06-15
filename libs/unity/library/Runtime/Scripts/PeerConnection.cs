@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Concurrent;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 #if UNITY_WSA && !UNITY_EDITOR
 using global::Windows.UI.Core;
@@ -17,6 +18,8 @@ using global::Windows.Media.Core;
 using global::Windows.Media.Capture;
 using global::Windows.ApplicationModel.Core;
 #endif
+
+[assembly: InternalsVisibleTo("Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime")]
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
@@ -119,7 +122,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// This is the API entry point for establishing a connection with a remote peer.
     /// </summary>
     [AddComponentMenu("MixedReality-WebRTC/Peer Connection")]
-    public class PeerConnection : MonoBehaviour
+    public class PeerConnection : WorkQueue
     {
         /// <summary>
         /// Retrieves the underlying peer connection object once initialized.
@@ -222,13 +225,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
 
         #region Private variables
-
-        /// <summary>
-        /// Internal queue used to marshal work back to the main Unity app thread where access
-        /// to Unity objects is allowed. This is generally used to defer events/callbacks, which
-        /// are free-threaded in the low-level implementation.
-        /// </summary>
-        private ConcurrentQueue<Action> _mainThreadWorkQueue = new ConcurrentQueue<Action>();
 
         /// <summary>
         /// Underlying native peer connection wrapper.
@@ -388,8 +384,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <c>true</c> if the offer creation task was submitted successfully, and <c>false</c> otherwise.
         /// The offer SDP message is always created asynchronously.
         /// </returns>
+        /// <remarks>
+        /// This method can only be called from the main Unity application thread, where Unity objects can
+        /// be safely accessed.
+        /// </remarks>
         public bool StartConnection()
         {
+            // MediaLine manipulates some MonoBehaviour objects when managing senders and receivers
+            EnsureIsMainAppThread();
+
             if (Peer == null)
             {
                 throw new InvalidOperationException("Cannot create an offer with an uninitialized peer.");
@@ -480,8 +483,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <returns>A task which completes once the remote description has been applied and transceivers
         /// have been updated.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not intialized.</exception>
+        /// <remarks>
+        /// This method can only be called from the main Unity application thread, where Unity objects can
+        /// be safely accessed.
+        /// </remarks>
         public async Task HandleConnectionMessageAsync(SdpMessage message)
         {
+            // MediaLine manipulates some MonoBehaviour objects when managing senders and receivers
+            EnsureIsMainAppThread();
+
             // First apply the remote description
             await Peer.SetRemoteDescriptionAsync(message);
 
@@ -523,10 +533,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         {
                             string peerName = name;
                             int idx = i;
-                            _mainThreadWorkQueue.Enqueue(() =>
-                            {
-                                LogWarningOnMissingReceiver(peerName, idx);
-                            });
+                            InvokeOnAppThread(() => LogWarningOnMissingReceiver(peerName, idx));
                         }
                     }
                 }
@@ -535,7 +542,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 if (numMatching < numAssociatedTransceivers)
                 {
                     string peerName = name;
-                    _mainThreadWorkQueue.Enqueue(() =>
+                    InvokeOnAppThread(() =>
                     {
                         for (int i = numMatching; i < numAssociatedTransceivers; ++i)
                         {
@@ -559,7 +566,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 if (numMatching < numAssociatedTransceivers)
                 {
                     string peerName = name;
-                    _mainThreadWorkQueue.Enqueue(() =>
+                    InvokeOnAppThread(() =>
                     {
                         for (int i = numMatching; i < numAssociatedTransceivers; ++i)
                         {
@@ -608,8 +615,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         #region Unity MonoBehaviour methods
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             // Check in case InitializeAsync() was called first.
             if (_nativePeer == null)
             {
@@ -633,21 +642,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (AutoInitializeOnStart)
             {
                 InitializeAsync();
-            }
-        }
-
-        /// <summary>
-        /// Unity Engine Update() hook
-        /// </summary>
-        /// <remarks>
-        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Update.html
-        /// </remarks>
-        private void Update()
-        {
-            // Execute any pending work enqueued by background tasks
-            while (_mainThreadWorkQueue.TryDequeue(out Action workload))
-            {
-                workload();
             }
         }
 
@@ -724,10 +718,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 else
                 {
                     var ex = prevTask.Exception;
-                    _mainThreadWorkQueue.Enqueue(() =>
-                    {
-                        OnError.Invoke($"Audio access failure: {ex.Message}.");
-                    });
+                    InvokeOnAppThread(() => OnError.Invoke($"Audio access failure: {ex.Message}."));
                 }
             }, token);
 #else
@@ -758,7 +749,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Exception ex = initTask.Exception;
                 if (ex != null)
                 {
-                    _mainThreadWorkQueue.Enqueue(() =>
+                    InvokeOnAppThread(() =>
                     {
                         var errorMessage = new StringBuilder();
                         errorMessage.Append("WebRTC plugin initializing failed. See full log for exception details.\n");
@@ -773,7 +764,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     throw initTask.Exception;
                 }
 
-                _mainThreadWorkQueue.Enqueue(OnPostInitialize);
+                InvokeOnAppThread(OnPostInitialize);
             }, token);
         }
 
@@ -840,7 +831,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // again trigger the renegotiation needed event, which is not re-entrant.
                 // This also allows accessing Unity objects, and makes it safer in general
                 // for other objects.
-                _mainThreadWorkQueue.Enqueue(() => StartConnection());
+                InvokeOnAppThread(() => StartConnection());
             }
         }
 
@@ -862,7 +853,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private void LogErrorOnMediaLineException(Exception ex, MediaLine mediaLine, Transceiver transceiver)
         {
             // Dispatch to main thread to access Unity objects to get their names
-            _mainThreadWorkQueue.Enqueue(() =>
+            InvokeOnAppThread(() =>
             {
                 string msg;
                 if (ex is InvalidTransceiverMediaKindException)

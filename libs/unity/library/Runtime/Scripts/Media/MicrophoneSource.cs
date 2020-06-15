@@ -78,8 +78,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 throw new Exception("Failed ot create microphone audio source.");
             }
 
-            AudioSourceStarted.Invoke(this);
             IsStreaming = true;
+            AudioSourceStarted.Invoke(this);
         }
 
 #if UNITY_WSA && !UNITY_EDITOR

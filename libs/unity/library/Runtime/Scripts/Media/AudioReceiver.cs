@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -29,6 +30,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public RemoteAudioTrack Track { get; private set; }
 
         /// <summary>
+        /// List of audio media lines using this source.
+        /// </summary>
+        public IReadOnlyList<MediaLine> MediaLines => _mediaLines;
+
+        /// <summary>
         /// If true, pad buffer underruns with a sine wave. This will cause artifacts on underruns.
         /// Use for debugging.
         /// </summary>
@@ -46,7 +52,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
         /// </remarks>
-        public AudioStreamStartedEvent AudioStreamStarted = new AudioStreamStartedEvent();
+        public readonly AudioStreamStartedEvent AudioStreamStarted = new AudioStreamStartedEvent();
 
         /// <summary>
         /// Event raised when the audio stream stopped.
@@ -59,7 +65,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
         /// </remarks>
-        public AudioStreamStoppedEvent AudioStreamStopped = new AudioStreamStoppedEvent();
+        public readonly AudioStreamStoppedEvent AudioStreamStopped = new AudioStreamStoppedEvent();
 
 
         #region IAudioSource interface
@@ -138,9 +144,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private bool _isLive = false;
         private Transceiver _transceiver = null;
+        private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
 
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
             OnAudioConfigurationChanged(deviceWasChanged: true);
         }
@@ -216,16 +224,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _readBuffer = Track.CreateReadBuffer();
 
             _isLive = true;
-            AudioStreamStarted.Invoke(this);
             IsStreaming = true;
+            AudioStreamStarted.Invoke(this);
         }
 
         // Must be called within Unity main thread.
         private void StopStreaming()
         {
             _isLive = false;
-            IsStreaming = false;
             AudioStreamStopped.Invoke(this);
+            IsStreaming = false;
 
             lock (_readBufferLock)
             {
@@ -237,6 +245,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
 
         #region IMediaReceiverInternal interface
+
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.OnAddedToMediaLine(MediaLine mediaLine)
+        {
+            Debug.Assert(!_mediaLines.Contains(mediaLine));
+            _mediaLines.Add(mediaLine);
+        }
+
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.OnRemoveFromMediaLine(MediaLine mediaLine)
+        {
+            bool removed = _mediaLines.Remove(mediaLine);
+            Debug.Assert(removed);
+        }
 
         /// <inheritdoc/>
         void IMediaReceiverInternal.OnPaired(MediaTrack track)
@@ -251,8 +273,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Debug.Assert(Track == null);
                 Track = remoteAudioTrack;
                 _isLive = true;
-                AudioStreamStarted.Invoke(this);
                 IsStreaming = true;
+                AudioStreamStarted.Invoke(this);
             });
         }
 
@@ -268,9 +290,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 Debug.Assert(Track == track);
                 Track = null;
-                IsStreaming = false;
                 _isLive = false;
                 AudioStreamStopped.Invoke(this);
+                IsStreaming = false;
             });
         }
 

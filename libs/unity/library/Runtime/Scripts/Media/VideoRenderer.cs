@@ -9,7 +9,9 @@ using Microsoft.MixedReality.WebRTC.Unity.Editor;
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// Play video frames received from a WebRTC video track.
+    /// Utility component used to play video frames obtained from a WebRTC video track. This can indiscriminately
+    /// play video frames from a video track source on the local peer as well as video frames from a remote video
+    /// receiver obtaining its frame from a remote WebRTC peer.
     /// </summary>
     /// <remarks>
     /// This component writes to the attached <a href="https://docs.unity3d.com/ScriptReference/Material.html">Material</a>,
@@ -19,12 +21,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     [AddComponentMenu("MixedReality-WebRTC/Video Renderer")]
     public class VideoRenderer : MonoBehaviour
     {
-        // Note - Here what we really want is to serialize some reference to an IVideoSource.
-        // Unfortunately Unity before 2019.3 does not support serialized interfaces, and more generally ignores
-        // polymorphism in serialization. And although there are ways to make that work with a custom inspector,
-        // this disables support for object picker, so only drag-and-drop works, which is very impractical.
-        // So we use a base class derived from MonoBehaviour, which is the only entity for which Unity handles
-        // polymorphism.
+        /// <summary>
+        /// Video frame source producing the frames to render. The concrete class must implement <see cref="IVideoSource"/>.
+        /// </summary>
+        /// <remarks>
+        /// Here what we really want is to serialize some reference to an <see cref="IVideoSource"/>.
+        /// Unfortunately Unity before 2019.3 does not support serialized interfaces, and more generally ignores
+        /// polymorphism in serialization. And although there are ways to make that work with a custom inspector,
+        /// this disables support for object picker, so only drag-and-drop works, which is very impractical.
+        /// So we use a base class derived from MonoBehaviour, which is the only entity for which Unity handles
+        /// polymorphism.
+        /// </remarks>
         [SerializeField]
         protected VideoRendererSource Source;
 
@@ -300,7 +307,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         fixed (void* buffer = frame.Buffer)
                         {
-                            var src = new System.IntPtr(buffer);
+                            var src = new IntPtr(buffer);
                             int lumaSize = lumaWidth * lumaHeight;
                             _textureY.LoadRawTextureData(src, lumaSize);
                             src += lumaSize;
@@ -347,7 +354,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         fixed (void* buffer = frame.Buffer)
                         {
-                            var src = new System.IntPtr(buffer);
+                            var src = new IntPtr(buffer);
                             int size = width * height * 4;
                             _textureY.LoadRawTextureData(src, size);
                         }

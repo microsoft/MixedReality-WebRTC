@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
-
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
@@ -16,5 +14,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Media kind of the track source.
         /// </summary>
         MediaKind MediaKind { get; }
+    }
+
+    internal interface IMediaTrackSourceInternal
+    {
+        void OnAddedToMediaLine(MediaLine mediaLine);
+        void OnRemoveFromMediaLine(MediaLine mediaLine);
     }
 }

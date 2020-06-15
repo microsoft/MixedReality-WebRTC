@@ -120,8 +120,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             onError_ = serializedObject.FindProperty("OnError");
 
             mediaLines_ = serializedObject.FindProperty("_mediaLines");
-            transceiverList_ = new ReorderableList(serializedObject, mediaLines_, true, true, true, true);
-            transceiverList_.elementHeight = 2 * kLineHeight + kItemSpacing;
+            transceiverList_ = new ReorderableList(serializedObject, mediaLines_, draggable: true,
+                displayHeader: true, displayAddButton: false, displayRemoveButton: true);
+            transceiverList_.elementHeightCallback =
+                (int index) =>
+                {
+                    float height = kItemSpacing + 2 * kLineHeight;
+                    var element = transceiverList_.serializedProperty.GetArrayElementAtIndex(index);
+                    var src = element.FindPropertyRelative("_source");
+                    if (src.isExpanded)
+                    {
+                        var trackName = element.FindPropertyRelative("SenderTrackName");
+                        // FIXME - SdpTokenDrawer.OnGUI() is called with h=16px instead of the total height, breaking the layout
+                        height += kLineHeight; // EditorGUI.GetPropertyHeight(trackName) + kItemSpacing;
+                    }
+                    return height;
+                };
             transceiverList_.drawHeaderCallback = (Rect rect) => EditorGUI.LabelField(rect, "Transceivers");
             transceiverList_.drawElementCallback =
                 (Rect rect, int index, bool isActive, bool isFocused) =>
@@ -157,15 +171,28 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     float fieldWidth = rect.width;
                     bool hasSender = false;
                     bool hasReceiver = false;
+                    bool sourceIsExpanded = false;
                     {
-
                         var p = element.FindPropertyRelative("_source");
                         Object obj = p.objectReferenceValue;
+                        sourceIsExpanded = EditorGUI.Foldout(new Rect(rect.x, y0, fieldWidth, EditorGUIUtility.singleLineHeight), p.isExpanded, new GUIContent());
+                        p.isExpanded = sourceIsExpanded;
                         obj = EditorGUI.ObjectField(
                             new Rect(rect.x, y0, fieldWidth, EditorGUIUtility.singleLineHeight),
                             obj, senderType, true);
                         hasSender = (obj != null);
                         p.objectReferenceValue = obj;
+                        y0 += kLineHeight;
+                    }
+                    if (sourceIsExpanded)
+                    {
+                        var p = element.FindPropertyRelative("_senderTrackName");
+                        // FIXME - SdpTokenDrawer.OnGUI() is called with h=16px instead of the total height, breaking the layout
+                        //EditorGUI.PropertyField(new Rect(rect.x + 10, y0, fieldWidth - 8, EditorGUIUtility.singleLineHeight), p);
+                        //y0 += EditorGUI.GetPropertyHeight(p) + 6;
+                        string val = p.stringValue;
+                        val = EditorGUI.TextField(new Rect(rect.x + 10, y0, fieldWidth - 8, EditorGUIUtility.singleLineHeight), "Track name", val);
+                        p.stringValue = val;
                         y0 += kLineHeight;
                     }
                     {

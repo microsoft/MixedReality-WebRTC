@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -13,7 +12,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// audio tracks.
     /// </summary>
     /// <seealso cref="MicrophoneSource"/>
-    public abstract class AudioTrackSource : WorkQueue, IAudioSource, IMediaTrackSource
+    public abstract class AudioTrackSource : MonoBehaviour, IAudioSource, IMediaTrackSource, IMediaTrackSourceInternal
     {
         /// <summary>
         /// Audio track source object from the underlying C# library that this component encapsulates.
@@ -125,20 +124,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Source.Dispose();
                 Source = null;
 
-                // Clear this already to make sure it is false when the event is raised.
-                IsStreaming = false;
-
                 AudioSourceStopped.Invoke(this);
+                IsStreaming = false;
             }
         }
 
-        internal void OnMediaLineAdded(MediaLine mediaLine)
+        void IMediaTrackSourceInternal.OnAddedToMediaLine(MediaLine mediaLine)
         {
             Debug.Assert(!_mediaLines.Contains(mediaLine));
             _mediaLines.Add(mediaLine);
         }
 
-        internal void OnMediaLineRemoved(MediaLine mediaLine)
+        void IMediaTrackSourceInternal.OnRemoveFromMediaLine(MediaLine mediaLine)
         {
             bool removed = _mediaLines.Remove(mediaLine);
             Debug.Assert(removed);

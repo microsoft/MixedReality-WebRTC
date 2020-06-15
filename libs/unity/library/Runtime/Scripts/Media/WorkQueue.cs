@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Threading;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -15,12 +17,33 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     public abstract class WorkQueue : MonoBehaviour
     {
         /// <summary>
+        /// Check if the current thread is the main Unity application thread where
+        /// it is safe to access Unity objects.
+        /// </summary>
+        protected bool IsMainAppThread => (Thread.CurrentThread == _mainAppThread);
+
+        /// <summary>
+        /// Ensure the current method is running on the main Unity application thread.
+        /// </summary>
+        [Conditional("UNITY_ASSERTIONS")]
+        protected void EnsureIsMainAppThread()
+        {
+            UnityEngine.Debug.Assert(IsMainAppThread, "This method can only be called from the main Unity application thread.");
+        }
+
+        /// <summary>
         /// Invoke the specified action on the main Unity app thread.
         /// </summary>
         /// <param name="action">The action to execute.</param>
         protected void InvokeOnAppThread(Action action)
         {
             _mainThreadWorkQueue.Enqueue(action);
+        }
+
+        protected virtual void Awake()
+        {
+            // Awake() is always called from the main Unity app thread
+            _mainAppThread = Thread.CurrentThread;
         }
 
         /// <summary>
@@ -42,5 +65,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// callbacks to defer some of their work, generally a final user notification via an event.
         /// </summary>
         private readonly ConcurrentQueue<Action> _mainThreadWorkQueue = new ConcurrentQueue<Action>();
+
+        /// <summary>
+        /// Reference to the main Unity application thread where it is safe to access Unity objects.
+        /// </summary>
+        private Thread _mainAppThread = null;
     }
 }

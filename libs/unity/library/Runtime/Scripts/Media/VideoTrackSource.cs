@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -15,9 +13,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// of any peer connection, and can be shared with multiple of them.
     /// </summary>
     /// <seealso cref="WebcamSource"/>
-    /// <seealso cref="CustomVideoSender{T}"/>
+    /// <seealso cref="CustomVideoSource{T}"/>
     /// <seealso cref="SceneVideoSource"/>
-    public abstract class VideoTrackSource : VideoRendererSource, IVideoSource, IMediaTrackSource
+    public abstract class VideoTrackSource : VideoRendererSource, IVideoSource, IMediaTrackSource, IMediaTrackSourceInternal
     {
         /// <summary>
         /// Video track source object from the underlying C# library that this component encapsulates.
@@ -142,20 +140,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Source.Dispose();
                 Source = null;
 
-                // Clear this already to make sure it is false when the event is raised.
-                IsStreaming = false;
-
                 VideoStreamStopped.Invoke(this);
+                IsStreaming = false;
             }
         }
 
-        internal void OnMediaLineAdded(MediaLine mediaLine)
+        void IMediaTrackSourceInternal.OnAddedToMediaLine(MediaLine mediaLine)
         {
             Debug.Assert(!_mediaLines.Contains(mediaLine));
             _mediaLines.Add(mediaLine);
         }
 
-        internal void OnMediaLineRemoved(MediaLine mediaLine)
+        void IMediaTrackSourceInternal.OnRemoveFromMediaLine(MediaLine mediaLine)
         {
             bool removed = _mediaLines.Remove(mediaLine);
             Debug.Assert(removed);
