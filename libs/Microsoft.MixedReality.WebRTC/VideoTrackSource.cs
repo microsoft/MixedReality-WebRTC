@@ -51,7 +51,10 @@ namespace Microsoft.MixedReality.WebRTC
         public IReadOnlyList<LocalVideoTrack> Tracks => _tracks;
 
         /// <summary>
-        /// Event that occurs when a video frame has been produced by the source.
+        /// Event raised when a video frame has been produced by the source. Handlers must process the
+        /// frame as fast as possible without blocking the caller thread, and cannot remove themselves
+        /// from the event nor add other handlers to the event, otherwise the caller thread will deadlock.
+        /// The event delivers to the handlers an I420-encoded video frame.
         /// </summary>
         public event I420AVideoFrameDelegate VideoFrameReady
         {
@@ -82,7 +85,10 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Event that occurs when a video frame has been produced by the source.
+        /// Event raised when a video frame has been produced by the source. Handlers must process the
+        /// frame as fast as possible without blocking the caller thread, and cannot remove themselves
+        /// from the event nor add other handlers to the event, otherwise the caller thread will deadlock.
+        /// The event delivers to the handlers an ARGB32-encoded video frame.
         /// </summary>
         public event Argb32VideoFrameDelegate ARGB32VideoFrameReady
         {
