@@ -2,7 +2,11 @@
 uid: index
 title: Index
 ---
-# MixedReality-WebRTC documentation
+# MixedReality-WebRTC documentation (latest)
+
+This is the MixedReality-WebRTC documentation for [the `master` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/master/), which contains the latest features and API changes. This latest API is **incompatible with the v1.x NuGet packages**.
+
+For the documentation corresponding to other branches, including [the `release/1.0` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/release/1.0/) from which the NuGet 1.x packages are built, use the drop-down selection at the top right of this page.
 
 ## User Manual
 
@@ -27,13 +31,13 @@ title: Index
   - [Tutorial](manual/helloworld-unity.md)
   - [Peer Connection](manual/unity-peerconnection.md)
   - [Signaler](manual/unity-signaler.md)
-  - [Media Player](manual/unity-mediaplayer.md)
   - Audio
-    - [LocalAudioSource](manual/unity-localaudiosource.md)
-    - [RemoteAudioSource](manual/unity-remoteaudiosource.md)
+    - [`MicrophoneSource`](manual/unity-localaudiosource.md)
+    - [`AudioReceiver`](manual/unity-remoteaudiosource.md)
   - Video
-    - [LocalVideoSource](manual/unity-localvideosource.md)
-    - [RemoteVideoSource](manual/unity-remotevideosource.md)
+    - [`WebcamSource`](manual/unity-localvideosource.md)
+    - [`VideoReceiver`](manual/unity-remotevideosource.md)
+    - [`VideoRenderer`](manual/unity-mediaplayer.md)
 - Advanced topics
   - [Building the Core dependencies from sources](manual/building-core.md)
 
