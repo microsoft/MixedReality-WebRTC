@@ -31,9 +31,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [ToggleLeft]
         protected bool _autoGainControl = true;
 
-#if UNITY_WSA && !UNITY_EDITOR
-        protected override async void OnEnable()
+        protected async void OnEnable()
         {
+            if (Source != null)
+            {
+                return;
+            }
+
+#if UNITY_WSA && !UNITY_EDITOR
             // Request access to audio capture. The OS may show some popup dialog to the
             // user to request permission. This will succeed only if the user approves it.
             try
@@ -54,19 +59,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 this.enabled = false;
                 return;
             }
-
-            // Once access was granted, continue to create the audio source by opening
-            // the audio capture device.
-            base.OnEnable();
-        }
 #endif
-
-        protected virtual async Task OnEnable()
-        {
-            if (Source != null)
-            {
-                return;
-            }
 
             var initConfig = new LocalAudioDeviceInitConfig
             {

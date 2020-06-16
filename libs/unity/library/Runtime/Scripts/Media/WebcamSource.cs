@@ -258,8 +258,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 throw new Exception("Failed ot create webcam video source.");
             }
 
-            VideoStreamStarted.Invoke(this);
             IsStreaming = true;
+            VideoStreamStarted.Invoke(this);
         }
 
 #if UNITY_WSA && !UNITY_EDITOR
