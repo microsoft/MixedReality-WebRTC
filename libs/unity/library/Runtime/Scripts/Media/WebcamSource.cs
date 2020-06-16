@@ -156,7 +156,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // some other place, and in case a future version of Unity decided to change that assumption,
                 // but currently OnEnable() is always invoked from the main Unity app thread so here the first
                 // branch is never taken.
-                if (!UnityEngine.WSA.Application.RunningOnUIThread())
+                if (UnityEngine.WSA.Application.RunningOnUIThread())
                 {
                     await RequestAccessAsync();
                 }
@@ -264,10 +264,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
 #if UNITY_WSA && !UNITY_EDITOR
         /// <summary>
-        /// Internal helper to ensure device access.
+        /// Internal UWP helper to ensure device access.
         /// </summary>
         /// <remarks>
-        /// On UWP this must be called from the main UI thread.
+        /// This must be called from the main UWP UI thread (not the main Unity app thread).
         /// </remarks>
         private Task RequestAccessAsync()
         {
