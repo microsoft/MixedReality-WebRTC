@@ -140,7 +140,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var pc_go = new GameObject("pc1");
             pc_go.SetActive(false); // prevent auto-activation of components
             var pc = pc_go.AddComponent<PeerConnection>();
-            pc.AutoInitializeOnStart = false;
 
             // Create some video track sources
             VideoTrackSource source1 = pc_go.AddComponent<MockVideoSource>();
@@ -191,7 +190,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var pc_go = new GameObject("pc1");
             pc_go.SetActive(false); // prevent auto-activation of components
             var pc = pc_go.AddComponent<PeerConnection>();
-            pc.AutoInitializeOnStart = false;
 
             // Create some video track sources
             VideoReceiver receiver1 = pc_go.AddComponent<VideoReceiver>();

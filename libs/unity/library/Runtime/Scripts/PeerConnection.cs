@@ -136,15 +136,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #region Behavior settings
 
         /// <summary>
-        /// Initialize the peer connection on <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
-        /// If this field is <c>false</c> then the user needs to call <see cref="InitializeAsync(CancellationToken)"/>
-        /// to manually initialize the peer connection before it can be used for any purpose.
-        /// </summary>
-        [Tooltip("Automatically initialize the peer connection on Start().")]
-        [Editor.ToggleLeft]
-        public bool AutoInitializeOnStart = true;
-
-        /// <summary>
         /// Automatically create a new offer whenever a renegotiation needed event is received.
         /// </summary>
         /// <remarks>
@@ -277,20 +268,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// that the <see cref="Peer"/> property is non-<c>null</c> to confirm that the connection
         /// is in fact initialized.
         /// </remarks>
-        public Task InitializeAsync(CancellationToken token = default(CancellationToken))
+        private Task InitializeAsync(CancellationToken token = default(CancellationToken))
         {
-            // Check in case Awake() was called first
-            if (_nativePeer == null)
-            {
-                CreateNativePeerConnection();
-            }
-
-            // if the peer is already set, we refuse to initialize again.
-            // Note: for multi-peer scenarios, use multiple WebRTC components.
-            if (_nativePeer.Initialized)
-            {
-                return Task.CompletedTask;
-            }
+            CreateNativePeerConnection();
 
             // Ensure Android binding is initialized before accessing the native implementation
             Android.Initialize();
@@ -417,19 +397,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         InitialDesiredDirection = wantsDir
                     };
                     tr = _nativePeer.AddTransceiver(mediaLine.MediaKind, settings);
+                    try
+                    {
+                        mediaLine.PairTransceiver(tr);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogErrorOnMediaLineException(ex, mediaLine, tr);
+                    }
                 }
                 Debug.Assert(tr != null);
-                Debug.Assert(transceivers[index++] == tr);
-
-                // Update the transceiver
-                try
-                {
-                    mediaLine.UpdateForCreateOffer(tr);
-                }
-                catch (Exception ex)
-                {
-                    LogErrorOnMediaLineException(ex, mediaLine, tr);
-                }
+                Debug.Assert(transceivers[index] == tr);
+                ++index;
             }
 
             // Create the offer
@@ -467,6 +446,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // MediaLine manipulates some MonoBehaviour objects when managing senders and receivers
             EnsureIsMainAppThread();
 
+            if (!isActiveAndEnabled)
+            {
+                Debug.LogWarning("Message received by disabled PeerConnection");
+                return;
+            }
+
             // First apply the remote description
             await Peer.SetRemoteDescriptionAsync(message);
 
@@ -487,12 +472,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     var tr = transceivers[i];
                     var mediaLine = _mediaLines[i];
+                    if (mediaLine.Transceiver == null)
+                    {
+                        mediaLine.PairTransceiver(tr);
+                    }
+                    else
+                    {
+                        Debug.Assert(tr == mediaLine.Transceiver);
+                    }
 
                     // Associate the transceiver with the media line, if not already done, and associate
                     // the track components of the media line to the tracks of the transceiver.
                     try
                     {
-                        mediaLine.UpdateOnReceiveOffer(tr);
+                        mediaLine.UpdateAfterSDPMessage();
                     }
                     catch (Exception ex)
                     {
@@ -534,7 +527,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     Transceiver tr = transceivers[i];
                     var mediaLine = _mediaLines[i];
                     Debug.Assert(mediaLine.Transceiver == transceivers[i]);
-                    mediaLine.UpdateOnReceiveAnswer();
+                    mediaLine.UpdateAfterSDPMessage();
                 }
 
                 // Ignore extra transceivers without a registered component to attach
@@ -558,31 +551,29 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// <see cref="Peer"/> will be <c>null</c> afterward.
         /// </remarks>
-        public void Uninitialize()
+        private void Uninitialize()
         {
-            if ((_nativePeer != null) && _nativePeer.Initialized)
+            Debug.Assert(_nativePeer.Initialized);
+            // Fire signals before doing anything else to allow listeners to clean-up,
+            // including un-registering any callback and remove any track from the connection.
+            OnShutdown.Invoke();
+
+            // Prevent publicly accessing the native peer after it has been deinitialized.
+            // This does not prevent systems caching a reference from accessing it, but it
+            // is their responsibility to check that the peer is initialized.
+            Peer = null;
+
+            // Detach all transceivers. This prevents senders/receivers from trying to access
+            // them during their clean-up sequence, as transceivers are about to be destroyed
+            // by the native implementation.
+            foreach (var mediaLine in _mediaLines)
             {
-                // Fire signals before doing anything else to allow listeners to clean-up,
-                // including un-registering any callback and remove any track from the connection.
-                OnShutdown.Invoke();
-
-                // Prevent publicly accessing the native peer after it has been deinitialized.
-                // This does not prevent systems caching a reference from accessing it, but it
-                // is their responsibility to check that the peer is initialized.
-                Peer = null;
-
-                // Detach all transceivers. This prevents senders/receivers from trying to access
-                // them during their clean-up sequence, as transceivers are about to be destroyed
-                // by the native implementation.
-                foreach (var mediaLine in _mediaLines)
-                {
-                    mediaLine.UnpairTransceiver();
-                }
-
-                // Close the connection and release native resources.
-                _nativePeer.Dispose();
-                _nativePeer = null;
+                mediaLine.UnpairTransceiver();
             }
+
+            // Close the connection and release native resources.
+            _nativePeer.Dispose();
+            _nativePeer = null;
         }
 
         #endregion
@@ -590,43 +581,28 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         #region Unity MonoBehaviour methods
 
-        protected override void Awake()
-        {
-            base.Awake();
-
-            // Check in case InitializeAsync() was called first.
-            if (_nativePeer == null)
-            {
-                CreateNativePeerConnection();
-            }
-        }
-
         /// <summary>
-        /// Unity Engine Start() hook
+        /// Unity Engine OnEnable() hook
         /// </summary>
         /// <remarks>
-        /// See <see href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html"/>
+        /// See <see href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnEnable.html"/>
         /// </remarks>
-        private void Start()
+        private void OnEnable()
         {
             if (AutoLogErrorsToUnityConsole)
             {
                 OnError.AddListener(OnError_Listener);
             }
-
-            if (AutoInitializeOnStart)
-            {
-                InitializeAsync();
-            }
+            InitializeAsync();
         }
 
         /// <summary>
-        /// Unity Engine OnDestroy() hook
+        /// Unity Engine OnDisable() hook
         /// </summary>
         /// <remarks>
-        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDestroy.html
+        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDisable.html
         /// </remarks>
-        private void OnDestroy()
+        private void OnDisable()
         {
             Uninitialize();
             OnError.RemoveListener(OnError_Listener);
@@ -645,13 +621,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             // Create the peer connection managed wrapper and its native implementation
             _nativePeer = new WebRTC.PeerConnection();
-
-            // Register event handlers for remote tracks removed (media receivers).
-            // Note that handling of tracks added is done in HandleConnectionMessageAsync rather than
-            // in TrackAdded because when these are invoked the transceivers have not been
-            // paired yet, so there's not much we can do with those events.
-            _nativePeer.AudioTrackRemoved += Peer_AudioTrackRemoved;
-            _nativePeer.VideoTrackRemoved += Peer_VideoTrackRemoved;
 
             _nativePeer.AudioTrackAdded +=
                 (RemoteAudioTrack track) =>
@@ -764,36 +733,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Peer = _nativePeer;
 
             OnInitialized.Invoke();
-        }
-
-        private void Peer_AudioTrackRemoved(Transceiver transceiver, RemoteAudioTrack track)
-        {
-            Debug.Assert(track.Transceiver == null); // already removed
-            // Note: if the transceiver was created by setting a remote description internally, but
-            // the user did not add any MediaLine in the component, then the transceiver is ignored.
-            // SetRemoteDescriptionAsync() already triggered a warning in this case, so be silent here.
-            MediaLine mediaLine = _mediaLines.Find((MediaLine ml) => ml.Transceiver == transceiver);
-            if (mediaLine != null)
-            {
-                Debug.Assert(mediaLine != null);
-                Debug.Assert(mediaLine.MediaKind == MediaKind.Audio);
-                mediaLine.OnUnpaired(track);
-            }
-        }
-
-        private void Peer_VideoTrackRemoved(Transceiver transceiver, RemoteVideoTrack track)
-        {
-            Debug.Assert(track.Transceiver == null); // already removed
-            // Note: if the transceiver was created by SetRemoteDescription() internally, but the user
-            // did not add any MediaLine in the component, then the transceiver is ignored.
-            // SetRemoteDescriptionAsync() already triggered a warning in this case, so be silent here.
-            MediaLine mediaLine = _mediaLines.Find((MediaLine ml) => ml.Transceiver == transceiver);
-            if (mediaLine != null)
-            {
-                Debug.Assert(mediaLine != null);
-                Debug.Assert(mediaLine.MediaKind == MediaKind.Video);
-                mediaLine.OnUnpaired(track);
-            }
         }
 
         private void Peer_RenegotiationNeeded()

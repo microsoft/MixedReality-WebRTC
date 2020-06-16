@@ -35,11 +35,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var pc1_go = new GameObject("pc1");
             pc1_go.SetActive(false); // prevent auto-activation of components
             var pc1 = pc1_go.AddComponent<PeerConnection>();
-            pc1.AutoInitializeOnStart = false;
             var pc2_go = new GameObject("pc2");
             pc2_go.SetActive(false); // prevent auto-activation of components
             var pc2 = pc2_go.AddComponent<PeerConnection>();
-            pc2.AutoInitializeOnStart = false;
 
             // Batch changes manually
             pc1.AutoCreateOfferOnRenegotiationNeeded = false;
@@ -83,40 +81,26 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             ml2.Source = source2;
             ml2.Receiver = receiver2;
 
-            // Activate
-            pc1_go.SetActive(true);
-            pc2_go.SetActive(true);
-
             // Initialize
-            var initializedEvent1 = new ManualResetEventSlim(initialState: false);
-            pc1.OnInitialized.AddListener(() => initializedEvent1.Set());
-            Assert.IsNull(pc1.Peer);
-            pc1.InitializeAsync().Wait(millisecondsTimeout: 50000);
-            var initializedEvent2 = new ManualResetEventSlim(initialState: false);
-            pc2.OnInitialized.AddListener(() => initializedEvent2.Set());
-            Assert.IsNull(pc2.Peer);
-            pc2.InitializeAsync().Wait(millisecondsTimeout: 50000);
+            var init1 = PeerConnectionTests.InitializeAndWait(pc1);
+            var init2 = PeerConnectionTests.InitializeAndWait(pc2);
+            yield return init1;
+            yield return init2;
 
-            // Wait a frame so that the Unity event OnInitialized can propagate
-            yield return null;
-
-            // Check the event was raised
-            Assert.IsTrue(initializedEvent1.Wait(millisecondsTimeout: 50000));
-            Assert.IsNotNull(pc1.Peer);
-            Assert.IsTrue(initializedEvent2.Wait(millisecondsTimeout: 50000));
-            Assert.IsNotNull(pc2.Peer);
-
-            // Confirm the sources are ready and the sender tracks have been created.
+            // Confirm the sources are ready
             if (withSender1)
             {
                 Assert.IsTrue(source1.IsLive);
-                Assert.IsNotNull(ml1.SenderTrack);
+
             }
             if (withSender2)
             {
                 Assert.IsTrue(source2.IsLive);
-                Assert.IsNotNull(ml2.SenderTrack);
             }
+
+            // Confirm the sender track is not created yet; it will be when the connection starts
+            Assert.IsNull(ml1.SenderTrack);
+            Assert.IsNull(ml2.SenderTrack);
 
             // Confirm the receiver track is not added yet, since remote tracks are only instantiated
             // as the result of a session negotiation.
@@ -256,11 +240,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var pc1_go = new GameObject("pc1");
             pc1_go.SetActive(false); // prevent auto-activation of components
             var pc1 = pc1_go.AddComponent<PeerConnection>();
-            pc1.AutoInitializeOnStart = false;
             var pc2_go = new GameObject("pc2");
             pc2_go.SetActive(false); // prevent auto-activation of components
             var pc2 = pc2_go.AddComponent<PeerConnection>();
-            pc2.AutoInitializeOnStart = false;
 
             // Batch changes manually
             pc1.AutoCreateOfferOnRenegotiationNeeded = false;
@@ -400,28 +382,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 }
             }
 
-            // Activate
-            pc1_go.SetActive(true);
-            pc2_go.SetActive(true);
-
             // Initialize
-            var initializedEvent1 = new ManualResetEventSlim(initialState: false);
-            pc1.OnInitialized.AddListener(() => initializedEvent1.Set());
-            Assert.IsNull(pc1.Peer);
-            pc1.InitializeAsync().Wait(millisecondsTimeout: 50000);
-            var initializedEvent2 = new ManualResetEventSlim(initialState: false);
-            pc2.OnInitialized.AddListener(() => initializedEvent2.Set());
-            Assert.IsNull(pc2.Peer);
-            pc2.InitializeAsync().Wait(millisecondsTimeout: 50000);
-
-            // Wait a frame so that the Unity event OnInitialized can propagate
-            yield return null;
-
-            // Check the event was raised
-            Assert.IsTrue(initializedEvent1.Wait(millisecondsTimeout: 50000));
-            Assert.IsNotNull(pc1.Peer);
-            Assert.IsTrue(initializedEvent2.Wait(millisecondsTimeout: 50000));
-            Assert.IsNotNull(pc2.Peer);
+            var init1 = PeerConnectionTests.InitializeAndWait(pc1);
+            var init2 = PeerConnectionTests.InitializeAndWait(pc2);
+            yield return init1;
+            yield return init2;
 
             // Confirm the sources are ready
             for (int i = 0; i < NumTransceivers; ++i)
@@ -431,13 +396,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 {
                     Assert.IsNotNull(cfg.peer1.source, $"Missing source #{i} on Peer #1");
                     Assert.IsTrue(cfg.peer1.source.IsLive, $"Source #{i} is not ready on Peer #1");
-                    Assert.IsNotNull(cfg.peer1.mediaLine.SenderTrack);
+                    Assert.IsNull(cfg.peer1.mediaLine.SenderTrack); // created during connection
                 }
                 if (cfg.peer2.expectSender)
                 {
                     Assert.IsNotNull(cfg.peer2.source, $"Missing source #{i} on Peer #2");
                     Assert.IsTrue(cfg.peer2.source.IsLive, $"Source #{i} is not ready on Peer #2");
-                    Assert.IsNotNull(cfg.peer2.mediaLine.SenderTrack);
+                    Assert.IsNull(cfg.peer2.mediaLine.SenderTrack); // created during connection
                 }
             }
 
@@ -582,11 +547,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var pc1_go = new GameObject("pc1");
             pc1_go.SetActive(false); // prevent auto-activation of components
             var pc1 = pc1_go.AddComponent<PeerConnection>();
-            pc1.AutoInitializeOnStart = false;
             var pc2_go = new GameObject("pc2");
             pc2_go.SetActive(false); // prevent auto-activation of components
             var pc2 = pc2_go.AddComponent<PeerConnection>();
-            pc2.AutoInitializeOnStart = false;
 
             // Batch changes manually
             pc1.AutoCreateOfferOnRenegotiationNeeded = false;
@@ -613,32 +576,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(MediaKind.Video, ml2.MediaKind);
             ml2.Receiver = receiver2;
 
-            // Activate
-            pc1_go.SetActive(true);
-            pc2_go.SetActive(true);
-
             // Initialize
-            var initializedEvent1 = new ManualResetEventSlim(initialState: false);
-            pc1.OnInitialized.AddListener(() => initializedEvent1.Set());
-            Assert.IsNull(pc1.Peer);
-            pc1.InitializeAsync().Wait(millisecondsTimeout: 50000);
-            var initializedEvent2 = new ManualResetEventSlim(initialState: false);
-            pc2.OnInitialized.AddListener(() => initializedEvent2.Set());
-            Assert.IsNull(pc2.Peer);
-            pc2.InitializeAsync().Wait(millisecondsTimeout: 50000);
+            var init1 = PeerConnectionTests.InitializeAndWait(pc1);
+            var init2 = PeerConnectionTests.InitializeAndWait(pc2);
+            yield return init1;
+            yield return init2;
 
-            // Wait a frame so that the Unity event OnInitialized can propagate
-            yield return null;
+            // Confirm the source is ready, but the sender track is not created yet
 
-            // Check the event was raised
-            Assert.IsTrue(initializedEvent1.Wait(millisecondsTimeout: 50000));
-            Assert.IsNotNull(pc1.Peer);
-            Assert.IsTrue(initializedEvent2.Wait(millisecondsTimeout: 50000));
-            Assert.IsNotNull(pc2.Peer);
-
-            // Confirm the source is ready, and there is a sender track.
             Assert.IsTrue(source1.IsLive);
-            Assert.IsNotNull(ml1.SenderTrack);
+            Assert.IsNull(ml1.SenderTrack);
 
             // Connect
             Assert.IsTrue(sig.StartConnection());
@@ -751,11 +698,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var pc1_go = new GameObject("pc1");
             pc1_go.SetActive(false); // prevent auto-activation of components
             var pc1 = pc1_go.AddComponent<PeerConnection>();
-            pc1.AutoInitializeOnStart = false;
             var pc2_go = new GameObject("pc2");
             pc2_go.SetActive(false); // prevent auto-activation of components
             var pc2 = pc2_go.AddComponent<PeerConnection>();
-            pc2.AutoInitializeOnStart = false;
 
             // Batch changes manually
             pc1.AutoCreateOfferOnRenegotiationNeeded = false;
@@ -780,34 +725,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsNotNull(ml2);
             ml2.Receiver = receiver2;
 
-            // Activate
-            pc1_go.SetActive(true);
-            pc2_go.SetActive(true);
-
             // Initialize
-            var initializedEvent1 = new ManualResetEventSlim(initialState: false);
-            pc1.OnInitialized.AddListener(() => initializedEvent1.Set());
-            Assert.IsNull(pc1.Peer);
-            bool finishedInitializeBeforeTimeout1 = pc1.InitializeAsync().Wait(millisecondsTimeout: 50000);
-            Assert.IsTrue(finishedInitializeBeforeTimeout1);
-            var initializedEvent2 = new ManualResetEventSlim(initialState: false);
-            pc2.OnInitialized.AddListener(() => initializedEvent2.Set());
-            Assert.IsNull(pc2.Peer);
-            bool finishedInitializeBeforeTimeout2 = pc2.InitializeAsync().Wait(millisecondsTimeout: 50000);
-            Assert.IsTrue(finishedInitializeBeforeTimeout2);
+            var init1 = PeerConnectionTests.InitializeAndWait(pc1);
+            var init2 = PeerConnectionTests.InitializeAndWait(pc2);
+            yield return init1;
+            yield return init2;
 
-            // Wait a frame so that the Unity event OnInitialized can propagate
-            yield return null;
-
-            // Check the event was raised and the C# peer objects created
-            Assert.IsTrue(initializedEvent1.Wait(millisecondsTimeout: 50000));
-            Assert.IsNotNull(pc1.Peer);
-            Assert.IsTrue(initializedEvent2.Wait(millisecondsTimeout: 50000));
-            Assert.IsNotNull(pc2.Peer);
-
-            // Confirm the source is ready, and there is a sender track.
+            // Confirm the source is ready, but the sender track is not created yet
             Assert.IsTrue(source1.IsLive);
-            Assert.IsNotNull(ml1.SenderTrack);
+            Assert.IsNull(ml1.SenderTrack);
 
             // Create some dummy out-of-band data channel to force SCTP negotiation
             // during the first offer, and be able to add some in-band data channels
