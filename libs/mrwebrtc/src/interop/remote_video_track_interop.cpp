@@ -10,22 +10,6 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-MRS_API void MRS_CALL
-mrsRemoteVideoTrackSetUserData(mrsRemoteVideoTrackHandle handle,
-                               void* user_data) noexcept {
-  if (auto track = static_cast<RemoteVideoTrack*>(handle)) {
-    track->SetUserData(user_data);
-  }
-}
-
-MRS_API void* MRS_CALL
-mrsRemoteVideoTrackGetUserData(mrsRemoteVideoTrackHandle handle) noexcept {
-  if (auto track = static_cast<RemoteVideoTrack*>(handle)) {
-    return track->GetUserData();
-  }
-  return nullptr;
-}
-
 void MRS_CALL mrsRemoteVideoTrackRegisterI420AFrameCallback(
     mrsRemoteVideoTrackHandle trackHandle,
     mrsI420AVideoFrameCallback callback,

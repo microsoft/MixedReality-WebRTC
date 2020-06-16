@@ -10,7 +10,7 @@ using UnityEngine;
 /// <summary>
 /// A video source producing some colored frames generated programmatically.
 /// </summary>
-public class UniformColorVideoSource : CustomVideoSender<Argb32VideoFrameStorage>
+public class UniformColorVideoSource : CustomVideoSource<Argb32VideoFrameStorage>
 {
     /// <summary>
     /// List of colors to cycle through.

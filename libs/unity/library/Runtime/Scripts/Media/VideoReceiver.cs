@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -8,13 +9,23 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <summary>
     /// This component represents a remote video source added as a video track to an
     /// existing WebRTC peer connection by a remote peer and received locally.
-    /// The video track can optionally be displayed locally with a <see cref="MediaPlayer"/>.
+    /// The video track can optionally be displayed locally with a <see cref="VideoRenderer"/>.
     /// </summary>
     [AddComponentMenu("MixedReality-WebRTC/Video Receiver")]
-    public class VideoReceiver : MediaReceiver, IVideoSource
+    public class VideoReceiver : VideoRendererSource, IVideoSource, IMediaReceiver, IMediaReceiverInternal
     {
-        /// <inheritdoc/>
-        public bool IsStreaming { get; protected set; }
+        /// <summary>
+        /// Remote video track receiving data from the remote peer.
+        ///
+        /// This is <c>null</c> until <see cref="IMediaReceiver.Transceiver"/> is set to a non-null value
+        /// and a remote track is added to that transceiver.
+        /// </summary>
+        public RemoteVideoTrack Track { get; private set; }
+
+        /// <summary>
+        /// List of video media lines using this source.
+        /// </summary>
+        public IReadOnlyList<MediaLine> MediaLines => _mediaLines;
 
         /// <summary>
         /// Event raised when the video stream started.
@@ -28,7 +39,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
         /// </remarks>
-        public VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
+        public readonly VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
 
         /// <summary>
         /// Event raised when the video stream stopped.
@@ -42,7 +53,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
         /// </remarks>
-        public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
+        public readonly VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
+
+
+        #region IVideoSource interface
+
+        /// <inheritdoc/>
+        public bool IsStreaming { get; protected set; }
 
         /// <inheritdoc/>
         public VideoStreamStartedEvent GetVideoStreamStarted() { return VideoStreamStarted; }
@@ -50,36 +67,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <inheritdoc/>
         public VideoStreamStoppedEvent GetVideoStreamStopped() { return VideoStreamStopped; }
 
-        /// <summary>
-        /// Video transceiver this receiver is paired with, if any.
-        ///
-        /// This is <c>null</c> until a remote description is applied which pairs the media line
-        /// this receiver is associated with to a transceiver, or until the peer connection of this
-        /// receiver's media line creates the video receiver right before creating an SDP offer.
-        /// </summary>
-        public Transceiver Transceiver { get; private set; }
-
-        /// <summary>
-        /// Remote video track receiving data from the remote peer.
-        ///
-        /// This is <c>null</c> until <see cref="Transceiver"/> is set to a non-null value and a
-        /// remote track is added to that transceiver.
-        /// </summary>
-        public RemoteVideoTrack Track { get; private set; }
-
         /// <inheritdoc/>
         public VideoEncoding FrameEncoding { get; } = VideoEncoding.I420A;
-
-        /// <inheritdoc/>
-        public VideoReceiver() : base(MediaKind.Video)
-        {
-        }
 
         /// <summary>
         /// Register a frame callback to listen to incoming video data receiving through this
         /// video receiver from the remote peer.
+        ///
         /// The callback can only be registered once the <see cref="Track"/> is valid, that is
-        /// once the <see cref="VideoStreamStarted"/> event was triggered.
+        /// once the <see cref="VideoStreamStarted"/> event was raised.
         /// </summary>
         /// <param name="callback">The new frame callback to register.</param>
         /// <remarks>
@@ -96,8 +92,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Register a frame callback to listen to incoming video data receiving through this
         /// video receiver from the remote peer.
+        ///
         /// The callback can only be registered once the <see cref="Track"/> is valid, that is
-        /// once the <see cref="VideoStreamStarted"/> event was triggered.
+        /// once the <see cref="VideoStreamStarted"/> event was raised.
         /// </summary>
         /// <param name="callback">The new frame callback to register.</param>
         /// <remarks>
@@ -111,10 +108,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        /// <summary>
-        /// Unregister an existing frame callback registered with <see cref="RegisterCallback(I420AVideoFrameDelegate)"/>.
-        /// </summary>
-        /// <param name="callback">The frame callback to unregister.</param>
+        /// <inheritdoc/>
         public void UnregisterCallback(I420AVideoFrameDelegate callback)
         {
             if (Track != null)
@@ -123,10 +117,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        /// <summary>
-        /// Unregister an existing frame callback registered with <see cref="RegisterCallback(Argb32VideoFrameDelegate)"/>.
-        /// </summary>
-        /// <param name="callback">The frame callback to unregister.</param>
+        /// <inheritdoc/>
         public void UnregisterCallback(Argb32VideoFrameDelegate callback)
         {
             if (Track != null)
@@ -135,75 +126,94 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        /// <summary>
-        /// Internal callback invoked when the video receiver is attached to a transceiver created
-        /// just before the peer connection creates an SDP offer.
-        /// </summary>
-        /// <param name="videoTransceiver">The video transceiver this receiver is attached with.</param>
-        /// <remarks>
-        /// At this time the transceiver does not yet contain a remote track. The remote track will be
-        /// created when receiving an answer from the remote peer, if it agreed to send media data through
-        /// that transceiver, and <see cref="OnPaired"/> will be invoked at that time.
-        /// </remarks>
-        internal void AttachToTransceiver(Transceiver videoTransceiver)
+        #endregion
+
+
+        #region IMediaReceiver interface
+
+        /// <inheritdoc/>
+        MediaKind IMediaReceiver.MediaKind => MediaKind.Video;
+
+        /// <inheritdoc/>
+        bool IMediaReceiver.IsLive => _isLive;
+
+        /// <inheritdoc/>
+        Transceiver IMediaReceiver.Transceiver => _transceiver;
+
+        #endregion
+
+
+        private bool _isLive = false;
+        private Transceiver _transceiver = null;
+        private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
+
+
+        #region IMediaReceiverInternal interface
+
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.OnAddedToMediaLine(MediaLine mediaLine)
         {
-            Debug.Assert((Transceiver == null) || (Transceiver == videoTransceiver));
-            Transceiver = videoTransceiver;
+            Debug.Assert(!_mediaLines.Contains(mediaLine));
+            _mediaLines.Add(mediaLine);
         }
 
-        /// <summary>
-        /// Internal callback invoked when the video receiver is detached from a transceiver about to be
-        /// destroyed by the native implementation.
-        /// </summary>
-        /// <param name="videoTransceiver">The video transceiver this receiver is attached with.</param>
-        internal void DetachFromTransceiver(Transceiver videoTransceiver)
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.OnRemoveFromMediaLine(MediaLine mediaLine)
         {
-            Debug.Assert((Transceiver == null) || (Transceiver == videoTransceiver));
-            Transceiver = null;
+            bool removed = _mediaLines.Remove(mediaLine);
+            Debug.Assert(removed);
         }
 
-        /// <summary>
-        /// Free-threaded callback invoked by the owning peer connection when a track is paired
-        /// with this receiver, which enqueues the <see cref="VideoSource.VideoStreamStarted"/>
-        /// event to be fired from the main Unity thread.
-        /// </summary>
-        internal override void OnPaired(MediaTrack track)
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.OnPaired(MediaTrack track)
         {
             var remoteVideoTrack = (RemoteVideoTrack)track;
 
             // Enqueue invoking from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.
-            _mainThreadWorkQueue.Enqueue(() =>
+            InvokeOnAppThread(() =>
             {
                 Debug.Assert(Track == null);
                 Track = remoteVideoTrack;
-                IsLive = true;
-                VideoStreamStarted.Invoke(this);
+                _isLive = true;
                 IsStreaming = true;
+                VideoStreamStarted.Invoke(this);
             });
         }
 
-        /// <summary>
-        /// Free-threaded callback invoked by the owning peer connection when a track is unpaired
-        /// from this receiver, which enqueues the <see cref="VideoSource.VideoStreamStopped"/>
-        /// event to be fired from the main Unity thread.
-        /// </summary>
-        internal override void OnUnpaired(MediaTrack track)
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.OnUnpaired(MediaTrack track)
         {
             Debug.Assert(track is RemoteVideoTrack);
 
             // Enqueue invoking from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.
-            _mainThreadWorkQueue.Enqueue(() =>
+            InvokeOnAppThread(() =>
             {
                 Debug.Assert(Track == track);
                 Track = null;
-                IsStreaming = false;
-                IsLive = false;
+                _isLive = false;
                 VideoStreamStopped.Invoke(this);
+                IsStreaming = false;
             });
         }
+
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.AttachToTransceiver(Transceiver transceiver)
+        {
+            Debug.Assert((_transceiver == null) || (_transceiver == transceiver));
+            _transceiver = transceiver;
+        }
+
+        /// <inheritdoc/>
+        void IMediaReceiverInternal.DetachFromTransceiver(Transceiver transceiver)
+        {
+            Debug.Assert((_transceiver == null) || (_transceiver == transceiver));
+            _transceiver = null;
+        }
+
+        #endregion
     }
 }

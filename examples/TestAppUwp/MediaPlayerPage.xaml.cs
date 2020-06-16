@@ -19,6 +19,7 @@ namespace TestAppUwp
     /// </summary>
     public class VideoTrackViewModel
     {
+        public VideoTrackSource Source;
         public IVideoTrack Track;
         public MediaTrack TrackImpl;
         public bool IsRemote;
@@ -52,6 +53,8 @@ namespace TestAppUwp
     /// </summary>
     public class AudioTrackViewModel
     {
+        // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
+        public AudioTrackSource Source;
         public IAudioTrack Track;
         public MediaTrack TrackImpl;
         public bool IsRemote;

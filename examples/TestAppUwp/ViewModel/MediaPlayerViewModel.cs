@@ -117,7 +117,10 @@ namespace TestAppUwp
                 DisplayName = "Local microphone (default device)",
                 Factory = async () =>
                 {
-                    return await LocalAudioTrack.CreateFromDeviceAsync();
+                    // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
+                    var source = await AudioTrackSource.CreateFromDeviceAsync();
+                    var settings = new LocalAudioTrackInitConfig();
+                    return LocalAudioTrack.CreateFromSource(source, settings);
                 }
             });
 
@@ -126,7 +129,10 @@ namespace TestAppUwp
                 DisplayName = "Local webcam (default device)",
                 Factory = async () =>
                 {
-                    return await LocalVideoTrack.CreateFromDeviceAsync();
+                    // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
+                    var source = await DeviceVideoTrackSource.CreateAsync();
+                    var settings = new LocalVideoTrackInitConfig();
+                    return LocalVideoTrack.CreateFromSource(source, settings);
                 }
             });
 

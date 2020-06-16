@@ -15,9 +15,9 @@ LocalAudioTrack::LocalAudioTrack(
     RefPtr<GlobalFactory> global_factory,
     rtc::scoped_refptr<webrtc::AudioTrackInterface> track) noexcept
     : MediaTrack(std::move(global_factory), ObjectType::kLocalAudioTrack),
-      track_(std::move(track)),
-      track_name_(track_->id()) {
+      track_(std::move(track)) {
   RTC_CHECK(track_);
+  name_ = track_->id();
   kind_ = mrsTrackKind::kAudioTrack;
   track_->AddSink(this);  //< FIXME - Implementation is no-op
 }
@@ -33,13 +33,13 @@ LocalAudioTrack::LocalAudioTrack(
                  owner),
       track_(std::move(track)),
       sender_(std::move(sender)),
-      transceiver_(transceiver),
-      track_name_(track_->id()) {
+      transceiver_(transceiver) {
   RTC_CHECK(owner_);
   RTC_CHECK(transceiver_);
   RTC_CHECK(transceiver_->GetMediaKind() == mrsMediaKind::kAudio);
   RTC_CHECK(track_);
   RTC_CHECK(sender_);
+  name_ = track_->id();
   kind_ = mrsTrackKind::kAudioTrack;
   transceiver_->OnLocalTrackAdded(this);
   track_->AddSink(this);  //< FIXME - Implementation is no-op

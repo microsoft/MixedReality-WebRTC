@@ -13,60 +13,6 @@
 
 #include <exception>
 
-namespace {
-
-using namespace Microsoft::MixedReality::WebRTC;
-
-/// Utility to convert an ObjectType to a string, for debugging purpose. This
-/// returns a view over a global constant buffer (static storage), which is
-/// always valid, never deallocated.
-absl::string_view ObjectTypeToString(ObjectType type) {
-  switch (type) {
-    case ObjectType::kPeerConnection:
-      return "PeerConnection";
-    case ObjectType::kLocalAudioTrack:
-      return "LocalAudioTrack";
-    case ObjectType::kLocalVideoTrack:
-      return "LocalVideoTrack";
-    case ObjectType::kExternalVideoTrackSource:
-      return "ExternalVideoTrackSource";
-    case ObjectType::kRemoteAudioTrack:
-      return "RemoteAudioTrack";
-    case ObjectType::kRemoteVideoTrack:
-      return "RemoteVideoTrack";
-    case ObjectType::kDataChannel:
-      return "DataChannel";
-    case ObjectType::kAudioTransceiver:
-      return "AudioTransceiver";
-    case ObjectType::kVideoTransceiver:
-      return "VideoTransceiver";
-    default:
-      RTC_NOTREACHED();
-      return "<UnknownObjectType>";
-  }
-}
-
-/// Utility to format a tracked object into a string, for debugging purpose.
-std::string ObjectToString(TrackedObject* obj) {
-  // rtc::StringBuilder doesn't support std::string_view, nor Append(). And
-  // asbl::string_view is not constexpr-friendly on MSVC due to strlen().
-  // rtc::SimpleStringBuilder supports Append(), but cannot dynamically resize.
-  // Assume that the object name will not be too long, and use that one.
-  char buffer[512];
-  rtc::SimpleStringBuilder builder(buffer);
-  if (obj) {
-    builder << "(";
-    absl::string_view sv = ObjectTypeToString(obj->GetObjectType());
-    builder.Append(sv.data(), sv.length());
-    builder << ") " << obj->GetName();
-  } else {
-    builder << "NULL";
-  }
-  return builder.str();
-}
-
-}  // namespace
-
 namespace Microsoft {
 namespace MixedReality {
 namespace WebRTC {

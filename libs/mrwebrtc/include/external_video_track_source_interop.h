@@ -7,24 +7,12 @@
 
 extern "C" {
 
-//
-// Wrapper
-//
-
-/// Add a reference to the native object associated with the given handle.
-MRS_API void MRS_CALL mrsExternalVideoTrackSourceAddRef(
-    mrsExternalVideoTrackSourceHandle handle) noexcept;
-
-/// Remove a reference from the native object associated with the given handle.
-MRS_API void MRS_CALL mrsExternalVideoTrackSourceRemoveRef(
-    mrsExternalVideoTrackSourceHandle handle) noexcept;
-
 /// Create a custom video track source external to the implementation. This
 /// allows feeding into WebRTC frames from any source, including generated or
 /// synthetic frames, for example for testing. The frame is provided from a
 /// callback as an I420-encoded buffer. This returns a handle to a newly
 /// allocated object, which must be released once not used anymore with
-/// |mrsExternalVideoTrackSourceRemoveRef()|.
+/// |mrsRefCountedObjectRemoveRef()|.
 MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromI420ACallback(
     mrsRequestExternalI420AVideoFrameCallback callback,
     void* user_data,
@@ -35,7 +23,7 @@ MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromI420ACallback(
 /// synthetic frames, for example for testing. The frame is provided from a
 /// callback as an ARGB32-encoded buffer. This returns a handle to a newly
 /// allocated object, which must be released once not used anymore with
-/// |mrsExternalVideoTrackSourceRemoveRef()|.
+/// |mrsRefCountedObjectRemoveRef()|.
 MRS_API mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromArgb32Callback(
     mrsRequestExternalArgb32VideoFrameCallback callback,
     void* user_data,

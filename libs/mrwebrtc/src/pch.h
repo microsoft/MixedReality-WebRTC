@@ -55,6 +55,7 @@
 #include "api/transport/bitrate_settings.h"
 #include "api/video/i420_buffer.h"
 #include "api/videosourceproxy.h"
+#include "media/base/adaptedvideotracksource.h"
 #include "media/engine/internaldecoderfactory.h"
 #include "media/engine/internalencoderfactory.h"
 #include "media/engine/multiplexcodecfactory.h"
@@ -65,6 +66,7 @@
 #include "modules/audio_mixer/audio_mixer_impl.h"
 #include "modules/audio_processing/include/audio_processing.h"
 #include "modules/video_capture/video_capture_factory.h"
+#include "rtc_base/bind.h"
 #include "rtc_base/memory/aligned_malloc.h"
 
 // libyuv from WebRTC repository for color conversion

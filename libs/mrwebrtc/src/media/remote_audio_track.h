@@ -35,7 +35,7 @@ class Transceiver;
 /// The remote nature of the track implies that the remote peer has control on
 /// it, including enabling or disabling the track, and removing it from the peer
 /// connection. The local peer only has limited control over the track.
-class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
+class RemoteAudioTrack : public MediaTrack, public AudioFrameObserver {
  public:
   RemoteAudioTrack(
       RefPtr<GlobalFactory> global_factory,
@@ -44,9 +44,6 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
       rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
       rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) noexcept;
   ~RemoteAudioTrack() override;
-
-  /// Get the name of the remote audio track.
-  std::string GetName() const noexcept override { return track_name_; }
 
   /// Enable or disable the audio track. An enabled track streams its content
   /// from its source to the remote peer. A disabled audio track only sends
@@ -109,9 +106,6 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// Note that unlike local tracks, this is never NULL since the remote track
   /// gets destroyed when detached from the transceiver.
   Transceiver* transceiver_{nullptr};
-
-  /// Cached track name, to avoid dispatching on signaling thread.
-  const std::string track_name_;
 
   /// SSRC id of the corresponding RtpReceiver.
   absl::optional<int> ssrc_;

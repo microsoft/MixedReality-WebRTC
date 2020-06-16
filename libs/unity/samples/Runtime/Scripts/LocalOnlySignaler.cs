@@ -4,6 +4,7 @@
 using UnityEngine;
 using Microsoft.MixedReality.WebRTC.Unity;
 using System.Threading;
+using System.Collections;
 
 /// <summary>
 /// Simple signaler using two peer connections in the same process,
@@ -13,7 +14,7 @@ using System.Threading;
 /// This component is designed to be used in demos where both peers
 /// are present in the same scene.
 /// </summary>
-public class LocalOnlySignaler : MonoBehaviour
+public class LocalOnlySignaler : WorkQueue
 {
     /// <summary>
     /// First peer to connect, which will generate an offer.
@@ -25,47 +26,60 @@ public class LocalOnlySignaler : MonoBehaviour
     /// </summary>
     public PeerConnection Peer2;
 
+    /// <summary>
+    /// Check if the last connection attempt successfully completed. This is reset to <c>false</c> each
+    /// time <see cref="StartConnection"/> is called, and is updated after <see cref="WaitForConnection"/>
+    /// returned to indicate if the connection succeeded.
+    /// </summary>
+    public bool IsConnected { get; private set; } = false;
+
     private ManualResetEventSlim _remoteApplied1 = new ManualResetEventSlim();
     private ManualResetEventSlim _remoteApplied2 = new ManualResetEventSlim();
 
     /// <summary>
     /// Initiate a connection by having <see cref="Peer1"/> send an offer to <see cref="Peer2"/>,
-    /// and wait indefinitely until the SDP exchange completed.
+    /// and wait until the SDP exchange completed. To wait for completion, use <see cref="WaitForConnection(int)"/>
+    /// then check the value of <see cref="IsConnected"/> after that to determine if
+    /// <see cref="WaitForConnection(int)"/> terminated due to the connection being established or
+    /// if it timed out.
     /// </summary>
-    /// <seealso cref="Connect(int)"/>
-    public void Connect()
+    /// <returns><c>true</c> if the exchange started successfully, or <c>false</c> otherwise.</returns>
+    /// <seealso cref="Connect"/>
+    public bool StartConnection()
     {
+        EnsureIsMainAppThread();
         _remoteApplied1.Reset();
         _remoteApplied2.Reset();
-        Peer1.StartConnection();
-        _remoteApplied1.Wait();
-        _remoteApplied2.Wait();
+        IsConnected = false;
+        return Peer1.StartConnection();
     }
 
     /// <summary>
-    /// Initiate a connection by having <see cref="Peer1"/> send an offer to <see cref="Peer2"/>,
-    /// and wait until the SDP exchange completed.
-    /// 
-    /// If the exchange does not completes within the given timeout, return <c>false</c>.
+    /// Wait for the connection being established.
     /// </summary>
-    /// <param name="millisecondsTimeout">Timeout in milliseconds for the SDP exchange to complete.</param>
-    /// <returns>This variant returns <c>true</c> if the exchange completed within the given timeout,
-    /// or <c>false</c> otherwise.</returns>
-    /// <seealso cref="Connect"/>
-    public bool Connect(int millisecondsTimeout)
+    /// <param name="millisecondsTimeout">Timeout in milliseconds to wait for the connection.</param>
+    /// <returns>An enumerator used to <c>yield</c> while waiting.</returns>
+    /// <example>
+    /// Assert.IsTrue(signaler.StartConnection());
+    /// yield return signaler.WaitForConnection(millisecondsTimeout: 10000);
+    /// Assert.IsTrue(signaler.IsConnected);
+    /// </example>
+    public IEnumerator WaitForConnection(int millisecondsTimeout)
     {
-        _remoteApplied1.Reset();
-        _remoteApplied2.Reset();
-        Peer1.StartConnection();
-        if (!_remoteApplied1.Wait(millisecondsTimeout))
+        float timeoutTime = Time.time + (millisecondsTimeout / 1000f);
+        while (true)
         {
-            return false;
+            if (_remoteApplied1.IsSet && _remoteApplied2.IsSet)
+            {
+                IsConnected = true;
+                break;
+            }
+            if (Time.time >= timeoutTime)
+            {
+                break;
+            }
+            yield return null;
         }
-        if (!_remoteApplied2.Wait(millisecondsTimeout))
-        {
-            return false;
-        }
-        return true;
     }
 
     private void Start()
@@ -86,24 +100,30 @@ public class LocalOnlySignaler : MonoBehaviour
         Peer2.Peer.IceCandidateReadytoSend += Peer2_IceCandidateReadytoSend;
     }
 
-    private async void Peer1_LocalSdpReadytoSend(Microsoft.MixedReality.WebRTC.SdpMessage message)
+    private void Peer1_LocalSdpReadytoSend(Microsoft.MixedReality.WebRTC.SdpMessage message)
     {
-        await Peer2.HandleConnectionMessageAsync(message);
-        _remoteApplied2.Set();
-        if (message.Type == Microsoft.MixedReality.WebRTC.SdpMessageType.Offer)
+        InvokeOnAppThread(async () =>
         {
-            Peer2.Peer.CreateAnswer();
-        }
+            await Peer2.HandleConnectionMessageAsync(message);
+            _remoteApplied2.Set();
+            if (message.Type == Microsoft.MixedReality.WebRTC.SdpMessageType.Offer)
+            {
+                Peer2.Peer.CreateAnswer();
+            }
+        });
     }
 
-    private async void Peer2_LocalSdpReadytoSend(Microsoft.MixedReality.WebRTC.SdpMessage message)
+    private void Peer2_LocalSdpReadytoSend(Microsoft.MixedReality.WebRTC.SdpMessage message)
     {
-        await Peer1.HandleConnectionMessageAsync(message);
-        _remoteApplied1.Set();
-        if (message.Type == Microsoft.MixedReality.WebRTC.SdpMessageType.Offer)
+        InvokeOnAppThread(async () =>
         {
-            Peer1.Peer.CreateAnswer();
-        }
+            await Peer1.HandleConnectionMessageAsync(message);
+            _remoteApplied1.Set();
+            if (message.Type == Microsoft.MixedReality.WebRTC.SdpMessageType.Offer)
+            {
+                Peer1.Peer.CreateAnswer();
+            }
+        });
     }
 
     private void Peer1_IceCandidateReadytoSend(Microsoft.MixedReality.WebRTC.IceCandidate candidate)

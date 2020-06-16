@@ -80,32 +80,44 @@ struct mrsRemoteVideoTrackConfig;
 struct mrsDataChannelConfig;
 struct mrsDataChannelCallbacks;
 
-/// Opaque handle to a native PeerConnection interop object.
-using mrsPeerConnectionHandle = void*;
+/// Opaque handle to a native interop object.
+using mrsObjectHandle = void*;
 
-/// Opaque handle to a native MediaTrack interop object.
-using mrsMediaTrackHandle = void*;
+/// Opaque handle to a native reference-counted interop object.
+using mrsRefCountedObjectHandle = mrsObjectHandle;
+
+/// Opaque handle to a native PeerConnection interop object.
+using mrsPeerConnectionHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native Transceiver interop object.
-using mrsTransceiverHandle = void*;
+using mrsTransceiverHandle = mrsObjectHandle;
+
+/// Opaque handle to a native AudioTrackSource interop object.
+using mrsAudioTrackSourceHandle = mrsRefCountedObjectHandle;
+
+/// Opaque handle to a native VideoTrackSource interop object.
+using mrsVideoTrackSourceHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native LocalAudioTrack interop object.
-using mrsLocalAudioTrackHandle = void*;
+using mrsLocalAudioTrackHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native LocalVideoTrack interop object.
-using mrsLocalVideoTrackHandle = void*;
+using mrsLocalVideoTrackHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native RemoteAudioTrack interop object.
-using mrsRemoteAudioTrackHandle = void*;
+using mrsRemoteAudioTrackHandle = mrsObjectHandle;
 
 /// Opaque handle to a native RemoteVideoTrack interop object.
-using mrsRemoteVideoTrackHandle = void*;
+using mrsRemoteVideoTrackHandle = mrsObjectHandle;
 
 /// Opaque handle to a native DataChannel interop object.
-using mrsDataChannelHandle = void*;
+using mrsDataChannelHandle = mrsObjectHandle;
 
 /// Opaque handle to a native ExternalVideoTrackSource interop object.
-using mrsExternalVideoTrackSourceHandle = void*;
+using mrsExternalVideoTrackSourceHandle = mrsVideoTrackSourceHandle;
+
+/// Opaque handle to a native DeviceVideoTrackSource interop object.
+using mrsDeviceVideoTrackSourceHandle = mrsVideoTrackSourceHandle;
 
 //
 // Video capture enumeration
@@ -255,16 +267,14 @@ struct mrsRemoteVideoTrackAddedInfo {
 /// Callback invoked when a remote audio track is added to a connection.
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsLocalAudioTrackRemoveRef()| and
-/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionAudioTrackAddedCallback =
     void(MRS_CALL*)(void* user_data, const mrsRemoteAudioTrackAddedInfo* info);
 
 /// Callback invoked when a remote audio track is removed from a connection.
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsLocalAudioTrackRemoveRef()| and
-/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionAudioTrackRemovedCallback =
     void(MRS_CALL*)(void* user_data,
                     mrsRemoteAudioTrackHandle audio_track,
@@ -273,16 +283,14 @@ using mrsPeerConnectionAudioTrackRemovedCallback =
 /// Callback invoked when a remote video track is added to a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsLocalVideoTrackRemoveRef()| and
-/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionVideoTrackAddedCallback =
     void(MRS_CALL*)(void* user_data, const mrsRemoteVideoTrackAddedInfo* info);
 
 /// Callback invoked when a remote video track is removed from a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsLocalVideoTrackRemoveRef()| and
-/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionVideoTrackRemovedCallback =
     void(MRS_CALL*)(void* user_data,
                     mrsRemoteVideoTrackHandle video_track,
@@ -420,9 +428,9 @@ struct mrsPeerConnectionConfiguration {
 /// On UWP this must be invoked from another thread than the main UI thread.
 /// The newly-created peer connection native resource is reference-counted, and
 /// has a single reference when this function returns. Additional references may
-/// be added with |mrsPeerConnectionAddRef| and removed with
-/// |mrsPeerConnectionRemoveRef|. When the last reference is removed, the native
-/// object is destroyed.
+/// be added with |mrsRefCountedObjectAddRef| and removed with
+/// |mrsRefCountedObjectRemoveRef|. When the last reference is removed, the
+/// native object is destroyed.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionCreate(const mrsPeerConnectionConfiguration* config,
                         mrsPeerConnectionHandle* peer_handle_out) noexcept;
@@ -740,7 +748,7 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionSetRemoteDescriptionAsync(
 /// Close a peer connection, removing all tracks and disconnecting from the
 /// remote peer currently connected. This does not invalidate the handle nor
 /// destroy the native peer connection object, but leaves it in a state where it
-/// can only be destroyed by calling |mrsPeerConnectionRemoveRef()|.
+/// can only be destroyed by calling |mrsRefCountedObjectRemoveRef()|.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionClose(mrsPeerConnectionHandle peer_handle) noexcept;
 
