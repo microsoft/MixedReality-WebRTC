@@ -107,8 +107,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// - Symbols [!#$%'*+-.^_`{|}~] and ampersand &amp;
         /// - Alphanumerical characters [A-Za-z0-9]
         /// 
-        /// Users can manually test if a string is a valid SDP token with the utility
-        /// method <see cref="SdpTokenAttribute.Validate(string, bool)"/>.
+        /// Users can manually test if a string is a valid SDP token with the utility method
+        /// <see cref="SdpTokenAttribute.Validate(string, bool)"/>. The property setter will
+        /// use this and throw an <see cref="ArgumentException"/> if the token is not a valid
+        /// SDP token.
+        /// 
+        /// The sender track name is taken into account each time the track is created. If this
+        /// property is assigned after the track was created (already negotiated), the value will
+        /// be used only for the next negotiation, and the current sender track will keep its
+        /// current track name (either a previous value or a generated one).
         /// </remarks>
         /// <seealso cref="SdpTokenAttribute.Validate(string, bool)"/>
         public string SenderTrackName
@@ -116,10 +123,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             get { return _senderTrackName; }
             set
             {
-                if (_senderTrack != null)
-                {
-                    throw new InvalidOperationException("Cannot set sender track name after track was created.");
-                }
+                SdpTokenAttribute.Validate(_senderTrackName);
                 _senderTrackName = value;
             }
         }
