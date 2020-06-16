@@ -19,7 +19,7 @@ For the documentation corresponding to other branches, including [the `release/1
   - [Building from sources](manual/building.md)
   - [C# tutorial (Desktop)](manual/cs/helloworld-cs-core3.md)
   - [C# tutorial (UWP)](manual/cs/helloworld-cs-uwp.md)
-  - [Unity tutorial](manual/helloworld-unity.md)
+  - [Unity tutorial](manual/unity/helloworld-unity.md)
 - C# library
   - [Feature Overview](manual/cs/cs.md)
   - [Tutorial (Desktop)](manual/cs/helloworld-cs-core3.md)
@@ -27,17 +27,17 @@ For the documentation corresponding to other branches, including [the `release/1
   - [Peer Connection](manual/cs/cs-peerconnection.md)
   - [Signaling](manual/cs/cs-signaling.md)
 - Unity integration
-  - [Feature Overview](manual/unity-integration.md)
-  - [Tutorial](manual/helloworld-unity.md)
-  - [Peer Connection](manual/unity-peerconnection.md)
-  - [Signaler](manual/unity-signaler.md)
+  - [Feature Overview](manual/unity/unity-integration.md)
+  - [Tutorial](manual/unity/helloworld-unity.md)
+  - [Peer Connection](manual/unity/unity-peerconnection.md)
+  - [Signaler](manual/unity/unity-signaler.md)
   - Audio
-    - [`MicrophoneSource`](manual/unity-localaudiosource.md)
-    - [`AudioReceiver`](manual/unity-remoteaudiosource.md)
+    - [`MicrophoneSource`](manual/unity/unity-localaudiosource.md)
+    - [`AudioReceiver`](manual/unity/unity-remoteaudiosource.md)
   - Video
-    - [`WebcamSource`](manual/unity-localvideosource.md)
-    - [`VideoReceiver`](manual/unity-remotevideosource.md)
-    - [`VideoRenderer`](manual/unity-mediaplayer.md)
+    - [`WebcamSource`](manual/unity/unity-localvideosource.md)
+    - [`VideoReceiver`](manual/unity/unity-remotevideosource.md)
+    - [`VideoRenderer`](manual/unity/unity-mediaplayer.md)
 - Advanced topics
   - [Building the Core dependencies from sources](manual/building-core.md)
 

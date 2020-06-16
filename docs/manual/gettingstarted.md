@@ -12,9 +12,10 @@ Not all components are required for all use cases, but each component builds upo
 > A note on terminology: in this documentation the term _component_ refers to one of the libraries mentioned above. This has no relation with a _Unity component_, which is a C# class deriving from [`MonoBehaviour`](https://docs.unity3d.com/ScriptReference/MonoBehaviour.html).
 
 In this chapter we discuss:
+
 - [**Download**](download.md) : Downloading precompiled binary packages of MixedReality-WebRTC.
 - [**Installation**](installation.md) : How to install the various libraries for use in your poject.
 - [**Building from sources**](building.md) : Building the MixedReality-WebRTC from sources.
 - [**Hello, C# world! (Desktop)**](cs/helloworld-cs-core3.md) : Your first C# .NET Core 3.0 application based on the C# library.
-- **Hello, C# world! (UWP)** (TODO) : Your first C# UWP application based on the C# library.
-- [**Hello, Unity world!**](helloworld-unity.md) : Your first Unity application based on the Unity integration.
+- [**Hello, C# world! (UWP)**](cs/helloworld-cs-uwp.md) : Your first C# UWP application based on the C# library.
+- [**Hello, Unity world!**](unity/helloworld-unity.md) : Your first Unity application based on the Unity integration.

@@ -55,7 +55,7 @@ Migrating from the 1.0 release, users typically:
 
 Unlike the C# library, the Unity integration takes a step back and build some convenience features on top of the transceiver API of the C# library. For the user, this avoids having to deal manually with pairing transceivers and tracks, and relying instead on a much simpler declarative model.
 
-Users are encouraged to follow the updated [Unity tutorial](helloworld-unity.md) to understand how to setup a peer connection with this new API.
+Users are encouraged to follow the updated [Unity tutorial](unity/helloworld-unity.md) to understand how to setup a peer connection with this new API.
 
 #### Peer connection
 

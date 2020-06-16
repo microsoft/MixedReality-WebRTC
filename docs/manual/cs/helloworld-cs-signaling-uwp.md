@@ -20,7 +20,7 @@ The `NodeDssSignaler` class makes use of the `Newtonsoft.Json` package for JSON 
 ![Install the Newtonsoft.Json NuGet package](cs-uwp14.png)
 
 > [!Warning]
-> Do not forget to start the `node-dss` signaling server. See [the detailed explanations in the Unity turorial](../helloworld-unity-connection.md#configuring-the-nodedsssignaler) about installing and starting it with NodeJS. In this tutorial we choose the _local peer ID_ to be the string "`App1`", and the _remote peer ID_ is the value we will assign below to the `NodeDssSignaler.RemotePeerId` field.
+> Do not forget to start the `node-dss` signaling server. See [the detailed explanations in the Unity turorial](../unity/helloworld-unity-connection.md#configuring-the-nodedsssignaler) about installing and starting it with NodeJS. In this tutorial we choose the _local peer ID_ to be the string "`App1`", and the _remote peer ID_ is the value we will assign below to the `NodeDssSignaler.RemotePeerId` field.
 
 ## Setup
 
@@ -115,7 +115,7 @@ Continue editing the `MainPage.xaml.cs` file.
    ```
 
    > [!WARNING]
-   > Take care to set the value of the `RemotePeerId` field of the `NodeDssSignaler` to the remote peer's ID, otherwise the signaling will not work. Similarly, this tutorial arbitrarily uses `App1` as the local peer ID for the application; this value needs to be set as the remote peer's ID when configuring the remote peer signaler. See [the explanations in the Unity turorial](../helloworld-unity-connection.md#configuring-the-nodedsssignaler) for more details.
+   > Take care to set the value of the `RemotePeerId` field of the `NodeDssSignaler` to the remote peer's ID, otherwise the signaling will not work. Similarly, this tutorial arbitrarily uses `App1` as the local peer ID for the application; this value needs to be set as the remote peer's ID when configuring the remote peer signaler. See [the explanations in the Unity turorial](../unity/helloworld-unity-connection.md#configuring-the-nodedsssignaler) for more details.
 
 6. In the `App_Suspending()` event handler, stop the signaler and clean-up the resources.
 

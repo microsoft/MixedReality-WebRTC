@@ -21,11 +21,11 @@ The binaries can be obtained either prebuilt from the NuGet packages, or from a 
 
 The native implementation and C# library of MixedReality-WebRTC are available precompiled via NuGet packages. See the [GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases) for the latest packages.
 
-The packages can be downloaded from [nuget.org](https://www.nuget.org/profiles/MicrosoftMR). Once downloaded, they can be extracted by simply renaming their extension from `.nupkg` to `.zip`, and using any standard ZIP archive extraction method. After the packages are extracted, the DLLs can be copied as detailed on the **Unity integration** section of the [installation page](installation.md).
+The packages can be downloaded from [nuget.org](https://www.nuget.org/profiles/MicrosoftMR). Once downloaded, they can be extracted by simply renaming their extension from `.nupkg` to `.zip`, and using any standard ZIP archive extraction method. After the packages are extracted, the DLLs can be copied as detailed on the **Unity integration** section of the [installation page](../installation.md).
 
 ### Local solution build
 
-If the native implementation and C# library are compiled from sources as explained in the [Building](building.md) page, they are available in one of the sub-folders under the `bin/` folder at the root of the repository of the MixedReality-WebRTC project.
+If the native implementation and C# library are compiled from sources as explained in the [Building](../building.md) page, they are available in one of the sub-folders under the `bin/` folder at the root of the repository of the MixedReality-WebRTC project.
 
 The C# library `Microsoft.MixedReality.WebRTC.dll` is a .NET Standard 2.0 library. This means it is compatible with all CPU architectures. This is often referred to as "AnyCPU", and the C# library is therefore available from `bin\AnyCPU\Debug` or `bin\AnyCPU\Release` depending on the build configuration which was compiled. In doubt you can use the `Release` configuration, which can provide better performance. This module needs to be copied somewhere into the `Assets\Plugins\` folder of the Unity project (if that folder doesn't exist you can create it). On Windows this can be done via the command line with `xcopy`, assuming that the git repository of MixedReality-WebRTC was cloned in `D:\mr-webrtc`:
 
