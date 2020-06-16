@@ -1,0 +1,72 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# [TEMPLATE] Compile C# library Microsoft.MixedReality.WebRTC.dll for release
+
+parameters:
+# Build agent pool
+- name: buildAgent
+  displayName: 'Build Agent Pool'
+  type: string
+  default: ''
+ 
+jobs:
+
+# Compile Microsoft.MixedReality.WebRTC.dll
+- job: cslib_build
+  timeoutInMinutes: 60
+  pool:
+    name: '${{parameters.buildAgent}}'
+  steps:
+  - checkout: self
+
+  # Build Microsoft.MixedReality.WebRTC (Release)
+  - task: DotNetCoreCLI@2
+    displayName: 'Build C# WebRTC lib (Release)'
+    inputs:
+      projects: 'libs/Microsoft.MixedReality.WebRTC/Microsoft.MixedReality.WebRTC.csproj'
+      arguments: '-f netstandard2.0 --no-incremental -c Release'
+      workingDirectory: 'libs/Microsoft.MixedReality.WebRTC'
+
+  # # Download mrwebrtc.dll (Win32-x64-buildConfig) for testing
+  # - ${{ if eq(parameters.withTesting, 'true') }}:
+  #   - task: DownloadPipelineArtifact@2
+  #     displayName: 'Download mrwebrtc library (Win32-x64-${{parameters.buildConfig}})'
+  #     inputs:
+  #       source: 'current'
+  #       artifact: 'mrwebrtc_Win32-x64-${{parameters.buildConfig}}'
+  #       patterns: '**/*.@(pdb|dll)'
+  #       path: 'bin/Win32/x64/${{parameters.buildConfig}}'
+
+  # # Build C# tests
+  # - ${{ if eq(parameters.withTesting, 'true') }}:
+  #   - task: DotNetCoreCLI@2
+  #     displayName: 'Build C# Tests (x64-${{parameters.buildConfig}}) [incremental]'
+  #     inputs:
+  #       projects: tests/Microsoft.MixedReality.WebRTC.Tests/Microsoft.MixedReality.WebRTC.Tests.csproj
+  #       arguments: '-c ${{parameters.buildConfig}} -p:DisableDeviceTests=1 -p:Platform=x64'
+  #       workingDirectory: 'tests/Microsoft.MixedReality.WebRTC.Tests/'
+
+  # # Run tests (Win32-x64-buildConfig)
+  # - ${{ if eq(parameters.withTesting, 'true') }}:
+  #   - task: VSTest@2
+  #     displayName: 'C# Testing (mrwebrtc Win32-x64-${{parameters.buildConfig}} / C# ${{parameters.buildConfig}})'
+  #     inputs:
+  #       testAssemblyVer2: 'Microsoft.MixedReality.WebRTC.Tests.dll'
+  #       searchFolder: 'bin/netstandard2.0/${{parameters.buildConfig}}'
+  #       runOnlyImpactedTests: false
+
+  # Stage artifacts
+  - task: CopyFiles@2
+    displayName: 'Stage artifacts'
+    inputs:
+      sourceFolder: 'bin/netstandard2.0/Release'
+      contents: '**/Microsoft.MixedReality.WebRTC.@(pdb|dll|xml)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)/Microsoft.MixedReality.WebRTC'
+
+  # Publish artifacts
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish artifacts'
+    inputs:
+      artifactName: 'cslib'
+      targetPath: '$(Build.ArtifactStagingDirectory)/Microsoft.MixedReality.WebRTC'

@@ -6,7 +6,8 @@ Shader "Video/ARGBFeedShader (standard lit)"
 {
     Properties
     {
-        [HideInEditor] _MainTex("Main Tex", 2D) = "black" {}
+        [Toggle(MIRROR)] _Mirror("Horizontal Mirror", Float) = 0
+        [HideInEditor][NoScaleOffset] _MainTex("Main Tex", 2D) = "black" {}
     }
     SubShader
     {
@@ -15,6 +16,8 @@ Shader "Video/ARGBFeedShader (standard lit)"
         CGPROGRAM
 
         #pragma surface surf Lambert //alpha
+        #pragma multi_compile_instancing
+        #pragma multi_compile __ MIRROR
 
         struct Input {
             float2 uv_MainTex;
@@ -25,9 +28,17 @@ Shader "Video/ARGBFeedShader (standard lit)"
 
         void surf(Input IN, inout SurfaceOutput o)
         {
-#if UNITY_UV_STARTS_AT_TOP
+            // Flip texture coordinates vertically.
+            // Texture2D.LoadRawTextureData() always expects a bottom-up image, but the MediaPlayer
+            // upload code always get a top-down frame from WebRTC. The most efficient is to upload
+            // as is (inverted) and revert here.
             IN.uv_MainTex.y = 1 - IN.uv_MainTex.y;
+
+#ifdef MIRROR
+            // Optional left-right mirroring (horizontal flipping)
+            IN.uv_MainTex.x = 1 - IN.uv_MainTex.x;
 #endif
+
             o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;
             o.Alpha = 1;
         }

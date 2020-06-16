@@ -1,0 +1,243 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# [TEMPLATE] Package Microsoft.MixedReality.WebRTC.Native.(Desktop|UWP)
+
+parameters:
+# Package agent pool
+- name: packageAgent
+  type: string
+  default: ''
+# Package platform
+- name: packagePlatform
+  type: string
+  default: ''
+  values:
+  - 'Desktop'
+  - 'UWP'
+# NuGet package version (SemVer)
+- name: nugetPackageVersion
+  type: string
+  default: ''
+
+jobs:
+- job: mrwebrtc_pack_${{parameters.packagePlatform}}
+  timeoutInMinutes: 360
+  pool:
+    name: ${{parameters.packageAgent}}
+    demands:
+    - msbuild
+  variables:
+    projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
+    packageName: 'Microsoft.MixedReality.WebRTC.Native.${{parameters.packagePlatform}}'
+  steps:
+
+  # Checkout
+  - checkout: self
+    fetchDepth: '50'
+
+  # Use NuGet 5.2.0 to work around auth issues in previous versions
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 5.2.0'
+    inputs:
+      versionSpec: 5.2.0
+
+  # Download all binaries from the previous stage
+  - ${{ if eq(parameters.packagePlatform, 'Desktop') }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (Win32-x86-Debug)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_Win32-x86-Debug'
+        patterns: '**/*.@(pdb|lib|dll)'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x86/native/debug'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (Win32-x86-Release)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_Win32-x86-Release'
+        patterns: '**/*.@(pdb|lib|dll)'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x86/native/release'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (Win32-x64-Debug)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_Win32-x64-Debug'
+        patterns: '**/*.@(pdb|lib|dll)'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x64/native/debug'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (Win32-x64-Release)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_Win32-x64-Release'
+        patterns: '**/*.@(pdb|lib|dll)'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x64/native/release'
+  - ${{ if eq(parameters.packagePlatform, 'UWP') }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (UWP-x86-Debug)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_UWP-x86-Debug'
+        patterns: '**/*.@(pdb|lib|dll)'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x86/lib/uap10.0/debug'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (UWP-x86-Release)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_UWP-x86-Release'
+        patterns: '**/*.@(pdb|lib|dll)'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x86/lib/uap10.0/release'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (UWP-x64-Debug)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_UWP-x64-Debug'
+        patterns: '**/*.@(pdb|lib|dll)'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x64/lib/uap10.0/debug'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (UWP-x64-Release)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_UWP-x64-Release'
+        patterns: '**/*.@(pdb|lib|dll)'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x64/lib/uap10.0/release'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (UWP-ARM-Debug)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_UWP-ARM-Debug'
+        patterns: '**/*.@(pdb|lib|dll)'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-arm/lib/uap10.0/debug'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download mrwebrtc library (UWP-ARM-Release)'
+      inputs:
+        source: 'current'
+        artifact: 'mrwebrtc_UWP-ARM-Release'
+        patterns: '**/*.@(pdb|lib|dll)'
+        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-arm/lib/uap10.0/release'
+
+  # Copy the NOTICE file
+  - powershell: |
+     $srcFile = Join-Path "$(Build.SourcesDirectory)" "NOTICE" -Resolve
+     $dstFile = Join-Path "$(Build.BinariesDirectory)" "$(packageName).${{parameters.nugetPackageVersion}}/content/NOTICE"
+     $dstDir = Split-Path -Path $dstFile -Parent
+     New-Item -Path $dstDir -ItemType Directory -ErrorAction Ignore | Out-Null
+     Write-Host "Copying $srcFile -> $dstFile"
+     Copy-Item $srcFile $dstFile -Force
+    displayName: 'Copy NOTICE'
+
+  # Copy the .props file
+  - powershell: |
+     $srcFile = Join-Path "$(Build.SourcesDirectory)" "tools/nuget/${{parameters.packagePlatform}}/$(packageName).props" -Resolve
+     $dstFile = Join-Path "$(Build.BinariesDirectory)" "$(packageName).${{parameters.nugetPackageVersion}}/build/native/$env:PROPSFILE"
+     $dstDir = Split-Path -Path $dstFile -Parent
+     New-Item -Path $dstDir -ItemType Directory -ErrorAction Ignore | Out-Null
+     Write-Host "Copying $srcFile -> $dstFile"
+     Copy-Item $srcFile $dstFile -Force
+    displayName: 'Copy .props file'
+    env:
+      PROPSFILE: '$(packageName).props'
+
+  # Copy the mrwebrtc API headers
+  - powershell: |
+     $srcFile = Join-Path "$(Build.SourcesDirectory)" "libs/mrwebrtc/include/*.h"
+     $dstDir = Join-Path "$(Build.BinariesDirectory)" "$(packageName).${{parameters.nugetPackageVersion}}/build/native/include/mrwebrtc"
+     New-Item -Path $dstDir -ItemType Directory -ErrorAction Ignore | Out-Null
+     Write-Host "Copying $srcFile -> $dstDir"
+     Copy-Item $srcFile $dstDir -Force
+    displayName: 'Copy API headers'
+
+  # For debugging, list the package content before signing
+  - powershell: |
+     foreach ($f in $(Get-ChildItem -Path $(Build.BinariesDirectory) -Recurse)) {
+       Write-Host $f.FullName
+     }
+    displayName: 'List package content'
+
+  # Run component detection
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection before signing'
+    inputs:
+      sourceScanPath: '$(Build.BinariesDirectory)'
+
+  # Sign package content
+  - task: DownloadSecureFile@1
+    name: SignConfigFile_Content
+    displayName: 'Download signing file (content)'
+    inputs:
+      secureFile: 'mr-webrtc-mrwebrtc-signconfig-content_${{parameters.packagePlatform}}.xml'
+    timeoutInMinutes: 10
+  - task: PkgESCodeSign@10
+    displayName: 'Sign package content'
+    inputs:
+      signConfigXml: '$(SignConfigFile_Content.secureFilePath)'
+      inPathRoot: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
+      outPathRoot: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+  # For debugging, list the package content after signing
+  - powershell: |
+     foreach ($f in $(Get-ChildItem -Path $(Build.BinariesDirectory) -Recurse)) {
+       Write-Host $f.FullName
+     }
+    displayName: 'List package content'
+
+  # Update package version in .nuspec file. This needs to be a valid version
+  # otherwise "nuget pack" will fail, even if we override the version.
+  - pwsh: |
+      Write-Host "NuGet package version: $env:NUGET_VERSION"
+      $template = Get-Content -Raw -Encoding UTF8 -Path "$env:NUSPEC_FILE"
+      $content = $template -replace "__VERSION_STRING__","$env:NUGET_VERSION"
+      $content = $content -replace "__SOURCE_COMMIT_ID__","$env:BUILD_COMMIT_ID"
+      Set-Content -Path "$env:NUSPEC_FILE" -Encoding UTF8 -Value $content
+    displayName: 'Update NuGet version'
+    env:
+      NUSPEC_FILE: 'tools/nuget/${{parameters.packagePlatform}}/$(packageName).nuspec'
+      NUGET_VERSION: '${{parameters.nugetPackageVersion}}'
+      BUILD_COMMIT_ID: '$(Build.SourceVersion)'
+
+  # Create the NuGet package
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+    displayName: 'NuGet pack'
+    inputs:
+      command: pack
+      packagesToPack: 'tools/nuget/${{parameters.packagePlatform}}/$(packageName).nuspec'
+      packDestination: '$(Build.ArtifactStagingDirectory)/unsigned/$(packageName).${{parameters.nugetPackageVersion}}'
+      versioningScheme: 'byEnvVar'
+      versionEnvVar: 'NUGET_VERSION'
+      basePath: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
+    env:
+      NUGET_VERSION: '${{parameters.nugetPackageVersion}}'
+
+  # Sign package
+  - task: DownloadSecureFile@1
+    name: SignConfigFile_NuGet
+    displayName: 'Download signing file (NuGet)'
+    inputs:
+      secureFile: 'mr-webrtc-mrwebrtc-signconfig-nuget_${{parameters.packagePlatform}}.xml'
+    timeoutInMinutes: 10
+  - pwsh: |
+      Write-Host "NuGet package version: $env:NUGET_VERSION"
+      $template = Get-Content -Raw -Encoding UTF8 -Path "$env:SIGN_FILE"
+      $content = $template -replace "__VERSION_STRING__","$env:NUGET_VERSION"
+      Set-Content -Path "$env:SIGN_FILE" -Encoding UTF8 -Value $content
+    displayName: 'Update NuGet version'
+    env:
+      SIGN_FILE: '$(SignConfigFile_NuGet.secureFilePath)'
+      NUGET_VERSION: '${{parameters.nugetPackageVersion}}'
+  - task: PkgESCodeSign@10
+    displayName: 'Sign NuGet package'
+    inputs:
+      signConfigXml: '$(SignConfigFile_NuGet.secureFilePath)'
+      inPathRoot: '$(Build.ArtifactStagingDirectory)/unsigned/$(packageName).${{parameters.nugetPackageVersion}}'
+      outPathRoot: '$(Build.ArtifactStagingDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+  # Publish the signed NuGet package for the Release pipeline
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish'
+    inputs:
+      path: '$(Build.ArtifactStagingDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}'
+      artifact: 'nuget_mrwebrtc_${{parameters.packagePlatform}}'

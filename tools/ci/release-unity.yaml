@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-# MixedReality-WebRTC build pipeline for Unity packages release.
+# MixedReality-WebRTC build pipeline for Unity packages release
 
 # Disable branch and PR triggers
 trigger: none
@@ -11,78 +11,73 @@ pr: none
 name: release-unity-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 parameters:
-- name: buildAgent
-  type: string
-  default: 'Hosted VS2017' # vs2017-win2016
-- name: npmPackageVersion
+- name: upmPackageVersion
+  displayName: 'UPM package version (semver)'
   type: string
   default: '0.0.1-preview.1'
+- name: withPdbs
+  displayName: 'Include PDBs in UPM packages'
+  type: boolean
+  default: true
 
 stages:
 
 # Compile all Release build variants of mrwebrtc.dll
-- stage: build_mrwebrtc
+- stage: build
   displayName: 'Build mrwebrtc'
   jobs:
-  - template: templates/jobs-cpp.yaml
-    parameters:
-      buildAgent: '${{parameters.buildAgent}}'
-      buildPlatform: 'Win32'
-      buildArch: 'x86'
-      msbuildPlatform: 'Win32'
-      buildConfig: 'Release'
-      withTesting: false
-  - template: templates/jobs-cpp.yaml
-    parameters:
-      buildAgent: '${{parameters.buildAgent}}'
-      buildPlatform: 'Win32'
-      buildArch: 'x64'
-      msbuildPlatform: 'x64'
-      buildConfig: 'Release'
-      withTesting: false
-  - template: templates/jobs-cpp.yaml
-    parameters:
-      buildAgent: '${{parameters.buildAgent}}'
-      buildPlatform: 'UWP'
-      buildArch: 'x86'
-      msbuildPlatform: 'Win32'
-      buildConfig: 'Release'
-      withTesting: false
-  - template: templates/jobs-cpp.yaml
-    parameters:
-      buildAgent: '${{parameters.buildAgent}}'
-      buildPlatform: 'UWP'
-      buildArch: 'x64'
-      msbuildPlatform: 'x64'
-      buildConfig: 'Release'
-      withTesting: false
-  - template: templates/jobs-cpp.yaml
-    parameters:
-      buildAgent: '${{parameters.buildAgent}}'
-      buildPlatform: 'UWP'
-      buildArch: 'ARM'
-      msbuildPlatform: 'ARM'
-      buildConfig: 'Release'
-      withTesting: false
 
-# Compile Microsoft.MixedReality.WebRTC.dll
-- stage: build_cs
-  dependsOn: build_mrwebrtc
-  displayName: 'Build C# library'
-  jobs:
-  - template: templates/jobs-cs-build.yaml
+  # Build mrwebrtc.aar for Android
+  - template: templates/jobs-libwebrtc-android.yaml
     parameters:
-      buildAgent: '${{parameters.buildAgent}}'
       buildConfig: 'Release'
-      publishArtifacts: true
-      withTesting: false
+
+  # Build all Release variants of mrwebrtc.dll for Windows Desktop
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'Win32'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'Win32'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x64'
+      buildConfig: 'Release'
+
+  # Build all Release variants of mrwebrtc.dll for Windows UWP
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'x64'
+      buildConfig: 'Release'
+  - template: templates/jobs-mrwebrtc-release-build.yaml
+    parameters:
+      buildPlatform: 'UWP'
+      buildAgent: '$(MRWebRTC.BuildAgent)'
+      buildArch: 'ARM'
+      buildConfig: 'Release'
+
+  # Build the Release variant of Microsoft.MixedReality.WebRTC.dll for release.
+  - template: templates/jobs-cslib-release-build.yaml
+    parameters:
+      buildAgent: '$(MRWebRTC.BuildAgent)'
 
 # Package library and samples
 - stage: publish
-  dependsOn: build_cs
+  dependsOn: build
   displayName: 'Publish'
   jobs:
   - template: templates/jobs-unity-package.yaml
     parameters:
-      buildAgent: '${{parameters.buildAgent}}'
-      npmPackageVersion: '${{parameters.npmPackageVersion}}'
+      buildAgent: '$(MRWebRTC.PackageAgent)'
+      upmPackageVersion: '${{parameters.upmPackageVersion}}'
+      withPdbs: '${{parameters.withPdbs}}'

@@ -110,6 +110,10 @@ class GlobalFactory {
   /// initialized.
   rtc::Thread* GetWorkerThread() const noexcept;
 
+  /// Get the WebRTC signaling thread, or NULL if the library is not
+  /// initialized.
+  rtc::Thread* GetSignalingThread() const noexcept;
+
   /// Add to the global factory collection a tracked object whose lifetime is
   /// monitored (via the library reference count) to know when it is safe to
   /// shutdown the library and terminate the WebRTC threads. This is generally

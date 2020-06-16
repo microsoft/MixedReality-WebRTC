@@ -297,9 +297,11 @@ ErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
   if (id < 0) {
     // In-band data channel with automatic ID assignment
     config.id = -1;
+    config.negotiated = false;
   } else if (id <= 0xFFFF) {
     // Out-of-band negotiated data channel with pre-established ID
     config.id = id;
+    config.negotiated = true;
   } else {
     // Valid IDs are 0-65535 (16 bits)
     return Error(Result::kOutOfRange);
@@ -322,9 +324,14 @@ ErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
 
     // For in-band channels, the creating side (here) doesn't receive an
     // OnDataChannel() message, so invoke the DataChannelAdded event right now.
-    if (!data_channel->impl()->negotiated()) {
+    // For out-of-band channels, the standard doesn't ask to raise that event,
+    // but we do it anyway for convenience and for consistency.
+    // Call from the signaling thread so that user callbacks can access the
+    // channel state (e.g. register channel callbacks) without it being changed
+    // concurrently by WebRTC.
+    global_factory_->GetSignalingThread()->Invoke<void>(RTC_FROM_HERE, [&]() {
       OnDataChannelAdded(*data_channel.get());
-    }
+    });
 
     return data_channel;
   }
@@ -441,6 +448,14 @@ void PeerConnection::OnDataChannelAdded(
       str label_str = data_channel.label();  // keep alive
       info.label = label_str.c_str();
       added_cb(&info);
+
+      // The user assumes an initial state of kConnecting; if this has already
+      // changed, fire the event to notify any callback that has been
+      // registered.
+      if (data_channel.impl()->state() !=
+          webrtc::DataChannelInterface::kConnecting) {
+        data_channel.InvokeOnStateChange();
+      }
     }
   }
 }

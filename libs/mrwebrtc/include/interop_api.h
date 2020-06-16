@@ -185,16 +185,16 @@ struct mrsIceCandidate {
   int32_t sdp_mline_index{-1};
 };
 
-/// Callback fired when the peer connection is connected, that is it finished
+/// Callback invoked when the peer connection is connected, that is it finished
 /// the JSEP offer/answer exchange successfully.
 using mrsPeerConnectionConnectedCallback = void(MRS_CALL*)(void* user_data);
 
-/// Callback fired when a local SDP message has been prepared and is ready to be
+/// Callback invoked when a local SDP message has been prepared and is ready to be
 /// sent by the user via the signaling service.
 using mrsPeerConnectionLocalSdpReadytoSendCallback = void(
     MRS_CALL*)(void* user_data, mrsSdpMessageType type, const char* sdp_data);
 
-/// Callback fired when an ICE candidate has been prepared and is ready to be
+/// Callback invoked when an ICE candidate has been prepared and is ready to be
 /// sent by the user via the signaling service.
 using mrsPeerConnectionIceCandidateReadytoSendCallback =
     void(MRS_CALL*)(void* user_data, const mrsIceCandidate* candidate);
@@ -220,11 +220,11 @@ enum class mrsIceGatheringState : int32_t {
   kComplete = 2,
 };
 
-/// Callback fired when the state of the ICE connection changed.
+/// Callback invoked when the state of the ICE connection changed.
 using mrsPeerConnectionIceStateChangedCallback =
     void(MRS_CALL*)(void* user_data, mrsIceConnectionState new_state);
 
-/// Callback fired when a renegotiation of the current session needs to occur to
+/// Callback invoked when a renegotiation of the current session needs to occur to
 /// account for new parameters (e.g. added or removed tracks).
 using mrsPeerConnectionRenegotiationNeededCallback =
     void(MRS_CALL*)(void* user_data);
@@ -264,14 +264,14 @@ struct mrsRemoteVideoTrackAddedInfo {
   const char* track_name;
 };
 
-/// Callback fired when a remote audio track is added to a connection.
+/// Callback invoked when a remote audio track is added to a connection.
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionAudioTrackAddedCallback =
     void(MRS_CALL*)(void* user_data, const mrsRemoteAudioTrackAddedInfo* info);
 
-/// Callback fired when a remote audio track is removed from a connection.
+/// Callback invoked when a remote audio track is removed from a connection.
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
@@ -280,14 +280,14 @@ using mrsPeerConnectionAudioTrackRemovedCallback =
                     mrsRemoteAudioTrackHandle audio_track,
                     mrsTransceiverHandle transceiver);
 
-/// Callback fired when a remote video track is added to a connection.
+/// Callback invoked when a remote video track is added to a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionVideoTrackAddedCallback =
     void(MRS_CALL*)(void* user_data, const mrsRemoteVideoTrackAddedInfo* info);
 
-/// Callback fired when a remote video track is removed from a connection.
+/// Callback invoked when a remote video track is removed from a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
 /// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
@@ -320,18 +320,27 @@ struct mrsDataChannelAddedInfo {
   const char* label{nullptr};
 };
 
-/// Callback fired when a data channel is added to the peer connection after
-/// being negotiated with the remote peer.
+/// Callback invoked when a data channel is added to the peer connection. This is
+/// called for both channels that are created locally and ones that are created
+/// by the remote peer.
+///
+/// Use this callback to call |mrsDataChannelRegisterCallbacks| on new data
+/// channels and to start listening for messages/state changes.
+///
+/// The data channel is initially in the |mrsDataChannelState::kConnecting|
+/// state and will transition to |mrsDataChannelState::kOpen| when it is ready
+/// for use. In order to know when the channel state changes you must pass
+/// a valid |mrsDataChannelStateCallback| to |mrsDataChannelRegisterCallbacks|.
 using mrsPeerConnectionDataChannelAddedCallback =
     void(MRS_CALL*)(void* user_data, const mrsDataChannelAddedInfo* info);
 
-/// Callback fired when a data channel is remoted from the peer connection.
+/// Callback invoked when a data channel is removed from the peer connection.
 using mrsPeerConnectionDataChannelRemovedCallback =
     void(MRS_CALL*)(void* user_data, mrsDataChannelHandle data_channel);
 
 using mrsI420AVideoFrame = Microsoft::MixedReality::WebRTC::I420AVideoFrame;
 
-/// Callback fired when a local or remote (depending on use) video frame is
+/// Callback invoked when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 /// The video frame is encoded in I420 triplanar format (NV12).
 using mrsI420AVideoFrameCallback =
@@ -339,7 +348,7 @@ using mrsI420AVideoFrameCallback =
 
 using mrsArgb32VideoFrame = Microsoft::MixedReality::WebRTC::Argb32VideoFrame;
 
-/// Callback fired when a local or remote (depending on use) video frame is
+/// Callback invoked when a local or remote (depending on use) video frame is
 /// available to be consumed by the caller, usually for display.
 /// The video frame is encoded in ARGB 32-bit per pixel.
 using mrsArgb32VideoFrameCallback =
@@ -347,7 +356,7 @@ using mrsArgb32VideoFrameCallback =
 
 using mrsAudioFrame = Microsoft::MixedReality::WebRTC::AudioFrame;
 
-/// Callback fired when a local or remote (depending on use) audio frame is
+/// Callback invoked when a local or remote (depending on use) audio frame is
 /// available to be consumed by the caller, usually for local output.
 using mrsAudioFrameCallback = void(MRS_CALL*)(void* user_data,
                                               const mrsAudioFrame& frame);
@@ -457,14 +466,14 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterIceStateChangedCallback(
     mrsPeerConnectionIceStateChangedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a renegotiation of the current session needs
+/// Register a callback invoked when a renegotiation of the current session needs
 /// to occur to account for new parameters (e.g. added or removed tracks).
 MRS_API void MRS_CALL mrsPeerConnectionRegisterRenegotiationNeededCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionRenegotiationNeededCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a remote audio track is added to the current
+/// Register a callback invoked when a remote audio track is added to the current
 /// peer connection.
 /// Note that the arguments include some object handles, which each hold a
 /// reference to the corresponding object and therefore must be released, even
@@ -474,7 +483,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackAddedCallback(
     mrsPeerConnectionAudioTrackAddedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a remote audio track is removed from the
+/// Register a callback invoked when a remote audio track is removed from the
 /// current peer connection.
 /// Note that the arguments include some object handles, which each hold a
 /// reference to the corresponding object and therefore must be released, even
@@ -484,7 +493,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackRemovedCallback(
     mrsPeerConnectionAudioTrackRemovedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a remote video track is added to the current
+/// Register a callback invoked when a remote video track is added to the current
 /// peer connection.
 /// Note that the arguments include some object handles, which each hold a
 /// reference to the corresponding object and therefore must be released, even
@@ -494,7 +503,7 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterVideoTrackAddedCallback(
     mrsPeerConnectionVideoTrackAddedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a remote video track is removed from the
+/// Register a callback invoked when a remote video track is removed from the
 /// current peer connection.
 /// Note that the arguments include some object handles, which each hold a
 /// reference to the corresponding object and therefore must be released, even
@@ -504,14 +513,14 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterVideoTrackRemovedCallback(
     mrsPeerConnectionVideoTrackRemovedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a remote data channel is removed from the
+/// Register a callback invoked when a remote data channel is removed from the
 /// current peer connection.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelAddedCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionDataChannelAddedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback fired when a remote data channel is removed from the
+/// Register a callback invoked when a remote data channel is removed from the
 /// current peer connection.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
     mrsPeerConnectionHandle peer_handle,
@@ -672,7 +681,7 @@ mrsPeerConnectionAddIceCandidate(mrsPeerConnectionHandle peer_handle,
                                  const mrsIceCandidate* candidate) noexcept;
 
 /// Create a new JSEP offer to try to establish a connection with a remote peer.
-/// This will generate a local offer message, then fire the
+/// This will generate a local offer message, then invoke the
 /// |LocalSdpReadytoSendCallback| callback, which should send to the remote peer
 /// this message via the signaling service the user implemented.
 ///
@@ -684,7 +693,7 @@ mrsPeerConnectionCreateOffer(mrsPeerConnectionHandle peer_handle) noexcept;
 
 /// Create a new JSEP answer to a received offer, either to try to establish a
 /// new connection with a remote peer, or to update an existing session with
-/// changes. This will generate a local answer message, then fire the
+/// changes. This will generate a local answer message, then invoke the
 /// |LocalSdpReadytoSendCallback| callback, which should send to the remote peer
 /// this message via the signaling service the user chose.
 ///

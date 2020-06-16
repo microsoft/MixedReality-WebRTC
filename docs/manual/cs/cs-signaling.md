@@ -22,7 +22,7 @@ peerConnection.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, 
 
 Upon receiving the above messages, the signaling solution must:
 
-- For SDP messages originating from a [`LocalSdpReadytoSend`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadytoSend) event invoked on the remote peer, call the [`PeerConnection.SetRemoteDescriptionAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescriptionAsync(System.String,System.String)) method to inform the local peer connection of the newly received session description.
+- For SDP messages originating from a [`LocalSdpReadytoSend`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadytoSend) event invoked on the remote peer, call the [`PeerConnection.SetRemoteDescriptionAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescriptionAsync(Microsoft.MixedReality.WebRTC.SdpMessage)) method to inform the local peer connection of the newly received session description.
 
   ```cs
   public void OnSdpMessage(string type, string sdp) {
