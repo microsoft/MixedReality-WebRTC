@@ -138,14 +138,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
         }
 
-#if UNITY_WSA && !UNITY_EDITOR
-        protected override async void OnEnable()
+        protected async void OnEnable()
         {
-            // Request access to video capture. The OS may show some popup dialog to the
-            // user to request permission. This will succeed only if the user approves it.
+            if (Source != null)
+            {
+                return;
+            }
+
+#if UNITY_WSA && !UNITY_EDITOR
+            // Request UWP access to video capture. The OS may show some popup dialog to the
+            // user to request permission. This will succeed only if the user grants permission.
             try
             {
-                if (UnityEngine.WSA.Application.RunningOnUIThread())
+                // Note that the UWP UI thread and the main Unity app thread are always different.
+                // https://docs.unity3d.com/Manual/windowsstore-appcallbacks.html
+                // We leave the code below as an example of generic handling in case this would be used in
+                // some other place, and in case a future version of Unity decided to change that assumption,
+                // but currently OnEnable() is always invoked from the main Unity app thread so here the first
+                // branch is never taken.
+                if (!UnityEngine.WSA.Application.RunningOnUIThread())
                 {
                     await RequestAccessAsync();
                 }
@@ -161,19 +172,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 this.enabled = false;
                 return;
             }
-
-            // Once access was granted, continue to create the video source by opening
-            // the video capture device.
-            base.OnEnable();
-        }
 #endif
-
-        protected virtual async Task OnEnable()
-        {
-            if (Source != null)
-            {
-                return;
-            }
 
             string videoProfileId = VideoProfileId;
             var videoProfileKind = VideoProfileKind;
