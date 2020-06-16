@@ -155,6 +155,9 @@ void ExternalVideoTrackSource::StartCapture() {
     return;
   }
 
+  RTC_LOG(LS_INFO) << "Starting capture for external video track source "
+                   << GetName().c_str();
+
   // Start capture thread
   GetSourceImpl()->state_ = SourceState::kLive;
   pending_requests_.clear();
@@ -244,6 +247,8 @@ Result ExternalVideoTrackSource::CompleteRequest(
 void ExternalVideoTrackSource::StopCapture() {
   detail::CustomTrackSourceAdapter* const src = GetSourceImpl();
   if (src->state_ != SourceState::kEnded) {
+    RTC_LOG(LS_INFO) << "Stopping capture for external video track source "
+                     << GetName().c_str();
     capture_thread_->Stop();
     src->state_ = SourceState::kEnded;
   }

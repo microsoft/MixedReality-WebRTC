@@ -4,34 +4,43 @@
 using UnityEngine;
 using Unity.Profiling;
 using System;
+using Microsoft.MixedReality.WebRTC.Unity.Editor;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// Play video frames received from a WebRTC video track.
+    /// Utility component used to play video frames obtained from a WebRTC video track. This can indiscriminately
+    /// play video frames from a video track source on the local peer as well as video frames from a remote video
+    /// receiver obtaining its frame from a remote WebRTC peer.
     /// </summary>
     /// <remarks>
     /// This component writes to the attached <a href="https://docs.unity3d.com/ScriptReference/Material.html">Material</a>,
     /// via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html">Renderer</a>.
     /// </remarks>
     [RequireComponent(typeof(Renderer))]
-    [AddComponentMenu("MixedReality-WebRTC/Media Player")]
-    public class MediaPlayer : MonoBehaviour
+    [AddComponentMenu("MixedReality-WebRTC/Video Renderer")]
+    public class VideoRenderer : MonoBehaviour
     {
-        [Header("Source")]
-        [Tooltip("Audio source providing the audio data used by this player")]
+        /// <summary>
+        /// Video frame source producing the frames to render. The concrete class must implement <see cref="IVideoSource"/>.
+        /// </summary>
+        /// <remarks>
+        /// Here what we really want is to serialize some reference to an <see cref="IVideoSource"/>.
+        /// Unfortunately Unity before 2019.3 does not support serialized interfaces, and more generally ignores
+        /// polymorphism in serialization. And although there are ways to make that work with a custom inspector,
+        /// this disables support for object picker, so only drag-and-drop works, which is very impractical.
+        /// So we use a base class derived from MonoBehaviour, which is the only entity for which Unity handles
+        /// polymorphism.
+        /// </remarks>
         [SerializeField]
-        protected MediaSource AudioSource;
+        protected VideoRendererSource Source;
 
-        [Tooltip("Video source providing the video frames rendered by this player")]
-        [SerializeField]
-        protected MediaSource VideoSource;
-
-        [Tooltip("Max video playback framerate, in frames per second")]
+        [Tooltip("Max playback framerate, in frames per second")]
         [Range(0.001f, 120f)]
-        public float MaxVideoFramerate = 30f;
+        public float MaxFramerate = 30f;
 
         [Header("Statistics")]
+        [ToggleLeft]
         public bool EnableStatistics = true;
 
         /// <summary>
@@ -85,16 +94,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void OnValidate()
         {
-            // Ensure that AudioSource implements IAudioSource
-            if (!(AudioSource is IAudioSource))
+            // Ensure that Source implements IVideoSource
+            if (!(Source is IVideoSource))
             {
-                AudioSource = null;
-            }
-
-            // Ensure that VideoSource implements IVideoSource
-            if (!(VideoSource is IVideoSource))
-            {
-                VideoSource = null;
+                Source = null;
             }
         }
 
@@ -104,33 +107,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             // Leave 3ms of margin, otherwise it misses 1 frame and drops to ~20 FPS
             // when Unity is running at 60 FPS.
-            _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxVideoFramerate) - 0.003f);
+            _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxFramerate) - 0.003f);
         }
 
         private void OnEnable()
         {
-            if (AudioSource != null)
+            if (Source != null)
             {
-                if (AudioSource is IAudioSource audioSrc)
-                {
-                    audioSrc.GetAudioStreamStarted().AddListener(AudioStreamStarted);
-                    audioSrc.GetAudioStreamStopped().AddListener(AudioStreamStopped);
-
-                    // If registering while the audio source is already playing, invoke manually
-                    if (audioSrc.IsStreaming)
-                    {
-                        AudioStreamStarted(audioSrc);
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException("Audio source does not implement IAudioSource.");
-                }
-            }
-
-            if (VideoSource != null)
-            {
-                if (VideoSource is IVideoSource videoSrc)
+                if (Source is IVideoSource videoSrc)
                 {
                     videoSrc.GetVideoStreamStarted().AddListener(VideoStreamStarted);
                     videoSrc.GetVideoStreamStopped().AddListener(VideoStreamStopped);
@@ -150,13 +134,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void OnDisable()
         {
-            var audioSrc = (IAudioSource)AudioSource;
-            if (audioSrc != null) // depends in particular on Unity's component destruction order
-            {
-                audioSrc.GetAudioStreamStarted().RemoveListener(AudioStreamStarted);
-                audioSrc.GetAudioStreamStopped().RemoveListener(AudioStreamStopped);
-            }
-            var videoSrc = (IVideoSource)VideoSource;
+            var videoSrc = (IVideoSource)Source;
             if (videoSrc != null) // depends in particular on Unity's component destruction order
             {
                 videoSrc.GetVideoStreamStarted().RemoveListener(VideoStreamStarted);
@@ -164,19 +142,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        private void AudioStreamStarted(IAudioSource source)
-        {
-        }
-
-        private void AudioStreamStopped(IAudioSource source)
-        {
-        }
-
         private void VideoStreamStarted(IVideoSource source)
         {
             bool isRemote = (source is VideoReceiver);
             int frameQueueSize = (isRemote ? 5 : 3);
-            var videoSrc = (IVideoSource)VideoSource;
+            var videoSrc = (IVideoSource)Source;
             switch (videoSrc.FrameEncoding)
             {
                 case VideoEncoding.I420A:
@@ -260,7 +230,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
                 // Leave 3ms of margin, otherwise it misses 1 frame and drops to ~20 FPS
                 // when Unity is running at 60 FPS.
-                _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxVideoFramerate) - 0.003f);
+                _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxFramerate) - 0.003f);
 #endif
                 // FIXME - This will overflow/underflow the queue if not set at the same rate
                 // as the one at which frames are enqueued!
@@ -337,7 +307,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         fixed (void* buffer = frame.Buffer)
                         {
-                            var src = new System.IntPtr(buffer);
+                            var src = new IntPtr(buffer);
                             int lumaSize = lumaWidth * lumaHeight;
                             _textureY.LoadRawTextureData(src, lumaSize);
                             src += lumaSize;
@@ -384,7 +354,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         fixed (void* buffer = frame.Buffer)
                         {
-                            var src = new System.IntPtr(buffer);
+                            var src = new IntPtr(buffer);
                             int size = width * height * 4;
                             _textureY.LoadRawTextureData(src, size);
                         }

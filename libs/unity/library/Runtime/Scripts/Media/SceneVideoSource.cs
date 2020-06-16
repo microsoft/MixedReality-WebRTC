@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// Custom video source capturing the Unity scene content as rendered by a given camera,
     /// and sending it as a video track through the selected peer connection.
     /// </summary>
-    public class SceneVideoSender : CustomVideoSender<Argb32VideoFrameStorage>
+    public class SceneVideoSource : CustomVideoSource<Argb32VideoFrameStorage>
     {
         /// <summary>
         /// Camera used to capture the scene content, whose rendering is used as
@@ -75,7 +76,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private VideoFrameQueue<Argb32VideoFrameStorage> _frameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(3);
 
-        protected new void OnEnable()
+        protected override void OnEnable()
         {
             if (!SystemInfo.supportsAsyncGPUReadback)
             {
@@ -101,10 +102,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             CreateCommandBuffer();
             SourceCamera.AddCommandBuffer(CameraEvent, _commandBuffer);
 
-            _ = base.OnEnable();
+            // Create the track source
+            base.OnEnable();
         }
 
-        protected new void OnDisable()
+        protected override void OnDisable()
         {
             base.OnDisable();
 

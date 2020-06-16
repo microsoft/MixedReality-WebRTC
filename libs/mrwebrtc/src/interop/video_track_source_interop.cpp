@@ -21,3 +21,18 @@ void MRS_CALL mrsVideoTrackSourceRegisterFrameCallback(
     source->SetCallback(I420AFrameReadyCallback{callback, user_data});
   }
 }
+
+void MRS_CALL mrsVideoTrackSourceRegisterArgb32FrameCallback(
+    mrsVideoTrackSourceHandle source_handle,
+    mrsArgb32VideoFrameCallback callback,
+    void* user_data) noexcept {
+  // TODO - Remove ARGB callbacks, use I420 callbacks only and expose some
+  // conversion utility to convert from ARGB to I420 when needed (to be called
+  // by the user).
+  if (auto source = static_cast<VideoTrackSource*>(source_handle)) {
+    RTC_DCHECK(
+        (source->GetObjectType() == ObjectType::kDeviceVideoTrackSource) ||
+        (source->GetObjectType() == ObjectType::kExternalVideoTrackSource));
+    source->SetCallback(Argb32FrameReadyCallback{callback, user_data});
+  }
+}

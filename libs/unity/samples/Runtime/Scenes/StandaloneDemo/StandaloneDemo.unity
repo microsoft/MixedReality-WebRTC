@@ -599,9 +599,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29b5ec2fdf160bb4ebd2d5159450fd2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackName: video_C
-  AutoStartOnEnabled: 1
-  PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -630,9 +627,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 447630319}
-  MaxVideoFramerate: 30
+  Source: {fileID: 447630319}
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 744769662}
   FramePresentStatHolder: {fileID: 238596599}
@@ -2037,9 +2033,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 989215899}
-  MaxVideoFramerate: 30
+  Source: {fileID: 989215899}
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 694614437}
   FramePresentStatHolder: {fileID: 1213993069}
@@ -2452,7 +2447,7 @@ GameObject:
   - component: {fileID: 1221709218}
   - component: {fileID: 1221709217}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2496,8 +2491,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
-  far clip plane: 100
+  near clip plane: 0.01
+  far clip plane: 10
   field of view: 43
   orthographic: 0
   orthographic size: 5
@@ -3117,9 +3112,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 1533694088}
-  MaxVideoFramerate: 30
+  Source: {fileID: 1533694088}
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 521926238}
   FramePresentStatHolder: {fileID: 1833828032}
@@ -3201,7 +3195,6 @@ MonoBehaviour:
   AutoInitializeOnStart: 1
   AutoCreateOfferOnRenegotiationNeeded: 1
   AutoLogErrorsToUnityConsole: 1
-  Signaler: {fileID: 0}
   IceServers:
   - Type: 1
     Uri: stun.l.google.com:19302
@@ -3218,16 +3211,16 @@ MonoBehaviour:
       m_Calls: []
   _mediaLines:
   - _kind: 1
-    _sender: {fileID: 0}
+    _source: {fileID: 0}
     _receiver: {fileID: 1533694088}
   - _kind: 1
-    _sender: {fileID: 0}
+    _source: {fileID: 0}
     _receiver: {fileID: 0}
   - _kind: 1
-    _sender: {fileID: 0}
+    _source: {fileID: 0}
     _receiver: {fileID: 1712234956}
   - _kind: 1
-    _sender: {fileID: 0}
+    _source: {fileID: 0}
     _receiver: {fileID: 0}
 --- !u!4 &1537901324
 Transform:
@@ -3300,9 +3293,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29b5ec2fdf160bb4ebd2d5159450fd2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackName: video_B
-  AutoStartOnEnabled: 1
-  PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -3329,9 +3319,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 1645256671}
-  MaxVideoFramerate: 30
+  Source: {fileID: 1645256671}
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 2120561397}
   FramePresentStatHolder: {fileID: 503339848}
@@ -3541,9 +3530,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 1712234956}
-  MaxVideoFramerate: 30
+  Source: {fileID: 1712234956}
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 1149091332}
   FramePresentStatHolder: {fileID: 1933715438}
@@ -4557,7 +4545,6 @@ MonoBehaviour:
   AutoInitializeOnStart: 1
   AutoCreateOfferOnRenegotiationNeeded: 1
   AutoLogErrorsToUnityConsole: 1
-  Signaler: {fileID: 0}
   IceServers:
   - Type: 1
     Uri: stun.l.google.com:19302
@@ -4574,16 +4561,16 @@ MonoBehaviour:
       m_Calls: []
   _mediaLines:
   - _kind: 1
-    _sender: {fileID: 8066520111486228012}
+    _source: {fileID: 8066520111486228012}
     _receiver: {fileID: 0}
   - _kind: 1
-    _sender: {fileID: 1645256671}
+    _source: {fileID: 1645256671}
     _receiver: {fileID: 0}
   - _kind: 1
-    _sender: {fileID: 447630319}
+    _source: {fileID: 447630319}
     _receiver: {fileID: 0}
   - _kind: 1
-    _sender: {fileID: 0}
+    _source: {fileID: 0}
     _receiver: {fileID: 989215899}
 --- !u!114 &114460246451956513
 MonoBehaviour:
@@ -4947,9 +4934,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 8066520111486228012}
-  MaxVideoFramerate: 30
+  Source: {fileID: 8066520111486228012}
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 8067683105943324948}
   FramePresentStatHolder: {fileID: 8067683106531057167}
@@ -5031,9 +5017,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29b5ec2fdf160bb4ebd2d5159450fd2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackName: video_A
-  AutoStartOnEnabled: 1
-  PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
       m_Calls: []

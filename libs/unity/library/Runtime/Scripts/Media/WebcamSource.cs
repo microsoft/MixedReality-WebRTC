@@ -9,6 +9,14 @@ using UnityEngine;
 using global::Windows.Graphics.Holographic;
 #endif
 
+#if UNITY_WSA && !UNITY_EDITOR
+using global::Windows.UI.Core;
+using global::Windows.Foundation;
+using global::Windows.Media.Core;
+using global::Windows.Media.Capture;
+using global::Windows.ApplicationModel.Core;
+#endif
+
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
@@ -57,12 +65,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
     /// <summary>
     /// This component represents a local video sender generating video frames from a local
-    /// video capture device (webcam). The video sender can be added to a video transceiver
-    /// in order for the video data to be sent to the remote peer. The captured video frames
-    /// can also optionally be displayed locally with a <see cref="MediaPlayer"/>.
+    /// video capture device (webcam).
     /// </summary>
     [AddComponentMenu("MixedReality-WebRTC/Webcam Source")]
-    public class WebcamSource : VideoSender
+    public class WebcamSource : VideoTrackSource
     {
         /// <summary>
         /// Optional identifier of the webcam to use. Setting this value forces using the given
@@ -132,8 +138,42 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
         }
 
-        protected override async Task CreateLocalVideoTrackAsync()
+        protected async void OnEnable()
         {
+            if (Source != null)
+            {
+                return;
+            }
+
+#if UNITY_WSA && !UNITY_EDITOR
+            // Request UWP access to video capture. The OS may show some popup dialog to the
+            // user to request permission. This will succeed only if the user grants permission.
+            try
+            {
+                // Note that the UWP UI thread and the main Unity app thread are always different.
+                // https://docs.unity3d.com/Manual/windowsstore-appcallbacks.html
+                // We leave the code below as an example of generic handling in case this would be used in
+                // some other place, and in case a future version of Unity decided to change that assumption,
+                // but currently OnEnable() is always invoked from the main Unity app thread so here the first
+                // branch is never taken.
+                if (UnityEngine.WSA.Application.RunningOnUIThread())
+                {
+                    await RequestAccessAsync();
+                }
+                else
+                {
+                    UnityEngine.WSA.Application.InvokeOnUIThread(() => RequestAccessAsync(), waitUntilDone: true);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log an error and prevent activation
+                Debug.LogError($"Video access failure: {ex.Message}.");
+                this.enabled = false;
+                return;
+            }
+#endif
+
             string videoProfileId = VideoProfileId;
             var videoProfileKind = VideoProfileKind;
             int width = Constraints.width;
@@ -172,6 +212,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 }
             }
 #endif
+
+            // TODO - Fix codec selection (was as below before change)
+
             // Force again PreferredVideoCodec right before starting the local capture,
             // so that modifications to the property done after OnPeerInitialized() are
             // accounted for.
@@ -179,28 +222,27 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             //PeerConnection.Peer.PreferredVideoCodec = PreferredVideoCodec;
 
             // Check H.264 requests on Desktop (not supported)
-#if !ENABLE_WINMD_SUPPORT
-            if (PreferredVideoCodec == "H264")
-            {
-                Debug.LogError("H.264 encoding is not supported on Desktop platforms. Using VP8 instead.");
-                PreferredVideoCodec = "VP8";
-            }
-#endif
+            //#if !ENABLE_WINMD_SUPPORT
+            //            if (PreferredVideoCodec == "H264")
+            //            {
+            //                Debug.LogError("H.264 encoding is not supported on Desktop platforms. Using VP8 instead.");
+            //                PreferredVideoCodec = "VP8";
+            //            }
+            //#endif
 
-            // Ensure the track has a valid name
-            string trackName = TrackName;
-            if (trackName.Length == 0)
-            {
-                trackName = Guid.NewGuid().ToString();
-                // Re-assign the generated track name for consistency
-                TrackName = trackName;
-            }
-            SdpTokenAttribute.Validate(trackName, allowEmpty: false);
+            //// Ensure the track has a valid name
+            //string trackName = TrackName;
+            //if (trackName.Length == 0)
+            //{
+            //    trackName = Guid.NewGuid().ToString();
+            //    // Re-assign the generated track name for consistency
+            //    TrackName = trackName;
+            //}
+            //SdpTokenAttribute.Validate(trackName, allowEmpty: false);
 
             // Create the track
-            var trackSettings = new LocalVideoTrackSettings
+            var deviceConfig = new LocalVideoDeviceInitConfig
             {
-                trackName = trackName,
                 videoDevice = WebcamDevice,
                 videoProfileId = videoProfileId,
                 videoProfileKind = videoProfileKind,
@@ -210,14 +252,38 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 enableMrc = EnableMixedRealityCapture,
                 enableMrcRecordingIndicator = EnableMRCRecordingIndicator
             };
-            Track = await LocalVideoTrack.CreateFromDeviceAsync(trackSettings);
-            if (Track == null)
+            Source = await DeviceVideoTrackSource.CreateAsync(deviceConfig);
+            if (Source == null)
             {
-                throw new Exception("Failed ot create webcam video track.");
+                throw new Exception("Failed ot create webcam video source.");
             }
 
-            // Synchronize the track status with the Unity component status
-            Track.Enabled = enabled;
+            IsStreaming = true;
+            VideoStreamStarted.Invoke(this);
         }
+
+#if UNITY_WSA && !UNITY_EDITOR
+        /// <summary>
+        /// Internal UWP helper to ensure device access.
+        /// </summary>
+        /// <remarks>
+        /// This must be called from the main UWP UI thread (not the main Unity app thread).
+        /// </remarks>
+        private Task RequestAccessAsync()
+        {
+            // On UWP the app must have the "webcam" capability, and the user must allow webcam
+            // access. So check that access before trying to initialize the WebRTC library, as this
+            // may result in a popup window being displayed the first time, which needs to be accepted
+            // before the camera can be accessed by WebRTC.
+            var mediaAccessRequester = new MediaCapture();
+            var mediaSettings = new MediaCaptureInitializationSettings();
+            mediaSettings.AudioDeviceId = "";
+            mediaSettings.VideoDeviceId = "";
+            mediaSettings.StreamingCaptureMode = StreamingCaptureMode.Video;
+            mediaSettings.PhotoCaptureSource = PhotoCaptureSource.VideoPreview;
+            mediaSettings.SharingMode = MediaCaptureSharingMode.SharedReadOnly; // for MRC and lower res camera
+            return mediaAccessRequester.InitializeAsync(mediaSettings).AsTask();
+        }
+#endif
     }
 }

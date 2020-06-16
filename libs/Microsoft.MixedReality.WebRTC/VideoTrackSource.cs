@@ -51,27 +51,71 @@ namespace Microsoft.MixedReality.WebRTC
         public IReadOnlyList<LocalVideoTrack> Tracks => _tracks;
 
         /// <summary>
-        /// Event that occurs when a video frame has been produced by the source.
+        /// Event raised when a video frame has been produced by the source. Handlers must process the
+        /// frame as fast as possible without blocking the caller thread, and cannot remove themselves
+        /// from the event nor add other handlers to the event, otherwise the caller thread will deadlock.
+        /// The event delivers to the handlers an I420-encoded video frame.
         /// </summary>
         public event I420AVideoFrameDelegate VideoFrameReady
         {
             add
             {
-                bool isFirstHandler = (_videoFrameReady == null);
-                _videoFrameReady += value;
-                if (isFirstHandler)
+                lock (_videoFrameReadyLock)
                 {
-                    RegisterVideoFrameCallback();
+                    bool isFirstHandler = (_videoFrameReady == null);
+                    _videoFrameReady += value;
+                    if (isFirstHandler)
+                    {
+                        RegisterVideoFrameCallback();
+                    }
                 }
             }
             remove
             {
-                // FIXME - ideally unregister first so no need to check for NULL event in handler
-                _videoFrameReady -= value;
-                bool isLastHandler = (_videoFrameReady == null);
-                if (isLastHandler)
+                lock (_videoFrameReadyLock)
                 {
-                    UnregisterVideoFrameCallback();
+                    _videoFrameReady -= value;
+                    bool isLastHandler = (_videoFrameReady == null);
+                    if (isLastHandler)
+                    {
+                        UnregisterVideoFrameCallback();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Event raised when a video frame has been produced by the source. Handlers must process the
+        /// frame as fast as possible without blocking the caller thread, and cannot remove themselves
+        /// from the event nor add other handlers to the event, otherwise the caller thread will deadlock.
+        /// The event delivers to the handlers an ARGB32-encoded video frame.
+        /// </summary>
+        public event Argb32VideoFrameDelegate ARGB32VideoFrameReady
+        {
+            // TODO - Remove ARGB callbacks, use I420 callbacks only and expose some conversion
+            // utility to convert from ARGB to I420 when needed (to be called by the user).
+            add
+            {
+                lock (_videoFrameReadyLock)
+                {
+                    bool isFirstHandler = (_argb32videoFrameReady == null);
+                    _argb32videoFrameReady += value;
+                    if (isFirstHandler)
+                    {
+                        RegisterArgb32VideoFrameCallback();
+                    }
+                }
+            }
+            remove
+            {
+                lock (_videoFrameReadyLock)
+                {
+                    _argb32videoFrameReady -= value;
+                    bool isLastHandler = (_argb32videoFrameReady == null);
+                    if (isLastHandler)
+                    {
+                        UnregisterArgb32VideoFrameCallback();
+                    }
                 }
             }
         }
@@ -107,7 +151,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private List<LocalVideoTrack> _tracks = new List<LocalVideoTrack>();
 
+        private readonly object _videoFrameReadyLock = new object();
         private event I420AVideoFrameDelegate _videoFrameReady;
+        private event Argb32VideoFrameDelegate _argb32videoFrameReady;
 
         internal VideoTrackSource()
         {
@@ -167,6 +213,25 @@ namespace Microsoft.MixedReality.WebRTC
             _interopCallbackArgs = null;
         }
 
+        private void RegisterArgb32VideoFrameCallback()
+        {
+            _interopCallbackArgs = new VideoTrackSourceInterop.InteropCallbackArgs()
+            {
+                Source = this,
+                Argb32FrameCallback = VideoTrackSourceInterop.Argb32FrameCallback,
+            };
+            _selfHandle = Utils.MakeWrapperRef(this);
+            VideoTrackSourceInterop.VideoTrackSource_RegisterArgb32FrameCallback(
+                _nativeHandle, _interopCallbackArgs.Argb32FrameCallback, _selfHandle);
+        }
+
+        private void UnregisterArgb32VideoFrameCallback()
+        {
+            VideoTrackSourceInterop.VideoTrackSource_RegisterFrameCallback(_nativeHandle, null, IntPtr.Zero);
+            Utils.ReleaseWrapperRef(_selfHandle);
+            _interopCallbackArgs = null;
+        }
+
         /// <summary>
         /// Internal callback when a track starts using this source.
         /// </summary>
@@ -215,7 +280,19 @@ namespace Microsoft.MixedReality.WebRTC
         internal void OnI420AFrameReady(I420AVideoFrame frame)
         {
             MainEventSource.Log.I420ALocalVideoFrameReady(frame.width, frame.height);
-            _videoFrameReady?.Invoke(frame);
+            lock (_videoFrameReadyLock)
+            {
+                _videoFrameReady?.Invoke(frame);
+            }
+        }
+
+        internal void OnArgb32FrameReady(Argb32VideoFrame frame)
+        {
+            MainEventSource.Log.Argb32LocalVideoFrameReady(frame.width, frame.height);
+            lock (_videoFrameReadyLock)
+            {
+                _argb32videoFrameReady?.Invoke(frame);
+            }
         }
 
         /// <inheritdoc/>
