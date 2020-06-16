@@ -153,7 +153,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &132294434
 Transform:
@@ -202,7 +202,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &407286071
 Transform:
@@ -237,7 +237,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!114 &594695094
 MonoBehaviour:
@@ -302,7 +302,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!114 &599126879
 MonoBehaviour:
@@ -351,7 +351,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &666380896
 Transform:
@@ -379,12 +379,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c8b8e916d2cbf40a9dd142c021c4d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VideoStreamStarted:
-    m_PersistentCalls:
-      m_Calls: []
-  VideoStreamStopped:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!4 &966919328 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6210530807246673570, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
@@ -408,7 +402,7 @@ GameObject:
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!81 &1221709217
 AudioListener:
@@ -496,7 +490,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1290921136
 Transform:
@@ -532,7 +526,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!65 &1364643067
 BoxCollider:
@@ -622,7 +616,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1697477436
 Transform:
@@ -650,12 +644,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac54f2f6b8185d444b4a85e048778344, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioStreamStarted:
-    m_PersistentCalls:
-      m_Calls: []
-  AudioStreamStopped:
-    m_PersistentCalls:
-      m_Calls: []
   PadWithSine: 0
 --- !u!82 &1697477438
 AudioSource:
@@ -770,7 +758,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!65 &1968188769
 BoxCollider:
@@ -859,7 +847,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &2089692226
 Transform:
@@ -921,7 +909,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1346071801121015
 GameObject:
@@ -940,7 +928,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1500328313306441
 GameObject:
@@ -958,7 +946,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1561135859488345
 GameObject:
@@ -976,7 +964,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1732322567789193
 GameObject:
@@ -993,7 +981,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1754267569312647
 GameObject:
@@ -1014,7 +1002,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1913512870514801
 GameObject:
@@ -1033,7 +1021,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1945671196978223
 GameObject:
@@ -1052,7 +1040,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &4483042683139361
 Transform:
@@ -1295,12 +1283,14 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _mediaLines:
-  - _kind: 0
+  - _mediaKind: 0
     _source: {fileID: 132294435}
     _receiver: {fileID: 1697477437}
-  - _kind: 1
+    _senderTrackName: microphone_track
+  - _mediaKind: 1
     _source: {fileID: 2089692227}
     _receiver: {fileID: 666380897}
+    _senderTrackName: webcam_track
 --- !u!114 &114460246451956513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1669,6 +1659,11 @@ PrefabInstance:
       propertyPath: m_Text
       value: Remote peer
       objectReference: {fileID: 0}
+    - target: {fileID: 1926200958023540929, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 6210530807246673570, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1744,6 +1739,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RemoteVideoPlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 6213381231372758174, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 6316678915622682930, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
       propertyPath: AudioSource2
@@ -1784,6 +1784,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Text
       value: Local peer
+      objectReference: {fileID: 0}
+    - target: {fileID: 1926200958023540929, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 6210530807246673570, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
@@ -1854,6 +1859,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: VideoPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 6213381231372758174, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 6316678915622682930, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
         type: 3}
