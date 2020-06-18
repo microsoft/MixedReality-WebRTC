@@ -31,7 +31,7 @@ TEST_F(ObjectTests, Name) {
     mrsObjectSetName(handle, kTestName);
     constexpr const size_t kBufferSize = kTestNameSize;  // exact-fit
     char buffer[kBufferSize];
-    size_t size = kBufferSize;
+    uint64_t size = kBufferSize;
     ASSERT_EQ(mrsResult::kSuccess, mrsObjectGetName(handle, buffer, &size));
     ASSERT_EQ(kTestNameSize, size);
     ASSERT_EQ(0, memcmp(buffer, kTestName, kTestNameSize));
@@ -45,7 +45,7 @@ TEST_F(ObjectTests, Name) {
     mrsObjectSetName(handle, kTestName);
     constexpr const size_t kBufferSize = kTestNameSize + 1;  // larger
     char buffer[kBufferSize];
-    size_t size = kBufferSize;
+    uint64_t size = kBufferSize;
     ASSERT_EQ(mrsResult::kSuccess, mrsObjectGetName(handle, buffer, &size));
     ASSERT_EQ(kTestNameSize, size);
     ASSERT_EQ(0, memcmp(buffer, kTestName, kTestNameSize));
@@ -59,7 +59,7 @@ TEST_F(ObjectTests, Name) {
     mrsObjectSetName(handle, kTestName);
     constexpr const size_t kBufferSize = kTestNameSize - 1;  // too small
     char buffer[kBufferSize];
-    size_t size = kBufferSize;
+    uint64_t size = kBufferSize;
     ASSERT_EQ(mrsResult::kBufferTooSmall,
               mrsObjectGetName(handle, buffer, &size));
     ASSERT_EQ(kTestNameSize, size);
@@ -67,7 +67,7 @@ TEST_F(ObjectTests, Name) {
 
   // Invalid buffer
   {
-    size_t size = 0;
+    uint64_t size = 0;
     ASSERT_EQ(mrsResult::kInvalidParameter,
               mrsObjectGetName(handle, nullptr, &size));
   }
