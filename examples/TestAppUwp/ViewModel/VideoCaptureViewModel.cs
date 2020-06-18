@@ -117,9 +117,6 @@ namespace TestAppUwp
             }
         }
 
-        public CollectionViewModel<MediaCaptureVideoProfileMediaDescription> RecordMediaDescs { get; private set; }
-            = new CollectionViewModel<MediaCaptureVideoProfileMediaDescription>();
-
         /// <summary>
         /// Property indicating whether a track can be created based on the currently selected items.
         /// </summary>
