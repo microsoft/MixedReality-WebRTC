@@ -8,7 +8,7 @@ The 2.0 release introduces some significant changes in the API compared to the 1
 
 ### Old C++ library
 
-Previsouly in the 1.x release the `Microsoft.MixedReality.WebRTC.Native.dll` module acted both as an implementation DLL for the C# library as well as a C++ library for direct use in end-user C++ applications. This double usage had diverging constraints which were making the internal implementation unnecessarily complex.
+Previously in the 1.x release the `Microsoft.MixedReality.WebRTC.Native.dll` module acted both as an implementation DLL for the C# library as well as a C++ library for direct use in end-user C++ applications. This double usage had diverging constraints which were making the internal implementation unnecessarily complex.
 
 Starting from the 2.0 release, this module now exposes a pure C API providing the core implementation of MixedReality-WebRTC. This library can be used from C/C++ programs with ease, as the use of a C API:
 
