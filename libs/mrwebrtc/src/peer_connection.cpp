@@ -343,7 +343,7 @@ void PeerConnection::RemoveDataChannel(
   // Cache variables which require a dispatch to the signaling thread
   // to minimize the risk of a deadlock with the data channel lock below.
   const int id = data_channel.id();
-  const str label = data_channel.label();
+  const std::string label = data_channel.label();
 
   // Move the channel to destroy out of the internal data structures
   std::shared_ptr<DataChannel> data_channel_ptr;
@@ -445,7 +445,7 @@ void PeerConnection::OnDataChannelAdded(
       info.handle = (void*)&data_channel;
       info.id = data_channel.id();
       info.flags = data_channel.flags();
-      str label_str = data_channel.label();  // keep alive
+      std::string label_str = data_channel.label();  // keep alive
       info.label = label_str.c_str();
       added_cb(&info);
 

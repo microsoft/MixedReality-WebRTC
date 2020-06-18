@@ -12,7 +12,6 @@
 #include "data_channel.h"
 #include "data_channel_interop.h"
 #include "interop_api.h"
-#include "str.h"
 
 namespace Microsoft {
 namespace MixedReality {
@@ -79,7 +78,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   }
 
   /// Get the friendly channel name.
-  MRS_NODISCARD str label() const;
+  MRS_NODISCARD std::string label() const;
 
   void SetMessageCallback(MessageCallback callback) noexcept;
   void SetBufferingCallback(BufferingCallback callback) noexcept;
