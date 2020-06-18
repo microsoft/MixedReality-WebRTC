@@ -44,8 +44,8 @@ DataChannel::~DataChannel() {
   RTC_CHECK(!owner_);
 }
 
-str DataChannel::label() const {
-  return str{data_channel_->label()};
+std::string DataChannel::label() const {
+  return data_channel_->label();
 }
 
 void DataChannel::SetMessageCallback(MessageCallback callback) noexcept {

@@ -105,7 +105,7 @@
   </ItemGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>_WINDLL;MR_SHARING_WIN;MRS_USE_STR_WRAPPER;WINUWP;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDLL;MR_SHARING_WIN;WINUWP;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <WarningLevel>Level4</WarningLevel>
@@ -187,7 +187,6 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\refptr.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\ref_counted_base.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\sdp_utils.h" />
-    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\str.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\targetver.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\tracked_object.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\utils.h" />
@@ -229,7 +228,6 @@
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\mrs_errors.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\peer_connection.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\sdp_utils.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\str.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\tracked_object.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\utils.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\video_frame_observer.cpp" />

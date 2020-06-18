@@ -70,9 +70,6 @@
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\sdp_utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\str.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\tracked_object.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -201,9 +198,6 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\sdp_utils.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\str.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\targetver.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -246,7 +240,7 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\device_video_track_source.h">
       <Filter>src\media</Filter>
     </ClInclude>
-    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\device_video_track_source_interop.h">
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\device_video_track_source_interop.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

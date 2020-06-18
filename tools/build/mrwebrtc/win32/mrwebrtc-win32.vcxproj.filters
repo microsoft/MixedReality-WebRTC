@@ -64,9 +64,6 @@
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\sdp_utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\str.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\tracked_object.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -184,9 +181,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\sdp_utils.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\str.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\targetver.h">
