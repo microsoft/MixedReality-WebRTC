@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Adding remote media | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Adding remote media | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.55.0.0">
+    
+    <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="adding-remote-media">Adding remote media</h1>
+
+<p>Unlike local video, the remote video track is controlled by the remote peer who will decide if and when to add the track to the connection. On the receiver side, the only thing to decide is whether or not to handle the video data received through that track. Similar observations can be made for audio.</p>
+<p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html"><code>VideoReceiver</code></a> component is used to expose a remote video track. And similarly to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html"><code>VideoTrackSource</code></a>, it can be added to a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html"><code>VideoRenderer</code></a> component to render the content of the video feed it receives from the remote peer. Same goes for the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html"><code>AudioReceiver</code></a> component for audio.</p>
+<h2 id="remote-video">Remote video</h2>
+<p>Like we did for the local video feed, we create a new game object with a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html"><code>VideoReceiver</code></a> component:</p>
+<ul>
+<li>In the <strong>Hierarchy</strong> window, select <strong>Create</strong> &gt; <strong>Create Empty</strong>.</li>
+<li>Rename it to something memorable like &quot;RemoteVideoPlayer&quot;.</li>
+<li>Go to the <strong>Transform</strong> component and increase the scale to <code>(4,3,1)</code> to get a 4:3 aspect ratio again.</li>
+<li>In the <strong>Inspector</strong> window, press the <strong>Add Component</strong> button at the bottom of the window, and select <strong>MixedReality-WebRTC</strong> &gt; <strong>Video Receiver</strong>.</li>
+</ul>
+<p><img src="helloworld-unity-13.png" alt="Create the video receiver"></p>
+<p>Next we add some video renderer. This is again similar to the video track source: the video receiver only exposes some frame queue which gets populated using the video frames coming from the remote peer, but the component does not do any rendering/output by itself. Instead we can use again a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html"><code>VideoRenderer</code></a> to render those video frames.</p>
+<ul>
+<li>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html"><code>VideoRenderer</code></a> component exposes the video frames as 3 animated <a href="https://docs.unity3d.com/ScriptReference/Texture2D.html"><code>Texture2D</code></a>, one for each of the YUV components, which need a mesh to be applied to. Add a <strong>Mesh Filter</strong> component, a <strong>Mesh Renderer</strong> component, and a <strong>Video Renderer</strong> component.
+<ul>
+<li>In the <strong>Mesh Filter</strong> component, set the <strong>Mesh</strong> property to the built-in Unity <strong>Quad</strong> mesh, which is the most simple mesh we can use (2 triangles) to display a texture. But any other mesh would do.</li>
+<li>In the <strong>Mesh Renderer</strong> component, expand the <strong>Materials</strong> array and set the first material <strong>Element 0</strong> to the  <code>YUVFeedMaterial</code> material located in the <code>Runtime/Materials/</code> folder. This material uses a custom shader to convert the 3 textures of the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html"><code>VideoRenderer</code></a> component (YUV, one per video component) into some RGB value for rendering.</li>
+<li>In the <strong>Video Renderer</strong> component, set the <strong>Source</strong> property to the video receiver component previously created.</li>
+<li>We can optionally assign some text meshes to display statistics if we have some.</li>
+</ul>
+</li>
+</ul>
+<p>The <strong>Inspector</strong> window should now look like this:</p>
+<p><img src="helloworld-unity-14.png" alt="Create a remote video player"></p>
+<p>Currently the two game objects holding the local and remote video players are located at the same position. Adjust them so that they don't overlap; for example set their X position to <code>X=+/-2.5</code>. We can also add some slight rotation to face the camera, for example <code>RY=+/-10</code>. Now we should be able to see in the <strong>Scene</strong> window our two black squares representing the local and remote media players:</p>
+<p><img src="helloworld-unity-15.png" alt="The local and remote video players"></p>
+<h2 id="remote-audio">Remote audio</h2>
+<p>Similar to video, we create a new game object with an <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html"><code>AudioReceiver</code></a> component:</p>
+<ul>
+<li>In the <strong>Hierarchy</strong> window, select <strong>Create</strong> &gt; <strong>Create Empty</strong>.</li>
+<li>Rename it to something memorable like &quot;RemoteAudio&quot;.</li>
+<li>In the <strong>Inspector</strong> window, press the <strong>Add Component</strong> button at the bottom of the window, and select <strong>MixedReality-WebRTC</strong> &gt; <strong>Audio Receiver</strong>.</li>
+<li>The <strong>Audio Receiver</strong> component requires a Unity <strong>Audio Source</strong> component to inject the audio it receives from the remote peer into the Unity DSP pipeline for audio rendering.</li>
+</ul>
+<p><img src="helloworld-unity-15b.png" alt="Create the audio receiver"></p>
+<h2 id="setting-up-the-media-lines">Setting up the media lines</h2>
+<p>Like for the audio and video sources, the receiver components need to be associated with the peer connection through a transceiver media line. Select the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> component again, and assign the new receivers to the audio and video media lines previously created.</p>
+<p><img src="helloworld-unity-13b.png" alt="Assign the receivers to the media lines"></p>
+<hr>
+<p>Next : <a href="helloworld-unity-connection.html">Establishing a connection</a></p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/manual/unity/helloworld-unity-remotevideo.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

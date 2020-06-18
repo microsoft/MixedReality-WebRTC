@@ -8,7 +8,7 @@
     <title>Installation | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Installation | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -98,11 +98,11 @@
 </ul>
 <p><img src="install-1.png" alt="Install"></p>
 <p>This will add a dependency to the currently selected C# project. If multiple projects are using the MixedReality-WebRTC library, this process must be repeated for each project.</p>
-<h2 id="c-library-1">C++ library</h2>
-<p>The C++ library is consumed as a NuGet package by adding a dependency to that package in your C++ project. The C++ library is often referred to as the <strong>native</strong> library.</p>
+<h2 id="c-library-1">C library</h2>
+<p>The C library is consumed as a NuGet package by adding a dependency to that package in your C/C++ project. The C library is often referred to as the <strong>native</strong> library or <strong>implementation</strong> library.</p>
 <div class="IMPORTANT">
 <h5>Important</h5>
-<p>The C++ library as distributed in the NuGet pacakges currently requires some internal headers from the Google's WebRTC implementation to be used, which are <strong>not</strong> shipped with the NuGet packages. See bug <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/123">#123</a> for details. A workaround is to clone the repository <em>recursively</em> to get those headers.</p>
+<p>The C++ library as distributed in the NuGet pacakges v1.x requires some internal headers from the Google's WebRTC implementation to be used, which are <strong>not</strong> shipped with the NuGet packages. See bug <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/123">#123</a> for details. A workaround is to clone the repository <em>recursively</em> to get those headers (<code>git clone --recursive</code>). This defect is fixed in the C library starting from v2.0.</p>
 </div>
 <p>In Visual Studio 2019:</p>
 <ul>
@@ -119,118 +119,64 @@
 </ul>
 <p><img src="install-2.png" alt="Install"></p>
 <p>This will add a dependency to the currently selected C++ project. If multiple projects are using the MixedReality-WebRTC library, this process must be repeated for each project.</p>
-<h2 id="unity-integration">Unity integration</h2>
-<p>The Unity integration currently does not provide any automated installation process. Instead, users need to copy the relevant files into their Unity project.</p>
-<h3 id="copying-the-sources">Copying the sources</h3>
+<h2 id="unity-library">Unity library</h2>
+<p>Starting from v2.0, a <a href="https://docs.unity3d.com/Manual/Packages.html">UPM package</a> named <code>com.microsoft.mixedreality.webrtc</code> is the main distribution method for the Unity library.</p>
+<p>This package is currently distributed as <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">an on-disk package (local package)</a> and requires the user to first build the C and C# libraries. The package manifest is located at <code>libs/unity/library/package.json</code>. There is currently no prebuilt UPM package including prebuilt binaries (yet).</p>
+<h3 id="building-the-c-and-c-libraries">Building the C and C# libraries</h3>
+<p>Follow <a href="building.html">the building instructions</a> to generate the <code>Microsoft.MixedReality.WebRTC.dll</code> C# assembly as well as any build variant of the <code>mrwebrtc</code> native C library needed for the Unity project to deploy on the platform the user targets.</p>
 <ul>
-<li><strong>Close Unity</strong>. Do not proceed further while the target project is open inside Unity.</li>
-<li>Clone the MixedReality-WebRTC project from GitHub using <code>git clone https://github.com/microsoft/MixedReality-WebRTC.git</code>. There is no need in this case to do a recursive clone, since we are not building anything. Alternatively, you can download a ZIP archive of the source code from any of the releases on <a href="https://github.com/microsoft/MixedReality-WebRTC/releases">the release page</a>.</li>
-<li>Copy from <code>libs/Microsoft.MixedReality.WebRTC.Unity/Assets/</code> the following files into the <code>Assets/</code> folder of the Unity project you want to import the MixedReality-WebRTC library in:
-<ul>
-<li>The <code>Microsoft.MixedReality.WebRTC.Unity</code> folder, which contains the main Unity scripts for the integration.</li>
-<li>The <code>Microsoft.MixedReality.WebRTC.Unity.Editor</code> folder, which contains some helper scripts for the Editor integration.</li>
-<li>The <code>Plugins</code> folder, which contains all the variants of the underlying native library used by the C# library, which in turns is used by the Unity integration.</li>
+<li>The Unity editor requires the x86_64 architecture of the Windows Desktop (Win32) variant.</li>
+<li>HoloLens 1 requires the UWP x86 variant.</li>
+<li>HoloLens 2 requires the UWP ARM variant (32-bit). ARM64 is not available.</li>
+<li>Android deployment requires the arm64-v8a variant. Other ARM architectures are not supported.</li>
 </ul>
-</li>
-</ul>
-<p>At this point, <strong>do not open Unity yet</strong>. The native library DLLs are not checked in the repository, but the <code>.meta</code> files which configure them are. If Unity detects that those <code>.meta</code> files do not have a corresponding <code>.dll</code> file it will delete the <code>.meta</code> file, and later recreate some <strong>with the wrong configuration</strong>. This will result in errors at runtime. Instead, we need first to copy the native library DLLs into the <code>Plugins/</code> folder.</p>
+<p>The Visual Studio solution used to build the Windows binaries (Desktop and UWP) will automatically copy the DLLs at the right location in the local git repository. If building Android from a Linux distribution (recommended) the <code>mrwebrtc.aar</code> archive needs to be manually copied to the Windows git repository.</p>
+<p>Unlike the C native library, the C# library has only one common variant for all build architectures and platforms. However it is recommended to place the C# library assembly <code>Microsoft.MixedReality.WebRTC.dll</code> inside the <code>Win32/x86_64</code> sub-folder of the Unity plugins (the folder used by the Unity editor), as past experience showed that other layouts may lead to DLL discovery issue.</p>
+<p>The above steps should result in the following hierarchy on disk, if building all possible build variants:</p>
+<pre><code class="lang-sh">libs/unity/library/Runtime/Plugins/
+├─ arm64-v8a.meta
+├─ arm64-v8a/
+|  ├─ mrwebrtc.aar
+|  └─ mrwebrtc.aar.meta
+├─ Win32.meta
+├─ Win32/
+|  ├─ x86.meta
+|  ├─ x86/
+|  |  ├─ mrwebrtc.dll
+|  |  └─ mrwebrtc.dll.meta
+|  ├─ x86_64.meta
+|  └─ x86_64/
+|     ├─ mrwebrtc.dll
+|     ├─ mrwebrtc.dll.meta
+|     ├─ Microsoft.MixedReality.WebRTC.dll
+|     └─ Microsoft.MixedReality.WebRTC.dll.meta
+├─ WSA.meta
+└─ WSA/
+   ├─ x86.meta
+   ├─ x86/
+   |  ├─ mrwebrtc.dll
+   |  └─ mrwebrtc.dll.meta
+   ├─ x86_64.meta
+   ├─ x86_64/
+   |  ├─ mrwebrtc.dll
+   |  └─ mrwebrtc.dll.meta
+   ├─ ARM.meta
+   └─ ARM/
+      ├─ mrwebrtc.dll
+      └─ mrwebrtc.dll.meta
+</code></pre>
 <div class="NOTE">
 <h5>Note</h5>
-<p>If you opened Unity already by mistake, you can close it and revert its changes with <code>git reset</code>, or restore the <code>.meta</code> files from the ZIP archive.</p>
+<p>The repository also contains some <code>.meta</code> files for the debug symbols databases (<code>.pdb</code>). The PDB are only necessary for debugging, thus the <code>.pdb.meta</code> files can be deleted. The other <code>.meta</code> files however need to be carefully safeguarded, as they contain the configuration needed for Unity to correctly deploy the binaries depending on the target platform.</p>
+</div>
+<h3 id="importing-the-upm-package">Importing the UPM package</h3>
+<p>Follow <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">the official Unity instructions</a> to import the library package into a Unity project after having compiled the library binaries, using the <code>libs/unity/library/package.json</code> file.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>If you already imported the library package into a Unity project <strong>before</strong> building the C and C# libraries, the Unity editor will find the <code>.meta</code> files without a corresponding asset and will attempt to delete those files thinking they are stale. Then once built the Unity editor will regenerate some new <code>.meta</code> files with a default configuration; unfortunately this configuration is generally wrong, and will prevent correct deployment and/or generate some error. You can close the Unity editor and revert its changes with <code>git reset</code> to restore the original <code>.meta</code> files checked in the GitHub repository, which contain the correct configuration for each binary file.</p>
 </div>
 <p>For more information about the <code>.meta</code> files and the per-platform configuration of the native library, see <a href="https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity-importwebrtc.html">Importing MixedReality-WebRTC</a> in the Unity tutorial.</p>
-<div class="NOTE">
-<h5>Note</h5>
-<p>The repository contains some <code>.meta</code> files for the debug symbols databases (<code>.pdb</code>). The PDB are only necessary for debugging, thus the <code>.pdb.meta</code> files can be deleted. The <code>.dll.meta</code> files however need to be carefully saveguarded as explained above.</p>
-</div>
-<h3 id="manually-download-the-c-nuget-packages">Manually download the C# NuGet packages</h3>
-<p>Download the NuGet package for the C# library from nuget.org by navigating to the package page using the links below, and selecting the <strong>Download package</strong> link in the right navigation panel.</p>
-<ul>
-<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC"><code>Microsoft.MixedReality.WebRTC</code></a></li>
-<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.UWP"><code>Microsoft.MixedReality.WebRTC.UWP</code></a></li>
-</ul>
-<p>Once downloaded, rename them by changing the <code>.nuget</code> extension to <code>.zip</code>, and extract the archives in some temporary folder of your choice.</p>
-<h3 id="copying-the-native-dlls">Copying the native DLLs</h3>
-<p>Copy all the <code>mrwebrtc.dll</code> variants as indicated in the table below.</p>
-<table>
-<thead>
-<tr>
-<th>Source Folder</th>
-<th>Destination Folder</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>From <code>Microsoft.MixedReality.WebRTC</code></strong></td>
-<td></td>
-</tr>
-<tr>
-<td>- <code>runtimes/win10-x86/native</code></td>
-<td><code>Assets/Plugins/Win32/x86</code></td>
-</tr>
-<tr>
-<td>- <code>runtimes/win10-x64/native</code></td>
-<td><code>Assets/Plugins/Win32/x86_64</code></td>
-</tr>
-<tr>
-<td><strong>From <code>Microsoft.MixedReality.WebRTC.UWP</code></strong></td>
-<td></td>
-</tr>
-<tr>
-<td>- <code>runtimes/win10-x86/native</code></td>
-<td><code>Assets/Plugins/WSA/x86</code></td>
-</tr>
-<tr>
-<td>- <code>runtimes/win10-x64/native</code></td>
-<td><code>Assets/Plugins/WSA/x86_64</code></td>
-</tr>
-<tr>
-<td>- <code>runtimes/win10-arm/native</code></td>
-<td><code>Assets/Plugins/WSA/ARM</code></td>
-</tr>
-</tbody>
-</table>
-<div class="IMPORTANT">
-<h5>Important</h5>
-<p>The <code>Microsoft.MixedReality.WebRTC.Native.dll</code> module has been renamed to <code>mrwebrtc.dll</code> in commit <a href="https://github.com/microsoft/MixedReality-WebRTC/commit/169502aab851b61c260831892e3eff9deeb876ae">169502a</a> due to a won't-fix bug in P/Invoke. When extracting the former from a NuGet package built before the rename, the DLL must be renamed into <code>mrwebrtc.dll</code> for the C# library to find it.</p>
-</div>
-<h3 id="copying-the-c-library">Copying the C# library</h3>
-<p>The Unity integration also references the C# library. Copy the <code>Microsoft.MixedReality.WebRTC.dll</code> assembly from either the Desktop package <code>Microsoft.MixedReality.WebRTC.nupkg</code> or the UWP package <code>Microsoft.MixedReality.WebRTC.UWP.nupkg</code>; both packages have the same copy of the C# assembly, and only differ by the associated native DLLs.</p>
-<ul>
-<li>Source: <code>&lt;package_root&gt;/lib/netstandard2.0/Microsoft.MixedReality.WebRTC.dll</code></li>
-<li>Destination: <code>&lt;unity_project&gt;/Assets/Plugins/Win32/x86_64/</code></li>
-</ul>
-<p>In theory the managed assembly could be copied anywhere in the <code>Assets/Plugins/</code> folder of the target Unity project. Practice however shows that Unity tends to stop its DLL search in the first folder that contains at least one DLL, instead of continuing to recurse into the parent folders. For this reason, we arbitrarily choose the <code>Assets/Plugins/Win32/x86_64/</code> as the destination for the C# assembly.</p>
-<h3 id="summary">Summary</h3>
-<p>The above steps should result in the following hierarchy on disk:</p>
-<pre><code class="lang-sh">MyAwesomeUnityProject/Assets/Plugins/
-+ Win32.meta
-+ Win32/
-| + x86.meta
-| + x86/
-| | + mrwebrtc.dll
-| | + mrwebrtc.dll.meta
-| + x86_64.meta
-| + x86_64/
-|   + mrwebrtc.dll
-|   + mrwebrtc.dll.meta
-|   + Microsoft.MixedReality.WebRTC.dll
-|   + Microsoft.MixedReality.WebRTC.dll.meta
-+ WSA.meta
-+ WSA/
-  + x86.meta
-  + x86/
-  | + mrwebrtc.dll
-  | + mrwebrtc.dll.meta
-  + x86_64.meta
-  + x86_64/
-  | + mrwebrtc.dll
-  | + mrwebrtc.dll.meta
-  + ARM.meta
-  + ARM/
-    + mrwebrtc.dll
-    + mrwebrtc.dll.meta
-</code></pre>
+<p>The repository also contains an optional package <code>com.microsoft.mixedreality.webrtc.samples</code> imported via the <code>libs/unity/samples/package.json</code> file. This is an optional package containing some samples to show how to use the Unity library. This samples package depends on the library package.</p>
 </article>
           </div>
           

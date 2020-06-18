@@ -8,7 +8,7 @@
     <title>A custom signaling solution | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="A custom signaling solution | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -100,7 +100,7 @@
 <p><img src="cs-uwp14.png" alt="Install the Newtonsoft.Json NuGet package"></p>
 <div class="WARNING">
 <h5>Warning</h5>
-<p>Do not forget to start the <code>node-dss</code> signaling server. See <a href="../helloworld-unity-connection.html#configuring-the-nodedsssignaler">the detailed explanations in the Unity turorial</a> about installing and starting it with NodeJS. In this tutorial we choose the <em>local peer ID</em> to be the string &quot;<code>App1</code>&quot;, and the <em>remote peer ID</em> is the value we will assign below to the <code>NodeDssSignaler.RemotePeerId</code> field.</p>
+<p>Do not forget to start the <code>node-dss</code> signaling server. See <a href="../unity/helloworld-unity-connection.html#configuring-the-nodedsssignaler">the detailed explanations in the Unity turorial</a> about installing and starting it with NodeJS. In this tutorial we choose the <em>local peer ID</em> to be the string &quot;<code>App1</code>&quot;, and the <em>remote peer ID</em> is the value we will assign below to the <code>NodeDssSignaler.RemotePeerId</code> field.</p>
 </div>
 <h2 id="setup">Setup</h2>
 <p>Continue editing the <code>MainPage.xaml.cs</code> file.</p>
@@ -182,7 +182,7 @@ _signaler.StartPollingAsync();
 </code></pre>
 <div class="WARNING">
 <h5>Warning</h5>
-<p>Take care to set the value of the <code>RemotePeerId</code> field of the <code>NodeDssSignaler</code> to the remote peer's ID, otherwise the signaling will not work. Similarly, this tutorial arbitrarily uses <code>App1</code> as the local peer ID for the application; this value needs to be set as the remote peer's ID when configuring the remote peer signaler. See <a href="../helloworld-unity-connection.html#configuring-the-nodedsssignaler">the explanations in the Unity turorial</a> for more details.</p>
+<p>Take care to set the value of the <code>RemotePeerId</code> field of the <code>NodeDssSignaler</code> to the remote peer's ID, otherwise the signaling will not work. Similarly, this tutorial arbitrarily uses <code>App1</code> as the local peer ID for the application; this value needs to be set as the remote peer's ID when configuring the remote peer signaler. See <a href="../unity/helloworld-unity-connection.html#configuring-the-nodedsssignaler">the explanations in the Unity turorial</a> for more details.</p>
 </div>
 </li>
 <li><p>In the <code>App_Suspending()</code> event handler, stop the signaler and clean-up the resources.</p>

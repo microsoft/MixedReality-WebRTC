@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Building the C# library | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Building the C# library | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.55.0.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="building-the-c-library">Building the C# library</h1>
+
+<p>The MixedReality-WebRTC C# library is a platform-independent .NET Standard 2.0 library which relies on a platform-specific version of the C library to provide most of the implementation. The C# library is built on Windows from the <code>Microsoft.MixedReality.WebRTC.sln</code> Visual Studio solution located at the root of the git repository. Building from a non-Windows environment is not supported.</p>
+<p>This documentation assumes that the user has already built the native C library, and therefore has installed <a href="building-windows.html#prerequisites">its prerequisites</a> and already cloned git the repository.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>If you have already built the entire solution for the native C library on Windows, then the C# library is already built. The steps below are mainly for Android-only users, although it is strongly recommended to build the Windows Desktop x64 configuration anyway to be able to run MixedReality-WebRTC in Play Mode in the Unity editor.</p>
+</div>
+<h2 id="building-the-library">Building the library</h2>
+<ol>
+<li><p>Open the <code>Microsoft.MixedReality.WebRTC.sln</code> Visual Studio solution located at the root of the cloned git repository.</p>
+</li>
+<li><p>Select a build configuration (Debug or Release) with the Solution Configuration drop-down widget under the menu bar. The architecture selection is irrelevant here; it is only relevant when building the native C library.</p>
+</li>
+<li><p>Build the <code>Microsoft.MixedReality.WebRTC</code> C# project by right-clicking on it and selecting the <strong>Build</strong> menu entry.</p>
+</li>
+</ol>
+<p>On successful build, the C# assembly will be generated in a sub-folder of <code>bin/netstandard2.0</code>, and the DLL will also be copied by a post-build script to <code>libs\unity\library\Runtime\Plugins\</code> for the Unity library to consume it.</p>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p><strong>Be sure to build the solution before opening any Unity integration project.</strong> As part of the build, the library is copied to the <code>Plugins</code> folder of the Unity library. There are already some associated <code>.meta</code> files, which have been committed to the git repository, to inform Unity of the platform of each DLL and how to deploy it. If the Unity project is opened first, before the DLLs are present, Unity will assume those <code>.meta</code> files are stale and will delete them, and then later will recreate some with a different default config once the DLLs are copied. This leads to errors about modules with duplicate names. See the <a href="unity/helloworld-unity-importwebrtc.html">Importing MixedReality-WebRTC</a> chapter of the &quot;Hello, Unity World!&quot; tutorial for more details.</p>
+</div>
+<h2 id="testing-the-build">Testing the build</h2>
+<p>Test the newly built C# library by <em>e.g.</em> using the <code>TestAppUWP</code> sample application:</p>
+<ol>
+<li><p>Build the <code>Microsoft.MixedReality.WebRTC.TestAppUWP</code> C# project from the same Visual Studio solution.</p>
+</li>
+<li><p>Run it by right-clicking on the project and selecting <strong>Debug</strong> &gt; <strong>Start New Instance</strong> (or F5 if the project is configured as the Startup Project).</p>
+</li>
+</ol>
+<p>See the <a href="cs/helloworld-cs-uwp.html">Hello, C# World! (UWP)</a> tutorial for more details.</p>
+<h2 id="installing-into-an-existing-c-project">Installing into an existing C# project</h2>
+<p>The C# library requires the C library, which contains the core WebRTC implementation. The setup is summarized in the following table:</p>
+<table>
+<thead>
+<tr>
+<th>Source DLLs</th>
+<th>How to add</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bin\netstandard2.0\Release\Microsoft.MixedReality.WebRTC.dll</code></td>
+<td>Include in &quot;References&quot; of your VS project</td>
+</tr>
+<tr>
+<td><code>bin\&lt;platform&gt;\&lt;arch&gt;\Release\mrwebrtc.dll</code></td>
+<td>Add as &quot;Content&quot; to the project, so that the Deploy step copies the DLL to the AppX folder alongside the application executable. See the <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/d78ffa488fbf822377558ce44bbfa8316f0f85f7/examples/TestAppUwp/Microsoft.MixedReality.WebRTC.TestAppUWP.csproj#L74-L83">TestAppUWP project</a> for an example, noting how it uses the <code>$(Platform)</code> and <code>$(Configuration)</code> Visual Studio variables to automatically copy the right DLL corresponding to the currently selected project configuration.</td>
+</tr>
+</tbody>
+</table>
+<p>where:</p>
+<ul>
+<li><code>&lt;platform&gt;</code> is either <code>Win32</code> for a Desktop app, or <code>UWP</code> for a UWP app.</li>
+<li><code>&lt;arch&gt;</code> is one of [<code>x86</code>, <code>x64</code>, <code>ARM</code>]. Note that <code>ARM</code> is only available on UWP.</li>
+</ul>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/manual/building-cslib.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

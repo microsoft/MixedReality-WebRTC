@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace Microsoft.MixedReality.WebRTC
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -100,6 +100,17 @@ arrive. Users should call
 <a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html#Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_Read_System_Int32_System_Int32_System_Single___System_Int32__System_Boolean__Microsoft_MixedReality_WebRTC_AudioTrackReadBuffer_PadBehavior_">Read(Int32, Int32, Single[], out Int32, out Boolean, AudioTrackReadBuffer.PadBehavior)</a>
 to read samples from the buffer when needed.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackSource.html">AudioTrackSource</a></h4>
+      <section><p>Audio source for WebRTC audio tracks.</p>
+<p>The audio source is not bound to any peer connection, and can therefore be shared by multiple audio
+tracks from different peer connections. This is especially useful to share local audio capture devices
+(microphones) amongst multiple peer connections when building a multi-peer experience with a mesh topology
+(one connection per pair of peers).</p>
+<p>The user owns the audio track source, and is in charge of keeping it alive until after all tracks using it
+are destroyed, and then dispose of it. The behavior of disposing of the track source while a track is still
+using it is undefined. The <a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_AudioTrackSource_Tracks">Tracks</a> property contains the list of tracks currently using the
+source.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.BufferTooSmallException.html">BufferTooSmallException</a></h4>
       <section><p>Exception raised when a buffer is too small to perform the current operation.</p>
 <p>Generally the buffer was provided by the caller, and this indicates that the caller
@@ -124,6 +135,9 @@ is created in-band by the remote peer (<a class="xref" href="Microsoft.MixedReal
 <p>The user should listen to the <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_StateChanged">StateChanged</a> event until the
 <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_State">State</a> property is <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.ChannelState.html#Microsoft_MixedReality_WebRTC_DataChannel_ChannelState_Open">Open</a>
 before trying to send some message with <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___">SendMessage(Byte[])</a>.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html">DeviceVideoTrackSource</a></h4>
+      <section><p>Implementation of a video track source producing frames captured from a video capture device (webcam).</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html">ExternalVideoTrackSource</a></h4>
       <section><p>Video source for WebRTC video tracks based on a custom source
@@ -152,19 +166,25 @@ but receives an invalid handle instead.</p>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Library.html">Library</a></h4>
       <section><p>Container for library-wise global settings of MixedReality-WebRTC.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.html">LocalAudioDeviceInitConfig</a></h4>
+      <section><p>Configuration to initialize capture on a local audio device (microphone).</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalAudioTrack.html">LocalAudioTrack</a></h4>
       <section><p>Audio track sending to the remote peer audio frames originating from
 a local track source (local microphone or other audio recording device).</p>
 </section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalAudioTrackSettings.html">LocalAudioTrackSettings</a></h4>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalAudioTrackInitConfig.html">LocalAudioTrackInitConfig</a></h4>
       <section><p>Settings for adding a local audio track backed by a local audio capture device (e.g. microphone).</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig.html">LocalVideoDeviceInitConfig</a></h4>
+      <section><p>Configuration to initialize capture on a local video device (webcam).</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html">LocalVideoTrack</a></h4>
       <section><p>Video track sending to the remote peer video frames originating from
 a local track source.</p>
 </section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings.html">LocalVideoTrackSettings</a></h4>
-      <section><p>Settings for adding a local video track backed by a local video capture device (e.g. webcam).</p>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig.html">LocalVideoTrackInitConfig</a></h4>
+      <section><p>Settings for creating a new local video track.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.MediaTrack.html">MediaTrack</a></h4>
       <section><p>Base class for media tracks sending to or receiving from the remote peer.</p>
@@ -224,6 +244,17 @@ used after that.</p>
 Used as temporary buffer between the WebRTC callback (push model) and the video
 player rendering (pull model). This also handles dropping frames when the source
 is faster than the sink, by limiting the maximum queue length.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html">VideoTrackSource</a></h4>
+      <section><p>Video source for WebRTC video tracks.</p>
+<p>The video source is not bound to any peer connection, and can therefore be shared by multiple video
+tracks from different peer connections. This is especially useful to share local video capture devices
+(microphones) amongst multiple peer connections when building a multi-peer experience with a mesh topology
+(one connection per pair of peers).</p>
+<p>The user owns the video track source, and is in charge of keeping it alive until after all tracks using it
+are destroyed, and then dispose of it. The behavior of disposing of the track source while a track is still
+using it is undefined. The <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_Tracks">Tracks</a> property contains the list of tracks currently using the
+source.</p>
 </section>
     <h3 id="structs">Structs
   </h3>

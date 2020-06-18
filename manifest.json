@@ -18,7 +18,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrame.html",
-          "hash": "U1iEGu4PlkvFTpTgNeuUzA=="
+          "hash": "0W3WLpEvC5IO6VgULceyaw=="
         }
       },
       "is_incremental": false,
@@ -30,7 +30,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameDelegate.html",
-          "hash": "82/R74l+d38Qzrqp+UIShQ=="
+          "hash": "geM+mli0qmhLX6c62By0jQ=="
         }
       },
       "is_incremental": false,
@@ -42,7 +42,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate.html",
-          "hash": "4tc4FicxIF9voInmoMFKVA=="
+          "hash": "abiIq+yypBW+AXeA4QHH1A=="
         }
       },
       "is_incremental": false,
@@ -54,7 +54,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html",
-          "hash": "3RR7GlCgPcbSQJjstyyIYQ=="
+          "hash": "RsDbkv6Nzb2qZLTJsmPC6w=="
         }
       },
       "is_incremental": false,
@@ -66,7 +66,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioFrame.html",
-          "hash": "QK4oIx+qYJwiL+zynZm4aA=="
+          "hash": "dHNiNn0NVfgJW0u0a1H1Bw=="
         }
       },
       "is_incremental": false,
@@ -78,7 +78,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioFrameDelegate.html",
-          "hash": "ZrVvNu0/YsHJaj82jdbb7g=="
+          "hash": "VKPAFIvtwOIQnVbyBd78ag=="
         }
       },
       "is_incremental": false,
@@ -90,7 +90,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.html",
-          "hash": "vHLgbvd2B0vJtWYG3asZPQ=="
+          "hash": "NhbztIst2nc4zuM4ahOY5A=="
         }
       },
       "is_incremental": false,
@@ -102,7 +102,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html",
-          "hash": "ptWCNLN0H4gmRVpeOSOZIA=="
+          "hash": "G955ekffV/q8jiiDVdlnJw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.AudioTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioTrackSource.html",
+          "hash": "lijvUK4DOIDAePvz0ejGTQ=="
         }
       },
       "is_incremental": false,
@@ -114,7 +126,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.html",
-          "hash": "y/3DLVx2I4Snmz8bPvYN/w=="
+          "hash": "348/EPVMbX2KxCzVIPpPGw=="
         }
       },
       "is_incremental": false,
@@ -126,7 +138,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.BundlePolicy.html",
-          "hash": "S9LL/Jzk+z+LF2otxJk0AA=="
+          "hash": "5sj7D8bNeMxEVdJzaajLSA=="
         }
       },
       "is_incremental": false,
@@ -138,7 +150,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.BufferingChangedDelegate.html",
-          "hash": "mDMjrv+Fh3zhV2yEqXruHQ=="
+          "hash": "OgK27LiS9o1DfI2bDNLC6A=="
         }
       },
       "is_incremental": false,
@@ -150,7 +162,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.ChannelState.html",
-          "hash": "6X1i7WujEEPYjeCkRLpKkQ=="
+          "hash": "Y6Q6QeDoKCFE42oEFZf7bg=="
         }
       },
       "is_incremental": false,
@@ -162,7 +174,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.html",
-          "hash": "3poCID1/BEkGchQPDiq5/g=="
+          "hash": "KKDy0cG7h4yxJUprS1KJew=="
         }
       },
       "is_incremental": false,
@@ -174,7 +186,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannelNotOpenException.html",
-          "hash": "SydwQuEC8MoCejNupLU8pA=="
+          "hash": "f4egMd66cDLzsR7+x3HFVA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html",
+          "hash": "CmzHgSsNEZCyGs5xqPWbCQ=="
         }
       },
       "is_incremental": false,
@@ -186,7 +210,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html",
-          "hash": "LXm+Sd1GPTIVr+Ot6zuQEQ=="
+          "hash": "OH3fFBfQsEfMfDGuDwAE4Q=="
         }
       },
       "is_incremental": false,
@@ -198,7 +222,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.FrameRequest.html",
-          "hash": "puJ/NiLiEmWh5f26xkncrQ=="
+          "hash": "TNVXqs2fhN+q4DjDj1lFMQ=="
         }
       },
       "is_incremental": false,
@@ -210,7 +234,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrame.html",
-          "hash": "UMi70yGJdGlwswAhlDOpRw=="
+          "hash": "XuSsYjjIb0NAGW/fORanKQ=="
         }
       },
       "is_incremental": false,
@@ -222,7 +246,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrameDelegate.html",
-          "hash": "qTeUmbyhElf8Kv7jn4iv0Q=="
+          "hash": "jJ87aAADDSqtL2yIWkHswQ=="
         }
       },
       "is_incremental": false,
@@ -234,7 +258,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate.html",
-          "hash": "ThjzkFLMXp0azOUn9OaDFg=="
+          "hash": "x6qDwcdOzMB6LkTblbWnpA=="
         }
       },
       "is_incremental": false,
@@ -246,7 +270,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrameStorage.html",
-          "hash": "FImRkxhoE4XghRWDXxoa6w=="
+          "hash": "KveK7f6KFE/qugIXiSSyXg=="
         }
       },
       "is_incremental": false,
@@ -258,7 +282,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IAudioTrack.html",
-          "hash": "1FMZwiWoHYuP90MbcQtMxg=="
+          "hash": "gqGs9o9ojxksTWAqt3NKmg=="
         }
       },
       "is_incremental": false,
@@ -270,7 +294,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoFrameQueue.html",
-          "hash": "/Ezstpdni/roXkbXiWE5Iw=="
+          "hash": "p6C8kQhpQuHI+xznhYd8eA=="
         }
       },
       "is_incremental": false,
@@ -282,7 +306,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoFrameStorage.html",
-          "hash": "AnlIuJDMhVMan5/9U6TOTw=="
+          "hash": "A4ht+ffVHYGi7mIMldUeNQ=="
         }
       },
       "is_incremental": false,
@@ -294,7 +318,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoTrack.html",
-          "hash": "ZRJq4dZXrZl67JeIekxZ6A=="
+          "hash": "ryXlh+fRQUeit2Yc83C3vw=="
         }
       },
       "is_incremental": false,
@@ -306,7 +330,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IceCandidate.html",
-          "hash": "LD4sHMdvZBSnZBxByLInZQ=="
+          "hash": "7FFllPd7U9nwAt9lhaIGmA=="
         }
       },
       "is_incremental": false,
@@ -318,7 +342,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IceConnectionState.html",
-          "hash": "9a0H/01fNnc9MDIP6HFsDg=="
+          "hash": "3NJQ4Zc7oJpR/bdN9NVD1g=="
         }
       },
       "is_incremental": false,
@@ -330,7 +354,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IceGatheringState.html",
-          "hash": "yZCIdFuKgnlt5Fxi2B2p+Q=="
+          "hash": "dSofHVpprEh8PW3UwEJXIA=="
         }
       },
       "is_incremental": false,
@@ -342,7 +366,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IceServer.html",
-          "hash": "YyBmruC/8vNA7if6xfGbIg=="
+          "hash": "OLKOuIhfoPrYXi+Q8ZgfCg=="
         }
       },
       "is_incremental": false,
@@ -354,7 +378,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.IceTransportType.html",
-          "hash": "E/Wl6RIfthAZ8v189IsjeQ=="
+          "hash": "BCFl1pKnAP2OHMS6Tz4gKg=="
         }
       },
       "is_incremental": false,
@@ -366,7 +390,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.html",
-          "hash": "+4WTQmX6ONxFLs3YurFOvA=="
+          "hash": "WUZh4f9eHXfcHQ1w1ID26g=="
         }
       },
       "is_incremental": false,
@@ -378,7 +402,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags.html",
-          "hash": "jC28VQzEWohyUYRYvZ8XfQ=="
+          "hash": "+1IY8m1SAcEX3gpIWtiY6w=="
         }
       },
       "is_incremental": false,
@@ -390,7 +414,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Library.html",
-          "hash": "kZbLZZAPMUWS7wwA9ZM2bw=="
+          "hash": "AdUauS9g7ddm/LShXroIOQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.html",
+          "hash": "dfzgh89SRLTCsDTq8jdq8Q=="
         }
       },
       "is_incremental": false,
@@ -402,7 +438,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioTrack.html",
-          "hash": "MJlfrcfEdjqCxhF4uuVrZw=="
+          "hash": "qUjvyuMvzM2mgZKpt8auxQ=="
         }
       },
       "is_incremental": false,
@@ -410,11 +446,23 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalAudioTrackSettings.yml",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalAudioTrackInitConfig.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioTrackSettings.html",
-          "hash": "otR1+PHvZGfMkeBSPhwRpQ=="
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioTrackInitConfig.html",
+          "hash": "h9Hi9ANSU1eE2H3EvwK/Nw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig.html",
+          "hash": "gScitzXHaw0tpUW/UG3ilQ=="
         }
       },
       "is_incremental": false,
@@ -426,7 +474,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html",
-          "hash": "iIsGHYNBTB8hlVwQGioSlg=="
+          "hash": "ay5dfsE5wxjADF4xEGXJLg=="
         }
       },
       "is_incremental": false,
@@ -434,11 +482,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings.yml",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings.html",
-          "hash": "mqbZi4uQmgSu6AgZ1Qa4+g=="
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig.html",
+          "hash": "tTFTUUHaWEvQi4tuF1TWpg=="
         }
       },
       "is_incremental": false,
@@ -450,7 +498,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.MediaKind.html",
-          "hash": "7+6aQhl2UllDgn+sMVb5mA=="
+          "hash": "wUEu5sDJd0vGZn6B+ArgMg=="
         }
       },
       "is_incremental": false,
@@ -462,7 +510,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.MediaTrack.html",
-          "hash": "o4Plgl+PqHCQp3frxHHqSw=="
+          "hash": "/3dlOT6nL9ErkUGkHl4E5Q=="
         }
       },
       "is_incremental": false,
@@ -474,7 +522,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.MovingAverage.html",
-          "hash": "oJiDF+pEVFLmUbWttw7EUg=="
+          "hash": "u7pcz66ivlLjV7HJz3+a9A=="
         }
       },
       "is_incremental": false,
@@ -486,7 +534,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html",
-          "hash": "OqxQ+JjzfdzQspm4rlUF0g=="
+          "hash": "ox3PlfupVV/ypiDRUjo0dQ=="
         }
       },
       "is_incremental": false,
@@ -498,7 +546,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html",
-          "hash": "W+PbdvbgAunkbot2TZ8K/Q=="
+          "hash": "fu8t9EnBu7oGlrNAZ+7CFQ=="
         }
       },
       "is_incremental": false,
@@ -510,7 +558,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioTrackAddedDelegate.html",
-          "hash": "xkbO36/tmLbpDFvP/TZtGQ=="
+          "hash": "qTCwt4FbcdmMVp+Kw4Kg+w=="
         }
       },
       "is_incremental": false,
@@ -522,7 +570,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioTrackRemovedDelegate.html",
-          "hash": "VmsQZETffdk2jhmuzfeucw=="
+          "hash": "ucE0qcwQ8hIaiDMqDxQGPA=="
         }
       },
       "is_incremental": false,
@@ -534,7 +582,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate.html",
-          "hash": "xqndnIlWPCRPPx4qsopwtQ=="
+          "hash": "seqFXJg9aSMFvp92SjbfwQ=="
         }
       },
       "is_incremental": false,
@@ -546,7 +594,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemovedDelegate.html",
-          "hash": "h5k5sqm4kFak4MYgfBntbg=="
+          "hash": "jHUy2nBMkCjimKP4LV7RRg=="
         }
       },
       "is_incremental": false,
@@ -558,7 +606,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html",
-          "hash": "uCWW0/RnuPK2LSDZd7O01w=="
+          "hash": "zl9RfQUqrt3buGVh5gFxTQ=="
         }
       },
       "is_incremental": false,
@@ -570,7 +618,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html",
-          "hash": "OiUuYcLTKBLtxwz1wu/dGw=="
+          "hash": "AILHk90dQiE5F9rw2gvebQ=="
         }
       },
       "is_incremental": false,
@@ -582,7 +630,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate.html",
-          "hash": "LNqGj7hwXWda4UKqeVMnoA=="
+          "hash": "aPT5hDZNKe4JmVn8Ce/Zlw=="
         }
       },
       "is_incremental": false,
@@ -594,7 +642,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChangedDelegate.html",
-          "hash": "3RYO9skD3jywDGGGZyXZvw=="
+          "hash": "HcJDe+MLe28ZAbfS26w82Q=="
         }
       },
       "is_incremental": false,
@@ -606,7 +654,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChangedDelegate.html",
-          "hash": "f8osD7vZWzRZ3eGOHhjp0g=="
+          "hash": "PckuOEp2upG4ev62s5Btfg=="
         }
       },
       "is_incremental": false,
@@ -618,7 +666,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadyToSendDelegate.html",
-          "hash": "KY6LnDG4f786HqgxGPWoag=="
+          "hash": "Su3SfA55zhaVqFP8KXlJxQ=="
         }
       },
       "is_incremental": false,
@@ -630,7 +678,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html",
-          "hash": "WmnUkwhLYbNYgk9I5t0E1Q=="
+          "hash": "Lr0hqKprVVRGlKHIC9i8Ag=="
         }
       },
       "is_incremental": false,
@@ -642,7 +690,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html",
-          "hash": "fo9wwZ2xSr/euQytIRA6xA=="
+          "hash": "cp6kHPMqugxndCbSmJV3Ag=="
         }
       },
       "is_incremental": false,
@@ -654,7 +702,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TransceiverAddedDelegate.html",
-          "hash": "RG0nbTYd1ooUiWaY0CI1Wg=="
+          "hash": "7x/XnHGNU015EKVWUJ5Hcg=="
         }
       },
       "is_incremental": false,
@@ -666,7 +714,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.html",
-          "hash": "oEC81EDiRAI1mk/NVjfzqA=="
+          "hash": "KSYNwUyqeDIkK1IPEcmzgQ=="
         }
       },
       "is_incremental": false,
@@ -678,7 +726,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html",
-          "hash": "ZS+4gX+GJ5h+KZmoc+yFfw=="
+          "hash": "fMaPgVzvpRjnV3dZnguSMw=="
         }
       },
       "is_incremental": false,
@@ -690,7 +738,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html",
-          "hash": "g2JJ9QQQfqHJC+j/iin7Uw=="
+          "hash": "H0VU2dvaZe6GduE1/qNv5A=="
         }
       },
       "is_incremental": false,
@@ -702,7 +750,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackAddedDelegate.html",
-          "hash": "1qQ/ak1n+iVMiziB+zspaQ=="
+          "hash": "Bg7cJgnTePzLYa9vCWLemw=="
         }
       },
       "is_incremental": false,
@@ -714,7 +762,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackRemovedDelegate.html",
-          "hash": "Aj05aVwCmuA4JVONuObaYQ=="
+          "hash": "7rVED7vjZNq+IXyOPI7fQg=="
         }
       },
       "is_incremental": false,
@@ -726,7 +774,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.html",
-          "hash": "1HIHbh3rpuvSXPqOQU5oKw=="
+          "hash": "y3dqcyy+pXVijRx5mLAOJQ=="
         }
       },
       "is_incremental": false,
@@ -738,7 +786,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html",
-          "hash": "uzwB3vIXh+FCIb7H6flBUg=="
+          "hash": "Ow2vGTZm9f2kagtebMJGyA=="
         }
       },
       "is_incremental": false,
@@ -750,7 +798,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html",
-          "hash": "pudKaYo0Ai5che2L/GloWQ=="
+          "hash": "u5pW18r2rFOeITHDMNK/MA=="
         }
       },
       "is_incremental": false,
@@ -762,7 +810,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html",
-          "hash": "PkeH3ThPTt0+V0S8V3SpEw=="
+          "hash": "p0aJv5HtwrzOtVypuKYtdA=="
         }
       },
       "is_incremental": false,
@@ -774,7 +822,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html",
-          "hash": "B+LrxVbsVgV9h1b6AFA3EQ=="
+          "hash": "vCFVlq6Hl0zcFsczZsUGcg=="
         }
       },
       "is_incremental": false,
@@ -786,7 +834,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SdpMessage.html",
-          "hash": "4aHURVJ2t8Q/wO1sQOitSA=="
+          "hash": "tC4p90Ctd2EFrvdNRCN2FA=="
         }
       },
       "is_incremental": false,
@@ -798,7 +846,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SdpMessageType.html",
-          "hash": "iOI1ngP42w45YYpEH0zD6w=="
+          "hash": "b/qjcSSUBLND4WaKX/uHlg=="
         }
       },
       "is_incremental": false,
@@ -810,7 +858,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.SdpSemantic.html",
-          "hash": "FUTx4426CTe+vr9K66UR9Q=="
+          "hash": "PH8yzRC3voA+PJaCC1hCAw=="
         }
       },
       "is_incremental": false,
@@ -822,7 +870,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.TaskExtensions.html",
-          "hash": "O9URuSqKcKejCyhdeED5/A=="
+          "hash": "15sHMCvQI8J3VE52nlV2bw=="
         }
       },
       "is_incremental": false,
@@ -834,7 +882,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Transceiver.Direction.html",
-          "hash": "yhuErWgIAhgCmL3jJEo6zg=="
+          "hash": "IwyChAFRNgufFP2LaYycIg=="
         }
       },
       "is_incremental": false,
@@ -846,7 +894,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Transceiver.html",
-          "hash": "VCMf5jrQxpbNvQvZ8ll2yQ=="
+          "hash": "SUkPZXxR9PfklCgVtdHzsA=="
         }
       },
       "is_incremental": false,
@@ -858,7 +906,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.TransceiverAssociatedDelegate.html",
-          "hash": "iZQvJu6dZggVDDW3c2z4Kw=="
+          "hash": "7wRD+68L2M7DkioKYiSHtw=="
         }
       },
       "is_incremental": false,
@@ -870,7 +918,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.TransceiverDirectionChangedDelegate.html",
-          "hash": "wJulC6LxnVV2qWlA3tXb7Q=="
+          "hash": "lVTiivbf8hotva4m8UCzUg=="
         }
       },
       "is_incremental": false,
@@ -882,7 +930,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.TransceiverInitSettings.html",
-          "hash": "F1AzbHt669xv74O0omOs4g=="
+          "hash": "hPsXCcC4I680qyWhPkRMfQ=="
         }
       },
       "is_incremental": false,
@@ -894,7 +942,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Android.html",
-          "hash": "dCizohCmOTc93Ef1I6NkAg=="
+          "hash": "u2GpjX6tDBRLRZnjzIr0kA=="
         }
       },
       "is_incremental": false,
@@ -906,19 +954,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html",
-          "hash": "tgA6o7xxnVxXC4enYHhp+g=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.AudioSender.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioSender.html",
-          "hash": "RRRcdOhw6f/ioHqMy2CJQg=="
+          "hash": "Pit0rrAeJIbmplBJb8ahgg=="
         }
       },
       "is_incremental": false,
@@ -930,7 +966,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent.html",
-          "hash": "aNVju9FPyCft1V6qpbKezg=="
+          "hash": "rdnRzp2ytzJakgz780UOyw=="
         }
       },
       "is_incremental": false,
@@ -942,7 +978,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent.html",
-          "hash": "P32HOCLdpbM7RrpvTcv6Nw=="
+          "hash": "fxQQiRmkr1e/TDeHiBPigQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html",
+          "hash": "8XXOBM6YIgaXY+FWf22aow=="
         }
       },
       "is_incremental": false,
@@ -954,7 +1002,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.html",
-          "hash": "KNBXNDmYtjxoir3RMmLfcg=="
+          "hash": "rMpx+YUO5Z5Nh25CmjdWkg=="
         }
       },
       "is_incremental": false,
@@ -966,7 +1014,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.html",
-          "hash": "PZfrE/A68A0Cr1Zfo8jGLA=="
+          "hash": "hXjU06V4hB2nCnqH7aoq8A=="
         }
       },
       "is_incremental": false,
@@ -974,11 +1022,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSender-1.yml",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSender-1.html",
-          "hash": "LjajJkzWLQnnp6pq5XZy7g=="
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html",
+          "hash": "xXN0GA/ntzJ+hhQWa6M3IA=="
         }
       },
       "is_incremental": false,
@@ -990,7 +1038,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.html",
-          "hash": "MniZXOrMoUQe+47Vt7yusw=="
+          "hash": "JRlxQkRVQqRe1UhaXLDTCg=="
         }
       },
       "is_incremental": false,
@@ -1002,7 +1050,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.ConfigurableIceServerDrawer.html",
-          "hash": "YXBmzR7FPZhswtbyUi92aw=="
+          "hash": "tQXDd3WUmwDL+wGXlec72Q=="
         }
       },
       "is_incremental": false,
@@ -1014,7 +1062,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.MicrophoneSourceEditor.html",
-          "hash": "Nkjp7MM1E6ymVCXW1/k2Rw=="
+          "hash": "6LWhN+NgcpAAyjl//6ef3Q=="
         }
       },
       "is_incremental": false,
@@ -1026,7 +1074,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.PeerConnectionEditor.html",
-          "hash": "WU/+aicKpLy3Q1CLqXgdYA=="
+          "hash": "0zP0kgimzapuiOw4hKNgDw=="
         }
       },
       "is_incremental": false,
@@ -1038,7 +1086,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.SdpTokenDrawer.html",
-          "hash": "4hddPrsy4UpgV2/FTbaiHw=="
+          "hash": "cTWLrtFfJn1+eJiduKB0Ig=="
         }
       },
       "is_incremental": false,
@@ -1050,7 +1098,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.ToggleLeftAttribute.html",
-          "hash": "bFCbStzluiF41+nitXl46w=="
+          "hash": "BNnvgqdsxrea9SqBOexDuQ=="
         }
       },
       "is_incremental": false,
@@ -1062,7 +1110,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.ToggleLeftDrawer.html",
-          "hash": "472hiTquTyUgP7t/PT85XQ=="
+          "hash": "62OTHF4E8QKnWzZLlK/D2A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Editor.VideoRendererEditor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.VideoRendererEditor.html",
+          "hash": "Po0tZG8umnR3mMrKjRGKxQ=="
         }
       },
       "is_incremental": false,
@@ -1074,7 +1134,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.WebcamSourceEditor.html",
-          "hash": "IAR5BnnLmwtPwpnKlQV5GQ=="
+          "hash": "ijCm6WFKLKQ8UInW43KikA=="
         }
       },
       "is_incremental": false,
@@ -1086,7 +1146,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.html",
-          "hash": "E9hSkjet4UpqWkGoWlhB2Q=="
+          "hash": "3L7fgEranopNvZGYjY3C7A=="
         }
       },
       "is_incremental": false,
@@ -1098,7 +1158,31 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.IAudioSource.html",
-          "hash": "PG16RxPaHGYrp33CfX7twg=="
+          "hash": "YdF/FDUd1sPA3GsBdVBUig=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.IMediaReceiver.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.IMediaReceiver.html",
+          "hash": "rv4DmNarUzBtm7ZmdPEu5w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html",
+          "hash": "QdflBH5mglFAiMKGUKZJEA=="
         }
       },
       "is_incremental": false,
@@ -1110,7 +1194,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html",
-          "hash": "xgp17ZRzZw+7suDUqdbniA=="
+          "hash": "2ECoBOK78mupMisEBoHBAg=="
         }
       },
       "is_incremental": false,
@@ -1122,7 +1206,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.IceType.html",
-          "hash": "ykwSIfiS+bPyw6txNBHKug=="
+          "hash": "8GSbkFgtwQO7VSuSipWX9Q=="
         }
       },
       "is_incremental": false,
@@ -1134,7 +1218,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.html",
-          "hash": "Dglr2w9wXU1qIydoRRT+Fw=="
+          "hash": "R/MnW8svHb5PEv44Ia3Ozw=="
         }
       },
       "is_incremental": false,
@@ -1146,7 +1230,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.html",
-          "hash": "bTMHPgZfIdfAXlcUmzMzbw=="
+          "hash": "U5j0SSA8OqYN/tDYPDJJug=="
         }
       },
       "is_incremental": false,
@@ -1158,55 +1242,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html",
-          "hash": "BtH5zRXL7Lb4JSpCgiSQZA=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html",
-          "hash": "xiZGpNYSoMA7HGnQh5MGHQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html",
-          "hash": "+fyCdbpRdD9WcvKdgCn/LQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.MediaSender.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaSender.html",
-          "hash": "ztqWEf8xYT1dVsDM2xFmRA=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.MediaSource.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaSource.html",
-          "hash": "rTau9pr/li013zfw0mNM2g=="
+          "hash": "sDXK9IL3bhN1boW8aKPdFg=="
         }
       },
       "is_incremental": false,
@@ -1218,7 +1254,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html",
-          "hash": "5LT4Rf1fE/L7vpxV5Hhh9g=="
+          "hash": "di5QTtDY9aNRq0eOyFafcA=="
         }
       },
       "is_incremental": false,
@@ -1230,7 +1266,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html",
-          "hash": "QMWmQdflWOKG/qaIS5UuzQ=="
+          "hash": "/V7Eqqn6XJm1YfVXVl/5lA=="
         }
       },
       "is_incremental": false,
@@ -1242,7 +1278,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html",
-          "hash": "QW51z05SbKMUujA15z+UwQ=="
+          "hash": "QqAOjIlVEm547k+mz9z8KA=="
         }
       },
       "is_incremental": false,
@@ -1250,11 +1286,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender.yml",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSender.html",
-          "hash": "63dbYZvGf27or8nLQpcc5g=="
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html",
+          "hash": "MrElsvsePeRpkb3CNz29yQ=="
         }
       },
       "is_incremental": false,
@@ -1266,7 +1302,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.html",
-          "hash": "gLEgk1gQl7+ibHj7MtGMKw=="
+          "hash": "YrdVRQYah7TJQamrLV/h6A=="
         }
       },
       "is_incremental": false,
@@ -1278,7 +1314,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html",
-          "hash": "ERID1KSfq+1uuG7zadFEMA=="
+          "hash": "Gecds0XU/ZwsQryD7Cd6Iw=="
         }
       },
       "is_incremental": false,
@@ -1290,7 +1326,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints.html",
-          "hash": "7u9d/vhW9qPgrayxJBSK9w=="
+          "hash": "wRcWiPJ7HCd5IwHF+kYbvA=="
         }
       },
       "is_incremental": false,
@@ -1302,7 +1338,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoEncoding.html",
-          "hash": "AhJ9zpVwOUy3QNHDdV7CyA=="
+          "hash": "ldgcOjf8HdlOkb0JMeVSTQ=="
         }
       },
       "is_incremental": false,
@@ -1314,7 +1350,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html",
-          "hash": "LuJoZTXBwDQxsNu+IJUmJg=="
+          "hash": "zmfHakT1vHgiNbACXvSD5w=="
         }
       },
       "is_incremental": false,
@@ -1322,11 +1358,23 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.VideoSender.yml",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoSender.html",
-          "hash": "NIEjqOyowlNoMYeC1azd3g=="
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html",
+          "hash": "1oGJA+zhTxORwv/u1vGD0g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.VideoRendererSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoRendererSource.html",
+          "hash": "VOmvl5SBg4xA2iGswOjadg=="
         }
       },
       "is_incremental": false,
@@ -1338,7 +1386,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent.html",
-          "hash": "W696HxMzxiGJwh4kOi5TfA=="
+          "hash": "TU8lWakHgCGOFPO1AKBWRA=="
         }
       },
       "is_incremental": false,
@@ -1350,7 +1398,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoStreamStoppedEvent.html",
-          "hash": "A9G/2ObQQ38WLN1IGh3jjg=="
+          "hash": "+BUNSrm7XP3xAO9jXfYTBw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html",
+          "hash": "hEht/VuKpbyL9LcYKNuE/Q=="
         }
       },
       "is_incremental": false,
@@ -1362,7 +1422,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WebRTCErrorEvent.html",
-          "hash": "Xg2ijZXoHeiqCUgwRcuHtA=="
+          "hash": "3yMOJSO+dlbZDzsXvzIFHg=="
         }
       },
       "is_incremental": false,
@@ -1374,7 +1434,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html",
-          "hash": "q4+pJ4gjO4hQgjFlJJEuZQ=="
+          "hash": "y4Kr09h/8Q9gJr3dA/SLQg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.WorkQueue.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html",
+          "hash": "La6tPeKaZ5kBonPpd0rx5w=="
         }
       },
       "is_incremental": false,
@@ -1386,7 +1458,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.html",
-          "hash": "1IuS7PtKEhz3dIOjq0N/wQ=="
+          "hash": "b8FyBQpz6h4MDGcxs+PcwQ=="
         }
       },
       "is_incremental": false,
@@ -1398,7 +1470,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html",
-          "hash": "otKAXEv4MQPfl6Zc0j+VdA=="
+          "hash": "Qq1DqdBcuSumVqrgXAG9OA=="
         }
       },
       "is_incremental": false,
@@ -1410,7 +1482,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoCaptureFormat.html",
-          "hash": "DkdORiqxu35GoSmg5gMazg=="
+          "hash": "YvzAgB+zNfk7sPNZu37VPQ=="
         }
       },
       "is_incremental": false,
@@ -1422,7 +1494,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html",
-          "hash": "z6NLUnjHMLTOxjrRynbKkQ=="
+          "hash": "Hat7tJaKBmwkiItTKei7Hw=="
         }
       },
       "is_incremental": false,
@@ -1434,7 +1506,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoProfileKind.html",
-          "hash": "x9p1wX4FpuFHQ3LqYHogQA=="
+          "hash": "BeqDXx8m0qmGCpjcy1Wx/w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoTrackSource.html",
+          "hash": "nHLwje7QHpxfp0xyBIe2Ew=="
         }
       },
       "is_incremental": false,
@@ -1446,7 +1530,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "cvfF6l5WAtzuU3eC+62RMg=="
+          "hash": "9UGkfMqMVeg/OHfxDwfCLg=="
         }
       },
       "is_incremental": false,
@@ -1458,7 +1542,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "5DaHWrgkB0DYGO98RmkxOg=="
+          "hash": "mJZSRVqrgrp9hkV0vBA3Ww=="
         }
       },
       "is_incremental": false,
@@ -1470,7 +1554,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "rgo6xiCClLehZH84Ne/2wg=="
+          "hash": "rrxdwqMqb2N5k3RkxypZYQ=="
         }
       },
       "is_incremental": false,
@@ -1510,6 +1594,18 @@
       "version": ""
     },
     {
+      "type": "Conceptual",
+      "source_relative_path": "manual/android/building-android.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/android/building-android.html",
+          "hash": "6EKJ4++y/J39/ivrtCX1Ag=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Resource",
       "source_relative_path": "manual/architecture.png",
       "output": {
@@ -1526,7 +1622,31 @@
       "output": {
         ".html": {
           "relative_path": "manual/building-core.html",
-          "hash": "z+MWYLonr6NV6BkVFdTTqw=="
+          "hash": "pUJICnjZ0XT9uhPt0usAaQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/building-cslib.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/building-cslib.html",
+          "hash": "QuD4hCCJf7850ZAdYDkliw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/building-windows.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/building-windows.html",
+          "hash": "McKFqTAbf0Cw67qiwAs8Sw=="
         }
       },
       "is_incremental": false,
@@ -1538,7 +1658,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/building.html",
-          "hash": "9svCr6BMKLTspfmX9NLznw=="
+          "hash": "m8+7T4gF4HntlhllvX0kcA=="
         }
       },
       "is_incremental": false,
@@ -1550,7 +1670,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/cs-peerconnection.html",
-          "hash": "fsjVYs6532E+arHCigzC4Q=="
+          "hash": "jBcmWrAnj73rsdNudv+8OA=="
         }
       },
       "is_incremental": false,
@@ -1562,7 +1682,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/cs-signaling.html",
-          "hash": "qAKnMN928wMyJirG5HMRmw=="
+          "hash": "SiEJkB/ih6fXAhP0itkc6A=="
         }
       },
       "is_incremental": false,
@@ -1728,7 +1848,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/cs.html",
-          "hash": "f/9bS2gUCEUuaVkK8OUuLw=="
+          "hash": "hY/m6qVMGNoxixl8ydCXjw=="
         }
       },
       "is_incremental": false,
@@ -1817,7 +1937,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-connection-core3.html",
-          "hash": "PrRQ1qljVR7WD3750+c+MA=="
+          "hash": "Z4IH94NHVIbnsHUA7aZKqA=="
         }
       },
       "is_incremental": false,
@@ -1829,7 +1949,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-connection-uwp.html",
-          "hash": "WVAI4r4jXhpH8yCSgU5FvA=="
+          "hash": "MdSE43Uh+SbhwCJxlaFTNw=="
         }
       },
       "is_incremental": false,
@@ -1841,7 +1961,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-core3.html",
-          "hash": "tz5DsFhVVT/nWzdAyvWn8w=="
+          "hash": "z+QJFqCsueEAVq2b6eLELg=="
         }
       },
       "is_incremental": false,
@@ -1853,7 +1973,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-core3.html",
-          "hash": "auAcQzxbW007/KC2PrIwUg=="
+          "hash": "wIKD01klWJ4Tm70h1fA/gA=="
         }
       },
       "is_incremental": false,
@@ -1865,7 +1985,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.html",
-          "hash": "xXUu/Mu3/qtWlV1PHNXbRA=="
+          "hash": "a/ypjUAFCcBN3kKTig3FhA=="
         }
       },
       "is_incremental": false,
@@ -1877,7 +1997,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-peerconnection-core3.html",
-          "hash": "AXrP6JJCJAnprsxGhYchMw=="
+          "hash": "DUMS1iR3xFVqb9G/DYU6MQ=="
         }
       },
       "is_incremental": false,
@@ -1889,7 +2009,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-peerconnection-uwp.html",
-          "hash": "eeK5amSz0fneLCCAXnR0hQ=="
+          "hash": "bFpR50R0YViEvP49mCwMRg=="
         }
       },
       "is_incremental": false,
@@ -1901,7 +2021,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-setup-core3.html",
-          "hash": "89LVhE9MOfuCt3eV4J8k5g=="
+          "hash": "H91EIno6E+8tDDVQfxMMmQ=="
         }
       },
       "is_incremental": false,
@@ -1913,7 +2033,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-setup-uwp.html",
-          "hash": "D9m8iU4L2K3bMM35hJ7lmA=="
+          "hash": "3IOCiCNF2kNEZHINlQ5POQ=="
         }
       },
       "is_incremental": false,
@@ -1925,7 +2045,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-signaling-core3.html",
-          "hash": "8JLY9gJoqb69urJW8u55Dw=="
+          "hash": "zOqjTj1gLohSn56ZOPUCqQ=="
         }
       },
       "is_incremental": false,
@@ -1937,7 +2057,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-signaling-uwp.html",
-          "hash": "k9/5Hkkgr0sCvolE7kExew=="
+          "hash": "Ila6y4dQVpLlxoUhS2b7ag=="
         }
       },
       "is_incremental": false,
@@ -1952,7 +2072,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-uwp.html",
-          "hash": "lHatvTyrRgBd+NHMCyuSJg=="
+          "hash": "2WY1W9Z+El7neDZRf8hGew=="
         }
       },
       "is_incremental": false,
@@ -1964,7 +2084,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/download.html",
-          "hash": "csyplIQt8KQgvl4tPa7EbA=="
+          "hash": "ZK+LIsMszjEO/5CqKXDoFQ=="
         }
       },
       "is_incremental": false,
@@ -1976,7 +2096,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/gettingstarted.html",
-          "hash": "JAgodyAuJy5wxnmwWrh0kQ=="
+          "hash": "6aSAe00/kVj0fo6ne+jVAw=="
         }
       },
       "is_incremental": false,
@@ -1988,323 +2108,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/glossary.html",
-          "hash": "G/OIDMi/0xkdZ8VCu8zcaQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-1.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-1.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-10.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-10.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-11.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-11.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-12.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-12.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-13.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-13.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-13b.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-13b.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-14.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-14.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-15.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-15.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-16.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-16.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-17.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-17.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-2.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-2.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-3.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-3.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-4.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-4.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-5.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-5.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-6.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-6.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-7.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-7.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-8.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-8.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-8b.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-8b.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-8c.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-8c.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/helloworld-unity-9.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/helloworld-unity-9.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/helloworld-unity-connection.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/helloworld-unity-connection.html",
-          "hash": "rPBHAtki7wKlMGtZx6TWOw=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/helloworld-unity-createproject.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/helloworld-unity-createproject.html",
-          "hash": "VAhLc9dl4WI8rtD5Bi46sA=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/helloworld-unity-importwebrtc.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/helloworld-unity-importwebrtc.html",
-          "hash": "RGNUsnsFE27rb9h56shU0Q=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/helloworld-unity-localvideo.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/helloworld-unity-localvideo.html",
-          "hash": "pd25hL1SedTy3s5cV0e+qg=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/helloworld-unity-peerconnection.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/helloworld-unity-peerconnection.html",
-          "hash": "8bPEnhxGs2mvTP+qVGGjaQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/helloworld-unity-remotevideo.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/helloworld-unity-remotevideo.html",
-          "hash": "T65BqlfHzyG3m9AU1Ps6tg=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/helloworld-unity-signaler.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/helloworld-unity-signaler.html",
-          "hash": "L9Mn2oGdL4EMGbvkZZwNmA=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/helloworld-unity.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/helloworld-unity.html",
-          "hash": "oRk+GkuA5wmV0RtFdNlkqQ=="
+          "hash": "BeccoC30eeLjYR+bhzPWdA=="
         }
       },
       "is_incremental": false,
@@ -2338,7 +2142,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/installation.html",
-          "hash": "yG8Qh4ChK8DHglIiENxA5Q=="
+          "hash": "OOSiKvdTS90BdNqkzJNzDg=="
         }
       },
       "is_incremental": false,
@@ -2350,7 +2154,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/introduction.html",
-          "hash": "1nWWKK/L4jm37gPBsckXcw=="
+          "hash": "2KV1jF7IB8dFs3x2EM+RBQ=="
         }
       },
       "is_incremental": false,
@@ -2362,7 +2166,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/migration-guide.html",
-          "hash": "hLcTNERxlZjW/oXI6wGA0g=="
+          "hash": "Kty6VfTejCGVvJJW69f5Og=="
         }
       },
       "is_incremental": false,
@@ -2374,7 +2178,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/toc.html",
-          "hash": "mldIZCIl9pIuwsQ/dCsAXw=="
+          "hash": "BHYWm4KQvaYc/E8waUfDAQ=="
         }
       },
       "is_incremental": false,
@@ -2382,10 +2186,10 @@
     },
     {
       "type": "Resource",
-      "source_relative_path": "manual/unity-class-diagram.png",
+      "source_relative_path": "manual/unity/helloworld-unity-1.png",
       "output": {
         "resource": {
-          "relative_path": "manual/unity-class-diagram.png"
+          "relative_path": "manual/unity/helloworld-unity-1.png"
         }
       },
       "is_incremental": false,
@@ -2393,22 +2197,10 @@
     },
     {
       "type": "Resource",
-      "source_relative_path": "manual/unity-components-diagram.png",
+      "source_relative_path": "manual/unity/helloworld-unity-10.png",
       "output": {
         "resource": {
-          "relative_path": "manual/unity-components-diagram.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/unity-components.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/unity-components.html",
-          "hash": "Dh8umXsxoeQewFJXWdmcQQ=="
+          "relative_path": "manual/unity/helloworld-unity-10.png"
         }
       },
       "is_incremental": false,
@@ -2416,34 +2208,10 @@
     },
     {
       "type": "Resource",
-      "source_relative_path": "manual/unity-inspector.png",
+      "source_relative_path": "manual/unity/helloworld-unity-11.png",
       "output": {
         "resource": {
-          "relative_path": "manual/unity-inspector.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/unity-integration.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/unity-integration.html",
-          "hash": "/4UzR2xGjC1mAIeADwplaQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/unity-localaudiosource.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/unity-localaudiosource.html",
-          "hash": "es8o/JSe2L/x4j2qw3QdXg=="
+          "relative_path": "manual/unity/helloworld-unity-11.png"
         }
       },
       "is_incremental": false,
@@ -2451,22 +2219,10 @@
     },
     {
       "type": "Resource",
-      "source_relative_path": "manual/unity-localaudiosource.png",
+      "source_relative_path": "manual/unity/helloworld-unity-12.png",
       "output": {
         "resource": {
-          "relative_path": "manual/unity-localaudiosource.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/unity-localvideosource.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/unity-localvideosource.html",
-          "hash": "k0yr4zEYPusD3jToCGWvaQ=="
+          "relative_path": "manual/unity/helloworld-unity-12.png"
         }
       },
       "is_incremental": false,
@@ -2474,22 +2230,10 @@
     },
     {
       "type": "Resource",
-      "source_relative_path": "manual/unity-localvideosource.png",
+      "source_relative_path": "manual/unity/helloworld-unity-13.png",
       "output": {
         "resource": {
-          "relative_path": "manual/unity-localvideosource.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/unity-mediaplayer.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/unity-mediaplayer.html",
-          "hash": "f/bXOzp9nfkAi4IGVaVqwA=="
+          "relative_path": "manual/unity/helloworld-unity-13.png"
         }
       },
       "is_incremental": false,
@@ -2497,25 +2241,10 @@
     },
     {
       "type": "Resource",
-      "source_relative_path": "manual/unity-mediaplayer.png",
+      "source_relative_path": "manual/unity/helloworld-unity-13b.png",
       "output": {
         "resource": {
-          "relative_path": "manual/unity-mediaplayer.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "log_codes": [
-        "UidNotFound"
-      ],
-      "type": "Conceptual",
-      "source_relative_path": "manual/unity-peerconnection.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/unity-peerconnection.html",
-          "hash": "Es9KnOCoR1kbyT+TsWEMxw=="
+          "relative_path": "manual/unity/helloworld-unity-13b.png"
         }
       },
       "is_incremental": false,
@@ -2523,22 +2252,10 @@
     },
     {
       "type": "Resource",
-      "source_relative_path": "manual/unity-peerconnection.png",
+      "source_relative_path": "manual/unity/helloworld-unity-14.png",
       "output": {
         "resource": {
-          "relative_path": "manual/unity-peerconnection.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/unity-remoteaudiosource.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/unity-remoteaudiosource.html",
-          "hash": "1NZaBtLjy5c6UGe13/wVzQ=="
+          "relative_path": "manual/unity/helloworld-unity-14.png"
         }
       },
       "is_incremental": false,
@@ -2546,22 +2263,10 @@
     },
     {
       "type": "Resource",
-      "source_relative_path": "manual/unity-remoteaudiosource.png",
+      "source_relative_path": "manual/unity/helloworld-unity-15.png",
       "output": {
         "resource": {
-          "relative_path": "manual/unity-remoteaudiosource.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Conceptual",
-      "source_relative_path": "manual/unity-remotevideosource.md",
-      "output": {
-        ".html": {
-          "relative_path": "manual/unity-remotevideosource.html",
-          "hash": "q0bYOhOFCmwj15d7ub94hQ=="
+          "relative_path": "manual/unity/helloworld-unity-15.png"
         }
       },
       "is_incremental": false,
@@ -2569,10 +2274,153 @@
     },
     {
       "type": "Resource",
-      "source_relative_path": "manual/unity-remotevideosource.png",
+      "source_relative_path": "manual/unity/helloworld-unity-15b.png",
       "output": {
         "resource": {
-          "relative_path": "manual/unity-remotevideosource.png"
+          "relative_path": "manual/unity/helloworld-unity-15b.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-16.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-16.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-17.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-17.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-1b.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-1b.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-4.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-5.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-5.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-6.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-6.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-7.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-7.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-8.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-8.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-8b.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-8b.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-8c.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-8c.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-9.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-9.png"
         }
       },
       "is_incremental": false,
@@ -2580,11 +2428,313 @@
     },
     {
       "type": "Conceptual",
-      "source_relative_path": "manual/unity-signaler.md",
+      "source_relative_path": "manual/unity/helloworld-unity-connection.md",
       "output": {
         ".html": {
-          "relative_path": "manual/unity-signaler.html",
-          "hash": "uj1yEOMBcXt2tdoHES9ENQ=="
+          "relative_path": "manual/unity/helloworld-unity-connection.html",
+          "hash": "1C+Nuj7veRESkzKxkZh7vA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-createproject.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-createproject.html",
+          "hash": "oZIZQFzZwx/qzQg0vuj2bA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-importwebrtc.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-importwebrtc.html",
+          "hash": "FS6rjHTzZoBTn8k9OKWBPw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-localvideo.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-localvideo.html",
+          "hash": "xoGhZTTj80jpD862nT9Z8g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-peerconnection.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-peerconnection.html",
+          "hash": "8opvQISetPH1RDheL92lJA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-remotevideo.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-remotevideo.html",
+          "hash": "SKhz0snMxm5Ky0ypaLqM7w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-signaler.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-signaler.html",
+          "hash": "sNuGqY/ui9cjT9mqeatH1Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity.html",
+          "hash": "OZj6QPJNme0aI2G6yFFi3A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-class-diagram.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-class-diagram.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-components-diagram.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-components-diagram.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-components.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-components.html",
+          "hash": "k4sKMVKMEyhd4awkmDYmvQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-inspector.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-inspector.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-integration.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-integration.html",
+          "hash": "40BdVwLf4DK5jj5uTt7uOQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-localaudiosource.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-localaudiosource.html",
+          "hash": "hjQqoY3j1739qKZ4y/uCKg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-localaudiosource.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-localaudiosource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-localvideosource.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-localvideosource.html",
+          "hash": "ZsgFN7fMs0/jVzVa829yzg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-localvideosource.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-localvideosource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-mediaplayer.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-mediaplayer.html",
+          "hash": "x8oUqODKJAmAxOJZ7a3xQQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-mediaplayer.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-mediaplayer.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-peerconnection.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-peerconnection.html",
+          "hash": "OB+fdha2uck/iZU4CBF96g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-peerconnection.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-peerconnection.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-remoteaudiosource.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-remoteaudiosource.html",
+          "hash": "qzzEed1ranpfhgCYRjDU2g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-remoteaudiosource.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-remoteaudiosource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-remotevideosource.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-remotevideosource.html",
+          "hash": "7xxh4nOrw1zJKrZpLGunjA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-remotevideosource.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-remotevideosource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-signaler.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-signaler.html",
+          "hash": "lzwTNLKlfPaGbNbxzSx6wQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/win-build-variant.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/win-build-variant.png"
         }
       },
       "is_incremental": false,
@@ -2650,13 +2800,13 @@
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 41,
+          "total_file_count": 44,
           "skipped_file_count": 0
         },
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 120,
+          "total_file_count": 127,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

@@ -1,0 +1,300 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class DeviceVideoTrackSource
+   | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class DeviceVideoTrackSource
+   | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.55.0.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource">
+  
+  
+  <h1 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource" class="text-break">Class DeviceVideoTrackSource
+  </h1>
+  <div class="markdown level0 summary"><p>Implementation of a video track source producing frames captured from a video capture device (webcam).</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html">VideoTrackSource</a></div>
+    <div class="level2"><span class="xref">DeviceVideoTrackSource</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_Name">VideoTrackSource.Name</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_Tracks">VideoTrackSource.Tracks</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_VideoFrameReady">VideoTrackSource.VideoFrameReady</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_ARGB32VideoFrameReady">VideoTrackSource.ARGB32VideoFrameReady</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_Dispose">VideoTrackSource.Dispose()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
+  <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class DeviceVideoTrackSource : VideoTrackSource</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.CreateAsync(Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L150">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.CreateAsync*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.CreateAsync(Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig)">CreateAsync(LocalVideoDeviceInitConfig)</h4>
+  <div class="markdown level1 summary"><p>Create a video track source using a local video capture device (webcam).</p>
+<p>The video track source produces raw video frames by capturing them from a capture device accessible
+from the local host machine, generally a USB webcam or built-in device camera. The video source
+initially starts in the capturing state, and will remain live for as long as the source is alive.
+Once the source is not live anymore (ended), it cannot be restarted. A new source must be created to
+use the same video capture device again.</p>
+<p>The source can be used to create one or more local video tracks (<a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html">LocalVideoTrack</a>), which
+once added to a video transceiver allow the video frames to be sent to a remote peer. The source itself
+is not associated with any peer connection, and can be used to create local video tracks from multiple
+peer connections at once, thereby being shared amongst those peer connections.</p>
+<p>The source is owned by the user, who must ensure it stays alive while being in use by at least one local
+video track. Once it is not used anymore, the user is in charge of disposing of the source. Disposing of
+a source still in use by a local video track is undefined behavior.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task&lt;VideoTrackSource&gt; CreateAsync(LocalVideoDeviceInitConfig initConfig = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig.html">LocalVideoDeviceInitConfig</a></td>
+        <td><span class="parametername">initConfig</span></td>
+        <td><p>Optional configuration to initialize the video capture on the device.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html">VideoTrackSource</a>&gt;</td>
+        <td><p>The newly create video track source.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>On UWP this requires the &quot;webcam&quot; capability.
+See <a href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations">https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations</a>
+for more details.</p>
+<p>The video capture device may be accessed several times during the initializing process,
+generally once for listing and validating the capture format, and once for actually starting
+the video capture. This is a limitation of the OS and/or hardware.</p>
+<p>Note that the capture device must support a capture format with the given constraints of profile
+ID or kind, capture resolution, and framerate, otherwise the call will fail. That is, there is no
+fallback mechanism selecting a closest match. Developers should use
+<a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureFormatsAsync_System_String_">GetVideoCaptureFormatsAsync(String)</a> to list the supported formats ahead
+of calling <a class="xref" href="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig_">CreateAsync(LocalVideoDeviceInitConfig)</a>, and can build their own
+fallback mechanism on top of this call if needed.</p>
+</div>
+  <h5 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig__examples">Examples</h5>
+  <p>Create a video track source with Mixed Reality Capture (MRC) enabled.
+This assumes that the platform supports MRC. Note that if MRC is not available
+the call will still succeed, but will return a track without MRC enabled.</p>
+<pre><code>var initConfig = new LocalVideoDeviceInitConfig
+{
+    enableMrc = true
+};
+var videoSource = await VideoTrackSource.CreateFromDeviceAsync(initConfig);</code></pre>
+<p>Create a video track source from a local webcam, asking for a capture format suited for video conferencing,
+and a target framerate of 30 frames per second (FPS). The implementation will select an appropriate
+capture resolution. This assumes that the device supports video profiles, and has at least one capture
+format supporting exactly 30 FPS capture associated with the VideoConferencing profile. Otherwise the call
+will fail.</p>
+<pre><code>var initConfig = new LocalVideoDeviceInitConfig
+{
+    videoProfileKind = VideoProfileKind.VideoConferencing,
+    framerate = 30.0
+};
+var videoSource = await VideoTrackSource.CreateFromDeviceAsync(initConfig);</code></pre>
+
+  <h5 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_VideoTrackSource_Microsoft_MixedReality_WebRTC_LocalVideoTrackInitConfig_">CreateFromSource(VideoTrackSource, LocalVideoTrackInitConfig)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_ToString.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L169">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_ToString_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.ToString*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_ToString" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_ToString">VideoTrackSource.ToString()</a></div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L86" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

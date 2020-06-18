@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class LocalAudioTrack
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -157,25 +157,56 @@ expected. If disabled, send only black frames instead.</p>
   <div class="markdown level1 remarks"><p>Reading the value of this property after the track has been disposed is valid, and returns
 <code>false</code>. Writing to this property after the track has been disposed throws an exception.</p>
 </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalAudioTrack_Source.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalAudioTrack.Source%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalAudioTrack.cs/#L58">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_Source_" data-uid="Microsoft.MixedReality.WebRTC.LocalAudioTrack.Source*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_Source" data-uid="Microsoft.MixedReality.WebRTC.LocalAudioTrack.Source">Source</h4>
+  <div class="markdown level1 summary"><p>Audio track source this track is pulling its audio frames from.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AudioTrackSource Source { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackSource.html">AudioTrackSource</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalAudioTrackSettings_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalAudioTrack.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalAudioTrackSettings)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_AudioTrackSource_Microsoft_MixedReality_WebRTC_LocalAudioTrackInitConfig_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalAudioTrack.CreateFromSource(Microsoft.MixedReality.WebRTC.AudioTrackSource%2CMicrosoft.MixedReality.WebRTC.LocalAudioTrackInitConfig)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalAudioTrack.cs/#L91">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalAudioTrack.cs/#L93">View Source</a>
   </span>
-  <a id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromDeviceAsync_" data-uid="Microsoft.MixedReality.WebRTC.LocalAudioTrack.CreateFromDeviceAsync*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalAudioTrackSettings_" data-uid="Microsoft.MixedReality.WebRTC.LocalAudioTrack.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalAudioTrackSettings)">CreateFromDeviceAsync(LocalAudioTrackSettings)</h4>
-  <div class="markdown level1 summary"><p>Create an audio track from a local audio capture device (microphone).
-This does not add the track to any peer connection. Instead, the track must be added manually to
+  <a id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromSource_" data-uid="Microsoft.MixedReality.WebRTC.LocalAudioTrack.CreateFromSource*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_AudioTrackSource_Microsoft_MixedReality_WebRTC_LocalAudioTrackInitConfig_" data-uid="Microsoft.MixedReality.WebRTC.LocalAudioTrack.CreateFromSource(Microsoft.MixedReality.WebRTC.AudioTrackSource,Microsoft.MixedReality.WebRTC.LocalAudioTrackInitConfig)">CreateFromSource(AudioTrackSource, LocalAudioTrackInitConfig)</h4>
+  <div class="markdown level1 summary"><p>Create an audio track from an existing audio track source.</p>
+<p>This does not add the track to any peer connection. Instead, the track must be added manually to
 an audio transceiver to be attached to a peer connection and transmitted to a remote peer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;LocalAudioTrack&gt; CreateFromDeviceAsync(LocalAudioTrackSettings settings = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public static LocalAudioTrack CreateFromSource(AudioTrackSource source, LocalAudioTrackInitConfig initConfig)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -188,9 +219,15 @@ an audio transceiver to be attached to a peer connection and transmitted to a re
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalAudioTrackSettings.html">LocalAudioTrackSettings</a></td>
-        <td><span class="parametername">settings</span></td>
-        <td><p>Settings to initialize the local audio track.</p>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.AudioTrackSource.html">AudioTrackSource</a></td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The track source which provides the raw audio frames to the newly created track.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalAudioTrackInitConfig.html">LocalAudioTrackInitConfig</a></td>
+        <td><span class="parametername">initConfig</span></td>
+        <td><p>Configuration to initialize the track being created.</p>
 </td>
       </tr>
     </tbody>
@@ -205,23 +242,18 @@ an audio transceiver to be attached to a peer connection and transmitted to a re
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.LocalAudioTrack.html">LocalAudioTrack</a>&gt;</td>
-        <td><p>Asynchronous task completed once the device is capturing and the track is created.</p>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalAudioTrack.html">LocalAudioTrack</a></td>
+        <td><p>Asynchronous task completed once the track is created.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalAudioTrackSettings__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>On UWP this requires the &quot;microphone&quot; capability.
-See <a href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations">https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations</a>
-for more details.</p>
-</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalAudioTrack_Dispose.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalAudioTrack.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalAudioTrack.cs/#L161">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalAudioTrack.cs/#L173">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_Dispose_" data-uid="Microsoft.MixedReality.WebRTC.LocalAudioTrack.Dispose*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_Dispose" data-uid="Microsoft.MixedReality.WebRTC.LocalAudioTrack.Dispose">Dispose()</h4>
@@ -236,7 +268,7 @@ for more details.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalAudioTrack_ToString.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalAudioTrack.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalAudioTrack.cs/#L204">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalAudioTrack.cs/#L223">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_ToString_" data-uid="Microsoft.MixedReality.WebRTC.LocalAudioTrack.ToString*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_ToString" data-uid="Microsoft.MixedReality.WebRTC.LocalAudioTrack.ToString">ToString()</h4>
@@ -270,7 +302,7 @@ for more details.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalAudioTrack_AudioFrameReady.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalAudioTrack.AudioFrameReady%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalAudioTrack.cs/#L58">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalAudioTrack.cs/#L63">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_LocalAudioTrack_AudioFrameReady" data-uid="Microsoft.MixedReality.WebRTC.LocalAudioTrack.AudioFrameReady">AudioFrameReady</h4>
   <div class="markdown level1 summary"><p>Event that occurs when a audio frame has been produced by the underlying source and is available.</p>

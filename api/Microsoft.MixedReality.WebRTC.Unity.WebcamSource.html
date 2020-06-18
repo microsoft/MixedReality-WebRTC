@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class WebcamSource
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -87,121 +87,87 @@
   <h1 id="Microsoft_MixedReality_WebRTC_Unity_WebcamSource" data-uid="Microsoft.MixedReality.WebRTC.Unity.WebcamSource" class="text-break">Class WebcamSource
   </h1>
   <div class="markdown level0 summary"><p>This component represents a local video sender generating video frames from a local
-video capture device (webcam). The video sender can be added to a video transceiver
-in order for the video data to be sent to the remote peer. The captured video frames
-can also optionally be displayed locally with a <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaPlayer.html">MediaPlayer</a>.</p>
+video capture device (webcam).</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html">MediaSource</a></div>
-    <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html">MediaSender</a></div>
-    <div class="level3"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html">VideoSender</a></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html">WorkQueue</a></div>
+    <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRendererSource.html">VideoRendererSource</a></div>
+    <div class="level3"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html">VideoTrackSource</a></div>
     <div class="level4"><span class="xref">WebcamSource</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a></div>
+    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_PreferredVideoCodec">VideoSender.PreferredVideoCodec</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_Source">VideoTrackSource.Source</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_VideoStreamStarted">VideoSender.VideoStreamStarted</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_MediaLines">VideoTrackSource.MediaLines</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_VideoStreamStopped">VideoSender.VideoStreamStopped</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_VideoStreamStarted">VideoTrackSource.VideoStreamStarted</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_IsStreaming">VideoSender.IsStreaming</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_VideoStreamStopped">VideoTrackSource.VideoStreamStopped</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_GetVideoStreamStarted">VideoSender.GetVideoStreamStarted()</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_IsStreaming">VideoTrackSource.IsStreaming</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_GetVideoStreamStopped">VideoSender.GetVideoStreamStopped()</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_GetVideoStreamStarted">VideoTrackSource.GetVideoStreamStarted()</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_Transceiver">VideoSender.Transceiver</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_GetVideoStreamStopped">VideoTrackSource.GetVideoStreamStopped()</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_FrameEncoding">VideoSender.FrameEncoding</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_FrameEncoding">VideoTrackSource.FrameEncoding</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_Track">VideoSender.Track</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_RegisterCallback_I420AVideoFrameDelegate_">VideoTrackSource.RegisterCallback(I420AVideoFrameDelegate)</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_RegisterCallback_I420AVideoFrameDelegate_">VideoSender.RegisterCallback(I420AVideoFrameDelegate)</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_UnregisterCallback_I420AVideoFrameDelegate_">VideoTrackSource.UnregisterCallback(I420AVideoFrameDelegate)</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_UnregisterCallback_I420AVideoFrameDelegate_">VideoSender.UnregisterCallback(I420AVideoFrameDelegate)</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_RegisterCallback_Argb32VideoFrameDelegate_">VideoTrackSource.RegisterCallback(Argb32VideoFrameDelegate)</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_RegisterCallback_Argb32VideoFrameDelegate_">VideoSender.RegisterCallback(Argb32VideoFrameDelegate)</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_UnregisterCallback_Argb32VideoFrameDelegate_">VideoTrackSource.UnregisterCallback(Argb32VideoFrameDelegate)</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_UnregisterCallback_Argb32VideoFrameDelegate_">VideoSender.UnregisterCallback(Argb32VideoFrameDelegate)</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_Microsoft_MixedReality_WebRTC_Unity_IMediaTrackSource_MediaKind">VideoTrackSource.IMediaTrackSource.MediaKind</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_CreateLocalTrackAsync">VideoSender.CreateLocalTrackAsync()</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_OnDisable">VideoTrackSource.OnDisable()</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_DestroyLocalTrack">VideoSender.DestroyLocalTrack()</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_IsMainAppThread">WorkQueue.IsMainAppThread</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_MuteImpl_System_Boolean_">VideoSender.MuteImpl(Boolean)</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_EnsureIsMainAppThread">WorkQueue.EnsureIsMainAppThread()</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_DestroyLocalVideoTrack">VideoSender.DestroyLocalVideoTrack()</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_InvokeOnAppThread_Action_">WorkQueue.InvokeOnAppThread(Action)</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_TrackName">MediaSender.TrackName</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_Awake">WorkQueue.Awake()</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_AutoStartOnEnabled">MediaSender.AutoStartOnEnabled</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_IsCapturing">MediaSender.IsCapturing</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StartCaptureAsync">MediaSender.StartCaptureAsync()</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_StopCapture">MediaSender.StopCapture()</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_Mute_System_Boolean_">MediaSender.Mute(Boolean)</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_Unmute">MediaSender.Unmute()</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnEnable">MediaSender.OnEnable()</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDisable">MediaSender.OnDisable()</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSender.html#Microsoft_MixedReality_WebRTC_Unity_MediaSender_OnDestroy">MediaSender.OnDestroy()</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource_MediaKind">MediaSource.MediaKind</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource__mainThreadWorkQueue">MediaSource._mainThreadWorkQueue</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaSource_Update">MediaSource.Update()</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_Update">WorkQueue.Update()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_WebcamSource_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class WebcamSource : VideoSender, IVideoSource</code></pre>
+    <pre><code class="lang-csharp hljs">public class WebcamSource : VideoTrackSource, IVideoSource, IMediaTrackSource, IMediaTrackSourceInternal</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -420,34 +386,20 @@ is a valid use case for hard-coding it.</p>
   </h3>
   
   
-  <a id="Microsoft_MixedReality_WebRTC_Unity_WebcamSource_CreateLocalVideoTrackAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.WebcamSource.CreateLocalVideoTrackAsync*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_WebcamSource_CreateLocalVideoTrackAsync" data-uid="Microsoft.MixedReality.WebRTC.Unity.WebcamSource.CreateLocalVideoTrackAsync">CreateLocalVideoTrackAsync()</h4>
+  <a id="Microsoft_MixedReality_WebRTC_Unity_WebcamSource_OnEnable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.WebcamSource.OnEnable*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_WebcamSource_OnEnable" data-uid="Microsoft.MixedReality.WebRTC.Unity.WebcamSource.OnEnable">OnEnable()</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override Task CreateLocalVideoTrackAsync()</code></pre>
+    <pre><code class="lang-csharp hljs">protected void OnEnable()</code></pre>
   </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Task</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoSender.html#Microsoft_MixedReality_WebRTC_Unity_VideoSender_CreateLocalVideoTrackAsync">VideoSender.CreateLocalVideoTrackAsync()</a></div>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a>
+  </div>
+  <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a>
   </div>
 </article>
           </div>

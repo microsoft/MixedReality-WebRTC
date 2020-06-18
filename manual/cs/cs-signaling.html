@@ -8,7 +8,7 @@
     <title>C# signaling | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="C# signaling | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -84,22 +84,22 @@
 
 <p>The C# library does not have a dedicated class for signaling. Instead, the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html"><code>PeerConnection</code></a> class provides some events and methods to build upon in order to build a signaling solution.</p>
 <p>A custom signaling solution needs to handle sending locally-prepared messages to the remote peer, for example via a separate TCP/IP connection, and dispatching messages received from the remote peer down to the local peer connection. Neither the WebRTC standard nor the MixedReality-WebRTC library specify the way those messages must be transmitted.</p>
-<h2 id="local-to-remote">Local to remote</h2>
+<h2 id="local-to-remote-send">Local to remote (send)</h2>
 <p>Local messages are generated under several circumstances by the local peer. The signaling solution must listen to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend"><code>LocalSdpReadytoSend</code></a> and <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend"><code>IceCandidateReadytoSend</code></a> events, and dispatch those messages to the remote peer by whatever way it choses.</p>
-<pre><code class="lang-cs">peerConnection.LocalSdpReadyToSend += (string type, string sdp) =&gt; {
-    MyCustomSignaling_SendSdp(type, sdp);
-}
+<pre><code class="lang-cs">peerConnection.LocalSdpReadyToSend += (SdpMessage message) =&gt; {
+    MyCustomSignaling_SendSdp(message);
+};
 
-peerConnection.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, string sdpMid) =&gt; {
-    MyCustomSignaling_SendIce(candidate, sdpMlineindex, sdpMid);
-}
+peerConnection.IceCandidateReadytoSend += (IceCandidate candidate) =&gt; {
+    MyCustomSignaling_SendIce(candidate);
+};
 </code></pre>
-<h2 id="remote-to-local">Remote to local</h2>
+<h2 id="remote-to-local-receive">Remote to local (receive)</h2>
 <p>Upon receiving the above messages, the signaling solution must:</p>
 <ul>
-<li><p>For SDP messages originating from a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend"><code>LocalSdpReadytoSend</code></a> event invoked on the remote peer, call the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_Microsoft_MixedReality_WebRTC_SdpMessage_"><code>PeerConnection.SetRemoteDescriptionAsync()</code></a> method to inform the local peer connection of the newly received session description.</p>
-<pre><code class="lang-cs">public void OnSdpMessage(string type, string sdp) {
-    await peerConnection.SetRemoteDescriptionAsync(type, sdp);
+<li><p>For SDP messages originating from a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend"><code>LocalSdpReadytoSend</code></a> event raised on the remote peer and sent to the local peer, call the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_Microsoft_MixedReality_WebRTC_SdpMessage_"><code>PeerConnection.SetRemoteDescriptionAsync()</code></a> method to inform the local peer connection of the newly received session description.</p>
+<pre><code class="lang-cs">public void OnSdpMessageReceived(SdpMessage message) {
+    await peerConnection.SetRemoteDescriptionAsync(message);
     // Optionally, and only after SetRemoteDescriptionAsync() completed:
     if (type == &quot;offer&quot;) {
         peerConnection.CreateAnswer();
@@ -107,10 +107,9 @@ peerConnection.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, 
 }
 </code></pre>
 </li>
-<li><p>For ICE messages originating from an <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend"><code>IceCandidateReadytoSend</code></a> event invoked on the remote peer, call the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddIceCandidate_"><code>PeerConnection.AddIceCandidate()</code></a> method to inform the local peer connection of the newly received ICE candidate.</p>
-<pre><code class="lang-cs">public void OnIceMessage(string candidate, int sdpMlineindex, string sdpMid) {
-    // Note the args order here!
-    peerConnection.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+<li><p>For ICE messages originating from an <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend"><code>IceCandidateReadytoSend</code></a> event raised on the remote peer and sent to the local peer, call the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddIceCandidate_"><code>PeerConnection.AddIceCandidate()</code></a> method to inform the local peer connection of the newly received ICE candidate.</p>
+<pre><code class="lang-cs">public void OnIceMessageReceived(IceCandidate candidate) {
+    peerConnection.AddIceCandidate(candidate);
 }
 </code></pre>
 </li>

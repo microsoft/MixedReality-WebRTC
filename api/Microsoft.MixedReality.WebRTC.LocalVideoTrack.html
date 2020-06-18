@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class LocalVideoTrack
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -126,7 +126,7 @@ a local track source.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalVideoTrack_Enabled.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalVideoTrack.Enabled%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L179">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L113">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_Enabled_" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.Enabled*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_Enabled" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.Enabled">Enabled</h4>
@@ -162,18 +162,16 @@ expected. If disabled, send only black frames instead.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalVideoTrack_Source.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalVideoTrack.Source%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L169">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L103">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_Source_" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.Source*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_Source" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.Source">Source</h4>
-  <div class="markdown level1 summary"><p>External source for this video track, or <code>null</code> if the source is some
-internal video capture device, or has been removed from any peer connection
-(and is therefore inactive).</p>
+  <div class="markdown level1 summary"><p>Video track source this track is pulling its video frames from.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ExternalVideoTrackSource Source { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public VideoTrackSource Source { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -185,7 +183,7 @@ internal video capture device, or has been removed from any peer connection
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html">ExternalVideoTrackSource</a></td>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html">VideoTrackSource</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -194,29 +192,21 @@ internal video capture device, or has been removed from any peer connection
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalVideoTrackSettings_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_VideoTrackSource_Microsoft_MixedReality_WebRTC_LocalVideoTrackInitConfig_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromSource(Microsoft.MixedReality.WebRTC.VideoTrackSource%2CMicrosoft.MixedReality.WebRTC.LocalVideoTrackInitConfig)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L285">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L164">View Source</a>
   </span>
-  <a id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromDeviceAsync_" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromDeviceAsync*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalVideoTrackSettings_" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings)">CreateFromDeviceAsync(LocalVideoTrackSettings)</h4>
-  <div class="markdown level1 summary"><p>Create a video track from a local video capture device (webcam).</p>
-<p>The video track receives its video data from an underlying hidden source associated with
-the track and producing video frames by capturing them from a capture device accessible
-from the local host machine, generally a USB webcam or built-in device camera.</p>
-<p>The underlying video source initially starts in the capturing state, and will remain live
-for as long as the track is alive. It can be added to a peer connection by assigning it to
-the <a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_LocalVideoTrack">LocalVideoTrack</a> property of a video transceiver of that peer
-connection. Once attached to the peer connection, it can temporarily be disabled and re-enabled
-(see <a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_Enabled">Enabled</a>) while remaining attached to it.</p>
-<p>Note that disabling the track does not release the device; the source retains exclusive access to it.
-Therefore in general multiple tracks cannot be created using a single video capture device.</p>
+  <a id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromSource_" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromSource*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_VideoTrackSource_Microsoft_MixedReality_WebRTC_LocalVideoTrackInitConfig_" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromSource(Microsoft.MixedReality.WebRTC.VideoTrackSource,Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig)">CreateFromSource(VideoTrackSource, LocalVideoTrackInitConfig)</h4>
+  <div class="markdown level1 summary"><p>Create a video track from an existing video track source.</p>
+<p>This does not add the track to any peer connection. Instead, the track must be added manually to
+a video transceiver to be attached to a peer connection and transmitted to a remote peer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;LocalVideoTrack&gt; CreateFromDeviceAsync(LocalVideoTrackSettings settings = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public static LocalVideoTrack CreateFromSource(VideoTrackSource source, LocalVideoTrackInitConfig initConfig)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -229,109 +219,15 @@ Therefore in general multiple tracks cannot be created using a single video capt
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings.html">LocalVideoTrackSettings</a></td>
-        <td><span class="parametername">settings</span></td>
-        <td><p>Video capture settings for configuring the capture device associated with
-the underlying video track source.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html">LocalVideoTrack</a>&gt;</td>
-        <td><p>This returns a task which, upon successful completion, provides an instance of
-<a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html">LocalVideoTrack</a> representing the newly created video track.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalVideoTrackSettings__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>On UWP this requires the &quot;webcam&quot; capability.
-See <a href="https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations">https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations</a>
-for more details.</p>
-<p>The video capture device may be accessed several times during the initializing process,
-generally once for listing and validating the capture format, and once for actually starting
-the video capture.</p>
-<p>Note that the capture device must support a capture format with the given constraints of profile
-ID or kind, capture resolution, and framerate, otherwise the call will fail. That is, there is no
-fallback mechanism selecting a closest match. Developers should use
-<a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureFormatsAsync_System_String_">GetVideoCaptureFormatsAsync(String)</a> to list the supported formats ahead
-of calling <a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalVideoTrackSettings_">CreateFromDeviceAsync(LocalVideoTrackSettings)</a>, and can build their own
-fallback mechanism on top of this call if needed.</p>
-</div>
-  <h5 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalVideoTrackSettings__examples">Examples</h5>
-  <p>Create a video track called &quot;MyTrack&quot;, with Mixed Reality Capture (MRC) enabled.
-This assumes that the platform supports MRC. Note that if MRC is not available
-the call will still succeed, but will return a track without MRC enabled.</p>
-<pre><code>var settings = new LocalVideoTrackSettings
-{
-    trackName = &quot;MyTrack&quot;,
-    enableMrc = true
-};
-var videoTrack = await LocalVideoTrack.CreateFromDeviceAsync(settings);</code></pre>
-<p>Create a video track from a local webcam, asking for a capture format suited for video conferencing,
-and a target framerate of 30 frames per second (FPS). The implementation will select an appropriate
-capture resolution. This assumes that the device supports video profiles, and has at least one capture
-format supporting 30 FPS capture associated with the VideoConferencing profile. Otherwise the call
-will fail.</p>
-<pre><code>var settings = new LocalVideoTrackSettings
-{
-    videoProfileKind = VideoProfileKind.VideoConferencing,
-    framerate = 30.0
-};
-var videoTrack = await LocalVideoTrack.CreateFromDeviceAsync(settings);</code></pre>
-
-  <h5 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalVideoTrackSettings__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_LocalVideoTrack">LocalVideoTrack</a></div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromExternalSource_System_String_Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromExternalSource(System.String%2CMicrosoft.MixedReality.WebRTC.ExternalVideoTrackSource)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L322">View Source</a>
-  </span>
-  <a id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromExternalSource_" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromExternalSource*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromExternalSource_System_String_Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromExternalSource(System.String,Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource)">CreateFromExternalSource(String, ExternalVideoTrackSource)</h4>
-  <div class="markdown level1 summary"><p>Create a new local video track backed by an existing external video source.
-The track can be added to a peer connection by setting the <a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_LocalVideoTrack">LocalVideoTrack</a>
-property.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static LocalVideoTrack CreateFromExternalSource(string trackName, ExternalVideoTrackSource source)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><span class="parametername">trackName</span></td>
-        <td><p>Name of the new local video track.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html">ExternalVideoTrackSource</a></td>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html">VideoTrackSource</a></td>
         <td><span class="parametername">source</span></td>
-        <td><p>External video track source providing some video frames to the track.</p>
+        <td><p>The track source which provides the raw video frames to the newly created track.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig.html">LocalVideoTrackInitConfig</a></td>
+        <td><span class="parametername">initConfig</span></td>
+        <td><p>Configuration to initialize the track being created.</p>
 </td>
       </tr>
     </tbody>
@@ -347,21 +243,17 @@ property.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalVideoTrack.html">LocalVideoTrack</a></td>
-        <td><p>The newly created local video track.</p>
+        <td><p>Asynchronous task completed once the track is created.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromExternalSource_System_String_Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_LocalVideoTrack">LocalVideoTrack</a></div>
-  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalVideoTrack_Dispose.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L392">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L234">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_Dispose_" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_Dispose" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose">Dispose()</h4>
@@ -376,7 +268,7 @@ property.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalVideoTrack_ToString.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalVideoTrack.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L449">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L291">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_ToString_" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.ToString*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_ToString" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.ToString">ToString()</h4>
@@ -410,7 +302,7 @@ property.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalVideoTrack_Argb32VideoFrameReady.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalVideoTrack.Argb32VideoFrameReady%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L200">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L134">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_Argb32VideoFrameReady" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.Argb32VideoFrameReady">Argb32VideoFrameReady</h4>
   <div class="markdown level1 summary"><p>Event that occurs when a video frame has been produced by the underlying source and is available.</p>
@@ -440,7 +332,7 @@ property.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalVideoTrack_I420AVideoFrameReady.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalVideoTrack.I420AVideoFrameReady%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L195">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L129">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_I420AVideoFrameReady" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.I420AVideoFrameReady">I420AVideoFrameReady</h4>
   <div class="markdown level1 summary"><p>Event that occurs when a video frame has been produced by the underlying source and is available.</p>
@@ -483,7 +375,7 @@ property.</p>
                     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalVideoTrack.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalVideoTrack%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L162" class="contribution-link">View Source</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/LocalVideoTrack.cs/#L98" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

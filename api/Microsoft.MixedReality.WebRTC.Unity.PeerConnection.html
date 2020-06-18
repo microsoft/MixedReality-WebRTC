@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class PeerConnection
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -93,13 +93,29 @@ This is the API entry point for establishing a connection with a remote peer.</p
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">PeerConnection</span></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html">WorkQueue</a></div>
+    <div class="level2"><span class="xref">PeerConnection</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_IsMainAppThread">WorkQueue.IsMainAppThread</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_EnsureIsMainAppThread">WorkQueue.EnsureIsMainAppThread()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_InvokeOnAppThread_Action_">WorkQueue.InvokeOnAppThread(Action)</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_Update">WorkQueue.Update()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class PeerConnection : MonoBehaviour</code></pre>
+    <pre><code class="lang-csharp hljs">public class PeerConnection : WorkQueue</code></pre>
   </div>
   <h3 id="fields">Fields
   </h3>
@@ -380,13 +396,13 @@ to manually initialize the peer connection before it can be used for any purpose
 <p>This method creates a media line, which expresses an intent from the user to get a transceiver.
 The actual <see xref="WebRTC.Transceiver"></see> object creation is delayed until a session
 negotiation is completed.</p>
-<p>Once the media line is created, the user can then assign its <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Sender">Sender</a> and
+<p>Once the media line is created, the user can then assign its <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Source">Source</a> and
 <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Receiver">Receiver</a> properties to express their intent to send and/or receive some media
 through the transceiver that will be associated with that media line once a session is negotiated.
 This information is used in subsequent negotiations to derive a
 <see xref="Microsoft.MixedReality.WebRTC.Transceiver.Direction"></see> to negotiate. Therefore users
 should avoid modifying the <see cref="!:Transceiver.DesiredDirection"></see> property manually when using
-the Unity library, and instead modify the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Sender">Sender</a> and
+the Unity library, and instead modify the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Source">Source</a> and
 <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Receiver">Receiver</a> properties.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -429,6 +445,18 @@ is negotiated.</p>
       </tr>
     </tbody>
   </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Awake_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Awake*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Awake" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Awake">Awake()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Awake()</code></pre>
+  </div>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_Awake">WorkQueue.Awake()</a></div>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_GetVideoCaptureDevicesAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.GetVideoCaptureDevicesAsync*"></a>
@@ -514,6 +542,10 @@ have been updated.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_HandleConnectionMessageAsync_SdpMessage__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method can only be called from the main Unity application thread, where Unity objects can
+be safely accessed.</p>
+</div>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync*"></a>
@@ -616,6 +648,10 @@ The offer SDP message is always created asynchronously.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_StartConnection_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method can only be called from the main Unity application thread, where Unity objects can
+be safely accessed.</p>
+</div>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Uninitialize_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Uninitialize*"></a>

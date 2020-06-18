@@ -8,7 +8,7 @@
     <title>Adding local media tracks | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Adding local media tracks | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.svg">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -92,22 +92,39 @@
 <p>Continue editing the <code>Program.cs</code> file and append the following:</p>
 <ol>
 <li><p>Create some variables we need at the start of the <code>Main</code> method, before the <code>try</code> block:</p>
-<pre><code class="lang-cs">Transceiver audioTransceiver = null;
+<pre><code class="lang-cs">AudioTrackSource microphoneSource = null;
+VideoTrackSource webcamSource = null;
+Transceiver audioTransceiver = null;
 Transceiver videoTransceiver = null;
 LocalAudioTrack localAudioTrack = null;
 LocalVideoTrack localVideoTrack = null;
 </code></pre>
 </li>
-<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalVideoTrackSettings_"><code>LocalVideoTrack.CreateFromDeviceAsync()</code></a> method to create a new video track sending to the remote peer some video frames obtained from a local video capture device (webcam).</p>
-<pre><code class="lang-cs">localVideoTrack = await LocalVideoTrack.CreateFromDeviceAsync();
+<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig_"><code>DeviceVideoTrackSource.CreateAsync()</code></a> method to create a new video track source obtaining its frames from a local video capture device (webcam).</p>
+<pre><code class="lang-cs">webcamSource = await DeviceVideoTrackSource.CreateAsync();
 </code></pre>
-<p>This method optionally takes a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings.html"><code>LocalVideoTrackSettings</code></a> object to configure the video capture. In this tutorial, we leave that object out and use the default settings, which will open the first available webcam with its default resolution and framerate. This is generally acceptable, although on mobile devices like HoloLens developers probably want to limit the capture resolution and framerate to reduce the power consumption and save on battery.</p>
-<p>Note that the local video track created is not associated with the peer connection yet; the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalVideoTrackSettings_"><code>LocalVideoTrack.CreateFromDeviceAsync()</code></a> is a static method which does not reference any peer connection. The local video track will be bound to one specific peer connection later when added to a video transceiver. After that, it will stay implicitly bound to that peer connection, even if detached from its transceiver, and cannot be reused with another peer connection.</p>
+<p>This method optionally takes a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig.html"><code>LocalVideoDeviceInitConfig</code></a> object to configure the video capture. In this tutorial, we leave that object out and use the default settings, which will open the first available webcam with its default resolution and framerate. This is generally acceptable, although on mobile devices like HoloLens developers probably want to limit the capture resolution and framerate to reduce the power consumption and save on battery.</p>
+<p>The video track source is a standalone object, which can be used by multiple tracks, including from different peer connections. This allows sharing a local webcam among multiple conections.</p>
 </li>
-<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalAudioTrack.html#Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalAudioTrackSettings_"><code>LocalAudioTrack.CreateFromDeviceAsync()</code></a> method to create an audio track sending to the remote peer some audio frames obtained from a local audio capture device (microphone).</p>
-<pre><code class="lang-cs">localAudioTrack = await LocalAudioTrack.CreateFromDeviceAsync();
+<li><p>From this source, create a local video track which will send those captured frames to the remote peer.</p>
+<pre><code class="lang-cs">var videoTrackConfig = new LocalVideoTrackInitConfig {
+   trackName = &quot;webcam_track&quot;
+};
+localVideoTrack = LocalVideoTrack.CreateFromSource(_webcamSource, videoTrackConfig);
 </code></pre>
-<p>Unlike video capture, audio capture currently does not offer any configuration option, and will always use the first available audio capture device.</p>
+<p>Note that the local video track created is not associated with the peer connection yet; the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_VideoTrackSource_Microsoft_MixedReality_WebRTC_LocalVideoTrackInitConfig_"><code>LocalVideoTrack.CreateFromSource()</code></a> is a static method which does not reference any peer connection. The local video track will be bound to one specific peer connection later when added to a video transceiver. After that, it will stay implicitly bound to that peer connection, even if detached from its transceiver, and cannot be reused with another peer connection.</p>
+</li>
+<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_AudioTrackSource_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalAudioDeviceInitConfig_"><code>AudioTrackSource.CreateFromDeviceAsync()</code></a> method to create an audio track source obtaining its audio frames from a local audio capture device (microphone).</p>
+<pre><code class="lang-cs">microphoneSource = await AudioTrackSource.CreateFromDeviceAsync();
+</code></pre>
+<p>Again, the method optionally takes <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.html"><code>LocalAudioDeviceInitConfig</code></a> object to configure the audio capture, but we can ignore it to get the default settings.</p>
+</li>
+<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalAudioTrack.html#Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_AudioTrackSource_Microsoft_MixedReality_WebRTC_LocalAudioTrackInitConfig_"><code>LocalAudioTrack.CreateFromSource()</code></a> method to create an audio track sending to the remote peer those audio frames.</p>
+<pre><code class="lang-cs">var audioTrackConfig = new LocalAudioTrackInitConfig {
+   trackName = &quot;microphone_track&quot;
+};
+localAudioTrack = LocalAudioTrack.CreateFromDeviceAsync(microphoneSource, audioTrackConfig);
+</code></pre>
 </li>
 <li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>PeerConnection.AddTransceiver()</code></a> method to add to the peer connection some audio and video transceivers, which are the transports through which the audio and video tracks are sent to the remote peer.</p>
 <pre><code class="lang-cs">videoTransceiver = pc.AddTransceiver(MediaKind.Video);
@@ -120,9 +137,11 @@ audioTransceiver.DesiredDirection = Transceiver.Direction.SendReceive;
 </code></pre>
 <p>This binds the local media tracks to the peer connection forever, and instructs the native implementation to use those tracks while they are attached to a transceiver. This also ask to negotiate a bidirectional transport (send + receive) for each transceiver in order to both send the audio and video captured locally, and receive those the remote peer will send.</p>
 </li>
-<li><p>At the very end of the program, outside of the <code>try</code> / <code>catch</code> block, make sure to dispose of the audio and video tracks after the peer connection has been closed. The audio and video tracks are owned by the user, and must be disposed of manually.</p>
+<li><p>At the very end of the program, outside of the <code>try</code> / <code>catch</code> block, make sure to dispose of the audio and video tracks and sources after the peer connection has been closed. The audio and video tracks and sources are owned by the user, and must be disposed of manually. The media sources also must outlive the local tracks using them, so make sure to dispose of them last.</p>
 <pre><code class="lang-cs">localAudioTrack?.Dispose();
 localVideoTrack?.Dispose();
+microphoneSource?.Dispose();
+webcamSource?.Dispose();
 </code></pre>
 </li>
 </ol>
