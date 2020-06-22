@@ -147,7 +147,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </code>
         /// </example>
         /// <seealso cref="LocalVideoTrack.CreateFromSource(VideoTrackSource, LocalVideoTrackInitConfig)"/>
-        public static Task<VideoTrackSource> CreateAsync(LocalVideoDeviceInitConfig initConfig = null)
+        public static Task<DeviceVideoTrackSource> CreateAsync(LocalVideoDeviceInitConfig initConfig = null)
         {
             return Task.Run(() =>
             {
@@ -157,7 +157,7 @@ namespace Microsoft.MixedReality.WebRTC
                 var config = new DeviceVideoTrackSourceInterop.LocalVideoDeviceMarshalInitConfig(initConfig);
                 uint ret = DeviceVideoTrackSourceInterop.DeviceVideoTrackSource_Create(in config, out DeviceVideoTrackSourceHandle handle);
                 Utils.ThrowOnErrorCode(ret);
-                return (VideoTrackSource)new DeviceVideoTrackSource(handle);
+                return new DeviceVideoTrackSource(handle);
             });
         }
 

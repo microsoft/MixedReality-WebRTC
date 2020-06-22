@@ -37,10 +37,12 @@ void AudioSourceAdapter::RemoveSink(webrtc::AudioTrackSinkInterface* sink) {
 
 AudioTrackSource::AudioTrackSource(
     RefPtr<GlobalFactory> global_factory,
+    ObjectType audio_track_source_type,
     rtc::scoped_refptr<webrtc::AudioSourceInterface> source) noexcept
-    : TrackedObject(std::move(global_factory), ObjectType::kAudioTrackSource),
+    : TrackedObject(std::move(global_factory), audio_track_source_type),
       source_(std::move(source)) {
   RTC_CHECK(source_);
+  RTC_CHECK(audio_track_source_type == ObjectType::kDeviceAudioTrackSource);
 }
 
 AudioTrackSource::~AudioTrackSource() {

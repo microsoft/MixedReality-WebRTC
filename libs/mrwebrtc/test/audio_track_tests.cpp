@@ -4,6 +4,7 @@
 #include "pch.h"
 
 #include "audio_frame.h"
+#include "device_audio_track_source_interop.h"
 #include "interop_api.h"
 #include "local_audio_track_interop.h"
 #include "remote_audio_track_interop.h"
@@ -122,9 +123,9 @@ TEST_P(AudioTrackTests, Simple) {
 
   // Create the audio source #1
   mrsLocalAudioDeviceInitConfig device_config{};
-  mrsAudioTrackSourceHandle audio_source1{};
-  ASSERT_EQ(Result::kSuccess, mrsAudioTrackSourceCreateFromDevice(
-                                  &device_config, &audio_source1));
+  mrsDeviceAudioTrackSourceHandle audio_source1{};
+  ASSERT_EQ(Result::kSuccess,
+            mrsDeviceAudioTrackSourceCreate(&device_config, &audio_source1));
   ASSERT_NE(nullptr, audio_source1);
 
   // Create the local audio track #1
@@ -279,9 +280,9 @@ TEST_P(AudioTrackTests, Muted) {
 
   // Create the audio source #1
   mrsLocalAudioDeviceInitConfig device_config{};
-  mrsAudioTrackSourceHandle audio_source1{};
-  ASSERT_EQ(Result::kSuccess, mrsAudioTrackSourceCreateFromDevice(
-                                  &device_config, &audio_source1));
+  mrsDeviceAudioTrackSourceHandle audio_source1{};
+  ASSERT_EQ(Result::kSuccess,
+            mrsDeviceAudioTrackSourceCreate(&device_config, &audio_source1));
   ASSERT_NE(nullptr, audio_source1);
 
   // Create the local audio track #1

@@ -119,6 +119,9 @@ using mrsExternalVideoTrackSourceHandle = mrsVideoTrackSourceHandle;
 /// Opaque handle to a native DeviceVideoTrackSource interop object.
 using mrsDeviceVideoTrackSourceHandle = mrsVideoTrackSourceHandle;
 
+/// Opaque handle to a native DeviceAudioTrackSource interop object.
+using mrsDeviceAudioTrackSourceHandle = mrsAudioTrackSourceHandle;
+
 //
 // Video capture enumeration
 //
@@ -189,8 +192,8 @@ struct mrsIceCandidate {
 /// the JSEP offer/answer exchange successfully.
 using mrsPeerConnectionConnectedCallback = void(MRS_CALL*)(void* user_data);
 
-/// Callback invoked when a local SDP message has been prepared and is ready to be
-/// sent by the user via the signaling service.
+/// Callback invoked when a local SDP message has been prepared and is ready to
+/// be sent by the user via the signaling service.
 using mrsPeerConnectionLocalSdpReadytoSendCallback = void(
     MRS_CALL*)(void* user_data, mrsSdpMessageType type, const char* sdp_data);
 
@@ -224,8 +227,8 @@ enum class mrsIceGatheringState : int32_t {
 using mrsPeerConnectionIceStateChangedCallback =
     void(MRS_CALL*)(void* user_data, mrsIceConnectionState new_state);
 
-/// Callback invoked when a renegotiation of the current session needs to occur to
-/// account for new parameters (e.g. added or removed tracks).
+/// Callback invoked when a renegotiation of the current session needs to occur
+/// to account for new parameters (e.g. added or removed tracks).
 using mrsPeerConnectionRenegotiationNeededCallback =
     void(MRS_CALL*)(void* user_data);
 
@@ -320,9 +323,9 @@ struct mrsDataChannelAddedInfo {
   const char* label{nullptr};
 };
 
-/// Callback invoked when a data channel is added to the peer connection. This is
-/// called for both channels that are created locally and ones that are created
-/// by the remote peer.
+/// Callback invoked when a data channel is added to the peer connection. This
+/// is called for both channels that are created locally and ones that are
+/// created by the remote peer.
 ///
 /// Use this callback to call |mrsDataChannelRegisterCallbacks| on new data
 /// channels and to start listening for messages/state changes.
@@ -466,18 +469,18 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterIceStateChangedCallback(
     mrsPeerConnectionIceStateChangedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback invoked when a renegotiation of the current session needs
-/// to occur to account for new parameters (e.g. added or removed tracks).
+/// Register a callback invoked when a renegotiation of the current session
+/// needs to occur to account for new parameters (e.g. added or removed tracks).
 MRS_API void MRS_CALL mrsPeerConnectionRegisterRenegotiationNeededCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionRenegotiationNeededCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback invoked when a remote audio track is added to the current
-/// peer connection.
-/// Note that the arguments include some object handles, which each hold a
-/// reference to the corresponding object and therefore must be released, even
-/// if the user does not make use of them in the callback.
+/// Register a callback invoked when a remote audio track is added to the
+/// current peer connection. Note that the arguments include some object
+/// handles, which each hold a reference to the corresponding object and
+/// therefore must be released, even if the user does not make use of them in
+/// the callback.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackAddedCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionAudioTrackAddedCallback callback,
@@ -493,11 +496,11 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackRemovedCallback(
     mrsPeerConnectionAudioTrackRemovedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback invoked when a remote video track is added to the current
-/// peer connection.
-/// Note that the arguments include some object handles, which each hold a
-/// reference to the corresponding object and therefore must be released, even
-/// if the user does not make use of them in the callback.
+/// Register a callback invoked when a remote video track is added to the
+/// current peer connection. Note that the arguments include some object
+/// handles, which each hold a reference to the corresponding object and
+/// therefore must be released, even if the user does not make use of them in
+/// the callback.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterVideoTrackAddedCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionVideoTrackAddedCallback callback,

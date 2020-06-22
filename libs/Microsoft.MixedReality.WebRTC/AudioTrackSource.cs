@@ -4,22 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC.Interop;
 
 namespace Microsoft.MixedReality.WebRTC
 {
-    /// <summary>
-    /// Configuration to initialize capture on a local audio device (microphone).
-    /// </summary>
-    public class LocalAudioDeviceInitConfig
-    {
-        /// <summary>
-        /// Enable automated gain control (AGC) on the audio device capture pipeline.
-        /// </summary>
-        public bool? AutoGainControl = null;
-    }
-
     /// <summary>
     /// Audio source for WebRTC audio tracks.
     /// 
@@ -34,7 +22,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// source.
     /// </summary>
     /// <seealso cref="LocalAudioTrack"/>
-    public class AudioTrackSource : IDisposable
+    public abstract class AudioTrackSource : IDisposable
     {
         /// <summary>
         /// A name for the audio track source, used for logging and debugging.
@@ -78,25 +66,6 @@ namespace Microsoft.MixedReality.WebRTC
         /// Backing field for <see cref="Tracks"/>.
         /// </summary>
         private List<LocalAudioTrack> _tracks = new List<LocalAudioTrack>();
-
-        /// <summary>
-        /// Create an audio track source using a local audio capture device (microphone).
-        /// </summary>
-        /// <param name="initConfig">Optional configuration to initialize the audio capture on the device.</param>
-        /// <returns>The newly create audio track source.</returns>
-        public static Task<AudioTrackSource> CreateFromDeviceAsync(LocalAudioDeviceInitConfig initConfig = null)
-        {
-            return Task.Run(() =>
-            {
-                // On UWP this cannot be called from the main UI thread, so always call it from
-                // a background worker thread.
-
-                var config = new AudioTrackSourceInterop.LocalAudioDeviceMarshalInitConfig(initConfig);
-                uint ret = AudioTrackSourceInterop.AudioTrackSource_CreateFromDevice(in config, out AudioTrackSourceHandle handle);
-                Utils.ThrowOnErrorCode(ret);
-                return new AudioTrackSource(handle);
-            });
-        }
 
         internal AudioTrackSource(AudioTrackSourceHandle nativeHandle)
         {

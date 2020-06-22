@@ -66,7 +66,7 @@ namespace TestNetCoreConsole
                 if (needAudio)
                 {
                     Console.WriteLine("Opening local microphone...");
-                    audioTrackSource = await AudioTrackSource.CreateFromDeviceAsync();
+                    audioTrackSource = await DeviceAudioTrackSource.CreateAsync();
 
                     Console.WriteLine("Create local audio track...");
                     var trackSettings = new LocalAudioTrackInitConfig { trackName = "mic_track" };

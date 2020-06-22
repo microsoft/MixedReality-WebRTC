@@ -21,7 +21,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         [Test]
         public async Task CreateFromSource()
         {
-            using (AudioTrackSource source = await AudioTrackSource.CreateFromDeviceAsync())
+            using (AudioTrackSource source = await DeviceAudioTrackSource.CreateAsync())
             {
                 Assert.IsNotNull(source);
 
