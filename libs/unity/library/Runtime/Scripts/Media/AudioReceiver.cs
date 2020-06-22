@@ -27,7 +27,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// This is <c>null</c> until <see cref="IMediaReceiver.Transceiver"/> is set to a non-null
         /// value and a remote track is added to that transceiver.
         /// </remarks>
-        public RemoteAudioTrack Track { get; private set; }
+        public RemoteAudioTrack Track => _track;
 
         /// <summary>
         /// List of audio media lines using this source.
@@ -146,6 +146,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private Transceiver _transceiver = null;
         private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
 
+        // This is set outside the main thread, make volatile so changes to this and other
+        // public properties are correctly ordered.
+        private volatile RemoteAudioTrack _track = null;
+
         protected override void Awake()
         {
             base.Awake();
@@ -156,6 +160,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         protected void OnDestroy()
         {
             AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
+        }
+
+        protected new void Update()
+        {
+            base.Update();
+
+            // Check if _track has been changed by OnPaired/OnUnpaired and
+            // we need to start/stop streaming.
+            if (_track != null && !IsStreaming)
+            {
+                StartStreaming();
+            }
+            else if (_track == null && IsStreaming)
+            {
+                StopStreaming();
+            }
         }
 
         protected void OnDisable()
@@ -214,10 +234,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _audioSampleRate = AudioSettings.outputSampleRate;
         }
 
-        // Must be called within Unity main thread.
         private void StartStreaming()
         {
             Debug.Assert(_readBuffer == null);
+            EnsureIsMainAppThread();
 
             // OnAudioFilterRead reads the variable concurrently, but the update is atomic
             // so we don't need a lock.
@@ -228,9 +248,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             AudioStreamStarted.Invoke(this);
         }
 
-        // Must be called within Unity main thread.
         private void StopStreaming()
         {
+            EnsureIsMainAppThread();
+
             _isLive = false;
             AudioStreamStopped.Invoke(this);
             IsStreaming = false;
@@ -265,35 +286,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             var remoteAudioTrack = (RemoteAudioTrack)track;
 
-            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
+            Debug.Assert(Track == null);
+            _track = remoteAudioTrack;
+            // Streaming will be started from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.
-            InvokeOnAppThread(() =>
-            {
-                Debug.Assert(Track == null);
-                Track = remoteAudioTrack;
-                _isLive = true;
-                IsStreaming = true;
-                AudioStreamStarted.Invoke(this);
-            });
         }
 
         /// <inheritdoc/>
         void IMediaReceiverInternal.OnUnpaired(MediaTrack track)
         {
             Debug.Assert(track is RemoteAudioTrack);
-
-            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
+            Debug.Assert(Track == track);
+            _track = null;
+            // Streaming will be stopped from the main Unity app thread, both to avoid locks on public
             // properties and so that listeners of the event can directly access Unity objects
             // from their handler function.
-            InvokeOnAppThread(() =>
-            {
-                Debug.Assert(Track == track);
-                Track = null;
-                _isLive = false;
-                AudioStreamStopped.Invoke(this);
-                IsStreaming = false;
-            });
         }
 
         /// <inheritdoc/>
