@@ -6,6 +6,7 @@
 #include "audio_frame.h"
 #include "audio_frame_observer.h"
 #include "audio_track_read_buffer.h"
+#include "interop/global_factory.h"
 #include "peer_connection.h"
 #include "remote_audio_track_interop.h"
 
@@ -40,9 +41,12 @@ void AudioTrackReadBuffer::OnData(const void* audio_data,
 }
 
 AudioTrackReadBuffer::AudioTrackReadBuffer(
+    RefPtr<GlobalFactory> global_factory,
     rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
     int bufferMs)
-    : track_(std::move(track)),
+    : TrackedObject(std::move(global_factory),
+                    ObjectType::kAudioTrackReadBuffer),
+      track_(std::move(track)),
       buffer_size_ms_(bufferMs >= 10 ? bufferMs : 500) {
   track_->AddSink(this);
 }

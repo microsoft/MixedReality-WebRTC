@@ -80,7 +80,7 @@ void RemoteAudioTrack::InitSsrc(int ssrc) {
 
 std::unique_ptr<AudioTrackReadBuffer> RemoteAudioTrack::CreateReadBuffer() const
     noexcept {
-  return std::make_unique<AudioTrackReadBuffer>(track_);
+  return std::make_unique<AudioTrackReadBuffer>(global_factory_, track_);
 }
 
 }  // namespace WebRTC
