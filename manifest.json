@@ -114,7 +114,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioTrackSource.html",
-          "hash": "lijvUK4DOIDAePvz0ejGTQ=="
+          "hash": "hLJb/9fg3mdj0HP4Jt11cQ=="
         }
       },
       "is_incremental": false,
@@ -194,11 +194,23 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html",
+          "hash": "cE73JPDHLkrELi07jREYbw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.yml",
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html",
-          "hash": "CmzHgSsNEZCyGs5xqPWbCQ=="
+          "hash": "nsPy/8WtDKoBqkdVlD/SrA=="
         }
       },
       "is_incremental": false,
@@ -426,7 +438,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.html",
-          "hash": "dfzgh89SRLTCsDTq8jdq8Q=="
+          "hash": "SkxocNRYqeCaLxIQXClE4Q=="
         }
       },
       "is_incremental": false,
@@ -1530,7 +1542,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "9UGkfMqMVeg/OHfxDwfCLg=="
+          "hash": "gTS/Iua3ntz8CfGHBSVPDw=="
         }
       },
       "is_incremental": false,
@@ -1542,7 +1554,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "mJZSRVqrgrp9hkV0vBA3Ww=="
+          "hash": "OEAO90eftz+jZD47CFeqMQ=="
         }
       },
       "is_incremental": false,
@@ -1968,24 +1980,30 @@
       "version": ""
     },
     {
+      "log_codes": [
+        "UidNotFound"
+      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-mediatracks-core3.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-core3.html",
-          "hash": "wIKD01klWJ4Tm70h1fA/gA=="
+          "hash": "j1CHvmLKLFDsJNRxqBklDw=="
         }
       },
       "is_incremental": false,
       "version": ""
     },
     {
+      "log_codes": [
+        "UidNotFound"
+      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.html",
-          "hash": "a/ypjUAFCcBN3kKTig3FhA=="
+          "hash": "XiS2c81Y/7Xt3pJm5lcD2g=="
         }
       },
       "is_incremental": false,
@@ -2161,12 +2179,15 @@
       "version": ""
     },
     {
+      "log_codes": [
+        "UidNotFound"
+      ],
       "type": "Conceptual",
       "source_relative_path": "manual/migration-guide.md",
       "output": {
         ".html": {
           "relative_path": "manual/migration-guide.html",
-          "hash": "Kty6VfTejCGVvJJW69f5Og=="
+          "hash": "CA8AmQyBhnPcipnEPL0YNw=="
         }
       },
       "is_incremental": false,
@@ -2806,7 +2827,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 127,
+          "total_file_count": 128,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

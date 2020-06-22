@@ -229,19 +229,6 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.AudioTrackSource
   fullName: Microsoft.MixedReality.WebRTC.AudioTrackSource
   nameWithType: AudioTrackSource
-- uid: Microsoft.MixedReality.WebRTC.AudioTrackSource.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig)
-  name: CreateFromDeviceAsync(LocalAudioDeviceInitConfig)
-  href: api/Microsoft.MixedReality.WebRTC.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_AudioTrackSource_CreateFromDeviceAsync_Microsoft_MixedReality_WebRTC_LocalAudioDeviceInitConfig_
-  commentId: M:Microsoft.MixedReality.WebRTC.AudioTrackSource.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig)
-  fullName: Microsoft.MixedReality.WebRTC.AudioTrackSource.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig)
-  nameWithType: AudioTrackSource.CreateFromDeviceAsync(LocalAudioDeviceInitConfig)
-- uid: Microsoft.MixedReality.WebRTC.AudioTrackSource.CreateFromDeviceAsync*
-  name: CreateFromDeviceAsync
-  href: api/Microsoft.MixedReality.WebRTC.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_AudioTrackSource_CreateFromDeviceAsync_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.AudioTrackSource.CreateFromDeviceAsync
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.AudioTrackSource.CreateFromDeviceAsync
-  nameWithType: AudioTrackSource.CreateFromDeviceAsync
 - uid: Microsoft.MixedReality.WebRTC.AudioTrackSource.Dispose
   name: Dispose()
   href: api/Microsoft.MixedReality.WebRTC.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_AudioTrackSource_Dispose
@@ -546,6 +533,38 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.DataChannelNotOpenException.DataChannelNotOpenException
   nameWithType: DataChannelNotOpenException.DataChannelNotOpenException
+- uid: Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource
+  name: DeviceAudioTrackSource
+  href: api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html
+  commentId: T:Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource
+  fullName: Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource
+  nameWithType: DeviceAudioTrackSource
+- uid: Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.CreateAsync(Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig)
+  name: CreateAsync(LocalAudioDeviceInitConfig)
+  href: api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceAudioTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalAudioDeviceInitConfig_
+  commentId: M:Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.CreateAsync(Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig)
+  fullName: Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.CreateAsync(Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig)
+  nameWithType: DeviceAudioTrackSource.CreateAsync(LocalAudioDeviceInitConfig)
+- uid: Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.CreateAsync*
+  name: CreateAsync
+  href: api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceAudioTrackSource_CreateAsync_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.CreateAsync
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.CreateAsync
+  nameWithType: DeviceAudioTrackSource.CreateAsync
+- uid: Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.ToString
+  name: ToString()
+  href: api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceAudioTrackSource_ToString
+  commentId: M:Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.ToString
+  fullName: Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.ToString()
+  nameWithType: DeviceAudioTrackSource.ToString()
+- uid: Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.ToString*
+  name: ToString
+  href: api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceAudioTrackSource_ToString_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.ToString
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.ToString
+  nameWithType: DeviceAudioTrackSource.ToString
 - uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource
   name: DeviceVideoTrackSource
   href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html
