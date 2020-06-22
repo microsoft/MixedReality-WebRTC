@@ -15,7 +15,7 @@ mrsResult MRS_CALL mrsDeviceAudioTrackSourceCreate(
     const mrsLocalAudioDeviceInitConfig* init_config,
     mrsDeviceAudioTrackSourceHandle* source_handle_out) noexcept {
   if (!source_handle_out) {
-    RTC_LOG(LS_ERROR) << "Invalid NULL audio track source handle.";
+    RTC_LOG(LS_ERROR) << "Invalid NULL source_handle_out.";
     return Result::kInvalidParameter;
   }
   *source_handle_out = nullptr;
