@@ -307,6 +307,12 @@ namespace TestAppUwp
                 deviceConfig.height = formatInfo.Format.height;
                 deviceConfig.framerate = formatInfo.Format.framerate;
             }
+            if (deviceInfo.SupportsVideoProfiles)
+            {
+                MediaCaptureVideoProfile profile = VideoProfiles.SelectedItem;
+                deviceConfig.videoProfileId = profile?.Id;
+                deviceConfig.videoProfileKind = SelectedVideoProfileKind;
+            }
             var source = await DeviceVideoTrackSource.CreateAsync(deviceConfig);
             // FIXME - this leaks the source, never disposed
 
