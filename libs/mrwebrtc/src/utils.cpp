@@ -112,8 +112,6 @@ absl::string_view ObjectTypeToString(ObjectType type) {
       return "LocalAudioTrack";
     case ObjectType::kLocalVideoTrack:
       return "LocalVideoTrack";
-    case ObjectType::kExternalVideoTrackSource:
-      return "ExternalVideoTrackSource";
     case ObjectType::kRemoteAudioTrack:
       return "RemoteAudioTrack";
     case ObjectType::kRemoteVideoTrack:
@@ -124,10 +122,12 @@ absl::string_view ObjectTypeToString(ObjectType type) {
       return "AudioTransceiver";
     case ObjectType::kVideoTransceiver:
       return "VideoTransceiver";
-    case ObjectType::kAudioTrackSource:
-      return "AudioTrackSource";
+    case ObjectType::kDeviceAudioTrackSource:
+      return "DeviceAudioTrackSource";
     case ObjectType::kDeviceVideoTrackSource:
       return "DeviceVideoTrackSource";
+    case ObjectType::kExternalVideoTrackSource:
+      return "ExternalVideoTrackSource";
     default:
       RTC_NOTREACHED();
       return "<UnknownObjectType>";

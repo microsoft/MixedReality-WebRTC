@@ -62,14 +62,9 @@ class AudioSourceAdapter : public webrtc::AudioSourceInterface {
 /// more audio tracks.
 class AudioTrackSource : public TrackedObject {
  public:
-  ///// Helper to create an audio track source from a custom audio frame request
-  ///// callback.
-  // static RefPtr<AudioTrackSource> createFromCustom(
-  //    RefPtr<GlobalFactory> global_factory,
-  //    RefPtr<CustomAudioSource> audio_source);
-
   AudioTrackSource(
       RefPtr<GlobalFactory> global_factory,
+      ObjectType audio_track_source_type,
       rtc::scoped_refptr<webrtc::AudioSourceInterface> source) noexcept;
   ~AudioTrackSource() override;
 

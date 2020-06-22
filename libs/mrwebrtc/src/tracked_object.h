@@ -23,14 +23,14 @@ enum class ObjectType : int {
   kPeerConnection,
   kLocalAudioTrack,
   kLocalVideoTrack,
-  kExternalVideoTrackSource,
   kRemoteAudioTrack,
   kRemoteVideoTrack,
   kDataChannel,
   kAudioTransceiver,
   kVideoTransceiver,
-  kAudioTrackSource,
+  kDeviceAudioTrackSource,
   kDeviceVideoTrackSource,
+  kExternalVideoTrackSource,
 };
 
 /// Object tracked for interop, exposing helper methods for debugging purpose.

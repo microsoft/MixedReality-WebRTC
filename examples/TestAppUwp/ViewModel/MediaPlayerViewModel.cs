@@ -118,7 +118,7 @@ namespace TestAppUwp
                 Factory = async () =>
                 {
                     // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
-                    var source = await AudioTrackSource.CreateFromDeviceAsync();
+                    var source = await DeviceAudioTrackSource.CreateAsync();
                     var settings = new LocalAudioTrackInitConfig();
                     return LocalAudioTrack.CreateFromSource(source, settings);
                 }
