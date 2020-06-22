@@ -8,6 +8,7 @@
 
 #include "export.h"
 #include "refptr.h"
+#include "tracked_object.h"
 
 enum class mrsAudioTrackReadBufferPadBehavior;
 
@@ -19,11 +20,12 @@ struct AudioFrame;
 class PeerConnection;
 
 /// Implementation of |mrsAudioTrackReadBufferHandle|.
-class AudioTrackReadBuffer : public webrtc::AudioTrackSinkInterface {
+class AudioTrackReadBuffer : public TrackedObject, webrtc::AudioTrackSinkInterface {
  public:
   /// Create a new stream which buffers |bufferMs| milliseconds of audio.
   /// WebRTC delivers audio at 10ms intervals so pass a multiple of 10.
-  AudioTrackReadBuffer(rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
+  AudioTrackReadBuffer(RefPtr<GlobalFactory> global_factory,
+                       rtc::scoped_refptr<webrtc::AudioTrackInterface> track,
                        int bufferMs = 500);
 
   /// Destructs the stream.
