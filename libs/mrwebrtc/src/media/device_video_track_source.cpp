@@ -328,13 +328,16 @@ DeviceVideoTrackSource::DeviceVideoTrackSource(
     RefPtr<GlobalFactory> global_factory,
     rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source
 #if defined(MR_SHARING_ANDROID)
-    ,
-    java_video_capturer_(java_video_capturer)
+    , jobject java_video_capturer
 #endif  // defined(MR_SHARING_ANDROID)
     ) noexcept
     : VideoTrackSource(std::move(global_factory),
                        ObjectType::kDeviceVideoTrackSource,
-                       std::move(source)) {}
+                       std::move(source))
+#if defined(MR_SHARING_ANDROID)
+    , java_video_capturer_(java_video_capturer)
+#endif  // defined(MR_SHARING_ANDROID)
+  {}
 
 DeviceVideoTrackSource::~DeviceVideoTrackSource() {
 #if defined(MR_SHARING_ANDROID)
