@@ -103,7 +103,7 @@
     <Compile Include="ViewModel\SessionViewModel.cs" />
     <Compile Include="ViewModel\CollectionViewModel.cs" />
     <Compile Include="ViewModel\SignalerViewModel.cs" />
-    <Compile Include="ViewModel\TransceiverCollectionViewModel.cs" />
+    <Compile Include="ViewModel\SenderTrackViewModel.cs" />
     <Compile Include="ViewModel\TransceiverViewModel.cs" />
     <Compile Include="ViewModel\NotifierBase.cs" />
     <Compile Include="ViewModel\VideoCaptureViewModel.cs" />

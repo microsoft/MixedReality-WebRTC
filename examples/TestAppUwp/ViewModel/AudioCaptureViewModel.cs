@@ -43,15 +43,9 @@ namespace TestAppUwp
             };
             var track = LocalAudioTrack.CreateFromSource(source, settings);
 
-            SessionModel.Current.AudioTracks.Add(new AudioTrackViewModel
-            {
-                Source = source,
-                Track = track,
-                TrackImpl = track,
-                IsRemote = false,
-                DeviceName = DefaultAudioDeviceName
-            });
-            SessionModel.Current.LocalTracks.Add(new TrackViewModel(Symbol.Volume) { DisplayName = DefaultAudioDeviceName });
+            ThreadHelper.EnsureIsMainThread();
+            SessionModel.Current.AudioTracks.Add(new AudioTrackViewModel(track, DefaultAudioDeviceName));
+            SessionModel.Current.LocalTracks.Add(new LocalTrackViewModel(Symbol.Volume) { DisplayName = DefaultAudioDeviceName });
         }
 
         private async Task RequestMediaAccessAsync(StreamingCaptureMode mode)

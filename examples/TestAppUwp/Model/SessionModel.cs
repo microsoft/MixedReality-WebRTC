@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC;
 
@@ -13,7 +14,7 @@ namespace TestAppUwp
 {
     /// <summary>
     /// Negotiation state similar to the one described in the WebRTC 1.0 standard.
-    /// 
+    ///
     /// Differences are:
     /// - Starts in <see cref="Closed"/> state instead of <see cref="Stable"/> state to
     ///   wait for the peer connection to be initialized.
@@ -122,12 +123,14 @@ namespace TestAppUwp
         /// <summary>
         /// Collection of transceivers of the peer connection associated with this session.
         /// </summary>
-        public TransceiverCollectionViewModel Transceivers { get; } = new TransceiverCollectionViewModel();
+        public CollectionViewModel<TransceiverViewModel> Transceivers { get; }
+            = new CollectionViewModel<TransceiverViewModel>();
 
         /// <summary>
         /// Collection of local tracks created and owned by the user, and which can be associated with a transceiver.
         /// </summary>
         /// <remarks>
+        /// Updated on main UI thread.
         /// The collection also contains some UI placeholders for the "Add" buttons (<see cref="AddNewTrackViewModel"/>).
         /// </remarks>
         /// <seealso cref="TrackViewModel"/>
@@ -139,6 +142,7 @@ namespace TestAppUwp
         /// - local tracks owned by the session and optionally attached to a transceiver;
         /// - remote tracks attached to their transceiver.
         /// </summary>
+        /// <remarks>Updated on main UI thread.</remarks>
         public CollectionViewModel<AudioTrackViewModel> AudioTracks { get; private set; }
             = new CollectionViewModel<AudioTrackViewModel>();
 
@@ -147,30 +151,9 @@ namespace TestAppUwp
         /// - local tracks owned by the session and optionally attached to a transceiver;
         /// - remote tracks attached to their transceiver.
         /// </summary>
+        /// <remarks>Updated on main UI thread.</remarks>
         public CollectionViewModel<VideoTrackViewModel> VideoTracks { get; private set; }
             = new CollectionViewModel<VideoTrackViewModel>();
-
-        /// <summary>
-        /// Placeholder for the null audio track, used to associate no track to a transceiver.
-        /// </summary>
-        public static readonly AudioTrackViewModel NullAudioTrack = new AudioTrackViewModel
-        {
-            Track = null,
-            TrackImpl = null,
-            IsRemote = false,
-            DeviceName = null
-        };
-
-        /// <summary>
-        /// Placeholder for the null video track, used to associate no track to a transceiver.
-        /// </summary>
-        public static readonly VideoTrackViewModel NullVideoTrack = new VideoTrackViewModel
-        {
-            Track = null,
-            TrackImpl = null,
-            IsRemote = false,
-            DeviceName = null
-        };
 
         /// <summary>
         /// Collection of chat channels of the current peer connection.
@@ -365,12 +348,6 @@ namespace TestAppUwp
             NodeDssSignaler.OnFailure += DssSignaler_OnFailure;
             NodeDssSignaler.OnPollingDone += DssSignaler_OnPollingDone;
 
-            AudioTracks.Add(NullAudioTrack);
-            VideoTracks.Add(NullVideoTrack);
-
-            AudioTracks.CollectionChanged += LocalAudioTrackCollectionChanged;
-            VideoTracks.CollectionChanged += LocalVideoTrackCollectionChanged;
-
             LocalTracks.Add(new AddNewTrackViewModel() { DisplayName = "Add audio track", PageType = typeof(AddAudioTrackPage) });
             LocalTracks.Add(new AddNewTrackViewModel() { DisplayName = "Add video track", PageType = typeof(AddVideoTrackPage) });
         }
@@ -484,7 +461,7 @@ namespace TestAppUwp
                 _needsNegotiation = false;
                 // FIXME - Race condition here; if receiving a RenegotiationNeeded event between this point
                 // and the moment the peer connection actually starts creating the offer message. In that case
-                // _needsNegotiation will become true, but might conceptually be false since the change that 
+                // _needsNegotiation will become true, but might conceptually be false since the change that
                 // raised the event will be taken into account in the call to CreateOffer() below. This is because
                 // we are crafting a state machine in C# instead of taping into the native implementation one.
             }
@@ -512,16 +489,6 @@ namespace TestAppUwp
         public void OnPeerInitialized()
         {
             ExchangeNegotiationState(NegotiationState.Closed, NegotiationState.Stable);
-        }
-
-        private void LocalAudioTrackCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            Transceivers.RefreshSenderList(MediaKind.Audio, force: true);
-        }
-
-        private void LocalVideoTrackCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            Transceivers.RefreshSenderList(MediaKind.Video, force: true);
         }
 
         /// <summary>
@@ -592,21 +559,24 @@ namespace TestAppUwp
             //    _remoteMediaSource?.Dispose();
             //}
 
-            // Remove all remote tracks
-            for (int i = AudioTracks.Count - 1; i >= 0; --i)
+            ThreadHelper.RunOnMainThread(() =>
             {
-                if (AudioTracks[i].IsRemote)
+                // Remove all remote tracks
+                for (int i = AudioTracks.Count - 1; i >= 0; --i)
                 {
-                    AudioTracks.RemoveAt(i);
+                    if (AudioTracks[i].IsRemote)
+                    {
+                        AudioTracks.RemoveAt(i);
+                    }
                 }
-            }
-            for (int i = VideoTracks.Count - 1; i >= 0; --i)
-            {
-                if (VideoTracks[i].IsRemote)
+                for (int i = VideoTracks.Count - 1; i >= 0; --i)
                 {
-                    VideoTracks.RemoveAt(i);
+                    if (VideoTracks[i].IsRemote)
+                    {
+                        VideoTracks.RemoveAt(i);
+                    }
                 }
-            }
+            });
         }
 
         /// <summary>
@@ -726,7 +696,7 @@ namespace TestAppUwp
 
         /// <summary>
         /// Callback on remote audio track added.
-        /// 
+        ///
         /// For simplicity this grabs the first remote audio track found. However currently the user has no
         /// control over audio output, so this is only used for audio statistics.
         /// </summary>
@@ -742,18 +712,13 @@ namespace TestAppUwp
                 Debug.Assert(trvm.Transceiver.RemoteAudioTrack == track);
                 trvm.NotifyReceiverChanged(); // this is thread-aware
                 // This raises property changed events in current thread, needs to be main one
-                AudioTracks.Add(new AudioTrackViewModel
-                {
-                    Track = track,
-                    TrackImpl = track,
-                    IsRemote = true
-                });
+                AudioTracks.Add(new AudioTrackViewModel(track));
             });
         }
 
         /// <summary>
         /// Callback on remote videa track added.
-        /// 
+        ///
         /// For simplicity this grabs the first remote video track found and uses it to render its
         /// content on the right pane of the Tracks window.
         /// </summary>
@@ -769,12 +734,7 @@ namespace TestAppUwp
                 Debug.Assert(trvm.Transceiver.RemoteVideoTrack == track);
                 trvm.NotifyReceiverChanged(); // this is thread-aware
                 // This raises property changed events in current thread, needs to be main one
-                VideoTracks.Add(new VideoTrackViewModel
-                {
-                    Track = track,
-                    TrackImpl = track,
-                    IsRemote = true
-                });
+                VideoTracks.Add(new VideoTrackViewModel(track));
             });
         }
 
@@ -786,8 +746,11 @@ namespace TestAppUwp
         {
             Logger.Log($"Removed remote audio track {track.Name} from transceiver {transceiver.Name}.");
 
-            var atvm = AudioTracks.Single(vm => vm.TrackImpl == track);
-            AudioTracks.Remove(atvm);
+            ThreadHelper.RunOnMainThread(() =>
+            {
+                var atvm = AudioTracks.Single(vm => vm.TrackImpl == track);
+                AudioTracks.Remove(atvm);
+            });
 
             //IAudioTrack newPlaybackAudioTrack = null;
             //if (LocalAudioTracks.Count > 0)
@@ -805,8 +768,11 @@ namespace TestAppUwp
         {
             Logger.Log($"Removed remote video track {track.Name} from transceiver {transceiver.Name}.");
 
-            var vtvm = VideoTracks.Single(vm => vm.TrackImpl == track);
-            VideoTracks.Remove(vtvm);
+            ThreadHelper.RunOnMainThread(() =>
+            {
+                var vtvm = VideoTracks.Single(vm => vm.TrackImpl == track);
+                VideoTracks.Remove(vtvm);
+            });
 
             //IVideoTrack newPlaybackVideoTrack = null;
             //if (LocalVideoTracks.Count > 0)
