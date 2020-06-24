@@ -27,11 +27,11 @@ namespace TestAppUwp
 
         private string _errorMessage;
 
-        public async Task AddAudioTrackFromDeviceAsync(string trackName)
+        public static async Task AddAudioTrackFromDeviceAsync(string trackName)
         {
             const string DefaultAudioDeviceName = "Default audio device";
 
-            await RequestMediaAccessAsync(StreamingCaptureMode.Audio);
+            await Utils.RequestMediaAccessAsync(StreamingCaptureMode.Audio);
 
                     // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
             var initConfig = new LocalAudioDeviceInitConfig();
@@ -43,37 +43,7 @@ namespace TestAppUwp
             };
             var track = LocalAudioTrack.CreateFromSource(source, settings);
 
-            ThreadHelper.EnsureIsMainThread();
-            SessionModel.Current.AudioTracks.Add(new AudioTrackViewModel(track, DefaultAudioDeviceName));
-            SessionModel.Current.LocalTracks.Add(new LocalTrackViewModel(Symbol.Volume) { DisplayName = DefaultAudioDeviceName });
-        }
-
-        private async Task RequestMediaAccessAsync(StreamingCaptureMode mode)
-        {
-            // Ensure that the UWP app was authorized to capture audio (cap:microphone)
-            // or video (cap:webcam), otherwise the native plugin will fail.
-            try
-            {
-                MediaCapture mediaAccessRequester = new MediaCapture();
-                var mediaSettings = new MediaCaptureInitializationSettings
-                {
-                    AudioDeviceId = "",
-                    VideoDeviceId = "",
-                    StreamingCaptureMode = mode,
-                    PhotoCaptureSource = PhotoCaptureSource.VideoPreview
-                };
-                await mediaAccessRequester.InitializeAsync(mediaSettings);
-            }
-            catch (UnauthorizedAccessException uae)
-            {
-                Logger.Log("Access to A/V denied, check app permissions: " + uae.Message);
-                throw uae;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Failed to initialize A/V with unknown exception: " + ex.Message);
-                throw ex;
-            }
+            SessionModel.Current.AddAudioTrack(track, DefaultAudioDeviceName);
         }
     }
 }
