@@ -9,6 +9,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC;
+using Windows.ApplicationModel;
+using Windows.Media.Capture;
+using Windows.UI.Xaml.Controls;
 
 namespace TestAppUwp
 {
@@ -403,19 +406,11 @@ namespace TestAppUwp
             Logger.Log("Peer connection initialized.");
             OnPeerInitialized();
 
-            //using (_sessionViewModel.GetNegotiationDeferral())
-            {
-                //// As a convenience, add 1 audio and 1 video transceivers
-                //// TODO - make that more flexible
-                //AddPendingTransceiver(MediaKind.Audio, "audio_transceiver_0");
-                //AddPendingTransceiver(MediaKind.Video, "video_transceiver_1");
-
-                // It is CRUCIAL to add any data channel BEFORE the SDP offer is sent, if data channels are
-                // to be used at all. Otherwise the SCTP will not be negotiated, and then all channels will
-                // stay forever in the kConnecting state.
-                // https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
-                await _peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true);
-            }
+            // It is CRUCIAL to add any data channel BEFORE the SDP offer is sent, if data channels are
+            // to be used at all. Otherwise the SCTP will not be negotiated, and then all channels will
+            // stay forever in the kConnecting state.
+            // https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
+            await _peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true);
 
             //_videoPlayer.CurrentStateChanged += OnMediaStateChanged;
             //_videoPlayer.MediaOpened += OnMediaOpened;
@@ -427,13 +422,62 @@ namespace TestAppUwp
             // Bind the XAML UI control (videoPlayerElement) to the MediaFoundation rendering pipeline (_videoPlayer)
             // so that the former can render in the UI the video frames produced in the background by the latter.
             //videoPlayerElement.SetMediaPlayer(_videoPlayer);
+
+            //// Uncomment to initialize local transceivers and tracks.
+            //if (Utils.IsFirstInstance())
+            //{
+            //    // Add transceivers
+            //    var transceiverA = AddTransceiver(MediaKind.Audio,
+            //        new TransceiverInitSettings { Name = "audio_transceiver" });
+
+            //    var transceiverV = AddTransceiver(MediaKind.Video,
+            //        new TransceiverInitSettings { Name = "video_transceiver", });
+
+            //    // Add audio track
+            //    var sourceA = await DeviceAudioTrackSource.CreateAsync(new LocalAudioDeviceInitConfig());
+            //    var trackA = LocalAudioTrack.CreateFromSource(sourceA,
+            //        new LocalAudioTrackInitConfig { trackName = "local_audio" });
+            //    AddAudioTrack(trackA, "Audio Device");
+
+            //    // Add the track to the transceiver.
+            //    {
+            //        var transceiverVM = Transceivers.First(t => t.Transceiver == transceiverA);
+            //        var trackVM = transceiverVM.AvailableSenders.Last();
+            //        transceiverVM.Sender = trackVM;
+            //    }
+
+            //    // Add video track
+            //    var sourceV = await DeviceVideoTrackSource.CreateAsync(
+            //        new LocalVideoDeviceInitConfig
+            //        {
+            //            videoDevice = new VideoCaptureDevice
+            //            {
+            //                id = @"<insert_device_id>"
+            //            },
+            //            videoProfileId = string.Empty,
+            //            width = 640,
+            //            height = 480,
+            //            framerate = 30
+            //        });
+            //    // Crate the track
+            //    var trackV = LocalVideoTrack.CreateFromSource(sourceV,
+            //        new LocalVideoTrackInitConfig { trackName = "local_video" });
+            //    AddVideoTrack(trackV, "Video Device");
+
+            //    // Add the track to the transceiver.
+            //    {
+            //        var transceiverVM = Transceivers.First(t => t.Transceiver == transceiverV);
+            //        var trackVM = transceiverVM.AvailableSenders.Last();
+            //        transceiverVM.Sender = trackVM;
+            //    }
+            //}
         }
 
-        public void AddTransceiver(MediaKind mediaKind, TransceiverInitSettings settings)
+        public Transceiver AddTransceiver(MediaKind mediaKind, TransceiverInitSettings settings)
         {
             // This will raise the TransceiverAdded event, which adds a new view model
             // for the newly added transceiver automatically.
-            _peerConnection.AddTransceiver(mediaKind, settings);
+            return _peerConnection.AddTransceiver(mediaKind, settings);
         }
 
         /// <summary>
@@ -840,23 +884,23 @@ namespace TestAppUwp
 
             switch (message.MessageType)
             {
-            case NodeDssSignaler.Message.WireMessageType.Offer:
-                await ApplyRemoteOfferAsync(message.Data);
-                // If we get an offer, we immediately send an answer back once the offer is applied
-                _peerConnection.CreateAnswer();
-                break;
+                case NodeDssSignaler.Message.WireMessageType.Offer:
+                    await ApplyRemoteOfferAsync(message.Data);
+                    // If we get an offer, we immediately send an answer back once the offer is applied
+                    _peerConnection.CreateAnswer();
+                    break;
 
-            case NodeDssSignaler.Message.WireMessageType.Answer:
-                await ApplyRemoteAnswerAsync(message.Data);
-                break;
+                case NodeDssSignaler.Message.WireMessageType.Answer:
+                    await ApplyRemoteAnswerAsync(message.Data);
+                    break;
 
-            case NodeDssSignaler.Message.WireMessageType.Ice:
-                // TODO - This is NodeDSS-specific
-                _peerConnection.AddIceCandidate(message.ToIceCandidate());
-                break;
+                case NodeDssSignaler.Message.WireMessageType.Ice:
+                    // TODO - This is NodeDSS-specific
+                    _peerConnection.AddIceCandidate(message.ToIceCandidate());
+                    break;
 
-            default:
-                throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
+                default:
+                    throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
             }
         }
 
@@ -881,6 +925,62 @@ namespace TestAppUwp
             //_isDssPolling = false;
             ////pollDssButton.IsEnabled = true;
             //Logger.Log($"Polling DSS server stopped.");
+        }
+
+        public void AddAudioTrack(LocalAudioTrack track, string deviceName)
+        {
+            ThreadHelper.EnsureIsMainThread();
+            AudioTracks.Add(new AudioTrackViewModel(track, deviceName));
+            LocalTracks.Add(new LocalTrackViewModel(Symbol.Volume) { DisplayName = deviceName });
+        }
+
+        public void AddVideoTrack(LocalVideoTrack track, string deviceName)
+        {
+            ThreadHelper.EnsureIsMainThread();
+            VideoTracks.Add(new VideoTrackViewModel(track, deviceName));
+            LocalTracks.Add(new LocalTrackViewModel(Symbol.Video) { DisplayName = deviceName });
+        }
+    }
+
+    internal static class Utils
+    {
+
+        /// <summary>
+        /// Check if this application instance is the first one launched on the host device.
+        /// </summary>
+        /// <returns><c>true</c> if the current application instance is the first and therefore only instance.</returns>
+        internal static bool IsFirstInstance()
+        {
+            var firstInstance = AppInstance.FindOrRegisterInstanceForKey("{44CD414E-B604-482E-8CFD-A9E09076CABD}");
+            return firstInstance.IsCurrentInstance;
+        }
+
+        internal static async Task RequestMediaAccessAsync(StreamingCaptureMode mode)
+        {
+            // Ensure that the UWP app was authorized to capture audio (cap:microphone)
+            // or video (cap:webcam), otherwise the native plugin will fail.
+            try
+            {
+                MediaCapture mediaAccessRequester = new MediaCapture();
+                var mediaSettings = new MediaCaptureInitializationSettings
+                {
+                    AudioDeviceId = "",
+                    VideoDeviceId = "",
+                    StreamingCaptureMode = mode,
+                    PhotoCaptureSource = PhotoCaptureSource.VideoPreview
+                };
+                await mediaAccessRequester.InitializeAsync(mediaSettings);
+            }
+            catch (UnauthorizedAccessException uae)
+            {
+                Logger.Log("Access to A/V denied, check app permissions: " + uae.Message);
+                throw uae;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Failed to initialize A/V with unknown exception: " + ex.Message);
+                throw ex;
+            }
         }
     }
 }

@@ -12,7 +12,7 @@
     <Page.Resources>
         <DataTemplate x:Key="VideoCaptureDeviceTemplate" x:DataType="local:VideoCaptureDeviceInfo">
             <StackPanel Orientation="Horizontal">
-                <SymbolIcon Symbol="{x:Bind Symbol}" Margin="0,0,12,0" />
+                <SymbolIcon Symbol="Video" Margin="0,0,12,0" />
                 <StackPanel Orientation="Vertical" AutomationProperties.Name="{x:Bind DisplayName}">
                     <TextBlock Text="{x:Bind DisplayName}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind Id}" VerticalAlignment="Center" FontSize="9px" />

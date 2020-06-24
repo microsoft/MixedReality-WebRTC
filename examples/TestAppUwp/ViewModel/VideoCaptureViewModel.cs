@@ -14,7 +14,6 @@ namespace TestAppUwp
     {
         public readonly string Id;
         public readonly string DisplayName;
-        public readonly Symbol Symbol = Symbol.Video;
 
         public VideoCaptureDeviceInfo(string id, string displayName)
         {
@@ -157,7 +156,7 @@ namespace TestAppUwp
             ErrorMessage = null;
             try
             {
-                await RequestMediaAccessAsync(StreamingCaptureMode.Video);
+                await Utils.RequestMediaAccessAsync(StreamingCaptureMode.Video);
             }
             catch (UnauthorizedAccessException uae)
             {
@@ -285,7 +284,7 @@ namespace TestAppUwp
 
         public async Task AddVideoTrackFromDeviceAsync(string trackName)
         {
-            await RequestMediaAccessAsync(StreamingCaptureMode.Video);
+            await Utils.RequestMediaAccessAsync(StreamingCaptureMode.Video);
 
             // Create the source
             VideoCaptureDeviceInfo deviceInfo = VideoCaptureDevices.SelectedItem;
@@ -321,37 +320,7 @@ namespace TestAppUwp
             var track = LocalVideoTrack.CreateFromSource(source, trackConfig);
             // FIXME - this probably leaks the track, never disposed
 
-            ThreadHelper.EnsureIsMainThread();
-            SessionModel.Current.VideoTracks.Add(new VideoTrackViewModel(track, deviceInfo.DisplayName));
-            SessionModel.Current.LocalTracks.Add(new LocalTrackViewModel(Symbol.Video) { DisplayName = deviceInfo.DisplayName });
-        }
-
-        private async Task RequestMediaAccessAsync(StreamingCaptureMode mode)
-        {
-            // Ensure that the UWP app was authorized to capture audio (cap:microphone)
-            // or video (cap:webcam), otherwise the native plugin will fail.
-            try
-            {
-                MediaCapture mediaAccessRequester = new MediaCapture();
-                var mediaSettings = new MediaCaptureInitializationSettings
-                {
-                    AudioDeviceId = "",
-                    VideoDeviceId = "",
-                    StreamingCaptureMode = mode,
-                    PhotoCaptureSource = PhotoCaptureSource.VideoPreview
-                };
-                await mediaAccessRequester.InitializeAsync(mediaSettings);
-            }
-            catch (UnauthorizedAccessException uae)
-            {
-                Logger.Log("Access to A/V denied, check app permissions: " + uae.Message);
-                throw uae;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Failed to initialize A/V with unknown exception: " + ex.Message);
-                throw ex;
-            }
+            SessionModel.Current.AddVideoTrack(track, deviceInfo.DisplayName);
         }
     }
 }
