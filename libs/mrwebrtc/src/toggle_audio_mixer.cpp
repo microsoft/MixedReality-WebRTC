@@ -75,7 +75,7 @@ void ToggleAudioMixer::Mix(size_t number_of_channels,
 
     // Collect the redirected sources.
     for (auto&& pair : source_from_id_) {
-      if (!pair.second.is_output) {
+      if (pair.second.source && !pair.second.is_output) {
         redirected_sources.push_back(pair.second.source);
       } else {
         some_source_is_output = true;
@@ -92,8 +92,9 @@ void ToggleAudioMixer::Mix(size_t number_of_channels,
   for (auto& source : redirected_sources) {
     // This pumps the source and fires the frame observer callbacks
     // which in turn fill the AudioTrackReadBuffer buffers
+    webrtc::AudioFrame unused;
     const auto audio_frame_info = source->GetAudioFrameWithInfo(
-        source->PreferredSampleRate(), audio_frame_for_mixing);
+        source->PreferredSampleRate(), &unused);
 
     if (audio_frame_info == Source::AudioFrameInfo::kError) {
       RTC_LOG_F(LS_WARNING) << "failed to GetAudioFrameWithInfo() from source";
