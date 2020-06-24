@@ -65,7 +65,7 @@ namespace TestAppUwp
         {
             get
             {
-                lock (_mediaPlaybackLock) 
+                lock (_mediaPlaybackLock)
                 {
                     return _videoWidth;
                 }
@@ -364,7 +364,7 @@ namespace TestAppUwp
         /// Stop playback of the local video from the local webcam, and remove the local
         /// audio and video tracks from the peer connection. This is called on the UI thread.
         /// </summary>
-        private async void StopLocalMedia()
+        private void StopLocalMedia()
         {
             lock (_mediaPlaybackLock)
             {

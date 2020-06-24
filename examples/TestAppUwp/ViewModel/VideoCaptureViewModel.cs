@@ -321,15 +321,9 @@ namespace TestAppUwp
             var track = LocalVideoTrack.CreateFromSource(source, trackConfig);
             // FIXME - this probably leaks the track, never disposed
 
-            SessionModel.Current.VideoTracks.Add(new VideoTrackViewModel
-            {
-                Source = source,
-                Track = track,
-                TrackImpl = track,
-                IsRemote = false,
-                DeviceName = deviceInfo.DisplayName
-            });
-            SessionModel.Current.LocalTracks.Add(new TrackViewModel(Symbol.Video) { DisplayName = deviceInfo.DisplayName });
+            ThreadHelper.EnsureIsMainThread();
+            SessionModel.Current.VideoTracks.Add(new VideoTrackViewModel(track, deviceInfo.DisplayName));
+            SessionModel.Current.LocalTracks.Add(new LocalTrackViewModel(Symbol.Video) { DisplayName = deviceInfo.DisplayName });
         }
 
         private async Task RequestMediaAccessAsync(StreamingCaptureMode mode)

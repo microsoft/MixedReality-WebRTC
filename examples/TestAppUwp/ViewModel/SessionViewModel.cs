@@ -37,6 +37,15 @@ namespace TestAppUwp
                 return Task.CompletedTask;
             }
         }
+
+        public static void EnsureIsMainThread()
+        {
+            var dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
+            if (!dispatcher.HasThreadAccess)
+            {
+                throw new InvalidOperationException("Invalid operation called out of main thread");
+            }
+        }
     }
 
     /// <summary>
