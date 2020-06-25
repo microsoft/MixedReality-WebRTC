@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading.Tasks;
 using UnityEngine;
 
 #if ENABLE_WINMD_SUPPORT
@@ -140,7 +139,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
 #if PLATFORM_ANDROID
         protected bool _androidCameraRequestPending = false;
-        protected bool _androidEnabledRequestPending = false;
+        protected float _androidCameraRequestRetryUntilTime = 0f;
 #endif
 
 
@@ -156,13 +155,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
 #if PLATFORM_ANDROID
+            // Ensure Android binding is initialized before accessing the native implementation
+            Android.Initialize();
+
             // Check for permission to access the camera
-            _androidEnabledRequestPending = false;
             if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
             {
                 if (!_androidCameraRequestPending)
                 {
+                    // Monitor the OnApplicationFocus(true) event during the next 5 minutes,
+                    // and check for permission again each time (see below why).
                     _androidCameraRequestPending = true;
+                    _androidCameraRequestRetryUntilTime = Time.time + 300;
 
                     // Display dialog requesting user permission. This will return immediately,
                     // and unfortunately there's no good way to tell when this completes. As a rule
@@ -170,7 +174,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     // be sufficient without having to poll every frame.
                     Permission.RequestUserPermission(Permission.Camera);
                 }
-                _androidEnabledRequestPending = true;
                 return;
             }
 #endif
@@ -260,16 +263,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             //            }
             //#endif
 
-            //// Ensure the track has a valid name
-            //string trackName = TrackName;
-            //if (trackName.Length == 0)
-            //{
-            //    trackName = Guid.NewGuid().ToString();
-            //    // Re-assign the generated track name for consistency
-            //    TrackName = trackName;
-            //}
-            //SdpTokenAttribute.Validate(trackName, allowEmpty: false);
-
             // Create the track
             var deviceConfig = new LocalVideoDeviceInitConfig
             {
@@ -300,7 +293,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 return;
             }
 
-            // If focus is restored after a pending request, check the permission again
+            // If focus is restored after a pending camera access request, check the permission again
             if (_androidCameraRequestPending)
             {
                 _androidCameraRequestPending = false;
@@ -308,15 +301,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 if (Permission.HasUserAuthorizedPermission(Permission.Camera))
                 {
                     // If now authorized, start capture as if just enabled
-                    if (_androidEnabledRequestPending)
-                    {
-                        OnEnable();
-                    }
+                    Debug.Log("User granted authorization to access webcam, starting WebcamSource now...");
+                    OnEnable();
+                }
+                else if (Time.time <= _androidCameraRequestRetryUntilTime)
+                {
+                    // OnApplicationFocus(true) may be called for unrelated reason(s) so do not disable on first call,
+                    // but instead retry during a given period after the request was made, until we're reasonably
+                    // confident that the user dialog was actually answered (that is, that OnApplicationFocus(true) was
+                    // called because of that dialog, and not because of another reason).
+                    // This may lead to false positives (checking permission after the user denied it), but the user
+                    // dialog will not popup again, so this is all in the background and essentially harmless.
+                    _androidCameraRequestPending = true;
                 }
                 else
                 {
-                    // If still denied, disable this component
-                    Debug.LogError("User denied Camera permission; cannot use WebcamSource.");
+                    // Some reasonable time passed since we made the permission request, and we still get a denied
+                    // answer, so assume the user actually denied it and stop retrying.
+                    _androidCameraRequestRetryUntilTime = 0f;
+                    Debug.LogError("User denied Camera permission; cannot use WebcamSource. Forcing enabled=false.");
                     enabled = false;
                 }
             }
