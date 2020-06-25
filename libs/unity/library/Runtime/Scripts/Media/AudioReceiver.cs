@@ -162,7 +162,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
         }
 
-        protected new void Update()
+        protected override void Update()
         {
             base.Update();
 
