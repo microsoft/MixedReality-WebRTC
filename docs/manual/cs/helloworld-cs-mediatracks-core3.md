@@ -43,10 +43,10 @@ Continue editing the `Program.cs` file and append the following:
 
    Note that the local video track created is not associated with the peer connection yet; the [`LocalVideoTrack.CreateFromSource()`](xref:Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromSource(Microsoft.MixedReality.WebRTC.VideoTrackSource,Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig)) is a static method which does not reference any peer connection. The local video track will be bound to one specific peer connection later when added to a video transceiver. After that, it will stay implicitly bound to that peer connection, even if detached from its transceiver, and cannot be reused with another peer connection.
 
-4. Use the [`AudioTrackSource.CreateFromDeviceAsync()`](xref:Microsoft.MixedReality.WebRTC.AudioTrackSource.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig)) method to create an audio track source obtaining its audio frames from a local audio capture device (microphone).
+4. Use the [`DeviceAudioTrackSource.CreateAsync()`](xref:Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.CreateAsync(Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig)) method to create an audio track source obtaining its audio frames from a local audio capture device (microphone).
 
    ```cs
-   microphoneSource = await AudioTrackSource.CreateFromDeviceAsync();
+   microphoneSource = await DeviceAudioTrackSource.CreateAsync();
    ```
 
    Again, the method optionally takes [`LocalAudioDeviceInitConfig`](xref:Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig) object to configure the audio capture, but we can ignore it to get the default settings.
