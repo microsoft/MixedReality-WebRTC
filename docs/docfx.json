@@ -47,11 +47,12 @@
     ],
     "globalMetadata": {
       // global docfx config - see docfx documentation for more config params (https://dotnet.github.io/docfx/tutorial/docfx.exe_user_manual.html)
+      "_appName": "MixedReality-WebRTC",
       "_appTitle": "MixedReality-WebRTC Documentation",
       "_enableSearch": true,
       "_disableNavbar": false,
       "_appLogoPath": "mr-webrtc_icon.png",
-      "_appFaviconPath": "mr-webrtc_icon.svg"
+      "_appFaviconPath": "mr-webrtc_icon.png"
       // re-add this section if you want to publish a version of the docs that keeps the "improve this doc" link pointing to the master branch
       //"_gitContribute": {
       //  "repo": "https://github.com/Microsoft/MixedReality-WebRTC",
