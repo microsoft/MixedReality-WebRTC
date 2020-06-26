@@ -299,7 +299,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 }
 
                 // Copy data from C# buffer into system memory managed by Unity.
-                // Note: This only "looks right" in Unity because we apply the 
+                // Note: This only "looks right" in Unity because we apply the
                 // "YUVFeedShader(Unlit)" to the texture (converting YUV planar to RGB).
                 // Note: Texture2D.LoadRawTextureData() expects some bottom-up texture data but
                 // the WebRTC video frame is top-down, so the image is uploaded vertically flipped,
