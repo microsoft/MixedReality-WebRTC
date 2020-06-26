@@ -3526,6 +3526,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.UnregisterCallback
   nameWithType: AudioReceiver.UnregisterCallback
+- uid: Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Update
+  name: Update()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html#Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Update
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Update
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Update()
+  nameWithType: AudioReceiver.Update()
+- uid: Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Update*
+  name: Update
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html#Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Update_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Update
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Update
+  nameWithType: AudioReceiver.Update
 - uid: Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent
   name: AudioStreamStartedEvent
   href: api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent.html
