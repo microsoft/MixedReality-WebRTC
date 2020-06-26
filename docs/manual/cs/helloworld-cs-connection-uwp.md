@@ -15,9 +15,12 @@ Continue editing the `OnLoaded()` method and append after the [`InitializeAsync(
    };
    ```
 
-   The [`Connected`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.Connected) event is invoked when the peer connection is established, that is when an offer/answer pair is successfully exchanged. The [`IceStateChanged`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChanged) is invoked each time the ICE status changes. Note that the [`Connected`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.Connected) event can be invoked before the ICE status reaches its [`IceConnectionState.Connected`](xref:Microsoft.MixedReality.WebRTC.IceConnectionState) state.
+   The [`Connected`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.Connected) event is raised when the peer connection is established, that is when the underlying media transports are writable. There is a subtlety here, in that this does not necessarily correspond to an offer/answer pair exchange being completed; indeed on the callee (answering peer) once the answer is created everything is done and the transports are writable, but the answer has not been sent yet, so the caller (offering peer) needs to wait until it received and applied that answer for its transports to be writable, and therefore its [`Connected`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.Connected) event will be raised much later than the one of the callee (answering peer).
 
-2. In order to render the remote video, we also subscribe to the [`RemoteVideoTrack.I420AVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.RemoteVideoTrack.I420AVideoFrameReady) event. This requires accessing the remote video track, which is only available once the connection is established and the track created during the session negotiation.
+
+   The [`IceStateChanged`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChanged) is raised each time the ICE status changes. Note that the [`Connected`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.Connected) event can be raised before the ICE status reaches its [`IceConnectionState.Connected`](xref:Microsoft.MixedReality.WebRTC.IceConnectionState) state, since the two processes occur in parallel and are partly independent.
+
+2. In order to render the remote video, we also subscribe to the [`RemoteVideoTrack.I420AVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.RemoteVideoTrack.I420AVideoFrameReady) event. This requires accessing the remote video track, which is only available once the connection is established and the track created during the session negotiation (more precisely: when an offer or answer is applied with [`SetRemoteDescriptionAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescriptionAsync(Microsoft.MixedReality.WebRTC.SdpMessage)).
 
    ```cs
    _peerConnection.VideoTrackAdded += (RemoteVideoTrack track) => {
@@ -37,7 +40,7 @@ That event handler is similar to the one for the local video, using another vide
    private VideoBridge _remoteVideoBridge = new VideoBridge(5);
    ```
 
-   This time we increase the video buffer queue to 5 frames, as the remote video is more prone to delays due to network latency.
+   This time we increase the video buffer queue to 5 frames to avoid starving the video rendering pipeline as the remote video is more prone to delays due to network latency. This potentially introduces more latency in the overall video streaming process, but optimizing for latency is a complex topic well outside of the scope of this tutorial.
 
 2. Modify the `OnMediaStreamSourceRequested()` event handler to dispatch either to the local or to the remote bridge:
 
@@ -65,7 +68,7 @@ That event handler is similar to the one for the local video, using another vide
                RunOnMainThread(() =>
                {
                    // Bridge the remote video track with the remote media player UI
-                   int framerate = 30; // for lack of an actual value
+                   int framerate = 30; // assumed, for lack of an actual value
                    _remoteVideoSource = CreateI420VideoStreamSource(width, height,
                        framerate);
                    var remoteVideoPlayer = new MediaPlayer();
@@ -107,3 +110,8 @@ Finally, we need to change the UI to add the new `remoteVideoPlayerElement` XAML
    Here we fix the size to 320x240 pixels, align the control to the lower right corner of the window, and add a 20px margin.
 
 At this point, the sample application is functional, although there is no mechanism to initiate a call. You can either add a button or similar to call [`CreateOffer()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.CreateOffer), or test this sample with the `TestAppUWP` available in the MixedReality-WebRTC repository in `examples/TestAppUWP`, which implements a "Create offer" button. Be sure to set the correct local and remote peer ID on **both** peers and have a `node-dss` server running before hitting the "Create offer" button, otherwise signaling will not work.
+
+In either cases however, be sure to create transceivers only on the caller:
+
+- If adding a [`CreateOffer()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.CreateOffer) button to the application, then move the calls to [`AddTransceiver()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddTransceiver(Microsoft.MixedReality.WebRTC.MediaKind,Microsoft.MixedReality.WebRTC.TransceiverInitSettings)) into the button handler, so that they are manually created on the caller only. On the callee, they will be created automatically in the same order when applying the offer received from the caller.
+- If using the `TestAppUWP` to make a connection with, the `TestAppUWP` is the caller so the transceivers should be created inside that app, and the calls to [`AddTransceiver()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddTransceiver(Microsoft.MixedReality.WebRTC.MediaKind,Microsoft.MixedReality.WebRTC.TransceiverInitSettings)) deleted from `App1`.
