@@ -85,7 +85,7 @@
 <p>In this tutorial we create a C# UWP application with a simple XAML-based UI to render video.</p>
 <div class="NOTE">
 <h5>Note</h5>
-<p>At this time there is no solution to render raw video frames from a .NET Core 3.0 application that is simple and short enough to be used in a turorial. Instead, we use the <code>MediaPlayerElement</code> XAML control from UWP which provides the necessary API. Its WPF equivalent <code>MediaElement</code> unfortunately does not currently allow specifying a custom video source other than an URI-based source like a file on disk.</p>
+<p>At this time there is no solution to render raw video frames from a .NET Core 3.0 application that is simple and short enough to be used in a turorial. Instead, we use the <code>MediaPlayerElement</code> XAML control from UWP which provides the necessary API. Its WPF equivalent <code>MediaElement</code> unfortunately does not allow specifying a custom video source other than an URI-based source like a file on disk.</p>
 </div>
 <div class="NOTE">
 <h5>Note</h5>
@@ -125,9 +125,13 @@
 <p>After that, the <code>App1</code> project should contain a reference to the package.</p>
 <p><img src="cs-uwp7.png" alt="App1 project references"></p>
 <h2 id="test-the-reference">Test the reference</h2>
-<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a href="cref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync"><code>PeerConnection.GetVideoCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
+<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync"><code>PeerConnection.GetVideoCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
 <p>First, because this sample application is a UWP application, it needs to declare some capabilities to access the microphone and webcam on the host device. In the <strong>Solution Explorer</strong> of Visual Studio, double-click on the <code>Package.appxmanifest</code> to open the AppX manifest of the app and select the <strong>Capabilities</strong> tab. Check <strong>Microphone</strong> and <strong>Webcam</strong>, and confirm that <strong>Internet (Client)</strong> is already checked.</p>
 <p><img src="cs-uwp8.png" alt="Configure the UWP app capabilities"></p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>Currently the <strong>Microphone</strong> capability is mandatory, even if not using audio. This is due to a limitation of the underlying native implementation which attempts to access the microphone while initializing the audio module (see <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/360">#360</a>). The <strong>Webcam</strong> capability however is only needed if using video.</p>
+</div>
 <p>Next, edit <code>MainPage.xaml.cs</code>:</p>
 <ol>
 <li><p>At the top of the file, add some <code>using</code> statement to import the <code>Microsoft.MixedReality.WebRTC</code> assembly. Also import the <code>System.Diagnostics</code> module, as we will be using the <code>Debugger</code> class to print debug information to the Visual Studio output window. Finally, import the <code>Windows.Media.Capture</code> module to be able to request access to the microphone and webcam, and the <code>Windows.ApplicationModel</code> module to handle resource clean-up.</p>
@@ -178,7 +182,7 @@ using Windows.ApplicationModel;
 <p>Launch the app again. The main window is still empty, but the <strong>Output window</strong> of Visual Studio 2019 (<strong>View</strong> &gt; <strong>Output</strong>, or <strong>Alt + 2</strong>) should show a list of devices. This list depends on the actual host device running the app, but looks something like:</p>
 <pre><code class="lang-shell">Webcam &lt;some device name&gt; (id: &lt;some device ID&gt;)
 </code></pre>
-<p>Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see <a href="cref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings)"><code>PeerConnection.AddLocalVideoTrackAsync</code></a>).</p>
+<p>Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig_"><code>DeviceVideoTrackSource.CreateAsync</code></a>).</p>
 <p>If this is the first time that <code>MediaCapture.InitializeAsync()</code> is requesting access to the webcam and microhpone, Windows displays a prompt asking the user for confirmation. You must click <strong>Yes</strong>, otherwise access to the microphone and webcam will be denied, and WebRTC will not be able to use them. This is part of the standard UWP capability mechanism for security and privacy.</p>
 <p><img src="cs-uwp9.png" alt="UWP access request to the microphone"></p>
 <p>If you clicked <strong>No</strong> by mistake, the prompt will not appear again and access will be silently denied on next runs. To change this access setting again, go to the Windows <strong>Settings</strong> &gt; <strong>Privacy</strong> &gt; <strong>Microphone</strong>, find the <code>App1</code> application and toggle its access <strong>On</strong>. Do the same for the webcam from the <strong>Settings</strong> &gt; <strong>Privacy</strong> &gt; <strong>Camera</strong> page.</p>

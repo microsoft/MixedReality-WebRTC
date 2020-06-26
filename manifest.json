@@ -1961,7 +1961,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-connection-uwp.html",
-          "hash": "MdSE43Uh+SbhwCJxlaFTNw=="
+          "hash": "PSeTCqMN6k+JzsdnXFOCQg=="
         }
       },
       "is_incremental": false,
@@ -1980,30 +1980,24 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-mediatracks-core3.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-core3.html",
-          "hash": "j1CHvmLKLFDsJNRxqBklDw=="
+          "hash": "a1C8shw0GTFU33Z2nJWc5A=="
         }
       },
       "is_incremental": false,
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.html",
-          "hash": "XiS2c81Y/7Xt3pJm5lcD2g=="
+          "hash": "zd4DD1/bkuVetFpcR1JKAQ=="
         }
       },
       "is_incremental": false,
@@ -2051,7 +2045,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-setup-uwp.html",
-          "hash": "3IOCiCNF2kNEZHINlQ5POQ=="
+          "hash": "3wAVjTcfpyi9xlzBA8fIKA=="
         }
       },
       "is_incremental": false,
@@ -2075,22 +2069,19 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-signaling-uwp.html",
-          "hash": "Ila6y4dQVpLlxoUhS2b7ag=="
+          "hash": "4sZd6RqkN3lc6uGZKc8aUw=="
         }
       },
       "is_incremental": false,
       "version": ""
     },
     {
-      "log_codes": [
-        "InvalidFileLink"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-uwp.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-uwp.html",
-          "hash": "2WY1W9Z+El7neDZRf8hGew=="
+          "hash": "lGwQ6Ev8RMbg3T/CXOO6DQ=="
         }
       },
       "is_incremental": false,
@@ -2179,15 +2170,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/migration-guide.md",
       "output": {
         ".html": {
           "relative_path": "manual/migration-guide.html",
-          "hash": "CA8AmQyBhnPcipnEPL0YNw=="
+          "hash": "1AAXCv8jp4OjQTqb92rkmA=="
         }
       },
       "is_incremental": false,

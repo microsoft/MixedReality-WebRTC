@@ -93,9 +93,10 @@ _peerConnection.IceStateChanged += (IceConnectionState newState) =&gt; {
     Debugger.Log(0, &quot;&quot;, $&quot;ICE state: {newState}\n&quot;);
 };
 </code></pre>
-<p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event is invoked when the peer connection is established, that is when an offer/answer pair is successfully exchanged. The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceStateChanged"><code>IceStateChanged</code></a> is invoked each time the ICE status changes. Note that the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event can be invoked before the ICE status reaches its <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.IceConnectionState.html"><code>IceConnectionState.Connected</code></a> state.</p>
+<p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event is raised when the peer connection is established, that is when the underlying media transports are writable. There is a subtlety here, in that this does not necessarily correspond to an offer/answer pair exchange being completed; indeed on the callee (answering peer) once the answer is created everything is done and the transports are writable, but the answer has not been sent yet, so the caller (offering peer) needs to wait until it received and applied that answer for its transports to be writable, and therefore its <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event will be raised much later than the one of the callee (answering peer).</p>
+<p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceStateChanged"><code>IceStateChanged</code></a> is raised each time the ICE status changes. Note that the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event can be raised before the ICE status reaches its <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.IceConnectionState.html"><code>IceConnectionState.Connected</code></a> state, since the two processes occur in parallel and are partly independent.</p>
 </li>
-<li><p>In order to render the remote video, we also subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html#Microsoft_MixedReality_WebRTC_RemoteVideoTrack_I420AVideoFrameReady"><code>RemoteVideoTrack.I420AVideoFrameReady</code></a> event. This requires accessing the remote video track, which is only available once the connection is established and the track created during the session negotiation.</p>
+<li><p>In order to render the remote video, we also subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html#Microsoft_MixedReality_WebRTC_RemoteVideoTrack_I420AVideoFrameReady"><code>RemoteVideoTrack.I420AVideoFrameReady</code></a> event. This requires accessing the remote video track, which is only available once the connection is established and the track created during the session negotiation (more precisely: when an offer or answer is applied with <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_Microsoft_MixedReality_WebRTC_SdpMessage_"><code>SetRemoteDescriptionAsync()</code></a>.</p>
 <pre><code class="lang-cs">_peerConnection.VideoTrackAdded += (RemoteVideoTrack track) =&gt; {
     _remoteVideoTrack = track;
     _remoteVideoTrack.I420AVideoFrameReady += RemoteVideo_I420AFrameReady;
@@ -111,7 +112,7 @@ private bool _remoteVideoPlaying = false;
 private MediaStreamSource _remoteVideoSource;
 private VideoBridge _remoteVideoBridge = new VideoBridge(5);
 </code></pre>
-<p>This time we increase the video buffer queue to 5 frames, as the remote video is more prone to delays due to network latency.</p>
+<p>This time we increase the video buffer queue to 5 frames to avoid starving the video rendering pipeline as the remote video is more prone to delays due to network latency. This potentially introduces more latency in the overall video streaming process, but optimizing for latency is a complex topic well outside of the scope of this tutorial.</p>
 </li>
 <li><p>Modify the <code>OnMediaStreamSourceRequested()</code> event handler to dispatch either to the local or to the remote bridge:</p>
 <pre><code class="lang-cs">if (sender == _localVideoSource)
@@ -135,7 +136,7 @@ else
             RunOnMainThread(() =&gt;
             {
                 // Bridge the remote video track with the remote media player UI
-                int framerate = 30; // for lack of an actual value
+                int framerate = 30; // assumed, for lack of an actual value
                 _remoteVideoSource = CreateI420VideoStreamSource(width, height,
                     framerate);
                 var remoteVideoPlayer = new MediaPlayer();
@@ -173,6 +174,11 @@ else
 </li>
 </ol>
 <p>At this point, the sample application is functional, although there is no mechanism to initiate a call. You can either add a button or similar to call <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer"><code>CreateOffer()</code></a>, or test this sample with the <code>TestAppUWP</code> available in the MixedReality-WebRTC repository in <code>examples/TestAppUWP</code>, which implements a &quot;Create offer&quot; button. Be sure to set the correct local and remote peer ID on <strong>both</strong> peers and have a <code>node-dss</code> server running before hitting the &quot;Create offer&quot; button, otherwise signaling will not work.</p>
+<p>In either cases however, be sure to create transceivers only on the caller:</p>
+<ul>
+<li>If adding a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer"><code>CreateOffer()</code></a> button to the application, then move the calls to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>AddTransceiver()</code></a> into the button handler, so that they are manually created on the caller only. On the callee, they will be created automatically in the same order when applying the offer received from the caller.</li>
+<li>If using the <code>TestAppUWP</code> to make a connection with, the <code>TestAppUWP</code> is the caller so the transceivers should be created inside that app, and the calls to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>AddTransceiver()</code></a> deleted from <code>App1</code>.</li>
+</ul>
 </article>
           </div>
           

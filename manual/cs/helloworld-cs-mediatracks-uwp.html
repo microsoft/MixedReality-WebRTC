@@ -90,11 +90,12 @@
 <p>The first case is benefical in the sense that media tracks will be immediately negotiated during the connection establishing, without the need for an extra negotiation specific for the tracks. However it requires knowing in advance that the tracks are used. Conversely, the latter case corresponds to a scenario like late joining, where the user or the application can control when to add or remove local tracks, at the expense of requiring an extra network negotiation each time the list of tracks is changed.</p>
 <p>In this tutorial, we add the local media tracks right away for simplicity.</p>
 <h2 id="creating-the-tracks">Creating the tracks</h2>
+<p>Media tracks are slim objects which bridge a <em>media track source</em>, that is a media frame producer, on one hand and a <em>transceiver</em>, that is a &quot;media pipe&quot; to transport that media to the remote peer, on the other hand. Media track sources can be of various types, but the most common ones are device-based, meaning they produce some audio and video frames by capturing them from a device. The main classes for this are the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html"><code>DeviceAudioTrackSource</code></a> and the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html"><code>DeviceVideoTrackSource</code></a>, which respectively open an audio or video capture device and use it to capture audio or video frames to provide them to one or more tracks.</p>
 <p>Continue editing the <code>MainPage.xaml.cs</code> file and append in the <code>OnLoaded</code> method the following:</p>
 <ol>
 <li><p>Create new private variables needed to store the tracks and their sources.</p>
-<pre><code class="lang-cs">MicrophoneSource _microphoneSource;
-WebcamSource _webcamSource;
+<pre><code class="lang-cs">DeviceAudioTrackSource _microphoneSource;
+DeviceVideoTrackSource _webcamSource;
 LocalAudioTrack _localAudioTrack;
 LocalVideoTrack _localVideoTrack;
 </code></pre>
@@ -113,8 +114,8 @@ _localVideoTrack = LocalVideoTrack.CreateFromSource(_webcamSource, videoTrackCon
 </code></pre>
 <p>Note that the local video track created is not associated with the peer connection yet; the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_VideoTrackSource_Microsoft_MixedReality_WebRTC_LocalVideoTrackInitConfig_"><code>LocalVideoTrack.CreateFromSource()</code></a> is a static method which does not reference any peer connection. The local video track will be bound to one specific peer connection later when added to a video transceiver. After that, it will stay implicitly bound to that peer connection, even if detached from its transceiver, and cannot be reused with another peer connection.</p>
 </li>
-<li><p>Use the <a href="xref:Microsoft.MixedReality.WebRTC.AudioTrackSource.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig)"><code>AudioTrackSource.CreateFromDeviceAsync()</code></a> method to create an audio track source obtaining its audio frames from a local audio capture device (microphone).</p>
-<pre><code class="lang-cs">_microphoneSource = await AudioTrackSource.CreateFromDeviceAsync();
+<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceAudioTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalAudioDeviceInitConfig_"><code>DeviceAudioTrackSource.CreateAsync()</code></a> method to create an audio track source obtaining its audio frames from a local audio capture device (microphone).</p>
+<pre><code class="lang-cs">_microphoneSource = await DeviceAudioTrackSource.CreateAsync();
 </code></pre>
 <p>Again, the method optionally takes <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.html"><code>LocalAudioDeviceInitConfig</code></a> object to configure the audio capture, but we can ignore it to get the default settings.</p>
 </li>
@@ -138,9 +139,10 @@ Transceiver _videoTransceiver;
 <pre><code class="lang-cs">_audioTransceiver = _peerConnection.AddTransceiver(MediaKind.Audio);
 _videoTransceiver = _peerConnection.AddTransceiver(MediaKind.Video);
 </code></pre>
+<p>Note that the order of the calls to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>AddTransceiver()</code></a> matters. Here we create first an audio transceiver associated with the <em>media line index</em> #0, and then a video transceiver associated with the <em>media line index</em> #1. On the remote peer, when it receives the SDP offer from this local peer and applies it by calling <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_Microsoft_MixedReality_WebRTC_SdpMessage_"><code>SetRemoteDescriptionAsync()</code></a>, the transceivers will be created in that same order.</p>
 <div class="IMPORTANT">
 <h5>Important</h5>
-<p>Note that the order of the calls to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>AddTransceiver()</code></a> matters. Here we create first an audio transceiver associated with the <em>media line index</em> #0, and then a video transceiver associated with the <em>media line index</em> #1. On the remote peer, when it receives the SDP offer from this local peer and applies it by calling <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_Microsoft_MixedReality_WebRTC_SdpMessage_"><code>SetRemoteDescriptionAsync()</code></a>, the transceivers will be created in that same order.</p>
+<p>As is, the code will not produce the intended effect, because transceivers must be added only on the <em>offering</em> (also known as <em>caller</em>) peer, and then are automatically created on the <em>answering</em> (also known as <em>callee</em>) peer, so adding transceivers on both peers will result in twice the amount intended. The calls to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>AddTransceiver()</code></a> above need to be conditional to the caller, but this requires a mechanism that we will add only later in this tutorial when looking at establishing a connection. For now we leave this code as is, and will revisit it in the last chapter.</p>
 </div>
 </li>
 <li><p>By default the transceivers have no track attached to them, and will send some empty media data (black frame for video, silence for audio). Attach the local tracks created prevoously to the transceivers, so that the WebRTC implementation uses them instead and send their media data to the remote peer.</p>
@@ -232,13 +234,13 @@ private VideoBridge _localVideoBridge = new VideoBridge(3);
 }
 </code></pre>
 </li>
-<li><p>In the <code>OnLoaded()</code> method where the local video track was created, subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_I420AVideoFrameReady"><code>I420AVideoFrameReady</code></a> event.</p>
-<pre><code class="lang-cs"> _localVideoTrack = await _peerConnection.AddLocalVideoTrackAsync();
- _localVideoTrack.I420AVideoFrameReady += Peer_LocalI420AFrameReady;
+<li><p>In the <code>OnLoaded()</code> method where the video track source was created, subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_VideoFrameReady"><code>VideoFrameReady</code></a> event.</p>
+<pre><code class="lang-cs"> _webcamSource = await DeviceVideoTrackSource.CreateAsync();
+ _webcamSource.VideoFrameReady += LocalI420AFrameReady;
 </code></pre>
 </li>
 <li><p>Implement the event handler by enqueueing the newly captured video frames into the bridge, which will later deliver them when the Media Foundation playback pipeline requests them.</p>
-<pre><code class="lang-cs">private void Peer_LocalI420AFrameReady(I420AVideoFrame frame)
+<pre><code class="lang-cs">private void LocalI420AFrameReady(I420AVideoFrame frame)
 {
     _localVideoBridge.HandleIncomingVideoFrame(frame);
 }
@@ -248,18 +250,18 @@ private VideoBridge _localVideoBridge = new VideoBridge(3);
 <h2 id="starting-the-media-playback">Starting the media playback</h2>
 <p>The last part is to actually start the playback pipeline when video frames start to be received from WebRTC. This is done lazily for two reasons:</p>
 <ul>
-<li>to avoid starving the Media Foundation playback pipeline if the WebRTC local video track takes some time to start delivering frames, which it generally does compared to the expectation of the playback pipeline.</li>
+<li>to avoid starving the Media Foundation playback pipeline if the WebRTC video track source takes some time to start delivering frames, which it generally does compared to the expectation of the playback pipeline.</li>
 <li>to get access to the frame resolution, which is not otherwise available from WebRTC.</li>
 </ul>
 <p>Unfortunately at this time the capture framerate is not available, so we assume a framerate of 30 frames per second (FPS).</p>
 <ol>
-<li><p>At the top of the <code>MainPage</code> class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_I420AVideoFrameReady"><code>I420AVideoFrameReady</code></a> and the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.media.core.mediastreamsource.samplerequested"><code>SampleRequested</code></a> events can be fired in parallel from multiple threads.</p>
+<li><p>At the top of the <code>MainPage</code> class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_VideoFrameReady"><code>VideoFrameReady</code></a> and the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.media.core.mediastreamsource.samplerequested"><code>SampleRequested</code></a> events can be fired in parallel from multiple threads.</p>
 <pre><code class="lang-cs">private bool _localVideoPlaying = false;
 private object _localVideoLock = new object();
 </code></pre>
 </li>
-<li><p>Modify the <code>Peer_LocalI420AFrameReady()</code> event handler to start the media player when the first WebRTC frame arrives.</p>
-<pre><code class="lang-cs">private void Peer_LocalI420FrameReady(I420AVideoFrame frame)
+<li><p>Modify the <code>LocalI420AFrameReady()</code> event handler to start the media player when the first WebRTC frame arrives.</p>
+<pre><code class="lang-cs">private void LocalI420AFrameReady(I420AVideoFrame frame)
 {
     lock (_localVideoLock)
     {
@@ -275,7 +277,7 @@ private object _localVideoLock = new object();
             RunOnMainThread(() =&gt;
             {
                 // Bridge the local video track with the local media player UI
-                int framerate = 30; // for lack of an actual value
+                int framerate = 30; // assumed, for lack of an actual value
                 _localVideoSource = CreateI420VideoStreamSource(
                     width, height, framerate);
                 var localVideoPlayer = new MediaPlayer();
@@ -286,13 +288,15 @@ private object _localVideoLock = new object();
             });
         }
     }
+    // Enqueue the incoming frame into the video bridge; the media player will
+    // later dequeue it as soon as it's ready.
     _localVideoBridge.HandleIncomingVideoFrame(frame);
 }
 </code></pre>
-<p>Some of the work cannot be carried during the execution of this event handler, which is invoked from an unspecified worker thread, because access to XAML UI elements must be done exclusively on the main UI thread. Therefore we use a helper method which schedule this work for execution on that thread.</p>
+<p>Some of the work cannot be carried during the execution of this event handler, which is invoked from an unspecified worker thread, because access to XAML UI elements must be done exclusively on the main UWP UI thread. Therefore we use a helper method which schedule this work for execution on that thread.</p>
 <div class="NOTE">
 <h5>Note</h5>
-<p>The use of <code>_localVideoSource</code> from the <code>OnMediaStreamSourceRequested()</code> event handler is not protected by the <code>_localVideoLock</code> lock. This is because the event cannot be fired until well after the <code>_localVideoSource</code> has been assigned a new value, so there is no race condition concern here. And since <code>_localVideoSource</code> is not further modified, we avoid acquiring that lock in the <code>OnMediaStreamSourceRequested()</code> to reduce the chances of contention. The lock is actually not needed at all at this point, since <code>_localVideoPlaying</code> is also only modified in the current <code>Peer_LocalI420FrameReady()</code> event handler. But a typical application will provide some UI like a button to start and stop the local video, and therefore needs to synchronize access to <code>_localVideoPlaying</code> and <code>_localVideoSource</code>, at which point <code>OnMediaStreamSourceRequested()</code> will also need to acquire this lock.</p>
+<p>The use of <code>_localVideoSource</code> from the <code>OnMediaStreamSourceRequested()</code> event handler is not protected by the <code>_localVideoLock</code> lock. This is because the event cannot be fired until well after the <code>_localVideoSource</code> has been assigned a new value, so there is no race condition concern here. And since <code>_localVideoSource</code> is not further modified, we avoid acquiring that lock in the <code>OnMediaStreamSourceRequested()</code> to reduce the chances of contention. The lock is actually not needed at all at this point, since <code>_localVideoPlaying</code> is also only modified in the current <code>LocalI420AFrameReady()</code> event handler. But a typical application will provide some UI like a button to start and stop the local video, and therefore needs to synchronize access to <code>_localVideoPlaying</code> and <code>_localVideoSource</code>, at which point <code>OnMediaStreamSourceRequested()</code> will also need to acquire this lock.</p>
 </div>
 </li>
 <li><p>Implement the <code>RunOnMainThread()</code> helper using the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.ui.core.corewindow.dispatcher#Windows_UI_Core_CoreWindow_Dispatcher"><code>Dispatcher</code></a> of the current window.</p>
