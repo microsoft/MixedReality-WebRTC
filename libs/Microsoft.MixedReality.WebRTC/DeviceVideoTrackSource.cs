@@ -1,9 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC.Interop;
 using Microsoft.MixedReality.WebRTC.Tracing;
@@ -149,6 +146,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <seealso cref="LocalVideoTrack.CreateFromSource(VideoTrackSource, LocalVideoTrackInitConfig)"/>
         public static Task<DeviceVideoTrackSource> CreateAsync(LocalVideoDeviceInitConfig initConfig = null)
         {
+            // Ensure the logging system is ready before using PInvoke.
+            MainEventSource.Log.Initialize();
+
             return Task.Run(() =>
             {
                 // On UWP this cannot be called from the main UI thread, so always call it from
