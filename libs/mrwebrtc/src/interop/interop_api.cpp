@@ -16,6 +16,7 @@
 #include "local_audio_track_interop.h"
 #include "local_video_track_interop.h"
 #include "media/audio_track_source.h"
+#include "media/device_video_track_source.h"
 #include "media/external_video_track_source.h"
 #include "media/local_audio_track.h"
 #include "media/local_video_track.h"
@@ -157,6 +158,17 @@ mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
       (*completedCallback)(completedCallbackUserData);
     }
   });
+  return Result::kSuccess;
+#elif defined(MR_SHARING_ANDROID)
+  RTC_LOG(LS_INFO) << "Enumerating Android video capture devices";
+  std::vector<VideoCaptureDeviceInfo> devices = DeviceVideoTrackSource::GetVideoCaptureDevices();
+  for (auto device : devices) {
+    RTC_LOG(LS_INFO) << "Device: " << device.name.c_str() << " (id=" << device.id.c_str() << ")";
+    (*enumCallback)(device.id.c_str(), device.name.c_str(), enumCallbackUserData);
+  }
+  if (completedCallback) {
+    (*completedCallback)(completedCallbackUserData);
+  }
   return Result::kSuccess;
 #else
   std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
@@ -300,6 +312,16 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
       (*completedCallback)(Result::kSuccess, completedCallbackUserData);
     }
   });
+#elif defined(MR_SHARING_ANDROID)
+  RTC_LOG(LS_INFO) << "Enumerating Android video capture formats for device " << device_id;
+  std::vector<VideoCaptureFormatInfo> formats = DeviceVideoTrackSource::GetVideoCaptureFormats(device_id);
+  for (auto format : formats) {
+    RTC_LOG(LS_INFO) << "Format: " << format.width << "x" << format.height << "@" << format.framerate;
+    (*enumCallback)(format.width, format.height, format.framerate, format.fourcc, enumCallbackUserData);
+  }
+  if (completedCallback) {
+    (*completedCallback)(Result::kSuccess, completedCallbackUserData);
+  }
 #else   // defined(WINUWP)
   std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
       webrtc::VideoCaptureFactory::CreateDeviceInfo());

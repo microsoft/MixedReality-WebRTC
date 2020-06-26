@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-// This file is originaly based on the UnityUtility.java file from the
+// This file is originally based on the UnityUtility.java file from the
 // WebRTC.org project, modified for the needs of the MixedReality-WebRTC
 // project and expanded with additional functionalities.
 
@@ -19,8 +19,11 @@
 package com.microsoft.mixedreality.webrtc;
 
 import android.content.Context;
+
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
+import org.webrtc.CameraEnumerationAndroid.CaptureFormat;
 import org.webrtc.CameraEnumerator;
 import org.webrtc.Camera2Enumerator;
 import org.webrtc.ContextUtils;
@@ -47,7 +50,6 @@ public class AndroidCameraInterop {
     for (String deviceName : deviceNames) {
       if (enumerator.isFrontFacing(deviceName)) {
         VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
-
         if (videoCapturer != null) {
           return videoCapturer;
         }
@@ -57,8 +59,40 @@ public class AndroidCameraInterop {
     return null;
   }
 
+  public static VideoCaptureDeviceInfo[] GetVideoCaptureDevices() {
+    CameraEnumerator enumerator = new Camera2Enumerator(ContextUtils.getApplicationContext());
+    final String[] deviceNames = enumerator.getDeviceNames();
+    VideoCaptureDeviceInfo[] devices = new VideoCaptureDeviceInfo[deviceNames.length];
+    int index = 0;
+    for (String name : deviceNames) {
+      // For lack of a better solution, return the device name in both fields
+      devices[index].id = name;
+      devices[index].name = name;
+      ++index;
+    }
+    return devices;
+  }
+
+  public static VideoCaptureFormatInfo[] GetVideoCaptureFormats(String deviceId) {
+    CameraEnumerator enumerator = new Camera2Enumerator(ContextUtils.getApplicationContext());
+    final List<CaptureFormat> formats = enumerator.getSupportedFormats(deviceId);
+    if (formats == null) {
+      return null;
+    }
+    VideoCaptureFormatInfo[] formatsOut = new VideoCaptureFormatInfo[formats.size()];
+    int index = 0;
+    for (CaptureFormat format : formats) {
+      formatsOut[index].width = format.width;
+      formatsOut[index].height = format.height;
+      formatsOut[index].framerate = format.framerate.max;
+      ++index;
+    }
+    return formatsOut;
+  }
+
   public static VideoCapturer StartCapture(
-      long nativeTrackSource, SurfaceTextureHelper surfaceTextureHelper) {
+      long nativeTrackSource, SurfaceTextureHelper surfaceTextureHelper, int width, int height,
+      int framerate) {
     VideoCapturer capturer =
         createCameraCapturer(new Camera2Enumerator(ContextUtils.getApplicationContext()));
 
@@ -67,7 +101,19 @@ public class AndroidCameraInterop {
     capturer.initialize(surfaceTextureHelper, ContextUtils.getApplicationContext(),
         videoSource.getCapturerObserver());
 
-    capturer.startCapture(720, 480, 30);
+    // Set default values if not specified (<= 0).
+    // TODO: Resolve partial resolution constraint to a supported resolution
+    if (width <= 0) {
+      width = 720;
+    }
+    if (height <= 0) {
+      height = 480;
+    }
+    if (framerate <= 0) {
+      framerate = 30;
+    }
+
+    capturer.startCapture(width, height, framerate);
     return capturer;
   }
 

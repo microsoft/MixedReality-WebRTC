@@ -16,12 +16,29 @@ namespace Microsoft {
 namespace MixedReality {
 namespace WebRTC {
 
+/// Video capture device info.
+struct VideoCaptureDeviceInfo {
+  std::string id;
+  std::string name;
+};
+
+/// Video capture format info.
+struct VideoCaptureFormatInfo {
+  int width;
+  int height;
+  int framerate;
+  uint32_t fourcc;
+};
+
 /// Video track source generating frames from a local video capture device
 /// (webcam).
 class DeviceVideoTrackSource : public VideoTrackSource {
  public:
   static ErrorOr<RefPtr<DeviceVideoTrackSource>> Create(
       const mrsLocalVideoDeviceInitConfig& init_config) noexcept;
+
+  static std::vector<VideoCaptureDeviceInfo> GetVideoCaptureDevices() noexcept;
+  static std::vector<VideoCaptureFormatInfo> GetVideoCaptureFormats(absl::string_view device_id) noexcept;
 
  protected:
   DeviceVideoTrackSource(

@@ -289,13 +289,28 @@ ErrorOr<RefPtr<DeviceVideoTrackSource>> DeviceVideoTrackSource::Create(
           global_factory->GetSignalingThread(),
           global_factory->GetWorkerThread(), impl_source);
 
-  // Create the camera capturer and bind it to the surface texture and the video source, then start capturing.
+  int width = -1;
+  if (init_config.width > 0) {
+    width = init_config.width;
+  }
+  int height = -1;
+  if (init_config.height > 0) {
+    height = init_config.height;
+  }
+  int framerate = -1;
+  if (init_config.framerate > 0.0) {
+    framerate = (int)std::round(init_config.framerate);
+  }
+
+  // Create the camera capturer and bind it to the surface texture and the video
+  // source, then start capturing.
   jmethodID start_capture_method = webrtc::GetStaticMethodID(
       env, android_camera_interop_class.obj(), "StartCapture",
-      "(JLorg/webrtc/SurfaceTextureHelper;)Lorg/webrtc/VideoCapturer;");
-  jobject camera_tmp =
-      env->CallStaticObjectMethod(android_camera_interop_class.obj(), start_capture_method,
-                                  (jlong)proxy_source.get(), texture_helper);
+      "(JLorg/webrtc/SurfaceTextureHelper;III)Lorg/webrtc/VideoCapturer;");
+  jobject camera_tmp = env->CallStaticObjectMethod(
+      android_camera_interop_class.obj(), start_capture_method,
+      (jlong)proxy_source.get(), texture_helper, (jint)width, (jint)height,
+      (jint)framerate);
   CHECK_EXCEPTION(env);
 
   // Java objects created are always returned as local references; create a new global reference to keep the camera capturer alive.
@@ -322,6 +337,113 @@ ErrorOr<RefPtr<DeviceVideoTrackSource>> DeviceVideoTrackSource::Create(
     return Error(Result::kUnknownError);
   }
   return wrapper;
+}
+
+std::vector<VideoCaptureDeviceInfo> DeviceVideoTrackSource::GetVideoCaptureDevices() noexcept {
+#if defined(MR_SHARING_ANDROID)
+  // Make sure the current thread is attached to the JVM. Since this method
+  // is often called asynchronously (as it takes some time to enumerate the video capture devices)
+  // it is likely to run on a background worker thread.
+  RTC_DCHECK(webrtc::jni::GetJVM()) << "JavaVM not initialized.";
+  JNIEnv* const env = webrtc::jni::AttachCurrentThreadIfNeeded();
+
+  // Find the Android camera helper Java class
+  webrtc::ScopedJavaLocalRef<jclass> android_camera_interop_class =
+      webrtc::GetClass(env, "com/microsoft/mixedreality/webrtc/AndroidCameraInterop");
+  RTC_DCHECK(android_camera_interop_class.obj() != nullptr) << "Failed to find AndroidCameraInterop Java class.";
+
+  // Find the video capture device info storage class and its fields
+  webrtc::ScopedJavaLocalRef<jclass> device_info_class =
+      webrtc::GetClass(env, "com/microsoft/mixedreality/webrtc/VideoCaptureDeviceInfo");
+  RTC_DCHECK(device_info_class.obj() != nullptr) << "Failed to find VideoCaptureDeviceInfo Java class.";
+  jfieldID id_field = env->GetFieldID(device_info_class.obj(), "id", "Ljava/lang/String;");
+  CHECK_EXCEPTION(env);
+  jfieldID name_field = env->GetFieldID(device_info_class.obj(), "name", "Ljava/lang/String;");
+  CHECK_EXCEPTION(env);
+
+  // Retrieve the device list
+  jmethodID enum_devices_method = webrtc::GetStaticMethodID(
+      env, android_camera_interop_class.obj(), "GetVideoCaptureDevices", "()[Lcom/microsoft/mixedreality/webrtc/VideoCaptureDeviceInfo;");
+  jobjectArray device_list = (jobjectArray)env->CallStaticObjectMethod(android_camera_interop_class.obj(), enum_devices_method);
+  CHECK_EXCEPTION(env);
+  const jsize num_devices = env->GetArrayLength(device_list);
+  CHECK_EXCEPTION(env);
+  if (num_devices <= 0) {
+    return {};
+  }
+  std::vector<VideoCaptureDeviceInfo> devices;
+  devices.reserve(num_devices);
+  for (jsize i = 0; i < num_devices; ++i) {
+    jobject device_info = env->GetObjectArrayElement(device_list, i);
+    CHECK_EXCEPTION(env);
+    jstring java_id = (jstring)env->GetObjectField(device_info, id_field);
+    CHECK_EXCEPTION(env);
+    jstring java_name = (jstring)env->GetObjectField(device_info, name_field);
+    CHECK_EXCEPTION(env);
+    const char* native_id = env->GetStringUTFChars(java_id, nullptr);
+    const char* native_name = env->GetStringUTFChars(java_name, nullptr);
+    devices.push_back({native_id, native_name});
+    env->ReleaseStringUTFChars(java_name, native_name);
+    env->ReleaseStringUTFChars(java_id, native_id);
+  }
+  return devices;
+#else
+  TODO - see mrsEnumVideoCaptureDevicesAsync() in interop_api.cpp
+#endif
+}
+
+std::vector<VideoCaptureFormatInfo> DeviceVideoTrackSource::GetVideoCaptureFormats(absl::string_view device_id) noexcept {
+#if defined(MR_SHARING_ANDROID)
+  // Make sure the current thread is attached to the JVM. Since this method
+  // is often called asynchronously (as it takes some time to enumerate the video capture devices)
+  // it is likely to run on a background worker thread.
+  RTC_DCHECK(webrtc::jni::GetJVM()) << "JavaVM not initialized.";
+  JNIEnv* const env = webrtc::jni::AttachCurrentThreadIfNeeded();
+
+  // Find the Android camera helper Java class
+  webrtc::ScopedJavaLocalRef<jclass> android_camera_interop_class =
+      webrtc::GetClass(env, "com/microsoft/mixedreality/webrtc/AndroidCameraInterop");
+  RTC_DCHECK(android_camera_interop_class.obj() != nullptr) << "Failed to find AndroidCameraInterop Java class.";
+
+  // Find the video capture format info storage class and its fields
+  webrtc::ScopedJavaLocalRef<jclass> format_info_class =
+      webrtc::GetClass(env, "com/microsoft/mixedreality/webrtc/VideoCaptureFormatInfo");
+  RTC_DCHECK(format_info_class.obj() != nullptr) << "Failed to find VideoCaptureFormatInfo Java class.";
+  jfieldID width_field = env->GetFieldID(format_info_class.obj(), "width", "I");
+  CHECK_EXCEPTION(env);
+  jfieldID height_field = env->GetFieldID(format_info_class.obj(), "height", "I");
+  CHECK_EXCEPTION(env);
+  jfieldID framerate_field = env->GetFieldID(format_info_class.obj(), "framerate", "I");
+  CHECK_EXCEPTION(env);
+
+  // Retrieve the format list
+  jmethodID enum_formats_method = webrtc::GetStaticMethodID(
+      env, android_camera_interop_class.obj(), "GetVideoCaptureFormats", "()[Lcom/microsoft/mixedreality/webrtc/VideoCaptureFormatInfo;");
+  jobjectArray format_list = (jobjectArray)env->CallStaticObjectMethod(android_camera_interop_class.obj(), enum_formats_method);
+  CHECK_EXCEPTION(env);
+  const jsize num_formats = env->GetArrayLength(format_list);
+  CHECK_EXCEPTION(env);
+  if (num_formats <= 0) {
+    return {};
+  }
+  std::vector<VideoCaptureFormatInfo> formats;
+  formats.reserve(num_formats);
+  for (jsize i = 0; i < num_formats; ++i) {
+    jobject format_info = env->GetObjectArrayElement(format_list, i);
+    CHECK_EXCEPTION(env);
+    jint java_width = env->GetIntField(format_info, width_field);
+    CHECK_EXCEPTION(env);
+    jint java_height = env->GetIntField(format_info, height_field);
+    CHECK_EXCEPTION(env);
+    jint java_framerate = env->GetIntField(format_info, framerate_field);
+    CHECK_EXCEPTION(env);
+    uint32_t fourcc = 0; // TODO - Populate FOURCC for Android capture format
+    formats.push_back({java_width, java_height, java_framerate, fourcc});
+  }
+  return formats;
+#else
+  TODO - see mrsEnumVideoCaptureFormatsAsync() in interop_api.cpp
+#endif
 }
 
 DeviceVideoTrackSource::DeviceVideoTrackSource(
