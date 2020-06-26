@@ -25,7 +25,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// inspector window, though direct manipulation via code is also possible.
     /// </summary>
     [Serializable]
-    public class MediaLine
+    public class MediaLine : ISerializationCallbackReceiver
     {
         /// <summary>
         /// Kind of media of the media line and its attached transceiver.
@@ -58,13 +58,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 if (value == null)
                 {
-                    if (_source != null)
-                    {
-                        (_source as IMediaTrackSourceInternal).OnRemoveFromMediaLine(this);
-                        _source = null;
-                        UpdateSenderOnSourceChanged();
-                        UpdateTransceiverDesiredDirection();
-                    }
+                    (_source as IMediaTrackSourceInternal)?.OnRemoveFromMediaLine(this);
+                    _source = null;
+                    DestroySenderIfNeeded();
                 }
                 else
                 {
@@ -83,8 +79,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                             (_source as IMediaTrackSourceInternal)?.OnRemoveFromMediaLine(this);
                             _source = mediaTrackSource;
                             (_source as IMediaTrackSourceInternal).OnAddedToMediaLine(this);
-                            UpdateSenderOnSourceChanged();
-                            UpdateTransceiverDesiredDirection();
+                            CreateSenderIfNeeded();
                         }
                     }
                     else
@@ -92,6 +87,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         throw new ArgumentException(nameof(Source) + " is not a MonoBehaviour component", nameof(Source));
                     }
                 }
+
+                // Whatever the change, keep the direction consistent.
+                UpdateTransceiverDesiredDirection();
             }
         }
 
@@ -156,12 +154,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 if (value == null)
                 {
-                    if (_receiver != null)
-                    {
-                        (_receiver as IMediaReceiverInternal).OnRemoveFromMediaLine(this);
-                        _receiver = null;
-                        UpdateTransceiverDesiredDirection();
-                    }
+                    (_receiver as IMediaReceiverInternal)?.OnRemoveFromMediaLine(this);
+                    _receiver = null;
                 }
                 else
                 {
@@ -180,7 +174,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                             (_receiver as IMediaReceiverInternal)?.OnRemoveFromMediaLine(this);
                             _receiver = mediaReceiver;
                             (_receiver as IMediaReceiverInternal).OnAddedToMediaLine(this);
-                            UpdateTransceiverDesiredDirection();
                         }
                     }
                     else
@@ -188,6 +181,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         throw new ArgumentException(nameof(Receiver) + " is not a MonoBehaviour component", nameof(Receiver));
                     }
                 }
+
+                // Whatever the change, keep the direction consistent.
+                UpdateTransceiverDesiredDirection();
             }
         }
 
@@ -242,7 +238,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// The media track is automatically managed when <see cref="Source"/> changes or the transceiver direction
         /// is renegotiated, as needed.
         /// </summary>
-        private MediaTrack _senderTrack = null;
+        private LocalMediaTrack _senderTrack = null;
 
         /// <summary>
         /// Receiver actually paired during <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/>.
@@ -260,18 +256,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         internal MediaLine(MediaKind kind)
         {
             _mediaKind = kind;
-        }
-
-        protected void UpdateSenderOnSourceChanged()
-        {
-            if ((_source != null) && (_senderTrack == null))
-            {
-                CreateSender();
-            }
-            else if ((_source == null) && (_senderTrack != null))
-            {
-                DestroySender();
-            }
         }
 
         protected void UpdateTransceiverDesiredDirection()
@@ -368,10 +352,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Create the local sender track from the current media track source if that source
         /// is active and enabled. Otherwise do nothing.
         /// </summary>
-        private void CreateSender()
+        private void CreateSenderIfNeeded()
         {
-            Debug.Assert(_source != null);
-            if (_source.isActiveAndEnabled)
+            if (_senderTrack == null && _source.isActiveAndEnabled)
             {
                 if (MediaKind == MediaKind.Audio)
                 {
@@ -397,19 +380,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        private void DestroySender()
+        private void DestroySenderIfNeeded()
         {
-            Debug.Assert(_senderTrack != null);
-            if (MediaKind == MediaKind.Audio)
+            if (_senderTrack != null)
             {
-                ((LocalAudioTrack)_senderTrack).Dispose();
+                _senderTrack.Dispose();
+                _senderTrack = null;
             }
-            else
-            {
-                Debug.Assert(MediaKind == MediaKind.Video);
-                ((LocalVideoTrack)_senderTrack).Dispose();
-            }
-            _senderTrack = null;
         }
 
         /// <summary>
@@ -439,15 +416,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Always do this even after first offer, because the sender and receiver
             // components can be assigned to the media line later, and therefore will
             // need to be updated on the next offer even if that is not the first one.
-            bool wantsSend = (Source != null);
+            CreateSenderIfNeeded();
             bool wantsRecv = (Receiver != null);
-            if (wantsSend)
-            {
-                if (_senderTrack == null)
-                {
-                    CreateSender();
-                }
-            }
             if (wantsRecv)
             {
                 (_receiver as IMediaReceiverInternal).AttachToTransceiver(Transceiver);
@@ -456,15 +426,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         internal void UnpairTransceiver()
         {
-            // Note: using Sender here and not Source to test actual applied state
-            // and not user intended state. So this deal naturally with inactive sources,
-            // since a sender was not created in that case.
-            bool wasSending = (_senderTrack != null);
+            DestroySenderIfNeeded();
             bool wasReceiving = (Receiver != null);
-            if (wasSending)
-            {
-                DestroySender();
-            }
             if (wasReceiving)
             {
                 (_receiver as IMediaReceiverInternal).DetachFromTransceiver(Transceiver);
@@ -552,18 +515,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <seealso cref="VideoTrackSource.OnDisable"/>
         internal void OnSourceDestroyed()
         {
-            if (_senderTrack is LocalAudioTrack audioTrack)
-            {
-                audioTrack.Dispose();
-            }
-            else if (_senderTrack is LocalVideoTrack videoTrack)
-            {
-                videoTrack.Dispose();
-            }
-            _senderTrack = null;
-
-            // Clear source, which is about to be destroyed
+            // Different from `Source = null`. Don't need to call Source.OnRemovedFromMediaLine
+            // since the Source itself has called this.
+            DestroySenderIfNeeded();
+            UpdateTransceiverDesiredDirection();
             Source = null;
+        }
+
+        public void OnBeforeSerialize() {}
+
+        public void OnAfterDeserialize()
+        {
+            if (_source)
+            {
+                // Fill the list of media lines for the source.
+                ((IMediaTrackSourceInternal)_source).OnAddedToMediaLine(this);
+            }
         }
     }
 }

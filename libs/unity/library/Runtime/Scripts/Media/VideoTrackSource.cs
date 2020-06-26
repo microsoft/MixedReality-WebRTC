@@ -19,7 +19,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     {
         /// <summary>
         /// Video track source object from the underlying C# library that this component encapsulates.
-        /// 
+        ///
         /// The object is owned by this component, which will create it and dispose of it automatically.
         /// </summary>
         public WebRTC.VideoTrackSource Source { get; protected set; } = null;
@@ -129,12 +129,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Source != null)
             {
-                // Notify media lines using that source. OnSourceDestroyed() calls
-                // OnMediaLineRemoved() which will modify the collection.
-                while (_mediaLines.Count > 0)
+                // Notify media lines using this source.
+                foreach (var ml in _mediaLines)
                 {
-                    _mediaLines[_mediaLines.Count - 1].OnSourceDestroyed();
+                    ml.OnSourceDestroyed();
                 }
+                _mediaLines.Clear();
 
                 // Video track sources are disposable objects owned by the user (this component)
                 Source.Dispose();
