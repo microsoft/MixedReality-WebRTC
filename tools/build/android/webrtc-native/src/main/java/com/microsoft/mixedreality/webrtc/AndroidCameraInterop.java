@@ -19,19 +19,21 @@
 package com.microsoft.mixedreality.webrtc;
 
 import android.content.Context;
+import android.graphics.ImageFormat;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat;
 import org.webrtc.CameraEnumerator;
 import org.webrtc.Camera2Enumerator;
 import org.webrtc.ContextUtils;
+import org.webrtc.Logging;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.VideoCapturer;
 import org.webrtc.VideoSource;
 
 public class AndroidCameraInterop {
+  private static final String TAG = "AndroidCameraInterop";
   private static final String VIDEO_CAPTURER_THREAD_NAME = "VideoCapturerThread";
 
   public static SurfaceTextureHelper CreateSurfaceTextureHelper() {
@@ -86,7 +88,15 @@ public class AndroidCameraInterop {
       VideoCaptureFormatInfo formatInfo = new VideoCaptureFormatInfo();
       formatInfo.width = format.width;
       formatInfo.height = format.height;
-      formatInfo.framerate = format.framerate.max;
+      // Framerate range is stored in thousand-frame-per-second (as integer)
+      formatInfo.framerate = (float)format.framerate.max / 1000.0F;
+      if (format.imageFormat == ImageFormat.NV21) {
+        // This is currently hard-coded in the implementation so should be the only value returned.
+        formatInfo.fourcc = 0x3132564E; // NV21
+      } else {
+        Logging.d(TAG, "Unknown FOURCC for Android image format #" + format.imageFormat);
+        formatInfo.fourcc = 0;
+      }
       formatInfos[index++] = formatInfo;
     }
     return formatInfos;

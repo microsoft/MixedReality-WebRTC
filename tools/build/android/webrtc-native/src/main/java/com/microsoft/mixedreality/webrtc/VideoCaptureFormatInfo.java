@@ -6,5 +6,6 @@ package com.microsoft.mixedreality.webrtc;
 public class VideoCaptureFormatInfo {
     public int width;
     public int height;
-    public int framerate;
+    public float framerate;
+    public long fourcc;
 }

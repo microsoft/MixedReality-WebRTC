@@ -413,7 +413,9 @@ std::vector<VideoCaptureFormatInfo> DeviceVideoTrackSource::GetVideoCaptureForma
   CHECK_EXCEPTION(env);
   jfieldID height_field = env->GetFieldID(format_info_class.obj(), "height", "I");
   CHECK_EXCEPTION(env);
-  jfieldID framerate_field = env->GetFieldID(format_info_class.obj(), "framerate", "I");
+  jfieldID framerate_field = env->GetFieldID(format_info_class.obj(), "framerate", "F");
+  CHECK_EXCEPTION(env);
+  jfieldID fourcc_field = env->GetFieldID(format_info_class.obj(), "fourcc", "J");
   CHECK_EXCEPTION(env);
 
   // Retrieve the format list
@@ -438,9 +440,10 @@ std::vector<VideoCaptureFormatInfo> DeviceVideoTrackSource::GetVideoCaptureForma
     CHECK_EXCEPTION(env);
     jint java_height = env->GetIntField(format_info, height_field);
     CHECK_EXCEPTION(env);
-    jint java_framerate = env->GetIntField(format_info, framerate_field);
+    jfloat java_framerate = env->GetFloatField(format_info, framerate_field);
     CHECK_EXCEPTION(env);
-    uint32_t fourcc = 0; // TODO - Populate FOURCC for Android capture format
+    uint32_t fourcc = (uint32_t)env->GetLongField(format_info, fourcc_field);
+    CHECK_EXCEPTION(env);
     formats.push_back({java_width, java_height, java_framerate, fourcc});
   }
   return formats;

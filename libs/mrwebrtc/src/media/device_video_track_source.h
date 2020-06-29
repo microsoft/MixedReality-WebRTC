@@ -26,7 +26,7 @@ struct VideoCaptureDeviceInfo {
 struct VideoCaptureFormatInfo {
   int width;
   int height;
-  int framerate;
+  double framerate;
   uint32_t fourcc;
 };
 
