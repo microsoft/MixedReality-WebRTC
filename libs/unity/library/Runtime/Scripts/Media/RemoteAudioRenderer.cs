@@ -20,14 +20,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     [RequireComponent(typeof(UnityEngine.AudioSource))]
     public class RemoteAudioRenderer : AudioReceiver, IAudioSource
     {
-        /// <summary>
-        /// Remote audio track receiving data from the remote peer.
-        /// </summary>
-        /// <remarks>
-        /// This is <c>null</c> until <see cref="IMediaReceiver.Transceiver"/> is set to a non-null
-        /// value and a remote track is added to that transceiver.
-        /// </remarks>
-        public RemoteAudioTrack Track => _track;
+        /// <inheritdoc />
+        public override RemoteAudioTrack AudioTrack => _track;
 
         /// <summary>
         /// If true, pad buffer underruns with a sine wave. This will cause artifacts on underruns.
@@ -70,7 +64,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Track != null)
             {
-                Track.AudioFrameReady += callback;
+                AudioTrack.AudioFrameReady += callback;
             }
         }
 
@@ -79,7 +73,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Track != null)
             {
-                Track.AudioFrameReady -= callback;
+                AudioTrack.AudioFrameReady -= callback;
             }
         }
 
@@ -191,9 +185,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             // OnAudioFilterRead reads the variable concurrently, but the update is atomic
             // so we don't need a lock.
-            _readBuffer = Track.CreateReadBuffer();
+            _readBuffer = AudioTrack.CreateReadBuffer();
 
-            _isLive = true;
             IsStreaming = true;
             AudioStreamStarted.Invoke(this);
         }
@@ -202,7 +195,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             EnsureIsMainAppThread();
 
-            _isLive = false;
             AudioStreamStopped.Invoke(this);
             IsStreaming = false;
 
@@ -213,8 +205,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 _readBuffer = null;
             }
         }
-
-        internal override void OnPaired(MediaTrack track)
+        protected internal override void OnPaired(MediaTrack track)
         {
             var remoteAudioTrack = (RemoteAudioTrack)track;
 
@@ -225,7 +216,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // from their handler function.
         }
 
-        internal override void OnUnpaired(MediaTrack track)
+        protected internal override void OnUnpaired(MediaTrack track)
         {
             Debug.Assert(track is RemoteAudioTrack);
             Debug.Assert(Track == track);

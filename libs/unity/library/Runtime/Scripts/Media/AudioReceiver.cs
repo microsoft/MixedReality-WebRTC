@@ -6,12 +6,16 @@ using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
-    public abstract class AudioReceiver : WorkQueue, IMediaReceiver, IMediaReceiverInternal
+    public abstract class AudioReceiver : MediaReceiver
     {
         /// <summary>
-        /// List of audio media lines using this source.
+        /// Remote audio track receiving data from the remote peer.
         /// </summary>
-        public IReadOnlyList<MediaLine> MediaLines => _mediaLines;
+        /// <remarks>
+        /// This is <c>null</c> until <see cref="IMediaReceiver.Transceiver"/> is set to a non-null
+        /// value and a remote track is added to that transceiver.
+        /// </remarks>
+        public abstract RemoteAudioTrack AudioTrack { get; }
 
         /// <summary>
         /// Event raised when the audio stream started.
@@ -40,64 +44,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public readonly AudioStreamStoppedEvent AudioStreamStopped = new AudioStreamStoppedEvent();
 
-
-        #region IMediaReceiver interface
-
         /// <inheritdoc/>
-        MediaKind IMediaReceiver.MediaKind => MediaKind.Audio;
-
+        public override MediaKind MediaKind => MediaKind.Audio;
         /// <inheritdoc/>
-        bool IMediaReceiver.IsLive => _isLive;
-
-        /// <inheritdoc/>
-        Transceiver IMediaReceiver.Transceiver => _transceiver;
-
-        #endregion
-
-        protected bool _isLive = false;
-        private Transceiver _transceiver = null;
-        private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
-
-
-        #region IMediaReceiverInternal interface
-
-        /// <inheritdoc/>
-        void IMediaReceiverInternal.OnAddedToMediaLine(MediaLine mediaLine)
-        {
-            Debug.Assert(!_mediaLines.Contains(mediaLine));
-            _mediaLines.Add(mediaLine);
-        }
-
-        /// <inheritdoc/>
-        void IMediaReceiverInternal.OnRemoveFromMediaLine(MediaLine mediaLine)
-        {
-            bool removed = _mediaLines.Remove(mediaLine);
-            Debug.Assert(removed);
-        }
-
-        void IMediaReceiverInternal.OnPaired(MediaTrack track) => OnPaired(track);
-        void IMediaReceiverInternal.OnUnpaired(MediaTrack track) => OnUnpaired(track);
-
-        /// <inheritdoc/>
-        internal abstract void OnPaired(MediaTrack track);
-
-        /// <inheritdoc/>
-        internal abstract void OnUnpaired(MediaTrack track);
-
-        /// <inheritdoc/>
-        void IMediaReceiverInternal.AttachToTransceiver(Transceiver transceiver)
-        {
-            Debug.Assert((_transceiver == null) || (_transceiver == transceiver));
-            _transceiver = transceiver;
-        }
-
-        /// <inheritdoc/>
-        void IMediaReceiverInternal.DetachFromTransceiver(Transceiver transceiver)
-        {
-            Debug.Assert((_transceiver == null) || (_transceiver == transceiver));
-            _transceiver = null;
-        }
-
-        #endregion
+        public override MediaTrack Track => AudioTrack;
     }
 }

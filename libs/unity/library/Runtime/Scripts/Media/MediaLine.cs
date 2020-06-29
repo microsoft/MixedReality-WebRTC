@@ -40,7 +40,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// This must be an instance of a class derived from <see cref="AudioTrackSource"/> or <see cref="VideoTrackSource"/>
         /// depending on whether <see cref="MediaKind"/> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"/>
         /// or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"/>, respectively.
-        /// 
+        ///
         /// Internally the peer connection will automatically create and manage a media track to bridge the
         /// media source with the transceiver.
         ///
@@ -106,12 +106,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// 'token' element as specified in https://tools.ietf.org/html/rfc4566#page-43:
         /// - Symbols [!#$%'*+-.^_`{|}~] and ampersand &amp;
         /// - Alphanumerical characters [A-Za-z0-9]
-        /// 
+        ///
         /// Users can manually test if a string is a valid SDP token with the utility method
         /// <see cref="SdpTokenAttribute.Validate(string, bool)"/>. The property setter will
         /// use this and throw an <see cref="ArgumentException"/> if the token is not a valid
         /// SDP token.
-        /// 
+        ///
         /// The sender track name is taken into account each time the track is created. If this
         /// property is assigned after the track was created (already negotiated), the value will
         /// be used only for the next negotiation, and the current sender track will keep its
@@ -149,16 +149,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
         /// </summary>
-        public IMediaReceiver Receiver
+        public MediaReceiver Receiver
         {
-            get { return (_receiver as IMediaReceiver); }
+            get { return _receiver; }
             set
             {
                 if (value == null)
                 {
                     if (_receiver != null)
                     {
-                        (_receiver as IMediaReceiverInternal).OnRemoveFromMediaLine(this);
+                        _receiver.OnRemoveFromMediaLine(this);
                         _receiver = null;
                         UpdateTransceiverDesiredDirection();
                     }
@@ -169,23 +169,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         throw new ArgumentException("Wrong media kind", nameof(Receiver));
                     }
-                    if (!(value is IMediaReceiverInternal))
+                    if (_receiver != value)
                     {
-                        throw new ArgumentException("Missing interface IMediaReceiverInternal", nameof(Receiver));
-                    }
-                    if (value is MonoBehaviour mediaReceiver)
-                    {
-                        if (_receiver != mediaReceiver)
+                        if (_receiver == null)
                         {
-                            (_receiver as IMediaReceiverInternal)?.OnRemoveFromMediaLine(this);
-                            _receiver = mediaReceiver;
-                            (_receiver as IMediaReceiverInternal).OnAddedToMediaLine(this);
-                            UpdateTransceiverDesiredDirection();
+                            _receiver.OnRemoveFromMediaLine(this);
                         }
-                    }
-                    else
-                    {
-                        throw new ArgumentException(nameof(Receiver) + " is not a MonoBehaviour component", nameof(Receiver));
+
+                        _receiver = value;
+                        _receiver.OnAddedToMediaLine(this);
+                        UpdateTransceiverDesiredDirection();
                     }
                 }
             }
@@ -226,7 +219,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         /// <seealso cref="Receiver"/>
         [SerializeField]
-        private MonoBehaviour _receiver;
+        private MediaReceiver _receiver;
 
         /// <summary>
         /// Backing field to serialize the sender track's name.
@@ -238,7 +231,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Media track bridging the <see cref="Source"/> with the underlying <see cref="Transceiver"/>.
-        /// 
+        ///
         /// The media track is automatically managed when <see cref="Source"/> changes or the transceiver direction
         /// is renegotiated, as needed.
         /// </summary>
@@ -248,7 +241,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Receiver actually paired during <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/>.
         /// This is different from <see cref="Receiver"/> until a negotiation is achieved.
         /// </summary>
-        private IMediaReceiverInternal _pairedReceiver;
+        private MediaReceiver _pairedReceiver;
 
         #endregion
 
@@ -330,17 +323,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Note the extra "isReceiving" check, which ensures that when the remote track was
             // just removed by OnUnpaired(RemoteTrack) from the TrackRemoved event then it is not
             // immediately re-added by mistake.
-            var receiverInternal = (_receiver as IMediaReceiverInternal);
             if (wantsRecv && isReceiving && !wasReceiving)
             {
                 // Transceiver started receiving, and user actually wants to receive
-                receiverInternal.OnPaired(transceiver.RemoteTrack);
-                _pairedReceiver = receiverInternal;
+                _receiver.OnPaired(transceiver.RemoteTrack);
+                _pairedReceiver = _receiver;
             }
             else if (!isReceiving && wasReceiving)
             {
                 // Transceiver stopped receiving (user intent does not matter here)
-                receiverInternal.OnUnpaired(transceiver.RemoteTrack);
+                _receiver.OnUnpaired(transceiver.RemoteTrack);
                 _pairedReceiver = null;
             }
         }
@@ -450,7 +442,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
             if (wantsRecv)
             {
-                (_receiver as IMediaReceiverInternal).AttachToTransceiver(Transceiver);
+                _receiver.AttachToTransceiver(Transceiver);
             }
         }
 
@@ -467,7 +459,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
             if (wasReceiving)
             {
-                (_receiver as IMediaReceiverInternal).DetachFromTransceiver(Transceiver);
+                _receiver.DetachFromTransceiver(Transceiver);
             }
         }
 

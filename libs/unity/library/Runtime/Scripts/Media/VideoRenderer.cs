@@ -75,16 +75,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             _source = source;
             _renderer = renderer;
+        }
 
+        public void StartPlaying()
+        {
             CreateEmptyVideoTextures();
 
             // Leave 3ms of margin, otherwise it misses 1 frame and drops to ~20 FPS
             // when Unity is running at 60 FPS.
             _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxFramerate) - 0.003f);
-        }
 
-        public void StartPlaying()
-        {
             _source.GetVideoStreamStarted().AddListener(OnVideoStreamStarted);
             _source.GetVideoStreamStopped().AddListener(OnVideoStreamStopped);
 

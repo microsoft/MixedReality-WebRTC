@@ -12,7 +12,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// The video track can optionally be displayed locally with a <see cref="VideoRenderer"/>.
     /// </summary>
     [AddComponentMenu("MixedReality-WebRTC/Video Receiver")]
-    public abstract class VideoReceiver : WorkQueue, IVideoSource, IMediaReceiver, IMediaReceiverInternal
+    public abstract class VideoReceiver : MediaReceiver, IVideoSource
     {
         /// <summary>
         /// Remote video track receiving data from the remote peer.
@@ -20,12 +20,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// This is <c>null</c> until <see cref="IMediaReceiver.Transceiver"/> is set to a non-null value
         /// and a remote track is added to that transceiver.
         /// </summary>
-        public RemoteVideoTrack Track { get; private set; }
-
-        /// <summary>
-        /// List of video media lines using this source.
-        /// </summary>
-        public IReadOnlyList<MediaLine> MediaLines => _mediaLines;
+        public RemoteVideoTrack VideoTrack { get; private set; }
 
         /// <summary>
         /// Event raised when the video stream started.
@@ -83,9 +78,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public void RegisterCallback(I420AVideoFrameDelegate callback)
         {
-            if (Track != null)
+            if (VideoTrack != null)
             {
-                Track.I420AVideoFrameReady += callback;
+                VideoTrack.I420AVideoFrameReady += callback;
             }
         }
 
@@ -102,27 +97,27 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public void RegisterCallback(Argb32VideoFrameDelegate callback)
         {
-            if (Track != null)
+            if (VideoTrack != null)
             {
-                Track.Argb32VideoFrameReady += callback;
+                VideoTrack.Argb32VideoFrameReady += callback;
             }
         }
 
         /// <inheritdoc/>
         public void UnregisterCallback(I420AVideoFrameDelegate callback)
         {
-            if (Track != null)
+            if (VideoTrack != null)
             {
-                Track.I420AVideoFrameReady -= callback;
+                VideoTrack.I420AVideoFrameReady -= callback;
             }
         }
 
         /// <inheritdoc/>
         public void UnregisterCallback(Argb32VideoFrameDelegate callback)
         {
-            if (Track != null)
+            if (VideoTrack != null)
             {
-                Track.Argb32VideoFrameReady -= callback;
+                VideoTrack.Argb32VideoFrameReady -= callback;
             }
         }
 
@@ -132,40 +127,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #region IMediaReceiver interface
 
         /// <inheritdoc/>
-        MediaKind IMediaReceiver.MediaKind => MediaKind.Video;
+        public override MediaKind MediaKind => MediaKind.Video;
 
-        /// <inheritdoc/>
-        bool IMediaReceiver.IsLive => _isLive;
-
-        /// <inheritdoc/>
-        Transceiver IMediaReceiver.Transceiver => _transceiver;
+        public override MediaTrack Track => VideoTrack;
 
         #endregion
 
-
-        private bool _isLive = false;
-        private Transceiver _transceiver = null;
-        private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
-
-
-        #region IMediaReceiverInternal interface
-
         /// <inheritdoc/>
-        void IMediaReceiverInternal.OnAddedToMediaLine(MediaLine mediaLine)
-        {
-            Debug.Assert(!_mediaLines.Contains(mediaLine));
-            _mediaLines.Add(mediaLine);
-        }
-
-        /// <inheritdoc/>
-        void IMediaReceiverInternal.OnRemoveFromMediaLine(MediaLine mediaLine)
-        {
-            bool removed = _mediaLines.Remove(mediaLine);
-            Debug.Assert(removed);
-        }
-
-        /// <inheritdoc/>
-        void IMediaReceiverInternal.OnPaired(MediaTrack track)
+        protected internal override void OnPaired(MediaTrack track)
         {
             var remoteVideoTrack = (RemoteVideoTrack)track;
 
@@ -174,16 +143,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // from their handler function.
             InvokeOnAppThread(() =>
             {
-                Debug.Assert(Track == null);
-                Track = remoteVideoTrack;
-                _isLive = true;
+                Debug.Assert(VideoTrack == null);
+                VideoTrack = remoteVideoTrack;
                 IsStreaming = true;
                 VideoStreamStarted.Invoke(this);
             });
         }
 
         /// <inheritdoc/>
-        void IMediaReceiverInternal.OnUnpaired(MediaTrack track)
+        protected internal override void OnUnpaired(MediaTrack track)
         {
             Debug.Assert(track is RemoteVideoTrack);
 
@@ -192,28 +160,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // from their handler function.
             InvokeOnAppThread(() =>
             {
-                Debug.Assert(Track == track);
-                Track = null;
-                _isLive = false;
+                Debug.Assert(VideoTrack == track);
+                VideoTrack = null;
                 VideoStreamStopped.Invoke(this);
                 IsStreaming = false;
             });
         }
-
-        /// <inheritdoc/>
-        void IMediaReceiverInternal.AttachToTransceiver(Transceiver transceiver)
-        {
-            Debug.Assert((_transceiver == null) || (_transceiver == transceiver));
-            _transceiver = transceiver;
-        }
-
-        /// <inheritdoc/>
-        void IMediaReceiverInternal.DetachFromTransceiver(Transceiver transceiver)
-        {
-            Debug.Assert((_transceiver == null) || (_transceiver == transceiver));
-            _transceiver = null;
-        }
-
-        #endregion
     }
 }

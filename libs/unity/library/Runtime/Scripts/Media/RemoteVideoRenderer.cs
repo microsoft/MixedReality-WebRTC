@@ -24,7 +24,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [SerializeField]
         private VideoRendererWidget _widget = new VideoRendererWidget();
 
-        private void Start()
+        protected override void Awake()
         {
             _widget.Initialize(this, GetComponent<Renderer>());
         }

@@ -49,14 +49,13 @@ public class UniformColorVideoSource : CustomVideoSource<Argb32VideoFrameStorage
 
     protected void Start()
     {
-        // Update buffer on start in case OnFrameRequested() is called before Update() 
+        // Update buffer on start in case OnFrameRequested() is called before Update()
         UpdateBuffer();
     }
 
-    protected new void Update()
+    protected void Update()
     {
         UpdateBuffer();
-        base.Update();
     }
 
     protected void UpdateBuffer()
