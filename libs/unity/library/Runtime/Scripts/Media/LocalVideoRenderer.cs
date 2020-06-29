@@ -35,7 +35,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (!_isPlaying && Source != null)
             {
-                _widget.Initialize(Source, GetComponent<Renderer>());
+                _widget.Initialize(Source, GetComponent<Renderer>(), 3);
                 _widget.StartPlaying();
                 _isPlaying = true;
             }

@@ -71,10 +71,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private IVideoSource _source;
         private Renderer _renderer;
 
-        public void Initialize(IVideoSource source, Renderer renderer)
+        private int _frameQueueSize;
+
+        public void Initialize(IVideoSource source, Renderer renderer, int frameQueueSize)
         {
             _source = source;
             _renderer = renderer;
+            _frameQueueSize = frameQueueSize;
         }
 
         public void StartPlaying()
@@ -103,16 +106,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void OnVideoStreamStarted(IVideoSource videoSrc)
         {
-            int frameQueueSize = 5;
             switch (videoSrc.FrameEncoding)
             {
                 case VideoEncoding.I420A:
-                    _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(frameQueueSize);
+                    _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(_frameQueueSize);
                     videoSrc.RegisterCallback(I420AVideoFrameReady);
                     break;
 
                 case VideoEncoding.Argb32:
-                    _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(frameQueueSize);
+                    _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(_frameQueueSize);
                     videoSrc.RegisterCallback(Argb32VideoFrameReady);
                     break;
             }

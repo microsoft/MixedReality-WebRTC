@@ -24,7 +24,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected override void Awake()
         {
-            _widget.Initialize(this, GetComponent<Renderer>());
+            _widget.Initialize(this, GetComponent<Renderer>(), 5);
         }
 
         private void OnEnable()
