@@ -9,44 +9,46 @@ using Microsoft.MixedReality.WebRTC.Unity.Editor;
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// Utility component used to play video frames obtained from a remote WebRTC video track.
+    /// Utility component used to play video frames obtained from a local WebRTC video track.
     /// </summary>
     /// <remarks>
     /// This component writes to the attached <a href="https://docs.unity3d.com/ScriptReference/Material.html">Material</a>,
     /// via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html">Renderer</a>.
     /// </remarks>
     [RequireComponent(typeof(Renderer))]
-    [AddComponentMenu("MixedReality-WebRTC/Remote Video Renderer")]
-    public class RemoteVideoRenderer : VideoReceiver
+    [AddComponentMenu("MixedReality-WebRTC/Local Video Renderer")]
+    public class LocalVideoRenderer : MonoBehaviour
     {
+        public VideoTrackSource Source;
+
         [SerializeField]
         private VideoRendererWidget _widget = new VideoRendererWidget();
 
-        protected override void Awake()
-        {
-            _widget.Initialize(this, GetComponent<Renderer>());
-        }
-
-        private void OnEnable()
-        {
-            _widget.StartPlaying();
-        }
+        private bool _isPlaying = false;
 
         private void OnDisable()
         {
             _widget.StopPlaying();
         }
 
-        //// <summary>
-        /// Unity Engine Start() hook
-        /// </summary>
-        /// <remarks>
-        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html
-        /// </remarks>
-        protected override void Update()
+        private void Update()
         {
-            base.Update();
-            _widget.Update();
+            if (!_isPlaying && Source != null)
+            {
+                _widget.Initialize(Source, GetComponent<Renderer>());
+                _widget.StartPlaying();
+                _isPlaying = true;
+            }
+            else if (_isPlaying && Source == null)
+            {
+                _widget.StopPlaying();
+                _isPlaying = false;
+            }
+
+            if (_isPlaying)
+            {
+                _widget.Update();
+            }
         }
     }
 }
