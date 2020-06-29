@@ -62,15 +62,16 @@ public class AndroidCameraInterop {
   public static VideoCaptureDeviceInfo[] GetVideoCaptureDevices() {
     CameraEnumerator enumerator = new Camera2Enumerator(ContextUtils.getApplicationContext());
     final String[] deviceNames = enumerator.getDeviceNames();
-    VideoCaptureDeviceInfo[] devices = new VideoCaptureDeviceInfo[deviceNames.length];
+    VideoCaptureDeviceInfo[] deviceInfos = new VideoCaptureDeviceInfo[deviceNames.length];
     int index = 0;
     for (String name : deviceNames) {
       // For lack of a better solution, return the device name in both fields
-      devices[index].id = name;
-      devices[index].name = name;
-      ++index;
+      VideoCaptureDeviceInfo deviceInfo = new VideoCaptureDeviceInfo();
+      deviceInfo.id = name;
+      deviceInfo.name = name;
+      deviceInfos[index++] = deviceInfo;
     }
-    return devices;
+    return deviceInfos;
   }
 
   public static VideoCaptureFormatInfo[] GetVideoCaptureFormats(String deviceId) {
@@ -79,15 +80,16 @@ public class AndroidCameraInterop {
     if (formats == null) {
       return null;
     }
-    VideoCaptureFormatInfo[] formatsOut = new VideoCaptureFormatInfo[formats.size()];
+    VideoCaptureFormatInfo[] formatInfos = new VideoCaptureFormatInfo[formats.size()];
     int index = 0;
     for (CaptureFormat format : formats) {
-      formatsOut[index].width = format.width;
-      formatsOut[index].height = format.height;
-      formatsOut[index].framerate = format.framerate.max;
-      ++index;
+      VideoCaptureFormatInfo formatInfo = new VideoCaptureFormatInfo();
+      formatInfo.width = format.width;
+      formatInfo.height = format.height;
+      formatInfo.framerate = format.framerate.max;
+      formatInfos[index++] = formatInfo;
     }
-    return formatsOut;
+    return formatInfos;
   }
 
   public static VideoCapturer StartCapture(
