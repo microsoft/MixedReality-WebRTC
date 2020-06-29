@@ -418,8 +418,11 @@ std::vector<VideoCaptureFormatInfo> DeviceVideoTrackSource::GetVideoCaptureForma
 
   // Retrieve the format list
   jmethodID enum_formats_method = webrtc::GetStaticMethodID(
-      env, android_camera_interop_class.obj(), "GetVideoCaptureFormats", "()[Lcom/microsoft/mixedreality/webrtc/VideoCaptureFormatInfo;");
-  jobjectArray format_list = (jobjectArray)env->CallStaticObjectMethod(android_camera_interop_class.obj(), enum_formats_method);
+      env, android_camera_interop_class.obj(), "GetVideoCaptureFormats", "(Ljava/lang/String;)[Lcom/microsoft/mixedreality/webrtc/VideoCaptureFormatInfo;");
+  std::string device_id_null_terminated(device_id.data(), device_id.size());
+  jstring java_device_id = env->NewStringUTF(device_id_null_terminated.c_str());
+  CHECK_EXCEPTION(env);
+  jobjectArray format_list = (jobjectArray)env->CallStaticObjectMethod(android_camera_interop_class.obj(), enum_formats_method, java_device_id);
   CHECK_EXCEPTION(env);
   const jsize num_formats = env->GetArrayLength(format_list);
   CHECK_EXCEPTION(env);
