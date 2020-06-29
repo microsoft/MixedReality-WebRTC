@@ -9,11 +9,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
     /// <summary>
     /// Inspector editor for <see cref="VideoRenderer"/>.
     /// </summary>
-    [CustomEditor(typeof(VideoRenderer))]
+    [CustomEditor(typeof(RemoteVideoRenderer))]
     [CanEditMultipleObjects]
     public class VideoRendererEditor : UnityEditor.Editor
     {
-        SerializedProperty _source;
+        //SerializedProperty _source;
         SerializedProperty _maxFramerate;
         SerializedProperty _enableStatistics;
         SerializedProperty _frameLoadStatHolder;
@@ -22,12 +22,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
         void OnEnable()
         {
-            _source = serializedObject.FindProperty("Source");
-            _maxFramerate = serializedObject.FindProperty("MaxFramerate");
-            _enableStatistics = serializedObject.FindProperty("EnableStatistics");
-            _frameLoadStatHolder = serializedObject.FindProperty("FrameLoadStatHolder");
-            _framePresentStatHolder = serializedObject.FindProperty("FramePresentStatHolder");
-            _frameSkipStatHolder = serializedObject.FindProperty("FrameSkipStatHolder");
+            //_source = serializedObject.FindProperty("Source");
+            _maxFramerate = serializedObject.FindProperty("_widget.MaxFramerate");
+            _enableStatistics = serializedObject.FindProperty("_widget.EnableStatistics");
+            _frameLoadStatHolder = serializedObject.FindProperty("_widget.FrameLoadStatHolder");
+            _framePresentStatHolder = serializedObject.FindProperty("_widget.FramePresentStatHolder");
+            _frameSkipStatHolder = serializedObject.FindProperty("_widget.FrameSkipStatHolder");
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             GUILayout.Space(10);
 
             EditorGUILayout.LabelField("Video", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_source);
+            //EditorGUILayout.PropertyField(_source);
             EditorGUILayout.PropertyField(_maxFramerate);
 
             GUILayout.Space(10);
