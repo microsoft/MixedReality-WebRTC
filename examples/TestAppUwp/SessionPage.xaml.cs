@@ -9,11 +9,11 @@ using Windows.UI.Xaml.Navigation;
 namespace TestAppUwp
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public sealed partial class SessionPage : Page
     {
-        public TransceiverCollectionViewModel Transceivers
+        public CollectionViewModel<TransceiverViewModel> Transceivers
         {
             get { return SessionModel.Current.Transceivers; }
         }
@@ -81,14 +81,7 @@ namespace TestAppUwp
             SessionModel.Current.StartNegotiation();
         }
 
-        private void TransceiverSenderSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var senderTrack = transceiverSenderTrack.SelectedItem as SenderTrackViewModel;
-            var transceiverViewModel = SessionModel.Current.Transceivers.SelectedItem;
-            transceiverViewModel.Sender = senderTrack;
-        }
-
-        private async void AddExtraDataChannelButtonClicked(object sender, RoutedEventArgs e)
+        private void AddExtraDataChannelButtonClicked(object sender, RoutedEventArgs e)
         {
             //if (!PluginInitialized)
             //{

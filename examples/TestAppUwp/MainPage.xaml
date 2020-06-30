@@ -27,12 +27,6 @@
         <DataTemplate x:Key="VideoTrackItemTemplate" x:DataType="local:VideoTrackViewModel">
             <TextBlock Text="{x:Bind DisplayName}" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
         </DataTemplate>-->
-
-        <!--<DataTemplate x:Key="ChatChannelItemTemplate" x:DataType="local:ChatChannel">
-            <StackPanel Orientation="Horizontal" Margin="2,0,0,0" AutomationProperties.Name="{x:Bind Label}">
-                <TextBlock Text="{x:Bind Label}" Margin="24,0,0,0" VerticalAlignment="Center" />
-            </StackPanel>
-        </DataTemplate>-->
     </Page.Resources>
     <Grid x:Name="LayoutRoot">
         <NavigationView x:Name="navigationView"
@@ -41,29 +35,6 @@
                         ItemInvoked="OnNavigationViewItemInvoked"
                         OpenPaneLength="170" IsBackButtonVisible="Collapsed">
             <Frame x:Name="rootFrame" CacheSize="2" />
-            
-            <!--<Grid Grid.Row="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="200"/>
-                                    <ColumnDefinition Width="12"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <ListView x:Name="chatList" Width="200" ItemClick="ChatList_ItemClick" IsItemClickEnabled="True"
-                                ItemsSource="{x:Bind ChatChannels}" ItemTemplate="{StaticResource ChatChannelItemTemplate}"/>
-                                <ScrollViewer x:Name="chatScrollViewer" Grid.Column="2" >
-                                    <TextBox x:Name="chatTextBox" IsEnabled="False" IsReadOnly="True" AcceptsReturn="True" />
-                                </ScrollViewer>
-                            </Grid>
-                            <Grid Grid.Row="6">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Button x:Name="chatSendButton" IsEnabled="False" Margin="0,6,6,0" Click="ChatSendButton_Click">
-                                    <SymbolIcon Symbol="Send" />
-                                </Button>
-                                <TextBox x:Name="chatInputBox" IsEnabled="False" Margin="0,6,0,0" PlaceholderText="Type some text to send..." Grid.Column="2" KeyDown="OnChatKeyDown" />
-                            </Grid>-->
         </NavigationView>
     </Grid>
 </Page>

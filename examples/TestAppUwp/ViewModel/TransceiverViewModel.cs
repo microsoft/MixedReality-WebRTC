@@ -2,7 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
 using Microsoft.MixedReality.WebRTC;
 
 namespace TestAppUwp
@@ -20,7 +23,7 @@ namespace TestAppUwp
         /// <summary>
         /// Current sender track for the transceiver. This is the track used as the media
         /// source to send to the remote peer. This can be the null sender track
-        /// (<see cref="TransceiverCollectionViewModel.NullSenderTrack"/>), but cannot be
+        /// (<see cref="NullSenderTrack"/>), but cannot be
         /// a <c>null</c> sender track view model (ignored).
         /// </summary>
         public SenderTrackViewModel Sender
@@ -142,6 +145,25 @@ namespace TestAppUwp
         public bool IsAudioTransceiver => Transceiver.MediaKind == MediaKind.Audio;
         public bool IsVideoTransceiver => Transceiver.MediaKind == MediaKind.Video;
 
+        private List<SenderTrackViewModel> _allSenders =
+            new List<SenderTrackViewModel>();
+
+        /// <summary>
+        /// Sender tracks available for this transceiver.
+        /// </summary>
+        public IEnumerable<SenderTrackViewModel> AvailableSenders
+        {
+            get
+            {
+                // Only return the null track, the current track, or the ones that are note
+                // attached to another transceiver.
+                return _allSenders.Where(sender =>
+                    sender == SenderTrackViewModel.Null ||
+                    sender.Track.Transceiver == null ||
+                    sender.Track.Transceiver == Transceiver);
+            }
+        }
+
         public TransceiverViewModel(Transceiver transceiver)
         {
             Transceiver = transceiver;
@@ -151,16 +173,65 @@ namespace TestAppUwp
             transceiver.DirectionChanged += OnDirectionChanged;
 
             // Sender defaults to the NULL track
-            _sender = TransceiverCollectionViewModel.NullSenderTrack;
+            _sender = SenderTrackViewModel.Null;
+
+            // Subscribe to new (local) tracks added.
+            if (transceiver.MediaKind == MediaKind.Audio)
+            {
+                SessionModel.Current.AudioTracks.CollectionChanged += OnTracksChanged;
+            }
+            else
+            {
+                SessionModel.Current.VideoTracks.CollectionChanged += OnTracksChanged;
+            }
+
+            // Build the list of sender tracks for the given media kind
+            _allSenders.Add(SenderTrackViewModel.Null);
+
+            var tracks =
+                Transceiver.MediaKind == MediaKind.Audio ?
+                (IEnumerable<TrackViewModel>)SessionModel.Current.AudioTracks :
+                (IEnumerable<TrackViewModel>)SessionModel.Current.VideoTracks;
+
+            foreach (var trackViewModel in tracks)
+            {
+                if (trackViewModel.IsRemote)
+                {
+                    continue;
+                }
+                var track = trackViewModel?.TrackImpl;
+                if (track != null)
+                {
+                    _allSenders.Add(new SenderTrackViewModel(track));
+                }
+            }
         }
 
-        /// <summary>
-        /// Notify the current transceiver that its sender track may have changed, generally
-        /// because the list of senders was refreshed after a new transceiver was selected.
-        /// </summary>
-        public void NotifySenderChanged()
+        private void OnTracksChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            RaisePropertyChanged("Sender");
+            ThreadHelper.EnsureIsMainThread();
+            // We only care about local tracks, that can only be added at the moment.
+            switch(e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    {
+                        bool anyNewLocalTrack = false;
+                        foreach (var newItem in e.NewItems)
+                        {
+                            var tvm = (TrackViewModel)newItem;
+                            if (!tvm.IsRemote)
+                            {
+                                anyNewLocalTrack = true;
+                                _allSenders.Add(new SenderTrackViewModel(tvm.TrackImpl));
+                            }
+                        }
+                        if (anyNewLocalTrack)
+                        {
+                            RaisePropertyChanged(nameof(AvailableSenders));
+                        }
+                        break;
+                    }
+            }
         }
 
         /// <summary>

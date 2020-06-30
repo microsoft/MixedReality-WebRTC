@@ -15,8 +15,7 @@ param(
 # - All the branches under 'release/*'
 $docsBranches = @("master")
 Invoke-Expression "git ls-remote origin `"refs/heads/release/*`"" | Tee-Object -Variable output | Out-Null
-if ($output)
-{
+if ($output) {
     # Split git command output by line, each line containing a different ref
     $output.Split("`n") | ForEach-Object {
         # Split at space, remove first part (ref hash) and keep second one (ref name),
@@ -25,8 +24,7 @@ if ($output)
         # Strip the 'refs/heads/' prefix, if any. If the pattern match failed above, the
         # string is empty, and the replace does nothing.
         $ref = $ref -replace "refs/heads/","";
-        if ($ref)
-        {
+        if ($ref) {
             $docsBranches += $ref;
         }
     }
@@ -40,8 +38,7 @@ $docsBranches.ForEach({ Write-Host "- Branch `"$_`"" })
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#build-variables
 $SourceBranch = ($SourceBranch -Replace "^refs/heads/","")
 Write-Host "Source branch: '$SourceBranch'"
-if (!$docsBranches.Contains($SourceBranch))
-{
+if (!$docsBranches.Contains($SourceBranch)) {
     Write-Host "Source branch is not a documented branch, aborting."
     Write-Host "##vso[task.complete result=Failed;]Non-documented branch $SourceBranch."
     exit 1
@@ -59,8 +56,7 @@ $Authorization = "Basic " + [System.Convert]::ToBase64String([System.Text.Encodi
 Write-Host "Resolve source branch commit SHA1"
 $output = ""
 Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/$SourceBranch^{commit}`"" | Tee-Object -Variable output | Out-Null
-if (-not $output)
-{
+if (-not $output) {
     Write-Host "Unknown branch '$SourceBranch'"
     Write-Host "##vso[task.complete result=Failed;]Unknown branch $SourceBranch."
     exit 1
@@ -79,15 +75,13 @@ Remove-Item ".\_docs" -Force -Recurse -ErrorAction Ignore
 # Compute the source and destination folders
 $DestFolder = ".\_docs\versions\$SourceBranch\"
 $DestFolder = $DestFolder.Replace("/", "\")
-if ($SourceBranch -eq "master")
-{
+if ($SourceBranch -eq "master") {
     # The master branch is the default version at the root of the website
     $DestFolder = ".\_docs\"
 }
 $output = ""
 Invoke-Expression "git rev-parse --verify `"refs/remotes/origin/gh-pages^{commit}`"" | Tee-Object -Variable output | Out-Null
-if (-not $output)
-{
+if (-not $output) {
     Write-Host "Missing docs branch 'gh-pages'"
     Write-Host "##vso[task.complete result=Failed;]Missing docs branch 'gh-pages'."
     exit 1
@@ -105,25 +99,24 @@ Write-Host "Clone the generated docs branch"
 git -c http.extraheader="AUTHORIZATION: $Authorization" `
     clone https://github.com/Microsoft/MixedReality-WebRTC.git `
     --branch gh-pages ".\_docs"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Failed to checkout GitHub repository. Check logs for details."
+    Write-Host "##vso[task.complete result=Failed;]Checkout failed."
+    exit 1
+}
 
 # Delete all the files in this folder, so that files deleted in the new version
 # of the documentation are effectively deleted in the commit.
 Write-Host "Delete currently committed version"
-if (Test-Path "$DestFolder")
-{
-    if ($SourceBranch -eq "master")
-    {
+if (Test-Path "$DestFolder") {
+    if ($SourceBranch -eq "master") {
         # For master, do not delete everything, otherwise docs for other branches
         # will also be deleted. Only delete files outside '_docs/versions'.
         Get-ChildItem "$DestFolder" -Recurse | Where-Object {$_.FullName -notlike "*\versions*"} | Remove-Item -Force -Recurse
-    }
-    else
-    {
+    } else {
         Get-ChildItem "$DestFolder" -Recurse | Remove-Item -Force -Recurse
     }
-}
-else
-{
+} else {
     New-Item "$DestFolder" -ItemType Directory
 }
 
@@ -173,17 +166,19 @@ git config user.email ${env:GITHUB_EMAIL}
 
 # Check for any change compared to previous version (if any)
 Write-Host "Check for changes"
-if (git status --short)
-{
+if (git status --short) {
     # Add everything. Because the current directory is _docs, this is everything from
     # the point of view of the sub-repo inside _docs, so this ignores all changes outside
     # this directory and retain only generated docs changes, which is exactly what we want.
     git add --all
     git commit -m "Generated docs for commit $commitSha ($commitTitle)"
     git -c http.extraheader="AUTHORIZATION: $Authorization" push origin "$DestBranch"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Failed to push new docs to GitHub repository. Check logs for details."
+        Write-Host "##vso[task.complete result=Failed;]Push failed."
+        exit 1
+    }
     Write-Host "Docs changes committed"
-}
-else
-{
+} else {
     Write-Host "Docs are up to date"
 }

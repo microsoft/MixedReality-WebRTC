@@ -7,24 +7,10 @@
 
 #include "media/remote_audio_track.h"
 #include "remote_audio_track_interop.h"
+#include "media/audio_track_read_buffer.h"
+#include "utils.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
-
-MRS_API void MRS_CALL
-mrsRemoteAudioTrackSetUserData(mrsRemoteAudioTrackHandle handle,
-                               void* user_data) noexcept {
-  if (auto track = static_cast<RemoteAudioTrack*>(handle)) {
-    track->SetUserData(user_data);
-  }
-}
-
-MRS_API void* MRS_CALL
-mrsRemoteAudioTrackGetUserData(mrsRemoteAudioTrackHandle handle) noexcept {
-  if (auto track = static_cast<RemoteAudioTrack*>(handle)) {
-    return track->GetUserData();
-  }
-  return nullptr;
-}
 
 void MRS_CALL
 mrsRemoteAudioTrackRegisterFrameCallback(mrsRemoteAudioTrackHandle trackHandle,
@@ -69,4 +55,78 @@ mrsBool MRS_CALL mrsRemoteAudioTrackIsOutputToDevice(
     return track->IsOutputToDevice() ? mrsBool::kTrue : mrsBool::kFalse;
   }
   return mrsBool::kFalse;
+}
+
+mrsResult MRS_CALL
+mrsRemoteAudioTrackCreateReadBuffer(mrsRemoteAudioTrackHandle track_handle,
+                              mrsAudioTrackReadBufferHandle* audioBufferOut) {
+  if (!audioBufferOut) {
+      return Result::kInvalidParameter;
+  }
+
+  *audioBufferOut = nullptr;
+  if (auto track = static_cast<RemoteAudioTrack*>(track_handle)) {
+    auto buffer = track->CreateReadBuffer();
+    *audioBufferOut = buffer.release();
+    return Result::kSuccess;
+  }
+  return Result::kInvalidNativeHandle;
+}
+
+#define LOG_INVALID_ARG_IF(...) \
+  (__VA_ARGS__) && ((RTC_LOG_F(LS_ERROR) << "Invalid argument: " #__VA_ARGS__), true)
+
+mrsResult MRS_CALL
+mrsAudioTrackReadBufferRead(mrsAudioTrackReadBufferHandle buffer,
+                            int sample_rate,
+                            int num_channels,
+                            mrsAudioTrackReadBufferPadBehavior pad_behavior,
+                            float* samples_out,
+                            int num_samples_max,
+                            int* num_samples_read_out,
+                            mrsBool* has_overrun_out) {
+  if (!buffer) {
+    return Result::kInvalidNativeHandle;
+  }
+  if (LOG_INVALID_ARG_IF(sample_rate <= 0)) {
+    return Result::kInvalidParameter;
+  }
+
+  if (LOG_INVALID_ARG_IF(num_channels <= 0)) {
+    return Result::kInvalidParameter;
+  }
+
+  if (LOG_INVALID_ARG_IF(!IsValidAudioTrackBufferPadBehavior(pad_behavior))) {
+    return Result::kInvalidParameter;
+  }
+
+  if (LOG_INVALID_ARG_IF(num_samples_max < 0)) {
+    return Result::kInvalidParameter;
+  }
+
+  if (LOG_INVALID_ARG_IF(num_samples_max > 0 && !samples_out)) {
+    return Result::kInvalidParameter;
+  }
+
+  if (LOG_INVALID_ARG_IF(!num_samples_read_out)) {
+    return Result::kInvalidParameter;
+  }
+
+  if(LOG_INVALID_ARG_IF(!has_overrun_out)) {
+    return Result::kInvalidParameter;
+  }
+
+  auto stream = static_cast<AudioTrackReadBuffer*>(buffer);
+  bool has_overrun;
+  stream->Read(sample_rate, num_channels, pad_behavior, samples_out,
+               num_samples_max, num_samples_read_out, &has_overrun);
+  *has_overrun_out = has_overrun ? mrsBool::kTrue : mrsBool::kFalse;
+  return Result::kSuccess;
+}
+
+void MRS_CALL
+mrsAudioTrackReadBufferDestroy(mrsAudioTrackReadBufferHandle buffer) {
+  if (auto ars = static_cast<AudioTrackReadBuffer*>(buffer)) {
+    delete ars;
+  }
 }

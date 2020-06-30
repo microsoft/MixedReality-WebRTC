@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+    <metadata>
+        <id>Microsoft.MixedReality.WebRTC</id>
+        <version>__VERSION_STRING__</version>
+        <authors>Microsoft</authors>
+        <copyright>&#169; Microsoft Corporation. All rights reserved.</copyright>
+        <description>MixedReality-WebRTC is a collection of components to help mixed reality app developers integrate audio, video, and data real-time communication into their application and improve their collaborative experience.
+
+This package contains the C# and native C++ libraries (x86, x64) for Windows Desktop.</description>
+        <title>Microsoft.MixedReality.WebRTC</title>
+        <projectUrl>https://microsoft.github.io/MixedReality-WebRTC/</projectUrl>
+        <license type="expression">MIT</license>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <repository type="git" url="https://github.com/microsoft/MixedReality-WebRTC.git" branch="master" commit="__SOURCE_COMMIT_ID__" />
+        <iconUrl>https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/mr-webrtc_icon.png</iconUrl>
+        <tags>WebRTC video audio data streaming realtime communication dotnet .NET C#</tags>
+        <summary>MixedReality-WebRTC is a collection of components to help mixed reality app developers integrate audio, video, and data real-time communication into their application and improve their collaborative experience.
+
+This package contains the C# and native C++ libraries (x86, x64) for Windows Desktop.</summary>
+    </metadata>
+    <files>
+        <!-- mrwebrtc.dll (Desktop) -->
+        <file src="runtimes\win10-x86\native\mrwebrtc.dll" target="runtimes\win10-x86\native" />
+        <file src="runtimes\win10-x64\native\mrwebrtc.dll" target="runtimes\win10-x64\native" />
+        
+        <!-- Microsoft.MixedReality.WebRTC.dll and IntelliSense .xml -->
+        <file src="lib\netstandard2.0\Microsoft.MixedReality.WebRTC.dll" target="lib\netstandard2.0" />
+        <file src="lib\netstandard2.0\Microsoft.MixedReality.WebRTC.xml" target="lib\netstandard2.0" />
+
+        <!-- NOTICE -->
+        <file src="content\NOTICE" target="content\NOTICE" />
+    </files>
+</package>

@@ -7,7 +7,9 @@
 
 set -o errexit
 set -o nounset
-set -o pipefail
+# This breaks checkout on ADO, throwing some SIGPIPE for no apparent reason.
+# See http://www.pixelbeat.org/programming/sigpipe_handling.html for details.
+#set -o pipefail
 
 #-----------------------------------------------------------------------------
 function check-err() {
@@ -44,6 +46,7 @@ OPTIONS:
     -c TARGET_CPU   Target CPU for cross compilation. Default is determined by TARGET_OS. For 'android', it is 'arm64'. Possible values are: 'x86', 'x64', 'arm64', 'arm'.
     -s              Ignore disk space check and proceed anyway with low disk space.
     -u              Ignore unsupported platform check and attempt to install anyway.
+    -f              Fast clone for CI (shallow clone, no history, no hooks)
 EOF
 }
 
@@ -56,6 +59,7 @@ function verify-arguments() {
     TARGET_CPU=${TARGET_CPU:-arm64}
     NO_DISK_SPACE=${NO_DISK_SPACE:-0}
     UNSUPPORTED=${UNSUPPORTED:-0}
+    FAST_CLONE=${FAST_CLONE:-0}
     # Print all executed commands?
     [ "$VERBOSE" = 1 ] && set -x || true
 }
@@ -64,7 +68,7 @@ function verify-arguments() {
 # Main
 
 # Read command line
-while getopts d:b:t:c:vsuh OPTION; do
+while getopts d:b:t:c:vsufh OPTION; do
     case ${OPTION} in
     d) WORK_DIR=$OPTARG ;;
     b) BRANCH=$OPTARG ;;
@@ -73,6 +77,7 @@ while getopts d:b:t:c:vsuh OPTION; do
     v) VERBOSE=1 ;;
     s) NO_DISK_SPACE=1 ;;
     u) UNSUPPORTED=1 ;;
+    f) FAST_CLONE=1 ;;
     h | ?) usage && exit 0 ;;
     esac
 done

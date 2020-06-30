@@ -36,6 +36,22 @@ namespace TestAppUwp
                 }
                 return string.Empty;
             }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    PreferredAudioCodec_Default.IsChecked = true;
+                }
+                else if (value == "opus")
+                {
+                    PreferredAudioCodec_OPUS.IsChecked = true;
+                }
+                else
+                {
+                    PreferredAudioCodec_Custom.IsChecked = true;
+                    CustomPreferredAudioCodec.Text = value;
+                }
+            }
         }
 
         /// <summary>
@@ -60,14 +76,39 @@ namespace TestAppUwp
                 }
                 return string.Empty;
             }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    PreferredVideoCodec_Default.IsChecked = true;
+                }
+                else if (value == "H264")
+                {
+                    PreferredVideoCodec_H264.IsChecked = true;
+                }
+                else if (value == "VP8")
+                {
+                    PreferredVideoCodec_VP8.IsChecked = true;
+                }
+                else
+                {
+                    PreferredVideoCodec_Custom.IsChecked = true;
+                    CustomPreferredVideoCodec.Text = value;
+                }
+            }
         }
 
         public SettingsPage()
         {
             this.InitializeComponent();
+
+            // Restore
+            var sessionModel = SessionModel.Current;
+            PreferredAudioCodec = sessionModel.PreferredAudioCodec;
+            PreferredVideoCodec = sessionModel.PreferredVideoCodec;
         }
 
-        private void SdpSemanticChanged(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void SdpSemanticChanged(object sender, RoutedEventArgs e)
         {
             if (sender == sdpSemanticUnifiedPlan)
             {

@@ -6,15 +6,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC;
+using Windows.ApplicationModel;
+using Windows.Media.Capture;
 using Windows.UI.Xaml.Controls;
 
 namespace TestAppUwp
 {
     /// <summary>
     /// Negotiation state similar to the one described in the WebRTC 1.0 standard.
-    /// 
+    ///
     /// Differences are:
     /// - Starts in <see cref="Closed"/> state instead of <see cref="Stable"/> state to
     ///   wait for the peer connection to be initialized.
@@ -57,53 +60,6 @@ namespace TestAppUwp
         /// <see cref="ApplyRemoteOfferAsync(string)"/>).
         /// </summary>
         HaveRemoteOffer,
-    }
-
-    /// <summary>
-    /// Model for a chat channel backed by a WebRTC data channel.
-    /// </summary>
-    public class ChatChannelModel : NotifierBase
-    {
-        /// <summary>
-        /// Backing WebRTC data channel used to transmit the chat messages.
-        /// </summary>
-        public DataChannel DataChannel { get; }
-
-        /// <summary>
-        /// Full chat text.
-        /// </summary>
-        public string FullText
-        {
-            get { return _fullText; }
-            set { SetProperty(ref _fullText, value); }
-        }
-
-        /// <summary>
-        /// Channel label.
-        /// </summary>
-        public string Label { get { return DataChannel?.Label; } }
-
-        private string _fullText = "";
-
-        public ChatChannelModel(DataChannel dataChannel)
-        {
-            DataChannel = dataChannel;
-            dataChannel.MessageReceived += (byte[] message) =>
-            {
-                string text = System.Text.Encoding.UTF8.GetString(message);
-                AppendText($"[remote] {text}\n");
-            };
-        }
-
-        /// <summary>
-        /// Append some text to <see cref="FullText"/>.
-        /// </summary>
-        /// <param name="text">The text to append.</param>
-        public void AppendText(string text)
-        {
-            _fullText += text;
-            RaisePropertyChanged("Text");
-        }
     }
 
     /// <summary>
@@ -170,12 +126,14 @@ namespace TestAppUwp
         /// <summary>
         /// Collection of transceivers of the peer connection associated with this session.
         /// </summary>
-        public TransceiverCollectionViewModel Transceivers { get; } = new TransceiverCollectionViewModel();
+        public CollectionViewModel<TransceiverViewModel> Transceivers { get; }
+            = new CollectionViewModel<TransceiverViewModel>();
 
         /// <summary>
         /// Collection of local tracks created and owned by the user, and which can be associated with a transceiver.
         /// </summary>
         /// <remarks>
+        /// Updated on main UI thread.
         /// The collection also contains some UI placeholders for the "Add" buttons (<see cref="AddNewTrackViewModel"/>).
         /// </remarks>
         /// <seealso cref="TrackViewModel"/>
@@ -187,6 +145,7 @@ namespace TestAppUwp
         /// - local tracks owned by the session and optionally attached to a transceiver;
         /// - remote tracks attached to their transceiver.
         /// </summary>
+        /// <remarks>Updated on main UI thread.</remarks>
         public CollectionViewModel<AudioTrackViewModel> AudioTracks { get; private set; }
             = new CollectionViewModel<AudioTrackViewModel>();
 
@@ -195,30 +154,9 @@ namespace TestAppUwp
         /// - local tracks owned by the session and optionally attached to a transceiver;
         /// - remote tracks attached to their transceiver.
         /// </summary>
+        /// <remarks>Updated on main UI thread.</remarks>
         public CollectionViewModel<VideoTrackViewModel> VideoTracks { get; private set; }
             = new CollectionViewModel<VideoTrackViewModel>();
-
-        /// <summary>
-        /// Placeholder for the null audio track, used to associate no track to a transceiver.
-        /// </summary>
-        public static readonly AudioTrackViewModel NullAudioTrack = new AudioTrackViewModel
-        {
-            Track = null,
-            TrackImpl = null,
-            IsRemote = false,
-            DeviceName = null
-        };
-
-        /// <summary>
-        /// Placeholder for the null video track, used to associate no track to a transceiver.
-        /// </summary>
-        public static readonly VideoTrackViewModel NullVideoTrack = new VideoTrackViewModel
-        {
-            Track = null,
-            TrackImpl = null,
-            IsRemote = false,
-            DeviceName = null
-        };
 
         /// <summary>
         /// Collection of chat channels of the current peer connection.
@@ -413,12 +351,6 @@ namespace TestAppUwp
             NodeDssSignaler.OnFailure += DssSignaler_OnFailure;
             NodeDssSignaler.OnPollingDone += DssSignaler_OnPollingDone;
 
-            AudioTracks.Add(NullAudioTrack);
-            VideoTracks.Add(NullVideoTrack);
-
-            AudioTracks.CollectionChanged += LocalAudioTrackCollectionChanged;
-            VideoTracks.CollectionChanged += LocalVideoTrackCollectionChanged;
-
             LocalTracks.Add(new AddNewTrackViewModel() { DisplayName = "Add audio track", PageType = typeof(AddAudioTrackPage) });
             LocalTracks.Add(new AddNewTrackViewModel() { DisplayName = "Add video track", PageType = typeof(AddVideoTrackPage) });
         }
@@ -474,19 +406,11 @@ namespace TestAppUwp
             Logger.Log("Peer connection initialized.");
             OnPeerInitialized();
 
-            //using (_sessionViewModel.GetNegotiationDeferral())
-            {
-                //// As a convenience, add 1 audio and 1 video transceivers
-                //// TODO - make that more flexible
-                //AddPendingTransceiver(MediaKind.Audio, "audio_transceiver_0");
-                //AddPendingTransceiver(MediaKind.Video, "video_transceiver_1");
-
-                // It is CRUCIAL to add any data channel BEFORE the SDP offer is sent, if data channels are
-                // to be used at all. Otherwise the SCTP will not be negotiated, and then all channels will
-                // stay forever in the kConnecting state.
-                // https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
-                await _peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true);
-            }
+            // It is CRUCIAL to add any data channel BEFORE the SDP offer is sent, if data channels are
+            // to be used at all. Otherwise the SCTP will not be negotiated, and then all channels will
+            // stay forever in the kConnecting state.
+            // https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
+            await _peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true);
 
             //_videoPlayer.CurrentStateChanged += OnMediaStateChanged;
             //_videoPlayer.MediaOpened += OnMediaOpened;
@@ -498,13 +422,62 @@ namespace TestAppUwp
             // Bind the XAML UI control (videoPlayerElement) to the MediaFoundation rendering pipeline (_videoPlayer)
             // so that the former can render in the UI the video frames produced in the background by the latter.
             //videoPlayerElement.SetMediaPlayer(_videoPlayer);
+
+            //// Uncomment to initialize local transceivers and tracks.
+            //if (Utils.IsFirstInstance())
+            //{
+            //    // Add transceivers
+            //    var transceiverA = AddTransceiver(MediaKind.Audio,
+            //        new TransceiverInitSettings { Name = "audio_transceiver" });
+
+            //    var transceiverV = AddTransceiver(MediaKind.Video,
+            //        new TransceiverInitSettings { Name = "video_transceiver", });
+
+            //    // Add audio track
+            //    var sourceA = await DeviceAudioTrackSource.CreateAsync(new LocalAudioDeviceInitConfig());
+            //    var trackA = LocalAudioTrack.CreateFromSource(sourceA,
+            //        new LocalAudioTrackInitConfig { trackName = "local_audio" });
+            //    AddAudioTrack(trackA, "Audio Device");
+
+            //    // Add the track to the transceiver.
+            //    {
+            //        var transceiverVM = Transceivers.First(t => t.Transceiver == transceiverA);
+            //        var trackVM = transceiverVM.AvailableSenders.Last();
+            //        transceiverVM.Sender = trackVM;
+            //    }
+
+            //    // Add video track
+            //    var sourceV = await DeviceVideoTrackSource.CreateAsync(
+            //        new LocalVideoDeviceInitConfig
+            //        {
+            //            videoDevice = new VideoCaptureDevice
+            //            {
+            //                id = @"<insert_device_id>"
+            //            },
+            //            videoProfileId = string.Empty,
+            //            width = 640,
+            //            height = 480,
+            //            framerate = 30
+            //        });
+            //    // Crate the track
+            //    var trackV = LocalVideoTrack.CreateFromSource(sourceV,
+            //        new LocalVideoTrackInitConfig { trackName = "local_video" });
+            //    AddVideoTrack(trackV, "Video Device");
+
+            //    // Add the track to the transceiver.
+            //    {
+            //        var transceiverVM = Transceivers.First(t => t.Transceiver == transceiverV);
+            //        var trackVM = transceiverVM.AvailableSenders.Last();
+            //        transceiverVM.Sender = trackVM;
+            //    }
+            //}
         }
 
-        public void AddTransceiver(MediaKind mediaKind, TransceiverInitSettings settings)
+        public Transceiver AddTransceiver(MediaKind mediaKind, TransceiverInitSettings settings)
         {
             // This will raise the TransceiverAdded event, which adds a new view model
             // for the newly added transceiver automatically.
-            _peerConnection.AddTransceiver(mediaKind, settings);
+            return _peerConnection.AddTransceiver(mediaKind, settings);
         }
 
         /// <summary>
@@ -532,7 +505,7 @@ namespace TestAppUwp
                 _needsNegotiation = false;
                 // FIXME - Race condition here; if receiving a RenegotiationNeeded event between this point
                 // and the moment the peer connection actually starts creating the offer message. In that case
-                // _needsNegotiation will become true, but might conceptually be false since the change that 
+                // _needsNegotiation will become true, but might conceptually be false since the change that
                 // raised the event will be taken into account in the call to CreateOffer() below. This is because
                 // we are crafting a state machine in C# instead of taping into the native implementation one.
             }
@@ -562,16 +535,6 @@ namespace TestAppUwp
             ExchangeNegotiationState(NegotiationState.Closed, NegotiationState.Stable);
         }
 
-        private void LocalAudioTrackCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            Transceivers.RefreshSenderList(MediaKind.Audio, force: true);
-        }
-
-        private void LocalVideoTrackCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            Transceivers.RefreshSenderList(MediaKind.Video, force: true);
-        }
-
         /// <summary>
         /// Callback invoked when an answer is available. This does not necesarilly indicate
         /// the remote peer has received this answer, if it was generated locally. But the
@@ -581,46 +544,27 @@ namespace TestAppUwp
         /// </summary>
         private void OnPeerConnected()
         {
-            //RunOnMainThread(() =>
-            //{
-            //    //sessionStatusText.Text = "joined";
-            //    chatTextBox.IsEnabled = true;
-
-            //    // Reset "Create Offer" button, and re-enable if signaling is available
-            //    createOfferButton.Content = "Create Offer";
-            //    createOfferButton.IsEnabled = _isDssPolling;
-            //});
         }
 
-        private void OnLocalSdpReadyToSend(string type, string sdp)
+        private void OnLocalSdpReadyToSend(SdpMessage message)
         {
-            Logger.Log($"Local {type} ready to be sent to remote peer.");
-            if (type == "offer")
+            Logger.Log($"Local {message.Type} ready to be sent to remote peer.");
+            if (message.Type == SdpMessageType.Offer)
             {
                 NotifyLocalOfferApplied();
             }
-            else if (type == "answer")
+            if (message.Type == SdpMessageType.Answer)
             {
                 NotifyLocalAnswerApplied();
             }
-            var message = new NodeDssSignaler.Message
-            {
-                MessageType = NodeDssSignaler.Message.WireMessageTypeFromString(type),
-                Data = sdp,
-                IceDataSeparator = "|"
-            };
-            NodeDssSignaler.SendMessageAsync(message);
+            var dssMessage = NodeDssSignaler.Message.FromSdpMessage(message);
+            NodeDssSignaler.SendMessageAsync(dssMessage);
             //RunOnMainThread(() => negotiationStatusText.Text = (type == "offer" ? "Sending local offer" : "Idle (answer sent)"));
         }
 
-        private void OnIceCandidateReadyToSend(string candidate, int sdpMlineindex, string sdpMid)
+        private void OnIceCandidateReadyToSend(IceCandidate candidate)
         {
-            var message = new NodeDssSignaler.Message
-            {
-                MessageType = NodeDssSignaler.Message.WireMessageType.Ice,
-                Data = $"{candidate}|{sdpMlineindex}|{sdpMid}", // see DssSignaler_OnMessage
-                IceDataSeparator = "|"
-            };
+            var message = NodeDssSignaler.Message.FromIceCandidate(candidate);
             NodeDssSignaler.SendMessageAsync(message);
         }
 
@@ -659,21 +603,24 @@ namespace TestAppUwp
             //    _remoteMediaSource?.Dispose();
             //}
 
-            // Remove all remote tracks
-            for (int i = AudioTracks.Count - 1; i >= 0; --i)
+            ThreadHelper.RunOnMainThread(() =>
             {
-                if (AudioTracks[i].IsRemote)
+                // Remove all remote tracks
+                for (int i = AudioTracks.Count - 1; i >= 0; --i)
                 {
-                    AudioTracks.RemoveAt(i);
+                    if (AudioTracks[i].IsRemote)
+                    {
+                        AudioTracks.RemoveAt(i);
+                    }
                 }
-            }
-            for (int i = VideoTracks.Count - 1; i >= 0; --i)
-            {
-                if (VideoTracks[i].IsRemote)
+                for (int i = VideoTracks.Count - 1; i >= 0; --i)
                 {
-                    VideoTracks.RemoveAt(i);
+                    if (VideoTracks[i].IsRemote)
+                    {
+                        VideoTracks.RemoveAt(i);
+                    }
                 }
-            }
+            });
         }
 
         /// <summary>
@@ -703,8 +650,8 @@ namespace TestAppUwp
             // This slightly deviates from the WebRTC standard which says that the
             // HaveRemoteOffer state is after the remote offer was applied, not before.
             ExchangeNegotiationState(NegotiationState.Stable, NegotiationState.HaveRemoteOffer);
-
-            await _peerConnection.SetRemoteDescriptionAsync("offer", content);
+            var message = new SdpMessage { Type = SdpMessageType.Offer, Content = content };
+            await _peerConnection.SetRemoteDescriptionAsync(message);
         }
 
         /// <summary>
@@ -713,7 +660,8 @@ namespace TestAppUwp
         /// <param name="content">The SDP answer message content.</param>
         public async Task ApplyRemoteAnswerAsync(string content)
         {
-            await _peerConnection.SetRemoteDescriptionAsync("answer", content);
+            var message = new SdpMessage { Type = SdpMessageType.Answer, Content = content };
+            await _peerConnection.SetRemoteDescriptionAsync(message);
 
             ExchangeNegotiationState(NegotiationState.HaveLocalOffer, NegotiationState.Stable);
         }
@@ -792,7 +740,7 @@ namespace TestAppUwp
 
         /// <summary>
         /// Callback on remote audio track added.
-        /// 
+        ///
         /// For simplicity this grabs the first remote audio track found. However currently the user has no
         /// control over audio output, so this is only used for audio statistics.
         /// </summary>
@@ -808,18 +756,13 @@ namespace TestAppUwp
                 Debug.Assert(trvm.Transceiver.RemoteAudioTrack == track);
                 trvm.NotifyReceiverChanged(); // this is thread-aware
                 // This raises property changed events in current thread, needs to be main one
-                AudioTracks.Add(new AudioTrackViewModel
-                {
-                    Track = track,
-                    TrackImpl = track,
-                    IsRemote = true
-                });
+                AudioTracks.Add(new AudioTrackViewModel(track));
             });
         }
 
         /// <summary>
         /// Callback on remote videa track added.
-        /// 
+        ///
         /// For simplicity this grabs the first remote video track found and uses it to render its
         /// content on the right pane of the Tracks window.
         /// </summary>
@@ -835,12 +778,7 @@ namespace TestAppUwp
                 Debug.Assert(trvm.Transceiver.RemoteVideoTrack == track);
                 trvm.NotifyReceiverChanged(); // this is thread-aware
                 // This raises property changed events in current thread, needs to be main one
-                VideoTracks.Add(new VideoTrackViewModel
-                {
-                    Track = track,
-                    TrackImpl = track,
-                    IsRemote = true
-                });
+                VideoTracks.Add(new VideoTrackViewModel(track));
             });
         }
 
@@ -852,8 +790,11 @@ namespace TestAppUwp
         {
             Logger.Log($"Removed remote audio track {track.Name} from transceiver {transceiver.Name}.");
 
-            var atvm = AudioTracks.Single(vm => vm.TrackImpl == track);
-            AudioTracks.Remove(atvm);
+            ThreadHelper.RunOnMainThread(() =>
+            {
+                var atvm = AudioTracks.Single(vm => vm.TrackImpl == track);
+                AudioTracks.Remove(atvm);
+            });
 
             //IAudioTrack newPlaybackAudioTrack = null;
             //if (LocalAudioTracks.Count > 0)
@@ -871,8 +812,11 @@ namespace TestAppUwp
         {
             Logger.Log($"Removed remote video track {track.Name} from transceiver {transceiver.Name}.");
 
-            var vtvm = VideoTracks.Single(vm => vm.TrackImpl == track);
-            VideoTracks.Remove(vtvm);
+            ThreadHelper.RunOnMainThread(() =>
+            {
+                var vtvm = VideoTracks.Single(vm => vm.TrackImpl == track);
+                VideoTracks.Remove(vtvm);
+            });
 
             //IVideoTrack newPlaybackVideoTrack = null;
             //if (LocalVideoTracks.Count > 0)
@@ -940,26 +884,23 @@ namespace TestAppUwp
 
             switch (message.MessageType)
             {
-            case NodeDssSignaler.Message.WireMessageType.Offer:
-                await ApplyRemoteOfferAsync(message.Data);
-                // If we get an offer, we immediately send an answer back once the offer is applied
-                _peerConnection.CreateAnswer();
-                break;
+                case NodeDssSignaler.Message.WireMessageType.Offer:
+                    await ApplyRemoteOfferAsync(message.Data);
+                    // If we get an offer, we immediately send an answer back once the offer is applied
+                    _peerConnection.CreateAnswer();
+                    break;
 
-            case NodeDssSignaler.Message.WireMessageType.Answer:
-                await ApplyRemoteAnswerAsync(message.Data);
-                break;
+                case NodeDssSignaler.Message.WireMessageType.Answer:
+                    await ApplyRemoteAnswerAsync(message.Data);
+                    break;
 
-            case NodeDssSignaler.Message.WireMessageType.Ice:
-                // TODO - This is NodeDSS-specific
-                // this "parts" protocol is defined above, in OnIceCandidateReadyToSend listener
-                var parts = message.Data.Split(new string[] { message.IceDataSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                // Note the inverted arguments; candidate is last here, but first in OnIceCandidateReadyToSend
-                _peerConnection.AddIceCandidate(parts[2], int.Parse(parts[1]), parts[0]);
-                break;
+                case NodeDssSignaler.Message.WireMessageType.Ice:
+                    // TODO - This is NodeDSS-specific
+                    _peerConnection.AddIceCandidate(message.ToIceCandidate());
+                    break;
 
-            default:
-                throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
+                default:
+                    throw new InvalidOperationException($"Unhandled signaler message type '{message.MessageType}'");
             }
         }
 
@@ -984,6 +925,62 @@ namespace TestAppUwp
             //_isDssPolling = false;
             ////pollDssButton.IsEnabled = true;
             //Logger.Log($"Polling DSS server stopped.");
+        }
+
+        public void AddAudioTrack(LocalAudioTrack track, string deviceName)
+        {
+            ThreadHelper.EnsureIsMainThread();
+            AudioTracks.Add(new AudioTrackViewModel(track, deviceName));
+            LocalTracks.Add(new LocalTrackViewModel(Symbol.Volume) { DisplayName = deviceName });
+        }
+
+        public void AddVideoTrack(LocalVideoTrack track, string deviceName)
+        {
+            ThreadHelper.EnsureIsMainThread();
+            VideoTracks.Add(new VideoTrackViewModel(track, deviceName));
+            LocalTracks.Add(new LocalTrackViewModel(Symbol.Video) { DisplayName = deviceName });
+        }
+    }
+
+    internal static class Utils
+    {
+
+        /// <summary>
+        /// Check if this application instance is the first one launched on the host device.
+        /// </summary>
+        /// <returns><c>true</c> if the current application instance is the first and therefore only instance.</returns>
+        internal static bool IsFirstInstance()
+        {
+            var firstInstance = AppInstance.FindOrRegisterInstanceForKey("{44CD414E-B604-482E-8CFD-A9E09076CABD}");
+            return firstInstance.IsCurrentInstance;
+        }
+
+        internal static async Task RequestMediaAccessAsync(StreamingCaptureMode mode)
+        {
+            // Ensure that the UWP app was authorized to capture audio (cap:microphone)
+            // or video (cap:webcam), otherwise the native plugin will fail.
+            try
+            {
+                MediaCapture mediaAccessRequester = new MediaCapture();
+                var mediaSettings = new MediaCaptureInitializationSettings
+                {
+                    AudioDeviceId = "",
+                    VideoDeviceId = "",
+                    StreamingCaptureMode = mode,
+                    PhotoCaptureSource = PhotoCaptureSource.VideoPreview
+                };
+                await mediaAccessRequester.InitializeAsync(mediaSettings);
+            }
+            catch (UnauthorizedAccessException uae)
+            {
+                Logger.Log("Access to A/V denied, check app permissions: " + uae.Message);
+                throw uae;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Failed to initialize A/V with unknown exception: " + ex.Message);
+                throw ex;
+            }
         }
     }
 }

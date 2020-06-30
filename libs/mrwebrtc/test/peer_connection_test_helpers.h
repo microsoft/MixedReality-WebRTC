@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../include/interop_api.h"
+#include "../include/ref_counted_object_interop.h"
 #include "../include/peer_connection_interop.h"
 
 #include "test_utils.h"
@@ -150,7 +151,7 @@ class PCRaii {
   }
   /// Create a peer connection with a specific configuration.
   PCRaii(const mrsPeerConnectionConfiguration& config) { create(config); }
-  ~PCRaii() { mrsPeerConnectionRemoveRef(handle_); }
+  ~PCRaii() { mrsRefCountedObjectRemoveRef(handle_); }
   mrsPeerConnectionHandle handle() const { return handle_; }
 
  protected:
@@ -162,10 +163,10 @@ class PCRaii {
 };
 
 // OnLocalSdpReadyToSend
-class SdpCallback : public InteropCallback<const char*, const char*> {
+class SdpCallback : public InteropCallback<mrsSdpMessageType, const char*> {
  public:
-  using Base = InteropCallback<const char*, const char*>;
-  using callback_type = void(const char*, const char*);
+  using Base = InteropCallback<mrsSdpMessageType, const char*>;
+  using callback_type = void(mrsSdpMessageType, const char*);
   SdpCallback(mrsPeerConnectionHandle pc) : pc_(pc) {}
   SdpCallback(mrsPeerConnectionHandle pc, std::function<callback_type> func)
       : Base(std::move(func)), pc_(pc) {
@@ -190,10 +191,10 @@ class SdpCallback : public InteropCallback<const char*, const char*> {
 };
 
 // OnIceCandidateReadyToSend
-class IceCallback : public InteropCallback<const char*, int, const char*> {
+class IceCallback : public InteropCallback<const mrsIceCandidate*> {
  public:
-  using Base = InteropCallback<const char*, int, const char*>;
-  using callback_type = void(const char*, int, const char*);
+  using Base = InteropCallback<const mrsIceCandidate*>;
+  using callback_type = void(const mrsIceCandidate*);
   IceCallback(mrsPeerConnectionHandle pc) : pc_(pc) {}
   IceCallback(mrsPeerConnectionHandle pc, std::function<callback_type> func)
       : Base(std::move(func)), pc_(pc) {
@@ -276,13 +277,13 @@ class LocalPeerPairRaii {
   bool is_exchange_pending_{false};
   Event exchange_completed_;
   void setup() {
-    sdp1_cb_ = [this](const char* type, const char* sdp_data) {
+    sdp1_cb_ = [this](mrsSdpMessageType type, const char* sdp_data) {
       Event ev;
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
                                       pc2_.handle(), type, sdp_data,
                                       &TestUtils::SetEventOnCompleted, &ev));
       ev.Wait();
-      if (kOfferString == type) {
+      if (type == mrsSdpMessageType::kOffer) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc2_.handle()));
       } else {
@@ -291,13 +292,13 @@ class LocalPeerPairRaii {
         exchange_completed_.Set();
       }
     };
-    sdp2_cb_ = [this](const char* type, const char* sdp_data) {
+    sdp2_cb_ = [this](mrsSdpMessageType type, const char* sdp_data) {
       Event ev;
       ASSERT_EQ(Result::kSuccess, mrsPeerConnectionSetRemoteDescriptionAsync(
                                       pc1_.handle(), type, sdp_data,
                                       &TestUtils::SetEventOnCompleted, &ev));
       ev.Wait();
-      if (kOfferString == type) {
+      if (type == mrsSdpMessageType::kOffer) {
         ASSERT_EQ(Result::kSuccess,
                   mrsPeerConnectionCreateAnswer(pc1_.handle()));
       } else {
@@ -306,17 +307,13 @@ class LocalPeerPairRaii {
         exchange_completed_.Set();
       }
     };
-    ice1_cb_ = [this](const char* candidate, int sdpMlineindex,
-                      const char* sdpMid) {
+    ice1_cb_ = [this](const mrsIceCandidate* candidate) {
       ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionAddIceCandidate(pc2_.handle(), sdpMid,
-                                                 sdpMlineindex, candidate));
+                mrsPeerConnectionAddIceCandidate(pc2_.handle(), candidate));
     };
-    ice2_cb_ = [this](const char* candidate, int sdpMlineindex,
-                      const char* sdpMid) {
+    ice2_cb_ = [this](const mrsIceCandidate* candidate) {
       ASSERT_EQ(Result::kSuccess,
-                mrsPeerConnectionAddIceCandidate(pc1_.handle(), sdpMid,
-                                                 sdpMlineindex, candidate));
+                mrsPeerConnectionAddIceCandidate(pc1_.handle(), candidate));
     };
   }
 

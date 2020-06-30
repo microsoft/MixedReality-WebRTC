@@ -39,7 +39,7 @@ class Transceiver;
 /// typically a audio capture device (e.g. webcam), but can also be a source
 /// producing programmatically generated frames. The local audio track itself
 /// has no knowledge about how the source produces the frames.
-class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
+class LocalAudioTrack : public MediaTrack, public AudioFrameObserver {
  public:
   /// Constructor for a track not added to any peer connection.
   LocalAudioTrack(
@@ -56,9 +56,6 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
 
   ~LocalAudioTrack() override;
 
-  /// Get the name of the local audio track.
-  std::string GetName() const noexcept override { return track_name_; }
-
   /// Enable or disable the audio track. An enabled track streams its content
   /// from its source to the remote peer. A disabled audio track only sends
   /// black frames.
@@ -66,9 +63,9 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
 
   /// Check if the track is enabled.
   /// See |SetEnabled(bool)|.
-  [[nodiscard]] bool IsEnabled() const noexcept;
+  MRS_NODISCARD bool IsEnabled() const noexcept;
 
-  [[nodiscard]] Transceiver* GetTransceiver() const noexcept {
+  MRS_NODISCARD Transceiver* GetTransceiver() const noexcept {
     return transceiver_;
   }
 
@@ -76,10 +73,10 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   // Advanced use
   //
 
-  [[nodiscard]] webrtc::AudioTrackInterface* impl() const;
-  [[nodiscard]] webrtc::RtpSenderInterface* sender() const;
+  MRS_NODISCARD webrtc::AudioTrackInterface* impl() const;
+  MRS_NODISCARD webrtc::RtpSenderInterface* sender() const;
 
-  [[nodiscard]] webrtc::MediaStreamTrackInterface* GetMediaImpl()
+  MRS_NODISCARD webrtc::MediaStreamTrackInterface* GetMediaImpl()
       const override {
     return impl();
   }
@@ -110,9 +107,6 @@ class LocalAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// Weak back-pointer to the Transceiver this track is associated with, if
   /// any. This avoids a circular reference with the transceiver itself.
   Transceiver* transceiver_{nullptr};
-
-  /// Cached track name, to avoid dispatching on signaling thread.
-  const std::string track_name_;
 };
 
 }  // namespace WebRTC

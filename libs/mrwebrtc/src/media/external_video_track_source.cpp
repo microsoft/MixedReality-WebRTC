@@ -4,7 +4,7 @@
 #include "pch.h"
 
 #include "interop/global_factory.h"
-#include "media/external_video_track_source_impl.h"
+#include "media/external_video_track_source.h"
 
 namespace {
 
@@ -113,15 +113,15 @@ class Argb32BufferAdapter : public detail::BufferAdapter {
 namespace Microsoft {
 namespace MixedReality {
 namespace WebRTC {
-namespace detail {
 
 constexpr const size_t kMaxPendingRequestCount = 64;
 
-RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceImpl::create(
+RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSource::create(
     RefPtr<GlobalFactory> global_factory,
-    std::unique_ptr<BufferAdapter> adapter) {
-  auto source = new ExternalVideoTrackSourceImpl(std::move(global_factory),
-                                                 std::move(adapter));
+    std::unique_ptr<detail::BufferAdapter> adapter) {
+  auto source = new ExternalVideoTrackSource(
+      std::move(global_factory), std::move(adapter),
+      new rtc::RefCountedObject<detail::CustomTrackSourceAdapter>());
   // Note: Video track sources always start already capturing; there is no
   // start/stop mechanism at the track level in WebRTC. A source is either being
   // initialized, or is already live. However because of wrappers and interop
@@ -129,32 +129,37 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceImpl::create(
   return source;
 }
 
-ExternalVideoTrackSourceImpl::ExternalVideoTrackSourceImpl(
+ExternalVideoTrackSource::ExternalVideoTrackSource(
     RefPtr<GlobalFactory> global_factory,
-    std::unique_ptr<BufferAdapter> adapter)
-    : ExternalVideoTrackSource(std::move(global_factory)),
-      track_source_(new rtc::RefCountedObject<CustomTrackSourceAdapter>()),
-      adapter_(std::forward<std::unique_ptr<BufferAdapter>>(adapter)),
+    std::unique_ptr<detail::BufferAdapter> adapter,
+    rtc::scoped_refptr<detail::CustomTrackSourceAdapter> source)
+    : VideoTrackSource(std::move(global_factory),
+                       ObjectType::kExternalVideoTrackSource,
+                       source),
+      adapter_(std::forward<std::unique_ptr<detail::BufferAdapter>>(adapter)),
       capture_thread_(rtc::Thread::Create()) {
   capture_thread_->SetName("ExternalVideoTrackSource capture thread", this);
 }
 
-ExternalVideoTrackSourceImpl::~ExternalVideoTrackSourceImpl() {
+ExternalVideoTrackSource::~ExternalVideoTrackSource() {
   StopCapture();
 }
 
-void ExternalVideoTrackSourceImpl::FinishCreation() {
+void ExternalVideoTrackSource::FinishCreation() {
   StartCapture();
 }
 
-void ExternalVideoTrackSourceImpl::StartCapture() {
+void ExternalVideoTrackSource::StartCapture() {
   // Check if |Shutdown()| was called, in which case the source cannot restart.
   if (!adapter_) {
     return;
   }
 
+  RTC_LOG(LS_INFO) << "Starting capture for external video track source "
+                   << GetName().c_str();
+
   // Start capture thread
-  track_source_->state_ = SourceState::kLive;
+  GetSourceImpl()->state_ = SourceState::kLive;
   pending_requests_.clear();
   capture_thread_->Start();
 
@@ -163,7 +168,7 @@ void ExternalVideoTrackSourceImpl::StartCapture() {
   capture_thread_->PostAt(RTC_FROM_HERE, now + 10, this, MSG_REQUEST_FRAME);
 }
 
-Result ExternalVideoTrackSourceImpl::CompleteRequest(
+Result ExternalVideoTrackSource::CompleteRequest(
     uint32_t request_id,
     int64_t timestamp_ms,
     const I420AVideoFrame& frame_view) {
@@ -197,11 +202,11 @@ Result ExternalVideoTrackSourceImpl::CompleteRequest(
           .set_video_frame_buffer(adapter_->FillBuffer(frame_view))
           .set_timestamp_ms(timestamp_ms)
           .build()};
-  track_source_->DispatchFrame(frame);
+  GetSourceImpl()->DispatchFrame(frame);
   return Result::kSuccess;
 }
 
-Result ExternalVideoTrackSourceImpl::CompleteRequest(
+Result ExternalVideoTrackSource::CompleteRequest(
     uint32_t request_id,
     int64_t timestamp_ms,
     const Argb32VideoFrame& frame_view) {
@@ -235,25 +240,28 @@ Result ExternalVideoTrackSourceImpl::CompleteRequest(
           .set_video_frame_buffer(adapter_->FillBuffer(frame_view))
           .set_timestamp_ms(timestamp_ms)
           .build()};
-  track_source_->DispatchFrame(frame);
+  GetSourceImpl()->DispatchFrame(frame);
   return Result::kSuccess;
 }
 
-void ExternalVideoTrackSourceImpl::StopCapture() {
-  if (track_source_->state_ != SourceState::kEnded) {
+void ExternalVideoTrackSource::StopCapture() {
+  detail::CustomTrackSourceAdapter* const src = GetSourceImpl();
+  if (src->state_ != SourceState::kEnded) {
+    RTC_LOG(LS_INFO) << "Stopping capture for external video track source "
+                     << GetName().c_str();
     capture_thread_->Stop();
-    track_source_->state_ = SourceState::kEnded;
+    src->state_ = SourceState::kEnded;
   }
   pending_requests_.clear();
 }
 
-void ExternalVideoTrackSourceImpl::Shutdown() noexcept {
+void ExternalVideoTrackSource::Shutdown() noexcept {
   StopCapture();
   adapter_ = nullptr;
 }
 
 // Note - This is called on the capture thread only.
-void ExternalVideoTrackSourceImpl::OnMessage(rtc::Message* message) {
+void ExternalVideoTrackSource::OnMessage(rtc::Message* message) {
   switch (message->message_id) {
     case MSG_REQUEST_FRAME:
       const int64_t now = rtc::TimeMillis();
@@ -282,17 +290,10 @@ void ExternalVideoTrackSourceImpl::OnMessage(rtc::Message* message) {
   }
 }
 
-}  // namespace detail
-
-ExternalVideoTrackSource::ExternalVideoTrackSource(
-    RefPtr<GlobalFactory> global_factory)
-    : TrackedObject(std::move(global_factory),
-                    ObjectType::kExternalVideoTrackSource) {}
-
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSource::createFromI420A(
     RefPtr<GlobalFactory> global_factory,
     RefPtr<I420AExternalVideoSource> video_source) {
-  return detail::ExternalVideoTrackSourceImpl::create(
+  return ExternalVideoTrackSource::create(
       std::move(global_factory),
       std::make_unique<I420ABufferAdapter>(std::move(video_source)));
 }
@@ -300,22 +301,20 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSource::createFromI420A(
 RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSource::createFromArgb32(
     RefPtr<GlobalFactory> global_factory,
     RefPtr<Argb32ExternalVideoSource> video_source) {
-  return detail::ExternalVideoTrackSourceImpl::create(
+  return ExternalVideoTrackSource::create(
       std::move(global_factory),
       std::make_unique<Argb32BufferAdapter>(std::move(video_source)));
 }
 
 Result I420AVideoFrameRequest::CompleteRequest(
     const I420AVideoFrame& frame_view) {
-  auto impl =
-      static_cast<detail::ExternalVideoTrackSourceImpl*>(&track_source_);
+  auto impl = static_cast<ExternalVideoTrackSource*>(&track_source_);
   return impl->CompleteRequest(request_id_, timestamp_ms_, frame_view);
 }
 
 Result Argb32VideoFrameRequest::CompleteRequest(
     const Argb32VideoFrame& frame_view) {
-  auto impl =
-      static_cast<detail::ExternalVideoTrackSourceImpl*>(&track_source_);
+  auto impl = static_cast<ExternalVideoTrackSource*>(&track_source_);
   return impl->CompleteRequest(request_id_, timestamp_ms_, frame_view);
 }
 

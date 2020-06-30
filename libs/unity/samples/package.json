@@ -1,0 +1,24 @@
+{
+    "name": "com.microsoft.mixedreality.webrtc.samples",
+    "version": "0.0.1-preview.4294967295",
+    "displayName": "MixedReality-WebRTC Samples",
+    "description": "This packages provides samples for the MixedReality-WebRTC package, to demonstrate typical usage scenarios and how to use the components it provides.",
+    "unity": "2018.4",
+    "dependencies": {
+        "com.microsoft.mixedreality.webrtc": "0.0.1-preview.4294967295",
+        "com.unity.textmeshpro": "1.4.1"
+    },
+    "keywords": [
+        "webrtc",
+        "mixed-reality",
+        "audio",
+        "video",
+        "realtime",
+        "samples"
+    ],
+    "author": {
+        "name": "Microsoft",
+        "email": "mr-webrtc-devs@microsoft.com",
+        "url": "https://github.com/microsoft/MixedReality-WebRTC/"
+    }
+}

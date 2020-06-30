@@ -202,7 +202,13 @@ namespace NamedPipeSignaler
                     }
 
                     Console.WriteLine($"[<-] ICE candidate: {sdpMid} {sdpMlineindex} {candidate}");
-                    IceCandidateReceived?.Invoke(sdpMid, sdpMlineindex, candidate);
+                    var iceCandidate = new IceCandidate
+                    {
+                        SdpMid = sdpMid,
+                        SdpMlineIndex = sdpMlineindex,
+                        Content = candidate
+                    };
+                    IceCandidateReceived?.Invoke(iceCandidate);
                 }
                 else if (line == "sdp")
                 {
@@ -221,7 +227,8 @@ namespace NamedPipeSignaler
                     }
 
                     Console.WriteLine($"[<-] SDP message: {type} {sdp}");
-                    SdpMessageReceived?.Invoke(type, sdp);
+                    var message = new SdpMessage { Type = SdpMessage.StringToType(type), Content = sdp };
+                    SdpMessageReceived?.Invoke(message);
                 }
             }
             Console.WriteLine("Finished processing messages");
@@ -264,16 +271,17 @@ namespace NamedPipeSignaler
             }
         }
 
-        private void PeerConnection_IceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
+        private void PeerConnection_IceCandidateReadytoSend(IceCandidate candidate)
         {
             // See ProcessIncomingMessages() for the message format
-            SendMessage($"ice\n{sdpMid}\n{sdpMlineindex}\n{candidate}\n\n");
+            SendMessage($"ice\n{candidate.SdpMid}\n{candidate.SdpMlineIndex}\n{candidate.Content}\n\n");
         }
 
-        private void PeerConnection_LocalSdpReadytoSend(string type, string sdp)
+        private void PeerConnection_LocalSdpReadytoSend(SdpMessage message)
         {
             // See ProcessIncomingMessages() for the message format
-            SendMessage($"sdp\n{type}\n{sdp}\n\n");
+            string typeStr = SdpMessage.TypeToString(message.Type);
+            SendMessage($"sdp\n{typeStr}\n{message.Content}\n\n");
         }
     }
 }

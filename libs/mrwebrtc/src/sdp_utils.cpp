@@ -210,6 +210,31 @@ std::string EncodeIceServers(const std::string& url,
                              const std::string& password) {
   return url + "\nusername:" + username + "\npassword:" + password;
 }
+
+webrtc::SdpType SdpTypeFromApiType(mrsSdpMessageType api_type) {
+  switch (api_type) {
+    case mrsSdpMessageType::kOffer:
+      return webrtc::SdpType::kOffer;
+    case mrsSdpMessageType::kAnswer:
+      return webrtc::SdpType::kAnswer;
+    default:
+      RTC_NOTREACHED();
+      return (webrtc::SdpType)-1;  // invalid
+  }
+}
+
+mrsSdpMessageType ApiTypeFromSdpType(webrtc::SdpType type) {
+  switch (type) {
+    case webrtc::SdpType::kOffer:
+      return mrsSdpMessageType::kOffer;
+    case webrtc::SdpType::kAnswer:
+      return mrsSdpMessageType::kAnswer;
+    default:
+      RTC_NOTREACHED();
+      return (mrsSdpMessageType)-1;  // invalid
+  }
+}
+
 }  // namespace WebRTC
 }  // namespace MixedReality
 }  // namespace Microsoft

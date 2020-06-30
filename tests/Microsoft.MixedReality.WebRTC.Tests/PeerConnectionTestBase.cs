@@ -257,12 +257,12 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             connectedEvent2_.Set();
         }
 
-        private async void OnLocalSdpReady1(string type, string sdp)
+        private async void OnLocalSdpReady1(SdpMessage message)
         {
             Assert.IsTrue(exchangePending_);
-            await pc2_.SetRemoteDescriptionAsync(type, sdp);
+            await pc2_.SetRemoteDescriptionAsync(message);
             remoteDescAppliedEvent2_.Set();
-            if (type == "offer")
+            if (message.Type == SdpMessageType.Offer)
             {
                 pc2_.CreateAnswer();
             }
@@ -273,12 +273,12 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             }
         }
 
-        private async void OnLocalSdpReady2(string type, string sdp)
+        private async void OnLocalSdpReady2(SdpMessage message)
         {
             Assert.IsTrue(exchangePending_);
-            await pc1_.SetRemoteDescriptionAsync(type, sdp);
+            await pc1_.SetRemoteDescriptionAsync(message);
             remoteDescAppliedEvent1_.Set();
-            if (type == "offer")
+            if (message.Type == SdpMessageType.Offer)
             {
                 pc1_.CreateAnswer();
             }
@@ -289,14 +289,14 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             }
         }
 
-        private void OnIceCandidateReadytoSend1(string candidate, int sdpMlineindex, string sdpMid)
+        private void OnIceCandidateReadytoSend1(IceCandidate candidate)
         {
-            pc2_.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+            pc2_.AddIceCandidate(candidate);
         }
 
-        private void OnIceCandidateReadytoSend2(string candidate, int sdpMlineindex, string sdpMid)
+        private void OnIceCandidateReadytoSend2(IceCandidate candidate)
         {
-            pc1_.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+            pc1_.AddIceCandidate(candidate);
         }
 
         private void OnRenegotiationNeeded1()

@@ -1,0 +1,71 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# [TEMPLATE] Test Microsoft.MixedReality.WebRTC(.UWP)
+
+parameters:
+# Package agent pool
+- name: testAgent
+  type: string
+  default: ''
+# Package platform
+- name: testPlatform
+  type: string
+  default: ''
+  values:
+  - 'Desktop'
+  - 'UWP'
+# NuGet package version (SemVer)
+- name: nugetPackageVersion
+  type: string
+  default: ''
+
+jobs:
+- job: cslib_test_${{parameters.testPlatform}}
+  timeoutInMinutes: 360
+  pool:
+    name: ${{parameters.testAgent}}
+    demands:
+    - msbuild
+    - vstest
+  steps:
+
+  # Checkout
+  - checkout: self
+    fetchDepth: '50'
+
+  # Compute package name
+  - pwsh: |
+      $packageName = "Microsoft.MixedReality.WebRTC"
+      if ("$env:PACKAGE_PLATFORM" -eq "UWP") {
+        $packageName += ".UWP"
+      }
+      Write-Host "Package name = $packageName"
+      Write-Host "##vso[task.setvariable variable=packageName;]$packageName"
+    displayName: 'Compute package name'
+    env:
+      PACKAGE_PLATFORM: '${{parameters.testPlatform}}'
+    timeoutInMinutes: 5
+
+  # Use NuGet 5.2.0 to work around auth issues in previous versions
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 5.2.0'
+    inputs:
+      versionSpec: 5.2.0
+
+  # Download NuGet package
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download C# library (${{parameters.testPlatform}})'
+    inputs:
+      source: 'current'
+      artifact: 'nuget_cslib_${{parameters.testPlatform}}'
+      patterns: '**/$(packageName).${{parameters.nugetPackageVersion}}.nupkg'
+      path: '$(Build.BinariesDirectory)/nuget/$(packageName)'
+
+  # Check package signing
+  - task: PowerShell@2
+    displayName: 'Check signing'
+    inputs:
+      targetType: 'filePath'
+      filePath: 'tools/ci/checkSigning.ps1'
+      arguments: '-PackageFolder "$(Build.BinariesDirectory)/nuget/$(packageName)" -TempFolder "$(Build.BinariesDirectory)/unpack/$(packageName)"'

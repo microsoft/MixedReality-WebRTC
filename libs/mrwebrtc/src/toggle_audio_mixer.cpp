@@ -74,7 +74,7 @@ void ToggleAudioMixer::Mix(size_t number_of_channels,
 
     // Collect the redirected sources.
     for (auto&& pair : source_from_id_) {
-      if (!pair.second.is_output) {
+      if (pair.second.source && !pair.second.is_output) {
         redirected_sources.push_back(pair.second.source);
       } else {
         some_source_is_output = true;
@@ -91,8 +91,9 @@ void ToggleAudioMixer::Mix(size_t number_of_channels,
   for (auto& source : redirected_sources) {
     // This pumps the source and fires the frame observer callbacks
     // which in turn fill the AudioTrackReadBuffer buffers
+    webrtc::AudioFrame unused;
     const auto audio_frame_info = source->GetAudioFrameWithInfo(
-        source->PreferredSampleRate(), audio_frame_for_mixing);
+        source->PreferredSampleRate(), &unused);
 
     if (audio_frame_info == Source::AudioFrameInfo::kError) {
       RTC_LOG_F(LS_WARNING) << "failed to GetAudioFrameWithInfo() from source";
@@ -114,11 +115,10 @@ void ToggleAudioMixer::OutputSource(int ssrc, bool output) {
   // If the source is unknown add a KnownSource with null Source* to remember
   // the choice.
   const auto result = source_from_id_.insert({ssrc, {nullptr, output}});
-
-  if (!result.second) {
-    // The source has already been added through OutputSource. Modify the output
+  KnownSource& known_source = result.first->second;
+  if (known_source.source) {
+    // The source has already been added through AddSource. Modify the output
     // state.
-    KnownSource& known_source = result.first->second;
     if (output && !known_source.is_output) {
       // Add the source to the ones mixed by the base impl.
       TryAddToBaseImpl(known_source);

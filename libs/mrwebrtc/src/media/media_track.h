@@ -5,7 +5,6 @@
 
 #include "callback.h"
 #include "interop_api.h"
-#include "str.h"
 #include "tracked_object.h"
 #include "video_frame_observer.h"
 
@@ -36,9 +35,9 @@ class MediaTrack : public TrackedObject {
   ~MediaTrack() override;
 
   /// Get the kind of track.
-  [[nodiscard]] mrsTrackKind GetKind() const noexcept { return kind_; }
+  MRS_NODISCARD mrsTrackKind GetKind() const noexcept { return kind_; }
 
-  [[nodiscard]] virtual webrtc::MediaStreamTrackInterface* GetMediaImpl()
+  MRS_NODISCARD virtual webrtc::MediaStreamTrackInterface* GetMediaImpl()
       const = 0;
 
  protected:

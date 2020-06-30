@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.MixedReality.WebRTC.Interop

@@ -133,16 +133,10 @@
             <TextBlock Text="Sender track" Margin="0,8,0,0"/>
             <ComboBox x:Name="transceiverSenderTrack" HorizontalAlignment="Stretch"
                       DataContext="local:SenderTrackViewModel"
-                      ItemsSource="{x:Bind Transceivers.AvailableSenders, Mode=OneWay}"
+                      ItemsSource="{x:Bind Transceivers.SelectedItem.AvailableSenders, Mode=OneWay}"
                       IsEnabled="{x:Bind Transceivers.SelectedItem, Mode=OneWay, Converter={StaticResource NullToBoolConverter}}"
-                      SelectionChanged="TransceiverSenderSelectionChanged"
                       ItemTemplate="{StaticResource SenderTrackItemTemplate}"
-                      SelectedItem="{x:Bind Transceivers.SelectedItem.Sender, Mode=OneWay}">
-                <ComboBox.ItemContainerStyle>
-                    <Style TargetType="ComboBoxItem">
-                        <Setter Property="IsEnabled" Value="{Binding CanBeAttached, Mode=OneWay}"/>
-                    </Style>
-                </ComboBox.ItemContainerStyle>
+                      SelectedItem="{x:Bind Transceivers.SelectedItem.Sender, Mode=TwoWay}">
             </ComboBox>
             <TextBlock Text="Receiver track" Margin="0,8,0,0"/>
             <TextBox x:Name="transceiverReceiverTrack" IsEnabled="False"

@@ -1,0 +1,19 @@
+{
+    "name": "com.microsoft.mixedreality.webrtc",
+    "version": "0.0.1-preview.4294967295",
+    "displayName": "MixedReality-WebRTC",
+    "description": "MixedReality-WebRTC provides multi-platform support for real-time audio/video/data communication using WebRTC, including for UWP devices like HoloLens 1 and HoloLens 2.\n\nEasy to integrate into any project, MixedReality-WebRTC offers components to manage a peer connection, to capture audio from a local microphone, to capture video from a local webcam, to render some remote video into a Unity texture, and to access remote audio as a Unity AudioSource object.\n\nConvenience components are also provided for typical uses like capturing the Unity scene content as rendered by any Unity Camera, and stream it as a video.\n\nAdvanced users can access the raw remote audio and video data via a set of callbacks, and inject their own custom audio and video data into a WebRTC track to be sent to the remote peer.\n\nSome samples showing those usages are provided in a separate package \"MixedReality-WebRTC Samples\".",
+    "unity": "2018.4",
+    "keywords": [
+        "webrtc",
+        "mixed-reality",
+        "audio",
+        "video",
+        "realtime"
+    ],
+    "author": {
+        "name": "Microsoft",
+        "email": "mr-webrtc-devs@microsoft.com",
+        "url": "https://github.com/microsoft/MixedReality-WebRTC/"
+    }
+}

@@ -63,22 +63,25 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_test_utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\audio_track_tests.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\external_video_track_source_tests.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\library_tests.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\memory_tests.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\peer_connection_tests.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\sdp_utils_tests.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\device_audio_track_source_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\audio_track_tests.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\data_channel_tests.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\test_utils.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_frame_observer_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\external_video_track_source_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\library_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\memory_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\object_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\peer_connection_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\sdp_utils_tests.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\simple_interop.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_test_utils.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_track_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\test_utils.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\transceiver_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_frame_observer_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_test_utils.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\device_video_track_source_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_track_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\mrwebrtc-win32.vcxproj">

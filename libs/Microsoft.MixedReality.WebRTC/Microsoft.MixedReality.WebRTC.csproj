@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy SourceFiles="@(NativeUnityPluginSourceFiles)" DestinationFolder="$(ProjectDir)..\Microsoft.MixedReality.WebRTC.Unity\Assets\Plugins\Win32\x86_64" />
+    <Copy SourceFiles="@(NativeUnityPluginSourceFiles)" DestinationFolder="$(ProjectDir)..\unity\library\Runtime\Plugins\Win32\x86_64" />
   </Target>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />

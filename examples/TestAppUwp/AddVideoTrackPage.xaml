@@ -12,7 +12,7 @@
     <Page.Resources>
         <DataTemplate x:Key="VideoCaptureDeviceTemplate" x:DataType="local:VideoCaptureDeviceInfo">
             <StackPanel Orientation="Horizontal">
-                <SymbolIcon Symbol="{x:Bind Symbol}" Margin="0,0,12,0" />
+                <SymbolIcon Symbol="Video" Margin="0,0,12,0" />
                 <StackPanel Orientation="Vertical" AutomationProperties.Name="{x:Bind DisplayName}">
                     <TextBlock Text="{x:Bind DisplayName}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind Id}" VerticalAlignment="Center" FontSize="9px" />
@@ -56,7 +56,7 @@
     <Grid Margin="8,0,8,8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical" Grid.Row="0">
@@ -68,55 +68,47 @@
                 <RadioButton x:Name="captureDeviceRadioButton" Content="Video Capture Device" IsChecked="True"/>
                 <RadioButton x:Name="uniformColorRadioButton" Content="Uniform Color (not implemented yet)" IsEnabled="False" Margin="16,0,0,0"/>
             </StackPanel>
-            <TextBlock Text="{x:Bind VideoCaptureViewModel.ErrorMessage, Mode=OneWay}" Foreground="Red" TextWrapping="Wrap"
-                       Visibility="{x:Bind VideoCaptureViewModel.ErrorMessage, Mode=OneWay, Converter={StaticResource VisibleIfNotEmptyConverter}}"/>
-            <Border BorderBrush="#66000000" BorderThickness="2,2,2,2" Background="#AAFFFFFF" Padding="8,8,8,8">
-                <ListView x:Name="videoCaptureDeviceList" HorizontalAlignment="Stretch" MinHeight="96"
-                          ItemsSource="{x:Bind VideoCaptureViewModel.VideoCaptureDevices, Mode=OneWay}"
-                          SelectedItem="{x:Bind VideoCaptureViewModel.VideoCaptureDevices.SelectedItem, Mode=TwoWay}"
-                          ItemTemplate="{StaticResource VideoCaptureDeviceTemplate}"/>
-            </Border>
-            <TextBlock Text="Video profiles are not supported by this device"
-                       Visibility="{x:Bind VideoCaptureViewModel.VideoCaptureDevices.SelectedItem.SupportsVideoProfiles,
-                           Mode=OneWay, Converter={StaticResource BooleanToVisibilityInvertedConverter}}"/>
-            <Grid Visibility="{x:Bind VideoCaptureViewModel.VideoCaptureDevices.SelectedItem.SupportsVideoProfiles, Mode=OneWay}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="Video profile kind" Grid.Row="0" Grid.Column="0" Margin="0,8,0,4"/>
-                <ComboBox x:Name="KnownVideoProfileKindComboBox" HorizontalAlignment="Stretch"
-                          Grid.Row="1" Grid.Column="0" Margin="0,0,8,0"
-                          ItemsSource="{x:Bind VideoCaptureViewModel.VideoProfileKinds, Mode=OneTime}"
-                          SelectedItem="{x:Bind VideoCaptureViewModel.SelectedVideoProfileKind, Mode=TwoWay}"/>
-                <TextBlock Text="Video profile" Grid.Row="0" Grid.Column="1" Margin="8,8,0,4"/>
-                <ComboBox x:Name="VideoProfileComboBox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"
-                          ItemsSource="{x:Bind VideoCaptureViewModel.VideoProfiles, Mode=OneWay}"
-                          SelectedItem="{x:Bind VideoCaptureViewModel.VideoProfiles.SelectedItem, Mode=TwoWay}"
-                          ItemTemplate="{StaticResource VideoProfileTemplate}"/>
-                <ListView x:Name="RecordMediaDescList" Grid.ColumnSpan="2" Grid.Row="2"
-                          ItemsSource="{x:Bind VideoCaptureViewModel.RecordMediaDescs, Mode=OneWay}"
-                          SelectedItem="{x:Bind VideoCaptureViewModel.RecordMediaDescs.SelectedItem, Mode=TwoWay}"
-                          ItemTemplate="{StaticResource RecordMediaDescTemplate}"/>
-            </Grid>
-            <TextBlock Text="Capture resolution" Margin="0,12,0,0"/>
         </StackPanel>
-        <ScrollViewer Grid.Row="1" Margin="0,8,0,8">
-            <ListView x:Name="VideoCaptureFormatList" HorizontalAlignment="Stretch" MinHeight="120"
-                      ItemsSource="{x:Bind VideoCaptureViewModel.VideoCaptureFormats, Mode=OneWay}"
-                      SelectedItem="{x:Bind VideoCaptureViewModel.VideoCaptureFormats.SelectedItem, Mode=TwoWay}"
-                      ItemTemplate="{StaticResource VideoCaptureFormatTemplate}"
-                      ScrollViewer.VerticalScrollMode="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-        </ScrollViewer>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Vertical">
+                <TextBlock Text="{x:Bind VideoCaptureViewModel.ErrorMessage, Mode=OneWay}" Foreground="Red" TextWrapping="Wrap"
+                    Visibility="{x:Bind VideoCaptureViewModel.ErrorMessage, Mode=OneWay, Converter={StaticResource VisibleIfNotEmptyConverter}}"/>
+                <Border BorderBrush="#66000000" BorderThickness="2,2,2,2" Background="#AAFFFFFF" Padding="8,8,8,8">
+                    <ListView x:Name="videoCaptureDeviceList" MinHeight="32"
+                        ItemsSource="{x:Bind VideoCaptureViewModel.VideoCaptureDevices, Mode=OneWay}"
+                        SelectedItem="{x:Bind VideoCaptureViewModel.VideoCaptureDevices.SelectedItem, Mode=TwoWay}"
+                        ItemTemplate="{StaticResource VideoCaptureDeviceTemplate}"/>
+                </Border>
+                <TextBlock Text="Video profiles are not supported by this device"
+                    Visibility="{x:Bind VideoCaptureViewModel.VideoCaptureDevices.SelectedItem.SupportsVideoProfiles,
+                        Mode=OneWay, Converter={StaticResource BooleanToVisibilityInvertedConverter}}"/>
+                <StackPanel Orientation="Vertical" Visibility="{x:Bind VideoCaptureViewModel.VideoCaptureDevices.SelectedItem.SupportsVideoProfiles, Mode=OneWay}">
+                    <TextBlock Text="Video profile kind" Margin="0,8,0,4"/>
+                    <ComboBox x:Name="KnownVideoProfileKindComboBox"
+                        ItemsSource="{x:Bind VideoCaptureViewModel.VideoProfileKinds, Mode=OneTime}"
+                        SelectedItem="{x:Bind VideoCaptureViewModel.SelectedVideoProfileKind, Mode=TwoWay}"/>
+                    <TextBlock Text="Video profile" Margin="0,8,0,4"/>
+                    <ComboBox x:Name="VideoProfileComboBox"
+                        ItemsSource="{x:Bind VideoCaptureViewModel.VideoProfiles, Mode=OneWay}"
+                        SelectedItem="{x:Bind VideoCaptureViewModel.VideoProfiles.SelectedItem, Mode=TwoWay}"
+                        ItemTemplate="{StaticResource VideoProfileTemplate}"/>
+                </StackPanel>
+            </StackPanel>
+            <ScrollViewer Grid.Column="1" HorizontalAlignment="Stretch" >
+                <ListView x:Name="VideoCaptureFormatList" HorizontalAlignment="Stretch" MinHeight="120"
+                ItemsSource="{x:Bind VideoCaptureViewModel.VideoCaptureFormats, Mode=OneWay}"
+                SelectedItem="{x:Bind VideoCaptureViewModel.VideoCaptureFormats.SelectedItem, Mode=TwoWay}"
+                ItemTemplate="{StaticResource VideoCaptureFormatTemplate}" />
+            </ScrollViewer>
+        </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="2">
             <Button Content="Close" Click="CloseClicked" Margin="0,0,8,0"/>
             <Button Content="Create Track" Click="CreateTrackClicked"
-                    IsEnabled="{x:Bind VideoCaptureViewModel.CanCreateTrack, Mode=OneWay}"/>
+                IsEnabled="{x:Bind VideoCaptureViewModel.CanCreateTrack, Mode=OneWay}"/>
             <ProgressRing x:Name="progressRing" IsActive="False" Margin="0,8,0,0"/>
             <TextBlock x:Name="createTrackStatusText" Margin="0,8,0,0"/>
         </StackPanel>

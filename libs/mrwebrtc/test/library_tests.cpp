@@ -26,7 +26,7 @@ TEST(LibraryTests, ReportLiveObjects) {
   ASSERT_NE(nullptr, source_handle);
   mrsExternalVideoTrackSourceFinishCreation(source_handle);
   ASSERT_EQ(1u, mrsReportLiveObjects());
-  mrsExternalVideoTrackSourceRemoveRef(source_handle);
+  mrsRefCountedObjectRemoveRef(source_handle);
   ASSERT_EQ(0u, mrsReportLiveObjects());
 }
 

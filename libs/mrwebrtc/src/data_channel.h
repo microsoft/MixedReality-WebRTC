@@ -10,9 +10,7 @@
 
 #include "callback.h"
 #include "data_channel.h"
-#include "str.h"
-
-// Internal
+#include "data_channel_interop.h"
 #include "interop_api.h"
 
 namespace Microsoft {
@@ -34,22 +32,6 @@ class PeerConnection;
 /// sent by the local peer.
 class DataChannel : public webrtc::DataChannelObserver {
  public:
-  /// Data channel state as marshaled through the public API.
-  enum class State : int {
-    /// The data channel is being connected, but is not yet ready to send nor
-    /// received any data.
-    kConnecting = 0,
-
-    /// The data channel is ready for read and write operations.
-    kOpen = 1,
-
-    /// The data channel is being closed, and cannot send any more data.
-    kClosing = 2,
-
-    /// The data channel is closed, and cannot be used again anymore.
-    kClosed = 3
-  };
-
   /// Callback fired on newly available data channel data.
   using MessageCallback = Callback<const void*, const uint64_t>;
 
@@ -64,7 +46,7 @@ class DataChannel : public webrtc::DataChannelObserver {
       Callback<const uint64_t, const uint64_t, const uint64_t>;
 
   /// Callback fired when the data channel state changed.
-  using StateCallback = Callback</*DataChannelState*/ int, int>;
+  using StateCallback = Callback<mrsDataChannelState, int>;
 
   DataChannel(
       PeerConnection* owner,
@@ -73,7 +55,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   /// Remove the data channel from its parent PeerConnection and close it.
   ~DataChannel() override;
 
-  [[nodiscard]] constexpr void* GetUserData() const noexcept {
+  MRS_NODISCARD constexpr void* GetUserData() const noexcept {
     return user_data_;
   }
 
@@ -82,9 +64,9 @@ class DataChannel : public webrtc::DataChannelObserver {
   }
 
   /// Get the unique channel identifier.
-  [[nodiscard]] int id() const { return data_channel_->id(); }
+  MRS_NODISCARD int id() const { return data_channel_->id(); }
 
-  [[nodiscard]] mrsDataChannelConfigFlags flags() const noexcept {
+  MRS_NODISCARD mrsDataChannelConfigFlags flags() const noexcept {
     mrsDataChannelConfigFlags flags{mrsDataChannelConfigFlags::kNone};
     if (data_channel_->ordered()) {
       flags = flags | mrsDataChannelConfigFlags::kOrdered;
@@ -96,7 +78,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   }
 
   /// Get the friendly channel name.
-  [[nodiscard]] str label() const;
+  MRS_NODISCARD std::string label() const;
 
   void SetMessageCallback(MessageCallback callback) noexcept;
   void SetBufferingCallback(BufferingCallback callback) noexcept;
@@ -104,7 +86,7 @@ class DataChannel : public webrtc::DataChannelObserver {
 
   /// Get the maximum buffering size, in bytes, before |Send()| stops accepting
   /// data.
-  [[nodiscard]] size_t GetMaxBufferingSize() const noexcept;
+  MRS_NODISCARD size_t GetMaxBufferingSize() const noexcept;
 
   /// Send a blob of data through the data channel.
   bool Send(const void* data, size_t size) noexcept;
@@ -113,13 +95,16 @@ class DataChannel : public webrtc::DataChannelObserver {
   // Advanced use
   //
 
-  [[nodiscard]] webrtc::DataChannelInterface* impl() const {
+  MRS_NODISCARD webrtc::DataChannelInterface* impl() const {
     return data_channel_.get();
   }
 
   /// This is invoked automatically by PeerConnection::RemoveDataChannel().
   /// Do not call it manually.
   void OnRemovedFromPeerConnection() noexcept { owner_ = nullptr; }
+
+  /// Fire the event now.
+  void InvokeOnStateChange() const noexcept;
 
  protected:
   // DataChannelObserver interface
@@ -144,7 +129,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   MessageCallback message_callback_ RTC_GUARDED_BY(mutex_);
   BufferingCallback buffering_callback_ RTC_GUARDED_BY(mutex_);
   StateCallback state_callback_ RTC_GUARDED_BY(mutex_);
-  std::mutex mutex_;
+  mutable std::mutex mutex_;
 
   /// Opaque user data.
   void* user_data_{nullptr};
