@@ -332,28 +332,29 @@ ErrorOr<RefPtr<DeviceVideoTrackSource>> DeviceVideoTrackSource::Create(
           global_factory->GetSignalingThread(),
           global_factory->GetWorkerThread(), impl_source);
 
-  int width = -1;
+  int width = 0;
   if (init_config.width > 0) {
-    width = init_config.width;
+    width = (int)init_config.width;
   }
-  int height = -1;
+  int height = 0;
   if (init_config.height > 0) {
-    height = init_config.height;
+    height = (int)init_config.height;
   }
-  int framerate = -1;
-  if (init_config.framerate > 0.0) {
-    framerate = (int)std::round(init_config.framerate);
+  float framerate = 0.0f;
+  if (init_config.framerate > 0.0f) {
+    framerate = (float)init_config.framerate;
   }
 
   // Create the camera capturer and bind it to the surface texture and the video
   // source, then start capturing.
   jmethodID start_capture_method = webrtc::GetStaticMethodID(
       env, android_camera_interop_class.obj(), "StartCapture",
-      "(JLorg/webrtc/SurfaceTextureHelper;III)Lorg/webrtc/VideoCapturer;");
+      "(JLorg/webrtc/SurfaceTextureHelper;Ljava/lang/String;IIF)Lorg/webrtc/VideoCapturer;");
+  jstring java_device_name = env->NewStringUTF(init_config.video_device_id);
+  CHECK_EXCEPTION(env);
   jobject camera_tmp = env->CallStaticObjectMethod(
-      android_camera_interop_class.obj(), start_capture_method,
-      (jlong)proxy_source.get(), texture_helper, (jint)width, (jint)height,
-      (jint)framerate);
+      android_camera_interop_class.obj(), start_capture_method, (jlong)proxy_source.get(),
+      texture_helper, java_device_name, (jint)width, (jint)height, (jfloat)framerate);
   CHECK_EXCEPTION(env);
 
   // Java objects created are always returned as local references; create a new
