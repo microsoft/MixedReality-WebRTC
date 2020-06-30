@@ -46,21 +46,6 @@ public class AndroidCameraInterop {
     return Camera2Enumerator.isSupported(ContextUtils.getApplicationContext());
   }
 
-  private static @Nullable VideoCapturer createCameraCapturer(CameraEnumerator enumerator) {
-    final String[] deviceNames = enumerator.getDeviceNames();
-
-    for (String deviceName : deviceNames) {
-      if (enumerator.isFrontFacing(deviceName)) {
-        VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
-        if (videoCapturer != null) {
-          return videoCapturer;
-        }
-      }
-    }
-
-    return null;
-  }
-
   public static VideoCaptureDeviceInfo[] GetVideoCaptureDevices() {
     CameraEnumerator enumerator = new Camera2Enumerator(ContextUtils.getApplicationContext());
     final String[] deviceNames = enumerator.getDeviceNames();
@@ -102,31 +87,63 @@ public class AndroidCameraInterop {
     return formatInfos;
   }
 
-  public static VideoCapturer StartCapture(
-      long nativeTrackSource, SurfaceTextureHelper surfaceTextureHelper, int width, int height,
-      int framerate) {
-    VideoCapturer capturer =
-        createCameraCapturer(new Camera2Enumerator(ContextUtils.getApplicationContext()));
+  public static @Nullable VideoCapturer StartCapture(
+      long nativeTrackSource, SurfaceTextureHelper surfaceTextureHelper, String deviceName, int width, int height,
+      float framerate) {
+    CameraEnumerator enumerator = new Camera2Enumerator(ContextUtils.getApplicationContext());
+
+    // Capture format uses some fixed-point framerate with 3 decimals
+    final int framerateInt = (framerate < 1.0f) ? 0 : Math.round(framerate * 1000.0f);
+
+    // Find the capture device by name
+    final String[] deviceNames = enumerator.getDeviceNames();
+    CaptureFormat captureFormat = null;
+    for (String name : deviceNames) {
+      if (deviceName != name) {
+        continue;
+      }
+
+      // Match constraints with existing capture format
+      captureFormat = null;
+      final List<CaptureFormat> formats = enumerator.getSupportedFormats(deviceName);
+      if (formats == null) {
+        continue;
+      }
+      for (CaptureFormat format : formats) {
+        if ((width > 0) && (format.width != width)) {
+          continue;
+        }
+        if ((height > 0) && (format.height != height)) {
+          continue;
+        }
+        if ((framerateInt > 0) && ((framerateInt < format.framerate.min) || (framerateInt > format.framerate.max))) {
+          continue;
+        }
+        captureFormat = format;
+      }
+      if (captureFormat == null) {
+        Logging.e(TAG, String.format(
+                "Failed to find matching capture format for device '%s' with constraints w=%d h=%d fps=%f(%d).",
+                deviceName, width, height, framerate, framerateInt));
+        return null;
+      }
+    }
+    if (captureFormat == null) {
+      Logging.e(TAG, "Failed to find matching capture device for name '" + deviceName + '"');
+      return null;
+    }
+
+    VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
+    if (videoCapturer == null) {
+      Logging.e(TAG, "Failed to create a video capturer for device '" + deviceName + '"');
+      return null;
+    }
 
     VideoSource videoSource = new VideoSource(nativeTrackSource);
-
-    capturer.initialize(surfaceTextureHelper, ContextUtils.getApplicationContext(),
+    videoCapturer.initialize(surfaceTextureHelper, ContextUtils.getApplicationContext(),
         videoSource.getCapturerObserver());
-
-    // Set default values if not specified (<= 0).
-    // TODO: Resolve partial resolution constraint to a supported resolution
-    if (width <= 0) {
-      width = 720;
-    }
-    if (height <= 0) {
-      height = 480;
-    }
-    if (framerate <= 0) {
-      framerate = 30;
-    }
-
-    capturer.startCapture(width, height, framerate);
-    return capturer;
+    videoCapturer.startCapture(captureFormat.width, captureFormat.height, captureFormat.framerate.max);
+    return videoCapturer;
   }
 
   public static void StopCamera(VideoCapturer camera) throws InterruptedException {
