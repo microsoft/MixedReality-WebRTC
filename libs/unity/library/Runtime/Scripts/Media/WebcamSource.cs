@@ -245,6 +245,47 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 }
             }
 #endif
+#if PLATFORM_ANDROID
+            if (FormatMode == LocalVideoSourceFormatMode.Automatic)
+            {
+                // Avoid constraining the framerate; this is generally not necessary (formats are listed
+                // with higher framerates first) and is error-prone as some formats report 30.0 FPS while
+                // others report 29.97 FPS.
+                framerate = 0; // auto
+
+                string deviceId = WebcamDevice.id;
+                if (string.IsNullOrEmpty(deviceId))
+                {
+                    List<VideoCaptureDevice> listedDevices = await PeerConnection.GetVideoCaptureDevicesAsync();
+                    if (listedDevices.Count > 0)
+                    {
+                        deviceId = listedDevices[0].id;
+                    }
+                }
+                if (!string.IsNullOrEmpty(deviceId))
+                {
+                    // Find the closest format to 720x480, independent of framerate
+                    List<VideoCaptureFormat> formats = await DeviceVideoTrackSource.GetCaptureFormatsAsync(deviceId);
+                    double smallestDiff = double.MaxValue;
+                    bool hasFormat = false;
+                    foreach (var fmt in formats)
+                    {
+                        double diff = Math.Abs(fmt.width - 720) + Math.Abs(fmt.height - 480);
+                        if ((diff < smallestDiff) || !hasFormat)
+                        {
+                            hasFormat = true;
+                            smallestDiff = diff;
+                            width = (int)fmt.width;
+                            height = (int)fmt.height;
+                        }
+                    }
+                    if (hasFormat)
+                    {
+                        Debug.Log($"WebcamSource automated mode selected resolution {width}x{height} for Android video capture device #{deviceId}.");
+                    }
+                }
+            }
+#endif
 
             // TODO - Fix codec selection (was as below before change)
 
