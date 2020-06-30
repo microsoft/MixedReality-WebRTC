@@ -122,8 +122,9 @@ public class AndroidCameraInterop {
           continue;
         }
         // Found compatible format; also save device name in case it was not specified
-        Logging.d(TAG, String.format("Found video capture device '%s' with format (%d x %d @ %d-%d)",
-                deviceName, format.width, format.height, format.framerate.min, format.framerate.max));
+        Logging.d(TAG, String.format("Found video capture device '%s' with format (%d x %d @ [%f:%f] fps)",
+                name, format.width, format.height, format.framerate.min / 1000.0f,
+                format.framerate.max / 1000.0f));
         captureFormat = format;
         deviceName = name;
         break;
