@@ -97,15 +97,17 @@ public class AndroidCameraInterop {
 
     // Find the capture device by name
     final String[] deviceNames = enumerator.getDeviceNames();
+    final boolean hasDeviceName = (deviceName != null) && !deviceName.isEmpty();
     CaptureFormat captureFormat = null;
     for (String name : deviceNames) {
-      if (deviceName != name) {
+      // Ignore devices with mismatching name only if a name was specified
+      if (hasDeviceName && (deviceName != name)) {
         continue;
       }
 
       // Match constraints with existing capture format
       captureFormat = null;
-      final List<CaptureFormat> formats = enumerator.getSupportedFormats(deviceName);
+      final List<CaptureFormat> formats = enumerator.getSupportedFormats(name);
       if (formats == null) {
         continue;
       }
@@ -119,9 +121,15 @@ public class AndroidCameraInterop {
         if ((framerateInt > 0) && ((framerateInt < format.framerate.min) || (framerateInt > format.framerate.max))) {
           continue;
         }
+        // Found compatible format; also save device name in case it was not specified
+        Logging.d(TAG, String.format("Found video capture device '%s' with format (%d x %d @ %f-%f)",
+                deviceName, format.width, format.height, format.framerate.min, format.framerate.max));
         captureFormat = format;
+        deviceName = name;
+        break;
       }
-      if (captureFormat == null) {
+      if (hasDeviceName && (captureFormat == null)) {
+        // Device was matched by name but no format was matched
         Logging.e(TAG, String.format(
                 "Failed to find matching capture format for device '%s' with constraints w=%d h=%d fps=%f(%d).",
                 deviceName, width, height, framerate, framerateInt));
@@ -129,7 +137,11 @@ public class AndroidCameraInterop {
       }
     }
     if (captureFormat == null) {
-      Logging.e(TAG, "Failed to find matching capture device for name '" + deviceName + '"');
+      if (hasDeviceName) {
+        Logging.e(TAG, "Failed to find matching video capture device for name '" + deviceName + "'");
+      } else {
+        Logging.e(TAG, "Failed to find any compatible video capture device");
+      }
       return null;
     }
 
