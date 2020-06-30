@@ -3,32 +3,18 @@
 
 #pragma once
 
+#include "device_video_track_source_interop.h"
 #include "mrs_errors.h"
 #include "refptr.h"
 #include "tracked_object.h"
 #include "video_frame.h"
 #include "video_track_source.h"
-#include "device_video_track_source_interop.h"
 
 #include "api/mediastreaminterface.h"
 
 namespace Microsoft {
 namespace MixedReality {
 namespace WebRTC {
-
-/// Video capture device info.
-struct VideoCaptureDeviceInfo {
-  std::string id;
-  std::string name;
-};
-
-/// Video capture format info.
-struct VideoCaptureFormatInfo {
-  int width;
-  int height;
-  double framerate;
-  uint32_t fourcc;
-};
 
 /// Video track source generating frames from a local video capture device
 /// (webcam).
@@ -37,8 +23,13 @@ class DeviceVideoTrackSource : public VideoTrackSource {
   static ErrorOr<RefPtr<DeviceVideoTrackSource>> Create(
       const mrsLocalVideoDeviceInitConfig& init_config) noexcept;
 
-  static std::vector<VideoCaptureDeviceInfo> GetVideoCaptureDevices() noexcept;
-  static std::vector<VideoCaptureFormatInfo> GetVideoCaptureFormats(absl::string_view device_id) noexcept;
+  static Error GetVideoCaptureDevices(
+      Callback<const mrsVideoCaptureDeviceInfo*> enum_callback,
+      Callback<mrsResult> end_callback) noexcept;
+  static Error GetVideoCaptureFormats(
+      absl::string_view device_id,
+      Callback<const mrsVideoCaptureFormatInfo*> enum_callback,
+      Callback<mrsResult> end_callback) noexcept;
 
  protected:
   DeviceVideoTrackSource(

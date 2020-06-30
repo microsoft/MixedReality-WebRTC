@@ -179,7 +179,7 @@ namespace TestAppUwp
             // would yield some devices that might become unavailable by the time
             // WebRTC internally opens the video capture device.
             // This is more for demo purpose here because using the UWP API is nicer.
-            var devices = await PeerConnection.GetVideoCaptureDevicesAsync();
+            var devices = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
             var deviceList = new CollectionViewModel<VideoCaptureDeviceInfo>();
             foreach (var device in devices)
             {
@@ -266,7 +266,7 @@ namespace TestAppUwp
                 else
                 {
                     // Device doesn't support video profiles; fall back on flat list of capture formats.
-                    List<VideoCaptureFormat> formatsList = await PeerConnection.GetVideoCaptureFormatsAsync(item.Id);
+                    List<VideoCaptureFormat> formatsList = await DeviceVideoTrackSource.GetCaptureFormatsAsync(item.Id);
                     foreach (var format in formatsList)
                     {
                         formats.Add(new VideoCaptureFormatViewModel
