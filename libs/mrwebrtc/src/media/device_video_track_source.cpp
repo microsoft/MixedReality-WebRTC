@@ -428,11 +428,11 @@ Error DeviceVideoTrackSource::GetVideoCaptureDevices(
   Enumerator<const mrsVideoCaptureDeviceInfo*, mrsResult> enumerator(
       enum_callback, end_callback, mrsResult::kSuccess);
   for (jsize i = 0; i < num_devices; ++i) {
-    jobject device_info = env->GetObjectArrayElement(device_list, i);
+    jobject java_device_info = env->GetObjectArrayElement(device_list, i);
     CHECK_EXCEPTION(env);
-    jstring java_id = (jstring)env->GetObjectField(device_info, id_field);
+    jstring java_id = (jstring)env->GetObjectField(java_device_info, id_field);
     CHECK_EXCEPTION(env);
-    jstring java_name = (jstring)env->GetObjectField(device_info, name_field);
+    jstring java_name = (jstring)env->GetObjectField(java_device_info, name_field);
     CHECK_EXCEPTION(env);
     const char* native_id = env->GetStringUTFChars(java_id, nullptr);
     const char* native_name = env->GetStringUTFChars(java_name, nullptr);
@@ -542,15 +542,15 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
   Enumerator<const mrsVideoCaptureFormatInfo*, mrsResult> enumerator(
       enum_callback, end_callback, mrsResult::kSuccess);
   for (jsize i = 0; i < num_formats; ++i) {
-    jobject format_info = env->GetObjectArrayElement(format_list, i);
+    jobject java_format_info = env->GetObjectArrayElement(format_list, i);
     CHECK_EXCEPTION(env);
-    jint java_width = env->GetIntField(format_info, width_field);
+    jint java_width = env->GetIntField(java_format_info, width_field);
     CHECK_EXCEPTION(env);
-    jint java_height = env->GetIntField(format_info, height_field);
+    jint java_height = env->GetIntField(java_format_info, height_field);
     CHECK_EXCEPTION(env);
-    jfloat java_framerate = env->GetFloatField(format_info, framerate_field);
+    jfloat java_framerate = env->GetFloatField(java_format_info, framerate_field);
     CHECK_EXCEPTION(env);
-    uint32_t fourcc = (uint32_t)env->GetLongField(format_info, fourcc_field);
+    uint32_t fourcc = (uint32_t)env->GetLongField(java_format_info, fourcc_field);
     CHECK_EXCEPTION(env);
     mrsVideoCaptureFormatInfo format_info{};
     format_info.width = java_width;
@@ -559,7 +559,7 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
     format_info.fourcc = fourcc;
     enumerator.yield(&format_info);
   }
-  return formats;
+  return Error::None();
 #elif defined(WINUWP)
   RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   // The UWP factory needs to be initialized for getDevices() to work.
