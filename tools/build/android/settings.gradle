@@ -1,2 +1,3 @@
+apply from: 'mrwebrtc.gradle'
 include ':webrtc-native'
 rootProject.name='MixedReality-WebRTC'
