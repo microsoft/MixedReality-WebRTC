@@ -70,7 +70,7 @@ bool IsValidAudioTrackBufferPadBehavior(
 
 /// Callback-based asynchronous enumerator utility.
 ///
-/// The utility takes a mandator enumeration callback, which is called each time
+/// The utility takes a mandatory enumeration callback, which is called each time
 /// |yield()| is called.
 ///
 /// If a non-void |EndTypeT| is used, then an additional ending callback is
