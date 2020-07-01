@@ -98,10 +98,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 AutoGainControl = _autoGainControl,
             };
-            Source = await DeviceAudioTrackSource.CreateAsync(initConfig);
-            if (Source == null)
+            try
             {
-                throw new Exception("Failed to create microphone audio source.");
+                Source = await DeviceAudioTrackSource.CreateAsync(initConfig);
+                if (Source == null)
+                {
+                    throw new Exception("DeviceAudioTrackSource.CreateAsync() returned a NULL source.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Disable MicrophoneSource
+                Debug.LogError("Failed to create audio source for MicrophoneSource component; disabling it.");
+                enabled = false;
+                // Throw again to log the exception message with a callstack
+                throw ex;
             }
 
             IsStreaming = true;
