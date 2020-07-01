@@ -227,11 +227,11 @@ void Test_SetLocalTrack(mrsSdpSemantic sdp_semantic,
   // Create the local video track (#1)
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    mrsLocalVideoTrackFromExternalSourceInitConfig config{};
-    config.source_handle = source_handle1;
-    config.track_name = "simulated_video_track1";
-    ASSERT_EQ(mrsResult::kSuccess, mrsLocalVideoTrackCreateFromExternalSource(
-                                       &config, &track_handle1));
+    mrsLocalVideoTrackInitSettings settings{};
+    settings.track_name = "simulated_video_track1";
+    ASSERT_EQ(mrsResult::kSuccess,
+              mrsLocalVideoTrackCreateFromSource(&settings, source_handle1,
+                                                 &track_handle1));
     ASSERT_NE(nullptr, track_handle1);
     ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle1));
   }
@@ -262,8 +262,8 @@ void Test_SetLocalTrack(mrsSdpSemantic sdp_semantic,
   // Remote track from transceiver #1 with non-null track
   ASSERT_EQ(Result::kSuccess,
             mrsTransceiverSetLocalVideoTrack(transceiver_handle1, nullptr));
-  mrsLocalVideoTrackRemoveRef(track_handle1);
-  mrsExternalVideoTrackSourceRemoveRef(source_handle1);
+  mrsRefCountedObjectRemoveRef(track_handle1);
+  mrsRefCountedObjectRemoveRef(source_handle1);
 
   // Check video transceiver #1 consistency
   {
@@ -474,23 +474,6 @@ TYPED_TEST_P(TransceiverTests, SetLocalTrack_InvalidHandle) {
   MediaTrait<TypeParam::MediaType>::Test_SetLocalTrack_InvalidHandle();
 }
 
-TYPED_TEST_P(TransceiverTests, UserData) {
-  using Media = MediaTrait<TypeParam::MediaType>;
-  mrsPeerConnectionConfiguration pc_config{};
-  pc_config.sdp_semantic = TypeParam::kSdpSemantic;
-  LocalPeerPairRaii pair(pc_config);
-  mrsTransceiverHandle transceiver_handle1{};
-  mrsTransceiverInitConfig transceiver_config{};
-  transceiver_config.media_kind = TypeParam::kMediaKind;
-  ASSERT_EQ(Result::kSuccess,
-            mrsPeerConnectionAddTransceiver(pair.pc1(), &transceiver_config,
-                                            &transceiver_handle1));
-  ASSERT_NE(nullptr, transceiver_handle1);
-  ASSERT_EQ(nullptr, mrsTransceiverGetUserData(transceiver_handle1));
-  mrsTransceiverSetUserData(transceiver_handle1, this);
-  ASSERT_EQ(this, mrsTransceiverGetUserData(transceiver_handle1));
-}
-
 TYPED_TEST_P(TransceiverTests, StreamIDs) {
   using Media = MediaTrait<TypeParam::MediaType>;
 
@@ -557,7 +540,6 @@ REGISTER_TYPED_TEST_CASE_P(TransceiverTests,
                            SetLocalTrack_InvalidHandle,
                            SetLocalTrackSendRecv,
                            SetLocalTrackRecvOnly,
-                           UserData,
                            StreamIDs);
 
 using TestTypes = ::testing::Types<TestParams<AudioTest, SdpPlanB>,

@@ -161,11 +161,11 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
   // Create the local track itself for #1
   mrsLocalVideoTrackHandle track_handle1{};
   {
-    mrsLocalVideoTrackFromExternalSourceInitConfig source_config{};
-    source_config.source_handle = source_handle1;
-    source_config.track_name = "gen_track";
-    ASSERT_EQ(mrsResult::kSuccess, mrsLocalVideoTrackCreateFromExternalSource(
-                                       &source_config, &track_handle1));
+    mrsLocalVideoTrackInitSettings settings{};
+    settings.track_name = "gen_track";
+    ASSERT_EQ(mrsResult::kSuccess,
+              mrsLocalVideoTrackCreateFromSource(&settings, source_handle1,
+                                                 &track_handle1));
     ASSERT_NE(nullptr, track_handle1);
     ASSERT_NE(mrsBool::kFalse, mrsLocalVideoTrackIsEnabled(track_handle1));
   }
@@ -215,9 +215,9 @@ TEST_P(ExternalVideoTrackSourceTests, Simple) {
   // Clean-up
   mrsRemoteVideoTrackRegisterArgb32FrameCallback(track_handle2, nullptr,
                                                  nullptr);
-  mrsLocalVideoTrackRemoveRef(track_handle1);
+  mrsRefCountedObjectRemoveRef(track_handle1);
   mrsExternalVideoTrackSourceShutdown(source_handle1);
-  mrsExternalVideoTrackSourceRemoveRef(source_handle1);
+  mrsRefCountedObjectRemoveRef(source_handle1);
 }
 
 #endif  // MRSW_EXCLUDE_DEVICE_TESTS

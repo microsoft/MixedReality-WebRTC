@@ -14,7 +14,6 @@ namespace TestAppUwp
     {
         public readonly string Id;
         public readonly string DisplayName;
-        public readonly Symbol Symbol = Symbol.Video;
 
         public VideoCaptureDeviceInfo(string id, string displayName)
         {
@@ -117,9 +116,6 @@ namespace TestAppUwp
             }
         }
 
-        public CollectionViewModel<MediaCaptureVideoProfileMediaDescription> RecordMediaDescs { get; private set; }
-            = new CollectionViewModel<MediaCaptureVideoProfileMediaDescription>();
-
         /// <summary>
         /// Property indicating whether a track can be created based on the currently selected items.
         /// </summary>
@@ -160,7 +156,7 @@ namespace TestAppUwp
             ErrorMessage = null;
             try
             {
-                await RequestMediaAccessAsync(StreamingCaptureMode.Video);
+                await Utils.RequestMediaAccessAsync(StreamingCaptureMode.Video);
             }
             catch (UnauthorizedAccessException uae)
             {
@@ -222,8 +218,10 @@ namespace TestAppUwp
                 }
                 else
                 {
-                    int index = (int)kind;
-                    profiles = MediaCapture.FindKnownVideoProfiles(item.Id, (KnownVideoProfile)index);
+                    // VideoProfileKind and KnownVideoProfile are the same with the exception of
+                    // `Unspecified` that takes value 0.
+                    var profile = (KnownVideoProfile)((int)kind - 1);
+                    profiles = MediaCapture.FindKnownVideoProfiles(item.Id, profile);
                 }
                 foreach (var profile in profiles)
                 {
@@ -286,63 +284,43 @@ namespace TestAppUwp
 
         public async Task AddVideoTrackFromDeviceAsync(string trackName)
         {
-            await RequestMediaAccessAsync(StreamingCaptureMode.Video);
+            await Utils.RequestMediaAccessAsync(StreamingCaptureMode.Video);
 
+            // Create the source
             VideoCaptureDeviceInfo deviceInfo = VideoCaptureDevices.SelectedItem;
             if (deviceInfo == null)
             {
                 throw new InvalidOperationException("No video capture device selected");
             }
-            var settings = new LocalVideoTrackSettings
+            var deviceConfig = new LocalVideoDeviceInitConfig
             {
-                trackName = trackName,
                 videoDevice = new VideoCaptureDevice { id = deviceInfo.Id },
             };
             VideoCaptureFormatViewModel formatInfo = VideoCaptureFormats.SelectedItem;
             if (formatInfo != null)
             {
-                settings.width = formatInfo.Format.width;
-                settings.height = formatInfo.Format.height;
-                settings.framerate = formatInfo.Format.framerate;
+                deviceConfig.width = formatInfo.Format.width;
+                deviceConfig.height = formatInfo.Format.height;
+                deviceConfig.framerate = formatInfo.Format.framerate;
             }
-            var track = await LocalVideoTrack.CreateFromDeviceAsync(settings);
+            if (deviceInfo.SupportsVideoProfiles)
+            {
+                MediaCaptureVideoProfile profile = VideoProfiles.SelectedItem;
+                deviceConfig.videoProfileId = profile?.Id;
+                deviceConfig.videoProfileKind = SelectedVideoProfileKind;
+            }
+            var source = await DeviceVideoTrackSource.CreateAsync(deviceConfig);
+            // FIXME - this leaks the source, never disposed
 
-            SessionModel.Current.VideoTracks.Add(new VideoTrackViewModel
+            // Crate the track
+            var trackConfig = new LocalVideoTrackInitConfig
             {
-                Track = track,
-                TrackImpl = track,
-                IsRemote = false,
-                DeviceName = deviceInfo.DisplayName
-            });
-            SessionModel.Current.LocalTracks.Add(new TrackViewModel(Symbol.Video) { DisplayName = deviceInfo.DisplayName });
-        }
+                trackName = trackName,
+            };
+            var track = LocalVideoTrack.CreateFromSource(source, trackConfig);
+            // FIXME - this probably leaks the track, never disposed
 
-        private async Task RequestMediaAccessAsync(StreamingCaptureMode mode)
-        {
-            // Ensure that the UWP app was authorized to capture audio (cap:microphone)
-            // or video (cap:webcam), otherwise the native plugin will fail.
-            try
-            {
-                MediaCapture mediaAccessRequester = new MediaCapture();
-                var mediaSettings = new MediaCaptureInitializationSettings
-                {
-                    AudioDeviceId = "",
-                    VideoDeviceId = "",
-                    StreamingCaptureMode = mode,
-                    PhotoCaptureSource = PhotoCaptureSource.VideoPreview
-                };
-                await mediaAccessRequester.InitializeAsync(mediaSettings);
-            }
-            catch (UnauthorizedAccessException uae)
-            {
-                Logger.Log("Access to A/V denied, check app permissions: " + uae.Message);
-                throw uae;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Failed to initialize A/V with unknown exception: " + ex.Message);
-                throw ex;
-            }
+            SessionModel.Current.AddVideoTrack(track, deviceInfo.DisplayName);
         }
     }
 }

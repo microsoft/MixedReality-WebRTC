@@ -31,13 +31,12 @@ void MRS_CALL mrsDataChannelRegisterCallbacks(
     mrsDataChannelHandle handle,
     const mrsDataChannelCallbacks* callbacks) noexcept {
   if (auto data_channel = static_cast<DataChannel*>(handle)) {
-    data_channel->SetMessageCallback(Callback<const void*, const uint64_t>{
-        callbacks->message_callback, callbacks->message_user_data});
+    data_channel->SetMessageCallback(
+        {callbacks->message_callback, callbacks->message_user_data});
     data_channel->SetBufferingCallback(
-        Callback<const uint64_t, const uint64_t, const uint64_t>{
-            callbacks->buffering_callback, callbacks->buffering_user_data});
-    data_channel->SetStateCallback(Callback<int, int>{
-        callbacks->state_callback, callbacks->state_user_data});
+        {callbacks->buffering_callback, callbacks->buffering_user_data});
+    data_channel->SetStateCallback(
+        {callbacks->state_callback, callbacks->state_user_data});
   }
 }
 

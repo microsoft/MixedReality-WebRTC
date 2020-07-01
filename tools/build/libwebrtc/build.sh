@@ -7,7 +7,9 @@
 
 set -o errexit
 set -o nounset
-set -o pipefail
+# This breaks checkout on ADO, throwing some SIGPIPE for no apparent reason.
+# See http://www.pixelbeat.org/programming/sigpipe_handling.html for details.
+#set -o pipefail
 
 #-----------------------------------------------------------------------------
 function check-err() {

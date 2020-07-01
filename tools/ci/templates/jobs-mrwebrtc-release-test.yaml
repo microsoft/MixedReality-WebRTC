@@ -1,0 +1,60 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# [TEMPLATE] Test Microsoft.MixedReality.WebRTC.Native.(Desktop|UWP)
+
+parameters:
+# Package agent pool
+- name: testAgent
+  type: string
+  default: ''
+# Package platform
+- name: testPlatform
+  type: string
+  default: ''
+  values:
+  - 'Desktop'
+  - 'UWP'
+# NuGet package version (SemVer)
+- name: nugetPackageVersion
+  type: string
+  default: ''
+
+jobs:
+- job: mrwebrtc_test_${{parameters.testPlatform}}
+  timeoutInMinutes: 360
+  pool:
+    name: ${{parameters.testAgent}}
+    demands:
+    - msbuild
+    - vstest
+  variables:
+    packageName: 'Microsoft.MixedReality.WebRTC.Native.${{parameters.testPlatform}}'
+  steps:
+
+  # Checkout
+  - checkout: self
+    fetchDepth: '50'
+
+  # Use NuGet 5.2.0 to work around auth issues in previous versions
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 5.2.0'
+    inputs:
+      versionSpec: 5.2.0
+
+  # Download NuGet package
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download mrwebrtc library (${{parameters.testPlatform}})'
+    inputs:
+      source: 'current'
+      artifact: 'nuget_mrwebrtc_${{parameters.testPlatform}}'
+      patterns: '**/$(packageName).${{parameters.nugetPackageVersion}}.nupkg'
+      path: '$(Build.BinariesDirectory)/nuget/$(packageName)'
+
+  # Check package signing
+  - task: PowerShell@2
+    displayName: 'Check signing'
+    inputs:
+      targetType: 'filePath'
+      filePath: 'tools/ci/checkSigning.ps1'
+      arguments: '-PackageFolder "$(Build.BinariesDirectory)/nuget/$(packageName)" -TempFolder "$(Build.BinariesDirectory)/unpack/$(packageName)"'

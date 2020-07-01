@@ -29,7 +29,7 @@ This generates a folder named `TestNetCoreConsole` which contains the following 
 - **`Program.cs`** : The C# source code for the application
 
 > [!Note]
-> Starting Visual Studio v16.3, this project can also be generated from the Visual Studio wizard by creating a new project and selecting **Console App (.NET Core)**, which will default to .NET Core 3.0. Previous versions of Visual Studio default to .NET Core 2.1 or lower. 
+> Starting Visual Studio v16.3, this project can also be generated from the Visual Studio wizard by creating a new project and selecting **Console App (.NET Core)**, which will default to .NET Core 3.0. Previous versions of Visual Studio default to .NET Core 2.1 or lower.
 
 ## Open the .NET Core project in Visual Studio 2019
 
@@ -52,9 +52,6 @@ dotnet add TestNetCoreConsole.csproj package Microsoft.MixedReality.WebRTC
 
 This will download from [nuget.org](https://www.nuget.org/) and install the `Microsoft.MixedReality.WebRTC.nupkg` NuGet package, which contains the same-named assembly, as well as its native dependencies (x86 and x64) for the Windows Desktop platform.
 
-> [!Note]
-> `dotnet` may complain about being unable to find a stable package, if no stable package has been released yet. Remember that `dotnet` only install stable packages by default, you can force a specific non-stable version with the `--version` option.
-
 After that, `TestNetCoreConsole.csproj` should contain a reference to the package, with a version corresponding to the latest stable version found on [nuget.org](https://www.nuget.org/), or the one you specified with the `--version` option.
 
 ```xml
@@ -76,7 +73,7 @@ Edit the `Program.cs` file:
    using Microsoft.MixedReality.WebRTC;
    ```
 
-2. Modify the signature of the `Main` function to make it asynchronous, by changing its return type from `void` to `Task` and adding the `async` keyword. This allows using the `await` keyword inside its body.
+2. Modify the signature of the `Main` function to make it asynchronous, by changing its return type from `void` to `Task` and adding the `async` keyword. This allows using the `await` keyword inside its body, which greatly simplifies the writing for asynchronous code.
 
    ```cs
    static async Task Main(string[] args)
@@ -111,7 +108,7 @@ Launch the application again. This time the terminal window shows a list of devi
 Found webcam <some webcam name> (id: <some long ID>)
 ```
 
-Note that there might be multiple lines if multiple capture devices are available, which is unusual but can happen _e.g._ if you plug a USB webcam into a laptop which already has an integrated webcam. In general the first capture device listed will be the default one used by WebRTC, although it is possible to explicitly select a device (see [`LocalVideoTrack.CreateFromDeviceAsync()`](xref:Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings)) for more details).
+Note that there might be multiple lines if multiple capture devices are available, which is unusual but can happen _e.g._ if you plug a USB webcam into a laptop which already has an integrated webcam. In general the first capture device listed will be the default one used by WebRTC, although it is possible to explicitly select a device (see [`DeviceVideoTrackSource.CreateAsync()`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.CreateAsync(Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig)) for more details).
 
 ----
 

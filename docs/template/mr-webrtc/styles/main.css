@@ -82,18 +82,61 @@ pre {
 /** Title bar **/
 
 .navbar-brand > img {
+  display: inline;
   width: 32px;
   margin: 10px 10px 10px 0;
 }
 
+.navbar-brand > span {
+  color: white;
+  display: inline;
+  margin-right: 15px;
+  vertical-align: middle;
+}
+
+/** Search **/
+
+#search {
+  margin: 0;
+  margin-right: 50px;
+  padding: 0;
+}
+
+#search input {
+  border: 0;
+  border-radius: 0;
+  height: 50px;
+  background-color: #666;
+  color: white;
+}
+
 /** Branch selector **/
 
+#branch-selector {
+  margin: 0;
+  padding: 0;
+}
+
 #branch-selector select {
-  height: 34px;
-  padding: 6px 12px;
-  padding-top: 3px;
-  border-radius: 4px;
-  border: 1px solid gray;
+  height: 50px;
+  padding: 0;
+  padding-left: 5px;
+  border-radius: 0;
+  border: 0;
+  color: #eee;
+  background-color: #0066b8;
+}
+
+/** Breadcrumb **/
+
+/* Hide breabcrumb on index page */
+body[data-uid="index"] .subnav {
+  display: none;
+}
+
+/* Adjust article content for removed breadcrumb */
+body[data-uid="index"] .article {
+  margin-top: 90px;
 }
 
 /** TOC nav bar (left) **/
@@ -246,4 +289,62 @@ article h4 {
 
 .level1.summary {
   margin: 1em 0 1em 0;
+}
+
+/** Glossary **/
+
+#_content[data-uid="glossary"] a em {
+  color: #337ac4;
+}
+
+#_content[data-uid="glossary"] h2 {
+  border-bottom: 1px solid #777;
+}
+
+#_content[data-uid="glossary"] h3 {
+  color: #337ac4;
+  border-left: 8px solid #337ac4;
+  margin-top: 30px;
+  padding-top: 0;
+  padding-left: 10px;
+}
+
+#_content[data-uid="glossary"] h3 .anchorjs-link {
+  left: 15px;
+}
+
+#_content[data-uid="glossary"] h4 {
+  font-weight: 600;
+  font-size: 90%;
+  color: #777;
+  margin-top: 1em;
+}
+
+#_content[data-uid="glossary"] blockquote {
+  padding: 0;
+  border: 0;
+  font-size: 90%;
+}
+
+#_content[data-uid="glossary"] blockquote p {
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+}
+
+#_content[data-uid="glossary"] blockquote p::after {
+  content: ":";
+}
+
+#_content[data-uid="glossary"] blockquote ul {
+  padding-left: 0;
+}
+
+#_content[data-uid="glossary"] blockquote li {
+  list-style-type: none;
+  display: inline;
+  margin-right: 3px;
+  background-color: #eee;
+  padding: 2px 5px;
+  border-radius: 5px;
 }

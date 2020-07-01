@@ -18,6 +18,9 @@ examples/TestNetCoreConsole/bin
 *.suo
 launchSettings.json
 
+# Python
+*.pyc
+
 # UWP packages
 /examples/TestAppUwp/AppPackages
 
@@ -26,20 +29,13 @@ launchSettings.json
 project.json
 project.lock.json
 
-# Unity artifacts
-/libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Plugins
-/libs/Microsoft.MixedReality.WebRTC.Unity/build
-/libs/Microsoft.MixedReality.WebRTC.Unity/Builds
-/libs/Microsoft.MixedReality.WebRTC.Unity/Library
-/libs/Microsoft.MixedReality.WebRTC.Unity/Temp
-/libs/Microsoft.MixedReality.WebRTC.Unity/Logs
-/libs/Microsoft.MixedReality.WebRTC.Unity/obj
-/libs/Microsoft.MixedReality.WebRTC.Unity/*.csproj
-/libs/Microsoft.MixedReality.WebRTC.Unity/*.sln
+# Unity package binaries
+libs/unity/**/*.dll
+libs/unity/**/*.pdb
+libs/unity/**/*.aar
 
-# Unity third-party dependencies
-/libs/Microsoft.MixedReality.WebRTC.Unity/Assets/MixedRealityToolkit*
-/libs/Microsoft.MixedReality.WebRTC.Unity/Assets/TextMesh Pro*
+# Legacy Unity library location
+libs/Microsoft.MixedReality.WebRTC.Unity
 
 # Certificates
 *.pfx

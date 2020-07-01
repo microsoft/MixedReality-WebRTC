@@ -49,6 +49,9 @@ class RefPtr {
   }
 
   RefPtr& operator=(RefPtr&& other) noexcept {
+    // Self-move is undefined behavior
+    RTC_DCHECK((ptr_ == nullptr) || (other.ptr_ != ptr_))
+        << "Detected self-move assignment of RefPtr object.";
     const auto new_ptr = other.ptr_;
     other.ptr_ = nullptr;
     const auto old_ptr = ptr_;

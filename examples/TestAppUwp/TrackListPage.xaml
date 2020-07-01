@@ -17,7 +17,7 @@
                 <TextBlock Text="{x:Bind DisplayName}" VerticalAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="TrackDataTemplate" x:DataType="local:TrackViewModel">
+        <DataTemplate x:Key="TrackDataTemplate" x:DataType="local:LocalTrackViewModel">
             <StackPanel Orientation="Horizontal" Height="64">
                 <SymbolIcon Width="48" Height="48" Symbol="{x:Bind Symbol}" Margin="0,8,8,8"/>
                 <Grid Height="64">

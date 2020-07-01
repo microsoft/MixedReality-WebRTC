@@ -8,12 +8,54 @@
 #include "refptr.h"
 #include "tracked_object.h"
 #include "video_frame.h"
+#include "video_track_source.h"
 
 namespace Microsoft {
 namespace MixedReality {
 namespace WebRTC {
 
 class ExternalVideoTrackSource;
+
+namespace detail {
+
+/// Adapter for the frame buffer of an external video track source,
+/// to support various frame encodings in a unified way.
+class BufferAdapter {
+ public:
+  virtual ~BufferAdapter() = default;
+
+  /// Request a new video frame with the specified request ID.
+  virtual Result RequestFrame(ExternalVideoTrackSource& track_source,
+                              uint32_t request_id,
+                              int64_t time_ms) noexcept = 0;
+
+  /// Allocate a new video frame buffer with a video frame received from a
+  /// fulfilled frame request.
+  virtual rtc::scoped_refptr<webrtc::VideoFrameBuffer> FillBuffer(
+      const I420AVideoFrame& frame_view) = 0;
+  virtual rtc::scoped_refptr<webrtc::VideoFrameBuffer> FillBuffer(
+      const Argb32VideoFrame& frame_view) = 0;
+};
+
+/// Adapter to bridge a video track source to the underlying core
+/// implementation.
+struct CustomTrackSourceAdapter : public rtc::AdaptedVideoTrackSource {
+  void DispatchFrame(const webrtc::VideoFrame& frame) { OnFrame(frame); }
+
+  // VideoTrackSourceInterface
+  bool is_screencast() const override { return false; }
+  absl::optional<bool> needs_denoising() const override {
+    return absl::nullopt;
+  }
+
+  // MediaSourceInterface
+  SourceState state() const override { return state_; }
+  bool remote() const override { return false; }
+
+  SourceState state_ = SourceState::kInitializing;
+};
+
+}  // namespace detail
 
 /// Frame request for an external video source producing video frames encoded in
 /// I420 format, with optional Alpha (opacity) plane.
@@ -78,8 +120,11 @@ class Argb32ExternalVideoSource : public RefCountedBase {
 
 /// Video track source acting as an adapter for an external source of raw
 /// frames.
-class ExternalVideoTrackSource : public TrackedObject {
+class ExternalVideoTrackSource : public VideoTrackSource,
+                                 public rtc::MessageHandler {
  public:
+  using SourceState = webrtc::MediaSourceInterface::SourceState;
+
   /// Helper to create an external video track source from a custom I420A video
   /// frame request callback.
   static RefPtr<ExternalVideoTrackSource> createFromI420A(
@@ -92,43 +137,66 @@ class ExternalVideoTrackSource : public TrackedObject {
       RefPtr<GlobalFactory> global_factory,
       RefPtr<Argb32ExternalVideoSource> video_source);
 
+  static RefPtr<ExternalVideoTrackSource> create(
+      RefPtr<GlobalFactory> global_factory,
+      std::unique_ptr<detail::BufferAdapter> adapter);
+
+  ~ExternalVideoTrackSource() override;
+
   /// Finish the creation of the video track source, and start capturing.
   /// See |mrsExternalVideoTrackSourceFinishCreation()| for details.
-  virtual void FinishCreation() = 0;
+  void FinishCreation();
 
   /// Start the video capture. This will begin to produce video frames and start
   /// calling the video frame callback.
-  virtual void StartCapture() = 0;
+  void StartCapture();
 
   /// Complete a given video frame request with the provided I420A frame.
   /// The caller must know the source expects an I420A frame; there is no check
   /// to confirm the source is I420A-based or ARGB32-based.
-  virtual Result CompleteRequest(uint32_t request_id,
-                                 int64_t timestamp_ms,
-                                 const I420AVideoFrame& frame) = 0;
+  Result CompleteRequest(uint32_t request_id,
+                         int64_t timestamp_ms,
+                         const I420AVideoFrame& frame);
 
   /// Complete a given video frame request with the provided ARGB32 frame.
   /// The caller must know the source expects an ARGB32 frame; there is no check
   /// to confirm the source is I420A-based or ARGB32-based.
-  virtual Result CompleteRequest(uint32_t request_id,
-                                 int64_t timestamp_ms,
-                                 const Argb32VideoFrame& frame) = 0;
+  Result CompleteRequest(uint32_t request_id,
+                         int64_t timestamp_ms,
+                         const Argb32VideoFrame& frame);
 
   /// Stop the video capture. This will stop producing video frames.
-  virtual void StopCapture() = 0;
+  void StopCapture();
 
   /// Shutdown the source and release the buffer adapter and its callback.
-  virtual void Shutdown() noexcept = 0;
+  void Shutdown() noexcept;
 
  protected:
-  ExternalVideoTrackSource(RefPtr<GlobalFactory> global_factory);
+  ExternalVideoTrackSource(
+      RefPtr<GlobalFactory> global_factory,
+      std::unique_ptr<detail::BufferAdapter> adapter,
+      rtc::scoped_refptr<detail::CustomTrackSourceAdapter> source);
+  // void Run(rtc::Thread* thread) override;
+  void OnMessage(rtc::Message* message) override;
+  detail::CustomTrackSourceAdapter* GetSourceImpl() const {
+    return (detail::CustomTrackSourceAdapter*)source_.get();
+  }
+
+  std::unique_ptr<detail::BufferAdapter> adapter_;
+  std::unique_ptr<rtc::Thread> capture_thread_;
+
+  /// Collection of pending frame requests
+  std::deque<std::pair<uint32_t, int64_t>> pending_requests_
+      RTC_GUARDED_BY(request_lock_);  //< TODO : circular buffer to avoid alloc
+
+  /// Next available ID for a frame request.
+  uint32_t next_request_id_ RTC_GUARDED_BY(request_lock_){};
+
+  /// Lock for frame requests.
+  rtc::CriticalSection request_lock_;
 };
 
 namespace detail {
-
-//
-// Helpers
-//
 
 /// Create an I420A external video track source wrapping the given interop
 /// callback.

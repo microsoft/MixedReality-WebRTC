@@ -79,14 +79,6 @@ class PeerConnection : public TrackedObject,
   static ErrorOr<RefPtr<PeerConnection>> create(
       const mrsPeerConnectionConfiguration& config);
 
-  /// Set the name of the peer connection. This is a friendly name opaque to the
-  /// implementation, used mainly for debugging and logging.
-  void SetName(absl::string_view name) {
-    name_.assign(name.data(), name.size());
-  }
-
-  std::string GetName() const override { return name_; }
-
   //
   // Signaling
   //
@@ -99,7 +91,7 @@ class PeerConnection : public TrackedObject,
   /// - The null-terminated type of the SDP message. Valid values are "offer" or
   /// "answer".
   /// - The null-terminated SDP message content.
-  using LocalSdpReadytoSendCallback = Callback<const char*, const char*>;
+  using LocalSdpReadytoSendCallback = Callback<mrsSdpMessageType, const char*>;
 
   /// Register a custom LocalSdpReadytoSendCallback invoked when a local SDP
   /// message is ready to be sent by the user to the remote peer. Users MUST
@@ -115,13 +107,7 @@ class PeerConnection : public TrackedObject,
 
   /// Callback invoked when a local ICE candidate message is ready to be sent to
   /// the remote peer via the signalling solution.
-  ///
-  /// The callback parameters are:
-  /// - The null-terminated ICE message content.
-  /// - The mline index.
-  /// - The MID string value.
-  using IceCandidateReadytoSendCallback =
-      Callback<const char*, int, const char*>;
+  using IceCandidateReadytoSendCallback = Callback<const mrsIceCandidate*>;
 
   /// Register a custom |IceCandidateReadytoSendCallback| invoked when a local
   /// ICE candidate has been generated and is ready to be sent. Users MUST
@@ -187,9 +173,7 @@ class PeerConnection : public TrackedObject,
   /// remote peer. The parameters correspond to the SDP message data provided by
   /// the |IceCandidateReadytoSendCallback|, after being transmitted to the
   /// other peer.
-  bool AddIceCandidate(const char* sdp_mid,
-                       const int sdp_mline_index,
-                       const char* candidate) noexcept;
+  Error AddIceCandidate(const mrsIceCandidate& candidate) noexcept;
 
   /// Callback invoked when |SetRemoteDescriptionAsync()| finished applying a
   /// remote description, successfully or not. The first parameter is the result
@@ -201,8 +185,8 @@ class PeerConnection : public TrackedObject,
   /// remote peer. The parameters correspond to the SDP message data provided by
   /// the |LocalSdpReadytoSendCallback|, after being transmitted to the
   /// other peer.
-  bool SetRemoteDescriptionAsync(
-      const char* type,
+  Error SetRemoteDescriptionAsync(
+      mrsSdpMessageType type,
       const char* sdp,
       RemoteDescriptionAppliedCallback callback) noexcept;
 
@@ -487,10 +471,6 @@ class PeerConnection : public TrackedObject,
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_;
 
  protected:
-  /// Peer connection name assigned by the user. This has no meaning for the
-  /// implementation.
-  std::string name_;
-
   /// User callback invoked when the peer connection received a new data channel
   /// from the remote peer and added it locally.
   DataChannelAddedCallback data_channel_added_callback_
@@ -601,7 +581,7 @@ class PeerConnection : public TrackedObject,
 
   /// Collection of data channels from their label.
   /// This contains only data channels with a non-empty label.
-  std::unordered_multimap<str, std::shared_ptr<DataChannel>>
+  std::unordered_multimap<std::string, std::shared_ptr<DataChannel>>
       data_channel_from_label_ RTC_GUARDED_BY(data_channel_mutex_);
 
   /// Mutex for data structures related to data channels.

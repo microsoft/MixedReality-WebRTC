@@ -22,13 +22,13 @@ RemoteVideoTrack::RemoteVideoTrack(
                  owner),
       track_(std::move(track)),
       receiver_(std::move(receiver)),
-      transceiver_(transceiver),
-      track_name_(track_->id()) {
+      transceiver_(transceiver) {
   RTC_CHECK(owner_);
   RTC_CHECK(track_);
   RTC_CHECK(receiver_);
   RTC_CHECK(transceiver_);
   RTC_CHECK(transceiver_->GetMediaKind() == mrsMediaKind::kVideo);
+  name_ = track_->id();
   kind_ = mrsTrackKind::kVideoTrack;
   transceiver_->OnRemoteTrackAdded(this);
   rtc::VideoSinkWants sink_settings{};

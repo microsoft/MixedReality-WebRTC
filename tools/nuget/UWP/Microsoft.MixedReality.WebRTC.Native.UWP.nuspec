@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+    <metadata>
+        <id>Microsoft.MixedReality.WebRTC.Native.UWP</id>
+        <version>__VERSION_STRING__</version>
+        <authors>Microsoft</authors>
+        <copyright>&#169; Microsoft Corporation. All rights reserved.</copyright>
+        <description>MixedReality-WebRTC is a collection of components to help mixed reality app developers integrate audio, video, and data real-time communication into their application and improve their collaborative experience.
+
+This package contains the native C++ libraries (x86, x64, ARM) and C++ headers for use in native C++ UWP (Universal Windows Platform) projects.</description>
+        <title>Microsoft.MixedReality.WebRTC.Native.UWP</title>
+        <projectUrl>https://microsoft.github.io/MixedReality-WebRTC/</projectUrl>
+        <license type="expression">MIT</license>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <repository type="git" url="https://github.com/microsoft/MixedReality-WebRTC.git" branch="master" commit="__SOURCE_COMMIT_ID__" />
+        <iconUrl>https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/mr-webrtc_icon.png</iconUrl>
+        <tags>native WebRTC video audio data streaming realtime communication C++ cpp UWP</tags>
+        <summary>MixedReality-WebRTC is a collection of components to help mixed reality app developers integrate audio, video, and data real-time communication into their application and improve their collaborative experience.
+
+This package contains the native C++ libraries (x86, x64, ARM) and C++ headers for use in native C++ UWP (Universal Windows Platform) projects.</summary>
+    </metadata>
+    <files>
+        <!-- mrwebrtc.dll and its import library -->
+        <file src="runtimes\win10-x86\lib\uap10.0\debug\mrwebrtc.dll" target="runtimes\win10-x86\lib\uap10.0\debug" />
+        <file src="runtimes\win10-x86\lib\uap10.0\debug\mrwebrtc.lib" target="runtimes\win10-x86\lib\uap10.0\debug" />
+        <file src="runtimes\win10-x86\lib\uap10.0\release\mrwebrtc.dll" target="runtimes\win10-x86\lib\uap10.0\release" />
+        <file src="runtimes\win10-x86\lib\uap10.0\release\mrwebrtc.lib" target="runtimes\win10-x86\lib\uap10.0\release" />
+        <file src="runtimes\win10-x64\lib\uap10.0\debug\mrwebrtc.dll" target="runtimes\win10-x64\lib\uap10.0\debug" />
+        <file src="runtimes\win10-x64\lib\uap10.0\debug\mrwebrtc.lib" target="runtimes\win10-x64\lib\uap10.0\debug" />
+        <file src="runtimes\win10-x64\lib\uap10.0\release\mrwebrtc.dll" target="runtimes\win10-x64\lib\uap10.0\release" />
+        <file src="runtimes\win10-x64\lib\uap10.0\release\mrwebrtc.lib" target="runtimes\win10-x64\lib\uap10.0\release" />
+        <file src="runtimes\win10-arm\lib\uap10.0\debug\mrwebrtc.dll" target="runtimes\win10-arm\lib\uap10.0\debug" />
+        <file src="runtimes\win10-arm\lib\uap10.0\debug\mrwebrtc.lib" target="runtimes\win10-arm\lib\uap10.0\debug" />
+        <file src="runtimes\win10-arm\lib\uap10.0\release\mrwebrtc.dll" target="runtimes\win10-arm\lib\uap10.0\release" />
+        <file src="runtimes\win10-arm\lib\uap10.0\release\mrwebrtc.lib" target="runtimes\win10-arm\lib\uap10.0\release" />
+        
+        <!-- .props -->
+        <file src="build\native\Microsoft.MixedReality.WebRTC.Native.UWP.props" target="build\native" />
+
+        <!-- headers-->
+        <file src="build\native\include\mrwebrtc\*.h" target="build\native\include\mrwebrtc" />
+
+        <!-- NOTICE -->
+        <file src="content\NOTICE" target="content\NOTICE" />
+    </files>
+</package>

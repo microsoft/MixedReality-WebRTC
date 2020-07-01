@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 # Compute the name and version of the Universal Package used for PDBs,
 # and populate the relevant pipeline variables.
 

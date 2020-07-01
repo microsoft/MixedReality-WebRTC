@@ -1,0 +1,59 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# [TEMPLATE] Run Windows Desktop (win32) tests for mrwebrtc.dll
+
+parameters:
+# Build architecture
+- name: buildArch
+  displayName: 'Build Architecture'
+  type: string
+  default: ''
+  values:
+  - 'x86'
+  - 'x64'
+  - 'ARM'
+  - 'ARM64'
+# Build configuration
+- name: buildConfig
+  displayName: 'Build Configuration'
+  type: string
+  default: ''
+  values:
+  - 'Debug'
+  - 'Release'
+
+steps:
+
+# Restore the NuGet packages for the mrwebrtc-win32-tests project
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+  displayName: 'NuGet restore mrwebrtc-win32-tests'
+  inputs:
+    command: restore
+    restoreSolution: '$(Build.SourcesDirectory)/tools/build/mrwebrtc/win32/tests/packages.config'
+    restoreDirectory: '$(Build.SourcesDirectory)/packages'
+    includeNuGetOrg: true
+    feedsToUse: 'config'
+    nugetConfigPath: '$(NuGetConfigPath)'
+  timeoutInMinutes: 10
+
+# Build the tests
+- task: MSBuild@1
+  displayName: 'Build mrwebrtc-win32-tests'
+  inputs:
+    solution: '$(Build.SourcesDirectory)/tools/build/mrwebrtc/win32/tests/mrwebrtc-win32-tests.vcxproj'
+    msbuildVersion: '15.0'
+    msbuildArchitecture: 'x64'
+    platform: '$(msbuildPlatform)'
+    configuration: '${{parameters.buildConfig}}'
+    msbuildArguments: '/p:DisableDeviceTests=1' # Disable tests requiring a webcam or microphone
+  timeoutInMinutes: 15
+
+# Run the tests
+- task: VSTest@2
+  displayName: 'Run mrwebrtc-win32-tests'
+  inputs:
+    testAssemblyVer2: 'mrwebrtc-win32-tests.exe'
+    searchFolder: '$(Build.SourcesDirectory)/bin/Win32/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+    pathtoCustomTestAdapters: '$(Build.SourcesDirectory)/packages/GoogleTestAdapter.0.16.1/build/_common'
+  timeoutInMinutes: 30

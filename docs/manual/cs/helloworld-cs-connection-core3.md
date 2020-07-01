@@ -33,7 +33,7 @@ Continue editing the `Program.cs` file and append the following:
    };
    ```
 
-3. To establish a WebRTC connection, one peer has to call [`CreateOffer()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.CreateOffer), but not both. Since the signaler implementation `NamedPipeSignaler` already provides a way to distinguish between the two peers, we use that information to select which peer will automatically initiate the connection.
+3. To establish a WebRTC connection, one peer (the _caller_) has to call [`CreateOffer()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.CreateOffer), but not both (the _callee_ just waits). Since the signaler implementation `NamedPipeSignaler` already provides a way to distinguish between the two peers, we use that information to select which peer will automatically initiate the call.
 
    ```cs
    if (signaler.IsClient)

@@ -13,25 +13,6 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL mrsPeerConnectionAddRef(mrsPeerConnectionHandle handle) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(handle)) {
-    peer->AddRef();
-  } else {
-    RTC_LOG(LS_WARNING)
-        << "Trying to add reference to NULL PeerConnection object.";
-  }
-}
-
-void MRS_CALL
-mrsPeerConnectionRemoveRef(mrsPeerConnectionHandle handle) noexcept {
-  if (auto peer = static_cast<PeerConnection*>(handle)) {
-    peer->RemoveRef();
-  } else {
-    RTC_LOG(LS_WARNING)
-        << "Trying to remove reference from NULL PeerConnection object.";
-  }
-}
-
 void MRS_CALL mrsPeerConnectionRegisterTransceiverAddedCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionTransceiverAddedCallback callback,
@@ -70,52 +51,3 @@ mrsPeerConnectionAddTransceiver(mrsPeerConnectionHandle peer_handle,
   }
   return Result::kInvalidNativeHandle;
 }
-
-#if 0  // WIP
-mrsResult MRS_CALL
-mrsPeerConnectionRenderRemoteAudio(mrsPeerConnectionHandle peerHandle,
-                                   bool render) {
-#if defined(WINUWP)
-  RTC_LOG_F(LS_ERROR) << "Rendering/not rendering remote audio explicitly is "
-                         "not supported on UWP";
-  return Result::kUnsupported;
-#else
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    peer->RenderRemoteAudioTrack(render);
-  }
-  return Result::kSuccess;
-#endif
-}
-
-mrsResult MRS_CALL
-mrsAudioTrackReadBufferCreate(mrsPeerConnectionHandle peerHandle,
-                              int bufferMs,
-                              AudioTrackReadBufferHandle* audioBufferOut) {
-  *audioBufferOut = nullptr;
-  if (auto peer = static_cast<PeerConnection*>(peerHandle)) {
-    *audioBufferOut = new AudioTrackReadBuffer(peer, bufferMs);
-    return Result::kSuccess;
-  }
-  return Result::kInvalidNativeHandle;
-}
-
-mrsResult MRS_CALL
-mrsAudioTrackReadBufferRead(AudioTrackReadBufferHandle readStream,
-                            int sampleRate,
-                            float data[],
-                            int dataLen,
-                            int numChannels) {
-  if (auto stream = static_cast<AudioTrackReadBuffer*>(readStream)) {
-    stream->Read(sampleRate, data, dataLen, numChannels);
-    return Result::kSuccess;
-  }
-  return Result::kInvalidNativeHandle;
-}
-
-void MRS_CALL
-mrsAudioTrackReadBufferDestroy(AudioTrackReadBufferHandle readStream) {
-  if (auto ars = static_cast<AudioTrackReadBuffer*>(readStream)) {
-    delete ars;
-  }
-}
-#endif

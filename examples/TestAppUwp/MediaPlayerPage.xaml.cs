@@ -1,28 +1,28 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.MixedReality.WebRTC;
-using TestAppUwp.Video;
-using Windows.Media.Core;
-using Windows.Media.MediaProperties;
-using Windows.Media.Playback;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace TestAppUwp
 {
     /// <summary>
-    /// Model for video tracks, whether local or remote, for rendering in video player.
+    /// Model for tracks, whether local or remote.
     /// </summary>
-    public class VideoTrackViewModel
+    public abstract class TrackViewModel
     {
-        public IVideoTrack Track;
-        public MediaTrack TrackImpl;
-        public bool IsRemote;
-        public string DeviceName;
+        public readonly MediaTrack TrackImpl;
+        public bool IsRemote => TrackImpl is RemoteAudioTrack || TrackImpl is RemoteVideoTrack;
+        public readonly string DeviceName;
+
+        protected TrackViewModel(MediaTrack track, string deviceName)
+        {
+            TrackImpl = track;
+            DeviceName = deviceName;
+        }
+
         public string DisplayName
         {
             get
@@ -50,33 +50,36 @@ namespace TestAppUwp
     /// <summary>
     /// Model for audio tracks, whether local or remote, for output in audio player.
     /// </summary>
-    public class AudioTrackViewModel
+    public class AudioTrackViewModel : TrackViewModel
     {
-        public IAudioTrack Track;
-        public MediaTrack TrackImpl;
-        public bool IsRemote;
-        public string DeviceName;
-        public string DisplayName
+        public AudioTrackSource Source => (TrackImpl as LocalAudioTrack)?.Source;
+        public IAudioTrack Track => (IAudioTrack)TrackImpl;
+
+        public AudioTrackViewModel(LocalAudioTrack track, string deviceName)
+            : base(track, deviceName)
         {
-            get
-            {
-                string label;
-                string deviceName = (string.IsNullOrWhiteSpace(DeviceName) ?
-                    (IsRemote ? "Remote track" : "Custom track") : DeviceName);
-                string audioTrackName = TrackImpl?.Name;
-                if (!string.IsNullOrWhiteSpace(audioTrackName))
-                {
-                    label = $"{audioTrackName} ({deviceName})";
-                }
-                else
-                {
-                    // The empty track placeholder
-                    Debug.Assert(audioTrackName == null);
-                    Debug.Assert(DeviceName == null);
-                    label = "<none>";
-                }
-                return label;
-            }
+        }
+        public AudioTrackViewModel(RemoteAudioTrack track)
+            : base(track, null)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Model for video tracks, whether local or remote, for rendering in video player.
+    /// </summary>
+    public class VideoTrackViewModel : TrackViewModel
+    {
+        public VideoTrackSource Source => (TrackImpl as LocalVideoTrack)?.Source;
+        public IVideoTrack Track => (IVideoTrack)TrackImpl;
+        public VideoTrackViewModel(LocalVideoTrack track, string deviceName)
+            : base(track, deviceName)
+        {
+        }
+
+        public VideoTrackViewModel(RemoteVideoTrack track)
+            : base(track, null)
+        {
         }
     }
 

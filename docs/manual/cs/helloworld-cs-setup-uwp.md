@@ -3,7 +3,7 @@
 In this tutorial we create a C# UWP application with a simple XAML-based UI to render video.
 
 > [!NOTE]
-> At this time there is no solution to render raw video frames from a .NET Core 3.0 application that is simple and short enough to be used in a turorial. Instead, we use the `MediaPlayerElement` XAML control from UWP which provides the necessary API. Its WPF equivalent `MediaElement` unfortunately does not currently allow specifying a custom video source other than an URI-based source like a file on disk.
+> At this time there is no solution to render raw video frames from a .NET Core 3.0 application that is simple and short enough to be used in a turorial. Instead, we use the `MediaPlayerElement` XAML control from UWP which provides the necessary API. Its WPF equivalent `MediaElement` unfortunately does not allow specifying a custom video source other than an URI-based source like a file on disk.
 
 > [!NOTE]
 > This tutorial assumes that the host device where the app will be running during the tutorial has access to:
@@ -64,11 +64,14 @@ After that, the `App1` project should contain a reference to the package.
 
 ## Test the reference
 
-In order to ensure everything works fine and the `Microsoft.MixedReality.WebRTC` assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method [`PeerConnection.GetVideoCaptureDevicesAsync()`](cref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync). This is more simple than creating objects, as there is no clean-up needed after use.
+In order to ensure everything works fine and the `Microsoft.MixedReality.WebRTC` assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method [`PeerConnection.GetVideoCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync). This is more simple than creating objects, as there is no clean-up needed after use.
 
 First, because this sample application is a UWP application, it needs to declare some capabilities to access the microphone and webcam on the host device. In the **Solution Explorer** of Visual Studio, double-click on the `Package.appxmanifest` to open the AppX manifest of the app and select the **Capabilities** tab. Check **Microphone** and **Webcam**, and confirm that **Internet (Client)** is already checked.
 
 ![Configure the UWP app capabilities](cs-uwp8.png)
+
+> [!WARNING]
+> Currently the **Microphone** capability is mandatory, even if not using audio. This is due to a limitation of the underlying native implementation which attempts to access the microphone while initializing the audio module (see [#360](https://github.com/microsoft/MixedReality-WebRTC/issues/360)). The **Webcam** capability however is only needed if using video.
 
 Next, edit `MainPage.xaml.cs`:
 
@@ -130,7 +133,7 @@ Launch the app again. The main window is still empty, but the **Output window** 
 Webcam <some device name> (id: <some device ID>)
 ```
 
-Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see [`PeerConnection.AddLocalVideoTrackAsync`](cref:Microsoft.MixedReality.WebRTC.PeerConnection.AddLocalVideoTrackAsync(Microsoft.MixedReality.WebRTC.PeerConnection.LocalVideoTrackSettings))).
+Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see [`DeviceVideoTrackSource.CreateAsync`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.CreateAsync(Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig))).
 
 If this is the first time that `MediaCapture.InitializeAsync()` is requesting access to the webcam and microhpone, Windows displays a prompt asking the user for confirmation. You must click **Yes**, otherwise access to the microphone and webcam will be denied, and WebRTC will not be able to use them. This is part of the standard UWP capability mechanism for security and privacy.
 

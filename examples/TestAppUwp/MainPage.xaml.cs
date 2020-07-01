@@ -65,6 +65,7 @@ namespace TestAppUwp
             new Category { Name = "Local Tracks", Glyph = Symbol.Library, PageType = typeof(TracksPage) },
             new Category { Name = "Session", Glyph = Symbol.VideoChat, PageType = typeof(SessionPage) },
             new Category { Name = "Media Player", Glyph = Symbol.Play, PageType = typeof(MediaPlayerPage) },
+            new Category { Name = "Chat Channels", Glyph = Symbol.Message, PageType = typeof(ChatChannelsPage) },
             new Category { Name = "Debug Logs", Glyph = Symbol.Memo, PageType = typeof(DebugConsolePage) },
         };
 
@@ -130,29 +131,17 @@ namespace TestAppUwp
             localSettings.Values["LocalPeerID"] = sessionModel.NodeDssSignaler.LocalPeerId;
             localSettings.Values["RemotePeerID"] = sessionModel.NodeDssSignaler.RemotePeerId;
             localSettings.Values["PollTimeMs"] = sessionModel.NodeDssSignaler.PollTimeMs;
-            //localSettings.Values["PreferredAudioCodec"] = PreferredAudioCodec;
-            //localSettings.Values["PreferredAudioCodecExtraParamsLocal"] = PreferredAudioCodecExtraParamsLocalTextBox.Text;
-            //localSettings.Values["PreferredAudioCodecExtraParamsRemote"] = PreferredAudioCodecExtraParamsRemoteTextBox.Text;
-            //localSettings.Values["PreferredAudioCodec_Custom"] = PreferredAudioCodec_Custom.IsChecked.GetValueOrDefault() ? CustomPreferredAudioCodec.Text : "";
-            //localSettings.Values["PreferredVideoCodec"] = PreferredVideoCodec;
-            //localSettings.Values["PreferredVideoCodecExtraParamsLocal"] = PreferredVideoCodecExtraParamsLocalTextBox.Text;
-            //localSettings.Values["PreferredVideoCodecExtraParamsRemote"] = PreferredVideoCodecExtraParamsRemoteTextBox.Text;
-            //localSettings.Values["PreferredVideoCodec_Custom"] = PreferredVideoCodec_Custom.IsChecked.GetValueOrDefault() ? CustomPreferredVideoCodec.Text : "";
+            localSettings.Values["PreferredAudioCodec"] = sessionModel.PreferredAudioCodec;
+            localSettings.Values["PreferredAudioCodecExtraParamsLocal"] = sessionModel.PreferredAudioCodecExtraParamsLocal;
+            localSettings.Values["PreferredAudioCodecExtraParamsRemote"] = sessionModel.PreferredAudioCodecExtraParamsRemote;
+            localSettings.Values["PreferredVideoCodec"] = sessionModel.PreferredVideoCodec;
+            localSettings.Values["PreferredVideoCodecExtraParamsLocal"] = sessionModel.PreferredVideoCodecExtraParamsLocal;
+            localSettings.Values["PreferredVideoCodecExtraParamsRemote"] = sessionModel.PreferredVideoCodecExtraParamsRemote;
         }
 
         private void App_Resuming(object sender, object e)
         {
             RestoreSettings();
-        }
-
-        /// <summary>
-        /// Check if this application instance is the first one launched on the host device.
-        /// </summary>
-        /// <returns><c>true</c> if the current application instance is the first and therefore only instance.</returns>
-        private static bool IsFirstInstance()
-        {
-            var firstInstance = AppInstance.FindOrRegisterInstanceForKey("{44CD414E-B604-482E-8CFD-A9E09076CABD}");
-            return firstInstance.IsCurrentInstance;
         }
 
         private void RestoreSettings()
@@ -194,10 +183,6 @@ namespace TestAppUwp
                     sessionModel.NodeDssSignaler.LocalPeerId = str;
                 }
             }
-            if (string.IsNullOrWhiteSpace(sessionModel.NodeDssSignaler.LocalPeerId))
-            {
-                sessionModel.NodeDssSignaler.LocalPeerId = GetDeviceName();
-            }
             if (localSettings.Values.TryGetValue("RemotePeerID", out object remoteObj))
             {
                 if (remoteObj is string str)
@@ -213,7 +198,7 @@ namespace TestAppUwp
                 }
             }
 
-            if (!IsFirstInstance())
+            if (!Utils.IsFirstInstance())
             {
                 // Swap the peer IDs. This way two instances launched on the same machine connect
                 // to each other by default
@@ -222,90 +207,37 @@ namespace TestAppUwp
                 sessionModel.NodeDssSignaler.RemotePeerId = tmp;
             }
 
-            //if (localSettings.Values.TryGetValue("PreferredAudioCodec", out object preferredAudioObj))
-            //{
-            //    if (preferredAudioObj is string str)
-            //    {
-            //        switch (str)
-            //        {
-            //        case "":
-            //        {
-            //            PreferredAudioCodec_Default.IsChecked = true;
-            //            break;
-            //        }
-            //        case "opus":
-            //        {
-            //            PreferredAudioCodec_OPUS.IsChecked = true;
-            //            break;
-            //        }
-            //        default:
-            //        {
-            //            PreferredAudioCodec_Custom.IsChecked = true;
-            //            CustomPreferredAudioCodec.Text = str;
-            //            break;
-            //        }
-            //        }
-            //    }
-            //}
-            //if (localSettings.Values.TryGetValue("PreferredAudioCodecExtraParamsLocal", out object preferredAudioParamsLocalObj))
-            //{
-            //    if (preferredAudioParamsLocalObj is string str)
-            //    {
-            //        PreferredAudioCodecExtraParamsLocalTextBox.Text = str;
-            //    }
-            //}
-            //if (localSettings.Values.TryGetValue("PreferredAudioCodecExtraParamsRemote", out object preferredAudioParamsRemoteObj))
-            //{
-            //    if (preferredAudioParamsRemoteObj is string str)
-            //    {
-            //        PreferredAudioCodecExtraParamsRemoteTextBox.Text = str;
-            //    }
-            //}
+            // Ensure the local peer is not empty, otherwise the signaler will throw an exception
+            // during OnLoaded(), which will crash the application.
+            if (string.IsNullOrWhiteSpace(sessionModel.NodeDssSignaler.LocalPeerId))
+            {
+                sessionModel.NodeDssSignaler.LocalPeerId = GetDeviceName();
+            }
 
-            //if (localSettings.Values.TryGetValue("PreferredVideoCodec", out object preferredVideoObj))
-            //{
-            //    if (preferredVideoObj is string str)
-            //    {
-            //        switch (str)
-            //        {
-            //        case "":
-            //        {
-            //            PreferredVideoCodec_Default.IsChecked = true;
-            //            break;
-            //        }
-            //        case "H264":
-            //        {
-            //            PreferredVideoCodec_H264.IsChecked = true;
-            //            break;
-            //        }
-            //        case "VP8":
-            //        {
-            //            PreferredVideoCodec_VP8.IsChecked = true;
-            //            break;
-            //        }
-            //        default:
-            //        {
-            //            PreferredVideoCodec_Custom.IsChecked = true;
-            //            CustomPreferredVideoCodec.Text = str;
-            //            break;
-            //        }
-            //        }
-            //    }
-            //}
-            //if (localSettings.Values.TryGetValue("PreferredVideoCodecExtraParamsLocal", out object preferredVideoParamsLocalObj))
-            //{
-            //    if (preferredVideoParamsLocalObj is string str)
-            //    {
-            //        PreferredVideoCodecExtraParamsLocalTextBox.Text = str;
-            //    }
-            //}
-            //if (localSettings.Values.TryGetValue("PreferredVideoCodecExtraParamsRemote", out object preferredVideoParamsRemoteObj))
-            //{
-            //    if (preferredVideoParamsRemoteObj is string str)
-            //    {
-            //        PreferredVideoCodecExtraParamsRemoteTextBox.Text = str;
-            //    }
-            //}
+            if (localSettings.Values.TryGetValue("PreferredAudioCodec", out object preferredAudioObj))
+            {
+                sessionModel.PreferredAudioCodec = (preferredAudioObj as string);
+            }
+            if (localSettings.Values.TryGetValue("PreferredAudioCodecExtraParamsLocal", out object preferredAudioParamsLocalObj))
+            {
+                sessionModel.PreferredAudioCodecExtraParamsLocal = (preferredAudioParamsLocalObj as string);
+            }
+            if (localSettings.Values.TryGetValue("PreferredAudioCodecExtraParamsRemote", out object preferredAudioParamsRemoteObj))
+            {
+                sessionModel.PreferredAudioCodecExtraParamsRemote = (preferredAudioParamsRemoteObj as string);
+            }
+            if (localSettings.Values.TryGetValue("PreferredVideoCodec", out object preferredVideoObj))
+            {
+                sessionModel.PreferredVideoCodec = (preferredVideoObj as string);
+            }
+            if (localSettings.Values.TryGetValue("PreferredVideoCodecExtraParamsLocal", out object preferredVideoParamsLocalObj))
+            {
+                sessionModel.PreferredVideoCodecExtraParamsLocal = (preferredVideoParamsLocalObj as string);
+            }
+            if (localSettings.Values.TryGetValue("PreferredVideoCodecExtraParamsRemote", out object preferredVideoParamsRemoteObj))
+            {
+                sessionModel.PreferredVideoCodecExtraParamsRemote = (preferredVideoParamsRemoteObj as string);
+            }
         }
 
         //private void OnPeerRenegotiationNeeded()
@@ -337,22 +269,6 @@ namespace TestAppUwp
 
             //videoPlayerElement.TransportControls = localVideoControls;
 
-
-
-            //using (_sessionViewModel.GetNegotiationDeferral())
-            //{
-            //    // As a convenience, add 1 audio and 1 video transceivers
-            //    // TODO - make that more flexible
-            //    AddPendingTransceiver(MediaKind.Audio, "audio_transceiver_0");
-            //    AddPendingTransceiver(MediaKind.Video, "video_transceiver_1");
-
-            //    // It is CRUCIAL to add any data channel BEFORE the SDP offer is sent, if data channels are
-            //    // to be used at all. Otherwise the SCTP will not be negotiated, and then all channels will
-            //    // stay forever in the kConnecting state.
-            //    // https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
-            //    await _peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true);
-            //}
-
             //chatInputBox.IsEnabled = true;
             //chatSendButton.IsEnabled = true;
 
@@ -367,58 +283,6 @@ namespace TestAppUwp
             // so that the former can render in the UI the video frames produced in the background by the latter.
             //videoPlayerElement.SetMediaPlayer(_videoPlayer);
         }
-
-        //private void ChatList_ItemClick(object sender, ItemClickEventArgs e)
-        //{
-        //    if (e.ClickedItem is ChatChannelModel chat)
-        //    {
-        //        chatTextBox.Text = chat.FullText;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Callback on Send button from text chat clicker.
-        ///// If connected, this sends the text message to the remote peer using
-        ///// the previously opened data channel.
-        ///// </summary>
-        ///// <param name="sender">The object which invoked the event.</param>
-        ///// <param name="e">Event arguments.</param>
-        //private void ChatSendButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (string.IsNullOrWhiteSpace(chatInputBox.Text))
-        //        return;
-
-        //    var chat = SelectedChatChannel;
-        //    if (chat == null)
-        //        return;
-
-        //    // Send the message through the data channel
-        //    byte[] chatMessage = System.Text.Encoding.UTF8.GetBytes(chatInputBox.Text);
-        //    chat.DataChannel.SendMessage(chatMessage);
-
-        //    // Save and display in the UI
-        //    var newLine = $"[local] {chatInputBox.Text}\n";
-        //    chat.Text += newLine;
-        //    chatTextBox.Text = chat.Text; // reassign or append? not sure...
-        //    chatScrollViewer.ChangeView(chatScrollViewer.HorizontalOffset,
-        //        chatScrollViewer.ScrollableHeight,
-        //        chatScrollViewer.ZoomFactor); // scroll to end
-        //    chatInputBox.Text = string.Empty;
-        //}
-
-        ///// <summary>
-        ///// Callback on key down event invoked in the chat window, to handle
-        ///// the "press Enter to send" text chat functionality.
-        ///// </summary>
-        ///// <param name="sender">The object which invoked the event.</param>
-        ///// <param name="e">Event arguments.</param>
-        //private void OnChatKeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
-        //{
-        //    if (e.Key == Windows.System.VirtualKey.Enter)
-        //    {
-        //        ChatSendButton_Click(this, null);
-        //    }
-        //}
 
         private void OnNavigationViewItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {

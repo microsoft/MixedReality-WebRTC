@@ -31,6 +31,10 @@
 #define WEBRTC_POSIX 1
 #define WEBRTC_ANDROID 1
 
+#else
+
+#error Unknown platform
+
 #endif
 
 // Prevent external headers from triggering warnings that would break compiling
@@ -50,6 +54,7 @@
 #include "api/stats/rtcstats_objects.h"
 #include "api/transport/bitrate_settings.h"
 #include "api/video/i420_buffer.h"
+#include "media/base/adapted_video_track_source.h"
 #include "media/engine/internal_decoder_factory.h"
 #include "media/engine/internal_encoder_factory.h"
 #include "media/engine/multiplex_codec_factory.h"
@@ -59,6 +64,7 @@
 #include "modules/video_capture/video_capture.h"
 #include "modules/video_capture/video_capture_factory.h"
 #include "pc/video_track_source.h"
+#include "rtc_base/bind.h"
 #include "rtc_base/memory/aligned_malloc.h"
 
 // libyuv from WebRTC repository for video frame conversion

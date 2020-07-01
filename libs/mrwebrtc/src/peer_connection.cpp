@@ -26,6 +26,14 @@
 
 #include <functional>
 
+// Include implementation because we cannot access the mline index from the
+// RtpTransceiverInterface. This is a not-so-clean workaround.
+// See PeerConnection::ExtractMlineIndexFromRtpTransceiver() for details.
+#pragma warning(push, 2)
+#pragma warning(disable : 4100)
+#include "pc/rtp_transceiver.h"
+#pragma warning(pop)
+
 #if defined(_M_IX86) /* x86 */ && defined(WINAPI_FAMILY) && \
     (WINAPI_FAMILY == WINAPI_FAMILY_APP) /* UWP app */ &&   \
     defined(_WIN32_WINNT_WIN10) &&                          \
@@ -222,9 +230,12 @@ mrsIceConnectionState IceStateFromImpl(
   using Native = mrsIceConnectionState;
   using Impl = webrtc::PeerConnectionInterface::IceConnectionState;
   static_assert((int)Native::kNew == (int)Impl::kIceConnectionNew, "");
-  static_assert((int)Native::kChecking == (int)Impl::kIceConnectionChecking, "");
-  static_assert((int)Native::kConnected == (int)Impl::kIceConnectionConnected, "");
-  static_assert((int)Native::kCompleted == (int)Impl::kIceConnectionCompleted, "");
+  static_assert((int)Native::kChecking == (int)Impl::kIceConnectionChecking,
+                "");
+  static_assert((int)Native::kConnected == (int)Impl::kIceConnectionConnected,
+                "");
+  static_assert((int)Native::kCompleted == (int)Impl::kIceConnectionCompleted,
+                "");
   static_assert((int)Native::kFailed == (int)Impl::kIceConnectionFailed, "");
   static_assert((int)Native::kDisconnected ==
                 (int)Impl::kIceConnectionDisconnected, "");
@@ -323,7 +334,12 @@ ErrorOr<std::shared_ptr<DataChannel>> PeerConnection::AddDataChannel(
     // OnDataChannel() message, so invoke the DataChannelAdded event right now.
     // For out-of-band channels, the standard doesn't ask to raise that event,
     // but we do it anyway for convenience and for consistency.
-    OnDataChannelAdded(*data_channel.get());
+    // Call from the signaling thread so that user callbacks can access the
+    // channel state (e.g. register channel callbacks) without it being changed
+    // concurrently by WebRTC.
+    global_factory_->GetSignalingThread()->Invoke<void>(RTC_FROM_HERE, [&]() {
+      OnDataChannelAdded(*data_channel.get());
+    });
 
     return data_channel;
   }
@@ -335,7 +351,7 @@ void PeerConnection::RemoveDataChannel(
   // Cache variables which require a dispatch to the signaling thread
   // to minimize the risk of a deadlock with the data channel lock below.
   const int id = data_channel.id();
-  const str label = data_channel.label();
+  const std::string label = data_channel.label();
 
   // Move the channel to destroy out of the internal data structures
   std::shared_ptr<DataChannel> data_channel_ptr;
@@ -439,9 +455,17 @@ void PeerConnection::OnDataChannelAdded(
       info.handle = (void*)&data_channel;
       info.id = data_channel.id();
       info.flags = data_channel.flags();
-      str label_str = data_channel.label();  // keep alive
+      std::string label_str = data_channel.label();  // keep alive
       info.label = label_str.c_str();
       added_cb(&info);
+
+      // The user assumes an initial state of kConnecting; if this has already
+      // changed, fire the event to notify any callback that has been
+      // registered.
+      if (data_channel.impl()->state() !=
+          webrtc::DataChannelInterface::kConnecting) {
+        data_channel.InvokeOnStateChange();
+      }
     }
   }
 }
@@ -461,22 +485,23 @@ void PeerConnection::OnStreamChanged(
   // symchronization.
 }
 
-bool PeerConnection::AddIceCandidate(const char* sdp_mid,
-                                     const int sdp_mline_index,
-                                     const char* candidate) noexcept {
+Error PeerConnection::AddIceCandidate(
+    const mrsIceCandidate& candidate) noexcept {
   if (!peer_) {
-    return false;
+    return Error(Result::kInvalidOperation);
   }
   webrtc::SdpParseError error;
   std::unique_ptr<webrtc::IceCandidateInterface> ice_candidate(
-      webrtc::CreateIceCandidate(sdp_mid, sdp_mline_index, candidate, &error));
+      webrtc::CreateIceCandidate(candidate.sdp_mid, candidate.sdp_mline_index,
+                                 candidate.content, &error));
   if (!ice_candidate) {
-    return false;
+    return Error(Result::kInvalidParameter, error.description);
   }
   if (!peer_->AddIceCandidate(ice_candidate.get())) {
-    return false;
+    return Error(Result::kUnknownError,
+                 "Failed to add ICE candidate to peer connection");
   }
-  return true;
+  return Error(Result::kSuccess);
 }
 
 bool PeerConnection::CreateOffer() noexcept {
@@ -689,12 +714,12 @@ ErrorOr<Transceiver*> PeerConnection::AddTransceiver(
   return transceiver.get();
 }
 
-bool PeerConnection::SetRemoteDescriptionAsync(
-    const char* type,
+Error PeerConnection::SetRemoteDescriptionAsync(
+    mrsSdpMessageType type,
     const char* sdp,
     RemoteDescriptionAppliedCallback callback) noexcept {
   if (!peer_) {
-    return false;
+    return Error(mrsResult::kInvalidOperation);
   }
   {
     const std::lock_guard<std::mutex> lock{data_channel_mutex_};
@@ -702,16 +727,14 @@ bool PeerConnection::SetRemoteDescriptionAsync(
       sctp_negotiated_ = false;
     }
   }
-  std::string sdp_type_str(type);
-  auto sdp_type = webrtc::SdpTypeFromString(sdp_type_str);
-  if (!sdp_type.has_value())
-    return false;
+  const webrtc::SdpType sdp_type = SdpTypeFromApiType(type);
   std::string remote_desc(sdp);
   webrtc::SdpParseError error;
   std::unique_ptr<webrtc::SessionDescriptionInterface> session_description(
-      webrtc::CreateSessionDescription(sdp_type.value(), remote_desc, &error));
-  if (!session_description)
-    return false;
+      webrtc::CreateSessionDescription(sdp_type, remote_desc, &error));
+  if (!session_description) {
+    return Error(mrsResult::kInvalidParameter, error.description.c_str());
+  }
   rtc::scoped_refptr<webrtc::SetRemoteDescriptionObserverInterface> observer =
       new rtc::RefCountedObject<SetRemoteSessionDescObserver>(
           [this, callback](mrsResult result, const char* error_message) {
@@ -738,7 +761,7 @@ bool PeerConnection::SetRemoteDescriptionAsync(
           });
   peer_->SetRemoteDescription(std::move(session_description),
                               std::move(observer));
-  return true;
+  return Error(mrsResult::kSuccess);
 }
 
 void PeerConnection::OnSignalingChange(
@@ -884,10 +907,16 @@ void PeerConnection::OnIceCandidate(
   auto cb = ice_candidate_ready_to_send_callback_;
   if (cb) {
     std::string sdp;
-    if (!candidate->ToString(&sdp))
+    if (!candidate->ToString(&sdp)) {
+      RTC_LOG(LS_ERROR) << "Failed to stringify ICE candidate into SDP format.";
       return;
+    }
     std::string sdp_mid = candidate->sdp_mid();
-    cb(sdp.c_str(), candidate->sdp_mline_index(), sdp_mid.c_str());
+    mrsIceCandidate ice_candidate{};
+    ice_candidate.sdp_mid = sdp_mid.c_str();
+    ice_candidate.sdp_mline_index = candidate->sdp_mline_index();
+    ice_candidate.content = sdp.c_str();
+    cb(&ice_candidate);
   }
 }
 
@@ -1010,10 +1039,10 @@ void PeerConnection::OnLocalDescCreated(
           const std::lock_guard<std::mutex> lock(local_sdp_ready_to_send_callback_mutex_);
           if (auto cb = local_sdp_ready_to_send_callback_) {
             auto desc = peer_->local_description();
-            std::string type{SdpTypeToString(desc->GetType())};
+            const mrsSdpMessageType type = ApiTypeFromSdpType(desc->GetType());
             std::string sdp;
             desc->ToString(&sdp);
-            cb(type.c_str(), sdp.c_str());
+            cb(type, sdp.c_str());
           }
         }
       });
@@ -1041,17 +1070,19 @@ int PeerConnection::ExtractMlineIndexFromRtpTransceiver(
     webrtc::RtpTransceiverInterface* tr) {
   RTC_DCHECK(tr);
   // We don't have access to the actual mline index, it is not exposed in the
-  // RTP transceiver API, so instead rely on the (implementation detail) fact
-  // that Google chose to use the mline index as the mid value, thankfully for
-  // us.
-  absl::optional<std::string> mid_opt = tr->mid();
-  if (!mid_opt.has_value()) {
+  // RTP transceiver API, so instead we cast to the actual implementation type
+  // and retrieve the mline index from it.
+  // #295 - Note that we cannot rely on the (implementation detail) fact that
+  // Google chose to use the mline index as the mid value because this breaks
+  // interoperability with other implementations.
+  auto tr_impl =
+      (rtc::RefCountedObject<
+          webrtc::RtpTransceiverProxyWithInternal<webrtc::RtpTransceiver>>*)tr;
+  absl::optional<std::size_t> mline_index = tr_impl->internal()->mline_index();
+  if (!mline_index.has_value()) {
     return -1;
   }
-  std::string mid = mid_opt.value();
-  char* end = nullptr;
-  long value = std::strtol(mid.c_str(), &end, 10);
-  RTC_CHECK(end > mid.c_str());
+  const std::size_t value = mline_index.value();
   RTC_CHECK(value >= 0);
   RTC_CHECK(value <= (long)INT_MAX);
   return static_cast<int>(value);

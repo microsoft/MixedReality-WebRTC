@@ -460,6 +460,95 @@ namespace Microsoft.MixedReality.WebRTC
     }
 
     /// <summary>
+    /// Type of SDP message.
+    /// </summary>
+    public enum SdpMessageType : int
+    {
+        /// <summary>
+        /// Offer message used to initiate a new session.
+        /// </summary>
+        Offer = 1,
+
+        /// <summary>
+        /// Answer message used to accept a session offer.
+        /// </summary>
+        Answer = 2
+    }
+
+    /// <summary>
+    /// SDP message passed between the local and remote peers via the user's signaling solution.
+    /// </summary>
+    public class SdpMessage
+    {
+        /// <summary>
+        /// The message type.
+        /// </summary>
+        public SdpMessageType Type;
+
+        /// <summary>
+        /// The raw message content.
+        /// </summary>
+        public string Content;
+
+        /// <summary>
+        /// Convert an SDP message type to its internal string representation.
+        /// </summary>
+        /// <param name="type">The SDP message type to convert</param>
+        /// <returns>The string representation of the SDP message type</returns>
+        /// <exception xref="ArgumentException">The SDP message type was invalid.</exception>
+        public static string TypeToString(SdpMessageType type)
+        {
+            switch (type)
+            {
+            case SdpMessageType.Offer: return "offer";
+            case SdpMessageType.Answer: return "answer";
+            }
+            throw new ArgumentException($"Cannot convert invalid SdpMessageType value '{type}'.");
+        }
+
+        /// <summary>
+        /// Convert an internal string representation of an SDP message type back to its enumerated value.
+        /// </summary>
+        /// <param name="type">The internal string representation of the SDP message</param>
+        /// <returns>The SDP message type associated with the string representation</returns>
+        /// <exception xref="ArgumentException">The string does not represent any SDP message type.</exception>
+        public static SdpMessageType StringToType(string type)
+        {
+            if (string.Equals(type, "offer", StringComparison.OrdinalIgnoreCase))
+            {
+                return SdpMessageType.Offer;
+            }
+            else if (string.Equals(type, "answer", StringComparison.OrdinalIgnoreCase))
+            {
+                return SdpMessageType.Answer;
+            }
+            throw new ArgumentException($"Cannot convert invalid SdpMessageType string '{type}'.");
+        }
+    }
+
+    /// <summary>
+    /// ICE candidate to send to a remote peer or received from it.
+    /// </summary>
+    public class IceCandidate
+    {
+        /// <summary>
+        /// Media ID (m=) of the candidate.
+        /// </summary>
+        public string SdpMid;
+
+        /// <summary>
+        /// Index of the media line associated with the candidate.
+        /// </summary>
+        public int SdpMlineIndex;
+
+        /// <summary>
+        /// Candidate raw content.
+        /// </summary>
+        public string Content;
+
+    }
+
+    /// <summary>
     /// The WebRTC peer connection object is the entry point to using WebRTC.
     /// </summary>
     public class PeerConnection : IDisposable
@@ -511,17 +600,14 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Delegate for <see cref="LocalSdpReadytoSend"/> event.
         /// </summary>
-        /// <param name="type">SDP message type, one of "offer", "answer", or "ice".</param>
-        /// <param name="sdp">Raw SDP message content.</param>
-        public delegate void LocalSdpReadyToSendDelegate(string type, string sdp);
+        /// <param name="message">SDP message to send.</param>
+        public delegate void LocalSdpReadyToSendDelegate(SdpMessage message);
 
         /// <summary>
         /// Delegate for the <see cref="IceCandidateReadytoSend"/> event.
         /// </summary>
-        /// <param name="candidate">Raw SDP message describing the ICE candidate.</param>
-        /// <param name="sdpMlineindex">Index of the m= line.</param>
-        /// <param name="sdpMid">Media identifier</param>
-        public delegate void IceCandidateReadytoSendDelegate(string candidate, int sdpMlineindex, string sdpMid);
+        /// <param name="candidate">The ICE candidate to send.</param>
+        public delegate void IceCandidateReadytoSendDelegate(IceCandidate candidate);
 
         /// <summary>
         /// Delegate for the <see cref="IceStateChanged"/> event.
@@ -677,7 +763,7 @@ namespace Microsoft.MixedReality.WebRTC
         ///
         /// A transceiver is associated with a media line when a local or remote offer is applied
         /// to the peer connection, respectively during <see cref="CreateOffer"/> and
-        /// <see cref="SetRemoteDescriptionAsync(string, string)"/>.
+        /// <see cref="SetRemoteDescriptionAsync(SdpMessage)"/>.
         /// </summary>
         public IEnumerable<Transceiver> AssociatedTransceivers
         {
@@ -1207,30 +1293,18 @@ namespace Microsoft.MixedReality.WebRTC
                 // Create the transceiver implementation
                 settings = settings ?? new TransceiverInitSettings();
                 TransceiverInterop.InitConfig config = new TransceiverInterop.InitConfig(mediaKind, settings);
-                uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, config, out IntPtr transceiverHandle);
+                uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, config,
+                    out IntPtr transceiverHandle);
                 Utils.ThrowOnErrorCode(res);
 
                 // The implementation fires the TransceiverAdded event, which creates the wrapper and
                 // stores a reference in the UserData of the native object.
-                IntPtr transceiver = TransceiverInterop.Transceiver_GetUserData(transceiverHandle);
+                IntPtr transceiver = ObjectInterop.Object_GetUserData(new TransceiverInterop.TransceiverHandle(transceiverHandle));
                 Debug.Assert(transceiver != IntPtr.Zero);
                 var wrapper = Utils.ToWrapper<Transceiver>(transceiver);
                 return wrapper;
             }
         }
-
-#if false //WIP
-        /// <summary>
-        /// High level interface for consuming WebRTC audio streams.
-        /// The implementation builds on top of the low-level AudioFrame callbacks
-        /// and handles all buffering and resampling.
-        /// </summary>
-        /// <param name="bufferMs">Size of the buffer in milliseconds or -1 for default.</param>
-        public AudioTrackReadBuffer CreateAudioTrackReadBuffer(int bufferMs = -1)
-        {
-            return new AudioTrackReadBuffer(_nativePeerhandle, bufferMs);
-        }
-#endif
 
         #endregion
 
@@ -1392,15 +1466,19 @@ namespace Microsoft.MixedReality.WebRTC
         /// <summary>
         /// Inform the WebRTC peer connection of a newly received ICE candidate.
         /// </summary>
-        /// <param name="sdpMid"></param>
-        /// <param name="sdpMlineindex"></param>
-        /// <param name="candidate"></param>
+        /// <param name="candidate">The ICE candidate received from the remote peer.</param>
         /// <exception xref="InvalidOperationException">The peer connection is not initialized.</exception>
-        public void AddIceCandidate(string sdpMid, int sdpMlineindex, string candidate)
+        public void AddIceCandidate(IceCandidate candidate)
         {
-            MainEventSource.Log.AddIceCandidate(sdpMid, sdpMlineindex, candidate);
+            MainEventSource.Log.AddIceCandidate(candidate.SdpMid, candidate.SdpMlineIndex, candidate.Content);
             ThrowIfConnectionNotOpen();
-            PeerConnectionInterop.PeerConnection_AddIceCandidate(_nativePeerhandle, sdpMid, sdpMlineindex, candidate);
+            var marshalCandidate = new PeerConnectionInterop.IceCandidate
+            {
+                SdpMid = candidate.SdpMid,
+                SdpMlineIndex = candidate.SdpMlineIndex,
+                Content = candidate.Content
+            };
+            PeerConnectionInterop.PeerConnection_AddIceCandidate(_nativePeerhandle, in marshalCandidate);
         }
 
         /// <summary>
@@ -1426,7 +1504,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Create an SDP answer message to a previously-received offer, to accept a connection.
         /// Once the message is ready to be sent, the <see cref="LocalSdpReadytoSend"/> event is fired
         /// to allow the user to send that message to the remote peer via its selected signaling solution.
-        /// Note that this cannot be called before <see cref="SetRemoteDescriptionAsync(string, string)"/>
+        /// Note that this cannot be called before <see cref="SetRemoteDescriptionAsync(SdpMessage)"/>
         /// successfully completed and applied the remote offer.
         /// </summary>
         /// <returns><c>true</c> if the answer creation task was successfully submitted.</returns>
@@ -1468,15 +1546,14 @@ namespace Microsoft.MixedReality.WebRTC
         /// This must be called by the signaler when receiving a message. Once this operation
         /// has completed, it is safe to call <see cref="CreateAnswer"/>.
         /// </summary>
-        /// <param name="type">The type of SDP message ("offer" or "answer")</param>
-        /// <param name="sdp">The content of the SDP message</param>
+        /// <param name="message">The SDP message</param>
         /// <returns>Returns a task which completes once the remote description has been applied and transceivers
         /// have been updated.</returns>
         /// <exception xref="InvalidOperationException">The peer connection is not initialized, or the peer connection
         /// is not in an expected state to apply the given message.</exception>
         /// <exception xref="ArgumentException">At least one of the arguments is invalid, including a malformed SDP
         /// message that failed to be parsed.</exception>
-        public Task SetRemoteDescriptionAsync(string type, string sdp)
+        public Task SetRemoteDescriptionAsync(SdpMessage message)
         {
             ThrowIfConnectionNotOpen();
 
@@ -1484,13 +1561,13 @@ namespace Microsoft.MixedReality.WebRTC
             // to exclude other codecs if the preferred one is supported.
             // We set the local codec params by forcing them here. There seems to be no direct way to set
             // local codec params so we "pretend" that the remote endpoint is asking for them.
-            string newSdp = ForceSdpCodecs(sdp: sdp,
+            string newSdp = ForceSdpCodecs(sdp: message.Content,
                 audio: PreferredAudioCodec,
                 audioParams: PreferredAudioCodecExtraParamsLocal,
                 video: PreferredVideoCodec,
                 videoParams: PreferredVideoCodecExtraParamsLocal);
 
-            return PeerConnectionInterop.SetRemoteDescriptionAsync(_nativePeerhandle, type, newSdp);
+            return PeerConnectionInterop.SetRemoteDescriptionAsync(_nativePeerhandle, message.Type, newSdp);
         }
 
         #endregion
@@ -1889,9 +1966,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <returns>The list of available video capture devices.</returns>
         /// <remarks>
-        /// Assign one of the returned <see cref="VideoCaptureDevice"/> to the <see cref="LocalVideoTrackSettings.videoDevice"/>
+        /// Assign one of the returned <see cref="VideoCaptureDevice"/> to the <see cref="LocalVideoDeviceInitConfig.videoDevice"/>
         /// field to force a local video track to use that device when creating it with
-        /// <see cref="LocalVideoTrack.CreateFromDeviceAsync(LocalVideoTrackSettings)"/>.
+        /// <see cref="DeviceVideoTrackSource.CreateAsync(LocalVideoDeviceInitConfig)"/>.
         /// </remarks>
         public static Task<List<VideoCaptureDevice>> GetVideoCaptureDevicesAsync()
         {
@@ -2052,27 +2129,6 @@ namespace Microsoft.MixedReality.WebRTC
             Utils.SetFrameHeightRoundMode(value);
         }
 
-#if false // WIP
-        /// <summary>
-        /// Experimental. Render or not remote audio tracks from a peer connection on
-        /// the system audio device.
-        /// </summary>
-        /// <remarks>
-        /// The default behavior is for every remote audio frame to be passed to
-        /// remote audio frame callbacks, as well as rendered automatically on the
-        /// system audio device. If `false` is passed to this function, remote audio
-        /// frames will still be received and passed to callbacks, but won't be rendered
-        /// on the system device.
-        ///
-        /// Changing the default behavior is not supported on UWP.
-        /// </remarks>
-        public void RenderRemoteAudio(bool render)
-        {
-            uint res = PeerConnectionInterop.PeerConnection_RenderRemoteAudio(_nativePeerhandle, render);
-            Utils.ThrowOnErrorCode(res);
-        }
-#endif
-
         internal void OnConnected()
         {
             MainEventSource.Log.Connected();
@@ -2136,7 +2192,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <param name="type">The SDP message type.</param>
         /// <param name="sdp">The SDP message content.</param>
-        internal void OnLocalSdpReadytoSend(string type, string sdp)
+        internal void OnLocalSdpReadytoSend(SdpMessageType type, string sdp)
         {
             MainEventSource.Log.LocalSdpReady(type, sdp);
 
@@ -2152,13 +2208,24 @@ namespace Microsoft.MixedReality.WebRTC
                 video: PreferredVideoCodec,
                 videoParams: PreferredVideoCodecExtraParamsRemote);
 
-            LocalSdpReadytoSend?.Invoke(type, newSdp);
+            var message = new SdpMessage
+            {
+                Type = type,
+                Content = newSdp
+            };
+            LocalSdpReadytoSend?.Invoke(message);
         }
 
-        internal void OnIceCandidateReadytoSend(string candidate, int sdpMlineindex, string sdpMid)
+        internal void OnIceCandidateReadytoSend(in PeerConnectionInterop.IceCandidate candidate)
         {
-            MainEventSource.Log.IceCandidateReady(sdpMid, sdpMlineindex, candidate);
-            IceCandidateReadytoSend?.Invoke(candidate, sdpMlineindex, sdpMid);
+            MainEventSource.Log.IceCandidateReady(candidate.SdpMid, candidate.SdpMlineIndex, candidate.Content);
+            var iceCandidate = new IceCandidate
+            {
+                SdpMid = candidate.SdpMid,
+                SdpMlineIndex = candidate.SdpMlineIndex,
+                Content = candidate.Content
+            };
+            IceCandidateReadytoSend?.Invoke(iceCandidate);
         }
 
         internal void OnIceStateChanged(IceConnectionState newState)

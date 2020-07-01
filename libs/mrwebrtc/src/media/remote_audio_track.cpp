@@ -3,9 +3,11 @@
 
 #include "pch.h"
 
+#include "audio_track_read_buffer.h"
 #include "interop/global_factory.h"
 #include "media/remote_audio_track.h"
 #include "peer_connection.h"
+#include "remote_audio_track_interop.h"
 
 namespace Microsoft {
 namespace MixedReality {
@@ -22,13 +24,13 @@ RemoteAudioTrack::RemoteAudioTrack(
                  owner),
       track_(std::move(track)),
       receiver_(std::move(receiver)),
-      transceiver_(transceiver),
-      track_name_(track_->id()) {
+      transceiver_(transceiver) {
   RTC_CHECK(owner_);
   RTC_CHECK(track_);
   RTC_CHECK(receiver_);
   RTC_CHECK(transceiver_);
   RTC_CHECK(transceiver_->GetMediaKind() == mrsMediaKind::kAudio);
+  name_ = track_->id();
   kind_ = mrsTrackKind::kAudioTrack;
   transceiver_->OnRemoteTrackAdded(this);
   track_->AddSink(this);
@@ -74,6 +76,11 @@ void RemoteAudioTrack::InitSsrc(int ssrc) {
   // Note that the value is true by default but might have been changed
   // if OutputToDevice has been called in the track creation callback.
   global_factory_->audio_mixer()->OutputSource(ssrc, output_to_device_);
+}
+
+std::unique_ptr<AudioTrackReadBuffer> RemoteAudioTrack::CreateReadBuffer() const
+    noexcept {
+  return std::make_unique<AudioTrackReadBuffer>(global_factory_, track_);
 }
 
 }  // namespace WebRTC

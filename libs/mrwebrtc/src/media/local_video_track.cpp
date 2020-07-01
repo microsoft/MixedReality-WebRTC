@@ -15,9 +15,9 @@ LocalVideoTrack::LocalVideoTrack(
     RefPtr<GlobalFactory> global_factory,
     rtc::scoped_refptr<webrtc::VideoTrackInterface> track) noexcept
     : MediaTrack(std::move(global_factory), ObjectType::kLocalVideoTrack),
-      track_(std::move(track)),
-      track_name_(track_->id()) {
+      track_(std::move(track)) {
   RTC_CHECK(track_);
+  name_ = track_->id();
   kind_ = mrsTrackKind::kVideoTrack;
   rtc::VideoSinkWants sink_settings{};
   sink_settings.rotation_applied = true;
@@ -35,13 +35,13 @@ LocalVideoTrack::LocalVideoTrack(
                  owner),
       track_(std::move(track)),
       sender_(std::move(sender)),
-      transceiver_(transceiver),
-      track_name_(track_->id()) {
+      transceiver_(transceiver) {
   RTC_CHECK(owner_);
   RTC_CHECK(transceiver_);
   RTC_CHECK(transceiver_->GetMediaKind() == mrsMediaKind::kVideo);
   RTC_CHECK(track_);
   RTC_CHECK(sender_);
+  name_ = track_->id();
   kind_ = mrsTrackKind::kVideoTrack;
   transceiver_->OnLocalTrackAdded(this);
   rtc::VideoSinkWants sink_settings{};

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "audio_frame_observer.h"
+#include "audio_track_read_buffer.h"
 #include "callback.h"
 #include "interop_api.h"
 #include "media_track.h"
@@ -34,7 +35,7 @@ class Transceiver;
 /// The remote nature of the track implies that the remote peer has control on
 /// it, including enabling or disabling the track, and removing it from the peer
 /// connection. The local peer only has limited control over the track.
-class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
+class RemoteAudioTrack : public MediaTrack, public AudioFrameObserver {
  public:
   RemoteAudioTrack(
       RefPtr<GlobalFactory> global_factory,
@@ -44,9 +45,6 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
       rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) noexcept;
   ~RemoteAudioTrack() override;
 
-  /// Get the name of the remote audio track.
-  std::string GetName() const noexcept override { return track_name_; }
-
   /// Enable or disable the audio track. An enabled track streams its content
   /// from its source to the remote peer. A disabled audio track only sends
   /// empty audio data (silence).
@@ -54,15 +52,18 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
 
   /// Check if the track is enabled.
   /// See |SetEnabled(bool)|.
-  [[nodiscard]] bool IsEnabled() const noexcept { return track_->enabled(); }
+  MRS_NODISCARD bool IsEnabled() const noexcept { return track_->enabled(); }
 
   /// See |mrsRemoteAudioOutputToDevice|.
   void OutputToDevice(bool output) noexcept;
 
   /// See |mrsRemoteAudioTrackIsOutputToDevice|.
-  [[nodiscard]] bool IsOutputToDevice() const noexcept {
+  MRS_NODISCARD bool IsOutputToDevice() const noexcept {
     return output_to_device_;
   }
+
+  /// See |mrsAudioTrackReadBufferCreate|.
+  std::unique_ptr<AudioTrackReadBuffer> CreateReadBuffer() const noexcept;
 
   //
   // Advanced use
@@ -71,18 +72,18 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// Get a handle to the remote audio track. This handle is valid until the
   /// remote track is removed from the peer connection and destroyed, which is
   /// signaled by the |TrackRemoved| event on the peer connection.
-  [[nodiscard]] constexpr mrsRemoteAudioTrackHandle GetHandle() const noexcept {
+  MRS_NODISCARD constexpr mrsRemoteAudioTrackHandle GetHandle() const noexcept {
     return (mrsRemoteAudioTrackHandle)this;
   }
 
-  [[nodiscard]] webrtc::AudioTrackInterface* impl() const;
-  [[nodiscard]] webrtc::RtpReceiverInterface* receiver() const;
+  MRS_NODISCARD webrtc::AudioTrackInterface* impl() const;
+  MRS_NODISCARD webrtc::RtpReceiverInterface* receiver() const;
 
-  [[nodiscard]] constexpr Transceiver* GetTransceiver() const {
+  MRS_NODISCARD constexpr Transceiver* GetTransceiver() const {
     return transceiver_;
   }
 
-  [[nodiscard]] webrtc::MediaStreamTrackInterface* GetMediaImpl()
+  MRS_NODISCARD webrtc::MediaStreamTrackInterface* GetMediaImpl()
       const override {
     return impl();
   }
@@ -105,9 +106,6 @@ class RemoteAudioTrack : public AudioFrameObserver, public MediaTrack {
   /// Note that unlike local tracks, this is never NULL since the remote track
   /// gets destroyed when detached from the transceiver.
   Transceiver* transceiver_{nullptr};
-
-  /// Cached track name, to avoid dispatching on signaling thread.
-  const std::string track_name_;
 
   /// SSRC id of the corresponding RtpReceiver.
   absl::optional<int> ssrc_;

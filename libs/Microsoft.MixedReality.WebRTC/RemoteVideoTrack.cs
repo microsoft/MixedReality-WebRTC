@@ -46,7 +46,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>
         /// In native land this is a <code>Microsoft::MixedReality::WebRTC::RemoteVideoTrackHandle</code>.
         /// </remarks>
-        internal IntPtr _nativeHandle = IntPtr.Zero;
+        internal RemoteVideoTrackInterop.RemoteVideoTrackHandle _nativeHandle = null;
 
         /// <summary>
         /// Handle to self for interop callbacks. This adds a reference to the current object, preventing
@@ -60,8 +60,10 @@ namespace Microsoft.MixedReality.WebRTC
         private RemoteVideoTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
         // Constructor for interop-based creation; SetHandle() will be called later
-        internal RemoteVideoTrack(IntPtr handle, PeerConnection peer, string trackName) : base(peer, trackName)
+        internal RemoteVideoTrack(RemoteVideoTrackInterop.RemoteVideoTrackHandle handle, PeerConnection peer, string trackName)
+            : base(peer, trackName)
         {
+            Debug.Assert(!handle.IsClosed);
             _nativeHandle = handle;
             RegisterInteropCallbacks();
         }
@@ -98,7 +100,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         internal void DestroyNative()
         {
-            if (_nativeHandle == IntPtr.Zero)
+            if (_nativeHandle.IsClosed)
             {
                 return;
             }
@@ -107,7 +109,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             UnregisterInteropCallbacks();
 
-            _nativeHandle = IntPtr.Zero;
+            _nativeHandle.Dispose();
         }
 
         internal void OnI420AFrameReady(I420AVideoFrame frame)
