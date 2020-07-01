@@ -13,7 +13,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
     [CanEditMultipleObjects]
     public class VideoRendererEditor : UnityEditor.Editor
     {
-        SerializedProperty _source;
         SerializedProperty _maxFramerate;
         SerializedProperty _enableStatistics;
         SerializedProperty _frameLoadStatHolder;
@@ -22,7 +21,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
         void OnEnable()
         {
-            _source = serializedObject.FindProperty("Source");
             _maxFramerate = serializedObject.FindProperty("MaxFramerate");
             _enableStatistics = serializedObject.FindProperty("EnableStatistics");
             _frameLoadStatHolder = serializedObject.FindProperty("FrameLoadStatHolder");
@@ -41,7 +39,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
             GUILayout.Space(10);
 
             EditorGUILayout.LabelField("Video", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_source);
             EditorGUILayout.PropertyField(_maxFramerate);
 
             GUILayout.Space(10);
