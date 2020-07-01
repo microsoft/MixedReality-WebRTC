@@ -198,6 +198,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         #region Private fields
 
+        private PeerConnection _peer;
+
         /// <summary>
         /// Backing field to serialize the <see cref="MediaKind"/> property.
         /// </summary>
@@ -250,8 +252,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Constructor called internally by <see cref="PeerConnection.AddMediaLine(MediaKind)"/>.
         /// </summary>
         /// <param name="kind">Immutable value assigned to the <see cref="MediaKind"/> property on construction.</param>
-        internal MediaLine(MediaKind kind)
+        internal MediaLine(PeerConnection peer, MediaKind kind)
         {
+            _peer = peer;
             _mediaKind = kind;
         }
 
@@ -326,13 +329,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (wantsRecv && isReceiving && !wasReceiving)
             {
                 // Transceiver started receiving, and user actually wants to receive
-                _receiver.OnPaired(transceiver.RemoteTrack);
+                _peer.InvokeOnAppThread(() => _receiver.OnPaired(transceiver.RemoteTrack));
                 _pairedReceiver = _receiver;
             }
             else if (!isReceiving && wasReceiving)
             {
                 // Transceiver stopped receiving (user intent does not matter here)
-                _receiver.OnUnpaired(transceiver.RemoteTrack);
+                _peer.InvokeOnAppThread(() => _receiver.OnUnpaired(transceiver.RemoteTrack));
                 _pairedReceiver = null;
             }
         }
@@ -351,7 +354,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // the received is updated.
             if (_pairedReceiver != null)
             {
-                _pairedReceiver.OnUnpaired(track);
+                _peer.InvokeOnAppThread(() => _pairedReceiver.OnUnpaired(track));
                 _pairedReceiver = null;
             }
         }

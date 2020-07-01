@@ -34,7 +34,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
         /// </remarks>
-        public readonly VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
+        public VideoStreamStartedEvent VideoStreamStarted = new VideoStreamStartedEvent();
 
         /// <summary>
         /// Event raised when the video stream stopped.
@@ -48,7 +48,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
         /// </remarks>
-        public readonly VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
+        public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
 
 
         #region IVideoSource interface
@@ -137,34 +137,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         protected internal override void OnPaired(MediaTrack track)
         {
             var remoteVideoTrack = (RemoteVideoTrack)track;
-
-            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
-            // properties and so that listeners of the event can directly access Unity objects
-            // from their handler function.
-            InvokeOnAppThread(() =>
-            {
-                Debug.Assert(VideoTrack == null);
-                VideoTrack = remoteVideoTrack;
-                IsStreaming = true;
-                VideoStreamStarted.Invoke(this);
-            });
+            Debug.Assert(VideoTrack == null);
+            VideoTrack = remoteVideoTrack;
+            IsStreaming = true;
+            VideoStreamStarted.Invoke(this);
         }
 
         /// <inheritdoc/>
         protected internal override void OnUnpaired(MediaTrack track)
         {
             Debug.Assert(track is RemoteVideoTrack);
-
-            // Enqueue invoking from the main Unity app thread, both to avoid locks on public
-            // properties and so that listeners of the event can directly access Unity objects
-            // from their handler function.
-            InvokeOnAppThread(() =>
-            {
-                Debug.Assert(VideoTrack == track);
-                VideoTrack = null;
-                VideoStreamStopped.Invoke(this);
-                IsStreaming = false;
-            });
+            Debug.Assert(VideoTrack == track);
+            VideoTrack = null;
+            VideoStreamStopped.Invoke(this);
+            IsStreaming = false;
         }
     }
 }

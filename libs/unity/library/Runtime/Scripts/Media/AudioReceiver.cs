@@ -102,8 +102,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             Debug.Assert(Track == null);
             AudioTrack = remoteAudioTrack;
-
-            // FIXME this should be done on main thread.
             IsStreaming = true;
             AudioStreamStarted.Invoke(this);
         }
@@ -113,8 +111,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(track is RemoteAudioTrack);
             Debug.Assert(Track == track);
             AudioTrack = null;
-
-            // FIXME this should be done on main thread.
             AudioStreamStopped.Invoke(this);
             IsStreaming = false;
         }

@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
+using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
     /// Base class for media producers generating frames by receiving them from a remote peer.
     /// </summary>
-    public abstract class MediaReceiver : WorkQueue
+    public abstract class MediaReceiver : MonoBehaviour
     {
         /// <summary>
         /// Media kind of the receiver.

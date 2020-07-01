@@ -21,19 +21,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     [AddComponentMenu("MixedReality-WebRTC/Video Renderer")]
     public class VideoRenderer : MonoBehaviour
     {
-        /// <summary>
-        /// Video frame source producing the frames to render. The concrete class must implement <see cref="IVideoSource"/>.
-        /// </summary>
-        /// <remarks>
-        /// Here what we really want is to serialize some reference to an <see cref="IVideoSource"/>.
-        /// Unfortunately Unity before 2019.3 does not support serialized interfaces, and more generally ignores
-        /// polymorphism in serialization. And although there are ways to make that work with a custom inspector,
-        /// this disables support for object picker, so only drag-and-drop works, which is very impractical.
-        /// So we use a base class derived from MonoBehaviour, which is the only entity for which Unity handles
-        /// polymorphism.
-        /// </remarks>
-        [SerializeField]
-        protected MonoBehaviour Source; //< FIXME
+        ///// <summary>
+        ///// Video frame source producing the frames to render. The concrete class must implement <see cref="IVideoSource"/>.
+        ///// </summary>
+        ///// <remarks>
+        ///// Here what we really want is to serialize some reference to an <see cref="IVideoSource"/>.
+        ///// Unfortunately Unity before 2019.3 does not support serialized interfaces, and more generally ignores
+        ///// polymorphism in serialization. And although there are ways to make that work with a custom inspector,
+        ///// this disables support for object picker, so only drag-and-drop works, which is very impractical.
+        ///// So we use a base class derived from MonoBehaviour, which is the only entity for which Unity handles
+        ///// polymorphism.
+        ///// </remarks>
+        //[SerializeField]
+        //protected MonoBehaviour Source; //< FIXME
 
         [Tooltip("Max playback framerate, in frames per second")]
         [Range(0.001f, 120f)]
@@ -92,14 +92,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private ProfilerMarker loadTextureDataMarker = new ProfilerMarker("LoadTextureData");
         private ProfilerMarker uploadTextureToGpuMarker = new ProfilerMarker("UploadTextureToGPU");
 
-        private void OnValidate()
-        {
-            // Ensure that Source implements IVideoSource
-            if (!(Source is IVideoSource))
-            {
-                Source = null;
-            }
-        }
+        //private void OnValidate()
+        //{
+        //    // Ensure that Source implements IVideoSource
+        //    if (!(Source is IVideoSource))
+        //    {
+        //        Source = null;
+        //    }
+        //}
 
         private void Start()
         {
@@ -112,41 +112,41 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void OnEnable()
         {
-            if (Source != null)
-            {
-                if (Source is IVideoSource videoSrc)
-                {
-                    videoSrc.GetVideoStreamStarted().AddListener(VideoStreamStarted);
-                    videoSrc.GetVideoStreamStopped().AddListener(VideoStreamStopped);
+            //if (Source != null)
+            //{
+            //    if (Source is IVideoSource videoSrc)
+            //    {
+            //        videoSrc.GetVideoStreamStarted().AddListener(VideoStreamStarted);
+            //        videoSrc.GetVideoStreamStopped().AddListener(VideoStreamStopped);
 
-                    // If registering while the audio source is already playing, invoke manually
-                    if (videoSrc.IsStreaming)
-                    {
-                        VideoStreamStarted(videoSrc);
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException("Video source does not implement IVideoSource.");
-                }
-            }
+            //        // If registering while the audio source is already playing, invoke manually
+            //        if (videoSrc.IsStreaming)
+            //        {
+            //            VideoStreamStarted(videoSrc);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        throw new ArgumentException("Video source does not implement IVideoSource.");
+            //    }
+            //}
         }
 
         private void OnDisable()
         {
-            var videoSrc = (IVideoSource)Source;
-            if (videoSrc != null) // depends in particular on Unity's component destruction order
-            {
-                videoSrc.GetVideoStreamStarted().RemoveListener(VideoStreamStarted);
-                videoSrc.GetVideoStreamStopped().RemoveListener(VideoStreamStopped);
-            }
+            //var videoSrc = (IVideoSource)Source;
+            //if (videoSrc != null) // depends in particular on Unity's component destruction order
+            //{
+            //    videoSrc.GetVideoStreamStarted().RemoveListener(VideoStreamStarted);
+            //    videoSrc.GetVideoStreamStopped().RemoveListener(VideoStreamStopped);
+            //}
         }
 
-        private void VideoStreamStarted(IVideoSource source)
+        public void VideoStreamStarted(IVideoSource source)
         {
             bool isRemote = (source is VideoReceiver);
             int frameQueueSize = (isRemote ? 5 : 3);
-            var videoSrc = (IVideoSource)Source;
+            var videoSrc = (IVideoSource)source;
             switch (videoSrc.FrameEncoding)
             {
             case VideoEncoding.I420A:
@@ -161,7 +161,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        private void VideoStreamStopped(IVideoSource source)
+        public void VideoStreamStopped(IVideoSource source)
         {
             // Clear the video display to not confuse the user who could otherwise
             // think that the video is still playing but is lagging/frozen.

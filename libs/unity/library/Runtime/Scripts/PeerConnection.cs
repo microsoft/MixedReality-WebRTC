@@ -331,7 +331,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// is negotiated.</returns>
         public MediaLine AddMediaLine(MediaKind kind)
         {
-            var ml = new MediaLine(kind);
+            var ml = new MediaLine(this, kind);
             _mediaLines.Add(ml);
             return ml;
         }
