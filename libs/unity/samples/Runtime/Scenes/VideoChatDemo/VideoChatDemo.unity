@@ -126,12 +126,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4163670226369723061}
   m_PrefabAsset: {fileID: 0}
---- !u!102 &19951692 stripped
-TextMesh:
-  m_CorrespondingSourceObject: {fileID: 6214544212355771945, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
-    type: 3}
-  m_PrefabInstance: {fileID: 2981115260991272961}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &44210650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,12 +146,6 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!102 &68002832 stripped
-TextMesh:
-  m_CorrespondingSourceObject: {fileID: 6214544212355771945, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
-    type: 3}
-  m_PrefabInstance: {fileID: 4163670226369723061}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &132294433
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,18 +196,6 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _autoGainControl: 1
---- !u!102 &294107015 stripped
-TextMesh:
-  m_CorrespondingSourceObject: {fileID: 6214544211268019386, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
-    type: 3}
-  m_PrefabInstance: {fileID: 4163670226369723061}
-  m_PrefabAsset: {fileID: 0}
---- !u!102 &398525448 stripped
-TextMesh:
-  m_CorrespondingSourceObject: {fileID: 6214544211268019386, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
-    type: 3}
-  m_PrefabInstance: {fileID: 2981115260991272961}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &407286070
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,36 +344,77 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &635382925 stripped
+--- !u!1 &666380895
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 6213381231372758174, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
-    type: 3}
-  m_PrefabInstance: {fileID: 2981115260991272961}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &635382926
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 666380896}
+  - component: {fileID: 666380897}
+  m_Layer: 0
+  m_Name: RemoteVideo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 4294967295
+  m_IsActive: 1
+--- !u!4 &666380896
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666380895}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1290921136}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &666380897
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 635382925}
+  m_GameObject: {fileID: 666380895}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ee2dce2853b06e44bc76f78399b181f, type: 3}
+  m_Script: {fileID: 11500000, guid: b5c8b8e916d2cbf40a9dd142c021c4d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _widget:
-    MaxFramerate: 30
-    EnableStatistics: 1
-    FrameLoadStatHolder: {fileID: 1385413875}
-    FramePresentStatHolder: {fileID: 398525448}
-    FrameSkipStatHolder: {fileID: 19951692}
---- !u!102 &829841507 stripped
-TextMesh:
-  m_CorrespondingSourceObject: {fileID: 6214544210814514081, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
-    type: 3}
-  m_PrefabInstance: {fileID: 4163670226369723061}
-  m_PrefabAsset: {fileID: 0}
+  VideoStreamStarted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2981115260991272962}
+        m_MethodName: VideoStreamStarted
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  VideoStreamStopped:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2981115260991272962}
+        m_MethodName: VideoStreamStopped
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &966919328 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6210530807246673570, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
@@ -524,6 +541,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1697477436}
+  - {fileID: 666380896}
   - {fileID: 966919328}
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -620,12 +638,6 @@ Transform:
   m_Father: {fileID: 966919328}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!102 &1385413875 stripped
-TextMesh:
-  m_CorrespondingSourceObject: {fileID: 6214544210814514081, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
-    type: 3}
-  m_PrefabInstance: {fileID: 2981115260991272961}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1697477435
 GameObject:
   m_ObjectHideFlags: 0
@@ -637,7 +649,6 @@ GameObject:
   - component: {fileID: 1697477436}
   - component: {fileID: 1697477437}
   - component: {fileID: 1697477438}
-  - component: {fileID: 1697477439}
   m_Layer: 0
   m_Name: RemoteAudio
   m_TagString: Untagged
@@ -668,7 +679,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1697477435}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: ac54f2f6b8185d444b4a85e048778344, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!82 &1697477438
@@ -767,19 +778,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1697477439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1697477435}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecc506ef6d3213043bc0529b3f591d39, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PadWithSine: 0
 --- !u!1 &1968188768
 GameObject:
   m_ObjectHideFlags: 0
@@ -917,10 +915,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VideoStreamStarted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4163670226369723062}
+        m_MethodName: VideoStreamStarted
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   VideoStreamStopped:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4163670226369723062}
+        m_MethodName: VideoStreamStopped
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   WebcamDevice:
     id: 
     name: 
@@ -1329,11 +1349,11 @@ MonoBehaviour:
   _mediaLines:
   - _mediaKind: 0
     _source: {fileID: 132294435}
-    _receiver: {fileID: 1697477439}
+    _receiver: {fileID: 1697477437}
     _senderTrackName: microphone_track
   - _mediaKind: 1
     _source: {fileID: 2089692227}
-    _receiver: {fileID: 635382926}
+    _receiver: {fileID: 666380897}
     _senderTrackName: webcam_track
 --- !u!114 &114460246451956513
 MonoBehaviour:
@@ -1818,10 +1838,21 @@ PrefabInstance:
         type: 3}
       propertyPath: Source
       value: 
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 6316678915622682930, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7, type: 3}
+      objectReference: {fileID: 666380897}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7, type: 3}
+--- !u!114 &2981115260991272962 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6316678915622682930, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+    type: 3}
+  m_PrefabInstance: {fileID: 2981115260991272961}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4163670226369723061
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1943,31 +1974,18 @@ PrefabInstance:
       objectReference: {fileID: 2089692227}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7, type: 3}
---- !u!1 &4163670226369723062 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6213381231372758174, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+--- !u!114 &4163670226369723062 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6316678915622682930, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
     type: 3}
   m_PrefabInstance: {fileID: 4163670226369723061}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4163670226369723063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4163670226369723062}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b9bb1fecd391b646be4599df752880f, type: 3}
+  m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Source: {fileID: 2089692227}
-  _widget:
-    MaxFramerate: 30
-    EnableStatistics: 1
-    FrameLoadStatHolder: {fileID: 829841507}
-    FramePresentStatHolder: {fileID: 294107015}
-    FrameSkipStatHolder: {fileID: 68002832}
 --- !u!114 &8844783485349696906
 MonoBehaviour:
   m_ObjectHideFlags: 0
