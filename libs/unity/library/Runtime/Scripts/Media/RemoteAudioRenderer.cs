@@ -18,66 +18,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <seealso cref="VideoRenderer"/>
     [AddComponentMenu("MixedReality-WebRTC/Remote Audio Renderer")]
     [RequireComponent(typeof(UnityEngine.AudioSource))]
-    public class RemoteAudioRenderer : AudioReceiver, IAudioSource
+    public class RemoteAudioRenderer : WorkQueue
     {
+        public AudioReceiver Receiver;
+
         /// <inheritdoc />
-        public override RemoteAudioTrack AudioTrack => _track;
+        public RemoteAudioTrack AudioTrack => _track;
 
         /// <summary>
         /// If true, pad buffer underruns with a sine wave. This will cause artifacts on underruns.
         /// Use for debugging.
         /// </summary>
         public bool PadWithSine = false;
-
-
-        #region IAudioSource interface
-
-        /// <inheritdoc/>
-        public bool IsStreaming { get; protected set; }
-
-        /// <inheritdoc/>
-        public AudioStreamStartedEvent GetAudioStreamStarted() { return AudioStreamStarted; }
-
-        /// <inheritdoc/>
-        public AudioStreamStoppedEvent GetAudioStreamStopped() { return AudioStreamStopped; }
-
-        /// <summary>
-        /// Register a frame callback to listen to incoming audio data receiving through this
-        /// audio receiver from the remote peer.
-        ///
-        /// The callback can only be registered once <see cref="Track"/> is valid, that is once
-        /// the <see cref="AudioStreamStarted"/> event was raised.
-        /// </summary>
-        /// <param name="callback">The new frame callback to register.</param>
-        /// <remarks>
-        /// Note that audio is output automatically through the <see cref="UnityEngine.AudioSource"/>
-        /// on the game object, so the data passed to the callback shouldn't be using for audio output.
-        ///
-        /// A typical application might use this callback to display some feedback of audio being
-        /// received, like a spectrum analyzer, but more commonly will not need that callback because
-        /// of the above restriction on automated audio output.
-        ///
-        /// Note that registering a callback does not influence the audio capture and sending
-        /// to the remote peer, which occurs whether or not a callback is registered.
-        /// </remarks>
-        public void RegisterCallback(AudioFrameDelegate callback)
-        {
-            if (Track != null)
-            {
-                AudioTrack.AudioFrameReady += callback;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void UnregisterCallback(AudioFrameDelegate callback)
-        {
-            if (Track != null)
-            {
-                AudioTrack.AudioFrameReady -= callback;
-            }
-        }
-
-        #endregion
 
 
         // Local storage of audio data to be fed to the output
@@ -112,11 +64,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             // Check if _track has been changed by OnPaired/OnUnpaired and
             // we need to start/stop streaming.
-            if (_track != null && !IsStreaming)
+            if (_track != null && !Receiver.IsStreaming)
             {
                 StartStreaming();
             }
-            else if (_track == null && IsStreaming)
+            else if (_track == null && Receiver.IsStreaming)
             {
                 StopStreaming();
             }
@@ -124,7 +76,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected void OnDisable()
         {
-            if (IsStreaming)
+            if (Receiver.IsStreaming)
             {
                 StopStreaming();
             }
@@ -186,17 +138,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // OnAudioFilterRead reads the variable concurrently, but the update is atomic
             // so we don't need a lock.
             _readBuffer = AudioTrack.CreateReadBuffer();
-
-            IsStreaming = true;
-            AudioStreamStarted.Invoke(this);
         }
 
         private void StopStreaming()
         {
             EnsureIsMainAppThread();
-
-            AudioStreamStopped.Invoke(this);
-            IsStreaming = false;
 
             lock (_readBufferLock)
             {
@@ -204,26 +150,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 _readBuffer.Dispose();
                 _readBuffer = null;
             }
-        }
-        protected internal override void OnPaired(MediaTrack track)
-        {
-            var remoteAudioTrack = (RemoteAudioTrack)track;
-
-            Debug.Assert(Track == null);
-            _track = remoteAudioTrack;
-            // Streaming will be started from the main Unity app thread, both to avoid locks on public
-            // properties and so that listeners of the event can directly access Unity objects
-            // from their handler function.
-        }
-
-        protected internal override void OnUnpaired(MediaTrack track)
-        {
-            Debug.Assert(track is RemoteAudioTrack);
-            Debug.Assert(Track == track);
-            _track = null;
-            // Streaming will be stopped from the main Unity app thread, both to avoid locks on public
-            // properties and so that listeners of the event can directly access Unity objects
-            // from their handler function.
         }
 }
 }

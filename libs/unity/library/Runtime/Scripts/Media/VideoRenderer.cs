@@ -8,9 +8,33 @@ using Microsoft.MixedReality.WebRTC.Unity.Editor;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
-    [Serializable]
-    public class VideoRendererWidget
+    /// <summary>
+    /// Utility component used to play video frames obtained from a WebRTC video track. This can indiscriminately
+    /// play video frames from a video track source on the local peer as well as video frames from a remote video
+    /// receiver obtaining its frame from a remote WebRTC peer.
+    /// </summary>
+    /// <remarks>
+    /// This component writes to the attached <a href="https://docs.unity3d.com/ScriptReference/Material.html">Material</a>,
+    /// via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html">Renderer</a>.
+    /// </remarks>
+    [RequireComponent(typeof(Renderer))]
+    [AddComponentMenu("MixedReality-WebRTC/Video Renderer")]
+    public class VideoRenderer : MonoBehaviour
     {
+        /// <summary>
+        /// Video frame source producing the frames to render. The concrete class must implement <see cref="IVideoSource"/>.
+        /// </summary>
+        /// <remarks>
+        /// Here what we really want is to serialize some reference to an <see cref="IVideoSource"/>.
+        /// Unfortunately Unity before 2019.3 does not support serialized interfaces, and more generally ignores
+        /// polymorphism in serialization. And although there are ways to make that work with a custom inspector,
+        /// this disables support for object picker, so only drag-and-drop works, which is very impractical.
+        /// So we use a base class derived from MonoBehaviour, which is the only entity for which Unity handles
+        /// polymorphism.
+        /// </remarks>
+        [SerializeField]
+        protected MonoBehaviour Source; //< FIXME
+
         [Tooltip("Max playback framerate, in frames per second")]
         [Range(0.001f, 120f)]
         public float MaxFramerate = 30f;
@@ -68,59 +92,76 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private ProfilerMarker loadTextureDataMarker = new ProfilerMarker("LoadTextureData");
         private ProfilerMarker uploadTextureToGpuMarker = new ProfilerMarker("UploadTextureToGPU");
 
-        private IVideoSource _source;
-        private Renderer _renderer;
-
-        private int _frameQueueSize;
-
-        public void Initialize(IVideoSource source, Renderer renderer, int frameQueueSize)
+        private void OnValidate()
         {
-            _source = source;
-            _renderer = renderer;
-            _frameQueueSize = frameQueueSize;
+            // Ensure that Source implements IVideoSource
+            if (!(Source is IVideoSource))
+            {
+                Source = null;
+            }
         }
 
-        public void StartPlaying()
+        private void Start()
         {
             CreateEmptyVideoTextures();
 
             // Leave 3ms of margin, otherwise it misses 1 frame and drops to ~20 FPS
             // when Unity is running at 60 FPS.
             _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxFramerate) - 0.003f);
+        }
 
-            _source.GetVideoStreamStarted().AddListener(OnVideoStreamStarted);
-            _source.GetVideoStreamStopped().AddListener(OnVideoStreamStopped);
-
-            // If registering while the audio source is already playing, invoke manually
-            if (_source.IsStreaming)
+        private void OnEnable()
+        {
+            if (Source != null)
             {
-                OnVideoStreamStarted(_source);
+                if (Source is IVideoSource videoSrc)
+                {
+                    videoSrc.GetVideoStreamStarted().AddListener(VideoStreamStarted);
+                    videoSrc.GetVideoStreamStopped().AddListener(VideoStreamStopped);
+
+                    // If registering while the audio source is already playing, invoke manually
+                    if (videoSrc.IsStreaming)
+                    {
+                        VideoStreamStarted(videoSrc);
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException("Video source does not implement IVideoSource.");
+                }
             }
         }
 
-        public void StopPlaying()
+        private void OnDisable()
         {
-            _source.GetVideoStreamStarted().RemoveListener(OnVideoStreamStarted);
-            _source.GetVideoStreamStopped().RemoveListener(OnVideoStreamStopped);
+            var videoSrc = (IVideoSource)Source;
+            if (videoSrc != null) // depends in particular on Unity's component destruction order
+            {
+                videoSrc.GetVideoStreamStarted().RemoveListener(VideoStreamStarted);
+                videoSrc.GetVideoStreamStopped().RemoveListener(VideoStreamStopped);
+            }
         }
 
-        private void OnVideoStreamStarted(IVideoSource videoSrc)
+        private void VideoStreamStarted(IVideoSource source)
         {
+            bool isRemote = (source is VideoReceiver);
+            int frameQueueSize = (isRemote ? 5 : 3);
+            var videoSrc = (IVideoSource)Source;
             switch (videoSrc.FrameEncoding)
             {
-                case VideoEncoding.I420A:
-                    _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(_frameQueueSize);
-                    videoSrc.RegisterCallback(I420AVideoFrameReady);
-                    break;
+            case VideoEncoding.I420A:
+                _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(frameQueueSize);
+                videoSrc.RegisterCallback(I420AVideoFrameReady);
+                break;
 
-                case VideoEncoding.Argb32:
-                    _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(_frameQueueSize);
-                    videoSrc.RegisterCallback(Argb32VideoFrameReady);
-                    break;
+            case VideoEncoding.Argb32:
+                _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(frameQueueSize);
+                videoSrc.RegisterCallback(Argb32VideoFrameReady);
+                break;
             }
         }
 
-        private void OnVideoStreamStopped(IVideoSource source)
+        private void VideoStreamStopped(IVideoSource source)
         {
             // Clear the video display to not confuse the user who could otherwise
             // think that the video is still playing but is lagging/frozen.
@@ -160,7 +201,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _textureV.Apply();
 
             // Assign that texture to the video player's Renderer component
-            videoMaterial = _renderer.material;
+            videoMaterial = GetComponent<Renderer>().material;
             if (_i420aFrameQueue != null)
             {
                 videoMaterial.SetTexture("_YPlane", _textureY);
@@ -173,7 +214,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        public void Update()
+        //// <summary>
+        /// Unity Engine Start() hook
+        /// </summary>
+        /// <remarks>
+        /// https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html
+        /// </remarks>
+        private void Update()
         {
             if ((_i420aFrameQueue != null) || (_argb32FrameQueue != null))
             {
