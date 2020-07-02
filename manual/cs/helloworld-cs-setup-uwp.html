@@ -8,7 +8,7 @@
     <title>Creating a project | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Creating a project | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.55.0.0">
+    <meta name="generator" content="docfx 2.56.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.png">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -126,7 +126,7 @@
 <p>After that, the <code>App1</code> project should contain a reference to the package.</p>
 <p><img src="cs-uwp7.png" alt="App1 project references"></p>
 <h2 id="test-the-reference">Test the reference</h2>
-<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync"><code>PeerConnection.GetVideoCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
+<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync"><code>PeerConnection.GetVideoCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
 <p>First, because this sample application is a UWP application, it needs to declare some capabilities to access the microphone and webcam on the host device. In the <strong>Solution Explorer</strong> of Visual Studio, double-click on the <code>Package.appxmanifest</code> to open the AppX manifest of the app and select the <strong>Capabilities</strong> tab. Check <strong>Microphone</strong> and <strong>Webcam</strong>, and confirm that <strong>Internet (Client)</strong> is already checked.</p>
 <p><img src="cs-uwp8.png" alt="Configure the UWP app capabilities"></p>
 <div class="WARNING">

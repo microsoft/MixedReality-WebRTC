@@ -8,7 +8,7 @@
     <title>Adding local media | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Adding local media | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.55.0.0">
+    <meta name="generator" content="docfx 2.56.0.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.png">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -126,7 +126,7 @@
 </li>
 <li><p>In <strong>Manual</strong> mode, the user can apply a set of constraints to the list of capture formats the device supports.</p>
 <p>This allows restricting the video capture formats the selection algorithm can choose from to a subset of all the formats supported by the video capture device, and even to a single known format if needed. Note however that over-constraining the algorithm may result in no format being available, and the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html"><code>WebcamSource</code></a> component failing to open the video capture device.</p>
-<p>In general it is recommended <strong>not</strong> to assign hard-coded resolution / framerate constraints at edit time, unless the application only target a specific kind of device with well-known immutable capture capabilities, and instead enumerate at runtime with <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureFormatsAsync_System_String_"><code>PeerConnection.GetVideoCaptureFormatsAsync()</code></a> the capture formats actually supported by the video capture device, then use constraints to select one or some of those formats.</p>
+<p>In general it is recommended <strong>not</strong> to assign hard-coded resolution / framerate constraints at edit time, unless the application only target a specific kind of device with well-known immutable capture capabilities, and instead enumerate at runtime with <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync(System.String)"><code>PeerConnection.GetVideoCaptureFormatsAsync()</code></a> the capture formats actually supported by the video capture device, then use constraints to select one or some of those formats.</p>
 </li>
 </ul>
 </li>

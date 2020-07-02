@@ -584,6 +584,32 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.CreateAsync
   nameWithType: DeviceVideoTrackSource.CreateAsync
+- uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync
+  name: GetCaptureDevicesAsync()
+  href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync
+  commentId: M:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync
+  fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync()
+  nameWithType: DeviceVideoTrackSource.GetCaptureDevicesAsync()
+- uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync*
+  name: GetCaptureDevicesAsync
+  href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync
+  nameWithType: DeviceVideoTrackSource.GetCaptureDevicesAsync
+- uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String)
+  name: GetCaptureFormatsAsync(String)
+  href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_System_String_
+  commentId: M:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String)
+  fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String)
+  nameWithType: DeviceVideoTrackSource.GetCaptureFormatsAsync(String)
+- uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync*
+  name: GetCaptureFormatsAsync
+  href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync
+  nameWithType: DeviceVideoTrackSource.GetCaptureFormatsAsync
 - uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.ToString
   name: ToString()
   href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_ToString
@@ -2101,32 +2127,6 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.GetSimpleStatsAsync
   nameWithType: PeerConnection.GetSimpleStatsAsync
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync
-  name: GetVideoCaptureDevicesAsync()
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync
-  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync()
-  nameWithType: PeerConnection.GetVideoCaptureDevicesAsync()
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync*
-  name: GetVideoCaptureDevicesAsync
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureDevicesAsync_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync
-  nameWithType: PeerConnection.GetVideoCaptureDevicesAsync
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync(System.String)
-  name: GetVideoCaptureFormatsAsync(String)
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureFormatsAsync_System_String_
-  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync(System.String)
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync(System.String)
-  nameWithType: PeerConnection.GetVideoCaptureFormatsAsync(String)
-- uid: Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync*
-  name: GetVideoCaptureFormatsAsync
-  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_GetVideoCaptureFormatsAsync_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync
-  nameWithType: PeerConnection.GetVideoCaptureFormatsAsync
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSend
   name: IceCandidateReadytoSend
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend
