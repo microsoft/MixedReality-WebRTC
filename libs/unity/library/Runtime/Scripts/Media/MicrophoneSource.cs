@@ -10,6 +10,7 @@ using UnityEngine.Android;
 #endif
 
 #if UNITY_WSA && !UNITY_EDITOR
+using System.Threading.Tasks;
 using global::Windows.UI.Core;
 using global::Windows.Foundation;
 using global::Windows.Media.Core;
