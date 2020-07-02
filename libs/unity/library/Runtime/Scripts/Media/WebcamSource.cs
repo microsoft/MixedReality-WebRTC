@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 #if ENABLE_WINMD_SUPPORT
@@ -176,9 +177,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 }
                 return;
             }
-#endif
-
-#if UNITY_WSA && !UNITY_EDITOR
+#elif UNITY_WSA && !UNITY_EDITOR
             // Request UWP access to video capture. The OS may show some popup dialog to the
             // user to request permission. This will succeed only if the user grants permission.
             try
@@ -207,6 +206,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 #endif
 
+            // Handle automatic capture format constraints
             string videoProfileId = VideoProfileId;
             var videoProfileKind = VideoProfileKind;
             int width = Constraints.width;
@@ -244,8 +244,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     }
                 }
             }
-#endif
-#if PLATFORM_ANDROID
+#elif PLATFORM_ANDROID
             if (FormatMode == LocalVideoSourceFormatMode.Automatic)
             {
                 // Avoid constraining the framerate; this is generally not necessary (formats are listed
