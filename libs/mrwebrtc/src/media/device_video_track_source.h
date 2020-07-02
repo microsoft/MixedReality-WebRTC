@@ -32,21 +32,23 @@ class DeviceVideoTrackSource : public VideoTrackSource {
       Callback<mrsResult> end_callback) noexcept;
 
  protected:
+#if defined(MR_SHARING_ANDROID)
+
   DeviceVideoTrackSource(
       RefPtr<GlobalFactory> global_factory,
-      rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source
-#if defined(MR_SHARING_ANDROID)
-      ,
-      jobject java_video_capturer
-#endif  // defined(MR_SHARING_ANDROID)
-      ) noexcept;
+      rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source,
+      jobject java_video_capturer) noexcept;
   ~DeviceVideoTrackSource();
-
-#if defined(MR_SHARING_ANDROID)
 
   /// Global reference to the Java video capturer (org.webrtc.VideoCapturer)
   /// object.
   jobject java_video_capturer_{nullptr};
+
+#else   // defined(MR_SHARING_ANDROID)
+
+  DeviceVideoTrackSource(
+      RefPtr<GlobalFactory> global_factory,
+      rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source) noexcept;
 
 #endif  // defined(MR_SHARING_ANDROID)
 };

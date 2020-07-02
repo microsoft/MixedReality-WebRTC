@@ -349,12 +349,14 @@ ErrorOr<RefPtr<DeviceVideoTrackSource>> DeviceVideoTrackSource::Create(
   // source, then start capturing.
   jmethodID start_capture_method = webrtc::GetStaticMethodID(
       env, android_camera_interop_class.obj(), "StartCapture",
-      "(JLorg/webrtc/SurfaceTextureHelper;Ljava/lang/String;IIF)Lorg/webrtc/VideoCapturer;");
+      "(JLorg/webrtc/SurfaceTextureHelper;Ljava/lang/String;IIF)Lorg/webrtc/"
+      "VideoCapturer;");
   jstring java_device_name = env->NewStringUTF(init_config.video_device_id);
   CHECK_EXCEPTION(env);
   jobject camera_tmp = env->CallStaticObjectMethod(
-      android_camera_interop_class.obj(), start_capture_method, (jlong)proxy_source.get(),
-      texture_helper, java_device_name, (jint)width, (jint)height, (jfloat)framerate);
+      android_camera_interop_class.obj(), start_capture_method,
+      (jlong)proxy_source.get(), texture_helper, java_device_name, (jint)width,
+      (jint)height, (jfloat)framerate);
   CHECK_EXCEPTION(env);
 
   // Java objects created are always returned as local references; create a new
@@ -433,7 +435,8 @@ Error DeviceVideoTrackSource::GetVideoCaptureDevices(
     CHECK_EXCEPTION(env);
     jstring java_id = (jstring)env->GetObjectField(java_device_info, id_field);
     CHECK_EXCEPTION(env);
-    jstring java_name = (jstring)env->GetObjectField(java_device_info, name_field);
+    jstring java_name =
+        (jstring)env->GetObjectField(java_device_info, name_field);
     CHECK_EXCEPTION(env);
     const char* native_id = env->GetStringUTFChars(java_id, nullptr);
     const char* native_name = env->GetStringUTFChars(java_name, nullptr);
@@ -549,9 +552,11 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
     CHECK_EXCEPTION(env);
     jint java_height = env->GetIntField(java_format_info, height_field);
     CHECK_EXCEPTION(env);
-    jfloat java_framerate = env->GetFloatField(java_format_info, framerate_field);
+    jfloat java_framerate =
+        env->GetFloatField(java_format_info, framerate_field);
     CHECK_EXCEPTION(env);
-    uint32_t fourcc = (uint32_t)env->GetLongField(java_format_info, fourcc_field);
+    uint32_t fourcc =
+        (uint32_t)env->GetLongField(java_format_info, fourcc_field);
     CHECK_EXCEPTION(env);
     mrsVideoCaptureFormatInfo format_info{};
     format_info.width = java_width;
@@ -703,26 +708,18 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
   return Error::None();
 }
 
+#if defined(MR_SHARING_ANDROID)
+
 DeviceVideoTrackSource::DeviceVideoTrackSource(
     RefPtr<GlobalFactory> global_factory,
-    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source
-#if defined(MR_SHARING_ANDROID)
-    ,
-    jobject java_video_capturer
-#endif  // defined(MR_SHARING_ANDROID)
-    ) noexcept
+    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source,
+    jobject java_video_capturer) noexcept
     : VideoTrackSource(std::move(global_factory),
                        ObjectType::kDeviceVideoTrackSource,
-                       std::move(source))
-#if defined(MR_SHARING_ANDROID)
-      ,
-      java_video_capturer_(java_video_capturer)
-#endif  // defined(MR_SHARING_ANDROID)
-{
-}
+                       std::move(source)),
+      java_video_capturer_(java_video_capturer) {}
 
 DeviceVideoTrackSource::~DeviceVideoTrackSource() {
-#if defined(MR_SHARING_ANDROID)
   // Stop video capture and release Java capturer
   if (java_video_capturer_) {
     JNIEnv* env = webrtc::jni::GetEnv();
@@ -737,8 +734,18 @@ DeviceVideoTrackSource::~DeviceVideoTrackSource() {
     CHECK_EXCEPTION(env);
     java_video_capturer_ = nullptr;
   }
-#endif  // defined(MR_SHARING_ANDROID)
 }
+
+#else  // defined(MR_SHARING_ANDROID)
+
+DeviceVideoTrackSource::DeviceVideoTrackSource(
+    RefPtr<GlobalFactory> global_factory,
+    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source) noexcept
+    : VideoTrackSource(std::move(global_factory),
+                       ObjectType::kDeviceVideoTrackSource,
+                       std::move(source)) {}
+
+#endif  // defined(MR_SHARING_ANDROID)
 
 }  // namespace WebRTC
 }  // namespace MixedReality
