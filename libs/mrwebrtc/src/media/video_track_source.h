@@ -49,13 +49,13 @@ class VideoSourceAdapter : public webrtc::VideoTrackSourceInterface {
   // Indicates that the encoder should denoise video before encoding it.
   // If it is not set, the default configuration is used which is different
   // depending on video codec.
-  absl::optional<bool> needs_denoising() const { return absl::nullopt; }
+  absl::optional<bool> needs_denoising() const override { return absl::nullopt; }
 
   // Returns false if no stats are available, e.g, for a remote source, or a
   // source which has not seen its first frame yet.
   //
   // Implementation should avoid blocking.
-  bool GetStats(Stats* /*stats*/) { return false; }
+  bool GetStats(Stats* /*stats*/) override { return false; }
 
  protected:
   rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source_;

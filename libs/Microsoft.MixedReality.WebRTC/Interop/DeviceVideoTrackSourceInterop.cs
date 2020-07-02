@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.MixedReality.WebRTC.Interop
@@ -14,13 +15,97 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     internal class DeviceVideoTrackSourceInterop
     {
         /// <summary>
+        /// Marshaling struct for enumerating a video capture device.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        internal ref struct VideoCaptureDeviceMarshalInfo
+        {
+            public string Id;
+            public string Name;
+        }
+
+        /// <summary>
+        /// Marshaling struct for enumerating a video capture format.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        internal ref struct VideoCaptureFormatMarshalInfo
+        {
+            public uint Width;
+            public uint Height;
+            public float Framerate;
+            public uint FourCC;
+        }
+
+        // Callbacks for internal enumeration implementation only
+        public delegate void VideoCaptureDeviceEnumCallbackImpl(in VideoCaptureDevice device);
+        public delegate void VideoCaptureDeviceEnumCompletedCallbackImpl(Exception ex);
+        public delegate void VideoCaptureFormatEnumCallbackImpl(in VideoCaptureFormat format);
+        public delegate void VideoCaptureFormatEnumCompletedCallbackImpl(Exception ex);
+
+        public class EnumVideoCaptureDeviceWrapper
+        {
+            public VideoCaptureDeviceEnumCallbackImpl enumCallback;
+            public VideoCaptureDeviceEnumCompletedCallbackImpl completedCallback;
+            // Keep delegates alive!
+            public VideoCaptureDeviceEnumCallback EnumTrampoline;
+            public VideoCaptureDeviceEnumCompletedCallback CompletedTrampoline;
+        }
+
+        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCallback))]
+        public static void VideoCaptureDevice_EnumCallback(IntPtr userData, in VideoCaptureDeviceMarshalInfo deviceInfo)
+        {
+            var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
+            var device = new VideoCaptureDevice();
+            device.id = deviceInfo.Id;
+            device.name = deviceInfo.Name;
+            wrapper.enumCallback(device); // this is mandatory, never null
+        }
+
+        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCompletedCallback))]
+        public static void VideoCaptureDevice_EnumCompletedCallback(IntPtr userData, uint resultCode)
+        {
+            var exception = Utils.GetExceptionForErrorCode(resultCode);
+            var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
+            wrapper.completedCallback(exception); // this is optional, allows to be null
+        }
+
+        public class EnumVideoCaptureFormatsWrapper
+        {
+            public VideoCaptureFormatEnumCallbackImpl enumCallback;
+            public VideoCaptureFormatEnumCompletedCallbackImpl completedCallback;
+            // Keep delegates alive!
+            public VideoCaptureFormatEnumCallback EnumTrampoline;
+            public VideoCaptureFormatEnumCompletedCallback CompletedTrampoline;
+        }
+
+        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCallback))]
+        public static void VideoCaptureFormat_EnumCallback(IntPtr userData, in VideoCaptureFormatMarshalInfo formatInfo)
+        {
+            var wrapper = Utils.ToWrapper<EnumVideoCaptureFormatsWrapper>(userData);
+            var format = new VideoCaptureFormat();
+            format.width = formatInfo.Width;
+            format.height = formatInfo.Height;
+            format.framerate = formatInfo.Framerate;
+            format.fourcc = formatInfo.FourCC;
+            wrapper.enumCallback(format); // this is mandatory, never null
+        }
+
+        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCompletedCallback))]
+        public static void VideoCaptureFormat_EnumCompletedCallback(IntPtr userData, uint resultCode)
+        {
+            var exception = Utils.GetExceptionForErrorCode(resultCode);
+            var wrapper = Utils.ToWrapper<EnumVideoCaptureFormatsWrapper>(userData);
+            wrapper.completedCallback(exception); // this is optional, allows to be null
+        }
+
+        /// <summary>
         /// Marshaling struct for initializing settings when opening a local video device.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         internal ref struct LocalVideoDeviceMarshalInitConfig
         {
             /// <summary>
-            /// Video capture device unique identifier, as returned by <see cref="PeerConnection.GetVideoCaptureDevicesAsync"/>.
+            /// Video capture device unique identifier, as returned by <see cref="DeviceVideoTrackSource.GetCaptureDevicesAsync"/>.
             /// </summary>
             public string VideoDeviceId;
 
@@ -108,7 +193,37 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             }
         }
 
+
+        #region Reverse P/Invoke delegates
+
+        // Note - none of those method arguments can be SafeHandle; use IntPtr instead.
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void VideoCaptureDeviceEnumCallback(IntPtr userData, in VideoCaptureDeviceMarshalInfo deviceInfo);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void VideoCaptureDeviceEnumCompletedCallback(IntPtr userData, uint resultCode);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void VideoCaptureFormatEnumCallback(IntPtr userData, in VideoCaptureFormatMarshalInfo formatInfo);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void VideoCaptureFormatEnumCompletedCallback(IntPtr userData, uint resultCode);
+
+        #endregion
+
+
         #region P/Invoke static functions
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsEnumVideoCaptureDevicesAsync")]
+        public static extern uint EnumVideoCaptureDevicesAsync(VideoCaptureDeviceEnumCallback enumCallback, IntPtr userData,
+            VideoCaptureDeviceEnumCompletedCallback completedCallback, IntPtr completedUserData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsEnumVideoCaptureFormatsAsync")]
+        public static extern uint EnumVideoCaptureFormatsAsync(string deviceId, VideoCaptureFormatEnumCallback enumCallback,
+            IntPtr userData, VideoCaptureFormatEnumCompletedCallback completedCallback, IntPtr completedUserData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsDeviceVideoTrackSourceCreate")]

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using UnityEngine;
 
 #if ENABLE_WINMD_SUPPORT
@@ -15,6 +15,10 @@ using global::Windows.Foundation;
 using global::Windows.Media.Core;
 using global::Windows.Media.Capture;
 using global::Windows.ApplicationModel.Core;
+#endif
+
+#if PLATFORM_ANDROID
+using UnityEngine.Android;
 #endif
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -134,6 +138,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             framerate = 0.0
         };
 
+#if PLATFORM_ANDROID
+        protected bool _androidCameraRequestPending = false;
+        protected float _androidCameraRequestRetryUntilTime = 0f;
+#endif
+
+
         public WebcamSource() : base(frameEncoding: VideoEncoding.I420A)
         {
         }
@@ -145,7 +155,29 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 return;
             }
 
-#if UNITY_WSA && !UNITY_EDITOR
+#if PLATFORM_ANDROID
+            // Ensure Android binding is initialized before accessing the native implementation
+            Android.Initialize();
+
+            // Check for permission to access the camera
+            if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
+            {
+                if (!_androidCameraRequestPending)
+                {
+                    // Monitor the OnApplicationFocus(true) event during the next 5 minutes,
+                    // and check for permission again each time (see below why).
+                    _androidCameraRequestPending = true;
+                    _androidCameraRequestRetryUntilTime = Time.time + 300;
+
+                    // Display dialog requesting user permission. This will return immediately,
+                    // and unfortunately there's no good way to tell when this completes. As a rule
+                    // of thumb, application should lose focus, so check when focus resumes should
+                    // be sufficient without having to poll every frame.
+                    Permission.RequestUserPermission(Permission.Camera);
+                }
+                return;
+            }
+#elif UNITY_WSA && !UNITY_EDITOR
             // Request UWP access to video capture. The OS may show some popup dialog to the
             // user to request permission. This will succeed only if the user grants permission.
             try
@@ -174,6 +206,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 #endif
 
+            // Handle automatic capture format constraints
             string videoProfileId = VideoProfileId;
             var videoProfileKind = VideoProfileKind;
             int width = Constraints.width;
@@ -211,6 +244,46 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     }
                 }
             }
+#elif PLATFORM_ANDROID
+            if (FormatMode == LocalVideoSourceFormatMode.Automatic)
+            {
+                // Avoid constraining the framerate; this is generally not necessary (formats are listed
+                // with higher framerates first) and is error-prone as some formats report 30.0 FPS while
+                // others report 29.97 FPS.
+                framerate = 0; // auto
+
+                string deviceId = WebcamDevice.id;
+                if (string.IsNullOrEmpty(deviceId))
+                {
+                    List<VideoCaptureDevice> listedDevices = await PeerConnection.GetVideoCaptureDevicesAsync();
+                    if (listedDevices.Count > 0)
+                    {
+                        deviceId = listedDevices[0].id;
+                    }
+                }
+                if (!string.IsNullOrEmpty(deviceId))
+                {
+                    // Find the closest format to 720x480, independent of framerate
+                    List<VideoCaptureFormat> formats = await DeviceVideoTrackSource.GetCaptureFormatsAsync(deviceId);
+                    double smallestDiff = double.MaxValue;
+                    bool hasFormat = false;
+                    foreach (var fmt in formats)
+                    {
+                        double diff = Math.Abs(fmt.width - 720) + Math.Abs(fmt.height - 480);
+                        if ((diff < smallestDiff) || !hasFormat)
+                        {
+                            hasFormat = true;
+                            smallestDiff = diff;
+                            width = (int)fmt.width;
+                            height = (int)fmt.height;
+                        }
+                    }
+                    if (hasFormat)
+                    {
+                        Debug.Log($"WebcamSource automated mode selected resolution {width}x{height} for Android video capture device #{deviceId}.");
+                    }
+                }
+            }
 #endif
 
             // TODO - Fix codec selection (was as below before change)
@@ -229,16 +302,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             //                PreferredVideoCodec = "VP8";
             //            }
             //#endif
-
-            //// Ensure the track has a valid name
-            //string trackName = TrackName;
-            //if (trackName.Length == 0)
-            //{
-            //    trackName = Guid.NewGuid().ToString();
-            //    // Re-assign the generated track name for consistency
-            //    TrackName = trackName;
-            //}
-            //SdpTokenAttribute.Validate(trackName, allowEmpty: false);
 
             // Create the track
             var deviceConfig = new LocalVideoDeviceInitConfig
@@ -261,6 +324,47 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             IsStreaming = true;
             VideoStreamStarted.Invoke(this);
         }
+
+#if PLATFORM_ANDROID
+        protected void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus)
+            {
+                return;
+            }
+
+            // If focus is restored after a pending camera access request, check the permission again
+            if (_androidCameraRequestPending)
+            {
+                _androidCameraRequestPending = false;
+
+                if (Permission.HasUserAuthorizedPermission(Permission.Camera))
+                {
+                    // If now authorized, start capture as if just enabled
+                    Debug.Log("User granted authorization to access webcam, starting WebcamSource now...");
+                    OnEnable();
+                }
+                else if (Time.time <= _androidCameraRequestRetryUntilTime)
+                {
+                    // OnApplicationFocus(true) may be called for unrelated reason(s) so do not disable on first call,
+                    // but instead retry during a given period after the request was made, until we're reasonably
+                    // confident that the user dialog was actually answered (that is, that OnApplicationFocus(true) was
+                    // called because of that dialog, and not because of another reason).
+                    // This may lead to false positives (checking permission after the user denied it), but the user
+                    // dialog will not popup again, so this is all in the background and essentially harmless.
+                    _androidCameraRequestPending = true;
+                }
+                else
+                {
+                    // Some reasonable time passed since we made the permission request, and we still get a denied
+                    // answer, so assume the user actually denied it and stop retrying.
+                    _androidCameraRequestRetryUntilTime = 0f;
+                    Debug.LogError("User denied Camera permission; cannot use WebcamSource. Forcing enabled=false.");
+                    enabled = false;
+                }
+            }
+        }
+#endif
 
 #if UNITY_WSA && !UNITY_EDITOR
         /// <summary>

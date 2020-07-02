@@ -75,3 +75,4 @@ tools/build/android/local.properties
 tools/build/android/**/build
 tools/build/android/captures
 tools/build/android/**/.externalNativeBuild
+tools/build/android/mrwebrtc.gradle

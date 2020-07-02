@@ -252,7 +252,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <returns>The list of local video capture devices available to WebRTC.</returns>
         public static Task<List<VideoCaptureDevice>> GetVideoCaptureDevicesAsync()
         {
-            return WebRTC.PeerConnection.GetVideoCaptureDevicesAsync();
+            return DeviceVideoTrackSource.GetCaptureDevicesAsync();
         }
 
         /// <summary>

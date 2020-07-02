@@ -50,7 +50,7 @@ extern "C" jint MRS_JNIEXPORT JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
   // Apparently it seems this was to become the "new way" but got cancelled and
   // the change partially reverted.
   // https://bugs.chromium.org/p/webrtc/issues/detail?id=8067
-  // Now, in addition, when intializing WebRTC from Java/Unity, this is actually
+  // Now, in addition, when initializing WebRTC from Java/Unity, this is actually
   // automatically called from
   // JNI_PeerConnectionFactory_InitializeAndroidGlobals() which is called from
   // Java via the Unity wrapper code in Android.Initialize(), so cannot be

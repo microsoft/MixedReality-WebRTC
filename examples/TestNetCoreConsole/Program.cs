@@ -25,7 +25,7 @@ namespace TestNetCoreConsole
                 bool needAudio = Array.Exists(args, arg => (arg == "-a") || (arg == "--audio"));
 
                 // Asynchronously retrieve a list of available video capture devices (webcams).
-                var deviceList = await PeerConnection.GetVideoCaptureDevicesAsync();
+                var deviceList = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
 
                 // For example, print them to the standard output
                 foreach (var device in deviceList)

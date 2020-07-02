@@ -11,6 +11,46 @@ namespace {
 
 using namespace Microsoft::MixedReality::WebRTC;
 
+/// Convert a WebRTC VideoType format into its FOURCC counterpart.
+uint32_t FourCCFromVideoType(webrtc::VideoType videoType) {
+  switch (videoType) {
+    default:
+    case webrtc::VideoType::kUnknown:
+      return (uint32_t)libyuv::FOURCC_ANY;
+    case webrtc::VideoType::kI420:
+      return (uint32_t)libyuv::FOURCC_I420;
+    case webrtc::VideoType::kIYUV:
+      return (uint32_t)libyuv::FOURCC_IYUV;
+    case webrtc::VideoType::kRGB24:
+      // this seems unintuitive, but is how defined in the core implementation
+      return (uint32_t)libyuv::FOURCC_24BG;
+    case webrtc::VideoType::kABGR:
+      return (uint32_t)libyuv::FOURCC_ABGR;
+    case webrtc::VideoType::kARGB:
+      return (uint32_t)libyuv::FOURCC_ARGB;
+    case webrtc::VideoType::kARGB4444:
+      return (uint32_t)libyuv::FOURCC_R444;
+    case webrtc::VideoType::kRGB565:
+      return (uint32_t)libyuv::FOURCC_RGBP;
+    case webrtc::VideoType::kARGB1555:
+      return (uint32_t)libyuv::FOURCC_RGBO;
+    case webrtc::VideoType::kYUY2:
+      return (uint32_t)libyuv::FOURCC_YUY2;
+    case webrtc::VideoType::kYV12:
+      return (uint32_t)libyuv::FOURCC_YV12;
+    case webrtc::VideoType::kUYVY:
+      return (uint32_t)libyuv::FOURCC_UYVY;
+    case webrtc::VideoType::kMJPEG:
+      return (uint32_t)libyuv::FOURCC_MJPG;
+    case webrtc::VideoType::kNV21:
+      return (uint32_t)libyuv::FOURCC_NV21;
+    case webrtc::VideoType::kNV12:
+      return (uint32_t)libyuv::FOURCC_NV12;
+    case webrtc::VideoType::kBGRA:
+      return (uint32_t)libyuv::FOURCC_BGRA;
+  };
+}
+
 class SimpleMediaConstraints : public webrtc::MediaConstraintsInterface {
  public:
   using webrtc::MediaConstraintsInterface::Constraint;
@@ -221,6 +261,10 @@ ErrorOr<RefPtr<DeviceVideoTrackSource>> DeviceVideoTrackSource::Create(
     return Error(Result::kInvalidOperation);
   }
 
+  rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source;
+
+#if !defined(MR_SHARING_ANDROID)
+
   // Open the video capture device
   std::unique_ptr<cricket::VideoCapturer> video_capturer;
   auto res = OpenVideoCaptureDevice(init_config, video_capturer);
@@ -252,16 +296,90 @@ ErrorOr<RefPtr<DeviceVideoTrackSource>> DeviceVideoTrackSource::Create(
   }
 
   // Create the video track source
-  rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> video_source =
-      pc_factory->CreateVideoSource(std::move(video_capturer),
-                                    videoConstraints.get());
+  video_source = pc_factory->CreateVideoSource(std::move(video_capturer),
+                                               videoConstraints.get());
+
+#else  // !defined(MR_SHARING_ANDROID)
+
+  // Make sure the current thread is attached to the JVM. Since this method
+  // is often called asynchronously (as it takes some time to initialize the
+  // video capture device) it is likely to run on a background worker thread.
+  RTC_DCHECK(webrtc::jni::GetJVM()) << "JavaVM not initialized.";
+  JNIEnv* env = webrtc::jni::AttachCurrentThreadIfNeeded();
+
+  // Create the surface texture helper, which manages the surface texture the
+  // camera renders to.
+  webrtc::ScopedJavaLocalRef<jclass> android_camera_interop_class =
+      webrtc::GetClass(
+          env, "com/microsoft/mixedreality/webrtc/AndroidCameraInterop");
+  RTC_DCHECK(android_camera_interop_class.obj() != nullptr)
+      << "Failed to find AndroidCameraInterop Java class.";
+  jmethodID create_texture_helper_method = webrtc::GetStaticMethodID(
+      env, android_camera_interop_class.obj(), "CreateSurfaceTextureHelper",
+      "()Lorg/webrtc/SurfaceTextureHelper;");
+  jobject texture_helper = env->CallStaticObjectMethod(
+      android_camera_interop_class.obj(), create_texture_helper_method);
+  CHECK_EXCEPTION(env);
+  RTC_DCHECK(texture_helper != nullptr)
+      << "Cannot get the Surface Texture Helper.";
+
+  // Create the video track source which wraps the Android camera capturer
+  rtc::scoped_refptr<webrtc::jni::AndroidVideoTrackSource> impl_source(
+      new rtc::RefCountedObject<webrtc::jni::AndroidVideoTrackSource>(
+          global_factory->GetSignalingThread(), env, false));
+  rtc::scoped_refptr<webrtc::VideoTrackSourceProxy> proxy_source =
+      webrtc::VideoTrackSourceProxy::Create(
+          global_factory->GetSignalingThread(),
+          global_factory->GetWorkerThread(), impl_source);
+
+  int width = 0;
+  if (init_config.width > 0) {
+    width = (int)init_config.width;
+  }
+  int height = 0;
+  if (init_config.height > 0) {
+    height = (int)init_config.height;
+  }
+  float framerate = 0.0f;
+  if (init_config.framerate > 0.0f) {
+    framerate = (float)init_config.framerate;
+  }
+
+  // Create the camera capturer and bind it to the surface texture and the video
+  // source, then start capturing.
+  jmethodID start_capture_method = webrtc::GetStaticMethodID(
+      env, android_camera_interop_class.obj(), "StartCapture",
+      "(JLorg/webrtc/SurfaceTextureHelper;Ljava/lang/String;IIF)Lorg/webrtc/"
+      "VideoCapturer;");
+  jstring java_device_name = env->NewStringUTF(init_config.video_device_id);
+  CHECK_EXCEPTION(env);
+  jobject camera_tmp = env->CallStaticObjectMethod(
+      android_camera_interop_class.obj(), start_capture_method,
+      (jlong)proxy_source.get(), texture_helper, java_device_name, (jint)width,
+      (jint)height, (jfloat)framerate);
+  CHECK_EXCEPTION(env);
+
+  // Java objects created are always returned as local references; create a new
+  // global reference to keep the camera capturer alive.
+  jobject java_video_capturer = (jobject)env->NewGlobalRef(camera_tmp);
+
+  video_source = proxy_source;
+
+#endif  // !defined(MR_SHARING_ANDROID)
+
   if (!video_source) {
+    RTC_LOG(LS_ERROR) << "Failed to create video track source.";
     return Error(Result::kUnknownError);
   }
 
   // Create the wrapper
   RefPtr<DeviceVideoTrackSource> wrapper =
-      new DeviceVideoTrackSource(global_factory, std::move(video_source));
+      new DeviceVideoTrackSource(global_factory, std::move(video_source)
+#if defined(MR_SHARING_ANDROID)
+                                                     ,
+                                 java_video_capturer
+#endif  // defined(MR_SHARING_ANDROID)
+      );
   if (!wrapper) {
     RTC_LOG(LS_ERROR) << "Failed to create device video track source.";
     return Error(Result::kUnknownError);
@@ -269,12 +387,365 @@ ErrorOr<RefPtr<DeviceVideoTrackSource>> DeviceVideoTrackSource::Create(
   return wrapper;
 }
 
+Error DeviceVideoTrackSource::GetVideoCaptureDevices(
+    Callback<const mrsVideoCaptureDeviceInfo*> enum_callback,
+    Callback<mrsResult> end_callback) noexcept {
+#if defined(MR_SHARING_ANDROID)
+  // Make sure the current thread is attached to the JVM. Since this method
+  // is often called asynchronously (as it takes some time to enumerate the
+  // video capture devices) it is likely to run on a background worker thread.
+  RTC_DCHECK(webrtc::jni::GetJVM()) << "JavaVM not initialized.";
+  JNIEnv* const env = webrtc::jni::AttachCurrentThreadIfNeeded();
+
+  // Find the Android camera helper Java class
+  webrtc::ScopedJavaLocalRef<jclass> android_camera_interop_class =
+      webrtc::GetClass(
+          env, "com/microsoft/mixedreality/webrtc/AndroidCameraInterop");
+  RTC_DCHECK(android_camera_interop_class.obj() != nullptr)
+      << "Failed to find AndroidCameraInterop Java class.";
+
+  // Find the video capture device info storage class and its fields
+  webrtc::ScopedJavaLocalRef<jclass> device_info_class = webrtc::GetClass(
+      env, "com/microsoft/mixedreality/webrtc/VideoCaptureDeviceInfo");
+  RTC_DCHECK(device_info_class.obj() != nullptr)
+      << "Failed to find VideoCaptureDeviceInfo Java class.";
+  jfieldID id_field =
+      env->GetFieldID(device_info_class.obj(), "id", "Ljava/lang/String;");
+  CHECK_EXCEPTION(env);
+  jfieldID name_field =
+      env->GetFieldID(device_info_class.obj(), "name", "Ljava/lang/String;");
+  CHECK_EXCEPTION(env);
+
+  // Retrieve the device list
+  jmethodID enum_devices_method = webrtc::GetStaticMethodID(
+      env, android_camera_interop_class.obj(), "GetVideoCaptureDevices",
+      "()[Lcom/microsoft/mixedreality/webrtc/VideoCaptureDeviceInfo;");
+  jobjectArray device_list = (jobjectArray)env->CallStaticObjectMethod(
+      android_camera_interop_class.obj(), enum_devices_method);
+  CHECK_EXCEPTION(env);
+  const jsize num_devices = env->GetArrayLength(device_list);
+  CHECK_EXCEPTION(env);
+  if (num_devices <= 0) {
+    return {};
+  }
+  Enumerator<const mrsVideoCaptureDeviceInfo*, mrsResult> enumerator(
+      enum_callback, end_callback, mrsResult::kSuccess);
+  for (jsize i = 0; i < num_devices; ++i) {
+    jobject java_device_info = env->GetObjectArrayElement(device_list, i);
+    CHECK_EXCEPTION(env);
+    jstring java_id = (jstring)env->GetObjectField(java_device_info, id_field);
+    CHECK_EXCEPTION(env);
+    jstring java_name =
+        (jstring)env->GetObjectField(java_device_info, name_field);
+    CHECK_EXCEPTION(env);
+    const char* native_id = env->GetStringUTFChars(java_id, nullptr);
+    const char* native_name = env->GetStringUTFChars(java_name, nullptr);
+    mrsVideoCaptureDeviceInfo device_info{native_id, native_name};
+    enumerator.yield(&device_info);
+    env->ReleaseStringUTFChars(java_name, native_name);
+    env->ReleaseStringUTFChars(java_id, native_id);
+  }
+  return Error::None();
+#elif defined(WINUWP)
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
+  // The UWP factory needs to be initialized for getDevices() to work.
+  if (!global_factory->GetPeerConnectionFactory()) {
+    RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
+    return Error(Result::kUnknownError);
+  }
+
+  auto vci = wrapper::impl::org::webRtc::VideoCapturer::getDevices();
+  vci->thenClosure([vci, enum_callback, end_callback] {
+    Enumerator<const mrsVideoCaptureDeviceInfo*, mrsResult> enumerator(
+        enum_callback, end_callback, mrsResult::kSuccess);
+    auto deviceList = vci->value();
+    for (auto&& vdi : *deviceList) {
+      auto devInfo =
+          wrapper::impl::org::webRtc::VideoDeviceInfo::toNative_winrt(vdi);
+      auto id = winrt::to_string(devInfo.Id());
+      auto name = winrt::to_string(devInfo.Name());
+      mrsVideoCaptureDeviceInfo device_info{id.c_str(), name.c_str()};
+      enumerator.yield(&device_info);
+    }
+  });
+  return Error::None();
+#else
+  std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
+      webrtc::VideoCaptureFactory::CreateDeviceInfo());
+  if (!info) {
+    RTC_LOG(LS_ERROR) << "Failed to start video capture devices enumeration.";
+    return Error(Result::kUnknownError);
+  }
+  Enumerator<const mrsVideoCaptureDeviceInfo*, mrsResult> enumerator(
+      enum_callback, end_callback, mrsResult::kSuccess);
+  int num_devices = info->NumberOfDevices();
+  for (int i = 0; i < num_devices; ++i) {
+    constexpr uint32_t kSize = 256;
+    char name[kSize] = {0};
+    char id[kSize] = {0};
+    if (info->GetDeviceName(i, name, kSize, id, kSize) != -1) {
+      mrsVideoCaptureDeviceInfo device_info{id, name};
+      enumerator.yield(&device_info);
+    }
+  }
+  return Error::None();
+#endif
+}
+
+Error DeviceVideoTrackSource::GetVideoCaptureFormats(
+    absl::string_view device_id,
+    Callback<const mrsVideoCaptureFormatInfo*> enum_callback,
+    Callback<mrsResult> end_callback) noexcept {
+#if defined(MR_SHARING_ANDROID)
+  // Make sure the current thread is attached to the JVM. Since this method
+  // is often called asynchronously (as it takes some time to enumerate the
+  // video capture devices) it is likely to run on a background worker thread.
+  RTC_DCHECK(webrtc::jni::GetJVM()) << "JavaVM not initialized.";
+  JNIEnv* const env = webrtc::jni::AttachCurrentThreadIfNeeded();
+
+  // Find the Android camera helper Java class
+  webrtc::ScopedJavaLocalRef<jclass> android_camera_interop_class =
+      webrtc::GetClass(
+          env, "com/microsoft/mixedreality/webrtc/AndroidCameraInterop");
+  RTC_DCHECK(android_camera_interop_class.obj() != nullptr)
+      << "Failed to find AndroidCameraInterop Java class.";
+
+  // Find the video capture format info storage class and its fields
+  webrtc::ScopedJavaLocalRef<jclass> format_info_class = webrtc::GetClass(
+      env, "com/microsoft/mixedreality/webrtc/VideoCaptureFormatInfo");
+  RTC_DCHECK(format_info_class.obj() != nullptr)
+      << "Failed to find VideoCaptureFormatInfo Java class.";
+  jfieldID width_field = env->GetFieldID(format_info_class.obj(), "width", "I");
+  CHECK_EXCEPTION(env);
+  jfieldID height_field =
+      env->GetFieldID(format_info_class.obj(), "height", "I");
+  CHECK_EXCEPTION(env);
+  jfieldID framerate_field =
+      env->GetFieldID(format_info_class.obj(), "framerate", "F");
+  CHECK_EXCEPTION(env);
+  jfieldID fourcc_field =
+      env->GetFieldID(format_info_class.obj(), "fourcc", "J");
+  CHECK_EXCEPTION(env);
+
+  // Retrieve the format list
+  jmethodID enum_formats_method = webrtc::GetStaticMethodID(
+      env, android_camera_interop_class.obj(), "GetVideoCaptureFormats",
+      "(Ljava/lang/String;)[Lcom/microsoft/mixedreality/webrtc/"
+      "VideoCaptureFormatInfo;");
+  std::string device_id_null_terminated(device_id.data(), device_id.size());
+  jstring java_device_id = env->NewStringUTF(device_id_null_terminated.c_str());
+  CHECK_EXCEPTION(env);
+  jobjectArray format_list = (jobjectArray)env->CallStaticObjectMethod(
+      android_camera_interop_class.obj(), enum_formats_method, java_device_id);
+  CHECK_EXCEPTION(env);
+  const jsize num_formats = env->GetArrayLength(format_list);
+  CHECK_EXCEPTION(env);
+  if (num_formats <= 0) {
+    return {};
+  }
+  Enumerator<const mrsVideoCaptureFormatInfo*, mrsResult> enumerator(
+      enum_callback, end_callback, mrsResult::kSuccess);
+  for (jsize i = 0; i < num_formats; ++i) {
+    jobject java_format_info = env->GetObjectArrayElement(format_list, i);
+    CHECK_EXCEPTION(env);
+    jint java_width = env->GetIntField(java_format_info, width_field);
+    CHECK_EXCEPTION(env);
+    jint java_height = env->GetIntField(java_format_info, height_field);
+    CHECK_EXCEPTION(env);
+    jfloat java_framerate =
+        env->GetFloatField(java_format_info, framerate_field);
+    CHECK_EXCEPTION(env);
+    uint32_t fourcc =
+        (uint32_t)env->GetLongField(java_format_info, fourcc_field);
+    CHECK_EXCEPTION(env);
+    mrsVideoCaptureFormatInfo format_info{};
+    format_info.width = java_width;
+    format_info.height = java_height;
+    format_info.framerate = java_framerate;
+    format_info.fourcc = fourcc;
+    enumerator.yield(&format_info);
+  }
+  return Error::None();
+#elif defined(WINUWP)
+  RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
+  // The UWP factory needs to be initialized for getDevices() to work.
+  WebRtcFactoryPtr uwp_factory;
+  {
+    mrsResult res = global_factory->GetOrCreateWebRtcFactory(uwp_factory);
+    if (res != Result::kSuccess) {
+      RTC_LOG(LS_ERROR) << "Failed to initialize the UWP factory.";
+      return Error(res);
+    }
+  }
+
+  // On UWP, MediaCapture is used to open the video capture device and list
+  // the available capture formats. This requires the UI thread to be idle,
+  // ready to process messages. Because the enumeration is async, and this
+  // function can return before the enumeration completed, if called on the
+  // main UI thread then defer all of it to a different thread.
+  // auto mw =
+  // winrt::Windows::ApplicationModel::Core::CoreApplication::MainView(); auto
+  // cw = mw.CoreWindow(); auto dispatcher = cw.Dispatcher(); if
+  // (dispatcher.HasThreadAccess()) {
+  //  if (completedCallback) {
+  //    (*completedCallback)(Result::kWrongThread,
+  //    completedCallbackUserData);
+  //  }
+  //  return Result::kWrongThread;
+  //}
+
+  // Keep a copy of the device ID string before the view goes out of scope.
+  auto device_id_ptr =
+      std::make_unique<std::string>(device_id.data(), device_id.size());
+
+  // Enumerate the video capture devices
+  auto asyncResults =
+      winrt::Windows::Devices::Enumeration::DeviceInformation::FindAllAsync(
+          winrt::Windows::Devices::Enumeration::DeviceClass::VideoCapture);
+  asyncResults.Completed([device_id = std::move(device_id_ptr), enum_callback,
+                          end_callback, uwp_factory = std::move(uwp_factory)](
+                             auto&& asyncResults,
+                             winrt::Windows::Foundation::AsyncStatus status) {
+    // If reaching this point, then GetVideoCaptureFormats() will always return
+    // success, so create an RAII enumerator to ensure the end callback is
+    // always called even on error during enumeration.
+    Enumerator<const mrsVideoCaptureFormatInfo*, mrsResult> enumerator(
+        enum_callback, end_callback, mrsResult::kSuccess);
+
+    // If the OS enumeration failed, terminate our own enumeration
+    if (status != winrt::Windows::Foundation::AsyncStatus::Completed) {
+      enumerator.setFailure(Result::kUnknownError);
+      return;
+    }
+    winrt::Windows::Devices::Enumeration::DeviceInformationCollection
+        devInfoCollection = asyncResults.GetResults();
+
+    // Find the video capture device by unique identifier
+    winrt::Windows::Devices::Enumeration::DeviceInformation devInfo(nullptr);
+    for (auto curDevInfo : devInfoCollection) {
+      auto id = winrt::to_string(curDevInfo.Id());
+      if (*device_id != id) {
+        continue;
+      }
+      devInfo = curDevInfo;
+      break;
+    }
+    if (!devInfo) {
+      enumerator.setFailure(Result::kInvalidParameter);
+      return;
+    }
+
+    // Device found, create an instance to enumerate. Most devices require
+    // actually opening the device to enumerate its capture formats.
+    auto createParams =
+        wrapper::org::webRtc::VideoCapturerCreationParameters::wrapper_create();
+    createParams->factory = uwp_factory;
+    createParams->name = devInfo.Name().c_str();
+    createParams->id = devInfo.Id().c_str();
+    auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
+    if (vcd == nullptr) {
+      enumerator.setFailure(Result::kUnknownError);
+      return;
+    }
+
+    // Get its supported capture formats
+    auto captureFormatList = vcd->getSupportedFormats();
+    for (auto&& captureFormat : *captureFormatList) {
+      mrsVideoCaptureFormatInfo format_info{};
+      format_info.width = captureFormat->get_width();
+      format_info.height = captureFormat->get_height();
+      format_info.framerate = captureFormat->get_framerateFloat();
+      format_info.fourcc = captureFormat->get_fourcc();
+      // When VideoEncodingProperties.Subtype() contains a GUID, the
+      // conversion to FOURCC fails and returns FOURCC_ANY. So ignore
+      // those formats, as we don't know their encoding.
+      if (format_info.fourcc != libyuv::FOURCC_ANY) {
+        enumerator.yield(&format_info);
+      }
+    }
+  });
+#else
+  std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
+      webrtc::VideoCaptureFactory::CreateDeviceInfo());
+  if (!info) {
+    return Error(Result::kUnknownError);
+  }
+  Enumerator<const mrsVideoCaptureFormatInfo*, mrsResult> enumerator(
+      enum_callback, end_callback, mrsResult::kSuccess);
+  int num_devices = info->NumberOfDevices();
+  for (int device_idx = 0; device_idx < num_devices; ++device_idx) {
+    // Filter devices by name
+    constexpr uint32_t kSize = 256;
+    char name[kSize] = {0};
+    char id[kSize] = {0};
+    if (info->GetDeviceName(device_idx, name, kSize, id, kSize) == -1) {
+      continue;
+    }
+    if (device_id != id) {
+      continue;
+    }
+
+    // Enum video capture formats
+    int32_t num_capabilities = info->NumberOfCapabilities(id);
+    for (int32_t cap_idx = 0; cap_idx < num_capabilities; ++cap_idx) {
+      webrtc::VideoCaptureCapability capability{};
+      if (info->GetCapability(id, cap_idx, capability) != -1) {
+        mrsVideoCaptureFormatInfo format_info{};
+        format_info.width = capability.width;
+        format_info.height = capability.height;
+        format_info.framerate = (float)capability.maxFPS;
+        format_info.fourcc = FourCCFromVideoType(capability.videoType);
+        // Ignore unknown capture formats
+        if (format_info.fourcc != libyuv::FOURCC_ANY) {
+          enumerator.yield(&format_info);
+        }
+      }
+    }
+
+    break;
+  }
+#endif
+  return Error::None();
+}
+
+#if defined(MR_SHARING_ANDROID)
+
+DeviceVideoTrackSource::DeviceVideoTrackSource(
+    RefPtr<GlobalFactory> global_factory,
+    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source,
+    jobject java_video_capturer) noexcept
+    : VideoTrackSource(std::move(global_factory),
+                       ObjectType::kDeviceVideoTrackSource,
+                       std::move(source)),
+      java_video_capturer_(java_video_capturer) {}
+
+DeviceVideoTrackSource::~DeviceVideoTrackSource() {
+  // Stop video capture and release Java capturer
+  if (java_video_capturer_) {
+    JNIEnv* env = webrtc::jni::GetEnv();
+    RTC_DCHECK(env);
+    webrtc::ScopedJavaLocalRef<jclass> pc_factory_class =
+        webrtc::GetClass(env, "org/webrtc/UnityUtility");
+    jmethodID stop_camera_method =
+        webrtc::GetStaticMethodID(env, pc_factory_class.obj(), "StopCamera",
+                                  "(Lorg/webrtc/VideoCapturer;)V");
+    env->CallStaticVoidMethod(pc_factory_class.obj(), stop_camera_method,
+                              java_video_capturer_);
+    CHECK_EXCEPTION(env);
+    java_video_capturer_ = nullptr;
+  }
+}
+
+#else  // defined(MR_SHARING_ANDROID)
+
 DeviceVideoTrackSource::DeviceVideoTrackSource(
     RefPtr<GlobalFactory> global_factory,
     rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source) noexcept
     : VideoTrackSource(std::move(global_factory),
                        ObjectType::kDeviceVideoTrackSource,
                        std::move(source)) {}
+
+#endif  // defined(MR_SHARING_ANDROID)
 
 }  // namespace WebRTC
 }  // namespace MixedReality
