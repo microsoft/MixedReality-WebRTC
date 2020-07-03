@@ -11,7 +11,4 @@
 
     # Download and setup the Google repository
     Install-GoogleRepository
-
-    # Install additional dependencies
-    Install-Dependencies
 }
