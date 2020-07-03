@@ -1442,6 +1442,25 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.LocalAudioTrackInitConfig.trackName
   fullName: Microsoft.MixedReality.WebRTC.LocalAudioTrackInitConfig.trackName
   nameWithType: LocalAudioTrackInitConfig.trackName
+- uid: Microsoft.MixedReality.WebRTC.LocalMediaTrack
+  name: LocalMediaTrack
+  href: api/Microsoft.MixedReality.WebRTC.LocalMediaTrack.html
+  commentId: T:Microsoft.MixedReality.WebRTC.LocalMediaTrack
+  fullName: Microsoft.MixedReality.WebRTC.LocalMediaTrack
+  nameWithType: LocalMediaTrack
+- uid: Microsoft.MixedReality.WebRTC.LocalMediaTrack.Dispose
+  name: Dispose()
+  href: api/Microsoft.MixedReality.WebRTC.LocalMediaTrack.html#Microsoft_MixedReality_WebRTC_LocalMediaTrack_Dispose
+  commentId: M:Microsoft.MixedReality.WebRTC.LocalMediaTrack.Dispose
+  fullName: Microsoft.MixedReality.WebRTC.LocalMediaTrack.Dispose()
+  nameWithType: LocalMediaTrack.Dispose()
+- uid: Microsoft.MixedReality.WebRTC.LocalMediaTrack.Dispose*
+  name: Dispose
+  href: api/Microsoft.MixedReality.WebRTC.LocalMediaTrack.html#Microsoft_MixedReality_WebRTC_LocalMediaTrack_Dispose_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.LocalMediaTrack.Dispose
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.LocalMediaTrack.Dispose
+  nameWithType: LocalMediaTrack.Dispose
 - uid: Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig
   name: LocalVideoDeviceInitConfig
   href: api/Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig.html
@@ -4372,6 +4391,32 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.MediaKind
   nameWithType: MediaLine.MediaKind
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnAfterDeserialize
+  name: OnAfterDeserialize()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_OnAfterDeserialize
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnAfterDeserialize
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnAfterDeserialize()
+  nameWithType: MediaLine.OnAfterDeserialize()
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnAfterDeserialize*
+  name: OnAfterDeserialize
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_OnAfterDeserialize_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnAfterDeserialize
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnAfterDeserialize
+  nameWithType: MediaLine.OnAfterDeserialize
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnBeforeSerialize
+  name: OnBeforeSerialize()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_OnBeforeSerialize
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnBeforeSerialize
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnBeforeSerialize()
+  nameWithType: MediaLine.OnBeforeSerialize()
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnBeforeSerialize*
+  name: OnBeforeSerialize
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_OnBeforeSerialize_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnBeforeSerialize
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.OnBeforeSerialize
+  nameWithType: MediaLine.OnBeforeSerialize
 - uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.Receiver
   name: Receiver
   href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Receiver
@@ -4437,19 +4482,6 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.Transceiver
   nameWithType: MediaLine.Transceiver
-- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateSenderOnSourceChanged
-  name: UpdateSenderOnSourceChanged()
-  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_UpdateSenderOnSourceChanged
-  commentId: M:Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateSenderOnSourceChanged
-  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateSenderOnSourceChanged()
-  nameWithType: MediaLine.UpdateSenderOnSourceChanged()
-- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateSenderOnSourceChanged*
-  name: UpdateSenderOnSourceChanged
-  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_UpdateSenderOnSourceChanged_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateSenderOnSourceChanged
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateSenderOnSourceChanged
-  nameWithType: MediaLine.UpdateSenderOnSourceChanged
 - uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateTransceiverDesiredDirection
   name: UpdateTransceiverDesiredDirection()
   href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_UpdateTransceiverDesiredDirection

@@ -95,12 +95,13 @@ a local track source.</p>
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.MediaTrack.html">MediaTrack</a></div>
-    <div class="level2"><span class="xref">LocalVideoTrack</span></div>
+    <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalMediaTrack.html">LocalMediaTrack</a></div>
+    <div class="level3"><span class="xref">LocalVideoTrack</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.IVideoTrack.html">IVideoTrack</a></div>
     <div><span class="xref">IDisposable</span></div>
+    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.IVideoTrack.html">IVideoTrack</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -118,7 +119,7 @@ a local track source.</p>
   <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
   <h5 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class LocalVideoTrack : MediaTrack, IVideoTrack, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class LocalVideoTrack : LocalMediaTrack, IDisposable, IVideoTrack</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
@@ -258,12 +259,16 @@ a video transceiver to be attached to a peer connection and transmitted to a rem
   </span>
   <a id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_Dispose_" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_LocalVideoTrack_Dispose" data-uid="Microsoft.MixedReality.WebRTC.LocalVideoTrack.Dispose">Dispose()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Remove the track from the associated <a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.html">Transceiver</a> (if there is one)
+and release the corresponding resources.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+    <pre><code class="lang-csharp hljs">public override void Dispose()</code></pre>
   </div>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.LocalMediaTrack.html#Microsoft_MixedReality_WebRTC_LocalMediaTrack_Dispose">LocalMediaTrack.Dispose()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_LocalVideoTrack_ToString.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.LocalVideoTrack.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -360,10 +365,10 @@ a video transceiver to be attached to a peer connection and transmitted to a rem
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.IVideoTrack.html">IVideoTrack</a>
+      <span class="xref">IDisposable</span>
   </div>
   <div>
-      <span class="xref">IDisposable</span>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.IVideoTrack.html">IVideoTrack</a>
   </div>
 </article>
           </div>

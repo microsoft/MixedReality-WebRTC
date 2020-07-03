@@ -450,7 +450,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioTrack.html",
-          "hash": "4n/NAwtWe15kldj77zH/xQ=="
+          "hash": "7Nf+jHbnK6fdmoXvEjSFFA=="
         }
       },
       "is_incremental": false,
@@ -463,6 +463,18 @@
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioTrackInitConfig.html",
           "hash": "ymVuU+oxk2L28C1Tloly8Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalMediaTrack.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalMediaTrack.html",
+          "hash": "5NSzY82TRKTwQ1LH5NKODg=="
         }
       },
       "is_incremental": false,
@@ -486,7 +498,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html",
-          "hash": "AhvuvbWprecu3Z7EvsHbDQ=="
+          "hash": "EjtFGzqmJoFi/c9HUcSMvA=="
         }
       },
       "is_incremental": false,
@@ -522,7 +534,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.MediaTrack.html",
-          "hash": "mQh7k5170FTHLLe5aWlKKw=="
+          "hash": "hmmi2TfCBWph2pFvI/yTRw=="
         }
       },
       "is_incremental": false,
@@ -1254,7 +1266,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html",
-          "hash": "4MXofpvqyc1SSL9Hh2cc4Q=="
+          "hash": "jaWZvQQq+E2427s8rsdkAQ=="
         }
       },
       "is_incremental": false,
@@ -1542,7 +1554,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "iHiM+MKonrL8hn0Wgsc4WQ=="
+          "hash": "kWdIYxja02oJt9a2AYVp6g=="
         }
       },
       "is_incremental": false,
@@ -1554,7 +1566,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "OEAO90eftz+jZD47CFeqMQ=="
+          "hash": "Fsyk+TLhPZ3ARSJTmoF4Og=="
         }
       },
       "is_incremental": false,
@@ -2827,7 +2839,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 128,
+          "total_file_count": 129,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
