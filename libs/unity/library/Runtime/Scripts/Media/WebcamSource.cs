@@ -326,11 +326,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
             catch (Exception ex)
             {
-                // Disable WebcamSource
-                Debug.LogError("Failed to create video source for WebcamSource component; disabling it.");
-                enabled = false;
-                // Throw again to log the exception message with a callstack
-                throw ex;
+                Debug.LogError($"Failed to create device track source for {nameof(WebcamSource)} component '{name}'.");
+                Debug.LogException(ex, this);
+                return;
             }
 
             IsStreaming = true;

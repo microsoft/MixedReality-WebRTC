@@ -108,11 +108,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
             catch (Exception ex)
             {
-                // Disable MicrophoneSource
-                Debug.LogError("Failed to create audio source for MicrophoneSource component; disabling it.");
-                enabled = false;
-                // Throw again to log the exception message with a callstack
-                throw ex;
+                Debug.LogError($"Failed to create device track source for {nameof(MicrophoneSource)} component '{name}'.");
+                Debug.LogException(ex, this);
+                return;
             }
 
             IsStreaming = true;
