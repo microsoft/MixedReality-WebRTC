@@ -133,13 +133,13 @@ function Install-GoogleRepository {
     $libwebrtcFolder = Join-Path $repoFolder "src" -Resolve
     Set-Location $libwebrtcFolder
     try {
-        Write-TaskStart "Checking out M80 branch, this might take some time..."
-        Invoke-Expression "git checkout branch-heads/3987"
+        Write-TaskStart "Checking out M84 branch, this might take some time..."
+        Invoke-Expression "git checkout branch-heads/4147"
         Write-TaskStart "Synchronizing dependencies, this might take some time..."
-        Invoke-Expression "gclient sync"
+        Invoke-Expression "gclient sync -D -r branch-heads/4147"
     }
     catch {
-        Write-Failure "Failed to checkout M80 branch 'branch-heads/3987'."
+        Write-Failure "Failed to checkout M84 branch 'branch-heads/4147'."
         throw
     }
 
@@ -149,41 +149,19 @@ function Install-GoogleRepository {
     Remove-Item -Path $(Join-Path $externalFolder "depot_tools/external_bin/gsutil" -Resolve) -Force -Recurse | Out-Null
 
     # Apply patches
-    $env:WEBRTCM80_ROOT = $libwebrtcFolder
-    Write-TaskStart "Patching M80 for UWP..."
-    Push-Location "../../winrtc/patches_for_WebRTC_org/m80"
+    $env:WEBRTCM84_ROOT = $libwebrtcFolder
+    Write-TaskStart "Patching M84 for UWP..."
+    Push-Location "../../winrtc/patches_for_WebRTC_org/m84"
     try {
-        & .\patchWebRTCM80.cmd
+        & .\patchWebRTCM84.cmd
     }
     catch {
-        Write-Failure "Failed to apply UWP patches on M80 branch."
+        Write-Failure "Failed to apply UWP patches on M84 branch."
         throw
     }
     Pop-Location
 
     Pop-Location
-}
-
-# Install dependencies
-function Install-Dependencies {
-    Write-TaskStart "Installing dependencies..."
-
-    # Check python
-    try {
-        Get-Command "python" -ErrorAction Stop | Out-Null
-    }
-    catch {
-        Write-Failure "Cannot find Python. Please install from https://www.python.org/."
-        exit 1
-    }
-
-    # Install pywin32
-    # Make sure to use "python -m pip" and not "pip" to ensure that the same
-    # Python version that is used to compile is also used to install. Otherwise
-    # a user might have "pip" in its PATH for a Python version, and "python" for
-    # another one, and install with "pip install" will succeed but import with
-    # the other python version will still fail.
-    Invoke-Expression "python -m pip install pywin32"
 }
 
 # Write the "args.gn" config file to the libwebrtc output folder
@@ -205,7 +183,7 @@ function Write-GnArgs([string]$Platform, [string]$Arch, [string]$Config, [string
         Default { throw "Unknown architecture '$Arch'" }
     }
     switch -Exact ($Config) {
-        "Debug" { 
+        "Debug" {
             $is_debug = "true"
             $config_dir = "debug"
         }
@@ -263,8 +241,14 @@ rtc_build_examples=false
 rtc_enable_protobuf=false
 rtc_enable_external_auth=false
 
+# Disable AV1, does not compile on UWP
+enable_libaom=false
+
 # Use WinRT video capturer for Windows Desktop and UWP
 rtc_win_video_capture_winrt=true
+
+# Use Media Foundation H.264 encoder
+rtc_win_use_mf_h264=true
 "@
         Write-Host -NoNewline "Writing args.gn file to $FileName..."
         # Set-Content doesn't support UTF8NoBOM before PowerShell 6.0
@@ -316,7 +300,7 @@ function Build-Libwebrtc([string]$Platform, [string]$Arch, [string]$Config) {
             Write-TaskStart "Generating build files..."
             Invoke-Expression "gn gen ."
         }
-    
+
         # Build
         Write-TaskStart "Starting build..."
         Invoke-Expression "ninja"

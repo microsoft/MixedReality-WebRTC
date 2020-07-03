@@ -16,10 +16,9 @@ Chromium's `libwebrtc` library underpins MixedReality-WebRTC. Here are the instr
 
    This command automatically:
    - Downloads the Google repository of libwebrtc inside `external/libwebrtc`
-   - Checks out the M80 branch
+   - Checks out the M84 branch
    - Applies the UWP patches from [WinRTC](https://github.com/microsoft/winrtc) to allow building on UWP
    - Synchronizes dependencies (`gclient sync`)
-   - Makes sure Python is installed, and install the `pywin32` module
 
 4. For each build variant needed, run the build script `build.ps1` with the appropriate arguments. This command automatically does all steps necessary to build `webrtc.lib` from the existing checkout performed in step 3. above:
    - Create the output folder in `external/libwebrtc/src/out/[win|winuwp]/[x86|x64|arm64]/[debug|release]`

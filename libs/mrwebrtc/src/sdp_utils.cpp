@@ -117,10 +117,10 @@ std::string SdpForceCodecs(
   // Remove codecs not wanted, add extra parameters if needed
   {
     // Loop over the session contents to find the audio and video ones
-    const cricket::SessionDescription* const desc = jdesc.description();
-    const cricket::ContentInfos& contents = desc->contents();
+    cricket::SessionDescription* const desc = jdesc.description();
+    cricket::ContentInfos& contents = desc->contents();
     for (auto&& content : contents) {
-      cricket::MediaContentDescription* media_desc = content.description;
+      cricket::MediaContentDescription* const media_desc = content.media_description();
       switch (media_desc->type()) {
         case cricket::MediaType::MEDIA_TYPE_AUDIO:
           // Only try modify the audio codecs if asked for
