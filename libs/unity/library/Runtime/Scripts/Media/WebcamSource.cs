@@ -316,10 +316,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 enableMrc = EnableMixedRealityCapture,
                 enableMrcRecordingIndicator = EnableMRCRecordingIndicator
             };
-            Source = await DeviceVideoTrackSource.CreateAsync(deviceConfig);
-            if (Source == null)
+            try
             {
-                throw new Exception("Failed ot create webcam video source.");
+                Source = await DeviceVideoTrackSource.CreateAsync(deviceConfig);
+                if (Source == null)
+                {
+                    throw new Exception("DeviceVideoTrackSource.CreateAsync() returned a NULL source.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to create device track source for {nameof(WebcamSource)} component '{name}'.");
+                Debug.LogException(ex, this);
+                return;
             }
 
             IsStreaming = true;
