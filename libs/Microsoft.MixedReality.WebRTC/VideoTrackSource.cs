@@ -51,6 +51,9 @@ namespace Microsoft.MixedReality.WebRTC
         public IReadOnlyList<LocalVideoTrack> Tracks => _tracks;
 
         /// <inheritdoc/>
+        public abstract VideoEncoding FrameEncoding { get; }
+
+        /// <inheritdoc/>
         public event I420AVideoFrameDelegate I420AVideoFrameReady
         {
             add

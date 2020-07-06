@@ -123,6 +123,9 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
+        /// <inheritdoc/>
+        public VideoEncoding FrameEncoding => Source.FrameEncoding;
+
         /// <summary>
         /// Event that occurs when a video frame has been produced by the underlying source and is available.
         /// </summary>

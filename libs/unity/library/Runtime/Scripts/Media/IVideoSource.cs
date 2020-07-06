@@ -19,22 +19,4 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     [Serializable]
     public class VideoStreamStoppedEvent : UnityEvent<IVideoSource>
     { };
-
-    /// <summary>
-    /// Enumeration of video encodings.
-    /// </summary>
-    public enum VideoEncoding
-    {
-        /// <summary>
-        /// I420A video encoding with chroma (UV) halved in both directions (4:2:0),
-        /// and optional Alpha plane.
-        /// </summary>
-        I420A,
-
-        /// <summary>
-        /// 32-bit ARGB32 video encoding with 8-bit per component, encoded as uint32 little-endian
-        /// 0xAARRGGBB value, or equivalently (B,G,R,A) in byte order.
-        /// </summary>
-        Argb32
-    }
 }

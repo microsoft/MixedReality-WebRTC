@@ -31,6 +31,9 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <inheritdoc/>
+        public VideoEncoding FrameEncoding => VideoEncoding.I420A;
+
+        /// <inheritdoc/>
         public event I420AVideoFrameDelegate I420AVideoFrameReady;
 
         /// <inheritdoc/>

@@ -21,20 +21,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     [AddComponentMenu("MixedReality-WebRTC/Video Renderer")]
     public class VideoRenderer : MonoBehaviour
     {
-        ///// <summary>
-        ///// Video frame source producing the frames to render. The concrete class must implement <see cref="IVideoSource"/>.
-        ///// </summary>
-        ///// <remarks>
-        ///// Here what we really want is to serialize some reference to an <see cref="IVideoSource"/>.
-        ///// Unfortunately Unity before 2019.3 does not support serialized interfaces, and more generally ignores
-        ///// polymorphism in serialization. And although there are ways to make that work with a custom inspector,
-        ///// this disables support for object picker, so only drag-and-drop works, which is very impractical.
-        ///// So we use a base class derived from MonoBehaviour, which is the only entity for which Unity handles
-        ///// polymorphism.
-        ///// </remarks>
-        //[SerializeField]
-        //protected MonoBehaviour Source; //< FIXME
-
         [Tooltip("Max playback framerate, in frames per second")]
         [Range(0.001f, 120f)]
         public float MaxFramerate = 30f;
@@ -92,15 +78,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private ProfilerMarker loadTextureDataMarker = new ProfilerMarker("LoadTextureData");
         private ProfilerMarker uploadTextureToGpuMarker = new ProfilerMarker("UploadTextureToGPU");
 
-        //private void OnValidate()
-        //{
-        //    // Ensure that Source implements IVideoSource
-        //    if (!(Source is IVideoSource))
-        //    {
-        //        Source = null;
-        //    }
-        //}
-
         private void Start()
         {
             CreateEmptyVideoTextures();
@@ -142,24 +119,23 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             //}
         }
 
-        public void StartRendering(IVideoSource track)
+        public void StartRendering(IVideoSource source)
         {
-            bool isRemote = (track is RemoteVideoTrack);
+            bool isRemote = (source is RemoteVideoTrack);
             int frameQueueSize = (isRemote ? 5 : 3);
 
-            // TODO move FrameEncoding to tracks
-            //switch (videoSrc.FrameEncoding)
-            //{
-            //case VideoEncoding.I420A:
-                _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(frameQueueSize);
-                track.I420AVideoFrameReady += I420AVideoFrameReady;
-            //    break;
+            switch (source.FrameEncoding)
+            {
+                case VideoEncoding.I420A:
+                    _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(frameQueueSize);
+                    source.I420AVideoFrameReady += I420AVideoFrameReady;
+                    break;
 
-            //case VideoEncoding.Argb32:
-            //    _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(frameQueueSize);
-            //    videoSrc.RegisterCallback(Argb32VideoFrameReady);
-            //    break;
-            //}
+                case VideoEncoding.Argb32:
+                    _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(frameQueueSize);
+                    source.Argb32VideoFrameReady += Argb32VideoFrameReady;
+                    break;
+            }
         }
 
         public void StopRendering(IVideoSource _)
