@@ -59,31 +59,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Internal callback invoked when the receiver is paired with a media track.
         /// </summary>
         /// <param name="track">The media track this receiver is paired with.</param>
-        protected internal abstract void OnPaired(MediaTrack track);
+        protected internal virtual void OnPaired(MediaTrack track) { }
 
         /// <summary>
         /// Internal callback invoked when the receiver is unpaired from a media track.
         /// </summary>
         /// <param name="track">The media track this receiver was paired with.</param>
-        protected internal abstract void OnUnpaired(MediaTrack track);
-
-        /// <summary>
-        /// Internal callback invoked when the receiver is attached to a transceiver created
-        /// just before the peer connection creates an SDP offer.
-        /// </summary>
-        /// <param name="transceiver">The transceiver this receiver is attached with.</param>
-        /// <remarks>
-        /// At this time the transceiver does not yet contain a remote track. The remote track will be
-        /// created when receiving an answer from the remote peer, if it agreed to send media data through
-        /// that transceiver, and <see cref="OnPaired"/> will be invoked at that time.
-        /// </remarks>
-        protected internal virtual void AttachToTransceiver(Transceiver transceiver) {}
-
-        /// <summary>
-        /// Internal callback invoked when the receiver is detached from a transceiver about to be
-        /// destroyed by the native implementation.
-        /// </summary>
-        /// <param name="transceiver">The transceiver this receiver is attached with.</param>
-        protected internal virtual void DetachFromTransceiver(Transceiver transceiver) {}
+        protected internal virtual void OnUnpaired(MediaTrack track) { }
     }
 }

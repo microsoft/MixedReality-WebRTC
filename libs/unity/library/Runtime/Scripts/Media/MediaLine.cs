@@ -435,17 +435,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // components can be assigned to the media line later, and therefore will
             // need to be updated on the next offer even if that is not the first one.
             bool wantsSend = (Source != null);
-            bool wantsRecv = (Receiver != null);
             if (wantsSend)
             {
                 if (_senderTrack == null)
                 {
                     CreateSender();
                 }
-            }
-            if (wantsRecv)
-            {
-                _receiver.AttachToTransceiver(Transceiver);
             }
         }
 
@@ -455,14 +450,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // and not user intended state. So this deal naturally with inactive sources,
             // since a sender was not created in that case.
             bool wasSending = (_senderTrack != null);
-            bool wasReceiving = (Receiver != null);
             if (wasSending)
             {
                 DestroySender();
-            }
-            if (wasReceiving)
-            {
-                _receiver.DetachFromTransceiver(Transceiver);
             }
         }
 
