@@ -126,19 +126,57 @@ using mrsDeviceAudioTrackSourceHandle = mrsAudioTrackSourceHandle;
 // Video capture enumeration
 //
 
-/// Callback invoked for each enumerated video capture device.
-using mrsVideoCaptureDeviceEnumCallback = void(MRS_CALL*)(const char* id,
-                                                          const char* name,
-                                                          void* user_data);
+/// Video capture device info.
+struct mrsVideoCaptureDeviceInfo {
+  // Unique identifier of the capture device, used to start capture.
+  const char* id;
 
-/// Callback invoked on video capture device enumeration completed.
+  // Optional friendly name of the capture device, for UI display. If the device
+  // does not have a friendly name, the implementation returns the same value as
+  // |id|, to ensure this value is not an emtpy string.
+  const char* name;
+};
+
+/// Video capture format info.
+struct mrsVideoCaptureFormatInfo {
+  // Capture width, in pixels.
+  uint32_t width;
+
+  // Capture height, in pixels.
+  uint32_t height;
+
+  // Maximum capture framerate, in frames per seconds. Video capture devices
+  // commonly have adaptive framerate based on luminosity, and this value
+  // reports the maximum framerate the device supports.
+  float framerate;
+
+  // Capture format as a FOURCC code.
+  // https://docs.microsoft.com/en-us/windows/win32/medfound/video-fourccs
+  uint32_t fourcc;
+};
+
+/// Callback invoked for each enumerated video capture device.
+using mrsVideoCaptureDeviceEnumCallback = void(
+    MRS_CALL*)(void* user_data, const mrsVideoCaptureDeviceInfo* device_info);
+
+/// Callback invoked on video capture device enumeration completed. If the
+/// result is not |mrsResult::kSuccess| then some or all of the devices might
+/// not have been enumerated.
 using mrsVideoCaptureDeviceEnumCompletedCallback =
-    void(MRS_CALL*)(void* user_data);
+    void(MRS_CALL*)(void* user_data, mrsResult result);
 
 /// Enumerate the video capture devices asynchronously.
-/// For each device found, invoke the mandatory |callback|.
-/// At the end of the enumeration, invoke the optional |completedCallback| if it
-/// was provided (non-null).
+///
+/// If the enumeration starts successfully, that is the function returns
+/// |mrsResult::kSuccess|, then for each device found the implementation invokes
+/// the mandatory |enumCallback|. At the end of the enumeration, it invokes the
+/// optional |completedCallback| if it was provided (non-null). Note that those
+/// calls are asynchonous and not necessarily done before
+/// |mrsEnumVideoCaptureDevicesAsync()| returned.
+///
+/// If the enumeration fails to start, the function returns an error code; in
+/// that case no callback is invoked.
+///
 /// On UWP this must *not* be called from the main UI thread, otherwise a
 /// |mrsResult::kWrongThread| error might be returned.
 MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
@@ -148,20 +186,27 @@ MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     void* completedCallbackUserData) noexcept;
 
 /// Callback invoked for each enumerated video capture format.
-using mrsVideoCaptureFormatEnumCallback = void(MRS_CALL*)(uint32_t width,
-                                                          uint32_t height,
-                                                          double framerate,
-                                                          uint32_t encoding,
-                                                          void* user_data);
+using mrsVideoCaptureFormatEnumCallback = void(
+    MRS_CALL*)(void* user_data, const mrsVideoCaptureFormatInfo* format_info);
 
-/// Callback invoked on video capture format enumeration completed.
+/// Callback invoked on video capture format enumeration completed. If the
+/// result is not |mrsResult::kSuccess| then some or all of the device formats
+/// might not have been enumerated.
 using mrsVideoCaptureFormatEnumCompletedCallback =
-    void(MRS_CALL*)(mrsResult result, void* user_data);
+    void(MRS_CALL*)(void* user_data, mrsResult result);
 
 /// Enumerate the video capture formats asynchronously.
-/// For each device found, invoke the mandatory |callback|.
-/// At the end of the enumeration, invoke the optional |completedCallback| if it
-/// was provided (non-null).
+///
+/// If the enumeration starts successfully, that is the function returns
+/// |mrsResult::kSuccess|, then for each format found the implementation invokes
+/// the mandatory |enumCallback|. At the end of the enumeration, it invokes the
+/// optional |completedCallback| if it was provided (non-null). Note that those
+/// calls are asynchonous and not necessarily done before
+/// |mrsEnumVideoCaptureFormatsAsync()| returned.
+///
+/// If the enumeration fails to start, the function returns an error code; in
+/// that case no callback is invoked.
+///
 /// On UWP this must *not* be called from the main UI thread, otherwise a
 /// |mrsResult::kWrongThread| error might be returned.
 MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(

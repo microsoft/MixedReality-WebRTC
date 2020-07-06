@@ -56,6 +56,7 @@ ArgbBuffer* VideoFrameObserver::GetArgbScratchBuffer(int width, int height) {
   const size_t needed_size = Argb32FrameSize(width, height);
   if (auto* buffer = argb_scratch_buffer_.get()) {
     if (buffer->Size() >= needed_size) {
+      buffer->Recycle(width, height);  // Update stride
       return buffer;
     }
   }

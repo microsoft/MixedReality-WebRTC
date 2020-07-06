@@ -42,12 +42,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Source != null)
             {
-                // Notify media lines using that source. OnSourceDestroyed() calls
-                // OnMediaLineRemoved() which will modify the collection.
-                while (_mediaLines.Count > 0)
+                // Notify media lines using this source.
+                foreach (var ml in _mediaLines)
                 {
-                    _mediaLines[_mediaLines.Count - 1].OnSourceDestroyed();
+                    ml.OnSourceDestroyed();
                 }
+                _mediaLines.Clear();
 
                 // Audio track sources are disposable objects owned by the user (this component)
                 Source.Dispose();

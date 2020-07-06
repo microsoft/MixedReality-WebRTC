@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
@@ -25,7 +27,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public string Name { get; }
 
-        internal MediaTrack(PeerConnection peer, string trackName)
+        private protected MediaTrack(PeerConnection peer, string trackName)
         {
             PeerConnection = peer;
             Name = trackName;
@@ -38,5 +40,22 @@ namespace Microsoft.MixedReality.WebRTC
         {
             return $"(MediaTrack)\"{Name}\"";
         }
+    }
+
+    /// <summary>
+    /// Base class for media tracks sending to the remote peer.
+    /// </summary>
+    public abstract class LocalMediaTrack : MediaTrack, IDisposable
+    {
+        private protected LocalMediaTrack(PeerConnection peer, string trackName)
+            : base(peer, trackName)
+        {
+        }
+
+        /// <summary>
+        /// Remove the track from the associated <see cref="Transceiver"/> (if there is one)
+        /// and release the corresponding resources.
+        /// </summary>
+        public abstract void Dispose();
     }
 }

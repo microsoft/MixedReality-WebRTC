@@ -36,6 +36,7 @@ add_library(
         SHARED
         ${mr-webrtc-native-dir}/src/interop/audio_track_source_interop.cpp
         ${mr-webrtc-native-dir}/src/interop/data_channel_interop.cpp
+        ${mr-webrtc-native-dir}/src/interop/device_audio_track_source_interop.cpp
         ${mr-webrtc-native-dir}/src/interop/device_video_track_source_interop.cpp
         ${mr-webrtc-native-dir}/src/interop/external_video_track_source_interop.cpp
         ${mr-webrtc-native-dir}/src/interop/global_factory.cpp
@@ -51,6 +52,7 @@ add_library(
         ${mr-webrtc-native-dir}/src/interop/video_track_source_interop.cpp
         ${mr-webrtc-native-dir}/src/media/audio_track_read_buffer.cpp
         ${mr-webrtc-native-dir}/src/media/audio_track_source.cpp
+        ${mr-webrtc-native-dir}/src/media/device_audio_track_source.cpp
         ${mr-webrtc-native-dir}/src/media/device_video_track_source.cpp
         ${mr-webrtc-native-dir}/src/media/external_video_track_source.cpp
         ${mr-webrtc-native-dir}/src/media/local_audio_track.cpp

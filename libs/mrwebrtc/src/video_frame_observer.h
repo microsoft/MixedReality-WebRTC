@@ -29,22 +29,40 @@ constexpr inline size_t Argb32FrameSize(int width, int height) {
   return (static_cast<size_t>(height) * width) * 4;
 }
 
-// Plain 32-bit ARGB buffer in standard memory.
+/// Plain 32-bit ARGB buffer in standard memory.
 class ArgbBuffer : public webrtc::VideoFrameBuffer {
  public:
-  // Create a new buffer with enough storage for a frame with the given
-  // width and height in pixels.
+  /// Create a new buffer with enough storage for a frame with the given width
+  /// and height in pixels.
   static inline rtc::scoped_refptr<ArgbBuffer> Create(int width, int height) {
     return new rtc::RefCountedObject<ArgbBuffer>(width, height, width * 4);
   }
 
-  // Create a new buffer with enough storage for a frame with the given
-  // width and height in pixels, with explicit stride.
+  /// Create a new buffer with enough storage for a frame with the given width
+  /// and height in pixels, with explicit stride.
   static inline rtc::scoped_refptr<ArgbBuffer> Create(int width,
                                                       int height,
                                                       int stride) {
     RTC_CHECK_GE(stride, width * 4);
     return new rtc::RefCountedObject<ArgbBuffer>(width, height, stride);
+  }
+
+  /// Recycle the current buffer for a frame which fits in it (frame size less
+  /// than or equal to buffer storage size) but has different dimensions. This
+  /// recalculate the strides without performing any allocation.
+  void Recycle(int width, int height) noexcept {
+    Recycle(width, height, width * 4);
+  }
+
+  /// Recycle the current buffer for a frame which fits in it (frame size less
+  /// than or equal to buffer storage size) but has different dimensions. This
+  /// recalculate the strides without performing any allocation.
+  void Recycle(int width, int height, int stride) noexcept {
+    RTC_CHECK_GE(stride, width * 4);
+    RTC_CHECK(static_cast<size_t>(height) * stride <= Size());
+    width_ = width;
+    height_ = height;
+    stride_ = stride;
   }
 
   //// Create a new buffer and copy the pixel data.
@@ -84,13 +102,13 @@ class ArgbBuffer : public webrtc::VideoFrameBuffer {
 
  private:
   /// Frame width, in pixels.
-  const int width_;
+  int width_;
 
   /// Frame height, in pixels.
-  const int height_;
+  int height_;
 
   /// Row stride, in pixels. This is always >= (4 * width_).
-  const int stride_;
+  int stride_;
 
   /// Raw buffer of ARGB32 data for the frame.
   const std::unique_ptr<uint8_t, webrtc::AlignedFreeDeleter> data_;

@@ -29,7 +29,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// Audio track sending to the remote peer audio frames originating from
     /// a local track source (local microphone or other audio recording device).
     /// </summary>
-    public class LocalAudioTrack : MediaTrack, IAudioTrack, IDisposable
+    public class LocalAudioTrack : LocalMediaTrack, IAudioTrack
     {
         /// <summary>
         /// Enabled status of the track. If enabled, send local audio frames to the remote peer as
@@ -170,7 +170,7 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <inheritdoc/>
-        public void Dispose()
+        public override void Dispose()
         {
             if (_nativeHandle.IsClosed)
             {

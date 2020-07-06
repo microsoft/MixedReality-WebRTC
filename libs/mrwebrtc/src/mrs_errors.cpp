@@ -17,6 +17,10 @@ Error Error::OK() {
   return Error();
 }
 
+Error Error::None() {
+  return Error();
+}
+
 const char* Error::message() const {
   return message_.c_str();
 }

@@ -95,7 +95,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// Video track sending to the remote peer video frames originating from
     /// a local track source.
     /// </summary>
-    public class LocalVideoTrack : MediaTrack, IVideoTrack, IDisposable
+    public class LocalVideoTrack : LocalMediaTrack, IVideoTrack
     {
         /// <summary>
         /// Video track source this track is pulling its video frames from.
@@ -154,7 +154,7 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Create a video track from an existing video track source.
-        /// 
+        ///
         /// This does not add the track to any peer connection. Instead, the track must be added manually to
         /// a video transceiver to be attached to a peer connection and transmitted to a remote peer.
         /// </summary>
@@ -231,7 +231,7 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <inheritdoc/>
-        public void Dispose()
+        public override void Dispose()
         {
             if (_nativeHandle.IsClosed)
             {

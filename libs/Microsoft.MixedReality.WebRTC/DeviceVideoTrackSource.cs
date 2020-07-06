@@ -3,7 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC.Interop;
 using Microsoft.MixedReality.WebRTC.Tracing;
@@ -75,7 +76,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <remarks>
         /// This is compared by strict equality, so is best left unspecified or to an exact value
-        /// retrieved by <see cref="PeerConnection.GetVideoCaptureFormatsAsync"/>.
+        /// retrieved by <see cref="DeviceVideoTrackSource.GetCaptureFormatsAsync"/>.
         /// </remarks>
         public double? framerate;
     }
@@ -85,6 +86,134 @@ namespace Microsoft.MixedReality.WebRTC
     /// </summary>
     public class DeviceVideoTrackSource : VideoTrackSource
     {
+        /// <summary>
+        /// Get the list of video capture devices available on the local host machine.
+        /// </summary>
+        /// <returns>The list of available video capture devices.</returns>
+        /// <remarks>
+        /// Assign one of the returned <see cref="VideoCaptureDevice"/> to the <see cref="LocalVideoDeviceInitConfig.videoDevice"/>
+        /// field to force a local video track to use that device when creating it with
+        /// <see cref="CreateAsync(LocalVideoDeviceInitConfig)"/>.
+        /// </remarks>
+        public static Task<List<VideoCaptureDevice>> GetCaptureDevicesAsync()
+        {
+            // Ensure the logging system is ready before using PInvoke.
+            MainEventSource.Log.Initialize();
+
+            // Always call this on a background thread, this is possibly the first call to the library so needs
+            // to initialize the global factory, and that cannot be done from the main UI thread on UWP.
+            return Task.Run(() =>
+            {
+                var devices = new List<VideoCaptureDevice>();
+                var eventWaitHandle = new ManualResetEventSlim(initialState: false);
+                Exception resultException = null;
+                var wrapper = new DeviceVideoTrackSourceInterop.EnumVideoCaptureDeviceWrapper()
+                {
+                    enumCallback = (in VideoCaptureDevice device) => devices.Add(device),
+                    completedCallback = (Exception ex) =>
+                    {
+                        resultException = ex;
+
+                        // On enumeration end, signal the caller thread
+                        eventWaitHandle.Set();
+                    },
+                    // Keep delegates alive
+                    EnumTrampoline = DeviceVideoTrackSourceInterop.VideoCaptureDevice_EnumCallback,
+                    CompletedTrampoline = DeviceVideoTrackSourceInterop.VideoCaptureDevice_EnumCompletedCallback
+                };
+
+                // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
+                var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
+                IntPtr userData = GCHandle.ToIntPtr(handle);
+
+                // Execute the native async callback
+                uint res = DeviceVideoTrackSourceInterop.EnumVideoCaptureDevicesAsync(
+                    wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
+                if (res != Utils.MRS_SUCCESS)
+                {
+                    resultException = Utils.GetExceptionForErrorCode(res);
+                }
+                else
+                {
+                    // Wait for end of enumerating
+                    eventWaitHandle.Wait();
+                }
+
+                // Clean-up and release the wrapper delegates
+                handle.Free();
+
+                if (resultException != null)
+                {
+                    throw resultException;
+                }
+
+                return devices;
+            });
+        }
+
+        /// <summary>
+        /// Enumerate the video capture formats for the specified video capture device.
+        /// </summary>
+        /// <param name="deviceId">Unique identifier of the video capture device to enumerate the
+        /// capture formats of, as retrieved from the <see cref="VideoCaptureDevice.id"/> field of
+        /// a capture device enumerated with <see cref="GetCaptureDevicesAsync"/>.</param>
+        /// <returns>The list of available video capture formats for the specified video capture device.</returns>
+        public static Task<List<VideoCaptureFormat>> GetCaptureFormatsAsync(string deviceId)
+        {
+            // Ensure the logging system is ready before using PInvoke.
+            MainEventSource.Log.Initialize();
+
+            // Always call this on a background thread, this is possibly the first call to the library so needs
+            // to initialize the global factory, and that cannot be done from the main UI thread on UWP.
+            return Task.Run(() =>
+            {
+                var formats = new List<VideoCaptureFormat>();
+                var eventWaitHandle = new ManualResetEventSlim(initialState: false);
+                Exception resultException = null;
+                var wrapper = new DeviceVideoTrackSourceInterop.EnumVideoCaptureFormatsWrapper()
+                {
+                    enumCallback = (in VideoCaptureFormat format) => formats.Add(format),
+                    completedCallback = (Exception ex) =>
+                    {
+                        resultException = ex;
+
+                        // On enumeration end, signal the caller thread
+                        eventWaitHandle.Set();
+                    },
+                    // Keep delegates alive
+                    EnumTrampoline = DeviceVideoTrackSourceInterop.VideoCaptureFormat_EnumCallback,
+                    CompletedTrampoline = DeviceVideoTrackSourceInterop.VideoCaptureFormat_EnumCompletedCallback
+                };
+
+                // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
+                var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
+                IntPtr userData = GCHandle.ToIntPtr(handle);
+
+                // Execute the native async callback.
+                uint res = DeviceVideoTrackSourceInterop.EnumVideoCaptureFormatsAsync(deviceId,
+                    wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
+                if (res != Utils.MRS_SUCCESS)
+                {
+                    resultException = Utils.GetExceptionForErrorCode(res);
+                }
+                else
+                {
+                    // Wait for end of enumerating
+                    eventWaitHandle.Wait();
+                }
+
+                // Clean-up and release the wrapper delegates
+                handle.Free();
+
+                if (resultException != null)
+                {
+                    throw resultException;
+                }
+
+                return formats;
+            });
+        }
+
         /// <summary>
         /// Create a video track source using a local video capture device (webcam).
         /// 
@@ -116,10 +245,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// 
         /// Note that the capture device must support a capture format with the given constraints of profile
         /// ID or kind, capture resolution, and framerate, otherwise the call will fail. That is, there is no
-        /// fallback mechanism selecting a closest match. Developers should use
-        /// <see cref="PeerConnection.GetVideoCaptureFormatsAsync(string)"/> to list the supported formats ahead
-        /// of calling <see cref="CreateAsync(LocalVideoDeviceInitConfig)"/>, and can build their own
-        /// fallback mechanism on top of this call if needed.
+        /// fallback mechanism selecting a closest match. Developers should use <see cref="GetCaptureFormatsAsync(string)"/>
+        /// to list the supported formats ahead of calling <see cref="CreateAsync(LocalVideoDeviceInitConfig)"/>, and can
+        /// build their own fallback mechanism on top of this call if needed.
         /// </remarks>
         /// <example>
         /// Create a video track source with Mixed Reality Capture (MRC) enabled.
@@ -149,6 +277,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// <seealso cref="LocalVideoTrack.CreateFromSource(VideoTrackSource, LocalVideoTrackInitConfig)"/>
         public static Task<DeviceVideoTrackSource> CreateAsync(LocalVideoDeviceInitConfig initConfig = null)
         {
+            // Ensure the logging system is ready before using PInvoke.
+            MainEventSource.Log.Initialize();
+
             return Task.Run(() =>
             {
                 // On UWP this cannot be called from the main UI thread, so always call it from

@@ -20,18 +20,14 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         /// any device then its ID and name are not empty.
         /// </summary>
         [Test]
-        public void EnumVideoDevices()
+        public async void EnumVideoDevices()
         {
-            PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((enumTask) =>
+            List<VideoCaptureDevice> devices = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
+            foreach (var device in devices)
             {
-                Assert.IsNull(enumTask.Exception);
-                List<VideoCaptureDevice> devices = enumTask.Result;
-                foreach (var device in devices)
-                {
-                    Assert.That(device.id.Length, Is.GreaterThan(0));
-                    Assert.That(device.name.Length, Is.GreaterThan(0));
-                }
-            });
+                Assert.That(device.id.Length, Is.GreaterThan(0));
+                Assert.That(device.name.Length, Is.GreaterThan(0));
+            }
         }
 
         /// <summary>
@@ -39,32 +35,23 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         /// GetVideoCaptureFormatsAsync() returns some valid formats.
         /// </summary>
         [Test]
-        public void EnumVideoFormats()
+        public async void EnumVideoFormats()
         {
-            PeerConnection.GetVideoCaptureDevicesAsync().ContinueWith((enumDeviceTask) =>
+            List<VideoCaptureDevice> devices = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
+            if (devices.Count == 0)
             {
-                Assert.IsNull(enumDeviceTask.Exception);
-                List<VideoCaptureDevice> devices = enumDeviceTask.Result;
-                if (devices.Count == 0)
+                Assert.Inconclusive("Host device has no available video capture device.");
+            }
+            foreach (var device in devices)
+            {
+                List<VideoCaptureFormat> formats = await DeviceVideoTrackSource.GetCaptureFormatsAsync(device.id);
+                foreach (var format in formats)
                 {
-                    Assert.Inconclusive("Host device has no available video capture device.");
+                    Assert.That(format.width, Is.GreaterThan(0));
+                    Assert.That(format.height, Is.GreaterThan(0));
+                    Assert.That(format.framerate, Is.GreaterThan(0.0));
                 }
-
-                foreach (var device in devices)
-                {
-                    PeerConnection.GetVideoCaptureFormatsAsync(device.id).ContinueWith((enumFormatTask) =>
-                    {
-                        Assert.IsNull(enumFormatTask.Exception);
-                        List<VideoCaptureFormat> formats = enumFormatTask.Result;
-                        foreach (var format in formats)
-                        {
-                            Assert.That(format.width, Is.GreaterThan(0));
-                            Assert.That(format.height, Is.GreaterThan(0));
-                            Assert.That(format.framerate, Is.GreaterThan(0.0));
-                        }
-                    });
-                }
-            });
+            }
         }
     }
 }

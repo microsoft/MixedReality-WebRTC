@@ -68,6 +68,12 @@
 #include "modules/video_capture/video_capture_factory.h"
 #include "rtc_base/bind.h"
 #include "rtc_base/memory/aligned_malloc.h"
+#if defined(MR_SHARING_ANDROID)
+#include "sdk/android/native_api/jni/class_loader.h"
+#include "modules/utility/include/helpers_android.h"
+#include "sdk/android/src/jni/androidvideotracksource.h"
+#include "sdk/android/src/jni/jni_helpers.h"
+#endif
 
 // libyuv from WebRTC repository for color conversion
 #include "libyuv.h"
