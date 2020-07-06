@@ -142,7 +142,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             //}
         }
 
-        public void VideoStreamStarted(IVideoTrack track)
+        public void StartRendering(IVideoTrack track)
         {
             bool isRemote = (track is RemoteVideoTrack);
             int frameQueueSize = (isRemote ? 5 : 3);
@@ -162,7 +162,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             //}
         }
 
-        public void VideoStreamStopped(IVideoTrack _)
+        public void StopRendering(IVideoTrack _)
         {
             // Clear the video display to not confuse the user who could otherwise
             // think that the video is still playing but is lagging/frozen.

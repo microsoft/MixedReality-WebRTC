@@ -65,7 +65,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        public void StartStreaming(IAudioTrack source)
+        public void StartRendering(IAudioTrack source)
         {
             Debug.Assert(_source == null);
             _source = source;
@@ -76,7 +76,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        public void StopStreaming(IAudioTrack source)
+        public void StopRendering(IAudioTrack source)
         {
             Debug.Assert(_source == source);
             if (isActiveAndEnabled)
