@@ -352,7 +352,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private void CreateSenderIfNeeded()
         {
-            if (_senderTrack == null && _source.isActiveAndEnabled)
+            if (_senderTrack == null && _source != null)
             {
                 if (MediaKind == MediaKind.Audio)
                 {
