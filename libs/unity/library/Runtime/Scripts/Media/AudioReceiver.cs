@@ -29,7 +29,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
         /// </remarks>
-        public readonly AudioStreamStartedEvent AudioStreamStarted = new AudioStreamStartedEvent();
+        public AudioStreamStartedEvent AudioStreamStarted = new AudioStreamStartedEvent();
 
         /// <summary>
         /// Event raised when the audio stream stopped.
@@ -42,7 +42,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
         /// </remarks>
-        public readonly AudioStreamStoppedEvent AudioStreamStopped = new AudioStreamStoppedEvent();
+        public AudioStreamStoppedEvent AudioStreamStopped = new AudioStreamStoppedEvent();
 
 
 
@@ -113,6 +113,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             AudioTrack = null;
             AudioStreamStopped.Invoke(this);
             IsStreaming = false;
+        }
+
+        public AudioTrackReadBuffer CreateReadBuffer()
+        {
+            return AudioTrack.CreateReadBuffer();
         }
     }
 }

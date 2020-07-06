@@ -60,5 +60,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         /// <param name="callback">The frame callback to unregister.</param>
         void UnregisterCallback(AudioFrameDelegate callback);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        AudioTrackReadBuffer CreateReadBuffer();
     }
 }

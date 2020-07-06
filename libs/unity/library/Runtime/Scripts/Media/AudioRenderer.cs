@@ -18,19 +18,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <seealso cref="VideoRenderer"/>
     [AddComponentMenu("MixedReality-WebRTC/Remote Audio Renderer")]
     [RequireComponent(typeof(UnityEngine.AudioSource))]
-    public class RemoteAudioRenderer : WorkQueue
+    public class AudioRenderer : MonoBehaviour
     {
-        public AudioReceiver Receiver;
-
-        /// <inheritdoc />
-        public RemoteAudioTrack AudioTrack => _track;
-
         /// <summary>
         /// If true, pad buffer underruns with a sine wave. This will cause artifacts on underruns.
         /// Use for debugging.
         /// </summary>
         public bool PadWithSine = false;
-
 
         // Local storage of audio data to be fed to the output
         private AudioTrackReadBuffer _readBuffer = null;
@@ -42,13 +36,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         // Cached sample rate since we can't access this in OnAudioFilterRead.
         private int _audioSampleRate = 0;
 
-        // This is set outside the main thread, make volatile so changes to this and other
-        // public properties are correctly ordered.
-        private volatile RemoteAudioTrack _track = null;
+        private IAudioSource _source;
 
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
             AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
             OnAudioConfigurationChanged(deviceWasChanged: true);
         }
@@ -58,28 +49,41 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
         }
 
-        protected override void Update()
+        protected void OnEnable()
         {
-            base.Update();
-
-            // Check if _track has been changed by OnPaired/OnUnpaired and
-            // we need to start/stop streaming.
-            if (_track != null && !Receiver.IsStreaming)
+            if (_source != null)
             {
-                StartStreaming();
-            }
-            else if (_track == null && Receiver.IsStreaming)
-            {
-                StopStreaming();
+                StartReadBuffer();
             }
         }
 
         protected void OnDisable()
         {
-            if (Receiver.IsStreaming)
+            if (_source != null)
             {
-                StopStreaming();
+                StopReadBuffer();
             }
+        }
+
+        public void StartStreaming(IAudioSource source)
+        {
+            Debug.Assert(_source == null);
+            _source = source;
+
+            if (isActiveAndEnabled)
+            {
+                StartReadBuffer();
+            }
+        }
+
+        public void StopStreaming(IAudioSource source)
+        {
+            Debug.Assert(_source == source);
+            if (isActiveAndEnabled)
+            {
+                StopReadBuffer();
+            }
+            _source = null;
         }
 
         protected void OnAudioFilterRead(float[] data, int channels)
@@ -130,20 +134,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _audioSampleRate = AudioSettings.outputSampleRate;
         }
 
-        private void StartStreaming()
+        private void StartReadBuffer()
         {
             Debug.Assert(_readBuffer == null);
-            EnsureIsMainAppThread();
 
             // OnAudioFilterRead reads the variable concurrently, but the update is atomic
             // so we don't need a lock.
-            _readBuffer = AudioTrack.CreateReadBuffer();
+            _readBuffer = _source.CreateReadBuffer();
         }
 
-        private void StopStreaming()
+        private void StopReadBuffer()
         {
-            EnsureIsMainAppThread();
-
             lock (_readBufferLock)
             {
                 // Under lock so OnAudioFilterRead won't use the buffer while/after it is disposed.

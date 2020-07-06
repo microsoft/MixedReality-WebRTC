@@ -16,7 +16,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     {
         /// <summary>
         /// Audio track source object from the underlying C# library that this component encapsulates.
-        /// 
+        ///
         /// The object is owned by this component, which will create it and dispose of it automatically.
         /// </summary>
         public WebRTC.AudioTrackSource Source { get; protected set; } = null;
@@ -67,7 +67,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Register a frame callback to listen to outgoing audio data produced by this audio sender
         /// and sent to the remote peer.
-        /// 
+        ///
         /// <div class="WARNING alert alert-warning">
         /// <h5>WARNING</h5>
         /// <p>
@@ -81,7 +81,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Unlike for video, where a typical application might display some local feedback of a local
         /// webcam recording, local audio feedback is rare, so this callback is not typically used.
         /// One possible use case would be to display some visual feedback, like an audio spectrum analyzer.
-        /// 
+        ///
         /// Note that registering a callback does not influence the audio capture and sending to the
         /// remote peer, which occur whether or not a callback is registered.
         /// </remarks>
@@ -139,6 +139,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             bool removed = _mediaLines.Remove(mediaLine);
             Debug.Assert(removed);
+        }
+
+        public AudioTrackReadBuffer CreateReadBuffer()
+        {
+            throw new NotImplementedException();
         }
     }
 }

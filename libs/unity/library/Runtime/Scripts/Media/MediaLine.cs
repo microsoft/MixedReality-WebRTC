@@ -198,6 +198,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         #region Private fields
 
+        [SerializeField]
         private PeerConnection _peer;
 
         /// <summary>
