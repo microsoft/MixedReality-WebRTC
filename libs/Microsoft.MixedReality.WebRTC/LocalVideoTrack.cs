@@ -95,7 +95,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// Video track sending to the remote peer video frames originating from
     /// a local track source.
     /// </summary>
-    public class LocalVideoTrack : LocalMediaTrack, IVideoTrack
+    public class LocalVideoTrack : LocalMediaTrack, IVideoSource
     {
         /// <summary>
         /// Video track source this track is pulling its video frames from.

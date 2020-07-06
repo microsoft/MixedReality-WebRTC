@@ -9,14 +9,14 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Single video frame encoded in I420A format (triplanar YUV with optional alpha plane).
     /// See e.g. https://wiki.videolan.org/YUV/#I420 for details.
-    /// 
+    ///
     /// The I420 format uses chroma downsampling in both directions, resulting in 12 bits per
     /// pixel. With the optional alpha plane, the size increases to 20 bits per pixel.
     /// </summary>
     /// <remarks>
     /// The use of <c>ref struct</c> is an optimization to avoid heap allocation on each frame while
     /// having a nicer-to-use container to pass a frame accross methods.
-    /// 
+    ///
     /// The alpha plane is generically supported in this data structure, but actual support
     /// in the video tracks depend on the underlying implementation and the video codec used,
     /// and is generally not available.
@@ -118,7 +118,7 @@ namespace Microsoft.MixedReality.WebRTC
 
     /// <summary>
     /// Single video frame encoded in ARGB interleaved format (32 bits per pixel).
-    /// 
+    ///
     /// The ARGB components are in the order of a little endian 32-bit integer, so
     /// 0xAARRGGBB, or (B, G, R, A) as a sequence of bytes in memory with B first
     /// and A last.

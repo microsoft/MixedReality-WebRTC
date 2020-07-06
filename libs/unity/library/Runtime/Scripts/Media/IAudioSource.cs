@@ -10,13 +10,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// Unity event corresponding to a new audio stream being started.
     /// </summary>
     [Serializable]
-    public class AudioStreamStartedEvent : UnityEvent<IAudioTrack>
+    public class AudioStreamStartedEvent : UnityEvent<IAudioSource>
     { };
 
     /// <summary>
     /// Unity event corresponding to an on-going audio stream being stopped.
     /// </summary>
     [Serializable]
-    public class AudioStreamStoppedEvent : UnityEvent<IAudioTrack>
+    public class AudioStreamStoppedEvent : UnityEvent<IAudioSource>
     { };
 }

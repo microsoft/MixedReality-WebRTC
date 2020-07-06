@@ -75,7 +75,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Source != null)
             {
-                Source.VideoFrameReady += callback;
+                Source.I420AVideoFrameReady += callback;
             }
         }
 
@@ -84,7 +84,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Source != null)
             {
-                Source.VideoFrameReady -= callback;
+                Source.I420AVideoFrameReady -= callback;
             }
         }
 
@@ -93,7 +93,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Source != null)
             {
-                Source.ARGB32VideoFrameReady += callback;
+                Source.Argb32VideoFrameReady += callback;
             }
         }
 
@@ -102,7 +102,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (Source != null)
             {
-                Source.ARGB32VideoFrameReady -= callback;
+                Source.Argb32VideoFrameReady -= callback;
             }
         }
 

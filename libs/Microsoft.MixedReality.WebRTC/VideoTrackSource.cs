@@ -25,7 +25,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <seealso cref="DeviceVideoTrackSource"/>
     /// <seealso cref="ExternalVideoTrackSource"/>
     /// <seealso cref="LocalVideoTrack"/>
-    public abstract class VideoTrackSource : IVideoTrack, IDisposable
+    public abstract class VideoTrackSource : IVideoSource, IDisposable
     {
         /// <summary>
         /// A name for the video track source, used for logging and debugging.
@@ -50,13 +50,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public IReadOnlyList<LocalVideoTrack> Tracks => _tracks;
 
-        /// <summary>
-        /// Event raised when a video frame has been produced by the source. Handlers must process the
-        /// frame as fast as possible without blocking the caller thread, and cannot remove themselves
-        /// from the event nor add other handlers to the event, otherwise the caller thread will deadlock.
-        /// The event delivers to the handlers an I420-encoded video frame.
-        /// </summary>
-        public event I420AVideoFrameDelegate VideoFrameReady
+        /// <inheritdoc/>
+        public event I420AVideoFrameDelegate I420AVideoFrameReady
         {
             add
             {
@@ -84,13 +79,8 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
-        /// <summary>
-        /// Event raised when a video frame has been produced by the source. Handlers must process the
-        /// frame as fast as possible without blocking the caller thread, and cannot remove themselves
-        /// from the event nor add other handlers to the event, otherwise the caller thread will deadlock.
-        /// The event delivers to the handlers an ARGB32-encoded video frame.
-        /// </summary>
-        public event Argb32VideoFrameDelegate ARGB32VideoFrameReady
+        /// <inheritdoc/>
+        public event Argb32VideoFrameDelegate Argb32VideoFrameReady
         {
             // TODO - Remove ARGB callbacks, use I420 callbacks only and expose some conversion
             // utility to convert from ARGB to I420 when needed (to be called by the user).
@@ -120,10 +110,6 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
-        // FIXME make names match with existing events
-        public event I420AVideoFrameDelegate I420AVideoFrameReady;
-        public event Argb32VideoFrameDelegate Argb32VideoFrameReady;
-
         /// <summary>
         /// Handle to the native VideoTrackSource object.
         /// </summary>
@@ -132,6 +118,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </remarks>
         internal VideoTrackSourceHandle _nativeHandle { get; private set; } = null;
 
+        /// <inheritdoc/>
         public bool Enabled => !_nativeHandle.IsClosed;
 
         /// <summary>

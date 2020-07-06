@@ -29,7 +29,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// Audio track sending to the remote peer audio frames originating from
     /// a local track source (local microphone or other audio recording device).
     /// </summary>
-    public class LocalAudioTrack : LocalMediaTrack, IAudioTrack
+    public class LocalAudioTrack : LocalMediaTrack, IAudioSource
     {
         /// <summary>
         /// Enabled status of the track. If enabled, send local audio frames to the remote peer as
@@ -57,9 +57,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public AudioTrackSource Source { get; private set; } = null;
 
-        /// <summary>
-        /// Event that occurs when a audio frame has been produced by the underlying source and is available.
-        /// </summary>
+        /// <inheritdoc/>
         public event AudioFrameDelegate AudioFrameReady;
 
         /// <summary>

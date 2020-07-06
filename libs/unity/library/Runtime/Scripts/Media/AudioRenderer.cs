@@ -36,7 +36,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         // Cached sample rate since we can't access this in OnAudioFilterRead.
         private int _audioSampleRate = 0;
 
-        private IAudioTrack _source;
+        private IAudioSource _source;
 
         protected void Awake()
         {
@@ -65,7 +65,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        public void StartRendering(IAudioTrack source)
+        public void StartRendering(IAudioSource source)
         {
             Debug.Assert(_source == null);
             _source = source;
@@ -76,7 +76,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        public void StopRendering(IAudioTrack source)
+        public void StopRendering(IAudioSource source)
         {
             Debug.Assert(_source == source);
             if (isActiveAndEnabled)
