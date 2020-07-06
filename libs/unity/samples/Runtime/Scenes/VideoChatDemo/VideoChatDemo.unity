@@ -649,6 +649,7 @@ GameObject:
   - component: {fileID: 1697477436}
   - component: {fileID: 1697477437}
   - component: {fileID: 1697477438}
+  - component: {fileID: 1697477439}
   m_Layer: 0
   m_Name: RemoteAudio
   m_TagString: Untagged
@@ -682,6 +683,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac54f2f6b8185d444b4a85e048778344, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AudioStreamStarted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1697477439}
+        m_MethodName: StartStreaming
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  AudioStreamStopped:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1697477439}
+        m_MethodName: StopStreaming
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!82 &1697477438
 AudioSource:
   m_ObjectHideFlags: 0
@@ -778,6 +807,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1697477439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697477435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecc506ef6d3213043bc0529b3f591d39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PadWithSine: 0
 --- !u!1 &1968188768
 GameObject:
   m_ObjectHideFlags: 0
@@ -1347,14 +1389,16 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _mediaLines:
-  - _mediaKind: 0
-    _source: {fileID: 132294435}
+  - _peer: {fileID: 114452440398351871}
+    _mediaKind: 0
+    _source: {fileID: 0}
     _receiver: {fileID: 1697477437}
-    _senderTrackName: microphone_track
-  - _mediaKind: 1
-    _source: {fileID: 2089692227}
+    _senderTrackName: 
+  - _peer: {fileID: 114452440398351871}
+    _mediaKind: 1
+    _source: {fileID: 0}
     _receiver: {fileID: 666380897}
-    _senderTrackName: webcam_track
+    _senderTrackName: 
 --- !u!114 &114460246451956513
 MonoBehaviour:
   m_ObjectHideFlags: 0
