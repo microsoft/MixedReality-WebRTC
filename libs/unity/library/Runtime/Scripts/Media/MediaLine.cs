@@ -240,11 +240,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private MediaTrack _senderTrack = null;
 
-        /// <summary>
-        /// Receiver actually paired during <see cref="PeerConnection.HandleConnectionMessageAsync(string, string)"/>.
-        /// This is different from <see cref="Receiver"/> until a negotiation is achieved.
-        /// </summary>
-        private MediaReceiver _pairedReceiver;
+        // True if this has a receiver and the media line is paired to a transceiver with a remote track.
+        private bool _isReceiverPaired = false;
 
         #endregion
 
@@ -319,25 +316,27 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         internal void UpdateReceiver()
         {
-            var transceiver = Transceiver;
-            Debug.Assert(transceiver != null);
-            bool wantsRecv = (Receiver != null);
-            bool wasReceiving = (_pairedReceiver != null);
-            bool isReceiving = (transceiver.RemoteTrack != null);
-            // Note the extra "isReceiving" check, which ensures that when the remote track was
-            // just removed by OnUnpaired(RemoteTrack) from the TrackRemoved event then it is not
-            // immediately re-added by mistake.
-            if (wantsRecv && isReceiving && !wasReceiving)
+            if (_receiver != null)
             {
-                // Transceiver started receiving, and user actually wants to receive
-                _peer.InvokeOnAppThread(() => _receiver.OnPaired(transceiver.RemoteTrack));
-                _pairedReceiver = _receiver;
-            }
-            else if (!isReceiving && wasReceiving)
-            {
-                // Transceiver stopped receiving (user intent does not matter here)
-                _peer.InvokeOnAppThread(() => _receiver.OnUnpaired(transceiver.RemoteTrack));
-                _pairedReceiver = null;
+                var transceiver = Transceiver;
+                Debug.Assert(transceiver != null);
+                bool wasReceiving = _isReceiverPaired;
+                bool hasRemoteTrack = (transceiver.RemoteTrack != null);
+                // Note the extra "hasRemoteTrack" check, which ensures that when the remote track was
+                // just removed by OnUnpaired(RemoteTrack) from the TrackRemoved event then it is not
+                // immediately re-added by mistake.
+                if (hasRemoteTrack && !wasReceiving)
+                {
+                    // Transceiver started receiving, and user actually wants to receive
+                    _peer.InvokeOnAppThread(() => _receiver.OnPaired(transceiver.RemoteTrack));
+                    _isReceiverPaired = true;
+                }
+                else if (!hasRemoteTrack && wasReceiving)
+                {
+                    // Transceiver stopped receiving (user intent does not matter here)
+                    _peer.InvokeOnAppThread(() => _receiver.OnUnpaired(transceiver.RemoteTrack));
+                    _isReceiverPaired = false;
+                }
             }
         }
 
@@ -353,10 +352,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // mode (per the WebRTC spec). So the SetDirection(sendonly) triggers the TrackRemoved
             // event, but the pairing was never done because SetDirection() is called before
             // the received is updated.
-            if (_pairedReceiver != null)
+            if (_isReceiverPaired)
             {
-                _peer.InvokeOnAppThread(() => _pairedReceiver.OnUnpaired(track));
-                _pairedReceiver = null;
+                _peer.InvokeOnAppThread(() => _receiver.OnUnpaired(track));
+                _isReceiverPaired = false;
             }
         }
 
