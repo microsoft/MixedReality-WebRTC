@@ -259,7 +259,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
             IsStreaming = true;
-            VideoStreamStarted.Invoke(this);
+            VideoStreamStarted.Invoke(Source);
         }
 
 #if UNITY_WSA && !UNITY_EDITOR

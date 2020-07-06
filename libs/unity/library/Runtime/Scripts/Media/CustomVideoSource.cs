@@ -43,7 +43,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
             IsStreaming = true;
-            VideoStreamStarted.Invoke(this);
+            VideoStreamStarted.Invoke(Source);
         }
 
         protected abstract void OnFrameRequested(in FrameRequest request);

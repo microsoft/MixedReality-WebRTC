@@ -12,7 +12,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// The video track can optionally be displayed locally with a <see cref="VideoRenderer"/>.
     /// </summary>
     [AddComponentMenu("MixedReality-WebRTC/Video Receiver")]
-    public class VideoReceiver : MediaReceiver, IVideoSource
+    public class VideoReceiver : MediaReceiver
     {
         /// <summary>
         /// Remote video track receiving data from the remote peer.
@@ -50,80 +50,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
 
-
-        #region IVideoSource interface
-
-        /// <inheritdoc/>
-        public bool IsStreaming { get; protected set; }
-
-        /// <inheritdoc/>
-        public VideoStreamStartedEvent GetVideoStreamStarted() { return VideoStreamStarted; }
-
-        /// <inheritdoc/>
-        public VideoStreamStoppedEvent GetVideoStreamStopped() { return VideoStreamStopped; }
-
-        /// <inheritdoc/>
-        public VideoEncoding FrameEncoding { get; } = VideoEncoding.I420A;
-
-        /// <summary>
-        /// Register a frame callback to listen to incoming video data receiving through this
-        /// video receiver from the remote peer.
-        ///
-        /// The callback can only be registered once the <see cref="Track"/> is valid, that is
-        /// once the <see cref="VideoStreamStarted"/> event was raised.
-        /// </summary>
-        /// <param name="callback">The new frame callback to register.</param>
-        /// <remarks>
-        /// A typical application uses this callback to display the received video.
-        /// </remarks>
-        public void RegisterCallback(I420AVideoFrameDelegate callback)
-        {
-            if (VideoTrack != null)
-            {
-                VideoTrack.I420AVideoFrameReady += callback;
-            }
-        }
-
-        /// <summary>
-        /// Register a frame callback to listen to incoming video data receiving through this
-        /// video receiver from the remote peer.
-        ///
-        /// The callback can only be registered once the <see cref="Track"/> is valid, that is
-        /// once the <see cref="VideoStreamStarted"/> event was raised.
-        /// </summary>
-        /// <param name="callback">The new frame callback to register.</param>
-        /// <remarks>
-        /// A typical application uses this callback to display the received video.
-        /// </remarks>
-        public void RegisterCallback(Argb32VideoFrameDelegate callback)
-        {
-            if (VideoTrack != null)
-            {
-                VideoTrack.Argb32VideoFrameReady += callback;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void UnregisterCallback(I420AVideoFrameDelegate callback)
-        {
-            if (VideoTrack != null)
-            {
-                VideoTrack.I420AVideoFrameReady -= callback;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void UnregisterCallback(Argb32VideoFrameDelegate callback)
-        {
-            if (VideoTrack != null)
-            {
-                VideoTrack.Argb32VideoFrameReady -= callback;
-            }
-        }
-
-        #endregion
-
-
         #region IMediaReceiver interface
 
         /// <inheritdoc/>
@@ -139,8 +65,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             var remoteVideoTrack = (RemoteVideoTrack)track;
             Debug.Assert(VideoTrack == null);
             VideoTrack = remoteVideoTrack;
-            IsStreaming = true;
-            VideoStreamStarted.Invoke(this);
+            VideoStreamStarted.Invoke(VideoTrack);
         }
 
         /// <inheritdoc/>
@@ -149,8 +74,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(track is RemoteVideoTrack);
             Debug.Assert(VideoTrack == track);
             VideoTrack = null;
-            VideoStreamStopped.Invoke(this);
-            IsStreaming = false;
+            VideoStreamStopped.Invoke(VideoTrack);
         }
     }
 }

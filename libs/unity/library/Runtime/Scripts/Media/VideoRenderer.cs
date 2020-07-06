@@ -142,26 +142,27 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             //}
         }
 
-        public void VideoStreamStarted(IVideoSource source)
+        public void VideoStreamStarted(IVideoTrack track)
         {
-            bool isRemote = (source is VideoReceiver);
+            bool isRemote = (track is RemoteVideoTrack);
             int frameQueueSize = (isRemote ? 5 : 3);
-            var videoSrc = (IVideoSource)source;
-            switch (videoSrc.FrameEncoding)
-            {
-            case VideoEncoding.I420A:
-                _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(frameQueueSize);
-                videoSrc.RegisterCallback(I420AVideoFrameReady);
-                break;
 
-            case VideoEncoding.Argb32:
-                _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(frameQueueSize);
-                videoSrc.RegisterCallback(Argb32VideoFrameReady);
-                break;
-            }
+            // TODO move FrameEncoding to tracks
+            //switch (videoSrc.FrameEncoding)
+            //{
+            //case VideoEncoding.I420A:
+                _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(frameQueueSize);
+                track.I420AVideoFrameReady += I420AVideoFrameReady;
+            //    break;
+
+            //case VideoEncoding.Argb32:
+            //    _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(frameQueueSize);
+            //    videoSrc.RegisterCallback(Argb32VideoFrameReady);
+            //    break;
+            //}
         }
 
-        public void VideoStreamStopped(IVideoSource source)
+        public void VideoStreamStopped(IVideoTrack _)
         {
             // Clear the video display to not confuse the user who could otherwise
             // think that the video is still playing but is lagging/frozen.

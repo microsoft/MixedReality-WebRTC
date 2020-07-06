@@ -11,12 +11,12 @@ namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
     /// Video source for WebRTC video tracks.
-    /// 
+    ///
     /// The video source is not bound to any peer connection, and can therefore be shared by multiple video
     /// tracks from different peer connections. This is especially useful to share local video capture devices
     /// (microphones) amongst multiple peer connections when building a multi-peer experience with a mesh topology
     /// (one connection per pair of peers).
-    /// 
+    ///
     /// The user owns the video track source, and is in charge of keeping it alive until after all tracks using it
     /// are destroyed, and then dispose of it. The behavior of disposing of the track source while a track is still
     /// using it is undefined. The <see cref="Tracks"/> property contains the list of tracks currently using the
@@ -25,7 +25,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <seealso cref="DeviceVideoTrackSource"/>
     /// <seealso cref="ExternalVideoTrackSource"/>
     /// <seealso cref="LocalVideoTrack"/>
-    public abstract class VideoTrackSource : IDisposable
+    public abstract class VideoTrackSource : IVideoTrack, IDisposable
     {
         /// <summary>
         /// A name for the video track source, used for logging and debugging.
@@ -120,6 +120,10 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
+        // FIXME names
+        public event I420AVideoFrameDelegate I420AVideoFrameReady;
+        public event Argb32VideoFrameDelegate Argb32VideoFrameReady;
+
         /// <summary>
         /// Handle to the native VideoTrackSource object.
         /// </summary>
@@ -127,6 +131,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// In native land this is a <code>mrsVideoTrackSourceHandle</code>.
         /// </remarks>
         internal VideoTrackSourceHandle _nativeHandle { get; private set; } = null;
+
+        public bool Enabled => !_nativeHandle.IsClosed;
 
         /// <summary>
         /// Handle to self for interop callbacks. This adds a reference to the current object, preventing

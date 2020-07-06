@@ -15,7 +15,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <seealso cref="WebcamSource"/>
     /// <seealso cref="CustomVideoSource{T}"/>
     /// <seealso cref="SceneVideoSource"/>
-    public abstract class VideoTrackSource : MonoBehaviour, IVideoSource, IMediaTrackSource, IMediaTrackSourceInternal
+    public abstract class VideoTrackSource : MonoBehaviour, IMediaTrackSource, IMediaTrackSourceInternal
     {
         /// <summary>
         /// Video track source object from the underlying C# library that this component encapsulates.
@@ -140,7 +140,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Source.Dispose();
                 Source = null;
 
-                VideoStreamStopped.Invoke(this);
+                VideoStreamStopped.Invoke(Source);
                 IsStreaming = false;
             }
         }

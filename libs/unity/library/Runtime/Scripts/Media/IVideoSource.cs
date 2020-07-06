@@ -10,14 +10,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// Unity event corresponding to a new video stream being started.
     /// </summary>
     [Serializable]
-    public class VideoStreamStartedEvent : UnityEvent<IVideoSource>
+    public class VideoStreamStartedEvent : UnityEvent<IVideoTrack>
     { };
 
     /// <summary>
     /// Unity event corresponding to an on-going video stream being stopped.
     /// </summary>
     [Serializable]
-    public class VideoStreamStoppedEvent : UnityEvent<IVideoSource>
+    public class VideoStreamStoppedEvent : UnityEvent<IVideoTrack>
     { };
 
     /// <summary>
@@ -36,47 +36,5 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// 0xAARRGGBB value, or equivalently (B,G,R,A) in byte order.
         /// </summary>
         Argb32
-    }
-
-    /// <summary>
-    /// Interface for video sources plugging into the internal peer connection API to
-    /// expose a single video stream to a renderer (<see cref="VideoRenderer"/> or custom).
-    /// </summary>
-    public interface IVideoSource
-    {
-        /// <summary>
-        /// Is the video source currently streaming some video frames?
-        /// This must be <c>true</c> between the invoking of the video stream started
-        /// and stopped events. That is, this becomes <c>true</c> after the stream started
-        /// event and becomes <c>false</c> before the stream stopped event.
-        /// </summary>
-        bool IsStreaming { get; }
-
-        /// <summary>
-        /// Get the event notifying the user that the video stream started.
-        /// </summary>
-        /// <returns>The event associated with the video source.</returns>
-        VideoStreamStartedEvent GetVideoStreamStarted();
-
-        /// <summary>
-        /// Get the event notifying the user that the video stream stopped.
-        /// </summary>
-        /// <returns>The event associated with the video source.</returns>
-        VideoStreamStoppedEvent GetVideoStreamStopped();
-        
-        /// <summary>
-        /// Video encoding indicating the kind of frames the source is producing.
-        /// This is used for example by the <see cref="VideoRenderer"/> to determine how to
-        /// render the frame.
-        /// </summary>
-        VideoEncoding FrameEncoding { get; }
-
-        void RegisterCallback(I420AVideoFrameDelegate callback);
-        void UnregisterCallback(I420AVideoFrameDelegate callback);
-
-        // TODO - Remove ARGB callbacks, use I420 callbacks only and expose some conversion
-        // utility to convert from ARGB to I420 when needed (to be called by the user).
-        void RegisterCallback(Argb32VideoFrameDelegate callback);
-        void UnregisterCallback(Argb32VideoFrameDelegate callback);
     }
 }

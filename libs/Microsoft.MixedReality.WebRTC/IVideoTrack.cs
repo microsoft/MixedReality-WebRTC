@@ -3,6 +3,7 @@
 
 namespace Microsoft.MixedReality.WebRTC
 {
+    // FIXME rename to VideoSource
     /// <summary>
     /// Interface for video tracks, whether local or remote.
     /// </summary>
@@ -12,7 +13,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Event that occurs when a new video frame is available from the track, either
         /// because the track produced it locally (<see cref="LocalVideoTrack"/>) or because
         /// it received it from the remote peer (<see cref="RemoteVideoTrack"/>).
-        /// 
+        ///
         /// The frame is delivered as an I420A-encoded video frame.
         /// </summary>
         /// <seealso cref="LocalVideoTrack"/>
@@ -23,7 +24,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Event that occurs when a new video frame is available from the track, either
         /// because the track produced it locally (<see cref="LocalVideoTrack"/>) or because
         /// it received it from the remote peer (<see cref="RemoteVideoTrack"/>).
-        /// 
+        ///
         /// The frame is delivered as an ARGB32-encoded video frame.
         /// </summary>
         /// <seealso cref="LocalVideoTrack"/>
