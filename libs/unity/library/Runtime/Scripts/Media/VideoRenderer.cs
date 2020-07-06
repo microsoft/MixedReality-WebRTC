@@ -56,6 +56,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [Tooltip("A textmesh onto which frame skip stat data will be written")]
         public TextMesh FrameSkipStatHolder;
 
+        private IVideoSource _source;
+
         /// <summary>
         /// Internal reference to the attached texture
         /// </summary>
@@ -87,38 +89,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxFramerate) - 0.003f);
         }
 
-        private void OnEnable()
-        {
-            //if (Source != null)
-            //{
-            //    if (Source is IVideoSource videoSrc)
-            //    {
-            //        videoSrc.GetVideoStreamStarted().AddListener(VideoStreamStarted);
-            //        videoSrc.GetVideoStreamStopped().AddListener(VideoStreamStopped);
-
-            //        // If registering while the audio source is already playing, invoke manually
-            //        if (videoSrc.IsStreaming)
-            //        {
-            //            VideoStreamStarted(videoSrc);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        throw new ArgumentException("Video source does not implement IVideoSource.");
-            //    }
-            //}
-        }
-
-        private void OnDisable()
-        {
-            //var videoSrc = (IVideoSource)Source;
-            //if (videoSrc != null) // depends in particular on Unity's component destruction order
-            //{
-            //    videoSrc.GetVideoStreamStarted().RemoveListener(VideoStreamStarted);
-            //    videoSrc.GetVideoStreamStopped().RemoveListener(VideoStreamStopped);
-            //}
-        }
-
+        /// <summary>
+        /// Start rendering the passed source.
+        /// </summary>
+        /// <remarks>
+        /// Can be used to handle <see cref="VideoTrackSource.VideoStreamStarted"/> or <see cref="VideoReceiver.VideoStreamStarted"/>.
+        /// </remarks>
         public void StartRendering(IVideoSource source)
         {
             bool isRemote = (source is RemoteVideoTrack);
@@ -138,10 +114,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
+        /// <summary>
+        /// Stop rendering the passed source. Must be called with the same source passed to <see cref="StartRendering(IVideoSource)"/>
+        /// </summary>
+        /// <remarks>
+        /// Can be used to handle <see cref="VideoTrackSource.VideoStreamStopped"/> or <see cref="VideoReceiver.VideoStreamStopped"/>.
+        /// </remarks>
         public void StopRendering(IVideoSource _)
         {
             // Clear the video display to not confuse the user who could otherwise
             // think that the video is still playing but is lagging/frozen.
+            CreateEmptyVideoTextures();
+        }
+
+        protected void OnDisable()
+        {
             CreateEmptyVideoTextures();
         }
 
