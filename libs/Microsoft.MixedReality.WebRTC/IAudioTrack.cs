@@ -3,6 +3,7 @@
 
 namespace Microsoft.MixedReality.WebRTC
 {
+    // FIXME rename to IAudioSource
     /// <summary>
     /// Interface for audio tracks, whether local or remote.
     /// </summary>
@@ -22,5 +23,11 @@ namespace Microsoft.MixedReality.WebRTC
         /// disabled, produces silence instead.
         /// </summary>
         bool Enabled { get; }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        AudioTrackReadBuffer CreateReadBuffer();
     }
 }

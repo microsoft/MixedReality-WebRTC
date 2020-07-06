@@ -120,7 +120,7 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
-        // FIXME names
+        // FIXME make names match with existing events
         public event I420AVideoFrameDelegate I420AVideoFrameReady;
         public event Argb32VideoFrameDelegate Argb32VideoFrameReady;
 

@@ -83,7 +83,7 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Create an audio track from an existing audio track source.
-        /// 
+        ///
         /// This does not add the track to any peer connection. Instead, the track must be added manually to
         /// an audio transceiver to be attached to a peer connection and transmitted to a remote peer.
         /// </summary>
@@ -223,6 +223,13 @@ namespace Microsoft.MixedReality.WebRTC
         public override string ToString()
         {
             return $"(LocalAudioTrack)\"{Name}\"";
+        }
+
+        /// <inheritdoc/>
+        public AudioTrackReadBuffer CreateReadBuffer()
+        {
+            // FIXME implement, or remove IAudioTrack from base
+            throw new NotImplementedException();
         }
     }
 }
