@@ -1,11 +1,26 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
+using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
+    /// <summary>
+    /// Unity event corresponding to a new video stream being started.
+    /// </summary>
+    [Serializable]
+    public class VideoStreamStartedEvent : UnityEvent<IVideoSource>
+    { };
+
+    /// <summary>
+    /// Unity event corresponding to an on-going video stream being stopped.
+    /// </summary>
+    [Serializable]
+    public class VideoStreamStoppedEvent : UnityEvent<IVideoSource>
+    { };
+
     /// <summary>
     /// This component represents a remote video source added as a video track to an
     /// existing WebRTC peer connection by a remote peer and received locally.
