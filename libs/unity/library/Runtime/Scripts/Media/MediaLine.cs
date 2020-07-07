@@ -519,7 +519,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // since the Source itself has called this.
             DestroySenderIfNeeded();
             UpdateTransceiverDesiredDirection();
-            Source = null;
+            _source = null;
         }
 
         public void OnBeforeSerialize() {}
