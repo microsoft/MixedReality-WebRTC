@@ -21,13 +21,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     public class AudioStreamStoppedEvent : UnityEvent<IAudioSource>
     { };
 
+    /// <summary>
+    /// Endpoint for a WebRTC remote audio track.
+    /// </summary>
+    /// <remarks>
+    /// Setting this on an audio <see cref="MediaLine"/> will enable the corresponding transceiver to receive.
+    /// A remote track will be exposed through <see cref="AudioTrack"/> once a connection is established.
+    /// The audio track can optionally be played locally with a <see cref="AudioRenderer"/>.
+    /// </remarks>
     public class AudioReceiver : MediaReceiver
     {
         /// <summary>
         /// Remote audio track receiving data from the remote peer.
         /// </summary>
         /// <remarks>
-        /// This is <c>null</c> until <see cref="IMediaReceiver.Transceiver"/> is set to a non-null
+        /// This is <c>null</c> until <see cref="MediaLine.Transceiver"/> is set to a non-null
         /// value and a remote track is added to that transceiver.
         /// </remarks>
         public RemoteAudioTrack AudioTrack { get; private set; }
@@ -38,8 +46,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// When this event is raised, the followings are true:
         /// - The <see cref="Track"/> property is a valid remote audio track.
         /// - The <see cref="MediaReceiver.IsLive"/> property is <c>true</c>.
-        /// - The <see cref="IsStreaming"/> will become <c>true</c> just after the event
-        ///   is raised, by design.
         /// </summary>
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
@@ -51,8 +57,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         ///
         /// When this event is raised, the followings are true:
         /// - The <see cref="MediaReceiver.IsLive"/> property is <c>false</c>.
-        /// - The <see cref="IsStreaming"/> has just become <c>false</c> right before the event
-        ///   was raised, by design.
         /// </summary>
         /// <remarks>
         /// This event is raised from the main Unity thread to allow Unity object access.
@@ -64,6 +68,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <inheritdoc/>
         public override MediaTrack Track => AudioTrack;
 
+        /// <inheritdoc/>
         protected internal override void OnPaired(MediaTrack track)
         {
             var remoteAudioTrack = (RemoteAudioTrack)track;
@@ -73,16 +78,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             AudioStreamStarted.Invoke(remoteAudioTrack);
         }
 
+        /// <inheritdoc/>
         protected internal override void OnUnpaired(MediaTrack track)
         {
             Debug.Assert(Track == track);
             AudioTrack = null;
             AudioStreamStopped.Invoke((RemoteAudioTrack)track);
-        }
-
-        public AudioTrackReadBuffer CreateReadBuffer()
-        {
-            return AudioTrack.CreateReadBuffer();
         }
     }
 }

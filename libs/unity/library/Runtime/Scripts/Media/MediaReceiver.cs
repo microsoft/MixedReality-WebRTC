@@ -15,6 +15,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         public abstract MediaKind MediaKind { get; }
 
+        /// <summary>
+        /// Remote track associated with this receiver.
+        /// Null if this object is not receiving at this time.
+        /// </summary>
+        /// <remarks>
+        /// This is always a <see cref="RemoteAudioTrack"/> or a <see cref="RemoteVideoTrack"/>
+        /// </remarks>
         public abstract MediaTrack Track { get; }
 
         /// <summary>
@@ -33,6 +40,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         public Transceiver Transceiver => MediaLine?.Transceiver;
 
+        /// <summary>
+        /// Media line this receiver is paired with, if any.
+        /// </summary>
         public MediaLine MediaLine { get; private set; }
 
         /// <summary>
@@ -58,12 +68,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Internal callback invoked when the receiver is paired with a media track.
         /// </summary>
+        /// <remarks>
+        /// This will be called on the Unity update thread.
+        /// </remarks>
         /// <param name="track">The media track this receiver is paired with.</param>
         protected internal virtual void OnPaired(MediaTrack track) { }
 
         /// <summary>
         /// Internal callback invoked when the receiver is unpaired from a media track.
         /// </summary>
+        /// <remarks>
+        /// This will be called on the Unity update thread.
+        /// </remarks>
         /// <param name="track">The media track this receiver was paired with.</param>
         protected internal virtual void OnUnpaired(MediaTrack track) { }
     }

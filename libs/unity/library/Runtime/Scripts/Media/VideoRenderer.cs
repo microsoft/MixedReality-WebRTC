@@ -56,6 +56,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [Tooltip("A textmesh onto which frame skip stat data will be written")]
         public TextMesh FrameSkipStatHolder;
 
+        // Source that this renderer is currently subscribed to.
         private IVideoSource _source;
 
         /// <summary>
@@ -129,6 +130,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected void OnDisable()
         {
+            // Clear the video display to not confuse the user who could otherwise
+            // think that the video is still playing but is lagging/frozen.
             CreateEmptyVideoTextures();
         }
 

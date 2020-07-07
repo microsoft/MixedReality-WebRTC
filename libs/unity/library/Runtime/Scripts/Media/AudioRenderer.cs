@@ -16,7 +16,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// to the paired <see cref="WebRTC.Transceiver"/>.
     /// </remarks>
     /// <seealso cref="VideoRenderer"/>
-    [AddComponentMenu("MixedReality-WebRTC/Remote Audio Renderer")]
+    [AddComponentMenu("MixedReality-WebRTC/Audio Renderer")]
     [RequireComponent(typeof(UnityEngine.AudioSource))]
     public class AudioRenderer : MonoBehaviour
     {
@@ -36,6 +36,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         // Cached sample rate since we can't access this in OnAudioFilterRead.
         private int _audioSampleRate = 0;
 
+
+        // Source that this renderer is currently subscribed to.
         private IAudioSource _source;
 
         protected void Awake()
@@ -65,6 +67,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
+        /// <summary>
+        /// Start rendering the passed source.
+        /// </summary>
+        /// <remarks>
+        /// Can be used to handle <see cref="AudioReceiver.AudioStreamStarted"/>.
+        /// </remarks>
         public void StartRendering(IAudioSource source)
         {
             Debug.Assert(_source == null);
@@ -76,6 +84,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
+        /// <summary>
+        /// Stop rendering the passed source. Must be called with the same source passed to <see cref="StartRendering(IAudioSource)"/>
+        /// </summary>
+        /// <remarks>
+        /// Can be used to handle <see cref="AudioReceiver.AudioStreamStopped"/>.
+        /// </remarks>
         public void StopRendering(IAudioSource source)
         {
             Debug.Assert(_source == source);
