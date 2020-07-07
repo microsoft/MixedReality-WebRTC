@@ -216,8 +216,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private MonoBehaviour _source;
 
         /// <summary>
-        /// Backing field to serialize the <see cref="Receiver"/> property. Because this needs to serialize a
-        /// polymorphic type, use the base class <see cref="MonoBehaviour"/>; this is a Unity restriction.
+        /// Backing field to serialize the <see cref="Receiver"/> property.
         /// </summary>
         /// <seealso cref="Receiver"/>
         [SerializeField]

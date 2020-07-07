@@ -144,11 +144,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         protected float _androidCameraRequestRetryUntilTime = 0f;
 #endif
 
-
-        public WebcamSource() : base(frameEncoding: VideoEncoding.I420A)
-        {
-        }
-
         protected async void OnEnable()
         {
             if (Source != null)
@@ -331,7 +326,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 return;
             }
 
-            IsStreaming = true;
             VideoStreamStarted.Invoke(Source);
         }
 

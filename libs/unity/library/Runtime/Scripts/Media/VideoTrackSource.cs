@@ -55,60 +55,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
 
-
-        #region IVideoSource interface
-
-        /// <inheritdoc/>
-        public bool IsStreaming { get; protected set; }
-
-        /// <inheritdoc/>
-        public VideoStreamStartedEvent GetVideoStreamStarted() { return VideoStreamStarted; }
-
-        /// <inheritdoc/>
-        public VideoStreamStoppedEvent GetVideoStreamStopped() { return VideoStreamStopped; }
-
-        /// <inheritdoc/>
-        public VideoEncoding FrameEncoding { get; } = VideoEncoding.I420A;
-
-        /// <inheritdoc/>
-        public void RegisterCallback(I420AVideoFrameDelegate callback)
-        {
-            if (Source != null)
-            {
-                Source.I420AVideoFrameReady += callback;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void UnregisterCallback(I420AVideoFrameDelegate callback)
-        {
-            if (Source != null)
-            {
-                Source.I420AVideoFrameReady -= callback;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void RegisterCallback(Argb32VideoFrameDelegate callback)
-        {
-            if (Source != null)
-            {
-                Source.Argb32VideoFrameReady += callback;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void UnregisterCallback(Argb32VideoFrameDelegate callback)
-        {
-            if (Source != null)
-            {
-                Source.Argb32VideoFrameReady -= callback;
-            }
-        }
-
-        #endregion
-
-
         #region IMediaTrackSource
 
         /// <inheritdoc/>
@@ -118,9 +64,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
 
 
-        public VideoTrackSource(VideoEncoding frameEncoding)
+        public VideoTrackSource()
         {
-            FrameEncoding = frameEncoding;
         }
 
         private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
@@ -141,7 +86,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Source = null;
 
                 VideoStreamStopped.Invoke(Source);
-                IsStreaming = false;
             }
         }
 
