@@ -168,7 +168,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     }
                     if (_receiver != value)
                     {
-                        if (_receiver == null)
+                        if (_receiver != null)
                         {
                             _receiver.OnRemoveFromMediaLine(this);
                         }
@@ -351,7 +351,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private void CreateSenderIfNeeded()
         {
-            if (_senderTrack == null && _source != null)
+            // Only create a sender track if the source is active, i.e. has an underlying frame source.
+            if (_senderTrack == null && _source != null && _source.isActiveAndEnabled)
             {
                 if (MediaKind == MediaKind.Audio)
                 {
