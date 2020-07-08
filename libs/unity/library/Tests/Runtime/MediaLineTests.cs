@@ -66,27 +66,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             public MediaKind MediaKind => MediaKind.Video;
         }
 
-        class DummyNonMonoBehaviourVideoReceiver : IMediaReceiver, IMediaReceiverInternal
-        {
-            public MediaKind MediaKind => MediaKind.Video;
-            public bool IsLive => throw new NotImplementedException();
-            public Transceiver Transceiver => throw new NotImplementedException();
-            public void AttachToTransceiver(Transceiver transceiver) => throw new NotImplementedException();
-            public void DetachFromTransceiver(Transceiver transceiver) => throw new NotImplementedException();
-            public void OnAddedToMediaLine(MediaLine mediaLine) => throw new NotImplementedException();
-            public void OnPaired(MediaTrack track) => throw new NotImplementedException();
-            public void OnUnpaired(MediaTrack track) => throw new NotImplementedException();
-            public void OnRemoveFromMediaLine(MediaLine mediaLine) => throw new NotImplementedException();
-
-        }
-
-        class DummyMissingInternalInterfaceVideoReceiver : MonoBehaviour, IMediaReceiver
-        {
-            public MediaKind MediaKind => MediaKind.Video;
-            public bool IsLive => throw new NotImplementedException();
-            public Transceiver Transceiver => throw new NotImplementedException();
-        }
-
         private MediaLine CreateMediaLine(PeerConnection pc)
         {
             MediaLine mediaLine = pc.AddMediaLine(MediaKind.Video);
@@ -228,8 +207,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Create some video track sources
             VideoReceiver receiver1 = pc_go.AddComponent<VideoReceiver>();
             VideoReceiver receiver2 = pc_go.AddComponent<VideoReceiver>();
-            Assert.AreEqual(0, receiver1.MediaLines.Count);
-            Assert.AreEqual(0, receiver2.MediaLines.Count);
+            Assert.IsNull(receiver1.MediaLine);
+            Assert.IsNull(receiver2.MediaLine);
 
             // Create the media line
             MediaLine mediaLine = pc.AddMediaLine(MediaKind.Video);
@@ -237,8 +216,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Assign a video source to the media line
             mediaLine.Receiver = receiver1;
             Assert.AreEqual(mediaLine.Receiver, receiver1);
-            Assert.AreEqual(1, receiver1.MediaLines.Count);
-            Assert.IsTrue(receiver1.MediaLines.Contains(mediaLine));
+            Assert.AreEqual(receiver1.MediaLine, mediaLine);
 
             // No-op
             mediaLine.Receiver = receiver1;
@@ -246,28 +224,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Assign another video source to the media line
             mediaLine.Receiver = receiver2;
             Assert.AreEqual(mediaLine.Receiver, receiver2);
-            Assert.AreEqual(0, receiver1.MediaLines.Count);
-            Assert.IsFalse(receiver1.MediaLines.Contains(mediaLine));
-            Assert.AreEqual(1, receiver2.MediaLines.Count);
-            Assert.IsTrue(receiver2.MediaLines.Contains(mediaLine));
+            Assert.IsNull(receiver1.MediaLine);
+            Assert.AreEqual(receiver2.MediaLine, mediaLine);
 
             // Remove it from the media line
             mediaLine.Receiver = null;
             Assert.IsNull(mediaLine.Receiver);
-            Assert.AreEqual(0, receiver2.MediaLines.Count);
-            Assert.IsFalse(receiver2.MediaLines.Contains(mediaLine));
+            Assert.IsNull(receiver2.MediaLine);
 
             // No-op
             mediaLine.Receiver = null;
 
             // Set an invalid source (wrong media kind)
             Assert.Throws<ArgumentException>(() => mediaLine.Receiver = pc_go.AddComponent<AudioReceiver>());
-
-            // Set an invalid source (not a MonoBehaviour)
-            Assert.Throws<ArgumentException>(() => mediaLine.Receiver = new DummyNonMonoBehaviourVideoReceiver());
-
-            // Set an invalid source (not implementing IMediaReceiverInternal)
-            Assert.Throws<ArgumentException>(() => mediaLine.Receiver = pc_go.AddComponent<DummyMissingInternalInterfaceVideoReceiver>());
         }
     }
 }
