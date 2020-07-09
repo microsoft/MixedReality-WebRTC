@@ -115,6 +115,9 @@
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\device_audio_track_source.cpp">
       <Filter>src\media</Filter>
     </ClCompile>
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\logging_interop.cpp">
+      <Filter>src\interop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\global_factory.h">
@@ -254,6 +257,9 @@
     </ClInclude>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\device_audio_track_source.h">
       <Filter>src\media</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\logging_interop.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
