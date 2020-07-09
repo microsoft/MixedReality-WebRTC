@@ -17,7 +17,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Remote track associated with this receiver.
-        /// Null if this object is not receiving at this time.
+        /// <c>null</c> if this object is not receiving at this time.
         /// </summary>
         /// <remarks>
         /// This is always a <see cref="RemoteAudioTrack"/> or a <see cref="RemoteVideoTrack"/>
