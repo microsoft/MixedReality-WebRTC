@@ -69,7 +69,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// Video source for WebRTC video tracks based on a custom source
     /// of video frames managed by the user and external to the WebRTC
     /// implementation.
-    /// 
+    ///
     /// This class is used to inject into the WebRTC engine a video track
     /// whose frames are produced by a user-managed source the WebRTC engine
     /// knows nothing about, like programmatically generated frames, including
@@ -79,6 +79,9 @@ namespace Microsoft.MixedReality.WebRTC
     /// </summary>
     public class ExternalVideoTrackSource : VideoTrackSource
     {
+        /// <inheritdoc/>
+        public override VideoEncoding FrameEncoding { get; }
+
         /// <summary>
         /// GC handle to frame request callback args keeping the delegate alive
         /// while the callback is registered with the native implementation.
@@ -105,9 +108,10 @@ namespace Microsoft.MixedReality.WebRTC
             return ExternalVideoTrackSourceInterop.CreateExternalVideoTrackSourceFromArgb32Callback(frameCallback);
         }
 
-        internal ExternalVideoTrackSource(IntPtr frameRequestCallbackArgsHandle)
+        internal ExternalVideoTrackSource(IntPtr frameRequestCallbackArgsHandle, VideoEncoding videoEncoding)
         {
             _frameRequestCallbackArgsHandle = frameRequestCallbackArgsHandle;
+            FrameEncoding = videoEncoding;
         }
 
         /// <summary>

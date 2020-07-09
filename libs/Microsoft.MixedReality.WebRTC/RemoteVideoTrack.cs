@@ -11,7 +11,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Video track receiving video frames from the remote peer.
     /// </summary>
-    public class RemoteVideoTrack : MediaTrack, IVideoTrack
+    public class RemoteVideoTrack : MediaTrack, IVideoSource
     {
         /// <summary>
         /// Enabled status of the track. If enabled, receives video frames from the remote peer as
@@ -30,14 +30,13 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
-        /// <summary>
-        /// Event that occurs when a video frame has been received from the remote peer.
-        /// </summary>
+        /// <inheritdoc/>
+        public VideoEncoding FrameEncoding => VideoEncoding.I420A;
+
+        /// <inheritdoc/>
         public event I420AVideoFrameDelegate I420AVideoFrameReady;
 
-        /// <summary>
-        /// Event that occurs when a video frame has been received from the remote peer.
-        /// </summary>
+        /// <inheritdoc/>
         public event Argb32VideoFrameDelegate Argb32VideoFrameReady;
 
         /// <summary>

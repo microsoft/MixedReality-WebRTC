@@ -11,12 +11,12 @@ namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
     /// Video source for WebRTC video tracks.
-    /// 
+    ///
     /// The video source is not bound to any peer connection, and can therefore be shared by multiple video
     /// tracks from different peer connections. This is especially useful to share local video capture devices
     /// (microphones) amongst multiple peer connections when building a multi-peer experience with a mesh topology
     /// (one connection per pair of peers).
-    /// 
+    ///
     /// The user owns the video track source, and is in charge of keeping it alive until after all tracks using it
     /// are destroyed, and then dispose of it. The behavior of disposing of the track source while a track is still
     /// using it is undefined. The <see cref="Tracks"/> property contains the list of tracks currently using the
@@ -25,7 +25,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <seealso cref="DeviceVideoTrackSource"/>
     /// <seealso cref="ExternalVideoTrackSource"/>
     /// <seealso cref="LocalVideoTrack"/>
-    public abstract class VideoTrackSource : IDisposable
+    public abstract class VideoTrackSource : IVideoSource, IDisposable
     {
         /// <summary>
         /// A name for the video track source, used for logging and debugging.
@@ -50,13 +50,11 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         public IReadOnlyList<LocalVideoTrack> Tracks => _tracks;
 
-        /// <summary>
-        /// Event raised when a video frame has been produced by the source. Handlers must process the
-        /// frame as fast as possible without blocking the caller thread, and cannot remove themselves
-        /// from the event nor add other handlers to the event, otherwise the caller thread will deadlock.
-        /// The event delivers to the handlers an I420-encoded video frame.
-        /// </summary>
-        public event I420AVideoFrameDelegate VideoFrameReady
+        /// <inheritdoc/>
+        public abstract VideoEncoding FrameEncoding { get; }
+
+        /// <inheritdoc/>
+        public event I420AVideoFrameDelegate I420AVideoFrameReady
         {
             add
             {
@@ -84,13 +82,8 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
-        /// <summary>
-        /// Event raised when a video frame has been produced by the source. Handlers must process the
-        /// frame as fast as possible without blocking the caller thread, and cannot remove themselves
-        /// from the event nor add other handlers to the event, otherwise the caller thread will deadlock.
-        /// The event delivers to the handlers an ARGB32-encoded video frame.
-        /// </summary>
-        public event Argb32VideoFrameDelegate ARGB32VideoFrameReady
+        /// <inheritdoc/>
+        public event Argb32VideoFrameDelegate Argb32VideoFrameReady
         {
             // TODO - Remove ARGB callbacks, use I420 callbacks only and expose some conversion
             // utility to convert from ARGB to I420 when needed (to be called by the user).
@@ -127,6 +120,11 @@ namespace Microsoft.MixedReality.WebRTC
         /// In native land this is a <code>mrsVideoTrackSourceHandle</code>.
         /// </remarks>
         internal VideoTrackSourceHandle _nativeHandle { get; private set; } = null;
+
+        /// <summary>
+        /// Enabled status of the source. True until the object is disposed.
+        /// </summary>
+        public bool Enabled => !_nativeHandle.IsClosed;
 
         /// <summary>
         /// Handle to self for interop callbacks. This adds a reference to the current object, preventing

@@ -112,9 +112,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Debug.LogException(ex, this);
                 return;
             }
-
-            IsStreaming = true;
-            AudioSourceStarted.Invoke(this);
         }
 
 #if PLATFORM_ANDROID

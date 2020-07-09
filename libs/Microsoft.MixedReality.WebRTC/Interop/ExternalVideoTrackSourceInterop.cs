@@ -127,7 +127,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             {
                 // A video track source starts in capturing state, so will immediately call the frame callback,
                 // which requires the source to be set. So create the source wrapper first.
-                var source = new ExternalVideoTrackSource(argsRef);
+                var source = new ExternalVideoTrackSource(argsRef, VideoEncoding.I420A);
                 args.Source = source;
 
                 // Create the external video track source
@@ -166,7 +166,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             {
                 // A video track source starts in capturing state, so will immediately call the frame callback,
                 // which requires the source to be set. So create the source wrapper first.
-                var source = new ExternalVideoTrackSource(argsRef);
+                var source = new ExternalVideoTrackSource(argsRef, VideoEncoding.Argb32);
                 args.Source = source;
 
                 // Create the external video track source

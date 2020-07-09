@@ -11,11 +11,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// </summary>
     public abstract class CustomVideoSource<T> : VideoTrackSource where T : class, IVideoFrameStorage, new()
     {
-        public CustomVideoSource()
-            : base(typeof(T) == typeof(I420AVideoFrameStorage) ? VideoEncoding.I420A : VideoEncoding.Argb32)
-        {
-        }
-
         protected virtual void OnEnable()
         {
             if (Source != null)
@@ -42,8 +37,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 throw new Exception("Failed to create external video track source.");
             }
 
-            IsStreaming = true;
-            VideoStreamStarted.Invoke(this);
+            VideoStreamStarted.Invoke(Source);
         }
 
         protected abstract void OnFrameRequested(in FrameRequest request);

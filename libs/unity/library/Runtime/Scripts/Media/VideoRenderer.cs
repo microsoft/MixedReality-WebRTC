@@ -21,20 +21,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     [AddComponentMenu("MixedReality-WebRTC/Video Renderer")]
     public class VideoRenderer : MonoBehaviour
     {
-        /// <summary>
-        /// Video frame source producing the frames to render. The concrete class must implement <see cref="IVideoSource"/>.
-        /// </summary>
-        /// <remarks>
-        /// Here what we really want is to serialize some reference to an <see cref="IVideoSource"/>.
-        /// Unfortunately Unity before 2019.3 does not support serialized interfaces, and more generally ignores
-        /// polymorphism in serialization. And although there are ways to make that work with a custom inspector,
-        /// this disables support for object picker, so only drag-and-drop works, which is very impractical.
-        /// So we use a base class derived from MonoBehaviour, which is the only entity for which Unity handles
-        /// polymorphism.
-        /// </remarks>
-        [SerializeField]
-        protected VideoRendererSource Source;
-
         [Tooltip("Max playback framerate, in frames per second")]
         [Range(0.001f, 120f)]
         public float MaxFramerate = 30f;
@@ -70,6 +56,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [Tooltip("A textmesh onto which frame skip stat data will be written")]
         public TextMesh FrameSkipStatHolder;
 
+        // Source that this renderer is currently subscribed to.
+        private IVideoSource _source;
+
         /// <summary>
         /// Internal reference to the attached texture
         /// </summary>
@@ -92,15 +81,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private ProfilerMarker loadTextureDataMarker = new ProfilerMarker("LoadTextureData");
         private ProfilerMarker uploadTextureToGpuMarker = new ProfilerMarker("UploadTextureToGPU");
 
-        private void OnValidate()
-        {
-            // Ensure that Source implements IVideoSource
-            if (!(Source is IVideoSource))
-            {
-                Source = null;
-            }
-        }
-
         private void Start()
         {
             CreateEmptyVideoTextures();
@@ -110,58 +90,45 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _minUpdateDelay = Mathf.Max(0f, 1f / Mathf.Max(0.001f, MaxFramerate) - 0.003f);
         }
 
-        private void OnEnable()
+        /// <summary>
+        /// Start rendering the passed source.
+        /// </summary>
+        /// <remarks>
+        /// Can be used to handle <see cref="VideoTrackSource.VideoStreamStarted"/> or <see cref="VideoReceiver.VideoStreamStarted"/>.
+        /// </remarks>
+        public void StartRendering(IVideoSource source)
         {
-            if (Source != null)
-            {
-                if (Source is IVideoSource videoSrc)
-                {
-                    videoSrc.GetVideoStreamStarted().AddListener(VideoStreamStarted);
-                    videoSrc.GetVideoStreamStopped().AddListener(VideoStreamStopped);
-
-                    // If registering while the audio source is already playing, invoke manually
-                    if (videoSrc.IsStreaming)
-                    {
-                        VideoStreamStarted(videoSrc);
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException("Video source does not implement IVideoSource.");
-                }
-            }
-        }
-
-        private void OnDisable()
-        {
-            var videoSrc = (IVideoSource)Source;
-            if (videoSrc != null) // depends in particular on Unity's component destruction order
-            {
-                videoSrc.GetVideoStreamStarted().RemoveListener(VideoStreamStarted);
-                videoSrc.GetVideoStreamStopped().RemoveListener(VideoStreamStopped);
-            }
-        }
-
-        private void VideoStreamStarted(IVideoSource source)
-        {
-            bool isRemote = (source is VideoReceiver);
+            bool isRemote = (source is RemoteVideoTrack);
             int frameQueueSize = (isRemote ? 5 : 3);
-            var videoSrc = (IVideoSource)Source;
-            switch (videoSrc.FrameEncoding)
-            {
-            case VideoEncoding.I420A:
-                _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(frameQueueSize);
-                videoSrc.RegisterCallback(I420AVideoFrameReady);
-                break;
 
-            case VideoEncoding.Argb32:
-                _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(frameQueueSize);
-                videoSrc.RegisterCallback(Argb32VideoFrameReady);
-                break;
+            switch (source.FrameEncoding)
+            {
+                case VideoEncoding.I420A:
+                    _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(frameQueueSize);
+                    source.I420AVideoFrameReady += I420AVideoFrameReady;
+                    break;
+
+                case VideoEncoding.Argb32:
+                    _argb32FrameQueue = new VideoFrameQueue<Argb32VideoFrameStorage>(frameQueueSize);
+                    source.Argb32VideoFrameReady += Argb32VideoFrameReady;
+                    break;
             }
         }
 
-        private void VideoStreamStopped(IVideoSource source)
+        /// <summary>
+        /// Stop rendering the passed source. Must be called with the same source passed to <see cref="StartRendering(IVideoSource)"/>
+        /// </summary>
+        /// <remarks>
+        /// Can be used to handle <see cref="VideoTrackSource.VideoStreamStopped"/> or <see cref="VideoReceiver.VideoStreamStopped"/>.
+        /// </remarks>
+        public void StopRendering(IVideoSource _)
+        {
+            // Clear the video display to not confuse the user who could otherwise
+            // think that the video is still playing but is lagging/frozen.
+            CreateEmptyVideoTextures();
+        }
+
+        protected void OnDisable()
         {
             // Clear the video display to not confuse the user who could otherwise
             // think that the video is still playing but is lagging/frozen.

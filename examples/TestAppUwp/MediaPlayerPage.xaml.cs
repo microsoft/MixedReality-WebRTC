@@ -53,7 +53,7 @@ namespace TestAppUwp
     public class AudioTrackViewModel : TrackViewModel
     {
         public AudioTrackSource Source => (TrackImpl as LocalAudioTrack)?.Source;
-        public IAudioTrack Track => (IAudioTrack)TrackImpl;
+        public IAudioSource Track => (IAudioSource)TrackImpl;
 
         public AudioTrackViewModel(LocalAudioTrack track, string deviceName)
             : base(track, deviceName)
@@ -71,7 +71,7 @@ namespace TestAppUwp
     public class VideoTrackViewModel : TrackViewModel
     {
         public VideoTrackSource Source => (TrackImpl as LocalVideoTrack)?.Source;
-        public IVideoTrack Track => (IVideoTrack)TrackImpl;
+        public IVideoSource Track => (IVideoSource)TrackImpl;
         public VideoTrackViewModel(LocalVideoTrack track, string deviceName)
             : base(track, deviceName)
         {
@@ -235,7 +235,7 @@ namespace TestAppUwp
             remoteAudioSampleRate.Text = $"{sampleRate} Hz";
         }
 
-        private void SwitchMediaPlayerSource(IAudioTrack audioTrack, IVideoTrack videoTrack)
+        private void SwitchMediaPlayerSource(IAudioSource audioTrack, IVideoSource videoTrack)
         {
             //lock (_mediaPlaybackLock)
             //{

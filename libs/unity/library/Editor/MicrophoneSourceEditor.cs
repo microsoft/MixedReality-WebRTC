@@ -14,14 +14,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
     public class MicrophoneSourceEditor : UnityEditor.Editor
     {
         SerializedProperty _autoGainControl;
-        SerializedProperty _audioSourceStarted;
         SerializedProperty _audioSourceStopped;
 
         void OnEnable()
         {
             _autoGainControl = serializedObject.FindProperty("_autoGainControl");
-            _audioSourceStarted = serializedObject.FindProperty("AudioSourceStarted");
-            _audioSourceStopped = serializedObject.FindProperty("AudioSourceStopped");
         }
 
         /// <summary>
@@ -50,11 +47,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
             EditorGUILayout.LabelField("Audio processing", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_autoGainControl);
-
-            GUILayout.Space(10);
-
-            EditorGUILayout.PropertyField(_audioSourceStarted);
-            EditorGUILayout.PropertyField(_audioSourceStopped);
 
             serializedObject.ApplyModifiedProperties();
         }

@@ -10,12 +10,12 @@ namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
     /// Audio source for WebRTC audio tracks.
-    /// 
+    ///
     /// The audio source is not bound to any peer connection, and can therefore be shared by multiple audio
     /// tracks from different peer connections. This is especially useful to share local audio capture devices
     /// (microphones) amongst multiple peer connections when building a multi-peer experience with a mesh topology
     /// (one connection per pair of peers).
-    /// 
+    ///
     /// The user owns the audio track source, and is in charge of keeping it alive until after all tracks using it
     /// are destroyed, and then dispose of it. The behavior of disposing of the track source while a track is still
     /// using it is undefined. The <see cref="Tracks"/> property contains the list of tracks currently using the

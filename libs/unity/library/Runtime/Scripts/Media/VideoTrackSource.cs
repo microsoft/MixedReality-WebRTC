@@ -15,7 +15,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <seealso cref="WebcamSource"/>
     /// <seealso cref="CustomVideoSource{T}"/>
     /// <seealso cref="SceneVideoSource"/>
-    public abstract class VideoTrackSource : VideoRendererSource, IVideoSource, IMediaTrackSource, IMediaTrackSourceInternal
+    public abstract class VideoTrackSource : MonoBehaviour, IMediaTrackSource, IMediaTrackSourceInternal
     {
         /// <summary>
         /// Video track source object from the underlying C# library that this component encapsulates.
@@ -55,73 +55,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
 
-
-        #region IVideoSource interface
-
-        /// <inheritdoc/>
-        public bool IsStreaming { get; protected set; }
-
-        /// <inheritdoc/>
-        public VideoStreamStartedEvent GetVideoStreamStarted() { return VideoStreamStarted; }
-
-        /// <inheritdoc/>
-        public VideoStreamStoppedEvent GetVideoStreamStopped() { return VideoStreamStopped; }
-
-        /// <inheritdoc/>
-        public VideoEncoding FrameEncoding { get; } = VideoEncoding.I420A;
-
-        /// <inheritdoc/>
-        public void RegisterCallback(I420AVideoFrameDelegate callback)
-        {
-            if (Source != null)
-            {
-                Source.VideoFrameReady += callback;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void UnregisterCallback(I420AVideoFrameDelegate callback)
-        {
-            if (Source != null)
-            {
-                Source.VideoFrameReady -= callback;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void RegisterCallback(Argb32VideoFrameDelegate callback)
-        {
-            if (Source != null)
-            {
-                Source.ARGB32VideoFrameReady += callback;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void UnregisterCallback(Argb32VideoFrameDelegate callback)
-        {
-            if (Source != null)
-            {
-                Source.ARGB32VideoFrameReady -= callback;
-            }
-        }
-
-        #endregion
-
-
         #region IMediaTrackSource
 
         /// <inheritdoc/>
         MediaKind IMediaTrackSource.MediaKind => MediaKind.Video;
 
         #endregion
-
-
-
-        public VideoTrackSource(VideoEncoding frameEncoding)
-        {
-            FrameEncoding = frameEncoding;
-        }
 
         private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
 
@@ -140,8 +79,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Source.Dispose();
                 Source = null;
 
-                VideoStreamStopped.Invoke(this);
-                IsStreaming = false;
+                VideoStreamStopped.Invoke(Source);
             }
         }
 
