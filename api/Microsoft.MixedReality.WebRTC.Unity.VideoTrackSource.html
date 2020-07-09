@@ -96,70 +96,20 @@ of any peer connection, and can be shared with multiple of them.</p>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html">WorkQueue</a></div>
-    <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRendererSource.html">VideoRendererSource</a></div>
-    <div class="level3"><span class="xref">VideoTrackSource</span></div>
-      <div class="level4"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html">CustomVideoSource</a>&lt;T&gt;</div>
-      <div class="level4"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html">WebcamSource</a></div>
+    <div class="level1"><span class="xref">VideoTrackSource</span></div>
+      <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html">CustomVideoSource</a>&lt;T&gt;</div>
+      <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html">WebcamSource</a></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a></div>
     <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a></div>
-  </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_IsMainAppThread">WorkQueue.IsMainAppThread</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_EnsureIsMainAppThread">WorkQueue.EnsureIsMainAppThread()</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_InvokeOnAppThread_Action_">WorkQueue.InvokeOnAppThread(Action)</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_Awake">WorkQueue.Awake()</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_Update">WorkQueue.Update()</a>
-    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class VideoTrackSource : VideoRendererSource, IVideoSource, IMediaTrackSource, IMediaTrackSourceInternal</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class VideoTrackSource : MonoBehaviour, IMediaTrackSource, IMediaTrackSourceInternal</code></pre>
   </div>
-  <h3 id="constructors">Constructors
-  </h3>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource__ctor_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.#ctor*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource__ctor_Microsoft_MixedReality_WebRTC_Unity_VideoEncoding_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.#ctor(Microsoft.MixedReality.WebRTC.Unity.VideoEncoding)">VideoTrackSource(VideoEncoding)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public VideoTrackSource(VideoEncoding frameEncoding)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoEncoding.html">VideoEncoding</a></td>
-        <td><span class="parametername">frameEncoding</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="fields">Fields
   </h3>
   
@@ -169,7 +119,7 @@ of any peer connection, and can be shared with multiple of them.</p>
 <p>When this event is raised, the followings are true:</p>
 <ul>
 <li>The <see cref="!:Track"></see> property is a valid local video track.</li>
-<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_IsStreaming">IsStreaming</a> will become <code>true</code> just after the event
+<li>The <see cref="!:IsStreaming"></see> will become <code>true</code> just after the event
 is raised, by design.</li>
 </ul>
 </div>
@@ -203,7 +153,7 @@ is raised, by design.</li>
 <p>When this event is raised, the followings are true:</p>
 <ul>
 <li>The <see cref="!:Track"></see> property is <code>null</code>.</li>
-<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_IsStreaming">IsStreaming</a> has just become <code>false</code> right before the event
+<li>The <see cref="!:IsStreaming"></see> has just become <code>false</code> right before the event
 was raised, by design.</li>
 </ul>
 </div>
@@ -232,63 +182,6 @@ was raised, by design.</li>
 </div>
   <h3 id="properties">Properties
   </h3>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_FrameEncoding_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.FrameEncoding*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_FrameEncoding" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.FrameEncoding">FrameEncoding</h4>
-  <div class="markdown level1 summary"><p>Video encoding indicating the kind of frames the source is producing.
-This is used for example by the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a> to determine how to
-render the frame.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public VideoEncoding FrameEncoding { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoEncoding.html">VideoEncoding</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_IsStreaming_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.IsStreaming*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_IsStreaming" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.IsStreaming">IsStreaming</h4>
-  <div class="markdown level1 summary"><p>Is the video source currently streaming some video frames?
-This must be <code>true</code> between the invoking of the video stream started
-and stopped events. That is, this becomes <code>true</code> after the stream started
-event and becomes <code>false</code> before the stream stopped event.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool IsStreaming { get; protected set; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_MediaLines_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.MediaLines*"></a>
@@ -346,60 +239,6 @@ event and becomes <code>false</code> before the stream stopped event.</p>
   </h3>
   
   
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_GetVideoStreamStarted_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.GetVideoStreamStarted*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_GetVideoStreamStarted" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.GetVideoStreamStarted">GetVideoStreamStarted()</h4>
-  <div class="markdown level1 summary"><p>Get the event notifying the user that the video stream started.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public VideoStreamStartedEvent GetVideoStreamStarted()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent.html">VideoStreamStartedEvent</a></td>
-        <td><p>The event associated with the video source.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_GetVideoStreamStopped_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.GetVideoStreamStopped*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_GetVideoStreamStopped" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.GetVideoStreamStopped">GetVideoStreamStopped()</h4>
-  <div class="markdown level1 summary"><p>Get the event notifying the user that the video stream stopped.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public VideoStreamStoppedEvent GetVideoStreamStopped()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoStreamStoppedEvent.html">VideoStreamStoppedEvent</a></td>
-        <td><p>The event associated with the video source.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
   <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_OnDisable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.OnDisable*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_OnDisable" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.OnDisable">OnDisable()</h4>
   <div class="markdown level1 summary"></div>
@@ -408,114 +247,6 @@ event and becomes <code>false</code> before the stream stopped event.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected virtual void OnDisable()</code></pre>
   </div>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_RegisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.RegisterCallback*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_RegisterCallback_Argb32VideoFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.RegisterCallback(Argb32VideoFrameDelegate)">RegisterCallback(Argb32VideoFrameDelegate)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void RegisterCallback(Argb32VideoFrameDelegate callback)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Argb32VideoFrameDelegate</span></td>
-        <td><span class="parametername">callback</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_RegisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.RegisterCallback*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_RegisterCallback_I420AVideoFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.RegisterCallback(I420AVideoFrameDelegate)">RegisterCallback(I420AVideoFrameDelegate)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void RegisterCallback(I420AVideoFrameDelegate callback)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">I420AVideoFrameDelegate</span></td>
-        <td><span class="parametername">callback</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_UnregisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.UnregisterCallback*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_UnregisterCallback_Argb32VideoFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.UnregisterCallback(Argb32VideoFrameDelegate)">UnregisterCallback(Argb32VideoFrameDelegate)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void UnregisterCallback(Argb32VideoFrameDelegate callback)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Argb32VideoFrameDelegate</span></td>
-        <td><span class="parametername">callback</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_UnregisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.UnregisterCallback*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_UnregisterCallback_I420AVideoFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.UnregisterCallback(I420AVideoFrameDelegate)">UnregisterCallback(I420AVideoFrameDelegate)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void UnregisterCallback(I420AVideoFrameDelegate callback)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">I420AVideoFrameDelegate</span></td>
-        <td><span class="parametername">callback</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="eii">Explicit Interface Implementations
   </h3>
   
@@ -545,9 +276,6 @@ event and becomes <code>false</code> before the stream stopped event.</p>
     </tbody>
   </table>
   <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a>
-  </div>
   <div>
       <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a>
   </div>

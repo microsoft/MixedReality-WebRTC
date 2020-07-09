@@ -241,39 +241,6 @@ via the attached <a href="https://docs.unity3d.com/ScriptReference/Renderer.html
       </tr>
     </tbody>
   </table>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_Source" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.Source">Source</h4>
-  <div class="markdown level1 summary"><p>Video frame source producing the frames to render. The concrete class must implement <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected VideoRendererSource Source</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRendererSource.html">VideoRendererSource</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_Source_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Here what we really want is to serialize some reference to an <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a>.
-Unfortunately Unity before 2019.3 does not support serialized interfaces, and more generally ignores
-polymorphism in serialization. And although there are ways to make that work with a custom inspector,
-this disables support for object picker, so only drag-and-drop works, which is very impractical.
-So we use a base class derived from MonoBehaviour, which is the only entity for which Unity handles
-polymorphism.</p>
-</div>
   <h3 id="methods">Methods
   </h3>
   
@@ -330,6 +297,78 @@ polymorphism.</p>
       </tr>
     </tbody>
   </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_OnDisable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.OnDisable*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_OnDisable" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.OnDisable">OnDisable()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void OnDisable()</code></pre>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_StartRendering_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.StartRendering*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_StartRendering_IVideoSource_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.StartRendering(IVideoSource)">StartRendering(IVideoSource)</h4>
+  <div class="markdown level1 summary"><p>Start rendering the passed source.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void StartRendering(IVideoSource source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IVideoSource</span></td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_StartRendering_IVideoSource__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Can be used to handle <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_VideoStreamStarted">VideoStreamStarted</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_VideoStreamStarted">VideoStreamStarted</a>.</p>
+</div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_StopRendering_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.StopRendering*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_StopRendering_IVideoSource_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.StopRendering(IVideoSource)">StopRendering(IVideoSource)</h4>
+  <div class="markdown level1 summary"><p>Stop rendering the passed source. Must be called with the same source passed to <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html#Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_StartRendering_IVideoSource_">StartRendering(IVideoSource)</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void StopRendering(IVideoSource _)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IVideoSource</span></td>
+        <td><span class="parametername">_</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_StopRendering_IVideoSource__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Can be used to handle <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_VideoStreamStopped">VideoStreamStopped</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_VideoStreamStopped">VideoStreamStopped</a>.</p>
+</div>
 </article>
           </div>
           

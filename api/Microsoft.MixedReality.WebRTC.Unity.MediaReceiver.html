@@ -1,0 +1,408 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class MediaReceiver
+   | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class MediaReceiver
+   | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.56.1.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.png">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="MixedReality-WebRTC">
+                <span>MixedReality-WebRTC</span>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver">
+  
+  
+  <h1 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver" class="text-break">Class MediaReceiver
+  </h1>
+  <div class="markdown level0 summary"><p>Base class for media producers generating frames by receiving them from a remote peer.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">MediaReceiver</span></div>
+      <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html">AudioReceiver</a></div>
+      <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html">VideoReceiver</a></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
+  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract class MediaReceiver : MonoBehaviour</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_IsLive_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.IsLive*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_IsLive" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.IsLive">IsLive</h4>
+  <div class="markdown level1 summary"><p>Is the media source currently producing frames received from the remote peer?
+This is <code>true</code> while the remote media track exists, which is notified by
+events on the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html">AudioReceiver</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html">VideoReceiver</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsLive { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_MediaKind_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.MediaKind*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_MediaKind" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.MediaKind">MediaKind</h4>
+  <div class="markdown level1 summary"><p>Media kind of the receiver.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract MediaKind MediaKind { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MediaKind</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_MediaLine_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.MediaLine*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_MediaLine" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.MediaLine">MediaLine</h4>
+  <div class="markdown level1 summary"><p>Media line this receiver is paired with, if any.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MediaLine MediaLine { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html">MediaLine</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_Track_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.Track*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_Track" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.Track">Track</h4>
+  <div class="markdown level1 summary"><p>Remote track associated with this receiver.
+<code>null</code> if this object is not receiving at this time.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract MediaTrack Track { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MediaTrack</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_Track_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This is always a <see cref="!:RemoteAudioTrack"></see> or a <see cref="!:RemoteVideoTrack"></see></p>
+</div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_Transceiver_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.Transceiver*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_Transceiver" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.Transceiver">Transceiver</h4>
+  <div class="markdown level1 summary"><p>Transceiver this receiver is paired with, if any.</p>
+<p>This is <code>null</code> until a remote description is applied which pairs the media line
+this receiver is associated with to a transceiver, or until the peer connection of this
+receiver's media line creates the receiver right before creating an SDP offer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Transceiver Transceiver { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transceiver</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnAddedToMediaLine_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnAddedToMediaLine*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnAddedToMediaLine_Microsoft_MixedReality_WebRTC_Unity_MediaLine_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnAddedToMediaLine(Microsoft.MixedReality.WebRTC.Unity.MediaLine)">OnAddedToMediaLine(MediaLine)</h4>
+  <div class="markdown level1 summary"><p>Internal callback invoked when the media receiver is assigned to a media line.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected virtual void OnAddedToMediaLine(MediaLine mediaLine)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html">MediaLine</a></td>
+        <td><span class="parametername">mediaLine</span></td>
+        <td><p>The new media line this receiver is assigned to.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnPaired_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnPaired*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnPaired_MediaTrack_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnPaired(MediaTrack)">OnPaired(MediaTrack)</h4>
+  <div class="markdown level1 summary"><p>Internal callback invoked when the receiver is paired with a media track.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected virtual void OnPaired(MediaTrack track)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MediaTrack</span></td>
+        <td><span class="parametername">track</span></td>
+        <td><p>The media track this receiver is paired with.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnPaired_MediaTrack__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This will be called on the Unity update thread.</p>
+</div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnRemoveFromMediaLine_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnRemoveFromMediaLine*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnRemoveFromMediaLine_Microsoft_MixedReality_WebRTC_Unity_MediaLine_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnRemoveFromMediaLine(Microsoft.MixedReality.WebRTC.Unity.MediaLine)">OnRemoveFromMediaLine(MediaLine)</h4>
+  <div class="markdown level1 summary"><p>Internal callback invoked when the media receiver is de-assigned from a media line.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected virtual void OnRemoveFromMediaLine(MediaLine mediaLine)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html">MediaLine</a></td>
+        <td><span class="parametername">mediaLine</span></td>
+        <td><p>The old media line this receiver was assigned to.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnUnpaired_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnUnpaired*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnUnpaired_MediaTrack_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnUnpaired(MediaTrack)">OnUnpaired(MediaTrack)</h4>
+  <div class="markdown level1 summary"><p>Internal callback invoked when the receiver is unpaired from a media track.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected virtual void OnUnpaired(MediaTrack track)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MediaTrack</span></td>
+        <td><span class="parametername">track</span></td>
+        <td><p>The media track this receiver was paired with.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnUnpaired_MediaTrack__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This will be called on the Unity update thread.</p>
+</div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

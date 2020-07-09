@@ -89,7 +89,7 @@
   </h1>
   <div class="markdown level0 summary"><p>Media line abstraction for a peer connection.</p>
 <p>This container binds together a source component (<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a>) and/or a receiver
-component (<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaReceiver.html">IMediaReceiver</a>) on one side, with a transceiver on the other side. The media line
+component (<see cref="!:IMediaReceiver"></see>) on one side, with a transceiver on the other side. The media line
 is a declarative representation of this association, which is then turned into a binding by the implementation
 during an SDP negotiation. This forms the core of the algorithm allowing automatic transceiver pairing
 between the two peers based on the declaration of intent of the user.</p>
@@ -160,7 +160,7 @@ peer connection of <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Med
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IMediaReceiver Receiver { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public MediaReceiver Receiver { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -172,7 +172,7 @@ peer connection of <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Med
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaReceiver.html">IMediaReceiver</a></td>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html">MediaReceiver</a></td>
         <td></td>
       </tr>
     </tbody>

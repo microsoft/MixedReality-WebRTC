@@ -94,9 +94,10 @@
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Android.html">Android</a></h4>
       <section></section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html">AudioReceiver</a></h4>
-      <section><p>This component represents a remote audio source added as an audio track to an
-existing WebRTC peer connection by a remote peer and received locally.
-The audio track can optionally be displayed locally with a <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a>.</p>
+      <section><p>Endpoint for a WebRTC remote audio track.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioRenderer.html">AudioRenderer</a></h4>
+      <section><p>Utility component used to play audio frames obtained from a WebRTC audio source.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent.html">AudioStreamStartedEvent</a></h4>
       <section><p>Unity event corresponding to a new audio stream being started.</p>
@@ -124,7 +125,7 @@ transceiver of one media kind with a media line of a different media kind.</p>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html">MediaLine</a></h4>
       <section><p>Media line abstraction for a peer connection.</p>
 <p>This container binds together a source component (<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a>) and/or a receiver
-component (<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaReceiver.html">IMediaReceiver</a>) on one side, with a transceiver on the other side. The media line
+component (<see cref="!:IMediaReceiver"></see>) on one side, with a transceiver on the other side. The media line
 is a declarative representation of this association, which is then turned into a binding by the implementation
 during an SDP negotiation. This forms the core of the algorithm allowing automatic transceiver pairing
 between the two peers based on the declaration of intent of the user.</p>
@@ -135,6 +136,9 @@ After the SDP negotiation is completed, the <a class="xref" href="Microsoft.Mixe
 associated with this media line, and which the sender and receiver will use.</p>
 <p>Users typically interact with this class through the peer connection transceiver collection in the Unity
 inspector window, though direct manipulation via code is also possible.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html">MediaReceiver</a></h4>
+      <section><p>Base class for media producers generating frames by receiving them from a remote peer.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html">MicrophoneSource</a></h4>
       <section><p>This component represents a local audio source generating audio frames from a local
@@ -168,22 +172,12 @@ for simplicity and safety, and leaves the implementation with instead with two s
 implement, as well as handling received messages.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html">VideoReceiver</a></h4>
-      <section><p>This component represents a remote video source added as a video track to an
-existing WebRTC peer connection by a remote peer and received locally.
-The video track can optionally be displayed locally with a <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a>.</p>
+      <section><p>Endpoint for a WebRTC remote video track.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a></h4>
       <section><p>Utility component used to play video frames obtained from a WebRTC video track. This can indiscriminately
 play video frames from a video track source on the local peer as well as video frames from a remote video
 receiver obtaining its frame from a remote WebRTC peer.</p>
-</section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRendererSource.html">VideoRendererSource</a></h4>
-      <section><p>Base class for video-producing entities which can be rendered using a <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a>.</p>
-<p>This class is only used because Unity requires a common base class between <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html">VideoTrackSource</a>
-and <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html">VideoReceiver</a> to be able to serialize a polymorphic property to either of those producers
-in <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a>. Ideally <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a> would use an <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a>
-property instead, but polymorphic serialization of interfaces is not supported (there is partial support in
-Unity 2019.3 but some things like the component picking window are still broken).</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent.html">VideoStreamStartedEvent</a></h4>
       <section><p>Unity event corresponding to a new video stream being started.</p>
@@ -220,19 +214,8 @@ a video capture format.</p>
 </section>
     <h3 id="interfaces">Interfaces
   </h3>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IAudioSource.html">IAudioSource</a></h4>
-      <section><p>Interface for audio sources plugging into the internal peer connection API to
-expose a single audio stream to a renderer (<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a> or custom).</p>
-</section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaReceiver.html">IMediaReceiver</a></h4>
-      <section><p>Base class for media producers generating frames by receiving them from a remote peer.</p>
-</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a></h4>
       <section><p>Interface for media track source components producing some media frames locally.</p>
-</section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IVideoSource.html">IVideoSource</a></h4>
-      <section><p>Interface for video sources plugging into the internal peer connection API to
-expose a single video stream to a renderer (<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a> or custom).</p>
 </section>
     <h3 id="enums">Enums
   </h3>
@@ -241,9 +224,6 @@ expose a single video stream to a renderer (<a class="xref" href="Microsoft.Mixe
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.html">LocalVideoSourceFormatMode</a></h4>
       <section><p>Video capture format selection mode for a local video source.</p>
-</section>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoEncoding.html">VideoEncoding</a></h4>
-      <section><p>Enumeration of video encodings.</p>
 </section>
 </article>
           </div>

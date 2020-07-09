@@ -87,43 +87,43 @@
   
   <h1 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver" class="text-break">Class AudioReceiver
   </h1>
-  <div class="markdown level0 summary"><p>This component represents a remote audio source added as an audio track to an
-existing WebRTC peer connection by a remote peer and received locally.
-The audio track can optionally be displayed locally with a <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a>.</p>
+  <div class="markdown level0 summary"><p>Endpoint for a WebRTC remote audio track.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html">WorkQueue</a></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html">MediaReceiver</a></div>
     <div class="level2"><span class="xref">AudioReceiver</span></div>
-  </div>
-  <div classs="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IAudioSource.html">IAudioSource</a></div>
-    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaReceiver.html">IMediaReceiver</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_IsMainAppThread">WorkQueue.IsMainAppThread</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_IsLive">MediaReceiver.IsLive</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_EnsureIsMainAppThread">WorkQueue.EnsureIsMainAppThread()</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_Transceiver">MediaReceiver.Transceiver</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_InvokeOnAppThread_Action_">WorkQueue.InvokeOnAppThread(Action)</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_MediaLine">MediaReceiver.MediaLine</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnAddedToMediaLine_Microsoft_MixedReality_WebRTC_Unity_MediaLine_">MediaReceiver.OnAddedToMediaLine(MediaLine)</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnRemoveFromMediaLine_Microsoft_MixedReality_WebRTC_Unity_MediaLine_">MediaReceiver.OnRemoveFromMediaLine(MediaLine)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AudioReceiver : WorkQueue, IAudioSource, IMediaReceiverInternal, IMediaReceiver</code></pre>
+    <pre><code class="lang-csharp hljs">public class AudioReceiver : MediaReceiver</code></pre>
   </div>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>This component will play audio only while it is active and a remote track is associated
-to the paired <see cref="!:WebRTC.Transceiver"></see>.</p>
+  <div class="markdown level0 remarks"><p>Setting this on an audio <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html">MediaLine</a> will enable the corresponding transceiver to receive.
+A remote track will be exposed through <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html#Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_AudioTrack">AudioTrack</a> once a connection is established.
+The audio track can optionally be played locally with an <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioRenderer.html">AudioRenderer</a>.</p>
 </div>
   <h3 id="fields">Fields
   </h3>
@@ -134,15 +134,13 @@ to the paired <see cref="!:WebRTC.Transceiver"></see>.</p>
 <p>When this event is raised, the followings are true:</p>
 <ul>
 <li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html#Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Track">Track</a> property is a valid remote audio track.</li>
-<li>The <see cref="!:MediaReceiver.IsLive"></see> property is <code>true</code>.</li>
-<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html#Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_IsStreaming">IsStreaming</a> will become <code>true</code> just after the event
-is raised, by design.</li>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_IsLive">IsLive</a> property is <code>true</code>.</li>
 </ul>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly AudioStreamStartedEvent AudioStreamStarted</code></pre>
+    <pre><code class="lang-csharp hljs">public AudioStreamStartedEvent AudioStreamStarted</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -168,15 +166,13 @@ is raised, by design.</li>
   <div class="markdown level1 summary"><p>Event raised when the audio stream stopped.</p>
 <p>When this event is raised, the followings are true:</p>
 <ul>
-<li>The <see cref="!:MediaReceiver.IsLive"></see> property is <code>false</code>.</li>
-<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html#Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_IsStreaming">IsStreaming</a> has just become <code>false</code> right before the event
-was raised, by design.</li>
+<li>The <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_IsLive">IsLive</a> property is <code>false</code>.</li>
 </ul>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly AudioStreamStoppedEvent AudioStreamStopped</code></pre>
+    <pre><code class="lang-csharp hljs">public AudioStreamStoppedEvent AudioStreamStopped</code></pre>
   </div>
   <h5 class="fieldValue">Field Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -196,99 +192,18 @@ was raised, by design.</li>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_AudioStreamStopped_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This event is raised from the main Unity thread to allow Unity object access.</p>
 </div>
-  
-  
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_PadWithSine" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.PadWithSine">PadWithSine</h4>
-  <div class="markdown level1 summary"><p>If true, pad buffer underruns with a sine wave. This will cause artifacts on underruns.
-Use for debugging.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool PadWithSine</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="properties">Properties
   </h3>
   
   
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_IsStreaming_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.IsStreaming*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_IsStreaming" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.IsStreaming">IsStreaming</h4>
-  <div class="markdown level1 summary"><p>Is the audio source currently streaming some audio frames?
-This must be <code>true</code> between the invoking of the audio stream started
-and stopped events. That is, this becomes <code>true</code> after the stream started
-event and becomes <code>false</code> before the stream stopped event.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool IsStreaming { get; protected set; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_MediaLines_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.MediaLines*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_MediaLines" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.MediaLines">MediaLines</h4>
-  <div class="markdown level1 summary"><p>List of audio media lines using this source.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;MediaLine&gt; MediaLines { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">IReadOnlyList</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html">MediaLine</a>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Track_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Track*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Track" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Track">Track</h4>
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_AudioTrack_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.AudioTrack*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_AudioTrack" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.AudioTrack">AudioTrack</h4>
   <div class="markdown level1 summary"><p>Remote audio track receiving data from the remote peer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RemoteAudioTrack Track { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public RemoteAudioTrack AudioTrack { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -305,254 +220,22 @@ event and becomes <code>false</code> before the stream stopped event.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Track_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This is <code>null</code> until <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_IMediaReceiver_Transceiver">Transceiver</a> is set to a non-null
-value and a remote track is added to that transceiver.</p>
-</div>
-  <h3 id="methods">Methods
-  </h3>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Awake_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Awake*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Awake" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Awake">Awake()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void Awake()</code></pre>
-  </div>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_Awake">WorkQueue.Awake()</a></div>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_GetAudioStreamStarted_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.GetAudioStreamStarted*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_GetAudioStreamStarted" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.GetAudioStreamStarted">GetAudioStreamStarted()</h4>
-  <div class="markdown level1 summary"><p>Get the event notifying the user that the audio stream started.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AudioStreamStartedEvent GetAudioStreamStarted()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent.html">AudioStreamStartedEvent</a></td>
-        <td><p>The event associated with the audio source.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_GetAudioStreamStopped_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.GetAudioStreamStopped*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_GetAudioStreamStopped" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.GetAudioStreamStopped">GetAudioStreamStopped()</h4>
-  <div class="markdown level1 summary"><p>Get the event notifying the user that the audio stream stopped.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AudioStreamStoppedEvent GetAudioStreamStopped()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent.html">AudioStreamStoppedEvent</a></td>
-        <td><p>The event associated with the audio source.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnAudioFilterRead_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.OnAudioFilterRead*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnAudioFilterRead_System_Single___System_Int32_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.OnAudioFilterRead(System.Single[],System.Int32)">OnAudioFilterRead(Single[], Int32)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected void OnAudioFilterRead(float[] data, int channels)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>[]</td>
-        <td><span class="parametername">data</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">channels</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnDestroy_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.OnDestroy*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnDestroy" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.OnDestroy">OnDestroy()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected void OnDestroy()</code></pre>
-  </div>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnDisable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.OnDisable*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnDisable" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.OnDisable">OnDisable()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected void OnDisable()</code></pre>
-  </div>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_RegisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.RegisterCallback*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_RegisterCallback_AudioFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.RegisterCallback(AudioFrameDelegate)">RegisterCallback(AudioFrameDelegate)</h4>
-  <div class="markdown level1 summary"><p>Register a frame callback to listen to incoming audio data receiving through this
-audio receiver from the remote peer.</p>
-<p>The callback can only be registered once <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html#Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Track">Track</a> is valid, that is once
-the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html#Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_AudioStreamStarted">AudioStreamStarted</a> event was raised.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void RegisterCallback(AudioFrameDelegate callback)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">AudioFrameDelegate</span></td>
-        <td><span class="parametername">callback</span></td>
-        <td><p>The new frame callback to register.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_RegisterCallback_AudioFrameDelegate__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Note that audio is output automatically through the <see cref="!:UnityEngine.AudioSource"></see>
-on the game object, so the data passed to the callback shouldn't be using for audio output.</p>
-<p>A typical application might use this callback to display some feedback of audio being
-received, like a spectrum analyzer, but more commonly will not need that callback because
-of the above restriction on automated audio output.</p>
-<p>Note that registering a callback does not influence the audio capture and sending
-to the remote peer, which occurs whether or not a callback is registered.</p>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_AudioTrack_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This is <code>null</code> until:</p>
+<ul></ul>
 </div>
   
   
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_UnregisterCallback_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.UnregisterCallback*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_UnregisterCallback_AudioFrameDelegate_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.UnregisterCallback(AudioFrameDelegate)">UnregisterCallback(AudioFrameDelegate)</h4>
-  <div class="markdown level1 summary"><p>Unregister a frame callback previously registered with <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IAudioSource.html#Microsoft_MixedReality_WebRTC_Unity_IAudioSource_RegisterCallback_AudioFrameDelegate_">RegisterCallback(AudioFrameDelegate)</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void UnregisterCallback(AudioFrameDelegate callback)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">AudioFrameDelegate</span></td>
-        <td><span class="parametername">callback</span></td>
-        <td><p>The frame callback to unregister.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Update_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Update*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Update" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Update">Update()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void Update()</code></pre>
-  </div>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html#Microsoft_MixedReality_WebRTC_Unity_WorkQueue_Update">WorkQueue.Update()</a></div>
-  <h3 id="eii">Explicit Interface Implementations
-  </h3>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Microsoft_MixedReality_WebRTC_Unity_IMediaReceiver_IsLive_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Microsoft#MixedReality#WebRTC#Unity#IMediaReceiver#IsLive*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Microsoft_MixedReality_WebRTC_Unity_IMediaReceiver_IsLive" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Microsoft#MixedReality#WebRTC#Unity#IMediaReceiver#IsLive">IMediaReceiver.IsLive</h4>
-  <div class="markdown level1 summary"><p>Is the media source currently producing frames received from the remote peer?
-This is <code>true</code> while the remote media track exists, which is notified by
-events on the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html">AudioReceiver</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html">VideoReceiver</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">bool IMediaReceiver.IsLive { get; }</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Microsoft_MixedReality_WebRTC_Unity_IMediaReceiver_MediaKind_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Microsoft#MixedReality#WebRTC#Unity#IMediaReceiver#MediaKind*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Microsoft_MixedReality_WebRTC_Unity_IMediaReceiver_MediaKind" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Microsoft#MixedReality#WebRTC#Unity#IMediaReceiver#MediaKind">IMediaReceiver.MediaKind</h4>
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_MediaKind_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.MediaKind*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_MediaKind" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.MediaKind">MediaKind</h4>
   <div class="markdown level1 summary"><p>Media kind of the receiver.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">MediaKind IMediaReceiver.MediaKind { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public override MediaKind MediaKind { get; }</code></pre>
   </div>
-  <h5 class="returns">Returns</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -567,21 +250,21 @@ events on the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioRec
       </tr>
     </tbody>
   </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_MediaKind">MediaReceiver.MediaKind</a></div>
   
   
-  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Microsoft_MixedReality_WebRTC_Unity_IMediaReceiver_Transceiver_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Microsoft#MixedReality#WebRTC#Unity#IMediaReceiver#Transceiver*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Microsoft_MixedReality_WebRTC_Unity_IMediaReceiver_Transceiver" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Microsoft#MixedReality#WebRTC#Unity#IMediaReceiver#Transceiver">IMediaReceiver.Transceiver</h4>
-  <div class="markdown level1 summary"><p>Transceiver this receiver is paired with, if any.</p>
-<p>This is <code>null</code> until a remote description is applied which pairs the media line
-this receiver is associated with to a transceiver, or until the peer connection of this
-receiver's media line creates the receiver right before creating an SDP offer.</p>
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Track_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Track*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Track" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.Track">Track</h4>
+  <div class="markdown level1 summary"><p>Remote track associated with this receiver.
+<code>null</code> if this object is not receiving at this time.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Transceiver IMediaReceiver.Transceiver { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public override MediaTrack Track { get; }</code></pre>
   </div>
-  <h5 class="returns">Returns</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -591,22 +274,86 @@ receiver's media line creates the receiver right before creating an SDP offer.</
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Transceiver</span></td>
+        <td><span class="xref">MediaTrack</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IAudioSource.html">IAudioSource</a>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_Track">MediaReceiver.Track</a></div>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_Track_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This is always a <see cref="!:RemoteAudioTrack"></see> or a <see cref="!:RemoteVideoTrack"></see></p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnPaired_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.OnPaired*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnPaired_MediaTrack_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.OnPaired(MediaTrack)">OnPaired(MediaTrack)</h4>
+  <div class="markdown level1 summary"><p>Internal callback invoked when the receiver is paired with a media track.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void OnPaired(MediaTrack track)</code></pre>
   </div>
-  <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaReceiver.html">IMediaReceiver</a>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MediaTrack</span></td>
+        <td><span class="parametername">track</span></td>
+        <td><p>The media track this receiver is paired with.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnPaired_MediaTrack_">MediaReceiver.OnPaired(MediaTrack)</a></div>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnPaired_MediaTrack__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This will be called on the Unity update thread.</p>
+</div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnUnpaired_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.OnUnpaired*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnUnpaired_MediaTrack_" data-uid="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.OnUnpaired(MediaTrack)">OnUnpaired(MediaTrack)</h4>
+  <div class="markdown level1 summary"><p>Internal callback invoked when the receiver is unpaired from a media track.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void OnUnpaired(MediaTrack track)</code></pre>
   </div>
-  <h3 id="seealso">See Also</h3>
-  <div class="seealso">
-      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a></div>
-  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MediaTrack</span></td>
+        <td><span class="parametername">track</span></td>
+        <td><p>The media track this receiver was paired with.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnUnpaired_MediaTrack_">MediaReceiver.OnUnpaired(MediaTrack)</a></div>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_AudioReceiver_OnUnpaired_MediaTrack__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This will be called on the Unity update thread.</p>
+</div>
 </article>
           </div>
           
