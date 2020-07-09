@@ -111,7 +111,7 @@ namespace Microsoft.MixedReality.WebRTC
         internal ExternalVideoTrackSource(IntPtr frameRequestCallbackArgsHandle, VideoEncoding videoEncoding)
         {
             _frameRequestCallbackArgsHandle = frameRequestCallbackArgsHandle;
-            FrameEncoding = FrameEncoding;
+            FrameEncoding = videoEncoding;
         }
 
         /// <summary>

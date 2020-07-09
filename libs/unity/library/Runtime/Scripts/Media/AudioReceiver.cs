@@ -29,14 +29,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// A remote track will be exposed through <see cref="AudioTrack"/> once a connection is established.
     /// The audio track can optionally be played locally with an <see cref="AudioRenderer"/>.
     /// </remarks>
+    [AddComponentMenu("MixedReality-WebRTC/Audio Receiver")]
     public class AudioReceiver : MediaReceiver
     {
         /// <summary>
         /// Remote audio track receiving data from the remote peer.
         /// </summary>
         /// <remarks>
-        /// This is <c>null</c> until <see cref="MediaLine.Transceiver"/> is set to a non-null
-        /// value and a remote track is added to that transceiver.
+        /// This is <c>null</c> until:
+        /// <list type="bullet">
+        /// <description><see cref="MediaLine.Transceiver"/> is set to a non-null value, and</description>
+        /// <description>the remote peer starts sending data to the paired transceiver after a session negotiation.</description>
+        /// </list>
         /// </remarks>
         public RemoteAudioTrack AudioTrack { get; private set; }
 

@@ -7,15 +7,16 @@ using UnityEngine;
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
-    /// This component represents a remote audio source added as an audio track to an
-    /// existing WebRTC peer connection by a remote peer and received locally.
-    /// The audio track can optionally be displayed locally with a <see cref="VideoRenderer"/>.
+    /// Utility component used to play audio frames obtained from a WebRTC audio source.
     /// </summary>
     /// <remarks>
-    /// This component will play audio only while it is active and a remote track is associated
-    /// to the paired <see cref="WebRTC.Transceiver"/>.
+    /// Calling <see cref="StartRendering(IAudioSource)"/> and <see cref="StopRendering(IAudioSource)"/>
+    /// will start/stop playing the passed <see cref="IAudioSource"/> through a <see cref="UnityEngine.AudioSource"/>
+    /// component on the same object, if there is one.
+    ///
+    /// The component will play only while enabled.
     /// </remarks>
-    /// <seealso cref="VideoRenderer"/>
+    /// <seealso cref="AudioReceiver"/>
     [AddComponentMenu("MixedReality-WebRTC/Audio Renderer")]
     [RequireComponent(typeof(UnityEngine.AudioSource))]
     public class AudioRenderer : MonoBehaviour

@@ -35,8 +35,8 @@ namespace Microsoft.MixedReality.WebRTC
         VideoEncoding FrameEncoding { get; }
 
         /// <summary>
-        /// Event that occurs when a new video frame is available from the track, either
-        /// because the track produced it locally (<see cref="VideoTrackSource"/>, <see cref="LocalVideoTrack"/>) or because
+        /// Event that occurs when a new video frame is available from the source, either
+        /// because the source produced it locally (<see cref="VideoTrackSource"/>, <see cref="LocalVideoTrack"/>) or because
         /// it received it from the remote peer (<see cref="RemoteVideoTrack"/>).
         /// </summary>
         /// <remarks>
@@ -49,8 +49,8 @@ namespace Microsoft.MixedReality.WebRTC
         event I420AVideoFrameDelegate I420AVideoFrameReady;
 
         /// <summary>
-        /// Event that occurs when a new video frame is available from the track, either
-        /// because the track produced it locally (<see cref="VideoTrackSource"/>, <see cref="LocalVideoTrack"/>) or because
+        /// Event that occurs when a new video frame is available from the source, either
+        /// because the source produced it locally (<see cref="VideoTrackSource"/>, <see cref="LocalVideoTrack"/>) or because
         /// it received it from the remote peer (<see cref="RemoteVideoTrack"/>).
         /// </summary>
         /// <remarks>
@@ -63,7 +63,7 @@ namespace Microsoft.MixedReality.WebRTC
         event Argb32VideoFrameDelegate Argb32VideoFrameReady;
 
         /// <summary>
-        /// Enabled status of the track. If enabled, produces video frames as expected. If
+        /// Enabled status of the source. If enabled, produces video frames as expected. If
         /// disabled, produces black frames instead.
         /// </summary>
         bool Enabled { get; }

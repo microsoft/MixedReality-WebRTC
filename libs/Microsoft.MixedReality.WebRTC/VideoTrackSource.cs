@@ -121,7 +121,9 @@ namespace Microsoft.MixedReality.WebRTC
         /// </remarks>
         internal VideoTrackSourceHandle _nativeHandle { get; private set; } = null;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Enabled status of the source. True until the object is disposed.
+        /// </summary>
         public bool Enabled => !_nativeHandle.IsClosed;
 
         /// <summary>

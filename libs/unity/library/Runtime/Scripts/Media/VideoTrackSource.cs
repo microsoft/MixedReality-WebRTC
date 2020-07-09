@@ -62,12 +62,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         #endregion
 
-
-
-        public VideoTrackSource()
-        {
-        }
-
         private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
 
         protected virtual void OnDisable()
