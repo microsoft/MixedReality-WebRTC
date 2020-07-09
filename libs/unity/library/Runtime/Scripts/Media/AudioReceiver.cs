@@ -27,7 +27,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <remarks>
     /// Setting this on an audio <see cref="MediaLine"/> will enable the corresponding transceiver to receive.
     /// A remote track will be exposed through <see cref="AudioTrack"/> once a connection is established.
-    /// The audio track can optionally be played locally with a <see cref="AudioRenderer"/>.
+    /// The audio track can optionally be played locally with an <see cref="AudioRenderer"/>.
     /// </remarks>
     public class AudioReceiver : MediaReceiver
     {
