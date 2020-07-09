@@ -60,7 +60,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     if (_source != null)
                     {
-                        _source.OnRemoveFromMediaLine(this);
+                        _source.OnRemovedFromMediaLine(this);
                         _source = null;
                         DestroySenderIfNeeded();
                     }
@@ -75,7 +75,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         if (_source != null)
                         {
-                            _source.OnRemoveFromMediaLine(this);
+                            _source.OnRemovedFromMediaLine(this);
                         }
                         _source = value;
                         _source.OnAddedToMediaLine(this);
@@ -151,7 +151,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     if (_receiver != null)
                     {
-                        _receiver.OnRemoveFromMediaLine(this);
+                        _receiver.OnRemovedFromMediaLine(this);
                         _receiver = null;
                     }
                 }
@@ -165,7 +165,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         if (_receiver != null)
                         {
-                            _receiver.OnRemoveFromMediaLine(this);
+                            _receiver.OnRemovedFromMediaLine(this);
                         }
 
                         _receiver = value;

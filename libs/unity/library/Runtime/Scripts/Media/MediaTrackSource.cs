@@ -31,7 +31,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _mediaLines.Add(mediaLine);
         }
 
-        internal void OnRemoveFromMediaLine(MediaLine mediaLine)
+        internal void OnRemovedFromMediaLine(MediaLine mediaLine)
         {
             bool removed = _mediaLines.Remove(mediaLine);
             Debug.Assert(removed);
