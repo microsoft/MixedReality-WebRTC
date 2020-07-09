@@ -63,6 +63,7 @@
 #include "modules/audio_processing/include/audio_processing.h"
 #include "modules/video_capture/video_capture.h"
 #include "modules/video_capture/video_capture_factory.h"
+#include "modules/video_coding/codecs/h264/win/h264_mf_factory.h"
 #include "pc/video_track_source.h"
 #include "rtc_base/bind.h"
 #include "rtc_base/memory/aligned_malloc.h"

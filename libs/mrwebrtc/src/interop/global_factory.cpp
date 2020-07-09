@@ -221,10 +221,10 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
       webrtc::CreateBuiltinAudioDecoderFactory(),
       std::unique_ptr<webrtc::VideoEncoderFactory>(
           new webrtc::MultiplexEncoderFactory(
-              absl::make_unique<webrtc::InternalEncoderFactory>())),
+              absl::make_unique<webrtc::H264MFEncoderFactory>())),
       std::unique_ptr<webrtc::VideoDecoderFactory>(
           new webrtc::MultiplexDecoderFactory(
-              absl::make_unique<webrtc::InternalDecoderFactory>())),
+              absl::make_unique<webrtc::H264MFDecoderFactory>())),
       custom_audio_mixer_, nullptr);
 //#endif  // defined(WINUWP)
   return (peer_factory_.get() != nullptr ? Result::kSuccess
