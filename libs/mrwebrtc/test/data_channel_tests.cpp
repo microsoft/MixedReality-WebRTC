@@ -215,7 +215,7 @@ TEST_P(DataChannelTests, Send) {
       [&](const void* data, const uint64_t size) {
         ASSERT_EQ(msg2_size, size);
         ASSERT_NE(nullptr, data);
-        ASSERT_EQ(0, memcmp(data, msg2_data, msg2_size));
+        ASSERT_EQ(0, memcmp(data, msg2_data, static_cast<size_t>(msg2_size)));
         ev_msg1.Set();
       });
   std::function<void(mrsDataChannelState, int32_t)> state1_cb(
@@ -233,7 +233,7 @@ TEST_P(DataChannelTests, Send) {
       [&](const void* data, const uint64_t size) {
         ASSERT_EQ(msg1_size, size);
         ASSERT_NE(nullptr, data);
-        ASSERT_EQ(0, memcmp(data, msg1_data, msg1_size));
+        ASSERT_EQ(0, memcmp(data, msg1_data, static_cast<size_t>(msg1_size)));
         ev_msg2.Set();
       });
   std::function<void(mrsDataChannelState, int32_t)> state2_cb(

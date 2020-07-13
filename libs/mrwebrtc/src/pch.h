@@ -67,6 +67,7 @@
 #include "modules/audio_processing/include/audio_processing.h"
 #include "modules/video_capture/video_capture_factory.h"
 #include "rtc_base/bind.h"
+#include "rtc_base/logging.h"
 #include "rtc_base/memory/aligned_malloc.h"
 #if defined(MR_SHARING_ANDROID)
 #include "sdk/android/native_api/jni/class_loader.h"

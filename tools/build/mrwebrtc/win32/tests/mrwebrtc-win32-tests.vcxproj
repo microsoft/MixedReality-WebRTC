@@ -82,6 +82,7 @@
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_test_utils.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\device_video_track_source_tests.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\video_track_tests.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\test\logging_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\mrwebrtc-win32.vcxproj">

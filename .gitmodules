@@ -1,4 +1,3 @@
 [submodule "external/webrtc-uwp-sdk"]
 	path = external/webrtc-uwp-sdk
 	url = https://github.com/webrtc-uwp/webrtc-uwp-sdk.git
-	branch = releases/m71
