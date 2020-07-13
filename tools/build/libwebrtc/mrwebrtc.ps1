@@ -247,7 +247,7 @@ enable_libaom=false
 # Use WinRT video capturer for Windows Desktop and UWP
 rtc_win_video_capture_winrt=true
 
-# Use Media Foundation H.264 encoder
+# Use Media Foundation H.264 encoder/decoder
 rtc_win_use_mf_h264=true
 "@
         Write-Host -NoNewline "Writing args.gn file to $FileName..."
