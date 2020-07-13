@@ -51,16 +51,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
         /// </summary>
-        public IMediaTrackSource Source
+        public MediaTrackSource Source
         {
-            get { return (_source as IMediaTrackSource); }
+            get { return (_source as MediaTrackSource); }
             set
             {
                 if (value == null)
                 {
-                    (_source as IMediaTrackSourceInternal)?.OnRemoveFromMediaLine(this);
-                    _source = null;
-                    DestroySenderIfNeeded();
+                    if (_source != null)
+                    {
+                        _source.OnRemovedFromMediaLine(this);
+                        _source = null;
+                        DestroySenderIfNeeded();
+                    }
                 }
                 else
                 {
@@ -68,23 +71,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         throw new ArgumentException("Wrong media kind", nameof(Source));
                     }
-                    if (!(value is IMediaTrackSourceInternal))
+                    if (_source != value)
                     {
-                        throw new ArgumentException("Missing interface IMediaTrackSourceInternal", nameof(Source));
-                    }
-                    if (value is MonoBehaviour mediaTrackSource)
-                    {
-                        if (_source != mediaTrackSource)
+                        if (_source != null)
                         {
-                            (_source as IMediaTrackSourceInternal)?.OnRemoveFromMediaLine(this);
-                            _source = mediaTrackSource;
-                            (_source as IMediaTrackSourceInternal).OnAddedToMediaLine(this);
-                            CreateSenderIfNeeded();
+                            _source.OnRemovedFromMediaLine(this);
                         }
-                    }
-                    else
-                    {
-                        throw new ArgumentException(nameof(Source) + " is not a MonoBehaviour component", nameof(Source));
+                        _source = value;
+                        _source.OnAddedToMediaLine(this);
+                        CreateSenderIfNeeded();
                     }
                 }
 
@@ -156,7 +151,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     if (_receiver != null)
                     {
-                        _receiver.OnRemoveFromMediaLine(this);
+                        _receiver.OnRemovedFromMediaLine(this);
                         _receiver = null;
                     }
                 }
@@ -170,7 +165,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         if (_receiver != null)
                         {
-                            _receiver.OnRemoveFromMediaLine(this);
+                            _receiver.OnRemovedFromMediaLine(this);
                         }
 
                         _receiver = value;
@@ -208,12 +203,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private MediaKind _mediaKind;
 
         /// <summary>
-        /// Backing field to serialize the <see cref="Source"/> property. Because this needs to serialize a
-        /// polymorphic type, use the base class <see cref="MonoBehaviour"/>; this is a Unity restriction.
+        /// Backing field to serialize the <see cref="Source"/> property.
         /// </summary>
         /// <seealso cref="Source"/>
         [SerializeField]
-        private MonoBehaviour _source;
+        private MediaTrackSource _source;
 
         /// <summary>
         /// Backing field to serialize the <see cref="Receiver"/> property.
@@ -517,7 +511,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (_source)
             {
                 // Fill the list of media lines for the source.
-                ((IMediaTrackSourceInternal)_source).OnAddedToMediaLine(this);
+                _source.OnAddedToMediaLine(this);
             }
         }
     }

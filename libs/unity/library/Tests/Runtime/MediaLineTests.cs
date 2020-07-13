@@ -52,19 +52,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Library.ReportLiveObjects();
         }
 
-        class DummyAudioSource : IMediaTrackSource { public MediaKind MediaKind => MediaKind.Audio; }
-
-        class DummyNonMonoBehaviourVideoSource : IMediaTrackSource, IMediaTrackSourceInternal
-        {
-            public MediaKind MediaKind => MediaKind.Video;
-            public void OnAddedToMediaLine(MediaLine mediaLine) => throw new NotImplementedException();
-            public void OnRemoveFromMediaLine(MediaLine mediaLine) => throw new NotImplementedException();
-        }
-
-        class DummyMissingInternalInterfaceVideoSource : MonoBehaviour, IMediaTrackSource
-        {
-            public MediaKind MediaKind => MediaKind.Video;
-        }
+        class DummyAudioSource : MediaTrackSource { public override MediaKind MediaKind => MediaKind.Audio; }
 
         private MediaLine CreateMediaLine(PeerConnection pc)
         {
@@ -186,13 +174,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             mediaLine.Source = null;
 
             // Set an invalid source (wrong media kind)
-            Assert.Throws<ArgumentException>(() => mediaLine.Source = new DummyAudioSource());
-
-            // Set an invalid source (not a MonoBehaviour)
-            Assert.Throws<ArgumentException>(() => mediaLine.Source = new DummyNonMonoBehaviourVideoSource());
-
-            // Set an invalid source (not implementing IMediaTrackSourceInternal)
-            Assert.Throws<ArgumentException>(() => mediaLine.Source = pc_go.AddComponent<DummyMissingInternalInterfaceVideoSource>());
+            Assert.Throws<ArgumentException>(() => mediaLine.Source = pc_go.AddComponent<DummyAudioSource>());
         }
 
         [Test(Description = "MediaLine.Receiver")]

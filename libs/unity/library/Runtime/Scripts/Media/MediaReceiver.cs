@@ -59,7 +59,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Internal callback invoked when the media receiver is de-assigned from a media line.
         /// </summary>
         /// <param name="mediaLine">The old media line this receiver was assigned to.</param>
-        protected internal virtual void OnRemoveFromMediaLine(MediaLine mediaLine)
+        protected internal virtual void OnRemovedFromMediaLine(MediaLine mediaLine)
         {
             Debug.Assert(MediaLine == mediaLine);
             MediaLine = null;

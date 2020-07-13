@@ -15,7 +15,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <seealso cref="WebcamSource"/>
     /// <seealso cref="CustomVideoSource{T}"/>
     /// <seealso cref="SceneVideoSource"/>
-    public abstract class VideoTrackSource : MonoBehaviour, IMediaTrackSource, IMediaTrackSourceInternal
+    public abstract class VideoTrackSource : MediaTrackSource
     {
         /// <summary>
         /// Video track source object from the underlying C# library that this component encapsulates.
@@ -23,11 +23,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// The object is owned by this component, which will create it and dispose of it automatically.
         /// </summary>
         public WebRTC.VideoTrackSource Source { get; protected set; } = null;
-
-        /// <summary>
-        /// List of video media lines using this source.
-        /// </summary>
-        public IReadOnlyList<MediaLine> MediaLines => _mediaLines;
 
         /// <summary>
         /// Event raised when the video stream started.
@@ -55,25 +50,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
 
-        #region IMediaTrackSource
-
         /// <inheritdoc/>
-        MediaKind IMediaTrackSource.MediaKind => MediaKind.Video;
-
-        #endregion
-
+        public override MediaKind MediaKind => MediaKind.Video;
         private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
 
         protected virtual void OnDisable()
         {
             if (Source != null)
             {
-                // Notify media lines using this source.
-                foreach (var ml in _mediaLines)
-                {
-                    ml.OnSourceDestroyed();
-                }
-                _mediaLines.Clear();
+                DetachFromMediaLines();
 
                 // Video track sources are disposable objects owned by the user (this component)
                 Source.Dispose();
@@ -81,18 +66,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
                 VideoStreamStopped.Invoke(Source);
             }
-        }
-
-        void IMediaTrackSourceInternal.OnAddedToMediaLine(MediaLine mediaLine)
-        {
-            Debug.Assert(!_mediaLines.Contains(mediaLine));
-            _mediaLines.Add(mediaLine);
-        }
-
-        void IMediaTrackSourceInternal.OnRemoveFromMediaLine(MediaLine mediaLine)
-        {
-            bool removed = _mediaLines.Remove(mediaLine);
-            Debug.Assert(removed);
         }
     }
 }
