@@ -124,7 +124,7 @@ transceiver of one media kind with a media line of a different media kind.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html">MediaLine</a></h4>
       <section><p>Media line abstraction for a peer connection.</p>
-<p>This container binds together a source component (<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a>) and/or a receiver
+<p>This container binds together a source component (<see cref="!:IMediaTrackSource"></see>) and/or a receiver
 component (<see cref="!:IMediaReceiver"></see>) on one side, with a transceiver on the other side. The media line
 is a declarative representation of this association, which is then turned into a binding by the implementation
 during an SDP negotiation. This forms the core of the algorithm allowing automatic transceiver pairing
@@ -139,6 +139,9 @@ inspector window, though direct manipulation via code is also possible.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html">MediaReceiver</a></h4>
       <section><p>Base class for media producers generating frames by receiving them from a remote peer.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html">MediaTrackSource</a></h4>
+      <section><p>Base class for media track source components producing some media frames locally.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html">MicrophoneSource</a></h4>
       <section><p>This component represents a local audio source generating audio frames from a local
@@ -211,11 +214,6 @@ Unity objects.</p>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints.html">VideoCaptureConstraints</a></h4>
       <section><p>Additional optional constraints applied to the resolution and framerate when selecting
 a video capture format.</p>
-</section>
-    <h3 id="interfaces">Interfaces
-  </h3>
-      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a></h4>
-      <section><p>Interface for media track source components producing some media frames locally.</p>
 </section>
     <h3 id="enums">Enums
   </h3>

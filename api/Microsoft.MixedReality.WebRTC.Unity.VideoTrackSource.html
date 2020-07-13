@@ -96,19 +96,25 @@ of any peer connection, and can be shared with multiple of them.</p>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">VideoTrackSource</span></div>
-      <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html">CustomVideoSource</a>&lt;T&gt;</div>
-      <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html">WebcamSource</a></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html">MediaTrackSource</a></div>
+    <div class="level2"><span class="xref">VideoTrackSource</span></div>
+      <div class="level3"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html">CustomVideoSource</a>&lt;T&gt;</div>
+      <div class="level3"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html">WebcamSource</a></div>
   </div>
-  <div classs="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_MediaLines">MediaTrackSource.MediaLines</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_DetachFromMediaLines">MediaTrackSource.DetachFromMediaLines()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class VideoTrackSource : MonoBehaviour, IMediaTrackSource, IMediaTrackSourceInternal</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class VideoTrackSource : MediaTrackSource</code></pre>
   </div>
   <h3 id="fields">Fields
   </h3>
@@ -184,14 +190,14 @@ was raised, by design.</li>
   </h3>
   
   
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_MediaLines_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.MediaLines*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_MediaLines" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.MediaLines">MediaLines</h4>
-  <div class="markdown level1 summary"><p>List of video media lines using this source.</p>
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_MediaKind_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.MediaKind*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_MediaKind" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.MediaKind">MediaKind</h4>
+  <div class="markdown level1 summary"><p>Media kind of the track source.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;MediaLine&gt; MediaLines { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public override MediaKind MediaKind { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -203,11 +209,13 @@ was raised, by design.</li>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IReadOnlyList</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html">MediaLine</a>&gt;</td>
+        <td><span class="xref">MediaKind</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_MediaKind">MediaTrackSource.MediaKind</a></div>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_Source_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.Source*"></a>
@@ -246,38 +254,6 @@ was raised, by design.</li>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected virtual void OnDisable()</code></pre>
-  </div>
-  <h3 id="eii">Explicit Interface Implementations
-  </h3>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_Microsoft_MixedReality_WebRTC_Unity_IMediaTrackSource_MediaKind_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.Microsoft#MixedReality#WebRTC#Unity#IMediaTrackSource#MediaKind*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_Microsoft_MixedReality_WebRTC_Unity_IMediaTrackSource_MediaKind" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.Microsoft#MixedReality#WebRTC#Unity#IMediaTrackSource#MediaKind">IMediaTrackSource.MediaKind</h4>
-  <div class="markdown level1 summary"><p>Media kind of the track source.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">MediaKind IMediaTrackSource.MediaKind { get; }</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">MediaKind</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a>
   </div>
   <h3 id="seealso">See Also</h3>
   <div class="seealso">

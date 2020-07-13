@@ -94,21 +94,15 @@ directly to the WebRTC implementation.</p>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html">VideoTrackSource</a></div>
-    <div class="level2"><span class="xref">CustomVideoSource&lt;T&gt;</span></div>
-      <div class="level3"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html">SceneVideoSource</a></div>
-  </div>
-  <div classs="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html">MediaTrackSource</a></div>
+    <div class="level2"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html">VideoTrackSource</a></div>
+    <div class="level3"><span class="xref">CustomVideoSource&lt;T&gt;</span></div>
+      <div class="level4"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html">SceneVideoSource</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
       <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_Source">VideoTrackSource.Source</a>
-    </div>
-    <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_MediaLines">VideoTrackSource.MediaLines</a>
     </div>
     <div>
       <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_VideoStreamStarted">VideoTrackSource.VideoStreamStarted</a>
@@ -117,17 +111,23 @@ directly to the WebRTC implementation.</p>
       <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_VideoStreamStopped">VideoTrackSource.VideoStreamStopped</a>
     </div>
     <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_Microsoft_MixedReality_WebRTC_Unity_IMediaTrackSource_MediaKind">VideoTrackSource.IMediaTrackSource.MediaKind</a>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_MediaKind">VideoTrackSource.MediaKind</a>
     </div>
     <div>
       <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_OnDisable">VideoTrackSource.OnDisable()</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_MediaLines">MediaTrackSource.MediaLines</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_DetachFromMediaLines">MediaTrackSource.DetachFromMediaLines()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class CustomVideoSource&lt;T&gt; : VideoTrackSource, IMediaTrackSource, IMediaTrackSourceInternal where T : class, IVideoFrameStorage, new()</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class CustomVideoSource&lt;T&gt; : VideoTrackSource where T : class, IVideoFrameStorage, new()</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -183,10 +183,6 @@ directly to the WebRTC implementation.</p>
       </tr>
     </tbody>
   </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.IMediaTrackSource.html">IMediaTrackSource</a>
-  </div>
 </article>
           </div>
           
