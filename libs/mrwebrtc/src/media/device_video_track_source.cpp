@@ -90,6 +90,17 @@ class BuiltinVideoCaptureDeviceTrackSource
           if ((config.framerate > 0.0) && (capability.maxFPS != config_fps)) {
             continue;
           }
+#if defined WEBRTC_VIDEO_CAPTURE_WINRT
+          int size_needed = MultiByteToWideChar(
+              CP_UTF8, 0, config.video_profile_id, -1, nullptr, 0);
+          size_needed -= 1;  //< drop terminating null
+          std::wstring converted(size_needed, 0);
+          MultiByteToWideChar(CP_UTF8, 0, config.video_profile_id, -1,
+                              &converted[0], size_needed);
+          if (config.video_profile_id && (capability.profile_id != converted)) {
+              continue;
+          }
+#endif
 
           // Found matching device with capability, try to open it
           vcm = webrtc::VideoCaptureFactory::Create(device_id_utf8.c_str());
@@ -118,9 +129,6 @@ class BuiltinVideoCaptureDeviceTrackSource
       source_out =
           new rtc::RefCountedObject<BuiltinVideoCaptureDeviceTrackSource>(
               std::move(vcm));
-      if (!source_out) {
-        return Result::kUnknownError;
-      }
 
       // Start capturing. All WebRTC track sources start in the capturing state
       // by convention.
