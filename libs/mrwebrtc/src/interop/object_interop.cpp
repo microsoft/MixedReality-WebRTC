@@ -36,7 +36,10 @@ mrsResult MRS_CALL mrsObjectGetName(mrsObjectHandle handle,
     return mrsResult::kInvalidParameter;
   }
   const std::string name = obj->GetName();
-  const size_t capacity = *buffer_size;
+  constexpr uint64_t max_capacity =
+      (uint64_t)std::numeric_limits<size_t>::max();
+  const size_t capacity =
+      (size_t)std::min<uint64_t>(*buffer_size, max_capacity);
   const size_t size_with_terminator = name.size() + 1;
   // Always assign size, even if buffer too small
   *buffer_size = size_with_terminator;
