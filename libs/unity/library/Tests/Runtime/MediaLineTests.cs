@@ -129,8 +129,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             return CreateMediaLineTest(initFirst: true);
         }
 
-        [Test(Description = "MediaLine.Source")]
-        public void SetSource()
+        [UnityTest(/*Description = "MediaLine.Source"*/)]
+        public IEnumerator SetSource()
         {
             // Create the peer connections
             var pc_go = new GameObject("pc1");
@@ -175,10 +175,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Set an invalid source (wrong media kind)
             Assert.Throws<ArgumentException>(() => mediaLine.Source = pc_go.AddComponent<DummyAudioSource>());
+
+            yield return null;
         }
 
-        [Test(Description = "MediaLine.Receiver")]
-        public void SetReceiver()
+        [UnityTest(/*Description = "MediaLine.Receiver"*/)]
+        public IEnumerator SetReceiver()
         {
             // Create the peer connections
             var pc_go = new GameObject("pc1");
@@ -219,6 +221,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Set an invalid source (wrong media kind)
             Assert.Throws<ArgumentException>(() => mediaLine.Receiver = pc_go.AddComponent<AudioReceiver>());
+
+            yield return null;
         }
     }
 }

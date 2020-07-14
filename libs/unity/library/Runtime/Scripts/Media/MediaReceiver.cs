@@ -82,5 +82,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         /// <param name="track">The media track this receiver was paired with.</param>
         protected internal virtual void OnUnpaired(MediaTrack track) { }
+
+        protected void OnDestroy()
+        {
+            MediaLine?.OnReceiverDestroyed();
+        }
     }
 }
