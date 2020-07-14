@@ -20,7 +20,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Check if the current thread is the main Unity application thread where
         /// it is safe to access Unity objects.
         /// </summary>
-        public bool IsMainAppThread => (Thread.CurrentThread == _mainAppThread);
+        public bool IsMainAppThread
+        {
+            get
+            {
+                UnityEngine.Debug.Assert(_mainAppThread != null, "This method can only be called once the object is awake.");
+                return Thread.CurrentThread == _mainAppThread;
+            }
+        }
 
         /// <summary>
         /// Ensure the current method is running on the main Unity application thread.
@@ -37,7 +44,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <param name="action">The action to execute.</param>
         public void InvokeOnAppThread(Action action)
         {
-            _mainThreadWorkQueue.Enqueue(action);
+            if (_mainAppThread != null && IsMainAppThread)
+            {
+                action();
+            }
+            else
+            {
+                _mainThreadWorkQueue.Enqueue(action);
+            }
         }
 
         protected virtual void Awake()
