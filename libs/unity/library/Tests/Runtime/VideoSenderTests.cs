@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
+using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 {
@@ -22,8 +23,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Library.ReportLiveObjects();
         }
 
-        [Test(Description = "Capture starts automatically when the component is activated")]
-        public void CaptureStartsOnActivate()
+        [UnityTest(/*Description = "Capture starts automatically when the component is activated"*/)]
+        public IEnumerator CaptureStartsOnActivate()
         {
             // Create the peer connections
             var pc_go = new GameObject("pc1");
@@ -80,6 +81,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // TODO fix after media source refactoring
             //// Confirm the source stops streaming
             //Assert.IsFalse(source.IsStreaming);
+
+            yield return null;
         }
     }
 }

@@ -37,6 +37,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Media source producing the media to send through the transceiver attached to this media line.
+        /// </summary>
+        /// <remarks>
         /// This must be an instance of a class derived from <see cref="AudioTrackSource"/> or <see cref="VideoTrackSource"/>
         /// depending on whether <see cref="MediaKind"/> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"/>
         /// or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"/>, respectively.
@@ -50,12 +52,23 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// If <see cref="Transceiver"/> is valid, that is a first session negotiation has already been completed,
         /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
-        /// </summary>
+        ///
+        /// Must be changed on the main thread.
+        /// </remarks>
         public MediaTrackSource Source
         {
             get { return (_source as MediaTrackSource); }
             set
             {
+                // If the connection is active, ensure that this is run on the main thread
+                // and doesn't race with the signaling handlers.
+                // If the connection is not awake we cannot use EnsureIsMainAppThread, but
+                // there should be no race on shared state, so skip the check.
+                if (_peer.isActiveAndEnabled)
+                {
+                    _peer.EnsureIsMainAppThread();
+                }
+
                 if (value == null)
                 {
                     if (_source != null)
@@ -131,6 +144,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Media receiver consuming the media received through the transceiver attached to this media line.
+        /// </summary>
+        /// <remarks>
         /// This must be an instance of a class derived from <see cref="AudioReceiver"/> or <see cref="VideoReceiver"/>
         /// depending on whether <see cref="MediaKind"/> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"/>
         /// or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"/>, respectively.
@@ -141,36 +156,48 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// If <see cref="Transceiver"/> is valid, that is a first session negotiation has already been conducted,
         /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
-        /// </summary>
+        ///
+        /// Must be changed on the main thread.
+        /// </remarks>
         public MediaReceiver Receiver
         {
             get { return _receiver; }
             set
             {
-                if (value == null)
+                if (_receiver == value)
                 {
-                    if (_receiver != null)
-                    {
-                        _receiver.OnRemovedFromMediaLine(this);
-                        _receiver = null;
-                    }
+                    return;
                 }
-                else
+                if (value!= null && value.MediaKind != MediaKind)
                 {
-                    if (value.MediaKind != MediaKind)
-                    {
-                        throw new ArgumentException("Wrong media kind", nameof(Receiver));
-                    }
-                    if (_receiver != value)
-                    {
-                        if (_receiver != null)
-                        {
-                            _receiver.OnRemovedFromMediaLine(this);
-                        }
+                    throw new ArgumentException("Wrong media kind", nameof(Receiver));
+                }
 
-                        _receiver = value;
-                        _receiver.OnAddedToMediaLine(this);
+                // If the connection is active, ensure that this is run on the main thread
+                // and doesn't race with the signaling handlers.
+                // If the connection is not awake we cannot use EnsureIsMainAppThread, but
+                // there should be no race on shared state, so skip the check.
+                if (_peer.isActiveAndEnabled)
+                {
+                    _peer.EnsureIsMainAppThread();
+                }
+
+                if (_receiver != null)
+                {
+                    if (_remoteTrack != null)
+                    {
+                        _receiver.OnUnpaired(_remoteTrack);
                     }
+                    _receiver.OnRemovedFromMediaLine(this);
+                }
+                _receiver = value;
+                if (_receiver != null)
+                {
+                    if (_remoteTrack != null)
+                    {
+                        _receiver.OnPaired(_remoteTrack);
+                    }
+                    _receiver.OnAddedToMediaLine(this);
                 }
 
                 // Whatever the change, keep the direction consistent.
@@ -232,8 +259,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         private LocalMediaTrack _senderTrack = null;
 
-        // True if this has a receiver and the media line is paired to a transceiver with a remote track.
-        private bool _isReceiverPaired = false;
+        // Cache for the remote track opened by the latest negotiation.
+        // Comparing it to Transceiver.RemoteTrack will tell if streaming has just started/stopped.
+        private MediaTrack _remoteTrack;
 
         #endregion
 
@@ -248,10 +276,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _mediaKind = kind;
         }
 
-        protected void UpdateTransceiverDesiredDirection()
+        private void UpdateTransceiverDesiredDirection()
         {
             if (Transceiver != null)
             {
+                // Avoid races on the desired direction by limiting changes to the main thread.
+                _peer.EnsureIsMainAppThread();
+
                 bool wantsSend = (_source != null);
                 bool wantsRecv = (_receiver != null);
                 Transceiver.DesiredDirection = Transceiver.DirectionFromSendRecv(wantsSend, wantsRecv);
@@ -294,30 +325,30 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        internal void UpdateReceiver()
+        internal void UpdateReceiverPairingIfNeeded()
         {
+            Debug.Assert(Transceiver != null);
+
+            // Callbacks must be called on the main thread.
+            _peer.EnsureIsMainAppThread();
+
+            var newRemoteTrack = Transceiver.RemoteTrack;
             if (_receiver != null)
             {
-                var transceiver = Transceiver;
-                Debug.Assert(transceiver != null);
-                bool wasReceiving = _isReceiverPaired;
-                bool hasRemoteTrack = (transceiver.RemoteTrack != null);
-                // Note the extra "hasRemoteTrack" check, which ensures that when the remote track was
-                // just removed by OnUnpaired(RemoteTrack) from the TrackRemoved event then it is not
-                // immediately re-added by mistake.
-                if (hasRemoteTrack && !wasReceiving)
+                bool wasReceiving = _remoteTrack != null;
+                bool isReceiving = newRemoteTrack != null;
+                if (isReceiving && !wasReceiving)
                 {
                     // Transceiver started receiving, and user actually wants to receive
-                    _peer.InvokeOnAppThread(() => _receiver.OnPaired(transceiver.RemoteTrack));
-                    _isReceiverPaired = true;
+                    _receiver.OnPaired(newRemoteTrack);
                 }
-                else if (!hasRemoteTrack && wasReceiving)
+                else if (!isReceiving && wasReceiving)
                 {
                     // Transceiver stopped receiving (user intent does not matter here)
-                    _peer.InvokeOnAppThread(() => _receiver.OnUnpaired(transceiver.RemoteTrack));
-                    _isReceiverPaired = false;
+                    _receiver.OnUnpaired(_remoteTrack);
                 }
             }
+            _remoteTrack = newRemoteTrack;
         }
 
         internal void OnUnpaired(MediaTrack track)
@@ -332,11 +363,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // mode (per the WebRTC spec). So the SetDirection(sendonly) triggers the TrackRemoved
             // event, but the pairing was never done because SetDirection() is called before
             // the received is updated.
-            if (_isReceiverPaired)
+
+            // Callbacks must be called on the main thread.
+            _peer.InvokeOnAppThread(() =>
             {
-                _peer.InvokeOnAppThread(() => _receiver.OnUnpaired(track));
-                _isReceiverPaired = false;
-            }
+                if (_receiver != null)
+                {
+                    bool wasReceiving = _remoteTrack != null;
+                    if (wasReceiving)
+                    {
+                        _receiver.OnUnpaired(_remoteTrack);
+                    }
+                }
+                _remoteTrack = null;
+            });
         }
 
         /// <summary>
@@ -414,6 +454,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         internal void UnpairTransceiver()
         {
             DestroySenderIfNeeded();
+            Transceiver = null;
         }
 
         /// <summary>
@@ -481,12 +522,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 DetachTrack();
             }
 
-            UpdateReceiver();
+            UpdateReceiverPairingIfNeeded();
         }
 
         internal void UpdateOnReceiveAnswer()
         {
-            UpdateReceiver();
+            UpdateReceiverPairingIfNeeded();
         }
 
         /// <summary>
@@ -500,8 +541,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Different from `Source = null`. Don't need to call Source.OnRemovedFromMediaLine
             // since the Source itself has called this.
             DestroySenderIfNeeded();
-            UpdateTransceiverDesiredDirection();
             _source = null;
+            UpdateTransceiverDesiredDirection();
+        }
+
+        internal void OnReceiverDestroyed()
+        {
+            // Different from `Receiver = null`. Don't need to call Receiver.OnRemovedFromMediaLine
+            // or Receiver.OnUnpaired since the Receiver itself has called this.
+            _receiver = null;
+            UpdateTransceiverDesiredDirection();
         }
 
         public void OnBeforeSerialize() {}
