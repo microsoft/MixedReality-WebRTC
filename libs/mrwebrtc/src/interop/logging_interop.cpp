@@ -109,7 +109,8 @@ void MRS_CALL mrsLoggingRemoveSink(mrsLogSinkHandle handle) noexcept {
   }
 }
 
-void mrsLogMessage(mrsLogSeverity severity, const char* message) noexcept {
+void MRS_CALL mrsLogMessage(mrsLogSeverity severity,
+                            const char* message) noexcept {
   if ((severity >= mrsLogSeverity::kVerbose) &&
       (severity <= mrsLogSeverity::kError)) {
     const rtc::LoggingSeverity sev = (rtc::LoggingSeverity)severity;
