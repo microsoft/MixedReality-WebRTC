@@ -3,6 +3,36 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Upcoming
+
+See also [2.0 roadmap](https://github.com/microsoft/MixedReality-WebRTC/issues/142).
+
+### Changed
+
+- (ba75e79c) Replace old track-based API with a transceiver-based API, allowing multiple audio and video tracks per peer connection. (#152)
+- (1a58b7be) Introduce proper standalone track source objects which can be shared among multiple tracks, including tracks from different peer connection. This allows sharing _e.g._ a single microphone or webcam track among multiple peer connections. (#412)
+- (46c058ae) Change the distribution model of the Unity library to use the Unity Package Manager (UPM). This allows better encapsulation and easier installation for users, as well as enabling distributing prebuilt packages including all Windows and Android binaries.
+
+### Fixed
+
+- (25058231) Fix compatiblity with other WebRTC implementation using non-numeric MID numbers in SDP messages. (#295)
+- (b7caf9c9) Recycle ARGB buffer when frame rotates (_i.e._ landscape vs. portrait). (#435)
+
+### Added
+
+- (39d68ad4) Add support for external (user callback-based) video tracks. (#35)
+- (48b9429d) Integrate audio tracks with Unity's AudioSource components to enable features like spatial audio. (#92)
+- (9a506028) Add support for Android ARM64 builds in Unity. (#28)
+- (3d80b8a9) Expose some statistics from the WebRTC stats API. (#128)
+
+## [1.0.3] - 2020-03-06
+
+f773f405102f7e90f049f371e2fe3964e3884b1e
+
+### Fixed
+
+- (f616909f) Integrate upstream fix for maxQP in H.264 encoder. This ensures that the value of the maxQP parameter computed by the image quality feedback loop and bandwidth estimator is properly passed to the H.264 encoder for it to take it into account.
+
 ## [1.0.2] - 2019-12-04
 
 8c958f9723bcf382cbc495d0828e88d9ff3aed42
