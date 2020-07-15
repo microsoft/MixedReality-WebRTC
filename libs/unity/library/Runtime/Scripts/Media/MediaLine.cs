@@ -362,7 +362,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // automatically by the implementation during SetRemoteDescription() in recvonly
             // mode (per the WebRTC spec). So the SetDirection(sendonly) triggers the TrackRemoved
             // event, but the pairing was never done because SetDirection() is called before
-            // the received is updated.
+            // the receiver is updated.
 
             // Callbacks must be called on the main thread.
             _peer.InvokeOnAppThread(() =>
