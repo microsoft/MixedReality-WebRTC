@@ -20,6 +20,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Check if the current thread is the main Unity application thread where
         /// it is safe to access Unity objects.
         /// </summary>
+        /// <remarks>
+        /// Should be only called once the object is awake.
+        /// </remarks>
         public bool IsMainAppThread
         {
             get
@@ -32,6 +35,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Ensure the current method is running on the main Unity application thread.
         /// </summary>
+        /// <remarks>
+        /// Should be only called once the object is awake.
+        /// </remarks>
         [Conditional("UNITY_ASSERTIONS")]
         public void EnsureIsMainAppThread()
         {
@@ -42,6 +48,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Invoke the specified action on the main Unity app thread.
         /// </summary>
         /// <param name="action">The action to execute.</param>
+        /// <remarks>
+        /// If this object is awake, and this method is called from the main Unity app thread,
+        /// <paramref name="action"/> will be executed synchronously. Otherwise,
+        /// <paramref name="action"/> will be called during the next call to this object's <see cref="Update"/>.
+        /// </remarks>
         public void InvokeOnAppThread(Action action)
         {
             if (_mainAppThread != null && IsMainAppThread)
