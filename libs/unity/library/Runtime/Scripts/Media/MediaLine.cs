@@ -60,15 +60,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             get { return (_source as MediaTrackSource); }
             set
             {
-                // If the connection is active, ensure that this is run on the main thread
-                // and doesn't race with the signaling handlers.
-                // If the connection is not awake we cannot use EnsureIsMainAppThread, but
-                // there should be no race on shared state, so skip the check.
-                if (_peer.isActiveAndEnabled)
-                {
-                    _peer.EnsureIsMainAppThread();
-                }
-
                 if (value == null)
                 {
                     if (_source != null)
@@ -173,15 +164,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     throw new ArgumentException("Wrong media kind", nameof(Receiver));
                 }
 
-                // If the connection is active, ensure that this is run on the main thread
-                // and doesn't race with the signaling handlers.
-                // If the connection is not awake we cannot use EnsureIsMainAppThread, but
-                // there should be no race on shared state, so skip the check.
-                if (_peer.isActiveAndEnabled)
-                {
-                    _peer.EnsureIsMainAppThread();
-                }
-
                 if (_receiver != null)
                 {
                     if (_remoteTrack != null)
@@ -193,11 +175,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 _receiver = value;
                 if (_receiver != null)
                 {
+                    _receiver.OnAddedToMediaLine(this);
                     if (_remoteTrack != null)
                     {
                         _receiver.OnPaired(_remoteTrack);
                     }
-                    _receiver.OnAddedToMediaLine(this);
                 }
 
                 // Whatever the change, keep the direction consistent.
@@ -281,6 +263,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             if (Transceiver != null)
             {
                 // Avoid races on the desired direction by limiting changes to the main thread.
+                // Note that EnsureIsMainAppThread cannot be used if _peer is not awake, so only
+                // check when there is a transceiver (meaning _peer is enabled).
                 _peer.EnsureIsMainAppThread();
 
                 bool wantsSend = (_source != null);
@@ -354,8 +338,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         internal void OnUnpaired(MediaTrack track)
         {
             Debug.Assert(track != null);
-            Debug.Assert(Transceiver != null);
-            Debug.Assert(Transceiver.RemoteTrack == null); // already removed
             // This is called by the TrackRemoved event, which can be fired sometimes even
             // though we did not have any opportunity yet to pair. So only unpair if we did.
             // In details, the case is the answering peer being in sendonly mode, yet created
@@ -372,6 +354,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     bool wasReceiving = _remoteTrack != null;
                     if (wasReceiving)
                     {
+                        Debug.Assert(_remoteTrack == track);
                         _receiver.OnUnpaired(_remoteTrack);
                     }
                 }
