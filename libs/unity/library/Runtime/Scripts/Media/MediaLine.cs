@@ -53,7 +53,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
         ///
-        /// Must be changed on the main thread.
+        /// Must be changed on the main Unity app thread.
         /// </remarks>
         public MediaTrackSource Source
         {
@@ -157,7 +157,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"/> event on the
         /// peer connection of <see cref="Transceiver"/>.
         ///
-        /// Must be changed on the main thread.
+        /// Must be changed on the main Unity app thread.
         /// </remarks>
         public MediaReceiver Receiver
         {
@@ -168,7 +168,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     return;
                 }
-                if (value!= null && value.MediaKind != MediaKind)
+                if (value != null && value.MediaKind != MediaKind)
                 {
                     throw new ArgumentException("Wrong media kind", nameof(Receiver));
                 }
@@ -329,7 +329,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             Debug.Assert(Transceiver != null);
 
-            // Callbacks must be called on the main thread.
+            // Callbacks must be called on the main Unity app thread.
             _peer.EnsureIsMainAppThread();
 
             var newRemoteTrack = Transceiver.RemoteTrack;
