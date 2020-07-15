@@ -147,15 +147,7 @@ and is immutable for the lifetime of the peer connection.</p>
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Receiver_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Receiver*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Receiver" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Receiver">Receiver</h4>
-  <div class="markdown level1 summary"><p>Media receiver consuming the media received through the transceiver attached to this media line.
-This must be an instance of a class derived from <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html">AudioReceiver</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html">VideoReceiver</a>
-depending on whether <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_MediaKind">MediaKind</a> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"></see>
-or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"></see>, respectively.</p>
-<p>If this is non-<code>null</code> then the peer connection will negotiate receiving some media, otherwise
-it will signal the remote peer that it does not wish to receive (send-only or inactive).</p>
-<p>If <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a> is valid, that is a first session negotiation has already been conducted,
-then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"></see> event on the
-peer connection of <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a>.</p>
+  <div class="markdown level1 summary"><p>Media receiver consuming the media received through the transceiver attached to this media line.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -177,6 +169,17 @@ peer connection of <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Med
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Receiver_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This must be an instance of a class derived from <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html">AudioReceiver</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html">VideoReceiver</a>
+depending on whether <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_MediaKind">MediaKind</a> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"></see>
+or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"></see>, respectively.</p>
+<p>If this is non-<code>null</code> then the peer connection will negotiate receiving some media, otherwise
+it will signal the remote peer that it does not wish to receive (send-only or inactive).</p>
+<p>If <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a> is valid, that is a first session negotiation has already been conducted,
+then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"></see> event on the
+peer connection of <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a>.</p>
+<p>Must be changed on the main Unity app thread.</p>
+</div>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_SenderTrack_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.SenderTrack*"></a>
@@ -256,17 +259,7 @@ current track name (either a previous value or a generated one).</p>
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Source_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Source*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Source" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Source">Source</h4>
-  <div class="markdown level1 summary"><p>Media source producing the media to send through the transceiver attached to this media line.
-This must be an instance of a class derived from <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html">AudioTrackSource</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html">VideoTrackSource</a>
-depending on whether <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_MediaKind">MediaKind</a> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"></see>
-or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"></see>, respectively.</p>
-<p>Internally the peer connection will automatically create and manage a media track to bridge the
-media source with the transceiver.</p>
-<p>If this is non-<code>null</code> then the peer connection will negotiate sending some media, otherwise
-it will signal the remote peer that it does not wish to send (receive-only or inactive).</p>
-<p>If <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a> is valid, that is a first session negotiation has already been completed,
-then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"></see> event on the
-peer connection of <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a>.</p>
+  <div class="markdown level1 summary"><p>Media source producing the media to send through the transceiver attached to this media line.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -288,6 +281,19 @@ peer connection of <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Med
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Source_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This must be an instance of a class derived from <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html">AudioTrackSource</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html">VideoTrackSource</a>
+depending on whether <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_MediaKind">MediaKind</a> is <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Audio"></see>
+or <see xref="Microsoft.MixedReality.WebRTC.MediaKind.Video"></see>, respectively.</p>
+<p>Internally the peer connection will automatically create and manage a media track to bridge the
+media source with the transceiver.</p>
+<p>If this is non-<code>null</code> then the peer connection will negotiate sending some media, otherwise
+it will signal the remote peer that it does not wish to send (receive-only or inactive).</p>
+<p>If <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a> is valid, that is a first session negotiation has already been completed,
+then changing this value raises a <see xref="WebRTC.PeerConnection.RenegotiationNeeded"></see> event on the
+peer connection of <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a>.</p>
+<p>Must be changed on the main Unity app thread.</p>
+</div>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.Transceiver*"></a>
@@ -339,16 +345,6 @@ value until the peer connection owning the media line is closed.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void OnBeforeSerialize()</code></pre>
-  </div>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_UpdateTransceiverDesiredDirection_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateTransceiverDesiredDirection*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_UpdateTransceiverDesiredDirection" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateTransceiverDesiredDirection">UpdateTransceiverDesiredDirection()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected void UpdateTransceiverDesiredDirection()</code></pre>
   </div>
 </article>
           </div>

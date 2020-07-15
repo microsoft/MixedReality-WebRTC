@@ -1140,25 +1140,6 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.IceTransportType.Relay
   fullName: Microsoft.MixedReality.WebRTC.IceTransportType.Relay
   nameWithType: IceTransportType.Relay
-- uid: Microsoft.MixedReality.WebRTC.ILogSink
-  name: ILogSink
-  href: api/Microsoft.MixedReality.WebRTC.ILogSink.html
-  commentId: T:Microsoft.MixedReality.WebRTC.ILogSink
-  fullName: Microsoft.MixedReality.WebRTC.ILogSink
-  nameWithType: ILogSink
-- uid: Microsoft.MixedReality.WebRTC.ILogSink.LogMessage(Microsoft.MixedReality.WebRTC.LogSeverity,System.String)
-  name: LogMessage(LogSeverity, String)
-  href: api/Microsoft.MixedReality.WebRTC.ILogSink.html#Microsoft_MixedReality_WebRTC_ILogSink_LogMessage_Microsoft_MixedReality_WebRTC_LogSeverity_System_String_
-  commentId: M:Microsoft.MixedReality.WebRTC.ILogSink.LogMessage(Microsoft.MixedReality.WebRTC.LogSeverity,System.String)
-  fullName: Microsoft.MixedReality.WebRTC.ILogSink.LogMessage(Microsoft.MixedReality.WebRTC.LogSeverity, System.String)
-  nameWithType: ILogSink.LogMessage(LogSeverity, String)
-- uid: Microsoft.MixedReality.WebRTC.ILogSink.LogMessage*
-  name: LogMessage
-  href: api/Microsoft.MixedReality.WebRTC.ILogSink.html#Microsoft_MixedReality_WebRTC_ILogSink_LogMessage_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.ILogSink.LogMessage
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.ILogSink.LogMessage
-  nameWithType: ILogSink.LogMessage
 - uid: Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException
   name: InvalidInteropNativeHandleException
   href: api/Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.html
@@ -1707,93 +1688,6 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig.trackName
   fullName: Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig.trackName
   nameWithType: LocalVideoTrackInitConfig.trackName
-- uid: Microsoft.MixedReality.WebRTC.Logging
-  name: Logging
-  href: api/Microsoft.MixedReality.WebRTC.Logging.html
-  commentId: T:Microsoft.MixedReality.WebRTC.Logging
-  fullName: Microsoft.MixedReality.WebRTC.Logging
-  nameWithType: Logging
-- uid: Microsoft.MixedReality.WebRTC.Logging.AddSink(Microsoft.MixedReality.WebRTC.ILogSink,Microsoft.MixedReality.WebRTC.LogSeverity)
-  name: AddSink(ILogSink, LogSeverity)
-  href: api/Microsoft.MixedReality.WebRTC.Logging.html#Microsoft_MixedReality_WebRTC_Logging_AddSink_Microsoft_MixedReality_WebRTC_ILogSink_Microsoft_MixedReality_WebRTC_LogSeverity_
-  commentId: M:Microsoft.MixedReality.WebRTC.Logging.AddSink(Microsoft.MixedReality.WebRTC.ILogSink,Microsoft.MixedReality.WebRTC.LogSeverity)
-  fullName: Microsoft.MixedReality.WebRTC.Logging.AddSink(Microsoft.MixedReality.WebRTC.ILogSink, Microsoft.MixedReality.WebRTC.LogSeverity)
-  nameWithType: Logging.AddSink(ILogSink, LogSeverity)
-- uid: Microsoft.MixedReality.WebRTC.Logging.AddSink*
-  name: AddSink
-  href: api/Microsoft.MixedReality.WebRTC.Logging.html#Microsoft_MixedReality_WebRTC_Logging_AddSink_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Logging.AddSink
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Logging.AddSink
-  nameWithType: Logging.AddSink
-- uid: Microsoft.MixedReality.WebRTC.Logging.LogMessage(Microsoft.MixedReality.WebRTC.LogSeverity,System.String)
-  name: LogMessage(LogSeverity, String)
-  href: api/Microsoft.MixedReality.WebRTC.Logging.html#Microsoft_MixedReality_WebRTC_Logging_LogMessage_Microsoft_MixedReality_WebRTC_LogSeverity_System_String_
-  commentId: M:Microsoft.MixedReality.WebRTC.Logging.LogMessage(Microsoft.MixedReality.WebRTC.LogSeverity,System.String)
-  fullName: Microsoft.MixedReality.WebRTC.Logging.LogMessage(Microsoft.MixedReality.WebRTC.LogSeverity, System.String)
-  nameWithType: Logging.LogMessage(LogSeverity, String)
-- uid: Microsoft.MixedReality.WebRTC.Logging.LogMessage*
-  name: LogMessage
-  href: api/Microsoft.MixedReality.WebRTC.Logging.html#Microsoft_MixedReality_WebRTC_Logging_LogMessage_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Logging.LogMessage
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Logging.LogMessage
-  nameWithType: Logging.LogMessage
-- uid: Microsoft.MixedReality.WebRTC.Logging.RemoveSink(Microsoft.MixedReality.WebRTC.ILogSink)
-  name: RemoveSink(ILogSink)
-  href: api/Microsoft.MixedReality.WebRTC.Logging.html#Microsoft_MixedReality_WebRTC_Logging_RemoveSink_Microsoft_MixedReality_WebRTC_ILogSink_
-  commentId: M:Microsoft.MixedReality.WebRTC.Logging.RemoveSink(Microsoft.MixedReality.WebRTC.ILogSink)
-  fullName: Microsoft.MixedReality.WebRTC.Logging.RemoveSink(Microsoft.MixedReality.WebRTC.ILogSink)
-  nameWithType: Logging.RemoveSink(ILogSink)
-- uid: Microsoft.MixedReality.WebRTC.Logging.RemoveSink*
-  name: RemoveSink
-  href: api/Microsoft.MixedReality.WebRTC.Logging.html#Microsoft_MixedReality_WebRTC_Logging_RemoveSink_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Logging.RemoveSink
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Logging.RemoveSink
-  nameWithType: Logging.RemoveSink
-- uid: Microsoft.MixedReality.WebRTC.LogSeverity
-  name: LogSeverity
-  href: api/Microsoft.MixedReality.WebRTC.LogSeverity.html
-  commentId: T:Microsoft.MixedReality.WebRTC.LogSeverity
-  fullName: Microsoft.MixedReality.WebRTC.LogSeverity
-  nameWithType: LogSeverity
-- uid: Microsoft.MixedReality.WebRTC.LogSeverity.Error
-  name: Error
-  href: api/Microsoft.MixedReality.WebRTC.LogSeverity.html#Microsoft_MixedReality_WebRTC_LogSeverity_Error
-  commentId: F:Microsoft.MixedReality.WebRTC.LogSeverity.Error
-  fullName: Microsoft.MixedReality.WebRTC.LogSeverity.Error
-  nameWithType: LogSeverity.Error
-- uid: Microsoft.MixedReality.WebRTC.LogSeverity.Info
-  name: Info
-  href: api/Microsoft.MixedReality.WebRTC.LogSeverity.html#Microsoft_MixedReality_WebRTC_LogSeverity_Info
-  commentId: F:Microsoft.MixedReality.WebRTC.LogSeverity.Info
-  fullName: Microsoft.MixedReality.WebRTC.LogSeverity.Info
-  nameWithType: LogSeverity.Info
-- uid: Microsoft.MixedReality.WebRTC.LogSeverity.None
-  name: None
-  href: api/Microsoft.MixedReality.WebRTC.LogSeverity.html#Microsoft_MixedReality_WebRTC_LogSeverity_None
-  commentId: F:Microsoft.MixedReality.WebRTC.LogSeverity.None
-  fullName: Microsoft.MixedReality.WebRTC.LogSeverity.None
-  nameWithType: LogSeverity.None
-- uid: Microsoft.MixedReality.WebRTC.LogSeverity.Unknown
-  name: Unknown
-  href: api/Microsoft.MixedReality.WebRTC.LogSeverity.html#Microsoft_MixedReality_WebRTC_LogSeverity_Unknown
-  commentId: F:Microsoft.MixedReality.WebRTC.LogSeverity.Unknown
-  fullName: Microsoft.MixedReality.WebRTC.LogSeverity.Unknown
-  nameWithType: LogSeverity.Unknown
-- uid: Microsoft.MixedReality.WebRTC.LogSeverity.Verbose
-  name: Verbose
-  href: api/Microsoft.MixedReality.WebRTC.LogSeverity.html#Microsoft_MixedReality_WebRTC_LogSeverity_Verbose
-  commentId: F:Microsoft.MixedReality.WebRTC.LogSeverity.Verbose
-  fullName: Microsoft.MixedReality.WebRTC.LogSeverity.Verbose
-  nameWithType: LogSeverity.Verbose
-- uid: Microsoft.MixedReality.WebRTC.LogSeverity.Warning
-  name: Warning
-  href: api/Microsoft.MixedReality.WebRTC.LogSeverity.html#Microsoft_MixedReality_WebRTC_LogSeverity_Warning
-  commentId: F:Microsoft.MixedReality.WebRTC.LogSeverity.Warning
-  fullName: Microsoft.MixedReality.WebRTC.LogSeverity.Warning
-  nameWithType: LogSeverity.Warning
 - uid: Microsoft.MixedReality.WebRTC.MediaKind
   name: MediaKind
   href: api/Microsoft.MixedReality.WebRTC.MediaKind.html
@@ -4292,19 +4186,6 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.Transceiver
   nameWithType: MediaLine.Transceiver
-- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateTransceiverDesiredDirection
-  name: UpdateTransceiverDesiredDirection()
-  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_UpdateTransceiverDesiredDirection
-  commentId: M:Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateTransceiverDesiredDirection
-  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateTransceiverDesiredDirection()
-  nameWithType: MediaLine.UpdateTransceiverDesiredDirection()
-- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateTransceiverDesiredDirection*
-  name: UpdateTransceiverDesiredDirection
-  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_UpdateTransceiverDesiredDirection_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateTransceiverDesiredDirection
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.UpdateTransceiverDesiredDirection
-  nameWithType: MediaLine.UpdateTransceiverDesiredDirection
 - uid: Microsoft.MixedReality.WebRTC.Unity.MediaReceiver
   name: MediaReceiver
   href: api/Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html
@@ -4363,6 +4244,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnAddedToMediaLine
   nameWithType: MediaReceiver.OnAddedToMediaLine
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnDestroy
+  name: OnDestroy()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnDestroy
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnDestroy
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnDestroy()
+  nameWithType: MediaReceiver.OnDestroy()
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnDestroy*
+  name: OnDestroy
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnDestroy_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnDestroy
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnDestroy
+  nameWithType: MediaReceiver.OnDestroy
 - uid: Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.OnPaired(MediaTrack)
   name: OnPaired(MediaTrack)
   href: api/Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html#Microsoft_MixedReality_WebRTC_Unity_MediaReceiver_OnPaired_MediaTrack_
