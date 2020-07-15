@@ -176,6 +176,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Set an invalid source (wrong media kind)
             Assert.Throws<ArgumentException>(() => mediaLine.Source = pc_go.AddComponent<DummyAudioSource>());
 
+            // Terminate the coroutine.
             yield return null;
         }
 
@@ -222,6 +223,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Set an invalid source (wrong media kind)
             Assert.Throws<ArgumentException>(() => mediaLine.Receiver = pc_go.AddComponent<AudioReceiver>());
 
+            // Terminate the coroutine.
             yield return null;
         }
     }
