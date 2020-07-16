@@ -15,7 +15,8 @@ See also [2.0 roadmap](https://github.com/microsoft/MixedReality-WebRTC/issues/1
 
 ### Fixed
 
-- (25058231) Fix compatiblity with other WebRTC implementation using non-numeric MID numbers in SDP messages. (#295)
+- (1a58b7be) Fix inefficiency in video capture/display; HL2 can stream video > 720p again. (#151)
+- (25058231) Fix compatibility with other WebRTC implementation using non-numeric MID numbers in SDP messages. (#295)
 - (b7caf9c9) Recycle ARGB buffer when frame rotates (_i.e._ landscape vs. portrait). (#435)
 
 ### Added
