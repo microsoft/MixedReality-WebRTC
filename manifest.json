@@ -1026,7 +1026,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html",
-          "hash": "8BARgw9qQq15GxL46GF+kg=="
+          "hash": "7/jFvLNf5QHtYq8v2+gvlQ=="
         }
       },
       "is_incremental": false,
@@ -1062,7 +1062,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html",
-          "hash": "EEqRBhNKbp8//AlC/uI8jg=="
+          "hash": "9B9iYa1NkW5pn3hiT6Xmbw=="
         }
       },
       "is_incremental": false,
@@ -1230,7 +1230,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html",
-          "hash": "2EcFFVZ4xpwormp96DyiLA=="
+          "hash": "cL+/AqKtRaRRzmiP8RjpXw=="
         }
       },
       "is_incremental": false,
@@ -1254,7 +1254,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html",
-          "hash": "nPJiEzj5a7/PORZQbtxj5g=="
+          "hash": "jBpPJdE0hrucJ7g84QVnwQ=="
         }
       },
       "is_incremental": false,
@@ -1266,7 +1266,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html",
-          "hash": "2cYY7thlQQLBxO7ynjXASg=="
+          "hash": "ZBvuxKlkNk/LLgTjd6UPUg=="
         }
       },
       "is_incremental": false,
@@ -1302,7 +1302,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html",
-          "hash": "LYuFBEfn9jAiSrXzbyKOrw=="
+          "hash": "eKZwPSGWL8NNwkSo+MW1Aw=="
         }
       },
       "is_incremental": false,
@@ -1398,7 +1398,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html",
-          "hash": "4o5bSkh3XSna0ByJuk6YPw=="
+          "hash": "O6oROIBNsWfuHtnNDYycFA=="
         }
       },
       "is_incremental": false,
@@ -1422,7 +1422,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html",
-          "hash": "gkBKxUPVR6NVkwizNAZgsg=="
+          "hash": "oyUcLEMTTBirYU3xFa62ZQ=="
         }
       },
       "is_incremental": false,
@@ -1446,7 +1446,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.html",
-          "hash": "6izmZQR/CK2zRIzwAC4PfQ=="
+          "hash": "JJaEsCEdHbvee8QOJ+b+WQ=="
         }
       },
       "is_incremental": false,

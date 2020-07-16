@@ -107,6 +107,9 @@ of any peer connection, and can be shared with multiple of them.</p>
       <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_MediaLines">MediaTrackSource.MediaLines</a>
     </div>
     <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_AttachToMediaLines">MediaTrackSource.AttachToMediaLines()</a>
+    </div>
+    <div>
       <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_DetachFromMediaLines">MediaTrackSource.DetachFromMediaLines()</a>
     </div>
   </div>
@@ -190,6 +193,34 @@ was raised, by design.</li>
   </h3>
   
   
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_IsLive_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.IsLive*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_IsLive" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.IsLive">IsLive</h4>
+  <div class="markdown level1 summary"><p>Indicates if the source is currently producing frames.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool IsLive { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_IsLive">MediaTrackSource.IsLive</a></div>
+  
+  
   <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_MediaKind_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.MediaKind*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_MediaKind" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.MediaKind">MediaKind</h4>
   <div class="markdown level1 summary"><p>Media kind of the track source.</p>
@@ -226,7 +257,7 @@ was raised, by design.</li>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public VideoTrackSource Source { get; protected set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public VideoTrackSource Source { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -247,13 +278,40 @@ was raised, by design.</li>
   </h3>
   
   
-  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_OnDisable_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.OnDisable*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_OnDisable" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.OnDisable">OnDisable()</h4>
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_AttachSource_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.AttachSource*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_AttachSource_Microsoft_MixedReality_WebRTC_VideoTrackSource_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.AttachSource(Microsoft.MixedReality.WebRTC.VideoTrackSource)">AttachSource(VideoTrackSource)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected virtual void OnDisable()</code></pre>
+    <pre><code class="lang-csharp hljs">protected void AttachSource(VideoTrackSource source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html">VideoTrackSource</a></td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_DisposeSource_" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.DisposeSource*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_DisposeSource" data-uid="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.DisposeSource">DisposeSource()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected void DisposeSource()</code></pre>
   </div>
   <h3 id="seealso">See Also</h3>
   <div class="seealso">

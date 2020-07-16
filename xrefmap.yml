@@ -3622,6 +3622,45 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource
   fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource
   nameWithType: AudioTrackSource
+- uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.AttachSource(Microsoft.MixedReality.WebRTC.AudioTrackSource)
+  name: AttachSource(AudioTrackSource)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioTrackSource_AttachSource_Microsoft_MixedReality_WebRTC_AudioTrackSource_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.AttachSource(Microsoft.MixedReality.WebRTC.AudioTrackSource)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.AttachSource(Microsoft.MixedReality.WebRTC.AudioTrackSource)
+  nameWithType: AudioTrackSource.AttachSource(AudioTrackSource)
+- uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.AttachSource*
+  name: AttachSource
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioTrackSource_AttachSource_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.AttachSource
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.AttachSource
+  nameWithType: AudioTrackSource.AttachSource
+- uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.DisposeSource
+  name: DisposeSource()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioTrackSource_DisposeSource
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.DisposeSource
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.DisposeSource()
+  nameWithType: AudioTrackSource.DisposeSource()
+- uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.DisposeSource*
+  name: DisposeSource
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioTrackSource_DisposeSource_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.DisposeSource
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.DisposeSource
+  nameWithType: AudioTrackSource.DisposeSource
+- uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.IsLive
+  name: IsLive
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioTrackSource_IsLive
+  commentId: P:Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.IsLive
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.IsLive
+  nameWithType: AudioTrackSource.IsLive
+- uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.IsLive*
+  name: IsLive
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioTrackSource_IsLive_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.IsLive
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.IsLive
+  nameWithType: AudioTrackSource.IsLive
 - uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.MediaKind
   name: MediaKind
   href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioTrackSource_MediaKind
@@ -3635,19 +3674,6 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.MediaKind
   nameWithType: AudioTrackSource.MediaKind
-- uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.OnDisable
-  name: OnDisable()
-  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioTrackSource_OnDisable
-  commentId: M:Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.OnDisable
-  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.OnDisable()
-  nameWithType: AudioTrackSource.OnDisable()
-- uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.OnDisable*
-  name: OnDisable
-  href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioTrackSource_OnDisable_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.OnDisable
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.OnDisable
-  nameWithType: AudioTrackSource.OnDisable
 - uid: Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.Source
   name: Source
   href: api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_AudioTrackSource_Source
@@ -3720,6 +3746,23 @@ references:
   fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T)
   nameWithType: CustomVideoSource<T>
   nameWithType.vb: CustomVideoSource(Of T)
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDisable
+  name: OnDisable()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnDisable
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDisable
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnDisable()
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).OnDisable()
+  nameWithType: CustomVideoSource<T>.OnDisable()
+  nameWithType.vb: CustomVideoSource(Of T).OnDisable()
+- uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDisable*
+  name: OnDisable
+  href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnDisable_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnDisable
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnDisable
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).OnDisable
+  nameWithType: CustomVideoSource<T>.OnDisable
+  nameWithType.vb: CustomVideoSource(Of T).OnDisable
 - uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnEnable
   name: OnEnable()
   href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnEnable
@@ -4328,6 +4371,19 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource
   fullName: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource
   nameWithType: MediaTrackSource
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.AttachToMediaLines
+  name: AttachToMediaLines()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_AttachToMediaLines
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.AttachToMediaLines
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.AttachToMediaLines()
+  nameWithType: MediaTrackSource.AttachToMediaLines()
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.AttachToMediaLines*
+  name: AttachToMediaLines
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_AttachToMediaLines_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.AttachToMediaLines
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.AttachToMediaLines
+  nameWithType: MediaTrackSource.AttachToMediaLines
 - uid: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.DetachFromMediaLines
   name: DetachFromMediaLines()
   href: api/Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_DetachFromMediaLines
@@ -4341,6 +4397,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.DetachFromMediaLines
   nameWithType: MediaTrackSource.DetachFromMediaLines
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.IsLive
+  name: IsLive
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_IsLive
+  commentId: P:Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.IsLive
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.IsLive
+  nameWithType: MediaTrackSource.IsLive
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.IsLive*
+  name: IsLive
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_IsLive_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.IsLive
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.IsLive
+  nameWithType: MediaTrackSource.IsLive
 - uid: Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.MediaKind
   name: MediaKind
   href: api/Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_MediaTrackSource_MediaKind
@@ -5115,6 +5184,45 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource
   fullName: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource
   nameWithType: VideoTrackSource
+- uid: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.AttachSource(Microsoft.MixedReality.WebRTC.VideoTrackSource)
+  name: AttachSource(VideoTrackSource)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_AttachSource_Microsoft_MixedReality_WebRTC_VideoTrackSource_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.AttachSource(Microsoft.MixedReality.WebRTC.VideoTrackSource)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.AttachSource(Microsoft.MixedReality.WebRTC.VideoTrackSource)
+  nameWithType: VideoTrackSource.AttachSource(VideoTrackSource)
+- uid: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.AttachSource*
+  name: AttachSource
+  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_AttachSource_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.AttachSource
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.AttachSource
+  nameWithType: VideoTrackSource.AttachSource
+- uid: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.DisposeSource
+  name: DisposeSource()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_DisposeSource
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.DisposeSource
+  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.DisposeSource()
+  nameWithType: VideoTrackSource.DisposeSource()
+- uid: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.DisposeSource*
+  name: DisposeSource
+  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_DisposeSource_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.DisposeSource
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.DisposeSource
+  nameWithType: VideoTrackSource.DisposeSource
+- uid: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.IsLive
+  name: IsLive
+  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_IsLive
+  commentId: P:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.IsLive
+  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.IsLive
+  nameWithType: VideoTrackSource.IsLive
+- uid: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.IsLive*
+  name: IsLive
+  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_IsLive_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.IsLive
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.IsLive
+  nameWithType: VideoTrackSource.IsLive
 - uid: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.MediaKind
   name: MediaKind
   href: api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_MediaKind
@@ -5128,19 +5236,6 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.MediaKind
   nameWithType: VideoTrackSource.MediaKind
-- uid: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.OnDisable
-  name: OnDisable()
-  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_OnDisable
-  commentId: M:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.OnDisable
-  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.OnDisable()
-  nameWithType: VideoTrackSource.OnDisable()
-- uid: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.OnDisable*
-  name: OnDisable
-  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_OnDisable_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.OnDisable
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.OnDisable
-  nameWithType: VideoTrackSource.OnDisable
 - uid: Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.Source
   name: Source
   href: api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_Source
