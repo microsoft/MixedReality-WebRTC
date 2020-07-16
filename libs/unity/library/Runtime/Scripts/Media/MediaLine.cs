@@ -9,8 +9,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// <summary>
     /// Media line abstraction for a peer connection.
     ///
-    /// This container binds together a source component (<see cref="IMediaTrackSource"/>) and/or a receiver
-    /// component (<see cref="IMediaReceiver"/>) on one side, with a transceiver on the other side. The media line
+    /// This container binds together a source component (<see cref="MediaTrackSource"/>) and/or a receiver
+    /// component (<see cref="MediaReceiver"/>) on one side, with a transceiver on the other side. The media line
     /// is a declarative representation of this association, which is then turned into a binding by the implementation
     /// during an SDP negotiation. This forms the core of the algorithm allowing automatic transceiver pairing
     /// between the two peers based on the declaration of intent of the user.
@@ -57,16 +57,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public MediaTrackSource Source
         {
-            get { return (_source as MediaTrackSource); }
+            get { return _source; }
             set
             {
                 if (value == null)
                 {
                     if (_source != null)
                     {
+                        if (_source.IsLive)
+                        {
+                            DestroySender();
+                        }
                         _source.OnRemovedFromMediaLine(this);
                         _source = null;
-                        DestroySenderIfNeeded();
                     }
                 }
                 else
@@ -83,7 +86,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         }
                         _source = value;
                         _source.OnAddedToMediaLine(this);
-                        CreateSenderIfNeeded();
+
+                        if (_source.IsLive)
+                        {
+                            CreateSender();
+                        }
                     }
                 }
 
@@ -267,7 +274,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // check when there is a transceiver (meaning _peer is enabled).
                 _peer.EnsureIsMainAppThread();
 
-                bool wantsSend = (_source != null);
+                bool wantsSend = _source != null && _source.IsLive;
                 bool wantsRecv = (_receiver != null);
                 Transceiver.DesiredDirection = Transceiver.DirectionFromSendRecv(wantsSend, wantsRecv);
             }
@@ -362,46 +369,36 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             });
         }
 
-        /// <summary>
-        /// Create the local sender track from the current media track source if that source
-        /// is active and enabled. Otherwise do nothing.
-        /// </summary>
-        private void CreateSenderIfNeeded()
+        private void CreateSender()
         {
-            // Only create a sender track if the source is active, i.e. has an underlying frame source.
-            if (_senderTrack == null && _source != null && _source.isActiveAndEnabled)
+            Debug.Assert(_senderTrack == null);
+            if (MediaKind == MediaKind.Audio)
             {
-                if (MediaKind == MediaKind.Audio)
-                {
-                    var audioSource = (_source as AudioTrackSource);
+                var audioSource = (AudioTrackSource)_source;
 
-                    var initConfig = new LocalAudioTrackInitConfig
-                    {
-                        trackName = _senderTrackName
-                    };
-                    _senderTrack = LocalAudioTrack.CreateFromSource(audioSource.Source, initConfig);
-                }
-                else
+                var initConfig = new LocalAudioTrackInitConfig
                 {
-                    Debug.Assert(MediaKind == MediaKind.Video);
-                    var videoSource = (_source as VideoTrackSource);
+                    trackName = _senderTrackName
+                };
+                _senderTrack = LocalAudioTrack.CreateFromSource(audioSource.Source, initConfig);
+            }
+            else
+            {
+                Debug.Assert(MediaKind == MediaKind.Video);
+                var videoSource = (VideoTrackSource)_source;
 
-                    var initConfig = new LocalVideoTrackInitConfig
-                    {
-                        trackName = _senderTrackName
-                    };
-                    _senderTrack = LocalVideoTrack.CreateFromSource(videoSource.Source, initConfig);
-                }
+                var initConfig = new LocalVideoTrackInitConfig
+                {
+                    trackName = _senderTrackName
+                };
+                _senderTrack = LocalVideoTrack.CreateFromSource(videoSource.Source, initConfig);
             }
         }
 
-        private void DestroySenderIfNeeded()
+        private void DestroySender()
         {
-            if (_senderTrack != null)
-            {
-                _senderTrack.Dispose();
-                _senderTrack = null;
-            }
+            _senderTrack.Dispose();
+            _senderTrack = null;
         }
 
         /// <summary>
@@ -425,18 +422,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
             Transceiver = tr;
 
-            // Keep the transceiver direction in sync with Sender and Receiver.
+            // Initialize the transceiver direction in sync with Sender and Receiver.
             UpdateTransceiverDesiredDirection();
-
-            // Always do this even after first offer, because the sender and receiver
-            // components can be assigned to the media line later, and therefore will
-            // need to be updated on the next offer even if that is not the first one.
-            CreateSenderIfNeeded();
         }
 
         internal void UnpairTransceiver()
         {
-            DestroySenderIfNeeded();
             Transceiver = null;
         }
 
@@ -515,16 +506,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         /// <summary>
         /// Internal callback when the underlying source providing media frames to the sender track
+        /// is created, and therefore the local media track needs to be created too.
+        /// </summary>
+        /// <seealso cref="AudioTrackSource.AttachSource(WebRTC.AudioTrackSource)"/>
+        /// <seealso cref="VideoTrackSource.AttachSource(WebRTC.VideoTrackSource)"/>
+        internal void AttachSource()
+        {
+            CreateSender();
+            UpdateTransceiverDesiredDirection();
+        }
+
+        /// <summary>
+        /// Internal callback when the underlying source providing media frames to the sender track
         /// is destroyed, and therefore the local media track needs to be destroyed too.
         /// </summary>
-        /// <seealso cref="AudioTrackSource.OnDisable"/>
-        /// <seealso cref="VideoTrackSource.OnDisable"/>
-        internal void OnSourceDestroyed()
+        /// <seealso cref="AudioTrackSource.DisposeSource"/>
+        /// <seealso cref="VideoTrackSource.DisposeSource"/>
+        internal void DetachSource()
         {
-            // Different from `Source = null`. Don't need to call Source.OnRemovedFromMediaLine
-            // since the Source itself has called this.
-            DestroySenderIfNeeded();
-            _source = null;
+            DestroySender();
             UpdateTransceiverDesiredDirection();
         }
 

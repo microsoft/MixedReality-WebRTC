@@ -19,10 +19,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public abstract MediaKind MediaKind { get; }
 
         /// <summary>
+        /// Indicates if the source is currently producing frames.
+        /// </summary>
+        public abstract bool IsLive { get; }
+
+        /// <summary>
         /// List of audio media lines using this source.
         /// </summary>
         public IReadOnlyList<MediaLine> MediaLines => _mediaLines;
-
         private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
 
         internal void OnAddedToMediaLine(MediaLine mediaLine)
@@ -37,14 +41,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(removed);
         }
 
-        protected void DetachFromMediaLines()
+        protected void AttachToMediaLines()
         {
-            // Notify media lines using this source.
             foreach (var ml in _mediaLines)
             {
-                ml.OnSourceDestroyed();
+                ml.AttachSource();
             }
-            _mediaLines.Clear();
+        }
+
+        protected void DetachFromMediaLines()
+        {
+            foreach (var ml in _mediaLines)
+            {
+                ml.DetachSource();
+            }
         }
     }
 }

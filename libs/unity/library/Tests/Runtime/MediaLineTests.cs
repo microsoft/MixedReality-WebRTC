@@ -52,7 +52,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Library.ReportLiveObjects();
         }
 
-        class DummyAudioSource : MediaTrackSource { public override MediaKind MediaKind => MediaKind.Audio; }
+        class DummyAudioSource : MediaTrackSource
+        {
+            public override MediaKind MediaKind => MediaKind.Audio;
+            public override bool IsLive => true;
+        }
 
         private MediaLine CreateMediaLine(PeerConnection pc)
         {

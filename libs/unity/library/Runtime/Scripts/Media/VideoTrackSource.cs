@@ -22,7 +22,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         ///
         /// The object is owned by this component, which will create it and dispose of it automatically.
         /// </summary>
-        public WebRTC.VideoTrackSource Source { get; protected set; } = null;
+        public WebRTC.VideoTrackSource Source { get; private set; } = null;
 
         /// <summary>
         /// Event raised when the video stream started.
@@ -51,20 +51,28 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public VideoStreamStoppedEvent VideoStreamStopped = new VideoStreamStoppedEvent();
 
         /// <inheritdoc/>
-        public override MediaKind MediaKind => MediaKind.Video;
-        private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
+        public override bool IsLive => Source != null;
 
-        protected virtual void OnDisable()
+        /// <inheritdoc/>
+        public override MediaKind MediaKind => MediaKind.Video;
+
+        protected void AttachSource(WebRTC.VideoTrackSource source)
+        {
+            Source = source;
+            AttachToMediaLines();
+            VideoStreamStarted.Invoke(Source);
+        }
+
+        protected void DisposeSource()
         {
             if (Source != null)
             {
+                VideoStreamStopped.Invoke(Source);
                 DetachFromMediaLines();
 
                 // Video track sources are disposable objects owned by the user (this component)
                 Source.Dispose();
                 Source = null;
-
-                VideoStreamStopped.Invoke(Source);
             }
         }
     }
