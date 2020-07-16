@@ -313,11 +313,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             };
             try
             {
-                Source = await DeviceVideoTrackSource.CreateAsync(deviceConfig);
-                if (Source == null)
-                {
-                    throw new Exception("DeviceVideoTrackSource.CreateAsync() returned a NULL source.");
-                }
+                var source = await DeviceVideoTrackSource.CreateAsync(deviceConfig);
+                AttachSource(source);
             }
             catch (Exception ex)
             {
@@ -325,8 +322,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 Debug.LogException(ex, this);
                 return;
             }
-
-            VideoStreamStarted.Invoke(Source);
         }
 
 #if PLATFORM_ANDROID

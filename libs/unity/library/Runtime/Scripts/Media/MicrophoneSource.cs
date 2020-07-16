@@ -100,11 +100,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             };
             try
             {
-                Source = await DeviceAudioTrackSource.CreateAsync(initConfig);
-                if (Source == null)
-                {
-                    throw new Exception("DeviceAudioTrackSource.CreateAsync() returned a NULL source.");
-                }
+                AttachSource(await DeviceAudioTrackSource.CreateAsync(initConfig));
             }
             catch (Exception ex)
             {

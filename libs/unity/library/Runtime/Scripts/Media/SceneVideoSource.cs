@@ -41,7 +41,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Camera event indicating the point in time during the Unity frame rendering
         /// when the camera rendering is to be captured.
-        /// 
+        ///
         /// This defaults to <see xref="CameraEvent.AfterEverything"/>, which is a reasonable
         /// default to capture the entire scene rendering, but can be customized to achieve
         /// other effects like capturing only a part of the scene.

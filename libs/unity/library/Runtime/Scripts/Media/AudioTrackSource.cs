@@ -19,13 +19,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         ///
         /// The object is owned by this component, which will create it and dispose of it automatically.
         /// </summary>
-        public WebRTC.AudioTrackSource Source { get; protected set; } = null;
+        public WebRTC.AudioTrackSource Source { get; private set; } = null;
 
         /// <inheritdoc/>
         public override MediaKind MediaKind => MediaKind.Audio;
 
+        /// <inheritdoc/>
+        public override bool IsLive => Source != null;
 
-        protected virtual void OnDisable()
+        protected void AttachSource(WebRTC.AudioTrackSource source)
+        {
+            Source = source;
+            AttachToMediaLines();
+        }
+
+        protected void DisposeSource()
         {
             if (Source != null)
             {

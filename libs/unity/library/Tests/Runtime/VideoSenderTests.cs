@@ -46,21 +46,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             ml.Source = source;
             Assert.IsTrue(source.MediaLines.Contains(ml));
 
-            // TODO fix after media source refactoring
             //// Add event handlers to check IsStreaming state
-            //source.VideoStreamStarted.AddListener((IVideoSource self) =>
-            //{
-            //    // Becomes true *before* this handler by design
-            //    Assert.IsTrue(source);
-            //});
-            //source.VideoStreamStopped.AddListener((IVideoSource self) =>
-            //{
-            //    // Still true until *after* this handler by design
-            //    Assert.IsTrue(self.Enabled);
-            //});
+            source.VideoStreamStarted.AddListener((IVideoSource self) =>
+            {
+                // Becomes true *before* this handler by design
+                Assert.IsTrue(source.IsLive);
+            });
+            source.VideoStreamStopped.AddListener((IVideoSource self) =>
+            {
+                // Still true until *after* this handler by design
+                Assert.IsTrue(source.IsLive);
+            });
 
-            //// Confirm the source is not capturing yet because the component is inactive
-            //Assert.IsFalse(source.IsStreaming);
+            // Confirm the source is not capturing yet because the component is inactive
+            Assert.IsFalse(source.IsLive);
 
             // Confirm the sender has no track because the component is inactive
             Assert.IsNull(ml.SenderTrack);
@@ -68,19 +67,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Activate the game object and the video track source component on it
             pc_go.SetActive(true);
 
-            // TODO fix after media source refactoring
-            //// Confirm the sender is capturing because the component is now active
-            //Assert.IsTrue(source.IsStreaming);
+            // Confirm the sender is capturing because the component is now active
+            Assert.IsTrue(source.IsLive);
 
-            // Confirm the sender still has no track because there's no connection
-            Assert.IsNull(ml.SenderTrack);
+            // Confirm the sender has a track now.
+            Assert.IsNotNull(ml.SenderTrack);
 
             // Deactivate the game object and the video track source component on it
             pc_go.SetActive(false);
 
-            // TODO fix after media source refactoring
-            //// Confirm the source stops streaming
-            //Assert.IsFalse(source.IsStreaming);
+            // Confirm the source stops streaming
+            Assert.IsFalse(source.IsLive);
 
             // Terminate the coroutine.
             yield return null;
