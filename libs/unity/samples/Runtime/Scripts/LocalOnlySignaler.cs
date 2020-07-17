@@ -10,7 +10,7 @@ using System.Collections;
 /// Simple signaler using two peer connections in the same process,
 /// and hard-coding their SDP message delivery to avoid the need for
 /// any kind of networking to deliver SDP messages.
-/// 
+///
 /// This component is designed to be used in demos where both peers
 /// are present in the same scene.
 /// </summary>
@@ -104,6 +104,11 @@ public class LocalOnlySignaler : WorkQueue
     {
         InvokeOnAppThread(async () =>
         {
+            if (Peer2.Peer == null)
+            {
+                Debug.Log("Discarding SDP message for peer #2 (disabled)");
+                return;
+            }
             await Peer2.HandleConnectionMessageAsync(message);
             _remoteApplied2.Set();
             if (message.Type == Microsoft.MixedReality.WebRTC.SdpMessageType.Offer)
@@ -117,6 +122,11 @@ public class LocalOnlySignaler : WorkQueue
     {
         InvokeOnAppThread(async () =>
         {
+            if (Peer1.Peer == null)
+            {
+                Debug.Log("Discarding SDP message for peer #1 (disabled)");
+                return;
+            }
             await Peer1.HandleConnectionMessageAsync(message);
             _remoteApplied1.Set();
             if (message.Type == Microsoft.MixedReality.WebRTC.SdpMessageType.Offer)
@@ -128,11 +138,21 @@ public class LocalOnlySignaler : WorkQueue
 
     private void Peer1_IceCandidateReadytoSend(Microsoft.MixedReality.WebRTC.IceCandidate candidate)
     {
+        if (Peer2.Peer == null)
+        {
+            Debug.Log("Discarding ICE message for peer #2 (disabled)");
+            return;
+        }
         Peer2.Peer.AddIceCandidate(candidate);
     }
 
     private void Peer2_IceCandidateReadytoSend(Microsoft.MixedReality.WebRTC.IceCandidate candidate)
     {
+        if (Peer1.Peer == null)
+        {
+            Debug.Log("Discarding ICE message for peer #1 (disabled)");
+            return;
+        }
         Peer1.Peer.AddIceCandidate(candidate);
     }
 }
