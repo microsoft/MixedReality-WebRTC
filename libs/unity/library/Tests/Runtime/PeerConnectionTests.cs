@@ -77,6 +77,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Initialize
             yield return InitializeAndWait(pc);
+            UnityEngine.Object.Destroy(go);
         }
 
         [UnityTest]
@@ -92,6 +93,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 yield return InitializeAndWait(pc);
                 yield return ShutdownAndCheckEvent(pc);
             }
+
+            UnityEngine.Object.Destroy(go);
         }
 
         [UnityTest]
@@ -179,6 +182,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 Assert.IsNull(ml2.SenderTrack);
                 Assert.IsNull(ml2.Transceiver);
             }
+            UnityEngine.Object.Destroy(pc1_go);
+            UnityEngine.Object.Destroy(pc2_go);
+            UnityEngine.Object.Destroy(sig_go);
         }
     }
 }

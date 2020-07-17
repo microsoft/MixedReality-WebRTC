@@ -158,6 +158,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 Assert.AreEqual(hasSend2, Transceiver.HasSend(ml2.Transceiver.NegotiatedDirection.Value));
                 Assert.AreEqual(hasRecv2, Transceiver.HasRecv(ml2.Transceiver.NegotiatedDirection.Value));
             }
+
+            Object.Destroy(pc1_go);
+            Object.Destroy(pc2_go);
+            Object.Destroy(sig_go);
         }
 
         [UnityTest]
@@ -533,6 +537,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                     Assert.IsNotNull(cfg.peer2.receiver.Track, $"Transceiver #{i} Missing remote track on Peer #2");
                 }
             }
+
+            Object.Destroy(pc1_go);
+            Object.Destroy(pc2_go);
+            Object.Destroy(sig_go);
         }
 
         /// Negotiate 3 sessions in a row:
@@ -684,6 +692,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(video_tr2, receiver2.Track.Transceiver);
             Assert.IsNotNull(video_tr2.RemoteTrack); // re-paired
             Assert.AreEqual(receiver2.Track, video_tr2.RemoteTrack);
+
+            Object.Destroy(pc1_go);
+            Object.Destroy(pc2_go);
+            Object.Destroy(sig_go);
         }
 
         /// <summary>
@@ -821,6 +833,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsNotNull(video_tr2b);
             Assert.AreEqual(2, video_tr1b.MlineIndex);
             Assert.AreEqual(2, video_tr2b.MlineIndex);
+
+            Object.Destroy(pc1_go);
+            Object.Destroy(pc2_go);
+            Object.Destroy(sig_go);
         }
     }
 }

@@ -78,6 +78,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Confirm the source stops streaming
             Assert.IsFalse(source.IsLive);
 
+            Object.Destroy(pc_go);
+
             // Terminate the coroutine.
             yield return null;
         }

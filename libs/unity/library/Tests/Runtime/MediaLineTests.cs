@@ -119,6 +119,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // The transceiver was created by the implementation and assigned to the media line
             Assert.IsNotNull(mediaLine.Transceiver);
             Assert.AreEqual(mediaLine.Transceiver.MediaKind, mediaLine.MediaKind);
+
+            // TODO Destroy just after StartConnection will crash (#463)
+            // UnityEngine.Object.Destroy(pc_go);
         }
 
         [UnityTest(/*Description = "Add a media line to a peer connection before it is initialized"*/)]
@@ -179,6 +182,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Set an invalid source (wrong media kind)
             Assert.Throws<ArgumentException>(() => mediaLine.Source = pc_go.AddComponent<DummyAudioSource>());
 
+            UnityEngine.Object.Destroy(pc_go);
+
             // Terminate the coroutine.
             yield return null;
         }
@@ -224,6 +229,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Set an invalid source (wrong media kind)
             Assert.Throws<ArgumentException>(() => mediaLine.Receiver = pc_go.AddComponent<AudioReceiver>());
+
+            UnityEngine.Object.Destroy(pc_go);
 
             // Terminate the coroutine.
             yield return null;
