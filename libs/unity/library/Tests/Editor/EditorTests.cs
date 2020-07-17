@@ -38,12 +38,10 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         //    }
         //}
 
-        private void WaitForSdpExchangeCompleted(ManualResetEventSlim conn1, ManualResetEventSlim conn2)
+        private void WaitForSdpExchangeCompleted(ManualResetEventSlim completed)
         {
-            Assert.True(conn1.Wait(TimeSpan.FromSeconds(60.0)));
-            Assert.True(conn2.Wait(TimeSpan.FromSeconds(60.0)));
-            conn1.Reset();
-            conn2.Reset();
+            Assert.True(completed.Wait(TimeSpan.FromSeconds(60.0)));
+            completed.Reset();
         }
 
         [Test]
@@ -57,33 +55,27 @@ namespace Microsoft.MixedReality.WebRTC.Tests
                     await pc2.InitializeAsync();
 
                     // Prepare SDP event handlers
+                    var completed = new ManualResetEventSlim(initialState: false);
                     pc1.LocalSdpReadytoSend += async (SdpMessage message) =>
                     {
+                        // Send caller offer to callee
                         await pc2.SetRemoteDescriptionAsync(message);
-                        if (message.Type == SdpMessageType.Offer)
-                        {
-                            pc2.CreateAnswer();
-                        }
+                        Assert.AreEqual(SdpMessageType.Offer, message.Type);
+                        pc2.CreateAnswer();
                     };
                     pc2.LocalSdpReadytoSend += async (SdpMessage message) =>
                     {
+                        // Send callee answer back to caller
                         await pc1.SetRemoteDescriptionAsync(message);
-                        if (message.Type == SdpMessageType.Offer)
-                        {
-                            pc1.CreateAnswer();
-                        }
-
+                        Assert.AreEqual(SdpMessageType.Answer, message.Type);
+                        completed.Set();
                     };
                     pc1.IceCandidateReadytoSend += (IceCandidate candidate) => pc2.AddIceCandidate(candidate);
                     pc2.IceCandidateReadytoSend += (IceCandidate candidate) => pc1.AddIceCandidate(candidate);
 
                     // Connect
-                    var conn1 = new ManualResetEventSlim(initialState: false);
-                    var conn2 = new ManualResetEventSlim(initialState: false);
-                    pc1.Connected += () => conn1.Set();
-                    pc2.Connected += () => conn2.Set();
                     pc1.CreateOffer();
-                    WaitForSdpExchangeCompleted(conn1, conn2);
+                    WaitForSdpExchangeCompleted(completed);
 
                     pc1.Close();
                     pc2.Close();
