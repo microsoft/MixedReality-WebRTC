@@ -121,6 +121,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// High-level wrapper for Unity WebRTC functionalities.
     /// This is the API entry point for establishing a connection with a remote peer.
     /// </summary>
+    /// <remarks>
+    /// The component initializes the underlying <see cref="WebRTC.PeerConnection"/> asynchronously
+    /// when enabled, and closes it when disabled. The <see cref="OnInitialized"/> event is called
+    /// when the connection object is ready to be used. Call <see cref="StartConnection"/>
+    /// to create an offer for a remote peer.
+    /// </remarks>
     [AddComponentMenu("MixedReality-WebRTC/Peer Connection")]
     public class PeerConnection : WorkQueue
     {
