@@ -129,7 +129,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Sender track created from a local source.
         /// </summary>
         /// <remarks>
-        /// This is not null when a live source is attached to the <see cref="MediaLine"/>, and the owning
+        /// This is non-<c>null</c> when a live source is attached to the <see cref="MediaLine"/>, and the owning
         /// <see cref="PeerConnection"/> is connected.
         /// </remarks>
         public MediaTrack SenderTrack
