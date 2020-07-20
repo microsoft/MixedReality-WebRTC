@@ -4125,6 +4125,19 @@ references:
   commentId: T:Microsoft.MixedReality.WebRTC.Unity.MediaLine
   fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine
   nameWithType: MediaLine
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.LocalTrack
+  name: LocalTrack
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_LocalTrack
+  commentId: P:Microsoft.MixedReality.WebRTC.Unity.MediaLine.LocalTrack
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.LocalTrack
+  nameWithType: MediaLine.LocalTrack
+- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.LocalTrack*
+  name: LocalTrack
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_LocalTrack_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MediaLine.LocalTrack
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.LocalTrack
+  nameWithType: MediaLine.LocalTrack
 - uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.MediaKind
   name: MediaKind
   href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_MediaKind
@@ -4177,19 +4190,6 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.Receiver
   nameWithType: MediaLine.Receiver
-- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.SenderTrack
-  name: SenderTrack
-  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_SenderTrack
-  commentId: P:Microsoft.MixedReality.WebRTC.Unity.MediaLine.SenderTrack
-  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.SenderTrack
-  nameWithType: MediaLine.SenderTrack
-- uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.SenderTrack*
-  name: SenderTrack
-  href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_SenderTrack_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MediaLine.SenderTrack
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Unity.MediaLine.SenderTrack
-  nameWithType: MediaLine.SenderTrack
 - uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine.SenderTrackName
   name: SenderTrackName
   href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_SenderTrackName
@@ -4567,31 +4567,12 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoCreateOfferOnRenegotiationNeeded
   fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoCreateOfferOnRenegotiationNeeded
   nameWithType: PeerConnection.AutoCreateOfferOnRenegotiationNeeded
-- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoInitializeOnStart
-  name: AutoInitializeOnStart
-  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AutoInitializeOnStart
-  commentId: F:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoInitializeOnStart
-  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoInitializeOnStart
-  nameWithType: PeerConnection.AutoInitializeOnStart
 - uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoLogErrorsToUnityConsole
   name: AutoLogErrorsToUnityConsole
   href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_AutoLogErrorsToUnityConsole
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoLogErrorsToUnityConsole
   fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.AutoLogErrorsToUnityConsole
   nameWithType: PeerConnection.AutoLogErrorsToUnityConsole
-- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Awake
-  name: Awake()
-  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Awake
-  commentId: M:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Awake
-  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Awake()
-  nameWithType: PeerConnection.Awake()
-- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Awake*
-  name: Awake
-  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Awake_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Awake
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Awake
-  nameWithType: PeerConnection.Awake
 - uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.GetVideoCaptureDevicesAsync
   name: GetVideoCaptureDevicesAsync()
   href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_GetVideoCaptureDevicesAsync
@@ -4636,19 +4617,6 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.IceUsername
   fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.IceUsername
   nameWithType: PeerConnection.IceUsername
-- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(CancellationToken)
-  name: InitializeAsync(CancellationToken)
-  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_CancellationToken_
-  commentId: M:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(CancellationToken)
-  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(CancellationToken)
-  nameWithType: PeerConnection.InitializeAsync(CancellationToken)
-- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync*
-  name: InitializeAsync
-  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_InitializeAsync_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync
-  nameWithType: PeerConnection.InitializeAsync
 - uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.OnError
   name: OnError
   href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_OnError
@@ -4693,19 +4661,6 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.StartConnection
   nameWithType: PeerConnection.StartConnection
-- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Uninitialize
-  name: Uninitialize()
-  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Uninitialize
-  commentId: M:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Uninitialize
-  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Uninitialize()
-  nameWithType: PeerConnection.Uninitialize()
-- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Uninitialize*
-  name: Uninitialize
-  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Uninitialize_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Uninitialize
-  isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Uninitialize
-  nameWithType: PeerConnection.Uninitialize
 - uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource
   name: SceneVideoSource
   href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html

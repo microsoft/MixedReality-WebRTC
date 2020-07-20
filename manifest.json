@@ -918,7 +918,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Transceiver.html",
-          "hash": "5Rnc0ODZCOpRxnfhrQ0UdQ=="
+          "hash": "vCZaR/HlEU1NEmxtHAUp/w=="
         }
       },
       "is_incremental": false,
@@ -1230,7 +1230,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html",
-          "hash": "cL+/AqKtRaRRzmiP8RjpXw=="
+          "hash": "OJldJ7SqQZdcxlduf9zFLg=="
         }
       },
       "is_incremental": false,
@@ -1290,7 +1290,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html",
-          "hash": "BLHLeH0ePreaQCFe0Dj9Kg=="
+          "hash": "jaaU4sawArnMqam+UPYXjQ=="
         }
       },
       "is_incremental": false,
@@ -2667,12 +2667,15 @@
       "version": ""
     },
     {
+      "log_codes": [
+        "UidNotFound"
+      ],
       "type": "Conceptual",
       "source_relative_path": "manual/unity/unity-peerconnection.md",
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-peerconnection.html",
-          "hash": "aVDXO8qDFS/nADh7ibKpoA=="
+          "hash": "RqfmdsaJcPorvAycu9wVYw=="
         }
       },
       "is_incremental": false,

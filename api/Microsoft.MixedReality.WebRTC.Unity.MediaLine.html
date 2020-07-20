@@ -117,6 +117,36 @@ inspector window, though direct manipulation via code is also possible.</p>
   </h3>
   
   
+  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_LocalTrack_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.LocalTrack*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_LocalTrack" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.LocalTrack">LocalTrack</h4>
+  <div class="markdown level1 summary"><p>Local track created from a local source.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public LocalMediaTrack LocalTrack { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">LocalMediaTrack</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_LocalTrack_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This is non-<code>null</code> when a live source is attached to the <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html">MediaLine</a>, and the owning
+<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html">PeerConnection</a> is connected.</p>
+</div>
+  
+  
   <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_MediaKind_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.MediaKind*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_MediaKind" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.MediaKind">MediaKind</h4>
   <div class="markdown level1 summary"><p>Kind of media of the media line and its attached transceiver.</p>
@@ -180,32 +210,6 @@ then changing this value raises a <see xref="WebRTC.PeerConnection.Renegotiation
 peer connection of <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html#Microsoft_MixedReality_WebRTC_Unity_MediaLine_Transceiver">Transceiver</a>.</p>
 <p>Must be changed on the main Unity app thread.</p>
 </div>
-  
-  
-  <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_SenderTrack_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.SenderTrack*"></a>
-  <h4 id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_SenderTrack" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.SenderTrack">SenderTrack</h4>
-  <div class="markdown level1 summary"><p>Sender track created from a local source when starting a negotiation.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MediaTrack SenderTrack { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">MediaTrack</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   
   
   <a id="Microsoft_MixedReality_WebRTC_Unity_MediaLine_SenderTrackName_" data-uid="Microsoft.MixedReality.WebRTC.Unity.MediaLine.SenderTrackName*"></a>
