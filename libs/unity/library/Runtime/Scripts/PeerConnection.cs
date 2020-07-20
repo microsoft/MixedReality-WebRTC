@@ -561,7 +561,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             Debug.Assert(_nativePeer.Initialized);
             // Fire signals before doing anything else to allow listeners to clean-up,
-            // including un-registering any callback and remove any track from the connection.
+            // including un-registering any callback from the connection.
             OnShutdown.Invoke();
 
             // Prevent publicly accessing the native peer after it has been deinitialized.
