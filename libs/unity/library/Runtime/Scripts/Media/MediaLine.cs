@@ -64,10 +64,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     if (_source != null)
                     {
-                        if (_source.IsLive)
-                        {
-                            DestroySender();
-                        }
+                        DestroyLocalTrackIfAny();
                         _source.OnRemovedFromMediaLine(this);
                         _source = null;
                     }
@@ -80,17 +77,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     }
                     if (_source != value)
                     {
+                        var oldTrack = LocalTrack;
                         if (_source != null)
                         {
                             _source.OnRemovedFromMediaLine(this);
                         }
                         _source = value;
                         _source.OnAddedToMediaLine(this);
+                        CreateLocalTrackIfNeeded();
 
-                        if (_source.IsLive)
-                        {
-                            CreateSender();
-                        }
+                        // Dispose the old track *after* replacing it with the new one
+                        // so that there is no gap in sending.
+                        oldTrack?.Dispose();
                     }
                 }
 
@@ -133,12 +131,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Sender track created from a local source when starting a negotiation.
+        /// Local track created from a local source.
         /// </summary>
-        public MediaTrack SenderTrack
-        {
-            get { return _senderTrack; }
-        }
+        /// <remarks>
+        /// This is non-<c>null</c> when a live source is attached to the <see cref="MediaLine"/>, and the owning
+        /// <see cref="PeerConnection"/> is connected.
+        /// </remarks>
+        public LocalMediaTrack LocalTrack => Transceiver?.LocalTrack;
 
         /// <summary>
         /// Media receiver consuming the media received through the transceiver attached to this media line.
@@ -240,14 +239,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [SdpToken(allowEmpty: true)]
         private string _senderTrackName;
 
-        /// <summary>
-        /// Media track bridging the <see cref="Source"/> with the underlying <see cref="Transceiver"/>.
-        ///
-        /// The media track is automatically managed when <see cref="Source"/> changes or the transceiver direction
-        /// is renegotiated, as needed.
-        /// </summary>
-        private LocalMediaTrack _senderTrack = null;
-
         // Cache for the remote track opened by the latest negotiation.
         // Comparing it to Transceiver.RemoteTrack will tell if streaming has just started/stopped.
         private MediaTrack _remoteTrack;
@@ -280,43 +271,57 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        internal void AttachTrack()
+        // Initializes and attaches a local track if all the preconditions are satisfied.
+        private void CreateLocalTrackIfNeeded()
         {
-            Debug.Assert(Transceiver != null);
-            Debug.Assert(Source != null);
-            Debug.Assert(Transceiver.LocalTrack != _senderTrack);
-            // Note: _senderTrack is null if the source was inactive
-            if (_senderTrack != null)
+            if (_source != null && _source.IsLive && Transceiver != null)
             {
-                if (_senderTrack is LocalAudioTrack audioTrack)
+                if (MediaKind == MediaKind.Audio)
                 {
+                    var audioSource = (AudioTrackSource)_source;
+
+                    var initConfig = new LocalAudioTrackInitConfig
+                    {
+                        trackName = _senderTrackName
+                    };
+                    var audioTrack = LocalAudioTrack.CreateFromSource(audioSource.Source, initConfig);
                     Transceiver.LocalAudioTrack = audioTrack;
                 }
-                else if (_senderTrack is LocalVideoTrack videoTrack)
+                else
                 {
+                    Debug.Assert(MediaKind == MediaKind.Video);
+                    var videoSource = (VideoTrackSource)_source;
+
+                    var initConfig = new LocalVideoTrackInitConfig
+                    {
+                        trackName = _senderTrackName
+                    };
+                    var videoTrack = LocalVideoTrack.CreateFromSource(videoSource.Source, initConfig);
                     Transceiver.LocalVideoTrack = videoTrack;
                 }
             }
         }
 
-        internal void DetachTrack()
+        // Detaches and disposes the local track if there is one.
+        private void DestroyLocalTrackIfAny()
         {
-            Debug.Assert(Transceiver != null);
-            Debug.Assert(Source == null);
-            Debug.Assert(Transceiver.LocalTrack == _senderTrack);
-            if (_senderTrack is LocalAudioTrack audioTrack)
+            var localTrack = Transceiver?.LocalTrack;
+            if (localTrack != null)
             {
-                Debug.Assert(Transceiver.LocalAudioTrack == audioTrack);
-                Transceiver.LocalAudioTrack = null;
-            }
-            else if (_senderTrack is LocalVideoTrack videoTrack)
-            {
-                Debug.Assert(Transceiver.LocalVideoTrack == videoTrack);
-                Transceiver.LocalVideoTrack = null;
+                if (MediaKind == MediaKind.Audio)
+                {
+                    Transceiver.LocalAudioTrack = null;
+                }
+                else
+                {
+                    Debug.Assert(MediaKind == MediaKind.Video);
+                    Transceiver.LocalVideoTrack = null;
+                }
+                localTrack.Dispose();
             }
         }
 
-        internal void UpdateReceiverPairingIfNeeded()
+        internal void UpdateAfterSdpReceived()
         {
             Debug.Assert(Transceiver != null);
 
@@ -342,65 +347,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _remoteTrack = newRemoteTrack;
         }
 
-        internal void OnUnpaired(MediaTrack track)
-        {
-            Debug.Assert(track != null);
-            // This is called by the TrackRemoved event, which can be fired sometimes even
-            // though we did not have any opportunity yet to pair. So only unpair if we did.
-            // In details, the case is the answering peer being in sendonly mode, yet created
-            // automatically by the implementation during SetRemoteDescription() in recvonly
-            // mode (per the WebRTC spec). So the SetDirection(sendonly) triggers the TrackRemoved
-            // event, but the pairing was never done because SetDirection() is called before
-            // the receiver is updated.
-
-            // Callbacks must be called on the main thread.
-            _peer.InvokeOnAppThread(() =>
-            {
-                if (_receiver != null)
-                {
-                    bool wasReceiving = _remoteTrack != null;
-                    if (wasReceiving)
-                    {
-                        Debug.Assert(_remoteTrack == track);
-                        _receiver.OnUnpaired(_remoteTrack);
-                    }
-                }
-                _remoteTrack = null;
-            });
-        }
-
-        private void CreateSender()
-        {
-            Debug.Assert(_senderTrack == null);
-            if (MediaKind == MediaKind.Audio)
-            {
-                var audioSource = (AudioTrackSource)_source;
-
-                var initConfig = new LocalAudioTrackInitConfig
-                {
-                    trackName = _senderTrackName
-                };
-                _senderTrack = LocalAudioTrack.CreateFromSource(audioSource.Source, initConfig);
-            }
-            else
-            {
-                Debug.Assert(MediaKind == MediaKind.Video);
-                var videoSource = (VideoTrackSource)_source;
-
-                var initConfig = new LocalVideoTrackInitConfig
-                {
-                    trackName = _senderTrackName
-                };
-                _senderTrack = LocalVideoTrack.CreateFromSource(videoSource.Source, initConfig);
-            }
-        }
-
-        private void DestroySender()
-        {
-            _senderTrack.Dispose();
-            _senderTrack = null;
-        }
-
         /// <summary>
         /// Pair the given transceiver with the current media line.
         /// </summary>
@@ -410,10 +356,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// has a different media kind than the media line. This is generally a result of the two peers having
         /// mismatching media line configurations.
         /// </exception>
-        internal void PairTransceiverOnFirstOffer(Transceiver tr)
+        internal void PairTransceiver(Transceiver tr)
         {
+            _peer.EnsureIsMainAppThread();
+
             Debug.Assert(tr != null);
-            Debug.Assert((Transceiver == null) || (Transceiver == tr));
+            Debug.Assert(Transceiver == null);
 
             // Check consistency before assigning
             if (tr.MediaKind != MediaKind)
@@ -424,84 +372,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             // Initialize the transceiver direction in sync with Sender and Receiver.
             UpdateTransceiverDesiredDirection();
+
+            // Start the local track if there is a live source.
+            CreateLocalTrackIfNeeded();
         }
 
         internal void UnpairTransceiver()
         {
+            _peer.EnsureIsMainAppThread();
+
+            // Notify the receiver.
+            if (_remoteTrack != null && _receiver != null)
+            {
+                _receiver.OnUnpaired(_remoteTrack);
+            }
+            _remoteTrack = null;
+
+            DestroyLocalTrackIfAny();
+
             Transceiver = null;
-        }
-
-        /// <summary>
-        /// Update the media line when about to create an SDP offer message.
-        /// </summary>
-        /// <param name="tr">
-        /// The transceiver associated in the offer with the same media line index as the current media line.
-        /// </param>
-        /// <returns>A task which completes when the update is done.</returns>
-        /// <exception cref="InvalidTransceiverMediaKindException">
-        /// The transceiver associated in the offer with the same media line index as the current media line
-        /// has a different media kind than the media line. This is generally a result of the two peers having
-        /// mismatching media line configurations.
-        /// </exception>
-        internal void UpdateForCreateOffer(Transceiver tr)
-        {
-            Debug.Assert(tr != null);
-
-            PairTransceiverOnFirstOffer(tr);
-
-            // Create the local sender track and attach it to the transceiver
-            bool wantsSend = (Source != null);
-            bool wasSending = (Transceiver.LocalTrack == _senderTrack);
-            if (wantsSend && !wasSending)
-            {
-                AttachTrack();
-            }
-            else if (!wantsSend && wasSending)
-            {
-                DetachTrack();
-            }
-
-            // The remote track is only created when applying a description, so only attach
-            // the transceiver for now (above) but do not try to pair remote tracks.
-        }
-
-        /// <summary>
-        /// Update the media line when receiving an SDP offer message from the remote peer.
-        /// </summary>
-        /// <param name="tr">
-        /// The transceiver associated in the offer with the same media line index as the current media line.
-        /// </param>
-        /// <returns>A task which completes when the update is done.</returns>
-        /// <exception cref="InvalidTransceiverMediaKindException">
-        /// The transceiver associated in the offer with the same media line index as the current media line
-        /// has a different media kind than the media line. This is generally a result of the two peers having
-        /// mismatching media line configurations.
-        /// </exception>
-        internal void UpdateOnReceiveOffer(Transceiver tr)
-        {
-            Debug.Assert(tr != null);
-
-            PairTransceiverOnFirstOffer(tr);
-
-            bool wantsSend = (Source != null);
-            bool wasSending = (Transceiver.LocalTrack == _senderTrack);
-            if (wantsSend && !wasSending)
-            {
-                // If the offer doesn't allow to send then this will generate a renegotiation needed event,
-                // which will be temporarily delayed since we are in the middle of a negotiation already.
-                AttachTrack();
-            }
-            else if (!wantsSend && wasSending)
-            {
-                DetachTrack();
-            }
-
-            UpdateReceiverPairingIfNeeded();
-        }
-
-        internal void UpdateOnReceiveAnswer()
-        {
-            UpdateReceiverPairingIfNeeded();
         }
 
         /// <summary>
@@ -512,7 +401,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <seealso cref="VideoTrackSource.AttachSource(WebRTC.VideoTrackSource)"/>
         internal void AttachSource()
         {
-            CreateSender();
+            Debug.Assert(Source.IsLive);
+            CreateLocalTrackIfNeeded();
             UpdateTransceiverDesiredDirection();
         }
 
@@ -524,7 +414,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <seealso cref="VideoTrackSource.DisposeSource"/>
         internal void DetachSource()
         {
-            DestroySender();
+            Debug.Assert(Source.IsLive);
+            DestroyLocalTrackIfAny();
             UpdateTransceiverDesiredDirection();
         }
 

@@ -66,7 +66,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsNull(mediaLine.Transceiver); // no connection
             Assert.IsNull(mediaLine.Source);
             Assert.IsNull(mediaLine.Receiver);
-            Assert.IsNull(mediaLine.SenderTrack);
+            Assert.IsNull(mediaLine.LocalTrack);
             return mediaLine;
         }
 
@@ -119,6 +119,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // The transceiver was created by the implementation and assigned to the media line
             Assert.IsNotNull(mediaLine.Transceiver);
             Assert.AreEqual(mediaLine.Transceiver.MediaKind, mediaLine.MediaKind);
+
+            // TODO Destroy just after StartConnection will crash (#463)
+            // UnityEngine.Object.Destroy(pc_go);
         }
 
         [UnityTest(/*Description = "Add a media line to a peer connection before it is initialized"*/)]
@@ -140,7 +143,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var pc_go = new GameObject("pc1");
             pc_go.SetActive(false); // prevent auto-activation of components
             var pc = pc_go.AddComponent<PeerConnection>();
-            pc.AutoInitializeOnStart = false;
 
             // Create some video track sources
             VideoTrackSource source1 = pc_go.AddComponent<MockVideoSource>();
@@ -180,6 +182,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Set an invalid source (wrong media kind)
             Assert.Throws<ArgumentException>(() => mediaLine.Source = pc_go.AddComponent<DummyAudioSource>());
 
+            UnityEngine.Object.Destroy(pc_go);
+
             // Terminate the coroutine.
             yield return null;
         }
@@ -191,7 +195,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var pc_go = new GameObject("pc1");
             pc_go.SetActive(false); // prevent auto-activation of components
             var pc = pc_go.AddComponent<PeerConnection>();
-            pc.AutoInitializeOnStart = false;
 
             // Create some video track sources
             VideoReceiver receiver1 = pc_go.AddComponent<VideoReceiver>();
@@ -226,6 +229,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Set an invalid source (wrong media kind)
             Assert.Throws<ArgumentException>(() => mediaLine.Receiver = pc_go.AddComponent<AudioReceiver>());
+
+            UnityEngine.Object.Destroy(pc_go);
 
             // Terminate the coroutine.
             yield return null;

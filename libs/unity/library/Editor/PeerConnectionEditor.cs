@@ -26,7 +26,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
         const float kIconSpacing = 25;
 
-        SerializedProperty autoInitOnStart_;
         SerializedProperty autoCreateOffer_;
         SerializedProperty autoLogErrors_;
 
@@ -107,7 +106,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
         void OnEnable()
         {
-            autoInitOnStart_ = serializedObject.FindProperty("AutoInitializeOnStart");
             autoCreateOffer_ = serializedObject.FindProperty("AutoCreateOfferOnRenegotiationNeeded");
             autoLogErrors_ = serializedObject.FindProperty("AutoLogErrorsToUnityConsole");
 
@@ -254,8 +252,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.PropertyField(autoInitOnStart_, new GUIContent("Initialize during component start",
-                "Automatically initialize the peer connection when the component is started."));
             EditorGUILayout.PropertyField(autoLogErrors_, new GUIContent("Log errors to the Unity console",
                 "Log the WebRTC errors to the Unity console."));
 

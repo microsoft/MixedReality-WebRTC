@@ -30,7 +30,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var pc_go = new GameObject("pc1");
             pc_go.SetActive(false); // prevent auto-activation of components
             var pc = pc_go.AddComponent<PeerConnection>();
-            pc.AutoInitializeOnStart = false;
 
             // Batch changes manually
             pc.AutoCreateOfferOnRenegotiationNeeded = false;
@@ -62,7 +61,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsFalse(source.IsLive);
 
             // Confirm the sender has no track because the component is inactive
-            Assert.IsNull(ml.SenderTrack);
+            Assert.IsNull(ml.LocalTrack);
 
             // Activate the game object and the video track source component on it
             pc_go.SetActive(true);
@@ -70,14 +69,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Confirm the sender is capturing because the component is now active
             Assert.IsTrue(source.IsLive);
 
-            // Confirm the sender has a track now.
-            Assert.IsNotNull(ml.SenderTrack);
+            // Confirm the sender still has no track because there's no connection
+            Assert.IsNull(ml.LocalTrack);
 
             // Deactivate the game object and the video track source component on it
             pc_go.SetActive(false);
 
             // Confirm the source stops streaming
             Assert.IsFalse(source.IsLive);
+
+            Object.Destroy(pc_go);
 
             // Terminate the coroutine.
             yield return null;

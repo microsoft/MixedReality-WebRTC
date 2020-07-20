@@ -201,7 +201,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <seealso cref="LocalAudioTrack"/>
         /// <seealso cref="LocalVideoTrack"/>
-        public MediaTrack LocalTrack => _localTrack;
+        public LocalMediaTrack LocalTrack => _localTrack;
 
         /// <summary>
         /// Local audio track attached to the transceiver, if <see cref="MediaKind"/> is
@@ -311,7 +311,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <seealso cref="TransceiverInterop.RegisterCallbacks(Transceiver, out IntPtr)"/>
         private IntPtr _argsRef = IntPtr.Zero;
 
-        private MediaTrack _localTrack = null;
+        private LocalMediaTrack _localTrack = null;
         private MediaTrack _remoteTrack = null;
 
         /// <summary>
@@ -340,18 +340,18 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Change the local audio track sending data to the remote peer.
-        /// 
+        ///
         /// This detaches the previous local audio track if any, and attaches the new one instead.
         /// Note that the transceiver will only send some audio data to the remote peer if its
         /// negotiated direction includes sending some data and it has an attached local track to
         /// produce this data.
-        /// 
+        ///
         /// This change is transparent to the session, and does not trigger any renegotiation.
         /// </summary>
         /// <param name="track">The new local audio track attached to the transceiver, and used to
         /// produce audio data to send to the remote peer if the transceiver is sending.
         /// Passing <c>null</c> is allowed, and will detach the current track if any.</param>
-        private void SetLocalTrackImpl(MediaTrack track)
+        private void SetLocalTrackImpl(LocalMediaTrack track)
         {
             if (track == _localTrack)
             {

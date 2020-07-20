@@ -106,6 +106,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
         {
             InvokeOnAppThread(async () =>
             {
+                if (Peer2.Peer == null)
+                {
+                    Debug.Log("Discarding SDP message for peer #2 (disabled)");
+                    return;
+                }
                 await Peer2.HandleConnectionMessageAsync(message);
                 _remoteApplied2.Set();
                 if (message.Type == Microsoft.MixedReality.WebRTC.SdpMessageType.Offer)
@@ -119,6 +124,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
         {
             InvokeOnAppThread(async () =>
             {
+                if (Peer1.Peer == null)
+                {
+                    Debug.Log("Discarding SDP message for peer #1 (disabled)");
+                    return;
+                }
                 await Peer1.HandleConnectionMessageAsync(message);
                 _remoteApplied1.Set();
                 if (message.Type == Microsoft.MixedReality.WebRTC.SdpMessageType.Offer)
@@ -130,11 +140,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
         private void Peer1_IceCandidateReadytoSend(Microsoft.MixedReality.WebRTC.IceCandidate candidate)
         {
+            if (Peer2.Peer == null)
+            {
+                Debug.Log("Discarding ICE message for peer #2 (disabled)");
+                return;
+            }
             Peer2.Peer.AddIceCandidate(candidate);
         }
 
         private void Peer2_IceCandidateReadytoSend(Microsoft.MixedReality.WebRTC.IceCandidate candidate)
         {
+            if (Peer1.Peer == null)
+            {
+                Debug.Log("Discarding ICE message for peer #1 (disabled)");
+                return;
+            }
             Peer1.Peer.AddIceCandidate(candidate);
         }
     }
