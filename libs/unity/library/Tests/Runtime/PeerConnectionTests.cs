@@ -36,7 +36,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var timeout = DateTime.Now + TimeSpan.FromSeconds(10);
             yield return new WaitUntil(() => isInitialized || DateTime.Now > timeout);
             pc.OnInitialized.RemoveListener(listener);
-
+            Assert.IsTrue(isInitialized);
             Assert.IsNotNull(pc.Peer);
         }
 
@@ -54,6 +54,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             var timeout = DateTime.Now + TimeSpan.FromSeconds(10);
             yield return new WaitUntil(() => isShutdown || DateTime.Now > timeout);
             pc.OnShutdown.RemoveListener(listener);
+            Assert.IsTrue(isShutdown);
         }
 
         [SetUp]
