@@ -491,7 +491,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     // the track components of the media line to the tracks of the transceiver.
                     try
                     {
-                        mediaLine.UpdateAfterSDPMessage();
+                        mediaLine.UpdateAfterSdpReceived();
                     }
                     catch (Exception ex)
                     {
@@ -533,7 +533,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     Transceiver tr = transceivers[i];
                     var mediaLine = _mediaLines[i];
                     Debug.Assert(mediaLine.Transceiver == transceivers[i]);
-                    mediaLine.UpdateAfterSDPMessage();
+                    mediaLine.UpdateAfterSdpReceived();
                 }
 
                 // Ignore extra transceivers without a registered component to attach

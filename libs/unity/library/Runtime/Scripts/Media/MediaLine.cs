@@ -64,7 +64,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     if (_source != null)
                     {
-                        StopLocalTrackIfStarted();
+                        DestroyLocalTrackIfAny();
                         _source.OnRemovedFromMediaLine(this);
                         _source = null;
                     }
@@ -83,7 +83,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         }
                         _source = value;
                         _source.OnAddedToMediaLine(this);
-                        StartLocalTrackIfPossible();
+                        CreateLocalTrackIfNeeded();
                     }
                 }
 
@@ -278,7 +278,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         // Initializes and attaches a local track if all the preconditions are satisfied.
-        private void StartLocalTrackIfPossible()
+        private void CreateLocalTrackIfNeeded()
         {
             Debug.Assert(_senderTrack == null);
             if (_source != null && _source.IsLive && Transceiver != null)
@@ -312,7 +312,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         // Detaches and disposes the local track if there is one.
-        private void StopLocalTrackIfStarted()
+        private void DestroyLocalTrackIfAny()
         {
             if (_senderTrack != null)
             {
@@ -330,7 +330,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-        internal void UpdateAfterSDPMessage()
+        internal void UpdateAfterSdpReceived()
         {
             Debug.Assert(Transceiver != null);
 
@@ -383,7 +383,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             UpdateTransceiverDesiredDirection();
 
             // Start the local track if there is a live source.
-            StartLocalTrackIfPossible();
+            CreateLocalTrackIfNeeded();
         }
 
         internal void UnpairTransceiver()
@@ -397,7 +397,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
             _remoteTrack = null;
 
-            StopLocalTrackIfStarted();
+            DestroyLocalTrackIfAny();
 
             Transceiver = null;
         }
@@ -411,7 +411,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         internal void AttachSource()
         {
             Debug.Assert(Source.IsLive);
-            StartLocalTrackIfPossible();
+            CreateLocalTrackIfNeeded();
             UpdateTransceiverDesiredDirection();
         }
 
@@ -424,7 +424,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         internal void DetachSource()
         {
             Debug.Assert(Source.IsLive);
-            StopLocalTrackIfStarted();
+            DestroyLocalTrackIfAny();
             UpdateTransceiverDesiredDirection();
         }
 
