@@ -77,6 +77,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     }
                     if (_source != value)
                     {
+                        var oldTrack = LocalTrack;
                         if (_source != null)
                         {
                             _source.OnRemovedFromMediaLine(this);
@@ -84,6 +85,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         _source = value;
                         _source.OnAddedToMediaLine(this);
                         CreateLocalTrackIfNeeded();
+
+                        // Dispose the old track *after* replacing it with the new one
+                        // so that there is no gap in sending.
+                        oldTrack?.Dispose();
                     }
                 }
 
@@ -126,16 +131,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Sender track created from a local source.
+        /// Local track created from a local source.
         /// </summary>
         /// <remarks>
         /// This is non-<c>null</c> when a live source is attached to the <see cref="MediaLine"/>, and the owning
         /// <see cref="PeerConnection"/> is connected.
         /// </remarks>
-        public MediaTrack SenderTrack
-        {
-            get { return _senderTrack; }
-        }
+        public LocalMediaTrack LocalTrack => Transceiver?.LocalTrack;
 
         /// <summary>
         /// Media receiver consuming the media received through the transceiver attached to this media line.
@@ -237,14 +239,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [SdpToken(allowEmpty: true)]
         private string _senderTrackName;
 
-        /// <summary>
-        /// Media track bridging the <see cref="Source"/> with the underlying <see cref="Transceiver"/>.
-        ///
-        /// The media track is automatically managed when <see cref="Source"/> changes or the transceiver direction
-        /// is renegotiated, as needed.
-        /// </summary>
-        private LocalMediaTrack _senderTrack = null;
-
         // Cache for the remote track opened by the latest negotiation.
         // Comparing it to Transceiver.RemoteTrack will tell if streaming has just started/stopped.
         private MediaTrack _remoteTrack;
@@ -280,7 +274,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         // Initializes and attaches a local track if all the preconditions are satisfied.
         private void CreateLocalTrackIfNeeded()
         {
-            Debug.Assert(_senderTrack == null);
             if (_source != null && _source.IsLive && Transceiver != null)
             {
                 if (MediaKind == MediaKind.Audio)
@@ -292,7 +285,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         trackName = _senderTrackName
                     };
                     var audioTrack = LocalAudioTrack.CreateFromSource(audioSource.Source, initConfig);
-                    _senderTrack = audioTrack;
                     Transceiver.LocalAudioTrack = audioTrack;
                 }
                 else
@@ -305,7 +297,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         trackName = _senderTrackName
                     };
                     var videoTrack = LocalVideoTrack.CreateFromSource(videoSource.Source, initConfig);
-                    _senderTrack = videoTrack;
                     Transceiver.LocalVideoTrack = videoTrack;
                 }
             }
@@ -314,19 +305,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         // Detaches and disposes the local track if there is one.
         private void DestroyLocalTrackIfAny()
         {
-            if (_senderTrack != null)
+            var localTrack = Transceiver?.LocalTrack;
+            if (localTrack != null)
             {
-                Debug.Assert(Transceiver.LocalTrack == _senderTrack);
-                if (_senderTrack is LocalAudioTrack)
+                if (MediaKind == MediaKind.Audio)
                 {
                     Transceiver.LocalAudioTrack = null;
                 }
-                else if (_senderTrack is LocalVideoTrack)
+                else
                 {
+                    Debug.Assert(MediaKind == MediaKind.Video);
                     Transceiver.LocalVideoTrack = null;
                 }
-                _senderTrack.Dispose();
-                _senderTrack = null;
+                localTrack.Dispose();
             }
         }
 

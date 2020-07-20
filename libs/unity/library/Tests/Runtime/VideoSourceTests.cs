@@ -97,8 +97,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             }
 
             // Confirm the sender track is not created yet; it will be when the connection starts
-            Assert.IsNull(ml1.SenderTrack);
-            Assert.IsNull(ml2.SenderTrack);
+            Assert.IsNull(ml1.LocalTrack);
+            Assert.IsNull(ml2.LocalTrack);
 
             // Confirm the receiver track is not added yet, since remote tracks are only instantiated
             // as the result of a session negotiation.
@@ -134,13 +134,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 if (withReceiver1 && withSender2) // R <= S
                 {
                     Assert.IsNotNull(receiver1.Track);
-                    Assert.IsNotNull(ml2.SenderTrack);
+                    Assert.IsNotNull(ml2.LocalTrack);
                     hasRecv1 = true;
                     hasSend2 = true;
                 }
                 if (withSender1 && withReceiver2) // S => R
                 {
-                    Assert.IsNotNull(ml1.SenderTrack);
+                    Assert.IsNotNull(ml1.LocalTrack);
                     Assert.IsNotNull(receiver2.Track);
                     hasSend1 = true;
                     hasRecv2 = true;
@@ -396,13 +396,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 {
                     Assert.IsNotNull(cfg.peer1.source, $"Missing source #{i} on Peer #1");
                     Assert.IsTrue(cfg.peer1.source.IsLive, $"Source #{i} is not ready on Peer #1");
-                    Assert.IsNull(cfg.peer1.mediaLine.SenderTrack); // created during connection
+                    Assert.IsNull(cfg.peer1.mediaLine.LocalTrack); // created during connection
                 }
                 if (cfg.peer2.expectSender)
                 {
                     Assert.IsNotNull(cfg.peer2.source, $"Missing source #{i} on Peer #2");
                     Assert.IsTrue(cfg.peer2.source.IsLive, $"Source #{i} is not ready on Peer #2");
-                    Assert.IsNull(cfg.peer2.mediaLine.SenderTrack); // created during connection
+                    Assert.IsNull(cfg.peer2.mediaLine.LocalTrack); // created during connection
                 }
             }
 
@@ -424,7 +424,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 var cfg = cfgs[i];
                 if (cfg.peer1.expectSender)
                 {
-                    Assert.IsNotNull(cfg.peer1.mediaLine.SenderTrack, $"Transceiver #{i} missing local sender track on Peer #1");
+                    Assert.IsNotNull(cfg.peer1.mediaLine.LocalTrack, $"Transceiver #{i} missing local sender track on Peer #1");
                 }
                 if (cfg.peer1.expectReceiver)
                 {
@@ -432,7 +432,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 }
                 if (cfg.peer2.expectSender)
                 {
-                    Assert.IsNotNull(cfg.peer2.mediaLine.SenderTrack, $"Transceiver #{i} missing local sender track on Peer #2");
+                    Assert.IsNotNull(cfg.peer2.mediaLine.LocalTrack, $"Transceiver #{i} missing local sender track on Peer #2");
                 }
                 if (cfg.peer2.expectReceiver)
                 {
@@ -587,7 +587,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             // Confirm the source is ready, but the sender track is not created yet
 
             Assert.IsTrue(source1.IsLive);
-            Assert.IsNull(ml1.SenderTrack);
+            Assert.IsNull(ml1.LocalTrack);
 
             // Connect
             Assert.IsTrue(sig.StartConnection());
@@ -614,9 +614,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(MediaKind.Video, video_tr2.MediaKind);
 
             // Check track pairing
-            Assert.IsNotNull(ml1.SenderTrack); // created during connection
+            Assert.IsNotNull(ml1.LocalTrack); // created during connection
             Assert.IsNotNull(receiver2.Track); // paired
-            Assert.AreEqual(video_tr1.LocalTrack, ml1.SenderTrack); // sender attached
+            Assert.AreEqual(video_tr1.LocalTrack, ml1.LocalTrack); // sender attached
             Assert.AreEqual(video_tr2.RemoteTrack, receiver2.Track); // receiver paired
 
             // ====== Remove sender ==============================
@@ -645,7 +645,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(video_tr2, ml2.Transceiver); // immutable
 
             // Check track pairing
-            Assert.IsNull(ml1.SenderTrack); // no source, so media line destroyed its sender track...
+            Assert.IsNull(ml1.LocalTrack); // no source, so media line destroyed its sender track...
             Assert.IsNull(video_tr1.LocalTrack); // ...after detaching it from the transceiver
             Assert.IsNull(receiver2.Track); // transceiver is inactive and remote tracks are not owned
             Assert.IsNull(video_tr2.RemoteTrack); // unpaired
@@ -676,11 +676,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(video_tr2, ml2.Transceiver); // immutable
 
             // Check track pairing
-            Assert.IsNotNull(ml1.SenderTrack); // new source again, media line re-created a sender track
-            Assert.IsNotNull(ml1.SenderTrack.Transceiver); // ...and attached it to the transceiver...
-            Assert.AreEqual(video_tr1, ml1.SenderTrack.Transceiver);
+            Assert.IsNotNull(ml1.LocalTrack); // new source again, media line re-created a sender track
+            Assert.IsNotNull(ml1.LocalTrack.Transceiver); // ...and attached it to the transceiver...
+            Assert.AreEqual(video_tr1, ml1.LocalTrack.Transceiver);
             Assert.IsNotNull(video_tr1.LocalTrack); // ...and conversely
-            Assert.AreEqual(ml1.SenderTrack, video_tr1.LocalTrack);
+            Assert.AreEqual(ml1.LocalTrack, video_tr1.LocalTrack);
             Assert.IsNotNull(receiver2.Track); // transceiver is active again and remote track was re-created
             Assert.IsNotNull(receiver2.Track.Transceiver);
             Assert.AreEqual(video_tr2, receiver2.Track.Transceiver);
@@ -737,7 +737,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Confirm the source is ready, but the sender track is not created yet
             Assert.IsTrue(source1.IsLive);
-            Assert.IsNull(ml1.SenderTrack);
+            Assert.IsNull(ml1.LocalTrack);
 
             // Create some dummy out-of-band data channel to force SCTP negotiation
             // during the first offer, and be able to add some in-band data channels
@@ -829,6 +829,186 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Object.Destroy(pc1_go);
             Object.Destroy(pc2_go);
             Object.Destroy(sig_go);
+        }
+
+        [UnityTest]
+        public IEnumerator SwapSource()
+        {
+            // Create the peer connections
+            var pc1_go = new GameObject("pc1");
+            pc1_go.SetActive(false); // prevent auto-activation of components
+            var pc1 = pc1_go.AddComponent<PeerConnection>();
+            var pc2_go = new GameObject("pc2");
+            pc2_go.SetActive(false); // prevent auto-activation of components
+            var pc2 = pc2_go.AddComponent<PeerConnection>();
+
+            // Batch changes manually
+            pc1.AutoCreateOfferOnRenegotiationNeeded = false;
+            pc2.AutoCreateOfferOnRenegotiationNeeded = false;
+
+            // Create the signaler
+            var sig_go = new GameObject("signaler");
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
+            sig.Peer1 = pc1;
+            sig.Peer2 = pc2;
+
+            // Create the video sources on peer #1
+            VideoTrackSource source1 = pc1_go.AddComponent<UniformColorVideoSource>();
+            VideoTrackSource source2 = pc1_go.AddComponent<UniformColorVideoSource>();
+
+            MediaLine ml = pc1.AddMediaLine(MediaKind.Video);
+            ml.SenderTrackName = "video_track_1";
+            ml.Source = source1;
+            Assert.AreEqual(source1.MediaLines.Single(), ml);
+
+            // Create the receiver on peer #2
+            {
+                VideoReceiver receiver = pc2_go.AddComponent<VideoReceiver>();
+                MediaLine receiverMl = pc2.AddMediaLine(MediaKind.Video);
+                receiverMl.Receiver = receiver;
+            }
+
+            // Initialize
+            yield return PeerConnectionTests.InitializeAndWait(pc1);
+            yield return PeerConnectionTests.InitializeAndWait(pc2);
+
+            // Connect
+            Assert.IsTrue(sig.StartConnection());
+            yield return sig.WaitForConnection(millisecondsTimeout: 10000);
+
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
+
+            // source1 is correctly wired.
+            Assert.AreEqual(ml.Transceiver.DesiredDirection, Transceiver.Direction.SendOnly);
+            Assert.AreEqual(pc1.Peer.LocalVideoTracks.Count(), 1);
+            Assert.IsNotNull(ml.LocalTrack);
+            Assert.AreEqual(((LocalVideoTrack)ml.LocalTrack).Source, source1.Source);
+
+            // Reset source
+            ml.Source = null;
+
+            // source1 has been detached.
+            Assert.IsNull(ml.LocalTrack);
+            Assert.AreEqual(ml.Transceiver.DesiredDirection, Transceiver.Direction.Inactive);
+            Assert.AreEqual(pc1.Peer.LocalVideoTracks.Count(), 0);
+            Assert.IsEmpty(source1.MediaLines);
+
+            // Set source2.
+            ml.Source = source2;
+
+            // source2 is correctly wired.
+            Assert.IsNotNull(ml.LocalTrack);
+            Assert.AreEqual(ml.Transceiver.DesiredDirection, Transceiver.Direction.SendOnly);
+            Assert.AreEqual(pc1.Peer.LocalVideoTracks.Count(), 1);
+            Assert.AreEqual(source2.MediaLines.Single(), ml);
+            Assert.AreEqual(((LocalVideoTrack)ml.LocalTrack).Source, source2.Source);
+
+            // Swap source2 with source1.
+            ml.Source = source1;
+
+            // source1 is correctly wired.
+            Assert.IsNotNull(ml.LocalTrack);
+            Assert.AreEqual(ml.Transceiver.DesiredDirection, Transceiver.Direction.SendOnly);
+            Assert.AreEqual(pc1.Peer.LocalVideoTracks.Count(), 1);
+            Assert.AreEqual(source1.MediaLines.Single(), ml);
+            Assert.AreEqual(((LocalVideoTrack)ml.LocalTrack).Source, source1.Source);
+
+            // source2 has been detached.
+            Assert.IsEmpty(source2.MediaLines);
+
+            Object.Destroy(pc1_go);
+            Object.Destroy(pc2_go);
+        }
+
+        [UnityTest]
+        public IEnumerator SwapReceiver()
+        {
+            // Create the peer connections
+            var pc1_go = new GameObject("pc1");
+            pc1_go.SetActive(false); // prevent auto-activation of components
+            var pc1 = pc1_go.AddComponent<PeerConnection>();
+            var pc2_go = new GameObject("pc2");
+            pc2_go.SetActive(false); // prevent auto-activation of components
+            var pc2 = pc2_go.AddComponent<PeerConnection>();
+
+            // Batch changes manually
+            pc1.AutoCreateOfferOnRenegotiationNeeded = false;
+            pc2.AutoCreateOfferOnRenegotiationNeeded = false;
+
+            // Create the signaler
+            var sig_go = new GameObject("signaler");
+            var sig = sig_go.AddComponent<LocalOnlySignaler>();
+            sig.Peer1 = pc1;
+            sig.Peer2 = pc2;
+
+            // Create the video source on peer #1
+            {
+                VideoTrackSource source = pc1_go.AddComponent<UniformColorVideoSource>();
+                MediaLine senderMl = pc1.AddMediaLine(MediaKind.Video);
+                senderMl.SenderTrackName = "video_track_1";
+                senderMl.Source = source;
+
+            }
+
+            // Create the receivers on peer #2
+            VideoReceiver receiver1 = pc2_go.AddComponent<VideoReceiver>();
+            VideoReceiver receiver2 = pc2_go.AddComponent<VideoReceiver>();
+            MediaLine ml = pc2.AddMediaLine(MediaKind.Video);
+            ml.Receiver = receiver1;
+            Assert.AreEqual(receiver1.MediaLine, ml);
+
+            // Initialize
+            yield return PeerConnectionTests.InitializeAndWait(pc1);
+            yield return PeerConnectionTests.InitializeAndWait(pc2);
+
+            // Connect
+            Assert.IsTrue(sig.StartConnection());
+            yield return sig.WaitForConnection(millisecondsTimeout: 10000);
+
+            // Wait a frame so that the Unity events for streams started can propagate
+            yield return null;
+
+            // receiver1 is correctly wired.
+            Assert.AreEqual(ml.Transceiver.DesiredDirection, Transceiver.Direction.ReceiveOnly);
+            Assert.AreEqual(pc2.Peer.RemoteVideoTracks.Count(), 1);
+            Assert.IsTrue(receiver1.IsLive);
+            Assert.AreEqual(receiver1.Track, ml.Transceiver.RemoteTrack);
+
+            // Reset receiver
+            ml.Receiver = null;
+
+            // receiver1 has been detached.
+            Assert.AreEqual(ml.Transceiver.DesiredDirection, Transceiver.Direction.Inactive);
+            Assert.IsFalse(receiver1.IsLive);
+            Assert.IsNull(receiver1.MediaLine);
+
+            // Set receiver2.
+            ml.Receiver = receiver2;
+
+            // receiver2 is correctly wired.
+            Assert.AreEqual(ml.Transceiver.DesiredDirection, Transceiver.Direction.ReceiveOnly);
+            Assert.AreEqual(pc2.Peer.RemoteVideoTracks.Count(), 1);
+            Assert.IsTrue(receiver2.IsLive);
+            Assert.AreEqual(receiver2.Track, ml.Transceiver.RemoteTrack);
+            Assert.AreEqual(receiver2.MediaLine, ml);
+
+            // Swap receiver2 with receiver1.
+            ml.Receiver = receiver1;
+
+            // receiver1 is correctly wired.
+            Assert.AreEqual(ml.Transceiver.DesiredDirection, Transceiver.Direction.ReceiveOnly);
+            Assert.AreEqual(pc2.Peer.RemoteVideoTracks.Count(), 1);
+            Assert.IsTrue(receiver1.IsLive);
+            Assert.AreEqual(receiver1.Track, ml.Transceiver.RemoteTrack);
+            Assert.AreEqual(receiver1.MediaLine, ml);
+
+            // receiver2 has been detached.
+            Assert.IsFalse(receiver2.IsLive);
+            Assert.IsNull(receiver2.MediaLine);
+
+            Object.Destroy(pc1_go);
+            Object.Destroy(pc2_go);
         }
     }
 }

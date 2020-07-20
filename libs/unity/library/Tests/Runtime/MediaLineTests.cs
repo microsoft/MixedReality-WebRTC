@@ -66,7 +66,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsNull(mediaLine.Transceiver); // no connection
             Assert.IsNull(mediaLine.Source);
             Assert.IsNull(mediaLine.Receiver);
-            Assert.IsNull(mediaLine.SenderTrack);
+            Assert.IsNull(mediaLine.LocalTrack);
             return mediaLine;
         }
 

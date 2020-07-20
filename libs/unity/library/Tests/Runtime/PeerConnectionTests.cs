@@ -67,6 +67,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
         {
         }
 
+        private void VerifyLocalShutdown(MediaLine ml)
+        {
+            // The source is not impacted, but tracks and transceiver are gone.
+            Assert.IsTrue(ml.Source.IsLive);
+            Assert.IsFalse(ml.Receiver.IsLive);
+            Assert.IsNull(ml.LocalTrack);
+            Assert.IsNull(ml.Transceiver);
+        }
+
         [UnityTest]
         public IEnumerator SimplePeerConnection()
         {
@@ -144,8 +153,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 Assert.IsTrue(source2.IsLive);
 
                 // Sender tracks will be created on connection.
-                Assert.IsNull(ml1.SenderTrack);
-                Assert.IsNull(ml2.SenderTrack);
+                Assert.IsNull(ml1.LocalTrack);
+                Assert.IsNull(ml2.LocalTrack);
 
                 // Connect
                 Assert.IsTrue(sig.StartConnection());
@@ -167,21 +176,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 pc1.enabled = false;
                 Assert.IsNull(pc1.Peer);
 
-                // The source is not impacted, but tracks and transceiver are gone.
-                Assert.IsTrue(source1.IsLive);
-                Assert.IsFalse(receiver1.IsLive);
-                Assert.IsNull(ml1.SenderTrack);
-                Assert.IsNull(ml1.Transceiver);
+                // We cannot reliably detect remote shutdown, so only check local peer.
+                VerifyLocalShutdown(ml1);
 
                 // Shutdown peer #2
                 pc2.enabled = false;
                 Assert.IsNull(pc2.Peer);
 
-                // The source is not impacted, but tracks and transceiver are gone.
-                Assert.IsTrue(source2.IsLive);
-                Assert.IsFalse(receiver2.IsLive);
-                Assert.IsNull(ml2.SenderTrack);
-                Assert.IsNull(ml2.Transceiver);
+                VerifyLocalShutdown(ml2);
             }
             UnityEngine.Object.Destroy(pc1_go);
             UnityEngine.Object.Destroy(pc2_go);
