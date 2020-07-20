@@ -82,10 +82,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             ml2.Receiver = receiver2;
 
             // Initialize
-            var init1 = PeerConnectionTests.InitializeAndWait(pc1);
-            var init2 = PeerConnectionTests.InitializeAndWait(pc2);
-            yield return init1;
-            yield return init2;
+            yield return PeerConnectionTests.InitializeAndWait(pc1);
+            yield return PeerConnectionTests.InitializeAndWait(pc2);
 
             // Confirm the sources are ready
             if (withSender1)
@@ -387,10 +385,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             }
 
             // Initialize
-            var init1 = PeerConnectionTests.InitializeAndWait(pc1);
-            var init2 = PeerConnectionTests.InitializeAndWait(pc2);
-            yield return init1;
-            yield return init2;
+            yield return PeerConnectionTests.InitializeAndWait(pc1);
+            yield return PeerConnectionTests.InitializeAndWait(pc2);
 
             // Confirm the sources are ready
             for (int i = 0; i < NumTransceivers; ++i)
@@ -585,10 +581,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             ml2.Receiver = receiver2;
 
             // Initialize
-            var init1 = PeerConnectionTests.InitializeAndWait(pc1);
-            var init2 = PeerConnectionTests.InitializeAndWait(pc2);
-            yield return init1;
-            yield return init2;
+            yield return PeerConnectionTests.InitializeAndWait(pc1);
+            yield return PeerConnectionTests.InitializeAndWait(pc2);
 
             // Confirm the source is ready, but the sender track is not created yet
 
@@ -738,10 +732,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             ml2.Receiver = receiver2;
 
             // Initialize
-            var init1 = PeerConnectionTests.InitializeAndWait(pc1);
-            var init2 = PeerConnectionTests.InitializeAndWait(pc2);
-            yield return init1;
-            yield return init2;
+            yield return PeerConnectionTests.InitializeAndWait(pc1);
+            yield return PeerConnectionTests.InitializeAndWait(pc2);
 
             // Confirm the source is ready, but the sender track is not created yet
             Assert.IsTrue(source1.IsLive);
