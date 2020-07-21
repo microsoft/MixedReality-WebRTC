@@ -25,7 +25,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// inspector window, though direct manipulation via code is also possible.
     /// </summary>
     [Serializable]
-    public class MediaLine : ISerializationCallbackReceiver
+    public class MediaLine
     {
         /// <summary>
         /// Kind of media of the media line and its attached transceiver.
@@ -60,37 +60,29 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             get { return _source; }
             set
             {
-                if (value == null)
+                if (_source == value)
                 {
-                    if (_source != null)
-                    {
-                        DestroyLocalTrackIfAny();
-                        _source.OnRemovedFromMediaLine(this);
-                        _source = null;
-                    }
+                    return;
                 }
-                else
+                if (value != null && value.MediaKind != MediaKind)
                 {
-                    if (value.MediaKind != MediaKind)
-                    {
-                        throw new ArgumentException("Wrong media kind", nameof(Source));
-                    }
-                    if (_source != value)
-                    {
-                        var oldTrack = LocalTrack;
-                        if (_source != null)
-                        {
-                            _source.OnRemovedFromMediaLine(this);
-                        }
-                        _source = value;
-                        _source.OnAddedToMediaLine(this);
-                        CreateLocalTrackIfNeeded();
+                    throw new ArgumentException("Wrong media kind", nameof(Receiver));
+                }
 
-                        // Dispose the old track *after* replacing it with the new one
-                        // so that there is no gap in sending.
-                        oldTrack?.Dispose();
-                    }
+                var oldTrack = LocalTrack;
+                if (_source != null && _peer.IsAwake)
+                {
+                    _source.OnRemovedFromMediaLine(this);
                 }
+                _source = value;
+                if (_source != null && _peer.IsAwake)
+                {
+                    _source.OnAddedToMediaLine(this);
+                    CreateLocalTrackIfNeeded();
+                }
+                // Dispose the old track *after* replacing it with the new one
+                // so that there is no gap in sending.
+                oldTrack?.Dispose();
 
                 // Whatever the change, keep the direction consistent.
                 UpdateTransceiverDesiredDirection();
@@ -170,7 +162,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     throw new ArgumentException("Wrong media kind", nameof(Receiver));
                 }
 
-                if (_receiver != null)
+                if (_receiver != null && _peer.IsAwake)
                 {
                     if (_remoteTrack != null)
                     {
@@ -179,7 +171,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     _receiver.OnRemovedFromMediaLine(this);
                 }
                 _receiver = value;
-                if (_receiver != null)
+                if (_receiver != null && _peer.IsAwake)
                 {
                     _receiver.OnAddedToMediaLine(this);
                     if (_remoteTrack != null)
@@ -427,14 +419,31 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             UpdateTransceiverDesiredDirection();
         }
 
-        public void OnBeforeSerialize() {}
-
-        public void OnAfterDeserialize()
+        // Called by PeerConnection.Awake.
+        internal void Awake()
         {
             if (_source)
             {
                 // Fill the list of media lines for the source.
                 _source.OnAddedToMediaLine(this);
+            }
+            if (_receiver)
+            {
+                _receiver.OnAddedToMediaLine(this);
+            }
+        }
+
+        // Called by PeerConnection.OnDestroy.
+        internal void OnDestroy()
+        {
+            if (_source)
+            {
+                // Fill the list of media lines for the source.
+                _source.OnRemovedFromMediaLine(this);
+            }
+            if (_receiver)
+            {
+                _receiver.OnRemovedFromMediaLine(this);
             }
         }
     }

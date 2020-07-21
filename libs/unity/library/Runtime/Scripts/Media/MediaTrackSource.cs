@@ -26,6 +26,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// List of audio media lines using this source.
         /// </summary>
+        /// <remarks>
+        /// Note that a connected <see cref="MediaLine"/> will be added to this only if the owning
+        /// <see cref="PeerConnection"/> is awake. A <see cref="MediaLine"/> will be automatically
+        /// removed if the owning <see cref="PeerConnection"/> is destroyed.
+        /// </remarks>
         public IReadOnlyList<MediaLine> MediaLines => _mediaLines;
         private readonly List<MediaLine> _mediaLines = new List<MediaLine>();
 

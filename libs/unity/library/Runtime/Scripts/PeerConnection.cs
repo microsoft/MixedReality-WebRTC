@@ -238,6 +238,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [SerializeField]
         private List<MediaLine> _mediaLines = new List<MediaLine>();
 
+        // Indicates if Awake has been called. Used by media lines to figure out whether to
+        // invoke callbacks or not.
+        internal bool IsAwake { get; private set; }
+
         #endregion
 
 
@@ -587,6 +591,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         #region Unity MonoBehaviour methods
 
+        protected override void Awake()
+        {
+            base.Awake();
+            IsAwake = true;
+            foreach (var ml in _mediaLines)
+            {
+                ml.Awake();
+            }
+        }
+
         /// <summary>
         /// Unity Engine OnEnable() hook
         /// </summary>
@@ -612,6 +626,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             Uninitialize();
             OnError.RemoveListener(OnError_Listener);
+        }
+
+        private void OnDestroy()
+        {
+            foreach (var ml in _mediaLines)
+            {
+                ml.OnDestroy();
+            }
         }
 
         #endregion
@@ -731,11 +753,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
             // Once the peer is initialized, it becomes publicly accessible.
-            // This prevent scripts from accessing it before it is initialized,
-            // or worse before it is constructed in Awake(). This happens because
-            // some scripts try to access Peer in OnEnabled(), which won't work
-            // if Unity decided to initialize that script before the current one.
-            // However subsequent calls will (and should) work as expected.
+            // This prevent scripts from accessing it before it is initialized.
             Peer = _nativePeer;
 
             OnInitialized.Invoke();
