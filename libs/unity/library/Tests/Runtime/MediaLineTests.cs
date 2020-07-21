@@ -141,7 +141,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
         {
             // Create the peer connections
             var pc_go = new GameObject("pc1");
-            pc_go.SetActive(false); // prevent auto-activation of components
             var pc = pc_go.AddComponent<PeerConnection>();
 
             // Create some video track sources
@@ -193,7 +192,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
         {
             // Create the peer connections
             var pc_go = new GameObject("pc1");
-            pc_go.SetActive(false); // prevent auto-activation of components
             var pc = pc_go.AddComponent<PeerConnection>();
 
             // Create some video track sources
@@ -234,6 +232,67 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Terminate the coroutine.
             yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator DestroyPeerConnection()
+        {
+            // Create the component
+            var go = new GameObject("test_go");
+            go.SetActive(false); // prevent auto-activation of components
+            var pc = go.AddComponent<PeerConnection>();
+
+            // Add a media line while inactive.
+            VideoTrackSource source1 = go.AddComponent<UniformColorVideoSource>();
+            VideoReceiver receiver1 = go.AddComponent<VideoReceiver>();
+            MediaLine ml1 = pc.AddMediaLine(MediaKind.Video);
+            ml1.Source = source1;
+            ml1.Receiver = receiver1;
+
+            // Media lines have not been set yet.
+            Assert.IsEmpty(source1.MediaLines);
+            Assert.IsNull(receiver1.MediaLine);
+
+            yield return PeerConnectionTests.InitializeAndWait(pc);
+
+            // Media lines have been set now.
+            Assert.AreEqual(source1.MediaLines.Single(), ml1);
+            Assert.AreEqual(receiver1.MediaLine, ml1);
+
+            // Add a media line while active.
+            VideoReceiver receiver2 = go.AddComponent<VideoReceiver>();
+            MediaLine ml2 = pc.AddMediaLine(MediaKind.Video);
+            ml2.Source = source1;
+            ml2.Receiver = receiver2;
+
+            // Media line #2 is connected.
+            Assert.AreEqual(source1.MediaLines[1], ml2);
+            Assert.AreEqual(receiver2.MediaLine, ml2);
+
+            // Disable the peer.
+            pc.enabled = false;
+
+            // Add a media line while disabled.
+            VideoReceiver receiver3 = go.AddComponent<VideoReceiver>();
+            MediaLine ml3 = pc.AddMediaLine(MediaKind.Video);
+            ml3.Source = source1;
+            ml3.Receiver = receiver3;
+
+            // Media line #3 is connected.
+            Assert.AreEqual(source1.MediaLines[2], ml3);
+            Assert.AreEqual(receiver3.MediaLine, ml3);
+
+            // Destroy the peer (wait a frame for destruction).
+            UnityEngine.Object.Destroy(pc);
+            yield return null;
+
+            // Source and receivers are not connected anymore.
+            Assert.IsEmpty(source1.MediaLines);
+            Assert.IsNull(receiver1.MediaLine);
+            Assert.IsNull(receiver2.MediaLine);
+            Assert.IsNull(receiver3.MediaLine);
+
+            UnityEngine.Object.Destroy(go);
         }
     }
 }

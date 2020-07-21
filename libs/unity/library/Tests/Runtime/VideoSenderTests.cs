@@ -43,9 +43,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Assign the video source to the media line
             ml.Source = source;
-            Assert.IsTrue(source.MediaLines.Contains(ml));
 
-            //// Add event handlers to check IsStreaming state
+            // MediaLine has not been connected yet.
+            Assert.IsEmpty(source.MediaLines);
+
+            // Add event handlers to check IsStreaming state
             source.VideoStreamStarted.AddListener((IVideoSource self) =>
             {
                 // Becomes true *before* this handler by design
@@ -65,6 +67,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
 
             // Activate the game object and the video track source component on it
             pc_go.SetActive(true);
+
+            // MediaLine is connected.
+            Assert.AreEqual(source.MediaLines.Single(), ml);
 
             // Confirm the sender is capturing because the component is now active
             Assert.IsTrue(source.IsLive);

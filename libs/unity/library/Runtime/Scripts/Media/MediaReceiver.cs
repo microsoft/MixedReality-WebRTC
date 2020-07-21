@@ -43,6 +43,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Media line this receiver is paired with, if any.
         /// </summary>
+        /// <remarks>
+        /// Note that this is set to the connected <see cref="Unity.MediaLine"/> only if the owning
+        /// <see cref="PeerConnection"/> is awake. This will be automatically reset if the
+        /// <see cref="PeerConnection"/> owning the <see cref="Unity.MediaLine"/>is destroyed.
+        /// </remarks>
         public MediaLine MediaLine { get; private set; }
 
         /// <summary>

@@ -859,7 +859,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             MediaLine ml = pc1.AddMediaLine(MediaKind.Video);
             ml.SenderTrackName = "video_track_1";
             ml.Source = source1;
-            Assert.AreEqual(source1.MediaLines.Single(), ml);
 
             // Create the receiver on peer #2
             {
@@ -884,6 +883,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(pc1.Peer.LocalVideoTracks.Count(), 1);
             Assert.IsNotNull(ml.LocalTrack);
             Assert.AreEqual(((LocalVideoTrack)ml.LocalTrack).Source, source1.Source);
+            Assert.AreEqual(source1.MediaLines.Single(), ml);
 
             // Reset source
             ml.Source = null;
@@ -948,7 +948,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
                 MediaLine senderMl = pc1.AddMediaLine(MediaKind.Video);
                 senderMl.SenderTrackName = "video_track_1";
                 senderMl.Source = source;
-
             }
 
             // Create the receivers on peer #2
@@ -956,7 +955,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             VideoReceiver receiver2 = pc2_go.AddComponent<VideoReceiver>();
             MediaLine ml = pc2.AddMediaLine(MediaKind.Video);
             ml.Receiver = receiver1;
-            Assert.AreEqual(receiver1.MediaLine, ml);
 
             // Initialize
             yield return PeerConnectionTests.InitializeAndWait(pc1);
@@ -974,6 +972,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.AreEqual(pc2.Peer.RemoteVideoTracks.Count(), 1);
             Assert.IsTrue(receiver1.IsLive);
             Assert.AreEqual(receiver1.Track, ml.Transceiver.RemoteTrack);
+            Assert.AreEqual(receiver1.MediaLine, ml);
 
             // Reset receiver
             ml.Receiver = null;
