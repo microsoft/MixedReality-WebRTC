@@ -19,6 +19,10 @@ parameters:
   displayName: 'Include PDBs in UPM packages'
   type: boolean
   default: true
+- name: clean
+  displayName: 'Clean build'
+  type: boolean
+  default: true
 
 stages:
 
@@ -39,12 +43,14 @@ stages:
       buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x86'
       buildConfig: 'Release'
+      clean: '${{parameters.clean}}'
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'Win32'
       buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x64'
       buildConfig: 'Release'
+      clean: '${{parameters.clean}}'
 
   # Build all Release variants of mrwebrtc.dll for Windows UWP
   - template: templates/jobs-mrwebrtc-release-build.yaml
@@ -53,18 +59,21 @@ stages:
       buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x86'
       buildConfig: 'Release'
+      clean: '${{parameters.clean}}'
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'UWP'
       buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'x64'
       buildConfig: 'Release'
+      clean: '${{parameters.clean}}'
   - template: templates/jobs-mrwebrtc-release-build.yaml
     parameters:
       buildPlatform: 'UWP'
       buildAgent: '$(MRWebRTC.BuildAgent)'
       buildArch: 'ARM'
       buildConfig: 'Release'
+      clean: '${{parameters.clean}}'
 
   # Build the Release variant of Microsoft.MixedReality.WebRTC.dll for release.
   - template: templates/jobs-cslib-release-build.yaml
