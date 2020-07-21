@@ -330,6 +330,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c8b8e916d2cbf40a9dd142c021c4d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  VideoStreamStarted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2981115260991272962}
+        m_MethodName: StartRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  VideoStreamStopped:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2981115260991272962}
+        m_MethodName: StopRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &799132310
 GameObject:
   m_ObjectHideFlags: 0
@@ -361,10 +389,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VideoStreamStarted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4163670226369723062}
+        m_MethodName: StartRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   VideoStreamStopped:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4163670226369723062}
+        m_MethodName: StopRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   SourceCamera: {fileID: 1188804072}
   CameraEvent: 20
 --- !u!4 &799132312
@@ -424,12 +474,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dafbc4e8e99e46e41823d17cdabbd651, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSourceStarted:
-    m_PersistentCalls:
-      m_Calls: []
-  AudioSourceStopped:
-    m_PersistentCalls:
-      m_Calls: []
   _autoGainControl: 1
 --- !u!4 &966919328 stripped
 Transform:
@@ -969,7 +1013,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac54f2f6b8185d444b4a85e048778344, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PadWithSine: 0
+  AudioStreamStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  AudioStreamStopped:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!82 &1697477438
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1529,7 +1578,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64dff3d25ffa2ee4f907d396ed9c1ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AutoInitializeOnStart: 1
   AutoCreateOfferOnRenegotiationNeeded: 1
   AutoLogErrorsToUnityConsole: 1
   IceServers:
@@ -1611,7 +1659,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 114433695892338045}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 114452440398351871}
+        m_MethodName: StartConnectionIgnoreError
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &114812408490274119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2027,6 +2086,18 @@ PrefabInstance:
       objectReference: {fileID: 666380897}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7, type: 3}
+--- !u!114 &2981115260991272962 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6316678915622682930, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+    type: 3}
+  m_PrefabInstance: {fileID: 2981115260991272961}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4163670226369723061
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2143,6 +2214,18 @@ PrefabInstance:
       objectReference: {fileID: 799132311}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7, type: 3}
+--- !u!114 &4163670226369723062 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6316678915622682930, guid: a5df3c1fbf79c4b4ca9d5e5035d945a7,
+    type: 3}
+  m_PrefabInstance: {fileID: 4163670226369723061}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8844783485349696906
 MonoBehaviour:
   m_ObjectHideFlags: 0
