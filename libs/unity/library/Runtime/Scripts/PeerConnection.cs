@@ -423,6 +423,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
+        /// Call <see cref="StartConnection"/> and discard the result. Can be wired to a <see cref="UnityEvent"/>.
+        /// </summary>
+        public void StartConnectionIgnoreError()
+        {
+            _ = StartConnection();
+        }
+
+        /// <summary>
         /// Pass the given SDP description received from the remote peer via signaling to the
         /// underlying WebRTC implementation, which will parse and use it.
         ///
