@@ -128,7 +128,7 @@ jobs:
     inputs:
       scriptSource: 'filePath'
       scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
-      arguments: '-a prepare -t webrtc -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper'
+      arguments: '-a prepare -t webrtc -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper --cpp17'
       failOnStderr: false
 
   # Clean-up unused files
@@ -152,7 +152,7 @@ jobs:
     inputs:
       scriptSource: 'filePath'
       scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
-      arguments: '-a build -t webrtc -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper'
+      arguments: '-a build -t webrtc -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper --cpp17'
       failOnStderr: false
     timeoutInMinutes: 120
 
