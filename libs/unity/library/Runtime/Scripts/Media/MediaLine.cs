@@ -204,10 +204,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         public Transceiver Transceiver { get; private set; }
 
+        /// <summary>
+        /// <see cref="PeerConnection"/> owning this <see cref="MediaLine"/>.
+        /// </summary>
+        public PeerConnection Peer
+        {
+            get => _peer;
+            internal set
+            {
+                Debug.Assert(Peer == null || Peer == value);
+                _peer = value;
+            }
+        }
 
         #region Private fields
-
-        [SerializeField]
         private PeerConnection _peer;
 
         /// <summary>
@@ -252,7 +262,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <param name="kind">Immutable value assigned to the <see cref="MediaKind"/> property on construction.</param>
         internal MediaLine(PeerConnection peer, MediaKind kind)
         {
-            _peer = peer;
+            Peer = peer;
             _mediaKind = kind;
         }
 
@@ -263,7 +273,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // Avoid races on the desired direction by limiting changes to the main thread.
                 // Note that EnsureIsMainAppThread cannot be used if _peer is not awake, so only
                 // check when there is a transceiver (meaning _peer is enabled).
-                _peer.EnsureIsMainAppThread();
+                Peer.EnsureIsMainAppThread();
 
                 bool wantsSend = _source != null && _source.IsLive;
                 bool wantsRecv = (_receiver != null);
@@ -326,7 +336,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             Debug.Assert(Transceiver != null);
 
             // Callbacks must be called on the main Unity app thread.
-            _peer.EnsureIsMainAppThread();
+            Peer.EnsureIsMainAppThread();
 
             var newRemoteTrack = Transceiver.RemoteTrack;
             if (_receiver != null)
@@ -358,7 +368,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </exception>
         internal void PairTransceiver(Transceiver tr)
         {
-            _peer.EnsureIsMainAppThread();
+            Peer.EnsureIsMainAppThread();
 
             Debug.Assert(tr != null);
             Debug.Assert(Transceiver == null);
@@ -379,7 +389,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         internal void UnpairTransceiver()
         {
-            _peer.EnsureIsMainAppThread();
+            Peer.EnsureIsMainAppThread();
 
             // Notify the receiver.
             if (_remoteTrack != null && _receiver != null)

@@ -1367,13 +1367,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _mediaLines:
-  - _peer: {fileID: 114452440398351871}
-    _mediaKind: 0
+  - _mediaKind: 0
     _source: {fileID: 132294435}
     _receiver: {fileID: 1697477437}
     _senderTrackName: microphone_track
-  - _peer: {fileID: 114452440398351871}
-    _mediaKind: 1
+  - _mediaKind: 1
     _source: {fileID: 2089692227}
     _receiver: {fileID: 666380897}
     _senderTrackName: webcam_track
