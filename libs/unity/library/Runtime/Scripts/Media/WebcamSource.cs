@@ -365,6 +365,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 #endif
 
+        protected void OnDisable()
+        {
+            DisposeSource();
+        }
+
 #if UNITY_WSA && !UNITY_EDITOR
         /// <summary>
         /// Internal UWP helper to ensure device access.
