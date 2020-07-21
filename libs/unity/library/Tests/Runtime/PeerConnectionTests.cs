@@ -143,10 +143,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             for (int i = 0; i < 2; ++i)
             {
                 // Initialize
-                var init1 = InitializeAndWait(pc1);
-                var init2 = InitializeAndWait(pc2);
-                yield return init1;
-                yield return init2;
+                yield return InitializeAndWait(pc1);
+                yield return InitializeAndWait(pc2);
 
                 // Confirm the sources are ready.
                 Assert.IsTrue(source1.IsLive);
