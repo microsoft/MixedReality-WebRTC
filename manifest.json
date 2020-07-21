@@ -1230,7 +1230,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html",
-          "hash": "OJldJ7SqQZdcxlduf9zFLg=="
+          "hash": "OTdF0O9NdGfJMu4feQ86hg=="
         }
       },
       "is_incremental": false,
@@ -1290,7 +1290,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html",
-          "hash": "jaaU4sawArnMqam+UPYXjQ=="
+          "hash": "0kOV36Oi/wSNeMat1kwedw=="
         }
       },
       "is_incremental": false,
@@ -1422,7 +1422,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html",
-          "hash": "oyUcLEMTTBirYU3xFa62ZQ=="
+          "hash": "amvENKD96DrQMR7pGI4nTQ=="
         }
       },
       "is_incremental": false,

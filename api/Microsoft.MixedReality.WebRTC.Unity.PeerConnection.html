@@ -97,6 +97,10 @@ This is the API entry point for establishing a connection with a remote peer.</p
     <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html">WorkQueue</a></div>
     <div class="level2"><span class="xref">PeerConnection</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">ISerializationCallbackReceiver</span></div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -119,7 +123,7 @@ This is the API entry point for establishing a connection with a remote peer.</p
   <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class PeerConnection : WorkQueue</code></pre>
+    <pre><code class="lang-csharp hljs">public class PeerConnection : WorkQueue, ISerializationCallbackReceiver</code></pre>
   </div>
   <h5 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The component initializes the underlying <see cref="!:WebRTC.PeerConnection"></see> asynchronously
@@ -519,6 +523,26 @@ be safely accessed.</p>
 </div>
   
   
+  <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_OnAfterDeserialize_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.OnAfterDeserialize*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_OnAfterDeserialize" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.OnAfterDeserialize">OnAfterDeserialize()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void OnAfterDeserialize()</code></pre>
+  </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_OnBeforeSerialize_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.OnBeforeSerialize*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_OnBeforeSerialize" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.OnBeforeSerialize">OnBeforeSerialize()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void OnBeforeSerialize()</code></pre>
+  </div>
+  
+  
   <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_StartConnection_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.StartConnection*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_StartConnection" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.StartConnection">StartConnection()</h4>
   <div class="markdown level1 summary"><p>Create a new connection offer, either for a first connection to the remote peer, or for
@@ -563,6 +587,21 @@ The offer SDP message is always created asynchronously.</p>
   <div class="markdown level1 remarks"><p>This method can only be called from the main Unity application thread, where Unity objects can
 be safely accessed.</p>
 </div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_StartConnectionIgnoreError_" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.StartConnectionIgnoreError*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_PeerConnection_StartConnectionIgnoreError" data-uid="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.StartConnectionIgnoreError">StartConnectionIgnoreError()</h4>
+  <div class="markdown level1 summary"><p>Call <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_StartConnection">StartConnection()</a> and discard the result. Can be wired to a <see cref="!:UnityEvent"></see>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void StartConnectionIgnoreError()</code></pre>
+  </div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">ISerializationCallbackReceiver</span>
+  </div>
 </article>
           </div>
           
