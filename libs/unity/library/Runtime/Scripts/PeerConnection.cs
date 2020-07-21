@@ -128,7 +128,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// to create an offer for a remote peer.
     /// </remarks>
     [AddComponentMenu("MixedReality-WebRTC/Peer Connection")]
-    public class PeerConnection : WorkQueue
+    public class PeerConnection : WorkQueue, ISerializationCallbackReceiver
     {
         /// <summary>
         /// Retrieves the underlying peer connection object once initialized.
@@ -618,6 +618,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
 
         #region Private implementation
+
+        public void OnBeforeSerialize() { }
+
+        public void OnAfterDeserialize()
+        {
+            foreach (var ml in _mediaLines)
+            {
+                ml.Peer = this;
+            }
+        }
 
         /// <summary>
         /// Create a new native peer connection and register event handlers to it.
