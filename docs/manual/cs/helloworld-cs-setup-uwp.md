@@ -64,7 +64,7 @@ After that, the `App1` project should contain a reference to the package.
 
 ## Test the reference
 
-In order to ensure everything works fine and the `Microsoft.MixedReality.WebRTC` assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method [`PeerConnection.GetVideoCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync). This is more simple than creating objects, as there is no clean-up needed after use.
+In order to ensure everything works fine and the `Microsoft.MixedReality.WebRTC` assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method [`DeviceVideoTrackSource.GetCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync). This is more simple than creating objects, as there is no clean-up needed after use.
 
 First, because this sample application is a UWP application, it needs to declare some capabilities to access the microphone and webcam on the host device. In the **Solution Explorer** of Visual Studio, double-click on the `Package.appxmanifest` to open the AppX manifest of the app and select the **Capabilities** tab. Check **Microphone** and **Webcam**, and confirm that **Internet (Client)** is already checked.
 
@@ -95,7 +95,7 @@ Next, edit `MainPage.xaml.cs`:
    }
    ```
 
-3. Create the event handler `OnLoaded()` and use it to request access from the user to the microphone and camera, and enumerate the video capture devices. The `MediaCapture.InitializeAsync()` call will prompt the user with a dialog to authorize access to the microphone and webcam. The latter be must authorized before calling `PeerConnection.GetVideoCaptureDevicesAsync()`, while the former will be needed in the following of the tutorial for calls like `PeerConnection.AddLocalAudioTrackAsync()`.
+3. Create the event handler `OnLoaded()` and use it to request access from the user to the microphone and camera, and enumerate the video capture devices. The `MediaCapture.InitializeAsync()` call will prompt the user with a dialog to authorize access to the microphone and webcam. The latter be must authorized before calling `DeviceVideoTrackSource.GetCaptureFormatsAsync()`, while the former will be needed in the following of the tutorial for calls like `PeerConnection.AddLocalAudioTrackAsync()`.
 
    ```cs
    private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -108,7 +108,7 @@ Next, edit `MainPage.xaml.cs`:
 
        // Retrieve a list of available video capture devices (webcams).
        List<VideoCaptureDevice> deviceList =
-           await PeerConnection.GetVideoCaptureDevicesAsync(); 
+           await DeviceVideoTrackSource.GetCaptureFormatsAsync(); 
 
        // Get the device list and, for example, print them to the debugger console
        foreach (var device in deviceList)

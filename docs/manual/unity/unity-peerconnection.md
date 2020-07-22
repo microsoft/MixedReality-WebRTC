@@ -18,6 +18,6 @@ The [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) 
 | **Media** | |
 | Auto Create Offer on Renegotiation Needed | Automatically call [`StartConnection()`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.StartConnection) to create a new offer and start a new session negotiation when the renegotiation needed event is raised. If not set, the user need to call [`StartConnection()`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.StartConnection) manually instead to (re-)negoitate a session. |
 | **Events** | |
-| On Initialized | Event fired once the [`InitializeAsync()`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(CancellationToken)) method returned successfully, to indicate that the peer connection component is ready for use. |
-| On Shutdown | Event fired when [`Uninitialize()`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Uninitialize) is called, usually automatically during [`MonoBehaviour.OnDestroy()`](https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDestroy.html) |
-| On Error | Event fired when an error occur in the peer connection. |
+| On Initialized | Event raised once the peer connection is successfully initialized as a result of the component being enabled, to indicate that the peer connection component is ready for use. |
+| On Shutdown | Event raised when the peer connection has been destroyed as a result of the component being disabled. After this event is raised the peer connection cannot be used until it is initilized again. |
+| On Error | Event raised when an error occur in the peer connection. |

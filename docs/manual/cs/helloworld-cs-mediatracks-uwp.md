@@ -196,11 +196,11 @@ The `CreateI420VideoStreamSource()` method references the [`SampleRequested`](xr
    }
    ```
 
-3. In the `OnLoaded()` method where the video track source was created, subscribe to the [`VideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.VideoTrackSource.VideoFrameReady) event.
+3. In the `OnLoaded()` method where the video track source was created, subscribe to the [`I420AVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.VideoTrackSource.I420AVideoFrameReady) event.
 
    ```cs
     _webcamSource = await DeviceVideoTrackSource.CreateAsync();
-    _webcamSource.VideoFrameReady += LocalI420AFrameReady;
+    _webcamSource.I420AVideoFrameReady += LocalI420AFrameReady;
    ```
 
 4. Implement the event handler by enqueueing the newly captured video frames into the bridge, which will later deliver them when the Media Foundation playback pipeline requests them.
@@ -221,7 +221,7 @@ The last part is to actually start the playback pipeline when video frames start
 
 Unfortunately at this time the capture framerate is not available, so we assume a framerate of 30 frames per second (FPS).
 
-1. At the top of the `MainPage` class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the [`VideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.VideoTrackSource.VideoFrameReady) and the [`SampleRequested`](xref:Windows.Media.Core.MediaStreamSource.SampleRequested) events can be fired in parallel from multiple threads.
+1. At the top of the `MainPage` class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the [`I420AVideoFrameReady`](xref:Microsoft.MixedReality.WebRTC.VideoTrackSource.I420AVideoFrameReady) and the [`SampleRequested`](xref:Windows.Media.Core.MediaStreamSource.SampleRequested) events can be fired in parallel from multiple threads.
 
    ```cs
    private bool _localVideoPlaying = false;
