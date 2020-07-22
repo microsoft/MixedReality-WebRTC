@@ -4448,6 +4448,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.AutoGainControl
   nameWithType: MicrophoneSource.AutoGainControl
+- uid: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.OnDisable
+  name: OnDisable()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html#Microsoft_MixedReality_WebRTC_Unity_MicrophoneSource_OnDisable
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.OnDisable
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.OnDisable()
+  nameWithType: MicrophoneSource.OnDisable()
+- uid: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.OnDisable*
+  name: OnDisable
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html#Microsoft_MixedReality_WebRTC_Unity_MicrophoneSource_OnDisable_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.OnDisable
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.OnDisable
+  nameWithType: MicrophoneSource.OnDisable
 - uid: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.OnEnable
   name: OnEnable()
   href: api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html#Microsoft_MixedReality_WebRTC_Unity_MicrophoneSource_OnEnable
