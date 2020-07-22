@@ -4101,6 +4101,63 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.InvalidTransceiverMediaKindException
   nameWithType: InvalidTransceiverMediaKindException.InvalidTransceiverMediaKindException
+- uid: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler
+  name: LocalOnlySignaler
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler
+  nameWithType: LocalOnlySignaler
+- uid: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.IsConnected
+  name: IsConnected
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html#Microsoft_MixedReality_WebRTC_Unity_LocalOnlySignaler_IsConnected
+  commentId: P:Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.IsConnected
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.IsConnected
+  nameWithType: LocalOnlySignaler.IsConnected
+- uid: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.IsConnected*
+  name: IsConnected
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html#Microsoft_MixedReality_WebRTC_Unity_LocalOnlySignaler_IsConnected_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.IsConnected
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.IsConnected
+  nameWithType: LocalOnlySignaler.IsConnected
+- uid: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.Peer1
+  name: Peer1
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html#Microsoft_MixedReality_WebRTC_Unity_LocalOnlySignaler_Peer1
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.Peer1
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.Peer1
+  nameWithType: LocalOnlySignaler.Peer1
+- uid: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.Peer2
+  name: Peer2
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html#Microsoft_MixedReality_WebRTC_Unity_LocalOnlySignaler_Peer2
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.Peer2
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.Peer2
+  nameWithType: LocalOnlySignaler.Peer2
+- uid: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.StartConnection
+  name: StartConnection()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html#Microsoft_MixedReality_WebRTC_Unity_LocalOnlySignaler_StartConnection
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.StartConnection
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.StartConnection()
+  nameWithType: LocalOnlySignaler.StartConnection()
+- uid: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.StartConnection*
+  name: StartConnection
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html#Microsoft_MixedReality_WebRTC_Unity_LocalOnlySignaler_StartConnection_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.StartConnection
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.StartConnection
+  nameWithType: LocalOnlySignaler.StartConnection
+- uid: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.WaitForConnection(System.Int32)
+  name: WaitForConnection(Int32)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html#Microsoft_MixedReality_WebRTC_Unity_LocalOnlySignaler_WaitForConnection_System_Int32_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.WaitForConnection(System.Int32)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.WaitForConnection(System.Int32)
+  nameWithType: LocalOnlySignaler.WaitForConnection(Int32)
+- uid: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.WaitForConnection*
+  name: WaitForConnection
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html#Microsoft_MixedReality_WebRTC_Unity_LocalOnlySignaler_WaitForConnection_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.WaitForConnection
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.WaitForConnection
+  nameWithType: LocalOnlySignaler.WaitForConnection
 - uid: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode
   name: LocalVideoSourceFormatMode
   href: api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.html
@@ -4965,6 +5022,79 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Update
   nameWithType: Signaler.Update
+- uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource
+  name: UniformColorVideoSource
+  href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource
+  nameWithType: UniformColorVideoSource
+- uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Colors
+  name: Colors
+  href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_UniformColorVideoSource_Colors
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Colors
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Colors
+  nameWithType: UniformColorVideoSource.Colors
+- uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested(FrameRequest@)
+  name: OnFrameRequested(FrameRequest)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_UniformColorVideoSource_OnFrameRequested_FrameRequest__
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested(FrameRequest@)
+  name.vb: OnFrameRequested(ByRef FrameRequest)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested(FrameRequest)
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested(ByRef FrameRequest)
+  nameWithType: UniformColorVideoSource.OnFrameRequested(FrameRequest)
+  nameWithType.vb: UniformColorVideoSource.OnFrameRequested(ByRef FrameRequest)
+- uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested*
+  name: OnFrameRequested
+  href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_UniformColorVideoSource_OnFrameRequested_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested
+  nameWithType: UniformColorVideoSource.OnFrameRequested
+- uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Speed
+  name: Speed
+  href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_UniformColorVideoSource_Speed
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Speed
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Speed
+  nameWithType: UniformColorVideoSource.Speed
+- uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Start
+  name: Start()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_UniformColorVideoSource_Start
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Start
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Start()
+  nameWithType: UniformColorVideoSource.Start()
+- uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Start*
+  name: Start
+  href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_UniformColorVideoSource_Start_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Start
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Start
+  nameWithType: UniformColorVideoSource.Start
+- uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Update
+  name: Update()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_UniformColorVideoSource_Update
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Update
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Update()
+  nameWithType: UniformColorVideoSource.Update()
+- uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Update*
+  name: Update
+  href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_UniformColorVideoSource_Update_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Update
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Update
+  nameWithType: UniformColorVideoSource.Update
+- uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.UpdateBuffer
+  name: UpdateBuffer()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_UniformColorVideoSource_UpdateBuffer
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.UpdateBuffer
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.UpdateBuffer()
+  nameWithType: UniformColorVideoSource.UpdateBuffer()
+- uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.UpdateBuffer*
+  name: UpdateBuffer
+  href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_UniformColorVideoSource_UpdateBuffer_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.UpdateBuffer
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.UpdateBuffer
+  nameWithType: UniformColorVideoSource.UpdateBuffer
 - uid: Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints
   name: VideoCaptureConstraints
   href: api/Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints.html

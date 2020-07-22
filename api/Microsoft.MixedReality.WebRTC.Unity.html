@@ -122,6 +122,13 @@ directly to the WebRTC implementation.</p>
       <section><p>Exception thrown when an invalid transceiver media kind was detected, generally when trying to pair a
 transceiver of one media kind with a media line of a different media kind.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html">LocalOnlySignaler</a></h4>
+      <section><p>Simple signaler using two peer connections in the same process,
+and hard-coding their SDP message delivery to avoid the need for
+any kind of networking to deliver SDP messages.</p>
+<p>This component is designed to be used in demos where both peers
+are present in the same scene.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaLine.html">MediaLine</a></h4>
       <section><p>Media line abstraction for a peer connection.</p>
 <p>This container binds together a source component (<a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html">MediaTrackSource</a>) and/or a receiver
@@ -173,6 +180,9 @@ event handlers, as well as dispatching free-threaded callbacks to the main Unity
 for simplicity and safety, and leaves the implementation with instead with two sending methods
 <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_SdpMessage_">SendMessageAsync(SdpMessage)</a> and <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_IceCandidate_">SendMessageAsync(IceCandidate)</a> to
 implement, as well as handling received messages.</p>
+</section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html">UniformColorVideoSource</a></h4>
+      <section><p>A video source producing some colored frames generated programmatically.</p>
 </section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html">VideoReceiver</a></h4>
       <section><p>Endpoint for a WebRTC remote video track.</p>
