@@ -26,12 +26,6 @@ public class NodeDssSignalerUI : MonoBehaviour
     [Tooltip("The text input field in which we accept the target device name")]
     public InputField RemotePeerId;
 
-    /// <summary>
-    /// The button that generates an offer to a given target
-    /// </summary>
-    [Tooltip("The button that generates an offer to a given target")]
-    public Button CreateOfferButton;
-
     private void Start()
     {
         string localPeerId = NodeDssSignaler.LocalPeerId;
@@ -47,15 +41,18 @@ public class NodeDssSignalerUI : MonoBehaviour
             RemotePeerId.text = PlayerPrefs.GetString(kLastRemotePeerId);
         }
         Debug.Log($"NodeDSS remote peer ID : {RemotePeerId.text}");
+    }
 
-        CreateOfferButton.onClick.AddListener(() =>
+    /// <summary>
+    /// If <see cref="RemotePeerId"/> is set, start a connection from the local peer.
+    /// </summary>
+    public void StartConnection()
+    {
+        if (!string.IsNullOrEmpty(RemotePeerId.text))
         {
-            if (!string.IsNullOrEmpty(RemotePeerId.text))
-            {
-                PlayerPrefs.SetString(kLastRemotePeerId, RemotePeerId.text);
-                NodeDssSignaler.RemotePeerId = RemotePeerId.text;
-                NodeDssSignaler.PeerConnection.StartConnection();
-            }
-        });
+            PlayerPrefs.SetString(kLastRemotePeerId, RemotePeerId.text);
+            NodeDssSignaler.RemotePeerId = RemotePeerId.text;
+            NodeDssSignaler.PeerConnection.StartConnection();
+        }
     }
 }
