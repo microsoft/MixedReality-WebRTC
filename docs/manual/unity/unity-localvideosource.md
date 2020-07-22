@@ -10,7 +10,7 @@ The [`WebcamSource`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource) Unit
 
 #### [`WebcamDevice`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.WebcamDevice) (code only)
 
-Description of the video capture device to use, colloquially referred to as _webcam_ for short, even if other non-webcam capture devices are also supported, like the HoloLens 1 and HoloLens 2 cameras. Valid device unique identifiers can be enumerated with [`GetVideoCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync) and correspond to the [`VideoCaptureDevice.id`](xref:Microsoft.MixedReality.WebRTC.VideoCaptureDevice.id) field. Note that this property is not exposed to the Unity editor, as devices should be enumerate at runtime to support the various video capture device configurations of the host device.
+Description of the video capture device to use, colloquially referred to as _webcam_ for short, even if other non-webcam capture devices are also supported, like the HoloLens 1 and HoloLens 2 cameras. Valid device unique identifiers can be enumerated with [`DeviceVideoTrackSource.GetCaptureFormatsAsync()`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String)) and correspond to the [`VideoCaptureDevice.id`](xref:Microsoft.MixedReality.WebRTC.VideoCaptureDevice.id) field. Note that this property is not exposed to the Unity editor, as devices should be enumerate at runtime to support the various video capture device configurations of the host device.
 
 #### [`FormatMode`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.FormatMode) ("Capture format" in Inspector)
 
@@ -18,7 +18,7 @@ Select between automated and manual video capture format selection mode. In auto
 
 #### [`Constraints`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.Constraints) (code only)
 
-Optional resolution and framerate constraints to apply when selecting a video capture format. This allows restricting the set of capture formats the implementation considers when selecting a capture format to use, possibly even forcing a single one. Constraints reducing the number of matching capture formats to zero will make opening the device fail, therefore it is recommended to enumerate the supported capture formats with [`GetVideoCaptureFormatsAsync`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureFormatsAsync(System.String)).
+Optional resolution and framerate constraints to apply when selecting a video capture format. This allows restricting the set of capture formats the implementation considers when selecting a capture format to use, possibly even forcing a single one. Constraints reducing the number of matching capture formats to zero will make opening the device fail, therefore it is recommended to enumerate the supported capture formats with [`DeviceVideoTrackSource.GetCaptureFormatsAsync`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String)).
 
 #### [`VideoProfileId`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.VideoProfileId) (code only)
 

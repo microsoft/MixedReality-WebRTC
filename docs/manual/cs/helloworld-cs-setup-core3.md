@@ -62,7 +62,7 @@ After that, `TestNetCoreConsole.csproj` should contain a reference to the packag
 
 ## Test the reference
 
-In order to ensure everything works fine and the `Microsoft.MixedReality.WebRTC` assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method [`PeerConnection.GetVideoCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync). This is more simple than creating objects, as there is no clean-up needed after use.
+In order to ensure everything works fine and the `Microsoft.MixedReality.WebRTC` assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method [`DeviceVideoTrackSource.GetCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync). This is more simple than creating objects, as there is no clean-up needed after use.
 
 Edit the `Program.cs` file:
 
@@ -79,7 +79,7 @@ Edit the `Program.cs` file:
    static async Task Main(string[] args)
    ```
 
-3. Change the body of the `Main` function to call [`GetVideoCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync) and display the list of devices found on the standard output.
+3. Change the body of the `Main` function to call [`GetCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync) and display the list of devices found on the standard output.
 
    ```cs
    static async Task Main(string[] args)
@@ -87,7 +87,7 @@ Edit the `Program.cs` file:
        try
        {
            // Asynchronously retrieve a list of available video capture devices (webcams).
-           var deviceList = await PeerConnection.GetVideoCaptureDevicesAsync();
+           var deviceList = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
 
            // For example, print them to the standard output
            foreach (var device in deviceList)
