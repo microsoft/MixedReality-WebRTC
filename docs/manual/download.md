@@ -24,9 +24,12 @@ See [Installation](installation.md) for details on how to use NuGet packages in 
 
 ### Legacy v1 packages
 
+> [!WARNING]
+> The legacy v1 native packages are now **deprecated and unsupported**, and should not be used.
+
 In v1 the native packages [`Microsoft.MixedReality.WebRTC.Native.Desktop`](https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Desktop) and [`Microsoft.MixedReality.WebRTC.Native.UWP`](https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.UWP) contain a native library exposing a C++ interface. This caused several issues:
 
 - Compatibility with various C++ compilers and CRT versions, which is a general problem when working with DLLs on Windows platforms.
 - Architecture defect : some library headers were including some internal headers from the Google's WebRTC implementation, which were **not** shipped with those NuGet packages. See bug [#123](https://github.com/microsoft/MixedReality-WebRTC/issues/123) for details.
 
-To avoid those issues, starting from 2.0.0 the native library exposes a pure C interface. To highlight this change and the fact the packages are native, some new package names are used. **The legacy v1 native packages are now deprecated and unsupported, and should not be used.**
+To avoid those issues, starting from 2.0.0 the native library exposes a pure C interface. To highlight this change and the fact the packages are native, some new package names are used.
