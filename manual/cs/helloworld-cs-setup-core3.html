@@ -130,7 +130,7 @@
 &lt;/ItemGroup&gt;
 </code></pre>
 <h2 id="test-the-reference">Test the reference</h2>
-<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync"><code>PeerConnection.GetVideoCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
+<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync"><code>DeviceVideoTrackSource.GetCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
 <p>Edit the <code>Program.cs</code> file:</p>
 <ol>
 <li><p>At the top of the file, add some <code>using</code> statement to import the <code>Microsoft.MixedReality.WebRTC</code> assembly. Also import the <code>System.Threading.Tasks</code> module, as we will use the <code>async</code> / <code>await</code> construct and the <code>Task</code> object.</p>
@@ -142,13 +142,13 @@ using Microsoft.MixedReality.WebRTC;
 <pre><code class="lang-cs">static async Task Main(string[] args)
 </code></pre>
 </li>
-<li><p>Change the body of the <code>Main</code> function to call <a href="xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync"><code>GetVideoCaptureDevicesAsync()</code></a> and display the list of devices found on the standard output.</p>
+<li><p>Change the body of the <code>Main</code> function to call <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync"><code>GetCaptureDevicesAsync()</code></a> and display the list of devices found on the standard output.</p>
 <pre><code class="lang-cs">static async Task Main(string[] args)
 {
     try
     {
         // Asynchronously retrieve a list of available video capture devices (webcams).
-        var deviceList = await PeerConnection.GetVideoCaptureDevicesAsync();
+        var deviceList = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
 
         // For example, print them to the standard output
         foreach (var device in deviceList)

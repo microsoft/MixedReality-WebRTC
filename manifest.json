@@ -2004,15 +2004,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.html",
-          "hash": "l5Gi6VdcV8ww2iBRbv/Tjw=="
+          "hash": "V22XT1kBTydEDyvBb8Ymuw=="
         }
       },
       "is_incremental": false,
@@ -2043,30 +2040,24 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-setup-core3.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-setup-core3.html",
-          "hash": "dYn7hbt6UDlmdhJvdpSNnQ=="
+          "hash": "bxX9rNwKr0NhaBltKG16xQ=="
         }
       },
       "is_incremental": false,
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/cs/helloworld-cs-setup-uwp.md",
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-setup-uwp.html",
-          "hash": "Mqzs/xahI64AmfQq/foTrg=="
+          "hash": "F6GczxiXBwqSLvhHDil88Q=="
         }
       },
       "is_incremental": false,
@@ -2114,7 +2105,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/download.html",
-          "hash": "AFrMmawdvhRR6KjDsr8uMg=="
+          "hash": "yhgxAZdjD3o4Tt0xC3XLdQ=="
         }
       },
       "is_incremental": false,
@@ -2172,7 +2163,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/installation.html",
-          "hash": "QchJNE5geIXvaOkHZgVARw=="
+          "hash": "1GUUWvDR6Uv2G3GzexuFIw=="
         }
       },
       "is_incremental": false,
@@ -2191,15 +2182,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/migration-guide.md",
       "output": {
         ".html": {
           "relative_path": "manual/migration-guide.html",
-          "hash": "43LDyaN7JwGv0bzhM0lH5Q=="
+          "hash": "9GXGZPFnTs1yVzr2MOkZtQ=="
         }
       },
       "is_incremental": false,
@@ -2496,15 +2484,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/unity/helloworld-unity-localvideo.md",
       "output": {
         ".html": {
           "relative_path": "manual/unity/helloworld-unity-localvideo.html",
-          "hash": "9S+aHHRexJqVC+wyJh8XzQ=="
+          "hash": "AVfzvR6WF6JTaArHkJnbrw=="
         }
       },
       "is_incremental": false,
@@ -2639,15 +2624,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/unity/unity-localvideosource.md",
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-localvideosource.html",
-          "hash": "Z+3vlYH9iseOrGm1Aq5qyA=="
+          "hash": "wl7z3dbN6ZDBK0J05U7qLw=="
         }
       },
       "is_incremental": false,
@@ -2665,15 +2647,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/unity/unity-mediaplayer.md",
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-mediaplayer.html",
-          "hash": "FHYIipzAStahxM2ULS85Jg=="
+          "hash": "QGbFLSvrY/9V6zw/n8SX1g=="
         }
       },
       "is_incremental": false,
@@ -2691,15 +2670,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "UidNotFound"
-      ],
       "type": "Conceptual",
       "source_relative_path": "manual/unity/unity-peerconnection.md",
       "output": {
         ".html": {
           "relative_path": "manual/unity/unity-peerconnection.html",
-          "hash": "RqfmdsaJcPorvAycu9wVYw=="
+          "hash": "Zo0nG29PNt5OCTxlcq164g=="
         }
       },
       "is_incremental": false,

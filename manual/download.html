@@ -83,35 +83,46 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="downloading-mixedreality-webrtc">Downloading MixedReality-WebRTC</h1>
 
-<p>MixedReality-WebRTC is primarily distributed as NuGet packages hosted on <a href="https://nuget.org">nuget.org</a>. Those packages are signed by Microsoft. Generally you do not want to download those packages directly, but instead add a reference inside a Visual Studio project and let Visual Studio do the installation. See <a href="installation.html">Installation</a> for details.</p>
-<p>Alternatively, the libraries can be compiled from source if wanted. See <a href="building.html">Building from sources</a> for details on this process.</p>
-<p>Starting from v2.0, the C library is only distributed as sources, to be linked statically inside a C/C++ project.</p>
-<h2 id="c-library">C# library</h2>
-<p>The C# library is distributed as two separate packages for Windows Desktop and Windows UWP:</p>
-<ul>
-<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC">Windows Desktop package <code>Microsoft.MixedReality.WebRTC</code></a></li>
-<li><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.UWP">Windows UWP package <code>Microsoft.MixedReality.WebRTC.UWP</code></a></li>
-</ul>
-<div class="NOTE">
-<h5>Note</h5>
-<p>As per existing C# NuGet packages convention, and unlike the C library below, the Desktop package has no suffix, and the UWP package adds a <code>.UWP</code> suffix.</p>
-</div>
-<p>The C# library packages contain the C# assembly <code>Microsoft.MixedReality.WebRTC</code> as well as the per-architecture native DLLs. Therefore those packages are standalone, and there is no need to reference any other package in your project.</p>
-<h2 id="c-library-1">C library</h2>
-<p>The C library is the native implementation module <code>mrwebrtc.dll</code> of the C# library, but can also be used as a standalone library in a C/C++ program. It is distributed as sources only for C/C++ projects to integrate it and statically link with it.</p>
-<p>To download the library, simply clone the MixedReality-WebRTC repository:</p>
-<pre><code class="lang-shell">git clone https://github.com/microsoft/MixedReality-WebRTC.git
-</code></pre>
-<div class="IMPORTANT">
-<h5>Important</h5>
-<p>The C++ library distributed in the NuGet packages v1.0.x has an architecture defect : it requires some internal headers from the Google's WebRTC implementation to be used, which are <strong>not</strong> shipped with those NuGet packages. See bug <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/123">#123</a> for details. A workaround is to clone the repository <em>recursively</em> to get those headers (<code>git clone --recurse</code>).</p>
-</div>
+<p>The <strong>Unity library</strong> and its <strong>optional samples</strong> are distributed as UPM packages. The library package contains all binaries for Windows Desktop, UWP, and Android.</p>
+<p>The <strong>C/C++ library</strong> and <strong>C# library</strong> are distributed as NuGet packages for Windows Desktop and UWP.</p>
 <h2 id="unity-library">Unity library</h2>
-<p>The sources for the Unity library are distributed as a UPM package to be imported into a user project via the Unity Package Manager. Users can checkout the GitHub repository and point UPM to the <code>package.json</code> file from <a href="https://github.com/microsoft/MixedReality-WebRTC/tree/master/libs/unity/library/"><code>libs/unity/library</code></a> (library) and <a href="https://github.com/microsoft/MixedReality-WebRTC/tree/master/libs/unity/samples/"><code>libs/unity/samples</code></a> (optional demo samples). The library however requires the user to compile from sources the C and C# libraries, which the Unity library uses under the hood. Standalone UPM packages with precompiled binaries are not available at this time. See <a href="installation.html">Installation</a> for details.</p>
+<p>UPM packages are available for download on the <a href="https://github.com/microsoft/MixedReality-WebRTC/releases">GitHub Releases page</a>.</p>
+<p>The library package contains prebuilt binaries for all supported Unity platforms: Windows Desktop (x86, x64), UWP (x86, x64, ARM), and Android (ARM64).</p>
+<p>See <a href="installation.html#unity-library">Installation</a> for details on how to use those packages in an existing Unity project.</p>
+<h2 id="nuget-packages">NuGet packages</h2>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>C# library</th>
+<th>C/C++ library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows Desktop (x86, x64)</td>
+<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC"><code>Microsoft.MixedReality.WebRTC</code></a></td>
+<td><a href="https://www.nuget.org/packages/mrwebrtc"><code>mrwebrtc</code></a></td>
+</tr>
+<tr>
+<td>UWP (x86, x64, ARM)</td>
+<td><a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.UWP"><code>Microsoft.MixedReality.WebRTC.UWP</code></a></td>
+<td><a href="https://www.nuget.org/packages/mrwebrtc_uwp"><code>mrwebrtc_uwp</code></a></td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="installation.html">Installation</a> for details on how to use NuGet packages in a Visual Studio project.</p>
+<h3 id="legacy-v1-packages">Legacy v1 packages</h3>
 <div class="WARNING">
 <h5>Warning</h5>
-<p>The Unity scripts are using the API of the branch they are associated with. This means that the Unity scripts on the <code>master</code> branch are only working with the <code>master</code> branch API, and are therefore not compatible with the NuGet packages, which are only provided for stable releases (<code>release/xxx</code> branches).</p>
+<p>The legacy v1 native packages are now <strong>deprecated and unsupported</strong>, and should not be used.</p>
 </div>
+<p>In v1 the native packages <a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.Desktop"><code>Microsoft.MixedReality.WebRTC.Native.Desktop</code></a> and <a href="https://www.nuget.org/packages/Microsoft.MixedReality.WebRTC.Native.UWP"><code>Microsoft.MixedReality.WebRTC.Native.UWP</code></a> contain a native library exposing a C++ interface. This caused several issues:</p>
+<ul>
+<li>Compatibility with various C++ compilers and CRT versions, which is a general problem when working with DLLs on Windows platforms.</li>
+<li>Architecture defect : some library headers were including some internal headers from the Google's WebRTC implementation, which were <strong>not</strong> shipped with those NuGet packages. See bug <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/123">#123</a> for details.</li>
+</ul>
+<p>To avoid those issues, starting from 2.0.0 the native library exposes a pure C interface. To highlight this change and the fact the packages are native, some new package names are used.</p>
 </article>
           </div>
           

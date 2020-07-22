@@ -84,7 +84,8 @@
 <h1 id="unity-videorenderer-component">Unity <code>VideoRenderer</code> component</h1>
 
 <p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html"><code>VideoRenderer</code></a> Unity component is a utility component to render some video frames into a Unity texture.</p>
-<p><img src="unity-mediaplayer.png" alt="The MediaPlayer Unity component"></p>
+<p><img src="unity-mediaplayer.png" alt="The VideoRenderer Unity component"></p>
+<p>To use the component, either call its <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html#Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_StartRendering_IVideoSource_"><code>StartRendering()</code></a> and <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html#Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_StopRendering_IVideoSource_"><code>StopRendering()</code></a> methods from code, or connect them to Unity events such as the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_VideoStreamStarted"><code>VideoTrackSource.VideoStreamStarted</code></a> and <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_VideoStreamStopped"><code>VideoTrackSource.VideoStreamStopped</code></a> events. All video source components derive from <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html"><code>VideoTrackSource</code></a> and therefore expose those events.</p>
 <table>
 <thead>
 <tr>
@@ -98,12 +99,8 @@
 <td></td>
 </tr>
 <tr>
-<td>Source</td>
-<td>Reference to the <a href="xref:Microsoft.MixedReality.WebRTC.Unity.VideoRendererSource"><code>VideoRendererSource</code></a> instance that the components acquires the video frames from. Only instances of classes implementing the <a href="xref:Microsoft.MixedReality.WebRTC.Unity.IVideoSource"><code>IVideoSource</code></a> interface are valid. Both <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html"><code>VideoTrackSource</code></a> (local video) and <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html"><code>VideoReceiver</code></a> (remote video) can be assigned.</td>
-</tr>
-<tr>
 <td>MaxFramerate</td>
-<td>Maximum number of video frames per second rendered. Extra frames coming from the video renderer source are discarded.</td>
+<td>Maximum number of video frames per second rendered. Extra frames coming from the video source passed to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html#Microsoft_MixedReality_WebRTC_Unity_VideoRenderer_StartRendering_IVideoSource_"><code>StartRendering()</code></a> are discarded.</td>
 </tr>
 <tr>
 <td><strong>Statistics</strong></td>
@@ -127,6 +124,13 @@
 </tr>
 </tbody>
 </table>
+<hr>
+<p><em>See also :</em></p>
+<ul>
+<li><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html"><code>VideoTrackSource</code></a></li>
+<li><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html"><code>WebcamSource</code></a></li>
+<li><a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html"><code>SceneVideoSource</code></a></li>
+</ul>
 </article>
           </div>
           

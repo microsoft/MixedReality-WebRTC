@@ -135,15 +135,15 @@
 </tr>
 <tr>
 <td>On Initialized</td>
-<td>Event fired once the <a href="xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.InitializeAsync(CancellationToken)"><code>InitializeAsync()</code></a> method returned successfully, to indicate that the peer connection component is ready for use.</td>
+<td>Event raised once the peer connection is successfully initialized as a result of the component being enabled, to indicate that the peer connection component is ready for use.</td>
 </tr>
 <tr>
 <td>On Shutdown</td>
-<td>Event fired when <a href="xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Uninitialize"><code>Uninitialize()</code></a> is called, usually automatically during <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDestroy.html"><code>MonoBehaviour.OnDestroy()</code></a></td>
+<td>Event raised when the peer connection has been destroyed as a result of the component being disabled. After this event is raised the peer connection cannot be used until it is initilized again.</td>
 </tr>
 <tr>
 <td>On Error</td>
-<td>Event fired when an error occur in the peer connection.</td>
+<td>Event raised when an error occur in the peer connection.</td>
 </tr>
 </tbody>
 </table>

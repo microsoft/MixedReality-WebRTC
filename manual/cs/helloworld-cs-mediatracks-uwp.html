@@ -235,9 +235,9 @@ private VideoBridge _localVideoBridge = new VideoBridge(3);
 }
 </code></pre>
 </li>
-<li><p>In the <code>OnLoaded()</code> method where the video track source was created, subscribe to the <a href="xref:Microsoft.MixedReality.WebRTC.VideoTrackSource.VideoFrameReady"><code>VideoFrameReady</code></a> event.</p>
+<li><p>In the <code>OnLoaded()</code> method where the video track source was created, subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_I420AVideoFrameReady"><code>I420AVideoFrameReady</code></a> event.</p>
 <pre><code class="lang-cs"> _webcamSource = await DeviceVideoTrackSource.CreateAsync();
- _webcamSource.VideoFrameReady += LocalI420AFrameReady;
+ _webcamSource.I420AVideoFrameReady += LocalI420AFrameReady;
 </code></pre>
 </li>
 <li><p>Implement the event handler by enqueueing the newly captured video frames into the bridge, which will later deliver them when the Media Foundation playback pipeline requests them.</p>
@@ -256,7 +256,7 @@ private VideoBridge _localVideoBridge = new VideoBridge(3);
 </ul>
 <p>Unfortunately at this time the capture framerate is not available, so we assume a framerate of 30 frames per second (FPS).</p>
 <ol>
-<li><p>At the top of the <code>MainPage</code> class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the <a href="xref:Microsoft.MixedReality.WebRTC.VideoTrackSource.VideoFrameReady"><code>VideoFrameReady</code></a> and the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.media.core.mediastreamsource.samplerequested"><code>SampleRequested</code></a> events can be fired in parallel from multiple threads.</p>
+<li><p>At the top of the <code>MainPage</code> class, add a boolean field to indicate whether the local video is playing. This is protected by a lock, because the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_I420AVideoFrameReady"><code>I420AVideoFrameReady</code></a> and the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.media.core.mediastreamsource.samplerequested"><code>SampleRequested</code></a> events can be fired in parallel from multiple threads.</p>
 <pre><code class="lang-cs">private bool _localVideoPlaying = false;
 private object _localVideoLock = new object();
 </code></pre>

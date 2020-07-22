@@ -99,12 +99,8 @@
 </ul>
 <p><img src="install-1.png" alt="Install"></p>
 <p>This will add a dependency to the currently selected C# project. If multiple projects are using the MixedReality-WebRTC library, this process must be repeated for each project.</p>
-<h2 id="c-library-1">C library</h2>
-<p>The C library is consumed as a NuGet package by adding a dependency to that package in your C/C++ project. The C library is often referred to as the <strong>native</strong> library or <strong>implementation</strong> library.</p>
-<div class="IMPORTANT">
-<h5>Important</h5>
-<p>The C++ library as distributed in the NuGet pacakges v1.x requires some internal headers from the Google's WebRTC implementation to be used, which are <strong>not</strong> shipped with the NuGet packages. See bug <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/123">#123</a> for details. A workaround is to clone the repository <em>recursively</em> to get those headers (<code>git clone --recursive</code>). This defect is fixed in the C library starting from v2.0.</p>
-</div>
+<h2 id="cc-library">C/C++ library</h2>
+<p>The C/C++ library is consumed as a NuGet package by adding a dependency to that package in your C/C++ project. The C/C++ library is often referred to as the <em>native</em> library or <em>implementation</em> library.</p>
 <p>In Visual Studio 2019:</p>
 <ul>
 <li>Right-click on the C++ project &gt; <strong>Manage NuGet Packages...</strong> to open the NuGet package manager window.</li>
@@ -112,72 +108,17 @@
 <li>In the search bar, type &quot;Microsoft.MixedReality.WebRTC.Native&quot;. You may need to check the <strong>Include prerelease</strong> option.</li>
 <li>Select the NuGet package to install:
 <ul>
-<li>For a C++ Desktop project, choose <code>Microsoft.MixedReality.WebRTC.Native.Desktop</code>.</li>
-<li>For a C++ UWP project, choose <code>Microsoft.MixedReality.WebRTC.Native.UWP</code>.</li>
+<li>For a C++ Desktop project, choose <code>mrwebrtc</code>.</li>
+<li>For a C++ UWP project, choose <code>mrwebrtc_uwp</code>.</li>
 </ul>
 </li>
 <li>In the right panel, choose a version and click the <strong>Install</strong> button.</li>
 </ul>
-<p><img src="install-2.png" alt="Install"></p>
 <p>This will add a dependency to the currently selected C++ project. If multiple projects are using the MixedReality-WebRTC library, this process must be repeated for each project.</p>
 <h2 id="unity-library">Unity library</h2>
-<p>Starting from v2.0, a <a href="https://docs.unity3d.com/Manual/Packages.html">UPM package</a> named <code>com.microsoft.mixedreality.webrtc</code> is the main distribution method for the Unity library.</p>
-<p>This package is currently distributed as <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">an on-disk package (local package)</a> and requires the user to first build the C and C# libraries. The package manifest is located at <code>libs/unity/library/package.json</code>. There is currently no prebuilt UPM package including prebuilt binaries (yet).</p>
-<h3 id="building-the-c-and-c-libraries">Building the C and C# libraries</h3>
-<p>Follow <a href="building.html">the building instructions</a> to generate the <code>Microsoft.MixedReality.WebRTC.dll</code> C# assembly as well as any build variant of the <code>mrwebrtc</code> native C library needed for the Unity project to deploy on the platform the user targets.</p>
-<ul>
-<li>The Unity editor requires the x86_64 architecture of the Windows Desktop (Win32) variant.</li>
-<li>HoloLens 1 requires the UWP x86 variant.</li>
-<li>HoloLens 2 requires the UWP ARM variant (32-bit). ARM64 is not available.</li>
-<li>Android deployment requires the arm64-v8a variant. Other ARM architectures are not supported.</li>
-</ul>
-<p>The Visual Studio solution used to build the Windows binaries (Desktop and UWP) will automatically copy the DLLs at the right location in the local git repository. If building Android from a Linux distribution (recommended) the <code>mrwebrtc.aar</code> archive needs to be manually copied to the Windows git repository.</p>
-<p>Unlike the C native library, the C# library has only one common variant for all build architectures and platforms. However it is recommended to place the C# library assembly <code>Microsoft.MixedReality.WebRTC.dll</code> inside the <code>Win32/x86_64</code> sub-folder of the Unity plugins (the folder used by the Unity editor), as past experience showed that other layouts may lead to DLL discovery issue.</p>
-<p>The above steps should result in the following hierarchy on disk, if building all possible build variants:</p>
-<pre><code class="lang-sh">libs/unity/library/Runtime/Plugins/
-├─ arm64-v8a.meta
-├─ arm64-v8a/
-|  ├─ mrwebrtc.aar
-|  └─ mrwebrtc.aar.meta
-├─ Win32.meta
-├─ Win32/
-|  ├─ x86.meta
-|  ├─ x86/
-|  |  ├─ mrwebrtc.dll
-|  |  └─ mrwebrtc.dll.meta
-|  ├─ x86_64.meta
-|  └─ x86_64/
-|     ├─ mrwebrtc.dll
-|     ├─ mrwebrtc.dll.meta
-|     ├─ Microsoft.MixedReality.WebRTC.dll
-|     └─ Microsoft.MixedReality.WebRTC.dll.meta
-├─ WSA.meta
-└─ WSA/
-   ├─ x86.meta
-   ├─ x86/
-   |  ├─ mrwebrtc.dll
-   |  └─ mrwebrtc.dll.meta
-   ├─ x86_64.meta
-   ├─ x86_64/
-   |  ├─ mrwebrtc.dll
-   |  └─ mrwebrtc.dll.meta
-   ├─ ARM.meta
-   └─ ARM/
-      ├─ mrwebrtc.dll
-      └─ mrwebrtc.dll.meta
-</code></pre>
-<div class="NOTE">
-<h5>Note</h5>
-<p>The repository also contains some <code>.meta</code> files for the debug symbols databases (<code>.pdb</code>). The PDB are only necessary for debugging, thus the <code>.pdb.meta</code> files can be deleted. The other <code>.meta</code> files however need to be carefully safeguarded, as they contain the configuration needed for Unity to correctly deploy the binaries depending on the target platform.</p>
-</div>
-<h3 id="importing-the-upm-package">Importing the UPM package</h3>
-<p>Follow <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">the official Unity instructions</a> to import the library package into a Unity project after having compiled the library binaries, using the <code>libs/unity/library/package.json</code> file.</p>
-<div class="NOTE">
-<h5>Note</h5>
-<p>If you already imported the library package into a Unity project <strong>before</strong> building the C and C# libraries, the Unity editor will find the <code>.meta</code> files without a corresponding asset and will attempt to delete those files thinking they are stale. Then once built the Unity editor will regenerate some new <code>.meta</code> files with a default configuration; unfortunately this configuration is generally wrong, and will prevent correct deployment and/or generate some error. You can close the Unity editor and revert its changes with <code>git reset</code> to restore the original <code>.meta</code> files checked in the GitHub repository, which contain the correct configuration for each binary file.</p>
-</div>
-<p>For more information about the <code>.meta</code> files and the per-platform configuration of the native library, see <a href="https://microsoft.github.io/MixedReality-WebRTC/manual/helloworld-unity-importwebrtc.html">Importing MixedReality-WebRTC</a> in the Unity tutorial.</p>
-<p>The repository also contains an optional package <code>com.microsoft.mixedreality.webrtc.samples</code> imported via the <code>libs/unity/samples/package.json</code> file. This is an optional package containing some samples to show how to use the Unity library. This samples package depends on the library package.</p>
+<p>Starting from v2.0.0, a <a href="https://docs.unity3d.com/Manual/Packages.html">UPM package</a> named <code>com.microsoft.mixedreality.webrtc</code> is the main distribution method for the Unity library.</p>
+<p>This package is currently distributed as <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">an on-disk package (local package)</a> containing prebuilt binaries for all supported Unity platforms. Follow <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">the official Unity instructions</a> to import the library package into a Unity project via the Unity Package Manager (UPM) window.</p>
+<p>An optional package <code>com.microsoft.mixedreality.webrtc.samples</code> is also available which contains some samples to show how to use the Unity library. This samples package depends on the library package. It should not be used in production.</p>
 </article>
           </div>
           
