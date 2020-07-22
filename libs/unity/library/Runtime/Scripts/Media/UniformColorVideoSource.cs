@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
+namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
     /// A video source producing some colored frames generated programmatically.
