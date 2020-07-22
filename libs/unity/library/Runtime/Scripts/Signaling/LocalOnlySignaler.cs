@@ -6,7 +6,7 @@ using Microsoft.MixedReality.WebRTC.Unity;
 using System.Threading;
 using System.Collections;
 
-namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
+namespace Microsoft.MixedReality.WebRTC.Unity
 {
     /// <summary>
     /// Simple signaler using two peer connections in the same process,
