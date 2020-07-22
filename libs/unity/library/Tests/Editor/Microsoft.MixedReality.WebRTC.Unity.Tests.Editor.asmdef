@@ -1,6 +1,8 @@
 {
     "name": "Microsoft.MixedReality.WebRTC.Unity.Tests.Editor",
-    "references": [],
+    "references": [
+        "Microsoft.MixedReality.WebRTC.Unity"
+    ],
     "optionalUnityReferences": [
         "TestAssemblies"
     ],
