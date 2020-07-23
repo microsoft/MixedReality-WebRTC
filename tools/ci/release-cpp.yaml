@@ -3,9 +3,9 @@
 
 # MixedReality-WebRTC release pipeline for the native and C# libraries on Windows.
 # This builds libwebrtc and mrwebrtc, then creates signed NuGet packages of mrwebrtc
-# (Microsoft.MixedReality.WebRTC.Native.*.nupkg). This also builds the C# library,
-# and creates signed NuGet packages of it (Microsoft.MixedReality.WebRTC(.UWP).nupkg)
-# which embed the Release build config of mrwebrtc.dll to be self-contained.
+# (mrwebrtc(_uwp).*.nupkg). This also builds the C# library, and creates signed NuGet
+# packages of it (Microsoft.MixedReality.WebRTC(.UWP).nupkg) which embed the Release
+# build config of mrwebrtc.dll to be self-contained.
 
 # FIXME - Rename file to 'release-windows.yaml' (and update pipeline using it), it is
 #         not limited to the native mrwebrtc library anymore.
@@ -124,7 +124,7 @@ stages:
   jobs:
 
   # Package mrwebrtc (Desktop)
-  # => Microsoft.MixedReality.WebRTC.Native.Desktop.nupkg
+  # => mrwebrtc.nupkg
   - template: templates/jobs-mrwebrtc-release-pack.yaml
     parameters:
       packagePlatform: 'Desktop'
@@ -132,7 +132,7 @@ stages:
       nugetPackageVersion: '${{parameters.nugetPackageVersion}}'
 
   # Package mrwebrtc (UWP)
-  # => Microsoft.MixedReality.WebRTC.Native.UWP.nupkg
+  # => mrwebrtc_uwp.nupkg
   - template: templates/jobs-mrwebrtc-release-pack.yaml
     parameters:
       packagePlatform: 'UWP'
