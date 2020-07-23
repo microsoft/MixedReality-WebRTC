@@ -9,6 +9,11 @@ parameters:
   displayName: 'Build Agent Pool'
   type: string
   default: ''
+# Clean agent before building?
+- name: clean
+  displayName: 'Clean build'
+  type: boolean
+  default: true
  
 jobs:
 
@@ -19,6 +24,7 @@ jobs:
     name: '${{parameters.buildAgent}}'
   steps:
   - checkout: self
+    clean: ${{parameters.clean}}
 
   # Build Microsoft.MixedReality.WebRTC (Release)
   - task: DotNetCoreCLI@2

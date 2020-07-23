@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package>
     <metadata>
-        <id>Microsoft.MixedReality.WebRTC.Native.Desktop</id>
+        <id>mrwebrtc</id>
         <version>__VERSION_STRING__</version>
         <authors>Microsoft</authors>
         <copyright>&#169; Microsoft Corporation. All rights reserved.</copyright>
         <description>MixedReality-WebRTC is a collection of components to help mixed reality app developers integrate audio, video, and data real-time communication into their application and improve their collaborative experience.
 
-This package contains the native C++ libraries (x86, x64) and C++ headers for use in native C++ Windows Desktop projects.</description>
-        <title>Microsoft.MixedReality.WebRTC.Native.Desktop</title>
+This package contains the native shared libraries (x86, x64) and C++ headers for use in native C++ Windows Desktop projects.</description>
+        <title>mrwebrtc</title>
         <projectUrl>https://microsoft.github.io/MixedReality-WebRTC/</projectUrl>
         <license type="expression">MIT</license>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -17,7 +17,7 @@ This package contains the native C++ libraries (x86, x64) and C++ headers for us
         <tags>native WebRTC video audio data streaming realtime communication C++ cpp</tags>
         <summary>MixedReality-WebRTC is a collection of components to help mixed reality app developers integrate audio, video, and data real-time communication into their application and improve their collaborative experience.
 
-This package contains the native C++ libraries (x86, x64) and C++ headers for use in native C++ Windows Desktop projects.</summary>
+This package contains the native shared libraries (x86, x64) and C++ headers for use in native C++ Windows Desktop projects.</summary>
     </metadata>
     <files>
         <!-- mrwebrtc.dll and its import library -->
@@ -31,7 +31,7 @@ This package contains the native C++ libraries (x86, x64) and C++ headers for us
         <file src="runtimes\win10-x64\native\release\mrwebrtc.lib" target="runtimes\win10-x64\native\release" />
         
         <!-- .props -->
-        <file src="build\native\Microsoft.MixedReality.WebRTC.Native.Desktop.props" target="build\native" />
+        <file src="build\native\mrwebrtc.props" target="build\native" />
 
         <!-- headers-->
         <file src="build\native\include\mrwebrtc\*.h" target="build\native\include\mrwebrtc" />
