@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-# [TEMPLATE] Test Microsoft.MixedReality.WebRTC.Native.(Desktop|UWP)
+# [TEMPLATE] Test native mrwebrtc NuGet packages (Desktop and UWP)
 
 parameters:
 # Package agent pool
@@ -35,6 +35,7 @@ jobs:
   # Checkout
   - checkout: self
     fetchDepth: '50'
+    clean: true
 
   # Use NuGet 5.2.0 to work around auth issues in previous versions
   - task: NuGetToolInstaller@1
