@@ -471,7 +471,14 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
             // First apply the remote description
-            await Peer.SetRemoteDescriptionAsync(message);
+            try
+            {
+                await Peer.SetRemoteDescriptionAsync(message);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Cannot apply remote description: {ex.Message}");
+            }
 
             // Sort associated transceiver by media line index. The media line index is not the index of
             // the transceiver, but they are both monotonically increasing, so sorting by one or the other
