@@ -173,7 +173,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
                     {
                         var p = element.FindPropertyRelative("_source");
                         Object obj = p.objectReferenceValue;
-                        sourceIsExpanded = EditorGUI.Foldout(new Rect(rect.x, y0, fieldWidth, EditorGUIUtility.singleLineHeight), p.isExpanded, new GUIContent());
+                        sourceIsExpanded = EditorGUI.Foldout(new Rect(rect.x, y0, 0, EditorGUIUtility.singleLineHeight), p.isExpanded, new GUIContent());
                         p.isExpanded = sourceIsExpanded;
                         obj = EditorGUI.ObjectField(
                             new Rect(rect.x, y0, fieldWidth, EditorGUIUtility.singleLineHeight),
