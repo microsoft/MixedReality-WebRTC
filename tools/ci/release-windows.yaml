@@ -7,9 +7,6 @@
 # packages of it (Microsoft.MixedReality.WebRTC(.UWP).nupkg) which embed the Release
 # build config of mrwebrtc.dll to be self-contained.
 
-# FIXME - Rename file to 'release-windows.yaml' (and update pipeline using it), it is
-#         not limited to the native mrwebrtc library anymore.
-
 # Disable branch and PR triggers
 trigger: none
 pr: none
