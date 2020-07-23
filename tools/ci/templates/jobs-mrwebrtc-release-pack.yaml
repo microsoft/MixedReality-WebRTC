@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-# [TEMPLATE] Package Microsoft.MixedReality.WebRTC.Native.(Desktop|UWP)
+# [TEMPLATE] Create signed mrwebrtc(_uwp) NuGet packages
 
 parameters:
 # Package agent pool
