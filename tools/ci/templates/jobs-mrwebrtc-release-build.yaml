@@ -59,26 +59,6 @@ jobs:
       tempFolder: '$(Build.BinariesDirectory)\py27'
       pythonVersion: '2.7.17'
 
-  # Compute package name
-  - task: PythonScript@0
-    displayName: 'Compute package name'
-    inputs:
-      scriptSource: inline
-      script: |
-        import sys;
-        platform = sys.argv[1];
-        print("Platform: %s" % platform);
-        if (platform == 'Win32'):
-          packageName = "mrwebrtc"
-        elif (platform == 'UWP'):
-          packageName = "mrwebrtc_uwp"
-        else:
-          print("##vso[task.complete result=Failed;]Unknown platform %s" % platform)
-          sys.exit(1)
-        print("Package name : %s" % packageName)
-        print("##vso[task.setvariable variable=packageName;]%s" % packageName)
-      arguments: '${{parameters.buildPlatform}}'
-
   # Use NuGet 5.2.0
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet 5.2.0'

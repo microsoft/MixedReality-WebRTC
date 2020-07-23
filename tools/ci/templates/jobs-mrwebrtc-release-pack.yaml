@@ -39,7 +39,7 @@ jobs:
       script: |
         import sys;
         platform = sys.argv[1];
-        print("Platform: %s" % platform);
+        print("Platform : %s" % platform);
         if (platform == 'Desktop'):
           packageName = "mrwebrtc"
         elif (platform == 'UWP'):
@@ -47,7 +47,7 @@ jobs:
         else:
           print("##vso[task.complete result=Failed;]Unknown platform %s" % platform)
           sys.exit(1)
-        print("Package name : %s" % packageName)
+        print("NuGet package name : %s" % packageName)
         print("##vso[task.setvariable variable=packageName;]%s" % packageName)
       arguments: '${{parameters.packagePlatform}}'
 
