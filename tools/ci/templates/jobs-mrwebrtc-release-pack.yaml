@@ -29,8 +29,27 @@ jobs:
     - msbuild
   variables:
     projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
-    packageName: 'Microsoft.MixedReality.WebRTC.Native.${{parameters.packagePlatform}}'
   steps:
+
+  # Compute package name
+  - task: PythonScript@0
+    displayName: 'Compute package name'
+    inputs:
+      scriptSource: inline
+      script: |
+        import sys;
+        platform = sys.argv[1];
+        print("Platform: %s" % platform);
+        if (platform == 'Desktop'):
+          packageName = "mrwebrtc"
+        elif (platform == 'UWP'):
+          packageName = "mrwebrtc_uwp"
+        else:
+          print("##vso[task.complete result=Failed;]Unknown platform %s" % platform)
+          sys.exit(1)
+        print("Package name : %s" % packageName)
+        print("##vso[task.setvariable variable=packageName;]%s" % packageName)
+      arguments: '${{parameters.packagePlatform}}'
 
   # Checkout
   - checkout: self
