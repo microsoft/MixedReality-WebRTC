@@ -47,6 +47,10 @@ foreach ($package in $packages) {
     # Extract the .nupkg
     $newDir = Join-Path $TempFolder $package.BaseName
     Write-Host "Extracting package to $newDir..."
+    if (Test-Path $newDir) {
+        Write-Host "Temporary directory exists - deleting $newDir"
+        Remove-Item -Recurse -Force -Path $newDir
+    }
     [System.IO.Compression.ZipFile]::ExtractToDirectory($packageFile, $newDir)
 
     # Check the .nupkg contains a signature
