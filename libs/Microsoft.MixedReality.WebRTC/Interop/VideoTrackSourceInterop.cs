@@ -11,7 +11,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     /// </summary>
     internal class VideoTrackSourceHandle : RefCountedObjectHandle { }
 
-    internal class VideoTrackSourceInterop
+    internal static class VideoTrackSourceInterop
     {
         // TODO - Remove ARGB callbacks, use I420 callbacks only and expose some conversion
         // utility to convert from ARGB to I420 when needed (to be called by the user).
@@ -42,24 +42,28 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         #endregion
 
-        public class InteropCallbackArgs
+        /// Callback arguments to ensure delegates registered with the native layer don't go out of scope.
+        internal static readonly I420AVideoFrameUnmanagedCallback I420AFrameCallback = I420AFrameCallbackFunction;
+        internal static readonly Argb32VideoFrameUnmanagedCallback Argb32FrameCallback = Argb32FrameCallbackFunction;
+
+        // Implemented by video source wrappers to receive frames from the interop layer.
+        internal interface IVideoSource
         {
-            public VideoTrackSource Source;
-            public I420AVideoFrameUnmanagedCallback I420AFrameCallback;
-            public Argb32VideoFrameUnmanagedCallback Argb32FrameCallback;
+            void OnI420AFrameReady(I420AVideoFrame frame);
+            void OnArgb32FrameReady(Argb32VideoFrame frame);
         }
 
         [MonoPInvokeCallback(typeof(I420AVideoFrameUnmanagedCallback))]
-        public static void I420AFrameCallback(IntPtr userData, in I420AVideoFrame frame)
+        private static void I420AFrameCallbackFunction(IntPtr userData, in I420AVideoFrame frame)
         {
-            var source = Utils.ToWrapper<VideoTrackSource>(userData);
+            var source = Utils.ToWrapper<IVideoSource>(userData);
             source.OnI420AFrameReady(frame);
         }
 
         [MonoPInvokeCallback(typeof(Argb32VideoFrameUnmanagedCallback))]
-        public static void Argb32FrameCallback(IntPtr userData, in Argb32VideoFrame frame)
+        private static void Argb32FrameCallbackFunction(IntPtr userData, in Argb32VideoFrame frame)
         {
-            var source = Utils.ToWrapper<VideoTrackSource>(userData);
+            var source = Utils.ToWrapper<IVideoSource>(userData);
             source.OnArgb32FrameReady(frame);
         }
     }
