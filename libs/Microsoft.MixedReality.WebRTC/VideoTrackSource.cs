@@ -25,7 +25,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <seealso cref="DeviceVideoTrackSource"/>
     /// <seealso cref="ExternalVideoTrackSource"/>
     /// <seealso cref="LocalVideoTrack"/>
-    public abstract class VideoTrackSource : IVideoSource, IDisposable
+    public abstract class VideoTrackSource : IVideoSource, IDisposable, VideoTrackSourceInterop.IVideoSource
     {
         /// <summary>
         /// A name for the video track source, used for logging and debugging.
@@ -58,26 +58,32 @@ namespace Microsoft.MixedReality.WebRTC
         {
             add
             {
+                bool isFirstHandler;
                 lock (_videoFrameReadyLock)
                 {
-                    bool isFirstHandler = (_videoFrameReady == null);
+                    isFirstHandler = (_videoFrameReady == null);
                     _videoFrameReady += value;
-                    if (isFirstHandler)
-                    {
-                        RegisterVideoFrameCallback();
-                    }
+                }
+                // Do out of lock since this dispatches to the worker thread.
+                if (isFirstHandler)
+                {
+                    VideoTrackSourceInterop.VideoTrackSource_RegisterFrameCallback(
+                        _nativeHandle, VideoTrackSourceInterop.I420AFrameCallback, _selfHandle);
                 }
             }
             remove
             {
+                bool isLastHandler;
                 lock (_videoFrameReadyLock)
                 {
                     _videoFrameReady -= value;
-                    bool isLastHandler = (_videoFrameReady == null);
-                    if (isLastHandler)
-                    {
-                        UnregisterVideoFrameCallback();
-                    }
+                    isLastHandler = (_videoFrameReady == null);
+                }
+                // Do out of lock since this dispatches to the worker thread.
+                if (isLastHandler)
+                {
+                    VideoTrackSourceInterop.VideoTrackSource_RegisterFrameCallback(
+                        _nativeHandle, null, IntPtr.Zero);
                 }
             }
         }
@@ -89,26 +95,32 @@ namespace Microsoft.MixedReality.WebRTC
             // utility to convert from ARGB to I420 when needed (to be called by the user).
             add
             {
+                bool isFirstHandler;
                 lock (_videoFrameReadyLock)
                 {
-                    bool isFirstHandler = (_argb32videoFrameReady == null);
-                    _argb32videoFrameReady += value;
-                    if (isFirstHandler)
-                    {
-                        RegisterArgb32VideoFrameCallback();
-                    }
+                    isFirstHandler = (_argb32VideoFrameReady == null);
+                    _argb32VideoFrameReady += value;
+                }
+                // Do out of lock since this dispatches to the worker thread.
+                if (isFirstHandler)
+                {
+                    VideoTrackSourceInterop.VideoTrackSource_RegisterArgb32FrameCallback(
+                        _nativeHandle, VideoTrackSourceInterop.Argb32FrameCallback, _selfHandle);
                 }
             }
             remove
             {
+                bool isLastHandler;
                 lock (_videoFrameReadyLock)
                 {
-                    _argb32videoFrameReady -= value;
-                    bool isLastHandler = (_argb32videoFrameReady == null);
-                    if (isLastHandler)
-                    {
-                        UnregisterArgb32VideoFrameCallback();
-                    }
+                    _argb32VideoFrameReady -= value;
+                    isLastHandler = (_argb32VideoFrameReady == null);
+                }
+                // Do out of lock since this dispatches to the worker thread.
+                if (isLastHandler)
+                {
+                    VideoTrackSourceInterop.VideoTrackSource_RegisterArgb32FrameCallback(
+                        _nativeHandle, null, IntPtr.Zero);
                 }
             }
         }
@@ -133,11 +145,6 @@ namespace Microsoft.MixedReality.WebRTC
         private IntPtr _selfHandle = IntPtr.Zero;
 
         /// <summary>
-        /// Callback arguments to ensure delegates registered with the native layer don't go out of scope.
-        /// </summary>
-        private VideoTrackSourceInterop.InteropCallbackArgs _interopCallbackArgs;
-
-        /// <summary>
         /// Backing field for <see cref="Name"/>, and cache for the native name.
         /// Since the name can only be set by the user, this cached value is always up-to-date with the
         /// internal name of the native object, by design.
@@ -151,22 +158,26 @@ namespace Microsoft.MixedReality.WebRTC
 
         private readonly object _videoFrameReadyLock = new object();
         private event I420AVideoFrameDelegate _videoFrameReady;
-        private event Argb32VideoFrameDelegate _argb32videoFrameReady;
+        private event Argb32VideoFrameDelegate _argb32VideoFrameReady;
 
+        // In some cases (e.g. external source) we need to create an object before we have a native handle.
+        // If this ctor is used, SetHandle must be called too before the source is used.
         internal VideoTrackSource()
         {
         }
 
         internal VideoTrackSource(VideoTrackSourceHandle nativeHandle)
         {
-            Debug.Assert(!nativeHandle.IsClosed);
-            _nativeHandle = nativeHandle;
+            SetHandle(nativeHandle);
         }
 
         internal void SetHandle(VideoTrackSourceHandle nativeHandle)
         {
             Debug.Assert(_nativeHandle == null);
+            Debug.Assert(!nativeHandle.IsClosed);
             _nativeHandle = nativeHandle;
+            // Note that this prevents the object from being garbage-collected until it is disposed.
+            _selfHandle = Utils.MakeWrapperRef(this);
         }
 
         /// <inheritdoc/>
@@ -183,6 +194,12 @@ namespace Microsoft.MixedReality.WebRTC
                 throw new InvalidOperationException($"Trying to dispose of VideoTrackSource '{Name}' while still in use by one or more video tracks.");
             }
 
+            // Unregister interop callbacks
+            _videoFrameReady = null;
+            _argb32VideoFrameReady = null;
+            Utils.ReleaseWrapperRef(_selfHandle);
+            _selfHandle = IntPtr.Zero;
+
             // Unregister from tracks
             // TODO...
             //VideoTrackSourceInterop.VideoTrackSource_Shutdown(_nativeHandle);
@@ -190,44 +207,6 @@ namespace Microsoft.MixedReality.WebRTC
             // Destroy the native object. This may be delayed if a P/Invoke callback is underway,
             // but will be handled at some point anyway, even if the managed instance is gone.
             _nativeHandle.Dispose();
-        }
-
-        private void RegisterVideoFrameCallback()
-        {
-            _interopCallbackArgs = new VideoTrackSourceInterop.InteropCallbackArgs()
-            {
-                Source = this,
-                I420AFrameCallback = VideoTrackSourceInterop.I420AFrameCallback,
-            };
-            _selfHandle = Utils.MakeWrapperRef(this);
-            VideoTrackSourceInterop.VideoTrackSource_RegisterFrameCallback(
-                _nativeHandle, _interopCallbackArgs.I420AFrameCallback, _selfHandle);
-        }
-
-        private void UnregisterVideoFrameCallback()
-        {
-            VideoTrackSourceInterop.VideoTrackSource_RegisterFrameCallback(_nativeHandle, null, IntPtr.Zero);
-            Utils.ReleaseWrapperRef(_selfHandle);
-            _interopCallbackArgs = null;
-        }
-
-        private void RegisterArgb32VideoFrameCallback()
-        {
-            _interopCallbackArgs = new VideoTrackSourceInterop.InteropCallbackArgs()
-            {
-                Source = this,
-                Argb32FrameCallback = VideoTrackSourceInterop.Argb32FrameCallback,
-            };
-            _selfHandle = Utils.MakeWrapperRef(this);
-            VideoTrackSourceInterop.VideoTrackSource_RegisterArgb32FrameCallback(
-                _nativeHandle, _interopCallbackArgs.Argb32FrameCallback, _selfHandle);
-        }
-
-        private void UnregisterArgb32VideoFrameCallback()
-        {
-            VideoTrackSourceInterop.VideoTrackSource_RegisterFrameCallback(_nativeHandle, null, IntPtr.Zero);
-            Utils.ReleaseWrapperRef(_selfHandle);
-            _interopCallbackArgs = null;
         }
 
         /// <summary>
@@ -275,7 +254,7 @@ namespace Microsoft.MixedReality.WebRTC
             _tracks = remainingTracks;
         }
 
-        internal void OnI420AFrameReady(I420AVideoFrame frame)
+        void VideoTrackSourceInterop.IVideoSource.OnI420AFrameReady(I420AVideoFrame frame)
         {
             MainEventSource.Log.I420ALocalVideoFrameReady(frame.width, frame.height);
             lock (_videoFrameReadyLock)
@@ -284,12 +263,12 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
-        internal void OnArgb32FrameReady(Argb32VideoFrame frame)
+        void VideoTrackSourceInterop.IVideoSource.OnArgb32FrameReady(Argb32VideoFrame frame)
         {
             MainEventSource.Log.Argb32LocalVideoFrameReady(frame.width, frame.height);
             lock (_videoFrameReadyLock)
             {
-                _argb32videoFrameReady?.Invoke(frame);
+                _argb32VideoFrameReady?.Invoke(frame);
             }
         }
 

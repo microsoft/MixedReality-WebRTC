@@ -17,88 +17,6 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         {
         }
 
-        private unsafe void CustomI420AFrameCallback(in FrameRequest request)
-        {
-            var data = stackalloc byte[32 * 16 + 16 * 8 * 2];
-            int k = 0;
-            // Y plane (full resolution)
-            for (int j = 0; j < 16; ++j)
-            {
-                for (int i = 0; i < 32; ++i)
-                {
-                    data[k++] = 0x7F;
-                }
-            }
-            // U plane (halved chroma in both directions)
-            for (int j = 0; j < 8; ++j)
-            {
-                for (int i = 0; i < 16; ++i)
-                {
-                    data[k++] = 0x30;
-                }
-            }
-            // V plane (halved chroma in both directions)
-            for (int j = 0; j < 8; ++j)
-            {
-                for (int i = 0; i < 16; ++i)
-                {
-                    data[k++] = 0xB2;
-                }
-            }
-            var dataY = new IntPtr(data);
-            var frame = new I420AVideoFrame
-            {
-                dataY = dataY,
-                dataU = dataY + (32 * 16),
-                dataV = dataY + (32 * 16) + (16 * 8),
-                dataA = IntPtr.Zero,
-                strideY = 32,
-                strideU = 16,
-                strideV = 16,
-                strideA = 0,
-                width = 32,
-                height = 16
-            };
-            request.CompleteRequest(frame);
-        }
-
-        private unsafe void CustomArgb32FrameCallback(in FrameRequest request)
-        {
-            var data = stackalloc uint[32 * 16];
-            int k = 0;
-            // Create 2x2 checker pattern with 4 different colors
-            for (int j = 0; j < 8; ++j)
-            {
-                for (int i = 0; i < 16; ++i)
-                {
-                    data[k++] = 0xFF0000FF;
-                }
-                for (int i = 16; i < 32; ++i)
-                {
-                    data[k++] = 0xFF00FF00;
-                }
-            }
-            for (int j = 8; j < 16; ++j)
-            {
-                for (int i = 0; i < 16; ++i)
-                {
-                    data[k++] = 0xFFFF0000;
-                }
-                for (int i = 16; i < 32; ++i)
-                {
-                    data[k++] = 0xFF00FFFF;
-                }
-            }
-            var frame = new Argb32VideoFrame
-            {
-                data = new IntPtr(data),
-                stride = 128,
-                width = 32,
-                height = 16
-            };
-            request.CompleteRequest(frame);
-        }
-
 #if !MRSW_EXCLUDE_DEVICE_TESTS
 
         [Test]
@@ -345,7 +263,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
 
             // Create external I420A source
-            var source1 = ExternalVideoTrackSource.CreateFromI420ACallback(CustomI420AFrameCallback);
+            var source1 = ExternalVideoTrackSource.CreateFromI420ACallback(
+                VideoTrackSourceTests.CustomI420AFrameCallback);
             Assert.NotNull(source1);
             Assert.AreEqual(0, source1.Tracks.Count());
 
@@ -425,7 +344,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
 
             // Create external ARGB32 source
-            var source1 = ExternalVideoTrackSource.CreateFromArgb32Callback(CustomArgb32FrameCallback);
+            var source1 = ExternalVideoTrackSource.CreateFromArgb32Callback(
+                VideoTrackSourceTests.CustomArgb32FrameCallback);
             Assert.NotNull(source1);
             Assert.AreEqual(0, source1.Tracks.Count());
 
@@ -489,6 +409,21 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         }
 
         [Test]
+        public void FrameReadyCallbacks()
+        {
+            var track_config = new LocalVideoTrackInitConfig
+            {
+                trackName = "custom_i420a"
+            };
+            using (var source = ExternalVideoTrackSource.CreateFromI420ACallback(
+                VideoTrackSourceTests.CustomI420AFrameCallback))
+            using (var track = LocalVideoTrack.CreateFromSource(source, track_config))
+            {
+                VideoTrackSourceTests.TestFrameReadyCallbacks(track);
+            }
+        }
+
+        [Test]
         public void MultiExternalI420A()
         {
             // Batch changes in this test, and manually (re)negotiate
@@ -508,7 +443,8 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             Assert.AreEqual(0, pc2_.RemoteVideoTracks.Count());
 
             // Create external I420A source
-            var source1 = ExternalVideoTrackSource.CreateFromI420ACallback(CustomI420AFrameCallback);
+            var source1 = ExternalVideoTrackSource.CreateFromI420ACallback(
+                VideoTrackSourceTests.CustomI420AFrameCallback);
             Assert.NotNull(source1);
             Assert.AreEqual(0, source1.Tracks.Count());
 
