@@ -1,6 +1,6 @@
 # Creating a project
 
-In this tutorial we use [.NET Core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0) to create a C# Desktop application. Because there is currently no simple solution to display raw video frames from a .NET Core application, like there is with UWP, we will limit this tutorial to creating a simple console application without graphics. Think of it as a recording tool to broadcast audio and/or video to a remote device.
+In this tutorial we use [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1) to create a C# Desktop application. Because there is currently no simple solution to display raw video frames from a .NET Core application, like there is with UWP, we will limit this tutorial to creating a simple console application without graphics. Think of it as a recording tool to broadcast audio and/or video to a remote device.
 
 > [!Note]
 > This tutorial assumes that the host device where the app will be running during the tutorial has access to:
@@ -8,9 +8,9 @@ In this tutorial we use [.NET Core 3.0](https://dotnet.microsoft.com/download/do
 > - a webcam, or any other video capture device recognized by WebRTC
 > - a microphone, or any other audio capture device recognized by WebRTC
 
-## Install .NET Core 3.0
+## Install .NET Core 3.1
 
-Download the latest .NET Core 3.0 **SDK** (and not Runtime) from its [download page](https://dotnet.microsoft.com/download/dotnet-core/3.0) and install it.
+Download the latest .NET Core 3.1 **SDK** (and not Runtime) from its [download page](https://dotnet.microsoft.com/download/dotnet-core/3.1) and install it.
 
 > [!Warning]
 > Visual Studio v16.3 or later is required, otherwise the console application might not run correctly inside Visual Studio.
@@ -29,7 +29,7 @@ This generates a folder named `TestNetCoreConsole` which contains the following 
 - **`Program.cs`** : The C# source code for the application
 
 > [!Note]
-> Starting Visual Studio v16.3, this project can also be generated from the Visual Studio wizard by creating a new project and selecting **Console App (.NET Core)**, which will default to .NET Core 3.0. Previous versions of Visual Studio default to .NET Core 2.1 or lower.
+> Starting Visual Studio v16.3, this project can also be generated from the Visual Studio wizard by creating a new project and selecting **Console App (.NET Core)**, which will default to .NET Core 3.1.
 
 ## Open the .NET Core project in Visual Studio 2019
 
