@@ -8,7 +8,7 @@
     <title>Creating a project | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Creating a project | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.56.1.0">
+    <meta name="generator" content="docfx 2.56.2.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.png">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -83,7 +83,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="creating-a-project">Creating a project</h1>
 
-<p>In this tutorial we use <a href="https://dotnet.microsoft.com/download/dotnet-core/3.0">.NET Core 3.0</a> to create a C# Desktop application. Because there is currently no simple solution to display raw video frames from a .NET Core application, like there is with UWP, we will limit this tutorial to creating a simple console application without graphics. Think of it as a recording tool to broadcast audio and/or video to a remote device.</p>
+<p>In this tutorial we use <a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">.NET Core 3.1</a> to create a C# Desktop application. Because there is currently no simple solution to display raw video frames from a .NET Core application, like there is with UWP, we will limit this tutorial to creating a simple console application without graphics. Think of it as a recording tool to broadcast audio and/or video to a remote device.</p>
 <div class="NOTE">
 <h5>Note</h5>
 <p>This tutorial assumes that the host device where the app will be running during the tutorial has access to:</p>
@@ -92,8 +92,8 @@
 <li>a microphone, or any other audio capture device recognized by WebRTC</li>
 </ul>
 </div>
-<h2 id="install-net-core-30">Install .NET Core 3.0</h2>
-<p>Download the latest .NET Core 3.0 <strong>SDK</strong> (and not Runtime) from its <a href="https://dotnet.microsoft.com/download/dotnet-core/3.0">download page</a> and install it.</p>
+<h2 id="install-net-core-31">Install .NET Core 3.1</h2>
+<p>Download the latest .NET Core 3.1 <strong>SDK</strong> (and not Runtime) from its <a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">download page</a> and install it.</p>
 <div class="WARNING">
 <h5>Warning</h5>
 <p>Visual Studio v16.3 or later is required, otherwise the console application might not run correctly inside Visual Studio.</p>
@@ -109,7 +109,7 @@
 </ul>
 <div class="NOTE">
 <h5>Note</h5>
-<p>Starting Visual Studio v16.3, this project can also be generated from the Visual Studio wizard by creating a new project and selecting <strong>Console App (.NET Core)</strong>, which will default to .NET Core 3.0. Previous versions of Visual Studio default to .NET Core 2.1 or lower.</p>
+<p>Starting Visual Studio v16.3, this project can also be generated from the Visual Studio wizard by creating a new project and selecting <strong>Console App (.NET Core)</strong>, which will default to .NET Core 3.1.</p>
 </div>
 <h2 id="open-the-net-core-project-in-visual-studio-2019">Open the .NET Core project in Visual Studio 2019</h2>
 <p>Open the C# project generated earlier (<code>TestNetCoreConsole.csproj</code>), then build and run it, either by pressing <strong>F5</strong> or selecting in the menu <strong>Debug</strong> &gt; <strong>Start Debugging</strong>. After the project built successfully, a terminal window should appear.</p>
