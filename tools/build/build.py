@@ -2,10 +2,12 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+import re
 from optparse import OptionParser
-import sys
 import os
 import subprocess
+import sys
+import winreg
 
 def colored(s, col):
     RESET = "\x1b[0m"
@@ -99,16 +101,42 @@ class Build:
         if ((target == 'win') and not (cpu in ('x86', 'x64'))):
             raise Exception("Windows Desktop target only supports x86 and x64 architectures (-c [x86|x64]).")
 
-    def checkout(self):
+    @staticmethod
+    def is_windows():
+        return os.name == "nt" # Includes cygwin etc.
+
+    @staticmethod
+    def ensure_windows_sdk():
+        if not Build.is_windows():
+            raise Exception("Cannot check Windows SDK on non-Windows platform")
+        try:
+            reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+            key = winreg.OpenKey(reg, "SOFTWARE\\WOW6432Node\\Microsoft\\Microsoft SDKs\\Windows\\v10.0", access = winreg.KEY_READ)
+            install_dir = winreg.QueryValueEx(key, "InstallationFolder")[0]
+            include_dir = os.path.realpath(os.path.join(install_dir, "Include"))
+            print("Found Windows SDK install folder: " + include_dir)
+            required_sdks = ["10.0.17134.0", "10.0.17763.0"]
+            for file in os.listdir(include_dir):
+                filename = os.path.realpath(os.path.join(include_dir, file))
+                if os.path.isdir(filename):
+                    if file in required_sdks:
+                        required_sdks.remove(file)
+                        print("✔ Found Windows SDK " + file)
+            if len(required_sdks) > 0:
+                raise Exception("Missing Windows SDK(s) : " + ", ".join(required_sdks))
+        except Exception as ex:
+            raise Exception("Failed to find Windows SDK")
+
+    def checkout(self, with_android):
         # Create checkout folder
         os.makedirs(self.webrtc_dir) # mkdir -p
 
         # Fetch the repository
-        fetch_target = 'webrtc_android' if target == 'android' else 'webrtc'
-        run_command("fetch --nohooks " + fetch_target, cwd=self.webrtc_dir)
+        fetch_target = 'webrtc_android' if with_android else 'webrtc'
+        run_command("fetch --nohooks " + fetch_target, cwd = self.webrtc_dir)
 
         # Sync modules
-        run_command("gclient sync -D -r branch-heads/4147", cwd=self.webrtc_dir)
+        run_command("gclient sync -D -r branch-heads/4147", cwd = self.webrtc_dir)
 
         # Apply UWP patches
         print("Applying UWP patches from WinRTC repository")
@@ -128,6 +156,17 @@ class Build:
         print("libwebrtc root : %s" % self.webrtc_dir)
         self.webrtc_src_dir = os.path.realpath(os.path.join(self.webrtc_dir, 'src'))
 
+        # Check Windows SDK
+        for tri in self.build_triples:
+            if (tri.target == 'win') or (tri.target == 'winuwp'):
+                print_step("Check required Windows SDK version(s)")
+                if not Build.is_windows():
+                    raise Exception("Cannot build Windows targets (win, winuwp) on non-Windows platform.")
+                Build.ensure_windows_sdk()
+                break
+
+        print_step("Prepare environment")
+
         # Ensure depot_tools on the PATH
         ensure_depot_tools(self.root_dir)
 
@@ -136,9 +175,11 @@ class Build:
         os.environ['GYP_MSVS_VERSION'] = '2019'
 
         # Checkout
+        print_step("Checkout")
         has_checkout = os.path.exists(self.webrtc_dir)
         if not has_checkout:
-            self.checkout()
+            has_any_android = reduce(lambda has_android, tri : has_android or tri.cpu == 'android', self.build_triples, initializer = False)
+            self.checkout(with_android = has_any_android)
         else:
             print("Reusing existing checkout. Delete the '%s' folder to force a clean checkout." % self.webrtc_dir)
 
@@ -165,7 +206,7 @@ class Build:
             'rtc_build_tools': 'false',
             'rtc_win_video_capture_winrt': 'true',
             'rtc_win_use_mf_h264': 'true',
-            'enable_libaom': 'true',
+            'enable_libaom': 'false', # Does not currently build on UWP + not reviewed for licensing
             'rtc_enable_protobuf': 'false',
             'target_os': '\"%s\"' % build_triple.target,
             'target_cpu': '\"%s\"' % build_triple.cpu
@@ -175,8 +216,8 @@ class Build:
             fp.write(opt_str)
 
         # Build
-        run_command("gn gen %s --filters=//:webrtc" % webrtc_out_dir_rel, cwd=self.webrtc_src_dir)
-        run_command("ninja -C " + webrtc_out_dir_rel, cwd=self.webrtc_src_dir)
+        run_command("gn gen %s --filters=//:webrtc" % webrtc_out_dir_rel, cwd = self.webrtc_src_dir)
+        run_command("ninja -C " + webrtc_out_dir_rel, cwd = self.webrtc_src_dir)
 
 
 def ensure_depot_tools(root_dir):
