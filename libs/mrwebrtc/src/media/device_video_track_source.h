@@ -26,6 +26,10 @@ class DeviceVideoTrackSource : public VideoTrackSource {
   static Error GetVideoCaptureDevices(
       Callback<const mrsVideoCaptureDeviceInfo*> enum_callback,
       Callback<mrsResult> end_callback) noexcept;
+  static Error GetVideoProfiles(
+      absl::string_view device_id,
+      Callback<const mrsVideoProfileInfo*> enum_callback,
+      Callback<mrsResult> end_callback) noexcept;
   static Error GetVideoCaptureFormats(
       absl::string_view device_id,
       Callback<const mrsVideoCaptureFormatInfo*> enum_callback,

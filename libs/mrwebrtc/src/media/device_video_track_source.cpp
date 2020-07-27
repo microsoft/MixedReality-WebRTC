@@ -492,6 +492,51 @@ Error DeviceVideoTrackSource::GetVideoCaptureDevices(
 #endif
 }
 
+Error DeviceVideoTrackSource::GetVideoProfiles(
+    absl::string_view device_id,
+    Callback<const mrsVideoProfileInfo*> enum_callback,
+    Callback<mrsResult> end_callback) noexcept {
+#if defined(WINUWP)
+  std::string device_id_str(device_id.data(), device_id.size());
+
+  // Create an RAII enumerator to ensure the end callback is always called even
+  // on error during enumeration or early out if device does not support
+  // profiles.
+  Enumerator<const mrsVideoProfileInfo*, mrsResult> enumerator(
+      enum_callback, end_callback, mrsResult::kSuccess);
+
+  // Check if the device supports video profiles at all
+  if (!winrt::Windows::Media::Capture::MediaCapture::IsVideoProfileSupported(
+          winrt::to_hstring(device_id))) {
+    RTC_LOG(LS_INFO) << "Video capture device '" << device_id_str.c_str()
+                     << "' does not support video profiles.";
+    return Error::None();
+  }
+
+  // Enumerate the video profiles
+  auto profile_list =
+      winrt::Windows::Media::Capture::MediaCapture::FindAllVideoProfiles(
+          winrt::to_hstring(device_id_str));
+  for (auto&& profile : profile_list) {
+    auto id_str = winrt::to_string(profile.Id());
+    mrsVideoProfileInfo info{};
+    info.id = id_str.c_str();
+    enumerator.yield(&info);
+  }
+  return Error::None();
+#else
+  // Non-UWP platforms do not support video profiles
+
+  // Silence unused parameter warnings
+  (void)device_id;
+  (void)enum_callback;
+
+  // End successfully without anything enumerated
+  end_callback(mrsResult::kSuccess);
+  return Error::None();
+#endif
+}
+
 Error DeviceVideoTrackSource::GetVideoCaptureFormats(
     absl::string_view device_id,
     Callback<const mrsVideoCaptureFormatInfo*> enum_callback,

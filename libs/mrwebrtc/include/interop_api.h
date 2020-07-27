@@ -137,6 +137,12 @@ struct mrsVideoCaptureDeviceInfo {
   const char* name;
 };
 
+/// Video profile info.
+struct mrsVideoProfileInfo {
+  // Unique identifier of the video profile.
+  const char* id;
+};
+
 /// Video capture format info.
 struct mrsVideoCaptureFormatInfo {
   // Capture width, in pixels.
@@ -183,6 +189,37 @@ MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     mrsVideoCaptureDeviceEnumCallback enumCallback,
     void* enumCallbackUserData,
     mrsVideoCaptureDeviceEnumCompletedCallback completedCallback,
+    void* completedCallbackUserData) noexcept;
+
+/// Callback invoked for each enumerated video capture device.
+using mrsVideoProfileEnumCallback =
+    void(MRS_CALL*)(void* user_data, const mrsVideoProfileInfo* profile_info);
+
+/// Callback invoked on video profile enumeration completed. If the result is
+/// not |mrsResult::kSuccess| then some or all of the profiles might not have
+/// been enumerated.
+using mrsVideoProfileEnumCompletedCallback = void(MRS_CALL*)(void* user_data,
+                                                             mrsResult result);
+
+/// Enumerate the video profiles for the given capture device asynchronously.
+///
+/// If the enumeration starts successfully, that is the function returns
+/// |mrsResult::kSuccess|, then for each video profile found for the given
+/// capture device the implementation invokes the mandatory |enumCallback|. At
+/// the end of the enumeration, it invokes the optional |completedCallback| if
+/// it was provided (non-null). Note that those calls are asynchonous and not
+/// necessarily done before |mrsEnumVideoProfilesAsync()| returned.
+///
+/// If the enumeration fails to start, the function returns an error code; in
+/// that case no callback is invoked.
+///
+/// On UWP this must *not* be called from the main UI thread, otherwise a
+/// |mrsResult::kWrongThread| error might be returned.
+MRS_API mrsResult MRS_CALL mrsEnumVideoProfilesAsync(
+    const char* device_id,
+    mrsVideoProfileEnumCallback enumCallback,
+    void* enumCallbackUserData,
+    mrsVideoProfileEnumCompletedCallback completedCallback,
     void* completedCallbackUserData) noexcept;
 
 /// Callback invoked for each enumerated video capture format.

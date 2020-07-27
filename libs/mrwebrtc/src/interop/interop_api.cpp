@@ -107,6 +107,31 @@ mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
   return Result::kSuccess;
 }
 
+mrsResult MRS_CALL mrsEnumVideoProfilesAsync(
+    const char* device_id,
+    mrsVideoProfileEnumCallback enumCallback,
+    void* enumCallbackUserData,
+    mrsVideoProfileEnumCompletedCallback completedCallback,
+    void* completedCallbackUserData) noexcept {
+  if (IsStringNullOrEmpty(device_id)) {
+    return Result::kInvalidParameter;
+  }
+  if (!enumCallback) {
+    return Result::kInvalidParameter;
+  }
+  RTC_LOG(LS_INFO) << "Enumerating video profiles for device '" << device_id
+                   << "'";
+  Error res = DeviceVideoTrackSource::GetVideoProfiles(
+      device_id, {enumCallback, enumCallbackUserData},
+      {completedCallback, completedCallbackUserData});
+  if (!res.ok()) {
+    RTC_LOG(LS_ERROR) << "Failed to enumerate video profiles for device '"
+                      << device_id << "': " << res.message();
+    return res.result();
+  }
+  return Result::kSuccess;
+}
+
 mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
     const char* device_id,
     mrsVideoCaptureFormatEnumCallback enumCallback,

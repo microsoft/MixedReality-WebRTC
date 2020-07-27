@@ -206,7 +206,7 @@ namespace TestAppUwp
             }
         }
 
-        public void RefreshVideoProfiles(VideoCaptureDeviceInfo item, VideoProfileKind kind)
+        public async void RefreshVideoProfiles(VideoCaptureDeviceInfo item, VideoProfileKind kind)
         {
             var videoProfiles = new CollectionViewModel<MediaCaptureVideoProfile>();
             if (item != null)
@@ -215,6 +215,13 @@ namespace TestAppUwp
                 if (kind == VideoProfileKind.Unspecified)
                 {
                     profiles = MediaCapture.FindAllVideoProfiles(item.Id);
+
+                    // TEMP
+                    var list = await DeviceVideoTrackSource.GetDeviceProfilesAsync(item.Id);
+                    foreach (var pr in list)
+                    {
+                        Console.WriteLine(pr.uniqueId);
+                    }
                 }
                 else
                 {
@@ -265,7 +272,7 @@ namespace TestAppUwp
                 else
                 {
                     // Device doesn't support video profiles; fall back on flat list of capture formats.
-                    List<VideoCaptureFormat> formatsList = await DeviceVideoTrackSource.GetCaptureFormatsAsync(item.Id);
+                    IReadOnlyList<VideoCaptureFormat> formatsList = await DeviceVideoTrackSource.GetCaptureFormatsAsync(item.Id);
                     foreach (var format in formatsList)
                     {
                         formats.Add(new VideoCaptureFormatViewModel
