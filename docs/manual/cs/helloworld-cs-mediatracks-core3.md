@@ -38,7 +38,7 @@ Continue editing the `Program.cs` file and append the following:
    var videoTrackConfig = new LocalVideoTrackInitConfig {
       trackName = "webcam_track"
    };
-   localVideoTrack = LocalVideoTrack.CreateFromSource(_webcamSource, videoTrackConfig);
+   localVideoTrack = LocalVideoTrack.CreateFromSource(webcamSource, videoTrackConfig);
    ```
 
    Note that the local video track created is not associated with the peer connection yet; the [`LocalVideoTrack.CreateFromSource()`](xref:Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromSource(Microsoft.MixedReality.WebRTC.VideoTrackSource,Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig)) is a static method which does not reference any peer connection. The local video track will be bound to one specific peer connection later when added to a video transceiver. After that, it will stay implicitly bound to that peer connection, even if detached from its transceiver, and cannot be reused with another peer connection.
@@ -57,7 +57,7 @@ Continue editing the `Program.cs` file and append the following:
    var audioTrackConfig = new LocalAudioTrackInitConfig {
       trackName = "microphone_track"
    };
-   localAudioTrack = LocalAudioTrack.CreateFromDeviceAsync(microphoneSource, audioTrackConfig);
+   localAudioTrack = LocalAudioTrack.CreateFromSource(microphoneSource, audioTrackConfig);
    ```
 
 6. Use the [`PeerConnection.AddTransceiver()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.AddTransceiver(Microsoft.MixedReality.WebRTC.MediaKind,Microsoft.MixedReality.WebRTC.TransceiverInitSettings)) method to add to the peer connection some audio and video transceivers, which are the transports through which the audio and video tracks are sent to the remote peer.
