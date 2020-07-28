@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 
@@ -20,7 +21,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         /// any device then its ID and name are not empty.
         /// </summary>
         [Test]
-        public async void EnumVideoDevices()
+        public async Task EnumVideoDevices()
         {
             List<VideoCaptureDevice> devices = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
             foreach (var device in devices)
@@ -35,7 +36,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         /// GetVideoCaptureFormatsAsync() returns some valid formats.
         /// </summary>
         [Test]
-        public async void EnumVideoFormats()
+        public async Task EnumVideoFormats()
         {
             List<VideoCaptureDevice> devices = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
             if (devices.Count == 0)
