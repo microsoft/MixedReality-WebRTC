@@ -76,10 +76,14 @@ class VideoTrackSource : public TrackedObject {
   void SetCallback(I420AFrameReadyCallback callback) noexcept;
   void SetCallback(Argb32FrameReadyCallback callback) noexcept;
 
-  inline rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> impl() const
-      noexcept {
+  inline rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> impl()
+      const noexcept {
     return source_;
   }
+
+ private:
+  template <class T>
+  void SetCallbackImpl(T callback) noexcept;
 
  protected:
   rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source_;
