@@ -127,6 +127,8 @@ class VideoFrameObserver : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   /// This is not exclusive and can be used along another I420 callback.
   void SetCallback(Argb32FrameReadyCallback callback) noexcept;
 
+  bool HasCallbacks() const { return i420a_callback_ || argb_callback_; }
+
  protected:
   /// Get a temporary scratch buffer for an ARGB32 frame of the given
   /// dimensions. The returned buffer does not need to be deallocated, but can
