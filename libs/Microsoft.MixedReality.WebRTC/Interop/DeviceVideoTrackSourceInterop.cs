@@ -265,13 +265,15 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsEnumVideoProfilesAsync")]
-        public static extern uint EnumVideoProfilesAsync(string deviceId, VideoProfileEnumCallback enumCallback, IntPtr userData,
+        public static extern uint EnumVideoProfilesAsync(string deviceId, VideoProfileKind profileKind,
+            VideoProfileEnumCallback enumCallback, IntPtr userData,
             VideoProfileEnumCompletedCallback completedCallback, IntPtr completedUserData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsEnumVideoCaptureFormatsAsync")]
-        public static extern uint EnumVideoCaptureFormatsAsync(string deviceId, VideoCaptureFormatEnumCallback enumCallback,
-            IntPtr userData, VideoCaptureFormatEnumCompletedCallback completedCallback, IntPtr completedUserData);
+        public static extern uint EnumVideoCaptureFormatsAsync(string deviceId, string profileId, VideoProfileKind profileKind,
+            VideoCaptureFormatEnumCallback enumCallback, IntPtr userData,
+            VideoCaptureFormatEnumCompletedCallback completedCallback, IntPtr completedUserData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsDeviceVideoTrackSourceCreate")]

@@ -247,6 +247,22 @@ mrsResult OpenVideoCaptureDevice(
 #endif
 }
 
+#ifdef WINUWP
+
+winrt::Windows::Media::Capture::KnownVideoProfile KnownVideoProfileFromKind(
+    mrsVideoProfileKind profile_kind) {
+  RTC_DCHECK(profile_kind != mrsVideoProfileKind::kUnspecified);
+  return (winrt::Windows::Media::Capture::KnownVideoProfile)(
+      (int)(profile_kind)-1);
+}
+
+mrsVideoProfileKind KnownVideoProfileToKind(
+    winrt::Windows::Media::Capture::KnownVideoProfile known_profile) {
+  return (mrsVideoProfileKind)((int)(known_profile) + 1);
+}
+
+#endif
+
 }  // namespace
 
 namespace Microsoft {
@@ -494,6 +510,7 @@ Error DeviceVideoTrackSource::GetVideoCaptureDevices(
 
 Error DeviceVideoTrackSource::GetVideoProfiles(
     absl::string_view device_id,
+    mrsVideoProfileKind profile_kind,
     Callback<const mrsVideoProfileInfo*> enum_callback,
     Callback<mrsResult> end_callback) noexcept {
 #if defined(WINUWP)
@@ -514,9 +531,24 @@ Error DeviceVideoTrackSource::GetVideoProfiles(
   }
 
   // Enumerate the video profiles
-  auto profile_list =
-      winrt::Windows::Media::Capture::MediaCapture::FindAllVideoProfiles(
-          winrt::to_hstring(device_id_str));
+  winrt::Windows::Foundation::Collections::IVectorView<
+      winrt::Windows::Media::Capture::MediaCaptureVideoProfile>
+      profile_list;
+  if (profile_kind == mrsVideoProfileKind::kUnspecified) {
+    RTC_LOG(LS_INFO) << "Enumerating video profiles for device '"
+                     << device_id_str.c_str() << "'";
+    profile_list =
+        winrt::Windows::Media::Capture::MediaCapture::FindAllVideoProfiles(
+            winrt::to_hstring(device_id_str));
+  } else {
+    RTC_LOG(LS_INFO) << "Enumerating video profiles for device '"
+                     << device_id_str.c_str() << "' and profile kind "
+                     << (int)profile_kind;
+    auto const known_profile = KnownVideoProfileFromKind(profile_kind);
+    profile_list =
+        winrt::Windows::Media::Capture::MediaCapture::FindKnownVideoProfiles(
+            winrt::to_hstring(device_id_str), known_profile);
+  }
   for (auto&& profile : profile_list) {
     auto id_str = winrt::to_string(profile.Id());
     mrsVideoProfileInfo info{};
@@ -529,6 +561,7 @@ Error DeviceVideoTrackSource::GetVideoProfiles(
 
   // Silence unused parameter warnings
   (void)device_id;
+  (void)profile_kind;
   (void)enum_callback;
 
   // End successfully without anything enumerated
@@ -539,9 +572,17 @@ Error DeviceVideoTrackSource::GetVideoProfiles(
 
 Error DeviceVideoTrackSource::GetVideoCaptureFormats(
     absl::string_view device_id,
+    absl::string_view profile_id,
+    mrsVideoProfileKind profile_kind,
     Callback<const mrsVideoCaptureFormatInfo*> enum_callback,
     Callback<mrsResult> end_callback) noexcept {
 #if defined(MR_SHARING_ANDROID)
+  // Non-UWP platforms do not support video profiles
+
+  // Silence unused parameter warnings
+  (void)profile_id;
+  (void)profile_kind;
+
   // Make sure the current thread is attached to the JVM. Since this method
   // is often called asynchronously (as it takes some time to enumerate the
   // video capture devices) it is likely to run on a background worker thread.
@@ -639,16 +680,33 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
   //  return Result::kWrongThread;
   //}
 
-  // Keep a copy of the device ID string before the view goes out of scope.
+  // Keep a copy of the various string parameters before the views go out of
+  // scope. Store in unique pointer for RAII-style async clean-up.
   auto device_id_ptr =
       std::make_unique<std::string>(device_id.data(), device_id.size());
+  auto profile_id_ptr =
+      profile_id.empty()
+          ? std::make_unique<std::string>()
+          : std::make_unique<std::string>(profile_id.data(), profile_id.size());
 
-  // Enumerate the video capture devices
+  // Only profile ID or kind can be specified, not both
+  if (!profile_id.empty() &&
+      (profile_kind != mrsVideoProfileKind::kUnspecified)) {
+    RTC_LOG(LS_ERROR) << "Cannot specify both video profile ID and kind when "
+                         "enumerating capture formats for device '"
+                      << device_id_ptr->c_str()
+                      << "'. Use either one or the other.";
+    return Error(mrsResult::kInvalidParameter);
+  }
+
+  // Enumerate the video capture devices to find the device by ID
   auto asyncResults =
       winrt::Windows::Devices::Enumeration::DeviceInformation::FindAllAsync(
           winrt::Windows::Devices::Enumeration::DeviceClass::VideoCapture);
-  asyncResults.Completed([device_id = std::move(device_id_ptr), enum_callback,
-                          end_callback, uwp_factory = std::move(uwp_factory)](
+  asyncResults.Completed([device_id = std::move(device_id_ptr),
+                          profile_id = std::move(profile_id_ptr), profile_kind,
+                          enum_callback, end_callback,
+                          uwp_factory = std::move(uwp_factory)](
                              auto&& asyncResults,
                              winrt::Windows::Foundation::AsyncStatus status) {
     // If reaching this point, then GetVideoCaptureFormats() will always return
@@ -676,6 +734,9 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
       break;
     }
     if (!devInfo) {
+      RTC_LOG(LS_ERROR)
+          << "Cannot enumerate video capture formats for unknown device ID '"
+          << device_id->c_str() << "'";
       enumerator.setFailure(Result::kInvalidParameter);
       return;
     }
@@ -687,8 +748,15 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
     createParams->factory = uwp_factory;
     createParams->name = devInfo.Name().c_str();
     createParams->id = devInfo.Id().c_str();
+    createParams->videoProfileId =
+        (profile_id->empty() ? nullptr : profile_id->c_str());
+    createParams->videoProfileKind =
+        (wrapper::org::webRtc::VideoProfileKind)profile_kind;
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
     if (vcd == nullptr) {
+      RTC_LOG(LS_ERROR) << "Failed to open video capture device '"
+                        << device_id->c_str()
+                        << "' for enumerating capture formats.";
       enumerator.setFailure(Result::kUnknownError);
       return;
     }
@@ -710,6 +778,12 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
     }
   });
 #else
+  // Non-UWP platforms do not support video profiles
+
+  // Silence unused parameter warnings
+  (void)profile_id;
+  (void)profile_kind;
+
   std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
       webrtc::VideoCaptureFactory::CreateDeviceInfo());
   if (!info) {

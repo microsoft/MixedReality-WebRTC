@@ -126,6 +126,27 @@ using mrsDeviceAudioTrackSourceHandle = mrsAudioTrackSourceHandle;
 // Video capture enumeration
 //
 
+/// Kind of video profile. Equal to org::webRtc::VideoProfileKind.
+///
+/// These are equivalent to the "known video profiles" found in the UWP
+/// MediaCapture API, with the addition of the
+/// |mrsVideoProfileKind::kUnspecified| placeholder value indicating "no
+/// profile" or "default profile" depending on the context.
+/// https://docs.microsoft.com/en-us/uwp/api/windows.media.capture.knownvideoprofile?view=winrt-19041
+enum class mrsVideoProfileKind : int32_t {
+  kUnspecified,
+  kVideoRecording,
+  kHighQualityPhoto,
+  kBalancedVideoAndPhoto,
+  kVideoConferencing,
+  kPhotoSequence,
+  kHighFrameRate,
+  kVariablePhotoSequence,
+  kHdrWithWcgVideo,
+  kHdrWithWcgPhoto,
+  kVideoHdr8,
+};
+
 /// Video capture device info.
 struct mrsVideoCaptureDeviceInfo {
   // Unique identifier of the capture device, used to start capture.
@@ -201,7 +222,8 @@ using mrsVideoProfileEnumCallback =
 using mrsVideoProfileEnumCompletedCallback = void(MRS_CALL*)(void* user_data,
                                                              mrsResult result);
 
-/// Enumerate the video profiles for the given capture device asynchronously.
+/// Asynchronously enumerate the video profiles for the given capture device,
+/// possibly restricted to the specified profile kind.
 ///
 /// If the enumeration starts successfully, that is the function returns
 /// |mrsResult::kSuccess|, then for each video profile found for the given
@@ -213,10 +235,14 @@ using mrsVideoProfileEnumCompletedCallback = void(MRS_CALL*)(void* user_data,
 /// If the enumeration fails to start, the function returns an error code; in
 /// that case no callback is invoked.
 ///
+/// If the video capture device does not support video profiles, this function
+/// succeeds and returns an empty list.
+///
 /// On UWP this must *not* be called from the main UI thread, otherwise a
 /// |mrsResult::kWrongThread| error might be returned.
 MRS_API mrsResult MRS_CALL mrsEnumVideoProfilesAsync(
     const char* device_id,
+    mrsVideoProfileKind profile_kind,
     mrsVideoProfileEnumCallback enumCallback,
     void* enumCallbackUserData,
     mrsVideoProfileEnumCompletedCallback completedCallback,
@@ -232,22 +258,45 @@ using mrsVideoCaptureFormatEnumCallback = void(
 using mrsVideoCaptureFormatEnumCompletedCallback =
     void(MRS_CALL*)(void* user_data, mrsResult result);
 
-/// Enumerate the video capture formats asynchronously.
+/// Asynchronously enumerate the capture formats of a video capture device.
+///
+/// The capture formats are enumerated for the given video capture device:
+/// - If the device does not support video profiles, |profile_id| and
+/// |profile_kind| are both ignored, and all capture formats supported by the
+/// specified device are enumerated.
+/// - If the device supports video profiles, enumeration depends on the values
+/// of the profile ID and kind. The profile ID string |profile_id| can be null
+/// or an empty string, meaning no specified profile ID. The profile kind
+/// |profile_kind| can be |mrsVideoProfileKind::Unspecified| to indicate no
+/// specified profile kind. |profile_id| or |profile_kind| can be specified (but
+/// not both) to limit the enumeration:
+///   - If neither profile ID nor kind are specified, the capture formats for
+///   the default video profile are enumerated.
+///   - If profile ID is specified, only capture formats for that specific
+///   profile are enumerated.
+///   - If profile kind is specified, capture formats for all profiles
+///   associated with the given kind are enumerated.
 ///
 /// If the enumeration starts successfully, that is the function returns
 /// |mrsResult::kSuccess|, then for each format found the implementation invokes
 /// the mandatory |enumCallback|. At the end of the enumeration, it invokes the
 /// optional |completedCallback| if it was provided (non-null). Note that those
 /// calls are asynchonous and not necessarily done before
-/// |mrsEnumVideoCaptureFormatsAsync()| returned.
+/// |mrsEnumVideoCaptureFormatsAsync()| returned. The |completedCallback|
+/// contains the result of the overall enumeration, therefore it is recommended
+/// to provide it. Only when it returns |mrsResult::kSuccess| is the caller
+/// ensured all capture formats have been enumerated successfully.
 ///
-/// If the enumeration fails to start, the function returns an error code; in
-/// that case no callback is invoked.
+/// If the enumeration fails to even start, the function returns an error code;
+/// in that case no callback is invoked, not even the |completedCallback| if
+/// provided.
 ///
 /// On UWP this must *not* be called from the main UI thread, otherwise a
 /// |mrsResult::kWrongThread| error might be returned.
 MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
     const char* device_id,
+    const char* profile_id,
+    mrsVideoProfileKind profile_kind,
     mrsVideoCaptureFormatEnumCallback enumCallback,
     void* enumCallbackUserData,
     mrsVideoCaptureFormatEnumCompletedCallback completedCallback,
@@ -611,21 +660,6 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionDataChannelRemovedCallback callback,
     void* user_data) noexcept;
-
-/// Kind of video profile. Equivalent to org::webRtc::VideoProfileKind.
-enum class mrsVideoProfileKind : int32_t {
-  kUnspecified,
-  kVideoRecording,
-  kHighQualityPhoto,
-  kBalancedVideoAndPhoto,
-  kVideoConferencing,
-  kPhotoSequence,
-  kHighFrameRate,
-  kVariablePhotoSequence,
-  kHdrWithWcgVideo,
-  kHdrWithWcgPhoto,
-  kVideoHdr8,
-};
 
 enum class mrsTransceiverStateUpdatedReason : int32_t {
   kLocalDesc,

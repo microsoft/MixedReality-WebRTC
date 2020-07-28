@@ -109,6 +109,7 @@ mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
 
 mrsResult MRS_CALL mrsEnumVideoProfilesAsync(
     const char* device_id,
+    mrsVideoProfileKind profile_kind,
     mrsVideoProfileEnumCallback enumCallback,
     void* enumCallbackUserData,
     mrsVideoProfileEnumCompletedCallback completedCallback,
@@ -122,7 +123,7 @@ mrsResult MRS_CALL mrsEnumVideoProfilesAsync(
   RTC_LOG(LS_INFO) << "Enumerating video profiles for device '" << device_id
                    << "'";
   Error res = DeviceVideoTrackSource::GetVideoProfiles(
-      device_id, {enumCallback, enumCallbackUserData},
+      device_id, profile_kind, {enumCallback, enumCallbackUserData},
       {completedCallback, completedCallbackUserData});
   if (!res.ok()) {
     RTC_LOG(LS_ERROR) << "Failed to enumerate video profiles for device '"
@@ -134,6 +135,8 @@ mrsResult MRS_CALL mrsEnumVideoProfilesAsync(
 
 mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
     const char* device_id,
+    const char* profile_id,
+    mrsVideoProfileKind profile_kind,
     mrsVideoCaptureFormatEnumCallback enumCallback,
     void* enumCallbackUserData,
     mrsVideoCaptureFormatEnumCompletedCallback completedCallback,
@@ -147,7 +150,7 @@ mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
   RTC_LOG(LS_INFO) << "Enumerating video capture formats for device '"
                    << device_id << "'";
   Error res = DeviceVideoTrackSource::GetVideoCaptureFormats(
-      device_id, {enumCallback, enumCallbackUserData},
+      device_id, profile_id, profile_kind, {enumCallback, enumCallbackUserData},
       {completedCallback, completedCallbackUserData});
   if (!res.ok()) {
     RTC_LOG(LS_ERROR) << "Failed to enumerate video capture formats: "

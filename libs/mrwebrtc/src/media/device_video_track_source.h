@@ -28,10 +28,13 @@ class DeviceVideoTrackSource : public VideoTrackSource {
       Callback<mrsResult> end_callback) noexcept;
   static Error GetVideoProfiles(
       absl::string_view device_id,
+      mrsVideoProfileKind profile_kind,
       Callback<const mrsVideoProfileInfo*> enum_callback,
       Callback<mrsResult> end_callback) noexcept;
   static Error GetVideoCaptureFormats(
       absl::string_view device_id,
+      absl::string_view profile_id,
+      mrsVideoProfileKind profile_kind,
       Callback<const mrsVideoCaptureFormatInfo*> enum_callback,
       Callback<mrsResult> end_callback) noexcept;
 
@@ -48,7 +51,7 @@ class DeviceVideoTrackSource : public VideoTrackSource {
   /// object.
   jobject java_video_capturer_{nullptr};
 
-#else   // defined(MR_SHARING_ANDROID)
+#else  // defined(MR_SHARING_ANDROID)
 
   DeviceVideoTrackSource(
       RefPtr<GlobalFactory> global_factory,

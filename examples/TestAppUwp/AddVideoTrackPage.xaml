@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:winmc="using:Windows.Media.Capture"
+    xmlns:mrwebrtc="using:Microsoft.MixedReality.WebRTC"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     NavigationCacheMode="Required">
@@ -19,8 +20,8 @@
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="VideoProfileTemplate" x:DataType="winmc:MediaCaptureVideoProfile">
-            <TextBlock Text="{x:Bind Id}" VerticalAlignment="Center"/>
+        <DataTemplate x:Key="VideoProfileTemplate" x:DataType="mrwebrtc:VideoProfile">
+            <TextBlock Text="{x:Bind uniqueId}" VerticalAlignment="Center"/>
         </DataTemplate>
         <DataTemplate x:Key="RecordMediaDescTemplate" x:DataType="winmc:MediaCaptureVideoProfileMediaDescription">
             <StackPanel Orientation="Horizontal">
