@@ -210,7 +210,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html",
-          "hash": "dk7suwypeTOjjWMSrzx6QA=="
+          "hash": "56IBeCTVds9+IgxqvFzb/w=="
         }
       },
       "is_incremental": false,
@@ -1526,6 +1526,18 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoProfile.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoProfile.html",
+          "hash": "+Q+OAJBfYaQ0Tk/1j6IERQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoProfileKind.yml",
       "output": {
         ".html": {
@@ -1554,7 +1566,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "L7p4UTnUWW8G/jks9Jck5g=="
+          "hash": "+mqLXN9OuepWyS+8v9Af1w=="
         }
       },
       "is_incremental": false,
@@ -1566,7 +1578,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "lCRD57zrPNGGU4/LWqN1fQ=="
+          "hash": "jbTa2KMnOxH5MW6nlrg3Yw=="
         }
       },
       "is_incremental": false,
@@ -2827,7 +2839,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 129,
+          "total_file_count": 130,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

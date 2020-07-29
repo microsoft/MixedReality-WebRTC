@@ -135,7 +135,7 @@
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_FrameEncoding.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.FrameEncoding%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L90">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L101">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_FrameEncoding_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.FrameEncoding*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_FrameEncoding" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.FrameEncoding">FrameEncoding</h4>
@@ -170,7 +170,7 @@
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.CreateAsync(Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L281">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L417">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.CreateAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.CreateAsync(Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig)">CreateAsync(LocalVideoDeviceInitConfig)</h4>
@@ -270,7 +270,7 @@ var videoSource = await VideoTrackSource.CreateFromDeviceAsync(initConfig);</cod
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L101">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L112">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync">GetCaptureDevicesAsync()</h4>
@@ -279,7 +279,7 @@ var videoSource = await VideoTrackSource.CreateFromDeviceAsync(initConfig);</cod
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;List&lt;VideoCaptureDevice&gt;&gt; GetCaptureDevicesAsync()</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task&lt;IReadOnlyList&lt;VideoCaptureDevice&gt;&gt; GetCaptureDevicesAsync()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -291,7 +291,7 @@ var videoSource = await VideoTrackSource.CreateFromDeviceAsync(initConfig);</cod
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<span class="xref">List</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html">VideoCaptureDevice</a>&gt;&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IReadOnlyList</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html">VideoCaptureDevice</a>&gt;&gt;</td>
         <td><p>The list of available video capture devices.</p>
 </td>
       </tr>
@@ -307,7 +307,7 @@ field to force a local video track to use that device when creating it with
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_System_String_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L164">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L264">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_System_String_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String)">GetCaptureFormatsAsync(String)</h4>
@@ -316,7 +316,7 @@ field to force a local video track to use that device when creating it with
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;List&lt;VideoCaptureFormat&gt;&gt; GetCaptureFormatsAsync(string deviceId)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task&lt;IReadOnlyList&lt;VideoCaptureFormat&gt;&gt; GetCaptureFormatsAsync(string deviceId)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -348,7 +348,7 @@ a capture device enumerated with <a class="xref" href="Microsoft.MixedReality.We
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<span class="xref">List</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureFormat.html">VideoCaptureFormat</a>&gt;&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IReadOnlyList</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureFormat.html">VideoCaptureFormat</a>&gt;&gt;</td>
         <td><p>The list of available video capture formats for the specified video capture device.</p>
 </td>
       </tr>
@@ -356,10 +356,258 @@ a capture device enumerated with <a class="xref" href="Microsoft.MixedReality.We
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_System_String_Microsoft_MixedReality_WebRTC_VideoProfileKind_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String%2CMicrosoft.MixedReality.WebRTC.VideoProfileKind)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L293">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_System_String_Microsoft_MixedReality_WebRTC_VideoProfileKind_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String,Microsoft.MixedReality.WebRTC.VideoProfileKind)">GetCaptureFormatsAsync(String, VideoProfileKind)</h4>
+  <div class="markdown level1 summary"><p>Enumerate the video capture formats for the specified video capture device and video profile.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task&lt;IReadOnlyList&lt;VideoCaptureFormat&gt;&gt; GetCaptureFormatsAsync(string deviceId, VideoProfileKind profileKind)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">deviceId</span></td>
+        <td><p>Unique identifier of the video capture device to enumerate the
+capture formats of, as retrieved from the <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html#Microsoft_MixedReality_WebRTC_VideoCaptureDevice_id">id</a> field of
+a capture device enumerated with <a class="xref" href="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync">GetCaptureDevicesAsync()</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoProfileKind.html">VideoProfileKind</a></td>
+        <td><span class="parametername">profileKind</span></td>
+        <td><p>Kind of video profile to enumerate the capture formats of.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IReadOnlyList</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureFormat.html">VideoCaptureFormat</a>&gt;&gt;</td>
+        <td><p>The list of available video capture formats for the specified video capture device.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_System_String_System_String_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L279">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_System_String_System_String_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String,System.String)">GetCaptureFormatsAsync(String, String)</h4>
+  <div class="markdown level1 summary"><p>Enumerate the video capture formats for the specified video capture device and video profile.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task&lt;IReadOnlyList&lt;VideoCaptureFormat&gt;&gt; GetCaptureFormatsAsync(string deviceId, string profileId)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">deviceId</span></td>
+        <td><p>Unique identifier of the video capture device to enumerate the
+capture formats of, as retrieved from the <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html#Microsoft_MixedReality_WebRTC_VideoCaptureDevice_id">id</a> field of
+a capture device enumerated with <a class="xref" href="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync">GetCaptureDevicesAsync()</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">profileId</span></td>
+        <td><p>Unique identifier of the video profile to enumerate the capture formats of,
+as retrieved from <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html#Microsoft_MixedReality_WebRTC_VideoCaptureDevice_id">id</a> field of a capture device enumerated with
+<a class="xref" href="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync">GetCaptureDevicesAsync()</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IReadOnlyList</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureFormat.html">VideoCaptureFormat</a>&gt;&gt;</td>
+        <td><p>The list of available video capture formats for the specified video capture device.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L185">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync(System.String)">GetCaptureProfilesAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Enumerate all the video profiles associated with the specified video capture device, if any.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task&lt;IReadOnlyList&lt;VideoProfile&gt;&gt; GetCaptureProfilesAsync(string deviceId)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">deviceId</span></td>
+        <td><p>Unique identifier of the video capture device to enumerate the
+capture formats of, as retrieved from the <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html#Microsoft_MixedReality_WebRTC_VideoCaptureDevice_id">id</a> field of
+a capture device enumerated with <a class="xref" href="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync">GetCaptureDevicesAsync()</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IReadOnlyList</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.VideoProfile.html">VideoProfile</a>&gt;&gt;</td>
+        <td><p>The list of available video profiles for the specified video capture device.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the video capture device does not support video profiles, the function succeeds
+and returns an empty list.</p>
+<p>This is equivalent to:</p>
+<pre><code>GetCaptureProfilesAsync(deviceId, VideoProfileKind.Unspecified);</code></pre>
+</div>
+  <h5 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String_Microsoft_MixedReality_WebRTC_VideoProfileKind_">GetCaptureProfilesAsync(String, VideoProfileKind)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String_Microsoft_MixedReality_WebRTC_VideoProfileKind_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync(System.String%2CMicrosoft.MixedReality.WebRTC.VideoProfileKind)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L203">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String_Microsoft_MixedReality_WebRTC_VideoProfileKind_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync(System.String,Microsoft.MixedReality.WebRTC.VideoProfileKind)">GetCaptureProfilesAsync(String, VideoProfileKind)</h4>
+  <div class="markdown level1 summary"><p>Enumerate the video profiles associated with the specified video capture device, if any,
+and restricted to the specified video profile kind.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task&lt;IReadOnlyList&lt;VideoProfile&gt;&gt; GetCaptureProfilesAsync(string deviceId, VideoProfileKind profileKind)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">deviceId</span></td>
+        <td><p>Unique identifier of the video capture device to enumerate the
+capture formats of, as retrieved from the <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html#Microsoft_MixedReality_WebRTC_VideoCaptureDevice_id">id</a> field of
+a capture device enumerated with <a class="xref" href="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync">GetCaptureDevicesAsync()</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoProfileKind.html">VideoProfileKind</a></td>
+        <td><span class="parametername">profileKind</span></td>
+        <td><p>Kind of video profile to enumerate. Specify
+<a class="xref" href="Microsoft.MixedReality.WebRTC.VideoProfileKind.html#Microsoft_MixedReality_WebRTC_VideoProfileKind_Unspecified">Unspecified</a> to enumerate all profiles.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IReadOnlyList</span>&lt;<a class="xref" href="Microsoft.MixedReality.WebRTC.VideoProfile.html">VideoProfile</a>&gt;&gt;</td>
+        <td><p>The list of available video profiles for the specified video capture device.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String_Microsoft_MixedReality_WebRTC_VideoProfileKind__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the video capture device does not support video profiles, the function succeeds
+and returns an empty list.</p>
+</div>
+  <h5 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String_Microsoft_MixedReality_WebRTC_VideoProfileKind__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String_">GetCaptureProfilesAsync(String)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_ToString.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L303">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L439">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_ToString_" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.ToString*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_ToString" data-uid="Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.ToString">ToString()</h4>
@@ -404,7 +652,7 @@ a capture device enumerated with <a class="xref" href="Microsoft.MixedReality.We
                     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L87" class="contribution-link">View Source</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DeviceVideoTrackSource.cs/#L98" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

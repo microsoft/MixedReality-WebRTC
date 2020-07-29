@@ -616,6 +616,18 @@ references:
   commentId: M:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String)
   fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String)
   nameWithType: DeviceVideoTrackSource.GetCaptureFormatsAsync(String)
+- uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String,Microsoft.MixedReality.WebRTC.VideoProfileKind)
+  name: GetCaptureFormatsAsync(String, VideoProfileKind)
+  href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_System_String_Microsoft_MixedReality_WebRTC_VideoProfileKind_
+  commentId: M:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String,Microsoft.MixedReality.WebRTC.VideoProfileKind)
+  fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String, Microsoft.MixedReality.WebRTC.VideoProfileKind)
+  nameWithType: DeviceVideoTrackSource.GetCaptureFormatsAsync(String, VideoProfileKind)
+- uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String,System.String)
+  name: GetCaptureFormatsAsync(String, String)
+  href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_System_String_System_String_
+  commentId: M:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String,System.String)
+  fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync(System.String, System.String)
+  nameWithType: DeviceVideoTrackSource.GetCaptureFormatsAsync(String, String)
 - uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync*
   name: GetCaptureFormatsAsync
   href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureFormatsAsync_
@@ -623,6 +635,25 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureFormatsAsync
   nameWithType: DeviceVideoTrackSource.GetCaptureFormatsAsync
+- uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync(System.String)
+  name: GetCaptureProfilesAsync(String)
+  href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String_
+  commentId: M:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync(System.String)
+  fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync(System.String)
+  nameWithType: DeviceVideoTrackSource.GetCaptureProfilesAsync(String)
+- uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync(System.String,Microsoft.MixedReality.WebRTC.VideoProfileKind)
+  name: GetCaptureProfilesAsync(String, VideoProfileKind)
+  href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_System_String_Microsoft_MixedReality_WebRTC_VideoProfileKind_
+  commentId: M:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync(System.String,Microsoft.MixedReality.WebRTC.VideoProfileKind)
+  fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync(System.String, Microsoft.MixedReality.WebRTC.VideoProfileKind)
+  nameWithType: DeviceVideoTrackSource.GetCaptureProfilesAsync(String, VideoProfileKind)
+- uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync*
+  name: GetCaptureProfilesAsync
+  href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureProfilesAsync_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureProfilesAsync
+  nameWithType: DeviceVideoTrackSource.GetCaptureProfilesAsync
 - uid: Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.ToString
   name: ToString()
   href: api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_ToString
@@ -5786,6 +5817,18 @@ references:
   fullName.vb: Microsoft.MixedReality.WebRTC.VideoFrameQueue(Of T).TryDequeue
   nameWithType: VideoFrameQueue<T>.TryDequeue
   nameWithType.vb: VideoFrameQueue(Of T).TryDequeue
+- uid: Microsoft.MixedReality.WebRTC.VideoProfile
+  name: VideoProfile
+  href: api/Microsoft.MixedReality.WebRTC.VideoProfile.html
+  commentId: T:Microsoft.MixedReality.WebRTC.VideoProfile
+  fullName: Microsoft.MixedReality.WebRTC.VideoProfile
+  nameWithType: VideoProfile
+- uid: Microsoft.MixedReality.WebRTC.VideoProfile.uniqueId
+  name: uniqueId
+  href: api/Microsoft.MixedReality.WebRTC.VideoProfile.html#Microsoft_MixedReality_WebRTC_VideoProfile_uniqueId
+  commentId: F:Microsoft.MixedReality.WebRTC.VideoProfile.uniqueId
+  fullName: Microsoft.MixedReality.WebRTC.VideoProfile.uniqueId
+  nameWithType: VideoProfile.uniqueId
 - uid: Microsoft.MixedReality.WebRTC.VideoProfileKind
   name: VideoProfileKind
   href: api/Microsoft.MixedReality.WebRTC.VideoProfileKind.html
