@@ -40,11 +40,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// it received it from the remote peer (<see cref="RemoteVideoTrack"/>).
         /// </summary>
         /// <remarks>
-        /// Handlers must process the
-        /// frame as fast as possible without blocking the caller thread, and cannot remove themselves
-        /// from the event nor add other handlers to the event, otherwise the caller thread will deadlock.
-        ///
         /// The event delivers to the handlers an I420-encoded video frame.
+        ///
+        /// This event is invoked on the WebRTC worker thread. Handlers can be added/removed safely
+        /// while the event is invoked, but access to any resource used by its handlers must be
+        /// synchronized manually. Note that a handler might be invoked (at most once) after it has
+        /// been removed from the event.
         /// </remarks>
         event I420AVideoFrameDelegate I420AVideoFrameReady;
 
@@ -54,11 +55,12 @@ namespace Microsoft.MixedReality.WebRTC
         /// it received it from the remote peer (<see cref="RemoteVideoTrack"/>).
         /// </summary>
         /// <remarks>
-        /// Handlers must process the
-        /// frame as fast as possible without blocking the caller thread, and cannot remove themselves
-        /// from the event nor add other handlers to the event, otherwise the caller thread will deadlock.
-        ///
         /// The event delivers to the handlers an ARGB32-encoded video frame.
+        ///
+        /// This event is invoked on the WebRTC worker thread. Handlers can be added/removed safely
+        /// while the event is invoked, but access to any resource used by its handlers must be
+        /// synchronized manually. Note that a handler might be invoked (at most once) after it has
+        /// been removed from the event.
         /// </remarks>
         event Argb32VideoFrameDelegate Argb32VideoFrameReady;
 
