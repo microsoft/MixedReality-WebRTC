@@ -417,9 +417,11 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             };
             using (var source = ExternalVideoTrackSource.CreateFromI420ACallback(
                 VideoTrackSourceTests.CustomI420AFrameCallback))
-            using (var track = LocalVideoTrack.CreateFromSource(source, track_config))
             {
-                VideoTrackSourceTests.TestFrameReadyCallbacks(track);
+                using (var track = LocalVideoTrack.CreateFromSource(source, track_config))
+                {
+                    VideoTrackSourceTests.TestFrameReadyCallbacks(track);
+                }
             }
         }
 
