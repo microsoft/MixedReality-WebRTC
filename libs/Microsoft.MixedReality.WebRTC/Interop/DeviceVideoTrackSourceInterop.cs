@@ -25,6 +25,15 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         /// <summary>
+        /// Marshaling struct for enumerating a video profile.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        internal ref struct VideoProfileMarshalInfo
+        {
+            public string Id;
+        }
+
+        /// <summary>
         /// Marshaling struct for enumerating a video capture format.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -39,10 +48,12 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         // Callbacks for internal enumeration implementation only
         public delegate void VideoCaptureDeviceEnumCallbackImpl(in VideoCaptureDevice device);
         public delegate void VideoCaptureDeviceEnumCompletedCallbackImpl(Exception ex);
+        public delegate void VideoProfileEnumCallbackImpl(in VideoProfile device);
+        public delegate void VideoProfileEnumCompletedCallbackImpl(Exception ex);
         public delegate void VideoCaptureFormatEnumCallbackImpl(in VideoCaptureFormat format);
         public delegate void VideoCaptureFormatEnumCompletedCallbackImpl(Exception ex);
 
-        public class EnumVideoCaptureDeviceWrapper
+        public class EnumVideoCaptureDevicesWrapper
         {
             public VideoCaptureDeviceEnumCallbackImpl enumCallback;
             public VideoCaptureDeviceEnumCompletedCallbackImpl completedCallback;
@@ -54,7 +65,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCallback))]
         public static void VideoCaptureDevice_EnumCallback(IntPtr userData, in VideoCaptureDeviceMarshalInfo deviceInfo)
         {
-            var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
+            var wrapper = Utils.ToWrapper<EnumVideoCaptureDevicesWrapper>(userData);
             var device = new VideoCaptureDevice();
             device.id = deviceInfo.Id;
             device.name = deviceInfo.Name;
@@ -65,7 +76,33 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void VideoCaptureDevice_EnumCompletedCallback(IntPtr userData, uint resultCode)
         {
             var exception = Utils.GetExceptionForErrorCode(resultCode);
-            var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
+            var wrapper = Utils.ToWrapper<EnumVideoCaptureDevicesWrapper>(userData);
+            wrapper.completedCallback(exception); // this is optional, allows to be null
+        }
+
+        public class EnumVideoProfilesWrapper
+        {
+            public VideoProfileEnumCallbackImpl enumCallback;
+            public VideoProfileEnumCompletedCallbackImpl completedCallback;
+            // Keep delegates alive!
+            public VideoProfileEnumCallback EnumTrampoline;
+            public VideoProfileEnumCompletedCallback CompletedTrampoline;
+        }
+
+        [MonoPInvokeCallback(typeof(VideoProfileEnumCallback))]
+        public static void VideoProfile_EnumCallback(IntPtr userData, in VideoProfileMarshalInfo profileInfo)
+        {
+            var wrapper = Utils.ToWrapper<EnumVideoProfilesWrapper>(userData);
+            var profile = new VideoProfile();
+            profile.uniqueId = profileInfo.Id;
+            wrapper.enumCallback(profile); // this is mandatory, never null
+        }
+
+        [MonoPInvokeCallback(typeof(VideoProfileEnumCompletedCallback))]
+        public static void VideoProfile_EnumCompletedCallback(IntPtr userData, uint resultCode)
+        {
+            var exception = Utils.GetExceptionForErrorCode(resultCode);
+            var wrapper = Utils.ToWrapper<EnumVideoProfilesWrapper>(userData);
             wrapper.completedCallback(exception); // this is optional, allows to be null
         }
 
@@ -205,6 +242,12 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public delegate void VideoCaptureDeviceEnumCompletedCallback(IntPtr userData, uint resultCode);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void VideoProfileEnumCallback(IntPtr userData, in VideoProfileMarshalInfo profileInfo);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void VideoProfileEnumCompletedCallback(IntPtr userData, uint resultCode);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void VideoCaptureFormatEnumCallback(IntPtr userData, in VideoCaptureFormatMarshalInfo formatInfo);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
@@ -221,9 +264,16 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             VideoCaptureDeviceEnumCompletedCallback completedCallback, IntPtr completedUserData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsEnumVideoProfilesAsync")]
+        public static extern uint EnumVideoProfilesAsync(string deviceId, VideoProfileKind profileKind,
+            VideoProfileEnumCallback enumCallback, IntPtr userData,
+            VideoProfileEnumCompletedCallback completedCallback, IntPtr completedUserData);
+
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsEnumVideoCaptureFormatsAsync")]
-        public static extern uint EnumVideoCaptureFormatsAsync(string deviceId, VideoCaptureFormatEnumCallback enumCallback,
-            IntPtr userData, VideoCaptureFormatEnumCompletedCallback completedCallback, IntPtr completedUserData);
+        public static extern uint EnumVideoCaptureFormatsAsync(string deviceId, string profileId, VideoProfileKind profileKind,
+            VideoCaptureFormatEnumCallback enumCallback, IntPtr userData,
+            VideoCaptureFormatEnumCompletedCallback completedCallback, IntPtr completedUserData);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsDeviceVideoTrackSourceCreate")]

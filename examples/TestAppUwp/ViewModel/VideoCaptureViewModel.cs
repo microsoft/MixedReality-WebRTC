@@ -98,7 +98,7 @@ namespace TestAppUwp
         /// Collection of video profiles for the currently selected video capture device
         /// and video profile kind.
         /// </summary>
-        public CollectionViewModel<MediaCaptureVideoProfile> VideoProfiles
+        public CollectionViewModel<VideoProfile> VideoProfiles
         {
             get { return _videoProfiles; }
             private set
@@ -138,8 +138,8 @@ namespace TestAppUwp
             = new CollectionViewModel<VideoCaptureDeviceInfo>();
         private CollectionViewModel<VideoCaptureFormatViewModel> _videoCaptureFormats
             = new CollectionViewModel<VideoCaptureFormatViewModel>();
-        private CollectionViewModel<MediaCaptureVideoProfile> _videoProfiles
-            = new CollectionViewModel<MediaCaptureVideoProfile>();
+        private CollectionViewModel<VideoProfile> _videoProfiles
+            = new CollectionViewModel<VideoProfile>();
         private VideoProfileKind _selectedVideoProfileKind = VideoProfileKind.Unspecified;
         private bool _canCreateTrack = false;
         private string _errorMessage;
@@ -206,23 +206,16 @@ namespace TestAppUwp
             }
         }
 
-        public void RefreshVideoProfiles(VideoCaptureDeviceInfo item, VideoProfileKind kind)
+        public async void RefreshVideoProfiles(VideoCaptureDeviceInfo item, VideoProfileKind kind)
         {
-            var videoProfiles = new CollectionViewModel<MediaCaptureVideoProfile>();
+            // Clear formats, which are profile-dependent. This ensures the former list doesn't
+            // stay visible if the current profile kind is not supported (does not return any profile).
+            VideoCaptureFormats.Clear();
+
+            var videoProfiles = new CollectionViewModel<VideoProfile>();
             if (item != null)
             {
-                IReadOnlyList<MediaCaptureVideoProfile> profiles;
-                if (kind == VideoProfileKind.Unspecified)
-                {
-                    profiles = MediaCapture.FindAllVideoProfiles(item.Id);
-                }
-                else
-                {
-                    // VideoProfileKind and KnownVideoProfile are the same with the exception of
-                    // `Unspecified` that takes value 0.
-                    var profile = (KnownVideoProfile)((int)kind - 1);
-                    profiles = MediaCapture.FindKnownVideoProfiles(item.Id, profile);
-                }
+                IReadOnlyList<VideoProfile> profiles = await DeviceVideoTrackSource.GetCaptureProfilesAsync(item.Id, kind);
                 foreach (var profile in profiles)
                 {
                     videoProfiles.Add(profile);
@@ -249,31 +242,25 @@ namespace TestAppUwp
             var formats = new CollectionViewModel<VideoCaptureFormatViewModel>();
             if (item != null)
             {
-                if (MediaCapture.IsVideoProfileSupported(item.Id))
+                IReadOnlyList<VideoCaptureFormat> formatsList;
+                string profileId = VideoProfiles.SelectedItem?.uniqueId;
+                if (string.IsNullOrEmpty(profileId))
                 {
-                    foreach (var desc in VideoProfiles.SelectedItem?.SupportedRecordMediaDescription)
-                    {
-                        var formatVM = new VideoCaptureFormatViewModel();
-                        formatVM.Format.width = desc.Width;
-                        formatVM.Format.height = desc.Height;
-                        formatVM.Format.framerate = desc.FrameRate;
-                        //formatVM.Format.fourcc = desc.Subtype; // TODO: string => FOURCC
-                        formatVM.FormatEncodingDisplayName = desc.Subtype;
-                        formats.Add(formatVM);
-                    }
+                    // Device doesn't support video profiles; fall back on flat list of capture formats.
+                    formatsList = await DeviceVideoTrackSource.GetCaptureFormatsAsync(item.Id);
                 }
                 else
                 {
-                    // Device doesn't support video profiles; fall back on flat list of capture formats.
-                    List<VideoCaptureFormat> formatsList = await DeviceVideoTrackSource.GetCaptureFormatsAsync(item.Id);
-                    foreach (var format in formatsList)
+                    // Enumerate formats for the specified profile only
+                    formatsList = await DeviceVideoTrackSource.GetCaptureFormatsAsync(item.Id, profileId);
+                }
+                foreach (var format in formatsList)
+                {
+                    formats.Add(new VideoCaptureFormatViewModel
                     {
-                        formats.Add(new VideoCaptureFormatViewModel
-                        {
-                            Format = format,
-                            FormatEncodingDisplayName = FourCCToString(format.fourcc)
-                        });
-                    }
+                        Format = format,
+                        FormatEncodingDisplayName = FourCCToString(format.fourcc)
+                    });
                 }
             }
             VideoCaptureFormats = formats;
@@ -305,8 +292,8 @@ namespace TestAppUwp
             }
             if (deviceInfo.SupportsVideoProfiles)
             {
-                MediaCaptureVideoProfile profile = VideoProfiles.SelectedItem;
-                deviceConfig.videoProfileId = profile?.Id;
+                VideoProfile profile = VideoProfiles.SelectedItem;
+                deviceConfig.videoProfileId = profile?.uniqueId;
                 deviceConfig.videoProfileKind = SelectedVideoProfileKind;
             }
             var source = await DeviceVideoTrackSource.CreateAsync(deviceConfig);
