@@ -42,26 +42,28 @@ namespace Microsoft.MixedReality.WebRTC.Tests
             // Add a local video track.
             using (var source = ExternalVideoTrackSource.CreateFromI420ACallback(
                 VideoTrackSourceTests.CustomI420AFrameCallback))
-            using (var localTrack = LocalVideoTrack.CreateFromSource(source, track_config))
             {
-                transceiver1.LocalVideoTrack = localTrack;
+                using (var localTrack = LocalVideoTrack.CreateFromSource(source, track_config))
+                {
+                    transceiver1.LocalVideoTrack = localTrack;
 
-                // Connect
-                await DoNegotiationStartFrom(pc1_);
+                    // Connect
+                    await DoNegotiationStartFrom(pc1_);
 
-                // Find the remote track
-                Assert.AreEqual(1, pc2_.Transceivers.Count);
-                var transceiver2 = pc2_.Transceivers[0];
-                var remoteTrack = transceiver2.RemoteVideoTrack;
-                Assert.IsNotNull(remoteTrack);
-                Assert.AreEqual(transceiver2, remoteTrack.Transceiver);
-                Assert.AreEqual(pc2_, remoteTrack.PeerConnection);
+                    // Find the remote track
+                    Assert.AreEqual(1, pc2_.Transceivers.Count);
+                    var transceiver2 = pc2_.Transceivers[0];
+                    var remoteTrack = transceiver2.RemoteVideoTrack;
+                    Assert.IsNotNull(remoteTrack);
+                    Assert.AreEqual(transceiver2, remoteTrack.Transceiver);
+                    Assert.AreEqual(pc2_, remoteTrack.PeerConnection);
 
-                // Remote track receives frames.
-                VideoTrackSourceTests.TestFrameReadyCallbacks(remoteTrack);
+                    // Remote track receives frames.
+                    VideoTrackSourceTests.TestFrameReadyCallbacks(remoteTrack);
 
-                // Cleanup.
-                transceiver1.LocalVideoTrack = null;
+                    // Cleanup.
+                    transceiver1.LocalVideoTrack = null;
+                }
             }
         }
     }

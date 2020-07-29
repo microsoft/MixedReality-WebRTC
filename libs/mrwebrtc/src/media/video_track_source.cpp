@@ -80,7 +80,7 @@ void VideoTrackSource::SetCallbackImpl(T callback) noexcept {
     if (observer_) {
       // Reset the callback.
       observer_->SetCallback(callback);
-      if (!observer_->HasCallbacks()) {
+      if (!observer_->HasAnyCallbacks()) {
         // Detach the observer.
         // Track sources need to be manipulated from the worker thread
         rtc::Thread* const worker_thread =
