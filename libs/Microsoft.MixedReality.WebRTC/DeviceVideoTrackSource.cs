@@ -178,7 +178,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// 
         /// This is equivalent to:
         /// <code>
-        /// GetCaptureProfilesAsync(deviceId, VideoProfileKind.Unknown);
+        /// GetCaptureProfilesAsync(deviceId, VideoProfileKind.Unspecified);
         /// </code>
         /// </remarks>
         /// <seealso cref="GetCaptureProfilesAsync(string, VideoProfileKind)"/>
