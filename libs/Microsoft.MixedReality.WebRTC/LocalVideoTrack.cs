@@ -309,19 +309,13 @@ namespace Microsoft.MixedReality.WebRTC
         void VideoTrackSourceInterop.IVideoSource.OnI420AFrameReady(I420AVideoFrame frame)
         {
             MainEventSource.Log.I420ALocalVideoFrameReady(frame.width, frame.height);
-            lock(_videoFrameReadyLock)
-            {
-                _videoFrameReady?.Invoke(frame);
-            }
+            _videoFrameReady?.Invoke(frame);
         }
 
         void VideoTrackSourceInterop.IVideoSource.OnArgb32FrameReady(Argb32VideoFrame frame)
         {
             MainEventSource.Log.Argb32LocalVideoFrameReady(frame.width, frame.height);
-            lock (_videoFrameReadyLock)
-            {
-                _argb32VideoFrameReady?.Invoke(frame);
-            }
+            _argb32VideoFrameReady?.Invoke(frame);
         }
 
         internal override void OnMute(bool muted)
