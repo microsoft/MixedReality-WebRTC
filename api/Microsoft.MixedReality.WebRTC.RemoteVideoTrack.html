@@ -116,7 +116,7 @@
   <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
   <h5 id="Microsoft_MixedReality_WebRTC_RemoteVideoTrack_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class RemoteVideoTrack : MediaTrack, IVideoSource</code></pre>
+    <pre><code class="lang-csharp hljs">public class RemoteVideoTrack : MediaTrack, IVideoSource, VideoTrackSourceInterop.IVideoSource</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
@@ -195,7 +195,7 @@ The remote video track enabled status is controlled by the remote peer only.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_RemoteVideoTrack_ToString.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.RemoteVideoTrack.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteVideoTrack.cs/#L132">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteVideoTrack.cs/#L176">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_RemoteVideoTrack_ToString_" data-uid="Microsoft.MixedReality.WebRTC.RemoteVideoTrack.ToString*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_RemoteVideoTrack_ToString" data-uid="Microsoft.MixedReality.WebRTC.RemoteVideoTrack.ToString">ToString()</h4>
@@ -229,7 +229,7 @@ The remote video track enabled status is controlled by the remote peer only.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_RemoteVideoTrack_Argb32VideoFrameReady.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.RemoteVideoTrack.Argb32VideoFrameReady%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteVideoTrack.cs/#L40">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/RemoteVideoTrack.cs/#L72">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_RemoteVideoTrack_Argb32VideoFrameReady" data-uid="Microsoft.MixedReality.WebRTC.RemoteVideoTrack.Argb32VideoFrameReady">Argb32VideoFrameReady</h4>
   <div class="markdown level1 summary"><p>Event that occurs when a new video frame is available from the source, either
@@ -257,10 +257,11 @@ it received it from the remote peer (<a class="xref" href="Microsoft.MixedRealit
     </tbody>
   </table>
   <h5 id="Microsoft_MixedReality_WebRTC_RemoteVideoTrack_Argb32VideoFrameReady_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Handlers must process the
-frame as fast as possible without blocking the caller thread, and cannot remove themselves
-from the event nor add other handlers to the event, otherwise the caller thread will deadlock.</p>
-<p>The event delivers to the handlers an ARGB32-encoded video frame.</p>
+  <div class="markdown level1 remarks"><p>The event delivers to the handlers an ARGB32-encoded video frame.</p>
+<p>This event is invoked on the WebRTC worker thread. Handlers can be added/removed safely
+while the event is invoked, but access to any resource used by its handlers must be
+synchronized manually. Note that a handler might be invoked (at most once) after it has
+been removed from the event.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
@@ -295,10 +296,11 @@ it received it from the remote peer (<a class="xref" href="Microsoft.MixedRealit
     </tbody>
   </table>
   <h5 id="Microsoft_MixedReality_WebRTC_RemoteVideoTrack_I420AVideoFrameReady_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Handlers must process the
-frame as fast as possible without blocking the caller thread, and cannot remove themselves
-from the event nor add other handlers to the event, otherwise the caller thread will deadlock.</p>
-<p>The event delivers to the handlers an I420-encoded video frame.</p>
+  <div class="markdown level1 remarks"><p>The event delivers to the handlers an I420-encoded video frame.</p>
+<p>This event is invoked on the WebRTC worker thread. Handlers can be added/removed safely
+while the event is invoked, but access to any resource used by its handlers must be
+synchronized manually. Note that a handler might be invoked (at most once) after it has
+been removed from the event.</p>
 </div>
   <h3 id="implements">Implements</h3>
   <div>

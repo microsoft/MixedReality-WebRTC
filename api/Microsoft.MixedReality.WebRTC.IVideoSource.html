@@ -103,7 +103,7 @@
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_IVideoSource_Enabled.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.IVideoSource.Enabled%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/IVideoSource.cs/#L69">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/IVideoSource.cs/#L71">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_IVideoSource_Enabled_" data-uid="Microsoft.MixedReality.WebRTC.IVideoSource.Enabled*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_IVideoSource_Enabled" data-uid="Microsoft.MixedReality.WebRTC.IVideoSource.Enabled">Enabled</h4>
@@ -168,7 +168,7 @@ disabled, produces black frames instead.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_IVideoSource_Argb32VideoFrameReady.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.IVideoSource.Argb32VideoFrameReady%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/IVideoSource.cs/#L63">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/IVideoSource.cs/#L65">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_IVideoSource_Argb32VideoFrameReady" data-uid="Microsoft.MixedReality.WebRTC.IVideoSource.Argb32VideoFrameReady">Argb32VideoFrameReady</h4>
   <div class="markdown level1 summary"><p>Event that occurs when a new video frame is available from the source, either
@@ -196,17 +196,18 @@ it received it from the remote peer (<a class="xref" href="Microsoft.MixedRealit
     </tbody>
   </table>
   <h5 id="Microsoft_MixedReality_WebRTC_IVideoSource_Argb32VideoFrameReady_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Handlers must process the
-frame as fast as possible without blocking the caller thread, and cannot remove themselves
-from the event nor add other handlers to the event, otherwise the caller thread will deadlock.</p>
-<p>The event delivers to the handlers an ARGB32-encoded video frame.</p>
+  <div class="markdown level1 remarks"><p>The event delivers to the handlers an ARGB32-encoded video frame.</p>
+<p>This event is invoked on the WebRTC worker thread. Handlers can be added/removed safely
+while the event is invoked, but access to any resource used by its handlers must be
+synchronized manually. Note that a handler might be invoked (at most once) after it has
+been removed from the event.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_IVideoSource_I420AVideoFrameReady.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.IVideoSource.I420AVideoFrameReady%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/IVideoSource.cs/#L49">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/IVideoSource.cs/#L50">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_IVideoSource_I420AVideoFrameReady" data-uid="Microsoft.MixedReality.WebRTC.IVideoSource.I420AVideoFrameReady">I420AVideoFrameReady</h4>
   <div class="markdown level1 summary"><p>Event that occurs when a new video frame is available from the source, either
@@ -234,10 +235,11 @@ it received it from the remote peer (<a class="xref" href="Microsoft.MixedRealit
     </tbody>
   </table>
   <h5 id="Microsoft_MixedReality_WebRTC_IVideoSource_I420AVideoFrameReady_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Handlers must process the
-frame as fast as possible without blocking the caller thread, and cannot remove themselves
-from the event nor add other handlers to the event, otherwise the caller thread will deadlock.</p>
-<p>The event delivers to the handlers an I420-encoded video frame.</p>
+  <div class="markdown level1 remarks"><p>The event delivers to the handlers an I420-encoded video frame.</p>
+<p>This event is invoked on the WebRTC worker thread. Handlers can be added/removed safely
+while the event is invoked, but access to any resource used by its handlers must be
+synchronized manually. Note that a handler might be invoked (at most once) after it has
+been removed from the event.</p>
 </div>
   <h3 id="seealso">See Also</h3>
   <div class="seealso">
