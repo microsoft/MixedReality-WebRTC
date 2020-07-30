@@ -120,8 +120,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Assert.IsNotNull(mediaLine.Transceiver);
             Assert.AreEqual(mediaLine.Transceiver.MediaKind, mediaLine.MediaKind);
 
-            // TODO Destroy just after StartConnection will crash (#463)
-            // UnityEngine.Object.Destroy(pc_go);
+            UnityEngine.Object.Destroy(pc_go);
         }
 
         [UnityTest(/*Description = "Add a media line to a peer connection before it is initialized"*/)]
