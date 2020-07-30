@@ -104,6 +104,10 @@ namespace Microsoft.MixedReality.WebRTC
         /// The channel connection state represents the connection status.
         /// Changes to this state are notified via the <see cref="StateChanged"/> event.
         /// </summary>
+        /// <remarks>
+        /// The code handling this event should unwind the stack before
+        /// using any other MR-WebRTC APIs; re-entrancy is not supported.
+        /// </remarks>
         /// <value>The channel connection state.</value>
         /// <seealso cref="StateChanged"/>
         public ChannelState State { get; internal set; }
@@ -112,6 +116,10 @@ namespace Microsoft.MixedReality.WebRTC
         /// Event triggered when the data channel state changes.
         /// The new state is available in <see cref="State"/>.
         /// </summary>
+        /// <remarks>
+        /// The code handling this event should unwind the stack before
+        /// using any other MR-WebRTC APIs; re-entrancy is not supported.
+        /// </remarks>
         /// <seealso cref="State"/>
         public event Action StateChanged;
 
@@ -122,6 +130,10 @@ namespace Microsoft.MixedReality.WebRTC
         /// congestion control. Once this buffer is full, any further call to <see cref="SendMessage(byte[])"/>
         /// will fail until some mesages are processed and removed to make space.
         /// </summary>
+        /// <remarks>
+        /// The code handling this event should unwind the stack before
+        /// using any other MR-WebRTC APIs; re-entrancy is not supported.
+        /// </remarks>
         /// <seealso cref="SendMessage(byte[])"/>.
         public event BufferingChangedDelegate BufferingChanged;
 

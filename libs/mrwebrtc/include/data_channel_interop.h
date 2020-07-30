@@ -37,6 +37,9 @@ mrsDataChannelGetUserData(mrsDataChannelHandle handle) noexcept;
 
 /// Callback fired when a message |data| of byte size |size| is received on a
 /// data channel.
+///
+/// The code responding to this callback should unwind the stack before
+/// using any other MR-WebRTC APIs; re-entrancy is not supported.
 using mrsDataChannelMessageCallback = void(
     MRS_CALL*)(void* user_data, const void* data, const uint64_t size);
 
@@ -45,6 +48,9 @@ using mrsDataChannelMessageCallback = void(
 /// the buffering buffer. The |limit| is the capacity of the buffer. Note that
 /// when the buffer is full, any attempt to send data will result is an abrupt
 /// closing of the data channel. So monitoring the buffering state is critical.
+///
+/// The code responding to this callback should unwind the stack before
+/// using any other MR-WebRTC APIs; re-entrancy is not supported.
 using mrsDataChannelBufferingCallback =
     void(MRS_CALL*)(void* user_data,
                     const uint64_t previous,
@@ -52,6 +58,9 @@ using mrsDataChannelBufferingCallback =
                     const uint64_t limit);
 
 /// Callback fired when the state of a data channel changed.
+///
+/// The code responding to this callback should unwind the stack before
+/// using any other MR-WebRTC APIs; re-entrancy is not supported.
 using mrsDataChannelStateCallback = void(MRS_CALL*)(void* user_data,
                                                     mrsDataChannelState state,
                                                     int32_t id);
