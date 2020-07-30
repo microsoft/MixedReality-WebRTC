@@ -289,7 +289,7 @@ not try to detect this nor resend them.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_State.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.State%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L109">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L113">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_DataChannel_State_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.State*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_State" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.State">State</h4>
@@ -317,6 +317,10 @@ Changes to this state are notified via the <a class="xref" href="Microsoft.Mixed
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_State_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The code handling this event should unwind the stack before
+using any other MR-WebRTC APIs; re-entrancy is not supported.</p>
+</div>
   <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_State_seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_StateChanged">StateChanged</a></div>
@@ -328,7 +332,7 @@ Changes to this state are notified via the <a class="xref" href="Microsoft.Mixed
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_IntPtr_System_UInt64_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(IntPtr%2CSystem.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L215">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L227">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_IntPtr_System_UInt64_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(IntPtr,System.UInt64)">SendMessage(IntPtr, UInt64)</h4>
@@ -376,7 +380,7 @@ The internal buffering is monitored via the <a class="xref" href="Microsoft.Mixe
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(System.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L191">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L203">View Source</a>
   </span>
   <a id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage*"></a>
   <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(System.Byte[])">SendMessage(Byte[])</h4>
@@ -436,7 +440,7 @@ The internal buffering is monitored via the <a class="xref" href="Microsoft.Mixe
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.BufferingChanged%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L126">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L138">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.BufferingChanged">BufferingChanged</h4>
   <div class="markdown level1 summary"><p>Event triggered when the data channel buffering changes. Users should monitor this to ensure
@@ -465,6 +469,10 @@ will fail until some mesages are processed and removed to make space.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The code handling this event should unwind the stack before
+using any other MR-WebRTC APIs; re-entrancy is not supported.</p>
+</div>
   <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged_seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___">SendMessage(Byte[])</a></div>
@@ -474,7 +482,7 @@ will fail until some mesages are processed and removed to make space.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_MessageReceived.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.MessageReceived%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L132">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L144">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_MessageReceived" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.MessageReceived">MessageReceived</h4>
   <div class="markdown level1 summary"><p>Event triggered when a message is received through the data channel.</p>
@@ -508,7 +516,7 @@ will fail until some mesages are processed and removed to make space.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_MessageReceivedUnsafe.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedUnsafe%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L138">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L150">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_MessageReceivedUnsafe" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedUnsafe">MessageReceivedUnsafe</h4>
   <div class="markdown level1 summary"><p>Event fires when a message is received through the data channel.</p>
@@ -542,7 +550,7 @@ will fail until some mesages are processed and removed to make space.</p>
     <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_StateChanged.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.StateChanged%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L116">View Source</a>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L124">View Source</a>
   </span>
   <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_StateChanged" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.StateChanged">StateChanged</h4>
   <div class="markdown level1 summary"><p>Event triggered when the data channel state changes.
@@ -568,6 +576,10 @@ The new state is available in <a class="xref" href="Microsoft.MixedReality.WebRT
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_StateChanged_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The code handling this event should unwind the stack before
+using any other MR-WebRTC APIs; re-entrancy is not supported.</p>
+</div>
   <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_StateChanged_seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_State">State</a></div>
