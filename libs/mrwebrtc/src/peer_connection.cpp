@@ -568,14 +568,11 @@ void PeerConnection::Close() noexcept {
     return;
   }
 
-  // Keep a reference to the implementation while shutting down, but clear the
-  // visible value in |peer_| to ensure |IsClosed()| returns false. This
-  // prevents other methods from being able to create new objects like
-  // transceivers.
-  rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc(std::move(peer_));
-
   // Close the connection
-  pc->Close();
+  peer_->Close();
+
+  // At this point no callbacks should be called anymore, so it's safe to reset
+  // the transceiver/track data.
 
   {
     rtc::CritScope lock(&transceivers_mutex_);
@@ -619,7 +616,7 @@ void PeerConnection::Close() noexcept {
   // global factory shuts down and terminates the threads, which potentially
   // happens just after this call when called from the destructor if this is the
   // last object alive.
-  pc = nullptr;
+  peer_ = nullptr;
 }
 
 bool PeerConnection::IsClosed() const noexcept {
@@ -1008,9 +1005,7 @@ void PeerConnection::OnRemoveTrack(
 
 void PeerConnection::OnLocalDescCreated(
     webrtc::SessionDescriptionInterface* desc) noexcept {
-  if (!peer_) {
-    return;
-  }
+  RTC_DCHECK(peer_);
   rtc::scoped_refptr<webrtc::SetSessionDescriptionObserver> observer =
       new rtc::RefCountedObject<SessionDescObserver>([this] {
         if (IsUnifiedPlan()) {
