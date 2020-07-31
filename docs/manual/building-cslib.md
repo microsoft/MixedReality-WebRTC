@@ -2,7 +2,7 @@
 
 The MixedReality-WebRTC C# library is a platform-independent .NET Standard 2.0 library which relies on a platform-specific version of the C library to provide its WebRTC implementation. The C# library is built on Windows from the `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution located at the root of the git repository. Building from a non-Windows environment is not supported.
 
-This documentation assumes that the user has already built the native C/C++ library on Windows, and therefore has installed [its prerequisites](building-windows.md#prerequisites) and already cloned the git  repository of MixedReality-WebRTC. If you only built the Android archive `mrwebrtc.aar` on a different Linux machine then you should install those prerequisites first on the current Windows machine.
+This documentation assumes that the user has already built the native C/C++ library on Windows, and therefore has installed [its prerequisites](building-windows.md#prerequisites) and already cloned the git repository of MixedReality-WebRTC. If you only built the Android archive `mrwebrtc.aar` on a different Linux machine then you should install those prerequisites first on the current Windows machine.
 
 > [!NOTE]
 > If you have already built the entire solution for the native C/C++ library on Windows, then the C# library is already built. The steps below are mainly for Android-only users, although it is strongly recommended to build the Windows Desktop x64 configuration anyway to be able to run MixedReality-WebRTC in Play Mode in the Unity editor.
