@@ -35,8 +35,15 @@ This will add a dependency to the currently selected C++ project. If multiple pr
 
 ## Unity library
 
-Starting from v2.0.0, a [UPM package](https://docs.unity3d.com/Manual/Packages.html) named `com.microsoft.mixedreality.webrtc` is the main distribution method for the Unity library.
+Starting from v2.0.0, a [UPM package](https://docs.unity3d.com/Manual/Packages.html) named `com.microsoft.mixedreality.webrtc` is the main distribution method for the Unity library. An optional package `com.microsoft.mixedreality.webrtc.samples` is also available which contains some samples to show how to use the Unity library. This samples package depends on the library package, and should not be used in production.
 
-This package is currently distributed as [an on-disk package (local package)](https://docs.unity3d.com/Manual/upm-ui-local.html) containing prebuilt binaries for all supported Unity platforms. Follow [the official Unity instructions](https://docs.unity3d.com/Manual/upm-ui-local.html) to import the library package into a Unity project via the Unity Package Manager (UPM) window.
+The library package contains prebuilt binaries for all supported Unity platforms:
 
-An optional package `com.microsoft.mixedreality.webrtc.samples` is also available which contains some samples to show how to use the Unity library. This samples package depends on the library package. It should not be used in production.
+- Windows Desktop (x86, x64)
+- Windows UWP (x86, x64, ARM)
+- Android (ARM64)
+
+These packages are currently distributed in two ways:
+
+- As [on-disk packages (local packages)](https://docs.unity3d.com/Manual/upm-ui-local.html) downloaded from [the GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases). Follow [the official Unity instructions](https://docs.unity3d.com/Manual/upm-ui-local.html) to import the package into a Unity project via the Unity Package Manager (UPM) window.
+- Directly via the Unity Package Manager by configuring UPM to use the official [Mixed Reality UPM package registry](https://dev.azure.com/aipmr/MixedReality-Unity-Packages/_packaging?_a=feed&feed=Unity-packages). See the [Unity tutorial](unity/helloworld-unity-importwebrtc.md) for details on how to configure the register and import the packages into an existing Unity project.
