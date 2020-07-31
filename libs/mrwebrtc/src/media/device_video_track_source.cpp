@@ -7,9 +7,45 @@
 #include "media/device_video_track_source.h"
 #include "video_track_source_interop.h"
 
+#if defined(WINUWP)
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Media.Capture.h>
+#endif
+
 namespace {
 
 using namespace Microsoft::MixedReality::WebRTC;
+
+#if defined(WINUWP)
+uint32_t FourCCFromMFSubType(winrt::hstring const& subtype) {
+  using namespace winrt::Windows::Media::MediaProperties;
+  uint32_t fourcc;
+  if (_wcsicmp(subtype.c_str(), MediaEncodingSubtypes::Yv12().c_str()) == 0) {
+    fourcc = libyuv::FOURCC_YV12;
+  } else if (_wcsicmp(subtype.c_str(), MediaEncodingSubtypes::Yuy2().c_str()) ==
+             0) {
+    fourcc = libyuv::FOURCC_YUY2;
+  } else if (_wcsicmp(subtype.c_str(), MediaEncodingSubtypes::Iyuv().c_str()) ==
+             0) {
+    fourcc = libyuv::FOURCC_IYUV;
+  } else if (_wcsicmp(subtype.c_str(),
+                      MediaEncodingSubtypes::Rgb24().c_str()) == 0) {
+    fourcc = libyuv::FOURCC_24BG;
+  } else if (_wcsicmp(subtype.c_str(),
+                      MediaEncodingSubtypes::Rgb32().c_str()) == 0) {
+    fourcc = libyuv::FOURCC_ARGB;
+  } else if (_wcsicmp(subtype.c_str(), MediaEncodingSubtypes::Mjpg().c_str()) ==
+             0) {
+    fourcc = libyuv::FOURCC_MJPG;
+  } else if (_wcsicmp(subtype.c_str(), MediaEncodingSubtypes::Nv12().c_str()) ==
+             0) {
+    fourcc = libyuv::FOURCC_NV12;
+  } else {
+    fourcc = libyuv::FOURCC_ANY;
+  }
+  return fourcc;
+}
+#endif
 
 /// Convert a WebRTC VideoType format into its FOURCC counterpart.
 uint32_t FourCCFromVideoType(webrtc::VideoType videoType) {
@@ -167,7 +203,8 @@ mrsResult OpenVideoCaptureDevice(
                        << "' (id=" << createParams->id.c_str() << ")";
 
       if (auto supportedFormats = nativeVcd->GetSupportedFormats()) {
-        RTC_LOG(LS_INFO) << "Supported video formats:";
+        RTC_LOG(LS_INFO)
+            << "Supported video formats (after any video profile filtering):";
         for (auto&& format : *supportedFormats) {
           auto str = format.ToString();
           RTC_LOG(LS_INFO) << "- " << str.c_str();
@@ -710,14 +747,17 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
                              auto&& asyncResults,
                              winrt::Windows::Foundation::AsyncStatus status) {
     // If reaching this point, then GetVideoCaptureFormats() will always return
-    // success, so create an RAII enumerator to ensure the end callback is
-    // always called even on error during enumeration.
-    Enumerator<const mrsVideoCaptureFormatInfo*, mrsResult> enumerator(
+    // success, as the rest of the code either doesn't fail or is asynchronous.
+    // So create an RAII enumerator to ensure the end callback is always called
+    // even on error during enumeration. Keep it under a unique_ptr<> to be able
+    // to move it to the various async callbacks.
+    auto enumerator = std::make_unique<
+        Enumerator<const mrsVideoCaptureFormatInfo*, mrsResult>>(
         enum_callback, end_callback, mrsResult::kSuccess);
 
     // If the OS enumeration failed, terminate our own enumeration
     if (status != winrt::Windows::Foundation::AsyncStatus::Completed) {
-      enumerator.setFailure(Result::kUnknownError);
+      enumerator->setFailure(Result::kUnknownError);
       return;
     }
     winrt::Windows::Devices::Enumeration::DeviceInformationCollection
@@ -737,10 +777,15 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
       RTC_LOG(LS_ERROR)
           << "Cannot enumerate video capture formats for unknown device ID '"
           << device_id->c_str() << "'";
-      enumerator.setFailure(Result::kInvalidParameter);
+      enumerator->setFailure(Result::kInvalidParameter);
       return;
     }
 
+    // The normal codepath would be to create and open the video capture device,
+    // and call getSupportedFormats(). But this is broken on UWP and somewhat
+    // non-trivial to fix. Instead, since we know webrtc-uwp-sdk uses
+    // MediaCapture internally, simply get the capture formats from it directly.
+#if 0
     // Device found, create an instance to enumerate. Most devices require
     // actually opening the device to enumerate its capture formats.
     auto createParams =
@@ -749,7 +794,7 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
     createParams->name = devInfo.Name().c_str();
     createParams->id = devInfo.Id().c_str();
     createParams->videoProfileId =
-        (profile_id->empty() ? nullptr : profile_id->c_str());
+        (profile_id->empty() ? "" : profile_id->c_str());
     createParams->videoProfileKind =
         (wrapper::org::webRtc::VideoProfileKind)profile_kind;
     auto vcd = wrapper::impl::org::webRtc::VideoCapturer::create(createParams);
@@ -757,7 +802,7 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
       RTC_LOG(LS_ERROR) << "Failed to open video capture device '"
                         << device_id->c_str()
                         << "' for enumerating capture formats.";
-      enumerator.setFailure(Result::kUnknownError);
+      enumerator->setFailure(Result::kUnknownError);
       return;
     }
 
@@ -773,9 +818,104 @@ Error DeviceVideoTrackSource::GetVideoCaptureFormats(
       // conversion to FOURCC fails and returns FOURCC_ANY. So ignore
       // those formats, as we don't know their encoding.
       if (format_info.fourcc != libyuv::FOURCC_ANY) {
-        enumerator.yield(&format_info);
+        enumerator->yield(&format_info);
       }
     }
+#else  // #if 0
+    // Workaround for broken getSupportedFormats() on webrtc-uwp-sdk.
+
+    using namespace winrt::Windows::Media::Capture;
+    using namespace winrt::Windows::Media::MediaProperties;
+    using namespace winrt::Windows::Foundation::Collections;
+    using namespace winrt::Windows::Foundation;
+
+    winrt::hstring device_id_hstr{winrt::to_hstring(*device_id)};
+
+    if (MediaCapture::IsVideoProfileSupported(device_id_hstr)) {
+      // For devices supporting video profiles, enumerate the formats of all
+      // profiles (or the one selected).
+      winrt::hstring profile_id_hstr(winrt::to_hstring(*profile_id));
+      IVectorView<MediaCaptureVideoProfile> profile_list;
+      if (profile_kind != mrsVideoProfileKind::kUnspecified) {
+        auto known_profile = (KnownVideoProfile)((int)profile_kind - 1);
+        profile_list =
+            MediaCapture::FindKnownVideoProfiles(device_id_hstr, known_profile);
+      } else {
+        profile_list = MediaCapture::FindAllVideoProfiles(device_id_hstr);
+      }
+      for (auto&& profile : profile_list) {
+        // Skip if a profile was specified and it's not this one
+        if (!profile_id_hstr.empty() && (profile.Id() != profile_id_hstr)) {
+          continue;
+        }
+        // Enumerate all supported formats
+        auto rmc_list = profile.SupportedRecordMediaDescription();
+        for (auto&& rmc : rmc_list) {
+          mrsVideoCaptureFormatInfo format_info{};
+          format_info.fourcc = FourCCFromMFSubType(rmc.Subtype());
+          // When VideoEncodingProperties.Subtype() contains a GUID, the
+          // conversion to FOURCC fails and returns FOURCC_ANY. So ignore
+          // those formats, as we don't know their encoding.
+          if (format_info.fourcc != libyuv::FOURCC_ANY) {
+            format_info.width = rmc.Width();
+            format_info.height = rmc.Height();
+            format_info.framerate = rmc.FrameRate();
+            enumerator->yield(&format_info);
+          }
+        }
+      }
+    } else {
+      // For devices that do not support video profiles, it is necessary to
+      // initialize a new MediaCapture instance to enumerate the formats from
+      // the device directly.
+      auto init_settings = MediaCaptureInitializationSettings::
+          MediaCaptureInitializationSettings();
+      init_settings.StreamingCaptureMode(StreamingCaptureMode::Video);
+      init_settings.VideoDeviceId(device_id_hstr);
+      auto media_capture = MediaCapture::MediaCapture();
+      auto async_res = media_capture.InitializeAsync(init_settings);
+      async_res.Completed([enumerator = std::move(enumerator),
+                           media_capture = std::move(media_capture)](
+                              auto&& asyncResults, AsyncStatus status) {
+        if (status != AsyncStatus::Completed) {
+          RTC_LOG(LS_ERROR) << "Failed to initialize MediaCapture to "
+                               "enumerate video capture formats.";
+          enumerator->setFailure(Result::kUnknownError);
+          return;
+        }
+
+        // Enumerate all formats from the video device controller
+        std::vector<cricket::VideoFormat> formats;
+        auto device_controller = media_capture.VideoDeviceController();
+        auto stream_props = device_controller.GetAvailableMediaStreamProperties(
+            MediaStreamType::VideoRecord);
+        for (unsigned int i = 0; i < stream_props.Size(); i++) {
+          IVideoEncodingProperties prop;
+          stream_props.GetAt(i).as(prop);
+          const int width = prop.Width();
+          const int height = prop.Height();
+          if ((width <= 0) || (height <= 0)) {
+            continue;
+          }
+          const double framerate =
+              static_cast<double>(prop.FrameRate().Numerator()) /
+              static_cast<double>(prop.FrameRate().Denominator());
+          if (framerate <= 0.0) {
+            continue;
+          }
+          mrsVideoCaptureFormatInfo format;
+          format.fourcc = FourCCFromMFSubType(prop.Subtype());
+          if (format.fourcc != libyuv::FOURCC_ANY) {
+            format.width = width;
+            format.height = height;
+            format.framerate = (float)framerate;
+            enumerator->yield(&format);
+          }
+        }
+      });
+    }
+
+#endif  // #if 0
   });
 #else
   // Non-UWP platforms do not support video profiles
