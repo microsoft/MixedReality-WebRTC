@@ -1,0 +1,233 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Creating a project | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Creating a project | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../../mr-webrtc_icon.png">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../mr-webrtc_icon.png" alt="MixedReality-WebRTC">
+                <span>MixedReality-WebRTC</span>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="creating-a-project">Creating a project</h1>
+
+<p>In this tutorial we create a C# UWP application with a simple XAML-based UI to render video.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>At this time there is no solution to render raw video frames from a .NET Core 3.0 application that is simple and short enough to be used in a turorial. Instead, we use the <code>MediaPlayerElement</code> XAML control from UWP which provides the necessary API. Its WPF equivalent <code>MediaElement</code> unfortunately does not allow specifying a custom video source other than an URI-based source like a file on disk.</p>
+</div>
+<div class="NOTE">
+<h5>Note</h5>
+<p>This tutorial assumes that the host device where the app will be running during the tutorial has access to:</p>
+<ul>
+<li>a webcam, or any other video capture device recognized by WebRTC</li>
+<li>a microphone, or any other audio capture device recognized by WebRTC</li>
+</ul>
+</div>
+<h2 id="generate-the-project">Generate the project</h2>
+<p>Open Visual Studio 2019 and select <strong>Create a new project</strong>.</p>
+<p><img src="cs-uwp1.png" alt="Create a new project"></p>
+<p>Filter projects by <strong>Language</strong> = <strong>C#</strong> and <strong>Platform</strong> = <strong>UWP</strong> to find the <strong>Blank App (Universal Window)</strong> project template.</p>
+<p><img src="cs-uwp2.png" alt="The Blank App (Universal Window) project template"></p>
+<p>When prompted to select a platform version, chose a version of at least <strong>Windows 10, version 1803 (10.0; Build 17134)</strong> or higher, as older versions are not officially supported by MixedReality-WebRTC. For HoloLens 2 development, it is strongly recommended to select at least <strong>Windows 10, version 1903 (10.0; Build 18362)</strong> to be able to use the latest OS APIs, although those are not used in this tutorial.</p>
+<p>Visual Studio 2019 generates a C# project (<code>.csproj</code>) and solution (<code>.sln</code>). In this tutorial we use the default name <code>App1</code>, therefore we get the following hierarchy:</p>
+<pre><code class="lang-shell">- App1/
+  - Assets/
+  - App.xaml
+  - App.xaml.cs
+  - App1.csproj
+  - MainPage.xaml
+  - MainPage.xaml.cs
+- App1.sln
+</code></pre>
+<p>At this point the project is already in a working state, although not yet functional. Press <strong>F5</strong> or select in the menu <strong>Debug</strong> &gt; <strong>Start Debugging</strong> to build and launch the application. A blank window titles &quot;App1&quot; should appear.</p>
+<p><img src="cs-uwp4.png" alt="Empty main window of the newly generated C# project"></p>
+<p><em>Note</em>: At the top of the window, the XAML debug bar allows access to debugging feature for the UI. This bar only appears while debugging, not when running the app outside Visual Studio 2019. It can be ignored.</p>
+<h2 id="add-a-dependency-to-mixedreality-webrtc">Add a dependency to MixedReality-WebRTC</h2>
+<p>In order to use the MixedReality-WebRTC project in this new <code>App1</code> application, we will add a dependency to its C# NuGet package hosted on <a href="https://www.nuget.org/">nuget.org</a>. This is by far the easiest way, although a locally-built copy of the <code>Microsoft.MixedReality.WebRTC.dll</code> assembly could also be alternatively used (but this is out of the scope of this tutorial).</p>
+<p>In the <strong>Solution Explorer</strong>, right-click on the <strong>App1 (Universal Windows)</strong> C# project and select the <strong>Manage NuGet Packages...</strong> menu entry. This opens a new tab <strong>NuGet: App1</strong> which allows configuring the NuGet dependencies for this project alone. The <strong>Installed</strong> tab contains the list of NuGet dependencies already installed, and should contain the <strong>Microsoft.NETCore.UniversalWindowsPlatform</strong> which was already installed by Visual Studio when creating the project.</p>
+<p><img src="cs-uwp5.png" alt="Installed NuGet packages"></p>
+<p>Select the <strong>Browse</strong> tab and, after making sure that the <strong>Package source</strong> is set to <strong>nuget.org</strong>, select the <strong>Microsoft.MixedReality.WebRTC.UWP</strong> NuGet package and click <strong>Install</strong>.</p>
+<p><img src="cs-uwp6.png" alt="Install the MixedReality-WebRTC NuGet package"></p>
+<p><em>Note</em>: If you cannot find the package, make sure that <strong>Include prerelease</strong> is checked, which disables filtering out preview packages (those packages with a version containing a suffix like &quot;-preview&quot; after the X.Y.Z version number).</p>
+<p>This will download from <a href="https://www.nuget.org/">nuget.org</a> and install the <code>Microsoft.MixedReality.WebRTC.UWP.nupkg</code> NuGet package, which contains the <code>Microsoft.MixedReality.WebRTC.dll</code> assembly, as well as its native dependencies (x86, x64, ARM) for the UWP platform.</p>
+<p>After that, the <code>App1</code> project should contain a reference to the package.</p>
+<p><img src="cs-uwp7.png" alt="App1 project references"></p>
+<h2 id="test-the-reference">Test the reference</h2>
+<p>In order to ensure everything works fine and the <code>Microsoft.MixedReality.WebRTC</code> assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_GetCaptureDevicesAsync"><code>DeviceVideoTrackSource.GetCaptureDevicesAsync()</code></a>. This is more simple than creating objects, as there is no clean-up needed after use.</p>
+<p>First, because this sample application is a UWP application, it needs to declare some capabilities to access the microphone and webcam on the host device. In the <strong>Solution Explorer</strong> of Visual Studio, double-click on the <code>Package.appxmanifest</code> to open the AppX manifest of the app and select the <strong>Capabilities</strong> tab. Check <strong>Microphone</strong> and <strong>Webcam</strong>, and confirm that <strong>Internet (Client)</strong> is already checked.</p>
+<p><img src="cs-uwp8.png" alt="Configure the UWP app capabilities"></p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>Currently the <strong>Microphone</strong> capability is mandatory, even if not using audio. This is due to a limitation of the underlying native implementation which attempts to access the microphone while initializing the audio module (see <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/360">#360</a>). The <strong>Webcam</strong> capability however is only needed if using video.</p>
+</div>
+<p>Next, edit <code>MainPage.xaml.cs</code>:</p>
+<ol>
+<li><p>At the top of the file, add some <code>using</code> statement to import the <code>Microsoft.MixedReality.WebRTC</code> assembly. Also import the <code>System.Diagnostics</code> module, as we will be using the <code>Debugger</code> class to print debug information to the Visual Studio output window. Finally, import the <code>Windows.Media.Capture</code> module to be able to request access to the microphone and webcam, and the <code>Windows.ApplicationModel</code> module to handle resource clean-up.</p>
+<pre><code class="lang-cs">using Microsoft.MixedReality.WebRTC;
+using System.Diagnostics;
+using Windows.Media.Capture;
+using Windows.ApplicationModel;
+</code></pre>
+</li>
+<li><p>In the <code>MainPage</code> constructor, register a handler for the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.ui.xaml.frameworkelement.loaded"><code>Loaded</code></a> event, which will be fired once the XAML user interface finished loading. For now it is not required to wait on the UI to call <code>Microsoft.MixedReality.WebRTC</code> methods. But later when accessing the UI to interact with its controls, either to get user inputs or display results, this will be required. So as a best practice we start doing so right away instead of invoking some code directly in the <code>MainPage</code> constructor. Also register a handler for the <a class="xref" href="https://docs.microsoft.com/uwp/api/windows.ui.xaml.application.suspending"><code>Application.Suspending</code></a> event to clean-up resources on exit.</p>
+<pre><code class="lang-cs">public MainPage()
+{
+    this.InitializeComponent();
+    this.Loaded += OnLoaded;
+    Application.Current.Suspending += App_Suspending;
+}
+</code></pre>
+</li>
+<li><p>Create the event handler <code>OnLoaded()</code> and use it to request access from the user to the microphone and camera, and enumerate the video capture devices. The <code>MediaCapture.InitializeAsync()</code> call will prompt the user with a dialog to authorize access to the microphone and webcam. The latter be must authorized before calling <code>DeviceVideoTrackSource.GetCaptureFormatsAsync()</code>, while the former will be needed in the following of the tutorial for calls like <code>PeerConnection.AddLocalAudioTrackAsync()</code>.</p>
+<pre><code class="lang-cs">private async void OnLoaded(object sender, RoutedEventArgs e)
+{
+    // Request access to microphone and camera
+    var settings = new MediaCaptureInitializationSettings();
+    settings.StreamingCaptureMode = StreamingCaptureMode.AudioAndVideo;
+    var capture = new MediaCapture();
+    await capture.InitializeAsync(settings);
+
+    // Retrieve a list of available video capture devices (webcams).
+    List&lt;VideoCaptureDevice&gt; deviceList =
+        await DeviceVideoTrackSource.GetCaptureFormatsAsync(); 
+
+    // Get the device list and, for example, print them to the debugger console
+    foreach (var device in deviceList)
+    {
+        // This message will show up in the Output window of Visual Studio
+        Debugger.Log(0, &quot;&quot;, $&quot;Webcam {device.name} (id: {device.id})\n&quot;);
+    }
+}
+</code></pre>
+</li>
+<li><p>Create the event handler <code>App_Suspending()</code>. For now there is nothing to do from it.</p>
+<pre><code class="lang-cs">private void App_Suspending(object sender, SuspendingEventArgs e)
+{
+}
+</code></pre>
+</li>
+</ol>
+<p>Launch the app again. The main window is still empty, but the <strong>Output window</strong> of Visual Studio 2019 (<strong>View</strong> &gt; <strong>Output</strong>, or <strong>Alt + 2</strong>) should show a list of devices. This list depends on the actual host device running the app, but looks something like:</p>
+<pre><code class="lang-shell">Webcam &lt;some device name&gt; (id: &lt;some device ID&gt;)
+</code></pre>
+<p>Note that there might be multiple lines if multiple capture devices are available. In general the first one listed will be the default used by WebRTC, although it is possible to explicitly select a device (see <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig_"><code>DeviceVideoTrackSource.CreateAsync</code></a>).</p>
+<p>If this is the first time that <code>MediaCapture.InitializeAsync()</code> is requesting access to the webcam and microhpone, Windows displays a prompt asking the user for confirmation. You must click <strong>Yes</strong>, otherwise access to the microphone and webcam will be denied, and WebRTC will not be able to use them. This is part of the standard UWP capability mechanism for security and privacy.</p>
+<p><img src="cs-uwp9.png" alt="UWP access request to the microphone"></p>
+<p>If you clicked <strong>No</strong> by mistake, the prompt will not appear again and access will be silently denied on next runs. To change this access setting again, go to the Windows <strong>Settings</strong> &gt; <strong>Privacy</strong> &gt; <strong>Microphone</strong>, find the <code>App1</code> application and toggle its access <strong>On</strong>. Do the same for the webcam from the <strong>Settings</strong> &gt; <strong>Privacy</strong> &gt; <strong>Camera</strong> page.</p>
+<p><img src="cs-uwp10.png" alt="Windows privacy settings for microphone"></p>
+<hr>
+<p>Next : <a href="helloworld-cs-peerconnection-uwp.html">Creating a peer connection</a></p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/docs/manual/cs/helloworld-cs-setup-uwp.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

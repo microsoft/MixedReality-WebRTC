@@ -1,0 +1,2856 @@
+{
+  "homepages": [],
+  "source_base_path": "D:/a/1/s/docs",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      },
+      "is_incremental": false
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Argb32VideoFrame.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrame.html",
+          "hash": "YgSMAywUpQ64Ikc1vasSTA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameDelegate.html",
+          "hash": "GIatuyyg5IHejQ6xRA6SWA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate.html",
+          "hash": "7wIopBBUp+hHOd5uj+8sHw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.html",
+          "hash": "G/EwaUGiGLPcTihbFCshSA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.AudioFrame.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioFrame.html",
+          "hash": "7ySCbsz/QEodJOrM7jNiFg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.AudioFrameDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioFrameDelegate.html",
+          "hash": "+pNguXBvV30xTPUu2mpjRQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.PadBehavior.html",
+          "hash": "VKGMU372LQR51KG0zo39Dw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioTrackReadBuffer.html",
+          "hash": "Cq5wxVsF8/iUp8wX2BWAvQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.AudioTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioTrackSource.html",
+          "hash": "01+yEDMP//d6OfAKw2RpZA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.BufferTooSmallException.html",
+          "hash": "/VJSKGJ+fqiPHEhpDW0bJg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.BundlePolicy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.BundlePolicy.html",
+          "hash": "gmP/MJEsK189cqqJnce59g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.DataChannel.BufferingChangedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.BufferingChangedDelegate.html",
+          "hash": "cxI23yXkR0xK/gX3T2ufrg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.DataChannel.ChannelState.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.ChannelState.html",
+          "hash": "F57Lyszf5v1izsyMlgMweQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.DataChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.html",
+          "hash": "k++Nqw53EB2jwzeXx36xjg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.DataChannelNotOpenException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannelNotOpenException.html",
+          "hash": "5Is1L1kQ2fi9i4cx5qlARQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html",
+          "hash": "ogQ2rQ3FHHiuX1t9DXuGqA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html",
+          "hash": "XNDPPRLQBt6+/hTZW/4pYw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html",
+          "hash": "vLVqhebyF4tM+LkS+45Q5A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.FrameRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.FrameRequest.html",
+          "hash": "/QScy8KqZC7ZciYMFYWjsg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.I420AVideoFrame.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrame.html",
+          "hash": "f47OjWqVfawyjBdRy6vf8Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.I420AVideoFrameDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrameDelegate.html",
+          "hash": "eeoTCZQlMr/XqNWtEn4IeA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate.html",
+          "hash": "qMOdYQW9RL5CY3W4dkoJMg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.I420AVideoFrameStorage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.I420AVideoFrameStorage.html",
+          "hash": "LWYVnOvlovc0F2cNhVd6Ww=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IAudioSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IAudioSource.html",
+          "hash": "mJsewA6p701PrOeVKRJ2qw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IVideoFrameQueue.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoFrameQueue.html",
+          "hash": "EJEDEgFCcGCsK+iweNdRJg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IVideoFrameStorage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoFrameStorage.html",
+          "hash": "98RSCEP1m3D+1dk0D/Di3Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IVideoSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IVideoSource.html",
+          "hash": "dQ4fEwg9UEerry7qXuAZ0A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IceCandidate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IceCandidate.html",
+          "hash": "ZEVq/ymzaT+9d2TLovAC4w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IceConnectionState.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IceConnectionState.html",
+          "hash": "wEvNrFlZZcoF6AayhM9Jrg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IceGatheringState.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IceGatheringState.html",
+          "hash": "xHsmR0Co21BmtUIuHtmRMg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IceServer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IceServer.html",
+          "hash": "THR6A9kFQ4fjfebXzfawYQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IceTransportType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.IceTransportType.html",
+          "hash": "YkYvnubZXXc+6qdHxoArfQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.InvalidInteropNativeHandleException.html",
+          "hash": "KiuEA0/CthyARiWz2ooeTw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags.html",
+          "hash": "PTEORGfbKEPGK6iHoNzkrw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Library.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Library.html",
+          "hash": "txSySQVEQyNYjMqILB15KQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.html",
+          "hash": "Rs7YJl3/FdmzlEzeI4iV6g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalAudioTrack.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioTrack.html",
+          "hash": "CWqLUYadmRcnwhaGQTmXgA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalAudioTrackInitConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalAudioTrackInitConfig.html",
+          "hash": "Z4IcaHtyl1LGrE6igwHKng=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalMediaTrack.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalMediaTrack.html",
+          "hash": "eswSZnTgI8DZP1fxpoLa6g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig.html",
+          "hash": "3Ulm7LnEKiSyx9xn/38AgA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html",
+          "hash": "0+qAQH9b3WGVRFh7OSnu5Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig.html",
+          "hash": "HVPPEE2mG3BbuipZBBM5wQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.MediaKind.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.MediaKind.html",
+          "hash": "fcpX6rLq4d6eO4m2fN0ckQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.MediaTrack.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.MediaTrack.html",
+          "hash": "1ylyWNtxOcXrmC5/z1YjkA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.MovingAverage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.MovingAverage.html",
+          "hash": "DcjV243InWBGcsHKA308uA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioReceiverStats.html",
+          "hash": "LqcFzIMuC2zUjzJ5qDB9yA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioSenderStats.html",
+          "hash": "B6gHWDE352dmsnbijFZ2zQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioTrackAddedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioTrackAddedDelegate.html",
+          "hash": "Tqjg5VysHhvQfDcNm8cxMg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioTrackRemovedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.AudioTrackRemovedDelegate.html",
+          "hash": "jqvL3B3tMlhlWuWtlGdD7w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate.html",
+          "hash": "WpCEdW1aP4903jc0u32xSg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemovedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelRemovedDelegate.html",
+          "hash": "sCFmi1yHvn8AF98TB8Bajw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelStats.html",
+          "hash": "7dxai/7B8lOCNnnPXu27zQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.FrameHeightRoundMode.html",
+          "hash": "pdrHP/vis+pT0LNuijY1gw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate.html",
+          "hash": "TIj9Vn2Cpxbcl3BsymGD1Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChangedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceGatheringStateChangedDelegate.html",
+          "hash": "hOSSwT3E7SBohhKlRr04XQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChangedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.IceStateChangedDelegate.html",
+          "hash": "NeCVj7X+u+KKKzeV21z9zQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadyToSendDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.LocalSdpReadyToSendDelegate.html",
+          "hash": "KWQ4usl9SrjlWgK242Rl8w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.StatsReport.html",
+          "hash": "OpMeOOGLZV8Z062i1y/v1Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TrackKind.html",
+          "hash": "KOz1KOaTHmpjdslZWfYZXw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.TransceiverAddedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TransceiverAddedDelegate.html",
+          "hash": "vrkWQahTxvwRY5bK4TPldA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.TransportStats.html",
+          "hash": "2cu+71S/3skQnGQP5zP/zw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoReceiverStats.html",
+          "hash": "Y3692mN2NmkEMNpYi02Gow=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoSenderStats.html",
+          "hash": "Fqvnc6sJ+4Y5my3ZoRtciA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackAddedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackAddedDelegate.html",
+          "hash": "biFJ/f1u2rikClXBuEOg6A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackRemovedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.VideoTrackRemovedDelegate.html",
+          "hash": "4us4c1ugSP3PKPzefRynEA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.html",
+          "hash": "Pm+Mi181Idv3Y3wCqRgv2g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnectionConfiguration.html",
+          "hash": "qBJc7XnXD/CwGONbLsloVw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.RemoteAudioTrack.html",
+          "hash": "RAL2Biae4u1GMKaRjuU0Jw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html",
+          "hash": "6bXM5Rrlpr0USdLygbkAqg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.SctpNotNegotiatedException.html",
+          "hash": "/zbqsm0PuSt3MSsAnzhCAQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.SdpMessage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.SdpMessage.html",
+          "hash": "5Ks/e8aPQI0YgtpGQugcLw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.SdpMessageType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.SdpMessageType.html",
+          "hash": "MnSL0gZ/zzjJX7pSPX4s8Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.SdpSemantic.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.SdpSemantic.html",
+          "hash": "+lBoo4L8baa6pQArgDUTtg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.TaskExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.TaskExtensions.html",
+          "hash": "Rk2ZYcR8ikVdEL364xHWVg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Transceiver.Direction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Transceiver.Direction.html",
+          "hash": "M7rtnsQY5abYNFcK+RWcEQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Transceiver.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Transceiver.html",
+          "hash": "wdU6vV5WrsUOGW9f6enGdA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.TransceiverAssociatedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.TransceiverAssociatedDelegate.html",
+          "hash": "jf1MnJoiJZYm3+jkPkugmw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.TransceiverDirectionChangedDelegate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.TransceiverDirectionChangedDelegate.html",
+          "hash": "tYQW5QJOtA5FwxYz/kSL1A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.TransceiverInitSettings.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.TransceiverInitSettings.html",
+          "hash": "QbPPgeCegh3H3McRt7Npsw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Android.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Android.html",
+          "hash": "eB/aOjA1Hzhj5gEda5F5Qg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html",
+          "hash": "aQMJvEa+jqfQmpKetdpgqA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.AudioRenderer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioRenderer.html",
+          "hash": "6NEfBvHLV2//NVzLT5V03Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStartedEvent.html",
+          "hash": "WyEbhwY2bNveeEVqUrHLsA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioStreamStoppedEvent.html",
+          "hash": "mEMkCZhd+LDEYFtGidfLSg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html",
+          "hash": "OZdZK0k6f9dd75ZEWDRMgg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.CaptureCameraAttribute.html",
+          "hash": "woBrjjd94SZSN5hMTStl/g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.ConfigurableIceServer.html",
+          "hash": "4TH+nPSyClc9lcxV9p+Ymg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html",
+          "hash": "wbxmMMOpZdJq60CUlv6KPA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.CaptureCameraDrawer.html",
+          "hash": "W8ZMSaBwDv7LVS+EAZVB/A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Editor.ConfigurableIceServerDrawer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.ConfigurableIceServerDrawer.html",
+          "hash": "1f432O/JLJteb99TVgJ4EA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Editor.MicrophoneSourceEditor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.MicrophoneSourceEditor.html",
+          "hash": "kiGVya78YlAG9aIiNYOxcA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Editor.PeerConnectionEditor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.PeerConnectionEditor.html",
+          "hash": "LlcrHaezmr2dKmwlJoXR+w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Editor.SdpTokenDrawer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.SdpTokenDrawer.html",
+          "hash": "GuNrKMKt2DSBc9arVReVmA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Editor.ToggleLeftAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.ToggleLeftAttribute.html",
+          "hash": "StKgfquVQdHD/iRf9nY4hg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Editor.ToggleLeftDrawer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.ToggleLeftDrawer.html",
+          "hash": "5rxfei1d+Rek/K/wCyrsFQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Editor.VideoRendererEditor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.VideoRendererEditor.html",
+          "hash": "f3vyHXXB2bmdkH7rlG3fNw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Editor.WebcamSourceEditor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.WebcamSourceEditor.html",
+          "hash": "10pLzY8eIJg0832wrCr1LQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Editor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Editor.html",
+          "hash": "knfmXKoYhs7U+4mrp3nP3g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.IceType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.IceType.html",
+          "hash": "Xrei8rN495nGfeiy0NidkQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.InvalidTransceiverMediaKindException.html",
+          "hash": "jKs8bVgT7JyPOcceTlbWhA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.LocalOnlySignaler.html",
+          "hash": "VtCodEyW5BocvkseQb5fvA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.html",
+          "hash": "DkI2xTSvyDdyUIOpUoDFSg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html",
+          "hash": "D0LmavwYEHIWeK9q3enGhw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaReceiver.html",
+          "hash": "HOiRk/88vlLMlIaccdxG7w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MediaTrackSource.html",
+          "hash": "49N3tcVG3NKu50thUlKsYw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html",
+          "hash": "8R8RG1Vnj4QQUY/hGIkJBg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html",
+          "hash": "YWydKPwGCiE+s4Qn//lCtA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html",
+          "hash": "VajnC2qUkAeEg0OsrUDPgA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html",
+          "hash": "nNGfmPxyY1eE1NEkQyW6RQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.html",
+          "hash": "yOsI/tuEPRXLq49/DJpy4w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.Signaler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html",
+          "hash": "mh6ZP6ric8n40WmNmERg6A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html",
+          "hash": "xRlFX5Pi3so4WCD4zVWkiQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints.html",
+          "hash": "5MzXyD0/n8jPHbehI1wY+A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html",
+          "hash": "ZUP+2wBoViWUzFpjkWsaiA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html",
+          "hash": "hsBQIJzCs7XYcK3GBdfzjA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoStreamStartedEvent.html",
+          "hash": "QKxkxGPRvFd+2bT8GTNftA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.VideoStreamStoppedEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoStreamStoppedEvent.html",
+          "hash": "UMkkTzsH2HNEJhq1f3F68w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html",
+          "hash": "eRxU6IS0kkRI/c4CblKWCQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.WebRTCErrorEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WebRTCErrorEvent.html",
+          "hash": "kEVk7aySsGOTI+0tqkagHQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html",
+          "hash": "JiN2jONHPCdMRniIAMdCrQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.WorkQueue.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.WorkQueue.html",
+          "hash": "2qaOsIn+Y18SVMD+r7YLQw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Unity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Unity.html",
+          "hash": "N3xZcM+n0nehugaNVWFqcQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoCaptureDevice.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoCaptureDevice.html",
+          "hash": "RS5jmrjZXFyIKR4/KGkV6w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoCaptureFormat.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoCaptureFormat.html",
+          "hash": "TrLdgrE9LbEvmW7ezwrWaw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoEncoding.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoEncoding.html",
+          "hash": "A4P8GOGRTCtFUBfkc74eiQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoFrameQueue-1.html",
+          "hash": "OLQM6ios/UOXpivqae2ahw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoProfile.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoProfile.html",
+          "hash": "MZqFjpg5/mPOI3s4TouFnA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoProfileKind.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoProfileKind.html",
+          "hash": "hXurXZ9XTLnEyHW9N9nmZA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.VideoTrackSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoTrackSource.html",
+          "hash": "+s6Sa/+NtEqJ+sZPSkvH7Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
+          "hash": "+mqLXN9OuepWyS+8v9Af1w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "../build/docs/api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "jbTa2KMnOxH5MW6nlrg3Yw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "AK81BYCW+VHxujfaMhSAHw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/MRTK170802_Short_17.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/MRTK170802_Short_17.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/MRTK170802_Short_18.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/MRTK170802_Short_18.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/MRTK170802_Short_19.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/MRTK170802_Short_19.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/android/building-android.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/android/building-android.html",
+          "hash": "Fe2/BumVH/A0f2V0YigX7w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/architecture.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/architecture.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/building-core.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/building-core.html",
+          "hash": "q0SIEHBrohAMZ/zqJN5keg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/building-cslib.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/building-cslib.html",
+          "hash": "yUvRgH/5f7yycOhp1ndibQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/building-windows.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/building-windows.html",
+          "hash": "6qywXgj4auahQmE9fmKLDw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/building.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/building.html",
+          "hash": "VjfHCFgA/4dxwEjSz68yFA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/cs-peerconnection.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/cs-peerconnection.html",
+          "hash": "NtVn/npMj24C9h1DRY0I3Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/cs-signaling.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/cs-signaling.html",
+          "hash": "Cq7nY4CNSb6CAZ/sSQH8FQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp1.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp10.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp10.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp11.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp11.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp12.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp12.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp13.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp13.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp14.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp14.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp2.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp3.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp4.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp5.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp5.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp6.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp6.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp7.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp7.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp8.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp8.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs-uwp9.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs-uwp9.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/cs.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/cs.html",
+          "hash": "Xc+D+tp/SFIdxqL7NqVQjw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs1.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs2.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs3.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs4.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs5.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs5.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs6.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs6.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/cs/cs7.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/cs/cs7.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-connection-core3.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-connection-core3.html",
+          "hash": "o9CZ9NB5aFxoXY0Xseus6g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-connection-uwp.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-connection-uwp.html",
+          "hash": "kABqKnk0Amq3n85ywjd8Cg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-core3.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-core3.html",
+          "hash": "OjETZJUeisUh2FWG16pCbw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-mediatracks-core3.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-mediatracks-core3.html",
+          "hash": "tljYiX+SIsKe4N6mwnvybA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.html",
+          "hash": "iT3V6fjP+yU0c1JdNOIm5A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-peerconnection-core3.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-peerconnection-core3.html",
+          "hash": "GbaLB7sMFj6WLoOCVriRCA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-peerconnection-uwp.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-peerconnection-uwp.html",
+          "hash": "1cE/MgW3+xiAzc5C/Gjntw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-setup-core3.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-setup-core3.html",
+          "hash": "2sE5YCNU5ebkxTXjEk2TjA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-setup-uwp.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-setup-uwp.html",
+          "hash": "qnAULdBTSezvKJsfD4moiQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-signaling-core3.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-signaling-core3.html",
+          "hash": "Mmy1Ad8hhe38MztYZfOwsA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-signaling-uwp.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-signaling-uwp.html",
+          "hash": "eu8/3fcBNh4elN8DqQ/3Vg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/cs/helloworld-cs-uwp.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/cs/helloworld-cs-uwp.html",
+          "hash": "tomMT6XKo9v7hVsYQ3k1EQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/download.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/download.html",
+          "hash": "HnV83PAdFOsQT2vOD/G7dg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/gettingstarted.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/gettingstarted.html",
+          "hash": "yxJ9tpyRn0xDKGqQdNGBqg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/glossary.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/glossary.html",
+          "hash": "66+XBZRpRVIz1FiCXs0hCA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/install-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/install-1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/install-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/install-2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/installation.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/installation.html",
+          "hash": "nq8Oe8wPUMcDbWzBR8LKNA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/introduction.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/introduction.html",
+          "hash": "Rf8IqcXej5DGhlwibzrlTg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/migration-guide.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/migration-guide.html",
+          "hash": "UVo8Rx822qVuJAtr8Bl/Uw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "manual/toc.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/toc.html",
+          "hash": "BHYWm4KQvaYc/E8waUfDAQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-10.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-10.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-11.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-11.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-12.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-12.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-13.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-13.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-13b.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-13b.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-14.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-14.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-15.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-15.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-15b.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-15b.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-16.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-16.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-17.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-17.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-1b.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-1b.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-5.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-5.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-6.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-6.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-7.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-7.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-8.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-8.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-8b.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-8b.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-8c.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-8c.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-9.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-9.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-connection.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-connection.html",
+          "hash": "OlP5stwYINeqDCK6Q50Kyw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-createproject.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-createproject.html",
+          "hash": "en4fb+JGQgLvR+B3nbhRyw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-importwebrtc.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-importwebrtc.html",
+          "hash": "y8yQSLql/69YBd0xi7g6uA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-localvideo.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-localvideo.html",
+          "hash": "/uljl1YT7hs3rpOt0Jr0hA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-peerconnection.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-peerconnection.html",
+          "hash": "Z1Ot6pTlEplzJtNXpWYg0g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-remotevideo.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-remotevideo.html",
+          "hash": "MmmhMyPPBRAfULHz45MRUQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity-signaler.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity-signaler.html",
+          "hash": "mQ+4ARv0XHRX3VAAKOv9MQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/helloworld-unity.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/helloworld-unity.html",
+          "hash": "3XKIxCdnvc/UOR7zB/XFAw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-class-diagram.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-class-diagram.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-components-diagram.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-components-diagram.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-components.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-components.html",
+          "hash": "/xX8yDLjJi0Sp1IRYIyJKw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-inspector.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-inspector.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-integration.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-integration.html",
+          "hash": "nwnn4BD82RiEiL75Hw2I0w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-localaudiosource.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-localaudiosource.html",
+          "hash": "AmDq7MvcZ84VkZtzT64iKw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-localaudiosource.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-localaudiosource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-localvideosource.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-localvideosource.html",
+          "hash": "7OgXdAqvFYPUzT06yIWgbQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-localvideosource.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-localvideosource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-mediaplayer.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-mediaplayer.html",
+          "hash": "wi4SxvKgboE+WqHTj8WHhA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-mediaplayer.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-mediaplayer.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-peerconnection.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-peerconnection.html",
+          "hash": "NQeSl3dPvkHq6qEBVs2Z+w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-peerconnection.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-peerconnection.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-remoteaudiosource.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-remoteaudiosource.html",
+          "hash": "y33KOZu3qs1jC3sJ43yRdQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-remoteaudiosource.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-remoteaudiosource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-remotevideosource.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-remotevideosource.html",
+          "hash": "pCp0bNCDOjAPc/PZwuBf0w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/unity-remotevideosource.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/unity-remotevideosource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "manual/unity/unity-signaler.md",
+      "output": {
+        ".html": {
+          "relative_path": "manual/unity/unity-signaler.html",
+          "hash": "Sxs8dGkKVZU0rZTu8jRx2g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/win-build-variant.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/win-build-variant.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "mr-webrtc.png",
+      "output": {
+        "resource": {
+          "relative_path": "mr-webrtc.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "mr-webrtc.svg",
+      "output": {
+        "resource": {
+          "relative_path": "mr-webrtc.svg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "mr-webrtc_icon.png",
+      "output": {
+        "resource": {
+          "relative_path": "mr-webrtc_icon.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.md",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "a/InvSW+6sdzWsMvU6asqQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Disable incremental build by force rebuild option.",
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0,
+        "full_build_reason_code": "ForceRebuild"
+      },
+      "processors": {
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 44,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 130,
+          "skipped_file_count": 0
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Cannot support incremental post processing, the reason is: should not trace intermediate info.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

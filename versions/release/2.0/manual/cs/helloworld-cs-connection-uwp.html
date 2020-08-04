@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Establishing a WebRTC connection | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Establishing a WebRTC connection | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../../mr-webrtc_icon.png">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../mr-webrtc_icon.png" alt="MixedReality-WebRTC">
+                <span>MixedReality-WebRTC</span>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="establishing-a-webrtc-connection">Establishing a WebRTC connection</h1>
+
+<p>Now that the signaling solution is in place, the final step is to establish a peer connection.</p>
+<p>Continue editing the <code>OnLoaded()</code> method and append after the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_Microsoft_MixedReality_WebRTC_PeerConnectionConfiguration_CancellationToken_"><code>InitializeAsync()</code></a> call:</p>
+<ol>
+<li><p>For debugging purpose, and to understand what is going on with the connection, connect the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> and <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceStateChanged"><code>IceStateChanged</code></a> events to handlers printing messages to the debugger. These messages are visible in the <strong>Output</strong> window of Visual Studio.</p>
+<pre><code class="lang-cs">_peerConnection.Connected += () =&gt; {
+    Debugger.Log(0, &quot;&quot;, &quot;PeerConnection: connected.\n&quot;);
+};
+_peerConnection.IceStateChanged += (IceConnectionState newState) =&gt; {
+    Debugger.Log(0, &quot;&quot;, $&quot;ICE state: {newState}\n&quot;);
+};
+</code></pre>
+<p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event is raised when the peer connection is established, that is when the underlying media transports are writable. There is a subtlety here, in that this does not necessarily correspond to an offer/answer pair exchange being completed; indeed on the callee (answering peer) once the answer is created everything is done and the transports are writable, but the answer has not been sent yet, so the caller (offering peer) needs to wait until it received and applied that answer for its transports to be writable, and therefore its <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event will be raised much later than the one of the callee (answering peer).</p>
+<p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceStateChanged"><code>IceStateChanged</code></a> is raised each time the ICE status changes. Note that the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Connected"><code>Connected</code></a> event can be raised before the ICE status reaches its <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.IceConnectionState.html"><code>IceConnectionState.Connected</code></a> state, since the two processes occur in parallel and are partly independent.</p>
+</li>
+<li><p>In order to render the remote video, we also subscribe to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html#Microsoft_MixedReality_WebRTC_RemoteVideoTrack_I420AVideoFrameReady"><code>RemoteVideoTrack.I420AVideoFrameReady</code></a> event. This requires accessing the remote video track, which is only available once the connection is established and the track created during the session negotiation (more precisely: when an offer or answer is applied with <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_Microsoft_MixedReality_WebRTC_SdpMessage_"><code>SetRemoteDescriptionAsync()</code></a>.</p>
+<pre><code class="lang-cs">_peerConnection.VideoTrackAdded += (RemoteVideoTrack track) =&gt; {
+    _remoteVideoTrack = track;
+    _remoteVideoTrack.I420AVideoFrameReady += RemoteVideo_I420AFrameReady;
+};
+</code></pre>
+</li>
+</ol>
+<p>That event handler is similar to the one for the local video, using another video bridge.</p>
+<ol>
+<li><p>Create a new set of fields for the remote video:</p>
+<pre><code class="lang-cs">private object _remoteVideoLock = new object();
+private bool _remoteVideoPlaying = false;
+private MediaStreamSource _remoteVideoSource;
+private VideoBridge _remoteVideoBridge = new VideoBridge(5);
+</code></pre>
+<p>This time we increase the video buffer queue to 5 frames to avoid starving the video rendering pipeline as the remote video is more prone to delays due to network latency. This potentially introduces more latency in the overall video streaming process, but optimizing for latency is a complex topic well outside of the scope of this tutorial.</p>
+</li>
+<li><p>Modify the <code>OnMediaStreamSourceRequested()</code> event handler to dispatch either to the local or to the remote bridge:</p>
+<pre><code class="lang-cs">if (sender == _localVideoSource)
+    videoBridge = _localVideoBridge;
+else if (sender == _remoteVideoSource)
+    videoBridge = _remoteVideoBridge;
+else
+    return;
+</code></pre>
+</li>
+<li><p>Implement the handler with the newly created members:</p>
+<pre><code class="lang-cs">private void RemoteVideo_I420AFrameReady(I420AVideoFrame frame)
+{
+    lock (_remoteVideoLock)
+    {
+        if (!_remoteVideoPlaying)
+        {
+            _remoteVideoPlaying = true;
+            uint width = frame.width;
+            uint height = frame.height;
+            RunOnMainThread(() =&gt;
+            {
+                // Bridge the remote video track with the remote media player UI
+                int framerate = 30; // assumed, for lack of an actual value
+                _remoteVideoSource = CreateI420VideoStreamSource(width, height,
+                    framerate);
+                var remoteVideoPlayer = new MediaPlayer();
+                remoteVideoPlayer.Source = MediaSource.CreateFromMediaStreamSource(
+                    _remoteVideoSource);
+                remoteVideoPlayerElement.SetMediaPlayer(remoteVideoPlayer);
+                remoteVideoPlayer.Play();
+            });
+        }
+    }
+    _remoteVideoBridge.HandleIncomingVideoFrame(frame);
+}
+</code></pre>
+</li>
+<li><p>In the <code>App_Suspending()</code> event handler, add a line to also clear the media player of the remote element.</p>
+<pre><code class="lang-cs">remoteVideoPlayerElement.SetMediaPlayer(null);
+</code></pre>
+</li>
+</ol>
+<p>Finally, we need to change the UI to add the new <code>remoteVideoPlayerElement</code> XAML control displaying the remote video track. Open <code>MainPage.xaml</code> in the visual editor and edit it:</p>
+<ol>
+<li><p>Add a new <code>&lt;MediaPlayerElement&gt;</code> tag for the remote video.</p>
+<pre><code class="lang-cs">&lt;MediaPlayerElement x:Name=&quot;remoteVideoPlayerElement&quot; /&gt;
+</code></pre>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>Be sure to put the remote tag first, <strong>before</strong> the local one, so that the remote video is rendered first in the background, and the local one second on top of it. Otherwise the local video will be hidden by the remote one.</p>
+</div>
+</li>
+<li><p>Change the tag for the local video to reduce its size and position it in the lower right corner of the window, like is typical for local video preview in a video chat application.</p>
+<pre><code class="lang-cs">&lt;MediaPlayerElement x:Name=&quot;localVideoPlayerElement&quot; Width=&quot;320&quot; Height=&quot;240&quot;
+    HorizontalAlignment=&quot;Right&quot; VerticalAlignment=&quot;Bottom&quot; Margin=&quot;0,0,20,20&quot; /&gt;
+</code></pre>
+<p>Here we fix the size to 320x240 pixels, align the control to the lower right corner of the window, and add a 20px margin.</p>
+</li>
+</ol>
+<p>At this point, the sample application is functional, although there is no mechanism to initiate a call. You can either add a button or similar to call <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer"><code>CreateOffer()</code></a>, or test this sample with the <code>TestAppUWP</code> available in the MixedReality-WebRTC repository in <code>examples/TestAppUWP</code>, which implements a &quot;Create offer&quot; button. Be sure to set the correct local and remote peer ID on <strong>both</strong> peers and have a <code>node-dss</code> server running before hitting the &quot;Create offer&quot; button, otherwise signaling will not work.</p>
+<p>In either cases however, be sure to create transceivers only on the caller:</p>
+<ul>
+<li>If adding a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_CreateOffer"><code>CreateOffer()</code></a> button to the application, then move the calls to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>AddTransceiver()</code></a> into the button handler, so that they are manually created on the caller only. On the callee, they will be created automatically in the same order when applying the offer received from the caller.</li>
+<li>If using the <code>TestAppUWP</code> to make a connection with, the <code>TestAppUWP</code> is the caller so the transceivers should be created inside that app, and the calls to <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>AddTransceiver()</code></a> deleted from <code>App1</code>.</li>
+</ul>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/docs/manual/cs/helloworld-cs-connection-uwp.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

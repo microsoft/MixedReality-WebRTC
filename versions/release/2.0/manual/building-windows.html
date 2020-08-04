@@ -1,0 +1,343 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Building from sources (Windows) | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Building from sources (Windows) | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.png">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="MixedReality-WebRTC">
+                <span>MixedReality-WebRTC</span>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="building-from-sources-windows">Building from sources (Windows)</h1>
+
+<p>The MixedReality-WebRTC libraries for Windows platforms (Desktop and UWP) are built from the <code>Microsoft.MixedReality.WebRTC.sln</code> Visual Studio solution located at the root of the git repository.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="environment-and-tooling">Environment and tooling</h3>
+<ul>
+<li><p>The NuGet packages for the input dependencies (see <em>Core input dependencies</em> below) require in total approximately <strong>10 GB of disk space</strong>. Those dependencies contain unstripped <code>.lib</code> files much larger than the final compiled DLL libraries, for both the Debug and Release build configurations.</p>
+</li>
+<li><p>Due to Windows paths length limit, it is recommended to <strong>clone the source repository close to the root</strong> of the filesystem, <em>e.g.</em> <code>C:\mr-webrtc\</code> or similar, as the recursive external dependencies create a deep hierarchy which may otherwise produce paths beyond the OS limit and result in build failure.</p>
+</li>
+<li><p>The solution uses <strong>Visual Studio 2019</strong> with the following features:</p>
+<ul>
+<li><p>The <strong>MSVC v141 - VS 2017 C++ x64/x86 build tools</strong> toolchain from Visual Studio <strong>2017</strong> is required to build the C++17 library of MixedReality-WebRTC. This will eventually be replaced with the Visual Studio <strong>2019</strong> compiler (v142 toolchain) once the project is upgraded to a Google milestone supporting Visual Studio 2019 (see details on <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/14">issue #14</a>)</p>
+</li>
+<li><p>For ARM support, the <strong>MSVC v141 - VS 2017 C++ ARM build tools</strong> toolchain is also required.</p>
+</li>
+<li><p>The C# library requires a .NET Standard 2.0 compiler, like the Roslyn compiler available as part of Visual Studio when installing the <strong>.NET desktop development</strong> workload.</p>
+</li>
+<li><p>The UWP libraries and projects require UWP support from the compiler, available as part of Visual Studio when installing the <strong>Universal Windows Platform development</strong> workload.</p>
+</li>
+</ul>
+</li>
+<li><p>The Unity library is officially supported for <a href="https://unity3d.com/get-unity/download">Unity</a> version <strong>2018.4.x</strong> (LTS) and <strong>2019.4.x</strong> (LTS). However, we do our best to keep things working on other versions too where possible. Versions earlier than 2018.4.x may work but are not tested at all, and no support will be provided for those.</p>
+</li>
+</ul>
+<h3 id="core-input-dependencies">Core input dependencies</h3>
+<p>The so-called <em>Core</em> input dependencies are constituted of:</p>
+<ul>
+<li><code>webrtc.lib</code> : A static library containing the Google implementation of the WebRTC standard.</li>
+<li><code>Org.WebRtc.winmd</code> : A set of WinRT wrappers for accessing the WebRTC API from UWP.</li>
+</ul>
+<p>Those dependencies require many extra prerequisites. They are also complex and time-consuming to build. Therefore to save time and avoid headache the MixedReality-WebRTC solution consumes those dependencies as precompiled NuGet packages <a href="https://www.nuget.org/packages?q=Microsoft.MixedReality.WebRTC.Native.Core">available from nuget.org</a>. Those NuGet packages are compiled from <a href="https://github.com/webrtc-uwp/webrtc-uwp-sdk">the WebRTC UWP project</a> maintained by Microsoft. So <strong>there is no extra setup for those</strong>.</p>
+<h2 id="cloning-the-repository">Cloning the repository</h2>
+<p>The official repository containing the source code of MixedReality-WebRTC is <a href="https://github.com/microsoft/MixedReality-WebRTC">hosted on GitHub</a>. The latest developments are done on the <code>master</code> branch, while the latest stable release is a <code>release/*</code> branch.</p>
+<p>Clone the choosen branch of the repository and its dependencies <strong>recursively</strong>, preferably close to the root of the filesystem (see prerequisites):</p>
+<pre><code class="lang-cmd">git clone --recursive https://github.com/microsoft/MixedReality-WebRTC.git -b &lt;branch_name&gt; C:\mr-webrtc
+</code></pre>
+<p>Note that <strong>this may take some time (&gt; 5 minutes)</strong> due to the large number of submodules in <a href="https://github.com/webrtc-uwp/webrtc-uwp-sdk">the WebRTC UWP SDK repository</a> this repository depends on.</p>
+<h2 id="building-the-libraries">Building the libraries</h2>
+<ol>
+<li><p>Open the <code>Microsoft.MixedReality.WebRTC.sln</code> Visual Studio solution located at the root of the freshly cloned repository.</p>
+</li>
+<li><p>Select the build variant with the Solution Configuration selector at the top of the window under the main menu.</p>
+<p><img src="win-build-variant.png" alt="Windows build variants"></p>
+<ul>
+<li>Choose the build configuration (<code>Debug</code> or <code>Release</code>); generally it is recommended to always use the <code>Release</code> configuration, as the <code>Debug</code> configuration of the underlying <code>webrtc.lib</code> implementation used by the native C library can be notably slow in <code>Debug</code>.</li>
+<li>Choose the build architecture corresponding to the variant needed:
+<ul>
+<li><code>x86</code> for the 32-bit Windows Desktop and UWP variants</li>
+<li><code>x64</code> for the 64-bit Windows Desktop and UWP variants; this includes the x64 Desktop variant required by the Unity editor</li>
+<li><code>ARM</code> for the 32-bit Windows UWP ARM variant</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Build the solution with F7 or <strong>Build &gt; Build Solution</strong></p>
+</li>
+</ol>
+<p>On successful build, the binaries will be generated in a sub-directory under <code>bin/</code>, and the relevant DLLs will be copied by a post-build script to <code>libs\unity\library\Runtime\Plugins\</code> for the Unity library to consume them.</p>
+<h2 id="copying-the-binaries">Copying the binaries</h2>
+<p><em>Note: This section describes manual copying in case the Visual Studio solution is not used or the automated copying does not work for any reason. If the solution built successfully, the binaries should already have been copied (see above).</em></p>
+<p>The C# library <code>Microsoft.MixedReality.WebRTC.dll</code> is a .NET Standard 2.0 library. This means it is compatible with all CPU architectures. The C# library is available from <code>bin\netstandard2.0\Debug</code> or <code>bin\netstandard2.0\Release</code> depending on the build configuration which was compiled. In doubt you should use the <code>Release</code> configuration, which can provide better performance. This module needs to be copied somehwere into the <code>libs\unity\library\Runtime\Plugins\</code> folder of the git repository checkout. This is done automatically by the build process of the Visual Studio solution, but can also be done via the command line with <code>xcopy</code>, assuming that the git repository of MixedReality-WebRTC was cloned in <code>D:\mr-webrtc</code>:</p>
+<pre><code class="lang-cmd">cd /D D:\testproj
+xcopy D:/mr-webrtc/bin/netstandard2.0/Release/Microsoft.MixedReality.WebRTC.dll libs/unity/library/Runtime/Plugins/Win32/x86_64/
+</code></pre>
+<p><em>Note</em>: By convention, and because of past experiences of getting errors when doing otherwise, the C# library is copied to the <code>Win32\x86_64</code> sub-folder where the native C library for the Unity editor is also located. It is unclear if this is best practice, as the Unity documentation is outdated on this topic.</p>
+<p>For the native C library <code>mrwebrtc.dll</code> things are a bit more complex. The DLL is compiled for a particular platform and architecture, in addition of the Debug or Release build configurations, and the correct variant needs to be used. On Windows, the Unity Editor needs a <strong>64-bit Desktop</strong> variant (<code>Debug</code> or <code>Release</code>); it is available from the <code>bin\Win32\x64\Release</code> folder (<code>Win32</code> is an alias for <code>Desktop</code>), and should be copied to the <code>libs\unity\library\Runtime\Plugins\Win32\x86_64\</code> folder. Again this is done automatically by the Visual Studio build process, but can be done manually with the following commands:</p>
+<pre><code class="lang-cmd">cd /D D:\testproj
+xcopy D:/mr-webrtc/bin/Win32/x64/Release/mrwebrtc.dll libs/unity/library/Runtime/Plugins/Win32/x86_64/
+</code></pre>
+<h2 id="importing-the-library">Importing the library</h2>
+<p>Once the necessary binaries have been added to <code>libs\unity\library\Runtime\Plugins</code>, the Unity library UPM package can be imported into any number of Unity projects.</p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>It is critical to setup the binaries first, before importing into a project and opening the Unity editor, otherwise the import settings might get overwritten by Unity. See <a href="#configuring-the-import-settings">Configuring the import settings</a> below for details.</p>
+</div>
+<p>The Unity library already has the proper layout on disk of a UPM package, and a <code>package.json</code> file is provided. This means the package can be imported simply by following <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">the official Unity instructions for installing a local package</a>.</p>
+<h2 id="configuring-the-import-settings">Configuring the import settings</h2>
+<p><em>Note: This step is normally not necessary, as the <code>.meta</code> files are already checked in the git repository and properly configured. It can happen that Unity deletes and recreates those files, therefore the configuration process is explained in details here anyway.</em></p>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p><strong>Be sure to build the binaries before importing the Unity library package into any Unity project.</strong> As part of the build, the libraries are copied to the <code>Plugins</code> folder of the Unity library. There are already some associated <code>.meta</code> files, which have been committed to the git repository, to inform Unity of the platform of each DLL and how to deploy it. If the Unity project is opened first, before the DLLs are present, Unity will assume those <code>.meta</code> files are stale and will delete them, and then later will recreate some with a different default config once the DLLs are copied. This leads to errors about modules with duplicate names. If done correctly then none of the below is necessary.</p>
+</div>
+<p>The git repository comes with pre-configured <code>.meta</code> files already setup. However we detail below the manual steps to configure those <code>.meta</code> files for the sake of clarity, and in case Unity deleted those files because the binaries have not been built yet (although using <code>git reset</code> is a faster and safer way to recover them), or if users want to get rid of the UPM package and incorporate a custom copy of the MixedReality-WebRTC into their Unity project and modify it.</p>
+<p>When building a Unity application for a given platform, another variant of the MixedReality-WebRTC native C/C++ library than the one the Unity editor uses may be required to deploy on that platform. In order for the C# library to be truly platform-independent, the name of all native C/C++ library variants is the same: <code>mrwebrtc</code>. This allows the C# code to reference that DLL with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.dllimportattribute?view=netcore-3.1">the same <code>DllImport</code> attribute path</a>. But this also means that multiple files with the same name exist in different folders, and Unity needs to know which one is associated with which build variant, to be able to deploy the correct one only. This is done by configuring the platform associated with a DLL in the import settings in the Unity inspector.</p>
+<p>When importing a UPM package into a Unity project, the content of the UPM package can be accessed from the <strong>Packages</strong> group of the <strong>Project</strong> window.</p>
+<p><img src="unity/helloworld-unity-1b.png" alt="Packages in the Project window"></p>
+<p>To configure the import settings:</p>
+<ul>
+<li>In the <strong>Project</strong> window, select one of the <code>mrwebrtc.dll</code> files from the <code>Plugins</code> folder.</li>
+<li>The <strong>Inspector</strong> window now shows the import settings for the selected file, which contains option to configure the deploy platform(s) and architecture(s).</li>
+</ul>
+<p>For example, by selecting in the <strong>Inspector</strong> window:</p>
+<ul>
+<li><strong>Include Platforms: WSAPlayer</strong>, the DLL will be used by Unity on UWP platforms. <em>WSAPlayer</em> is the name Unity uses for its UWP standalone player.</li>
+<li><strong>CPU</strong> equal to <strong>x86_64</strong>, Unity will only deploy that DLL when deploying on a 64-bit Intel architecture.</li>
+</ul>
+<p>This way, multiple variants of the same-named <code>mrwebrtc.dll</code> can co-exist in different sub-folders of <code>Assets/Plugins/</code> and Unity will deploy and use the correct variant on each platform.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>If Unity complains about &quot;<em>Multiple plugins with the same name 'mrwebrtc'</em>&quot;, then the configurations of the various <code>mrwebrtc.dll</code> files are not exclusive, and 2 or more files have been allowed for deploying on the same platform. Check the configuration of all variants again.</p>
+</div>
+<p>For <strong>Windows Desktop</strong>, the native implementation DLL variants are:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Include Platforms</th>
+<th>Settings</th>
+<th>Example use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Plugins/Win32/x86</code></td>
+<td>Standalone</td>
+<td>x86</td>
+<td>32-bit Windows Desktop application</td>
+</tr>
+<tr>
+<td><code>Plugins/Win32/x86_64</code></td>
+<td>Editor</td>
+<td>CPU = x86_64, OS = Windows</td>
+<td>Unity Editor on Windows</td>
+</tr>
+<tr>
+<td></td>
+<td>Standalone</td>
+<td>x86_64</td>
+<td>64-bit Windows Desktop application</td>
+</tr>
+</tbody>
+</table>
+<p>For <strong>Windows UWP</strong>, the native implementation DLL variants are:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Include Platforms</th>
+<th>SDK</th>
+<th>CPU</th>
+<th>Example use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Plugins/UWP/x86</code></td>
+<td>WSAPlayer</td>
+<td>UWP</td>
+<td>X86</td>
+<td>Microsoft HoloLens (1st gen)</td>
+</tr>
+<tr>
+<td><code>Plugins/UWP/x86_64</code></td>
+<td>WSAPlayer</td>
+<td>UWP</td>
+<td>X64</td>
+<td>64-bit UWP Desktop app on Windows</td>
+</tr>
+<tr>
+<td><code>Plugins/UWP/ARM</code></td>
+<td>WSAPlayer</td>
+<td>UWP</td>
+<td>ARM</td>
+<td>HoloLens 2 (compatibility)</td>
+</tr>
+</tbody>
+</table>
+<div class="NOTE">
+<h5>Note</h5>
+<p>UWP ARM64 is not supported. The ARM (32-bit) architecture variant can be used as a fallback on HoloLens 2 and other devices which support running 32-bit ARM applications on ARM64 hardware.</p>
+</div>
+<p>For <strong>Android</strong>, the native implementation archive <code>mrwebrc.aar</code> is configured as:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Include Platforms</th>
+<th>Example use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Plugins/Android/arm64-v8a</code></td>
+<td>Android</td>
+<td>Android phone</td>
+</tr>
+</tbody>
+</table>
+<p>In all cases the &quot;Any Platform&quot; setting must be unchecked.</p>
+<p>If all variants are installed, the resulting hierarchy should look like this in the <strong>Project</strong> window:</p>
+<pre><code class="lang-shell">Plugins
+├─ Android
+|  └─ arm64-v8a
+|     └─ mrwebrtc.aar
+├─ Win32
+|  ├─ x86
+|  |  └─ mrwebrtc.dll
+|  └─ x86_64
+|     └─ mrwebrtc.dll
+└─ UWP
+   ├─ x86
+   |  └─ mrwebrtc.dll
+   ├─ x86_64
+   |  └─ mrwebrtc.dll
+   └─ ARM
+      └─ mrwebrtc.dll
+</code></pre>
+<p>Note that the <code>.meta</code> files where the import settings are saved do not appear in the <strong>Project</strong> window.</p>
+<h2 id="testing-the-build">Testing the build</h2>
+<p>Test the newly built libraries by <em>e.g.</em> running some of the Windows Desktop tests:</p>
+<ol>
+<li><p>Build the <code>mrwebrtc-win32-tests</code> after selecting a Solution Configuration including the <code>x86</code> or <code>x64</code> architecture.</p>
+</li>
+<li><p>Run it by right-clicking on the project and selecting <strong>Debug</strong> &gt; <strong>Start New Instance</strong> (or F5 if the project is configured as the Startup Project). Alternatively, the test program uses Google Test and integrates with the Visual Studio Test Explorer, so tests can be run from that panel too.</p>
+</li>
+</ol>
+<hr>
+<p><em>Next</em> : <a href="building-cslib.html">Building the C# library</a></p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/docs/manual/building-windows.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

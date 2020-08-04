@@ -1,0 +1,634 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class DataChannel
+   | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class DataChannel
+   | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.png">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="Microsoft.MixedReality.WebRTC.DataChannel">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="MixedReality-WebRTC">
+                <span>MixedReality-WebRTC</span>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.DataChannel">
+  
+  
+  <h1 id="Microsoft_MixedReality_WebRTC_DataChannel" data-uid="Microsoft.MixedReality.WebRTC.DataChannel" class="text-break">Class DataChannel
+  </h1>
+  <div class="markdown level0 summary"><p>Encapsulates a data channel of a peer connection.</p>
+<p>A data channel is a &quot;pipe&quot; allowing to send and receive arbitrary data to the
+remote peer. Data channels are based on DTLS-SRTP, and are therefore secure (encrypted).
+Exact security guarantees are provided by the underlying WebRTC core implementation
+and the WebRTC standard itself.</p>
+<p><a href="https://tools.ietf.org/wg/rtcweb/">https://tools.ietf.org/wg/rtcweb/</a>
+<a href="https://www.w3.org/TR/webrtc/">https://www.w3.org/TR/webrtc/</a></p>
+<p>An instance of <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a> is created either by manually calling
+<see cref="!:PeerConnection.AddDataChannelAsync(string,bool,bool,System.Threading.CancellationToken)"></see>
+or one of its variants, or automatically by the implementation when a new data channel
+is created in-band by the remote peer (<a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAdded">DataChannelAdded</a>).
+<a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a> cannot be instantiated directly.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">DataChannel</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
+  <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class DataChannel : object</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_ID.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.ID%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L77">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DataChannel_ID_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.ID*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_ID" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.ID">ID</h4>
+  <div class="markdown level1 summary"><p>The unique identifier of the data channel in the current connection.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int ID { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_Label.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.Label%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L82">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DataChannel_Label_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.Label*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_Label" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.Label">Label</h4>
+  <div class="markdown level1 summary"><p>The data channel name in the current connection.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Label { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_Ordered.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.Ordered%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L91">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DataChannel_Ordered_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.Ordered*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_Ordered" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.Ordered">Ordered</h4>
+  <div class="markdown level1 summary"><p>Indicates whether the data channel messages are ordered or not.
+Ordered messages are delivered in the order they are sent, at the cost of delaying later messages
+delivery to the application (via <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_MessageReceived">MessageReceived</a>) when internally arriving out of order.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Ordered { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><code>true</code> if messages are ordered.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_Ordered_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_Reliable">Reliable</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_PeerConnection.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.PeerConnection%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L72">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DataChannel_PeerConnection_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.PeerConnection*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_PeerConnection" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.PeerConnection">PeerConnection</h4>
+  <div class="markdown level1 summary"><p>The <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_PeerConnection">PeerConnection</a> object this data channel was created from and is attached to.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PeerConnection PeerConnection { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html">PeerConnection</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_Reliable.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.Reliable%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L101">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DataChannel_Reliable_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.Reliable*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_Reliable" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.Reliable">Reliable</h4>
+  <div class="markdown level1 summary"><p>Indicates whether the data channel messages are reliably delivered.
+Reliable messages are guaranteed to be delivered as long as the connection is not dropped.
+Unreliable messages may be silently dropped for whatever reason, and the implementation will
+not try to detect this nor resend them.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Reliable { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><code>true</code> if messages are reliable.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_Reliable_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_Ordered">Ordered</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_State.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.State%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L113">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DataChannel_State_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.State*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_State" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.State">State</h4>
+  <div class="markdown level1 summary"><p>The channel connection state represents the connection status.
+Changes to this state are notified via the <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_StateChanged">StateChanged</a> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DataChannel.ChannelState State { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.ChannelState.html">DataChannel.ChannelState</a></td>
+        <td><p>The channel connection state.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_State_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The code handling this event should unwind the stack before
+using any other MR-WebRTC APIs; re-entrancy is not supported.</p>
+</div>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_State_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_StateChanged">StateChanged</a></div>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_IntPtr_System_UInt64_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(IntPtr%2CSystem.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L227">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_IntPtr_System_UInt64_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(IntPtr,System.UInt64)">SendMessage(IntPtr, UInt64)</h4>
+  <div class="markdown level1 summary"><p>Send a message through the data channel. If the message cannot be sent, for example because of congestion
+control, it is buffered internally. If this buffer gets full, an exception is thrown and this call is aborted.
+The internal buffering is monitored via the <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged">BufferingChanged</a> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SendMessage(IntPtr message, ulong size)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">message</span></td>
+        <td><p>The message to send to the remote peer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
+        <td><span class="parametername">size</span></td>
+        <td><p>The size of the message to send in octects.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_IntPtr_System_UInt64__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_Microsoft_MixedReality_WebRTC_PeerConnectionConfiguration_CancellationToken_">InitializeAsync(PeerConnectionConfiguration, CancellationToken)</a></div>
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Initialized">Initialized</a></div>
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged">BufferingChanged</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(System.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L203">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.SendMessage(System.Byte[])">SendMessage(Byte[])</h4>
+  <div class="markdown level1 summary"><p>Send a message through the data channel. If the message cannot be sent, for example because of congestion
+control, it is buffered internally. If this buffer gets full, an exception is thrown and this call is aborted.
+The internal buffering is monitored via the <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged">BufferingChanged</a> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SendMessage(byte[] message)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">message</span></td>
+        <td><p>The message to send to the remote peer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannelNotOpenException.html">DataChannelNotOpenException</a></td>
+        <td><p>The data channel is not open yet.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte____seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_InitializeAsync_Microsoft_MixedReality_WebRTC_PeerConnectionConfiguration_CancellationToken_">InitializeAsync(PeerConnectionConfiguration, CancellationToken)</a></div>
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_Initialized">Initialized</a></div>
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged">BufferingChanged</a></div>
+  </div>
+  <h3 id="events">Events
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.BufferingChanged%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L138">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.BufferingChanged">BufferingChanged</h4>
+  <div class="markdown level1 summary"><p>Event triggered when the data channel buffering changes. Users should monitor this to ensure
+calls to <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___">SendMessage(Byte[])</a> do not fail. Internally the data channel contains
+a buffer of messages to send that could not be sent immediately, for example due to
+congestion control. Once this buffer is full, any further call to <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___">SendMessage(Byte[])</a>
+will fail until some mesages are processed and removed to make space.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event DataChannel.BufferingChangedDelegate BufferingChanged</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.BufferingChangedDelegate.html">DataChannel.BufferingChangedDelegate</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The code handling this event should unwind the stack before
+using any other MR-WebRTC APIs; re-entrancy is not supported.</p>
+</div>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_BufferingChanged_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___">SendMessage(Byte[])</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_MessageReceived.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.MessageReceived%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L144">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_MessageReceived" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.MessageReceived">MessageReceived</h4>
+  <div class="markdown level1 summary"><p>Event triggered when a message is received through the data channel.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event Action&lt;byte[]&gt; MessageReceived</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Action</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_MessageReceived_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_System_Byte___">SendMessage(Byte[])</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_MessageReceivedUnsafe.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedUnsafe%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L150">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_MessageReceivedUnsafe" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedUnsafe">MessageReceivedUnsafe</h4>
+  <div class="markdown level1 summary"><p>Event fires when a message is received through the data channel.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event Action&lt;IntPtr, ulong&gt; MessageReceivedUnsafe</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Action</span>&lt;<span class="xref">IntPtr</span>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_MessageReceivedUnsafe_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessage_IntPtr_System_UInt64_">SendMessage(IntPtr, UInt64)</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel_StateChanged.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel.StateChanged%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L124">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_DataChannel_StateChanged" data-uid="Microsoft.MixedReality.WebRTC.DataChannel.StateChanged">StateChanged</h4>
+  <div class="markdown level1 summary"><p>Event triggered when the data channel state changes.
+The new state is available in <a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_State">State</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event Action StateChanged</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Action</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_StateChanged_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The code handling this event should unwind the stack before
+using any other MR-WebRTC APIs; re-entrancy is not supported.</p>
+</div>
+  <h5 id="Microsoft_MixedReality_WebRTC_DataChannel_StateChanged_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_State">State</a></div>
+  </div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAdded">DataChannelAdded</a></div>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_DataChannel.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.DataChannel%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/DataChannel.cs/#L31" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

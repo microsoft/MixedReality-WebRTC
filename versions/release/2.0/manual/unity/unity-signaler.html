@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Unity Signaler component | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Unity Signaler component | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../../mr-webrtc_icon.png">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../mr-webrtc_icon.png" alt="MixedReality-WebRTC">
+                <span>MixedReality-WebRTC</span>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="unity-signaler-component">Unity <code>Signaler</code> component</h1>
+
+<p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> Unity component is an abstract base class used as an helper for implementing a custom component for a given signaling solution. It is not strictly required, but provides some utilities which make it easier to write an implementation.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PeerConnection</td>
+<td>A reference to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> Unity component that this signaler should provide signaling for.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="implementing-a-custom-signaler">Implementing a custom signaler</h2>
+<p>A custom signaling solution can derive from the abstract base <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> class for simplicity, or be any other Unity component or C# class.</p>
+<p>When deriving from the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> class, a derived class needs to:</p>
+<ul>
+<li>Implement the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_SdpMessage_"><code>SendMessageAsync(SdpMessage)</code></a> and <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_IceCandidate_"><code>SendMessageAsync(IceCandidate)</code></a> abstract methods to send messages to the remote peer via the custom signaling solution.</li>
+<li>Handle incoming messages from the remote peer:
+<ul>
+<li>call <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_HandleConnectionMessageAsync_SdpMessage_"><code>HandleConnectionMessageAsync(SdpMessage)</code></a> on the Unity peer connection component when receiving an SDP offer or answer message.</li>
+<li>call <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddIceCandidate_Microsoft_MixedReality_WebRTC_IceCandidate_"><code>AddIceCandidate(IceCandidate)</code></a> on the underlying C# peer connection object to deliver ICE candidates to the local peer implementation.</li>
+</ul>
+</li>
+</ul>
+<p>When implementing a custom signaling solution from scratch <strong>without</strong> using the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> class, the custom implementation must, in addition of the above message handling, replace the work done by <code>SendMessageAsync()</code>:</p>
+<ul>
+<li>Listen to the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_LocalSdpReadytoSend"><code>LocalSdpReadytoSend</code></a> and <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend"><code>IceCandidateReadytoSend</code></a> events.</li>
+<li>Send to the remote peer, by whatever mean devised by the implementation, some messages containing the data of those events, such that the remote peer can handle them as described above.</li>
+</ul>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/docs/manual/unity/unity-signaler.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

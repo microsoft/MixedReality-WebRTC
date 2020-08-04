@@ -1,0 +1,192 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Adding local media tracks | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Adding local media tracks | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../../mr-webrtc_icon.png">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../mr-webrtc_icon.png" alt="MixedReality-WebRTC">
+                <span>MixedReality-WebRTC</span>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="adding-local-media-tracks">Adding local media tracks</h1>
+
+<p>Now that the peer connection is initialized, there are two possible paths depending on the usage scenario:</p>
+<ul>
+<li>Immediately adding local audio and/or video tracks to the peer connection, so that they are available right away when the connection will be established with the remote peer.</li>
+<li>Waiting for the connection to be established, and add the local media tracks after that.</li>
+</ul>
+<p>The first case is benefical in the sense that media tracks will be immediately negotiated during the connection establishing, without the need for an extra negotiation specific to the tracks. However it requires knowing in advance that the tracks are used. Conversely, the latter case corresponds to a scenario like late joining, where the user or the application can control when to add or remove local tracks, at the expense of requiring an extra network negotiation each time the list of tracks changes.</p>
+<p>In this tutorial, we add the local media tracks right away for simplicity.</p>
+<p>Continue editing the <code>Program.cs</code> file and append the following:</p>
+<ol>
+<li><p>Create some variables we need at the start of the <code>Main</code> method, before the <code>try</code> block:</p>
+<pre><code class="lang-cs">AudioTrackSource microphoneSource = null;
+VideoTrackSource webcamSource = null;
+Transceiver audioTransceiver = null;
+Transceiver videoTransceiver = null;
+LocalAudioTrack localAudioTrack = null;
+LocalVideoTrack localVideoTrack = null;
+</code></pre>
+</li>
+<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig_"><code>DeviceVideoTrackSource.CreateAsync()</code></a> method to create a new video track source obtaining its frames from a local video capture device (webcam).</p>
+<pre><code class="lang-cs">webcamSource = await DeviceVideoTrackSource.CreateAsync();
+</code></pre>
+<p>This method optionally takes a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig.html"><code>LocalVideoDeviceInitConfig</code></a> object to configure the video capture. In this tutorial, we leave that object out and use the default settings, which will open the first available webcam with its default resolution and framerate. This is generally acceptable, although on mobile devices like HoloLens developers probably want to limit the capture resolution and framerate to reduce the power consumption and save on battery.</p>
+<p>The video track source is a standalone object, which can be used by multiple tracks, including from different peer connections. This allows sharing a local webcam among multiple conections.</p>
+</li>
+<li><p>From this source, create a local video track which will send those captured frames to the remote peer.</p>
+<pre><code class="lang-cs">var videoTrackConfig = new LocalVideoTrackInitConfig {
+   trackName = &quot;webcam_track&quot;
+};
+localVideoTrack = LocalVideoTrack.CreateFromSource(webcamSource, videoTrackConfig);
+</code></pre>
+<p>Note that the local video track created is not associated with the peer connection yet; the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_VideoTrackSource_Microsoft_MixedReality_WebRTC_LocalVideoTrackInitConfig_"><code>LocalVideoTrack.CreateFromSource()</code></a> is a static method which does not reference any peer connection. The local video track will be bound to one specific peer connection later when added to a video transceiver. After that, it will stay implicitly bound to that peer connection, even if detached from its transceiver, and cannot be reused with another peer connection.</p>
+</li>
+<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceAudioTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalAudioDeviceInitConfig_"><code>DeviceAudioTrackSource.CreateAsync()</code></a> method to create an audio track source obtaining its audio frames from a local audio capture device (microphone).</p>
+<pre><code class="lang-cs">microphoneSource = await DeviceAudioTrackSource.CreateAsync();
+</code></pre>
+<p>Again, the method optionally takes <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.html"><code>LocalAudioDeviceInitConfig</code></a> object to configure the audio capture, but we can ignore it to get the default settings.</p>
+</li>
+<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.LocalAudioTrack.html#Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_AudioTrackSource_Microsoft_MixedReality_WebRTC_LocalAudioTrackInitConfig_"><code>LocalAudioTrack.CreateFromSource()</code></a> method to create an audio track sending to the remote peer those audio frames.</p>
+<pre><code class="lang-cs">var audioTrackConfig = new LocalAudioTrackInitConfig {
+   trackName = &quot;microphone_track&quot;
+};
+localAudioTrack = LocalAudioTrack.CreateFromSource(microphoneSource, audioTrackConfig);
+</code></pre>
+</li>
+<li><p>Use the <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>PeerConnection.AddTransceiver()</code></a> method to add to the peer connection some audio and video transceivers, which are the transports through which the audio and video tracks are sent to the remote peer.</p>
+<pre><code class="lang-cs">videoTransceiver = pc.AddTransceiver(MediaKind.Video);
+videoTransceiver.LocalVideoTrack = localVideoTrack;
+videoTransceiver.DesiredDirection = Transceiver.Direction.SendReceive;
+
+audioTransceiver = pc.AddTransceiver(MediaKind.Audio);
+audioTransceiver.LocalAudioTrack = localAudioTrack;
+audioTransceiver.DesiredDirection = Transceiver.Direction.SendReceive;
+</code></pre>
+<p>This binds the local media tracks to the peer connection forever, and instructs the native implementation to use those tracks while they are attached to a transceiver. This also ask to negotiate a bidirectional transport (send + receive) for each transceiver in order to both send the audio and video captured locally, and receive those the remote peer will send.</p>
+</li>
+<li><p>At the very end of the program, outside of the <code>try</code> / <code>catch</code> block, make sure to dispose of the audio and video tracks and sources after the peer connection has been closed. The audio and video tracks and sources are owned by the user, and must be disposed of manually. The media sources also must outlive the local tracks using them, so make sure to dispose of them last.</p>
+<pre><code class="lang-cs">localAudioTrack?.Dispose();
+localVideoTrack?.Dispose();
+microphoneSource?.Dispose();
+webcamSource?.Dispose();
+</code></pre>
+</li>
+</ol>
+<p>Run the application again. This time, there is no visible difference in the terminal window, except some extra delay to open the audio and video devices; this delay varies greatly depending on the number of capture devices on the host machine, but is generally within a few seconds too. Additionally, if the webcam or microphone have a LED indicating recording, it should briefly turn ON when the capture device starts recording, and immediately stop when the program reaches its end and the peer connection and its tracks are automatically shut down.</p>
+<hr>
+<p>Next : <a href="helloworld-cs-signaling-core3.html">A custom signaling solution</a></p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/docs/manual/cs/helloworld-cs-mediatracks-core3.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Installation | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Installation | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.png">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="MixedReality-WebRTC">
+                <span>MixedReality-WebRTC</span>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="installation">Installation</h1>
+
+<h2 id="c-library">C# library</h2>
+<p>The C# library is consumed as a NuGet package by adding a dependency to that package in your C# project.</p>
+<p>In Visual Studio 2019:</p>
+<ul>
+<li>Right-click on the C# project &gt; <strong>Manage NuGet Packages...</strong> to open the NuGet package manager window.</li>
+<li>In the search bar, type &quot;Microsoft.MixedReality.WebRTC&quot;. You may need to check the <strong>Include prerelease</strong> option.</li>
+<li>Select the NuGet package to install:
+<ul>
+<li>For a C# Desktop project, choose <code>Microsoft.MixedReality.WebRTC</code>.</li>
+<li>For a C# UWP project, choose <code>Microsoft.MixedReality.WebRTC.UWP</code>.</li>
+</ul>
+</li>
+<li>In the right panel, choose a version and click the <strong>Install</strong> button.</li>
+</ul>
+<p><img src="install-1.png" alt="Install"></p>
+<p>This will add a dependency to the currently selected C# project. If multiple projects are using the MixedReality-WebRTC library, this process must be repeated for each project.</p>
+<h2 id="cc-library">C/C++ library</h2>
+<p>The C/C++ library is consumed as a NuGet package by adding a dependency to that package in your C/C++ project. The C/C++ library is often referred to as the <em>native</em> library or <em>implementation</em> library.</p>
+<p>In Visual Studio 2019:</p>
+<ul>
+<li>Right-click on the C++ project &gt; <strong>Manage NuGet Packages...</strong> to open the NuGet package manager window.</li>
+<li>Select the <strong>Browse</strong> tab.</li>
+<li>In the search bar, type &quot;Microsoft.MixedReality.WebRTC.Native&quot;. You may need to check the <strong>Include prerelease</strong> option.</li>
+<li>Select the NuGet package to install:
+<ul>
+<li>For a C++ Desktop project, choose <code>mrwebrtc</code>.</li>
+<li>For a C++ UWP project, choose <code>mrwebrtc_uwp</code>.</li>
+</ul>
+</li>
+<li>In the right panel, choose a version and click the <strong>Install</strong> button.</li>
+</ul>
+<p>This will add a dependency to the currently selected C++ project. If multiple projects are using the MixedReality-WebRTC library, this process must be repeated for each project.</p>
+<h2 id="unity-library">Unity library</h2>
+<p>Starting from v2.0.0, a <a href="https://docs.unity3d.com/Manual/Packages.html">UPM package</a> named <code>com.microsoft.mixedreality.webrtc</code> is the main distribution method for the Unity library. An optional package <code>com.microsoft.mixedreality.webrtc.samples</code> is also available which contains some samples to show how to use the Unity library. This samples package depends on the library package, and should not be used in production.</p>
+<p>The library package contains prebuilt binaries for all supported Unity platforms:</p>
+<ul>
+<li>Windows Desktop (x86, x64)</li>
+<li>Windows UWP (x86, x64, ARM)</li>
+<li>Android (ARM64)</li>
+</ul>
+<p>These packages are currently distributed in two ways:</p>
+<ul>
+<li>As <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">on-disk packages (local packages)</a> downloaded from <a href="https://github.com/microsoft/MixedReality-WebRTC/releases">the GitHub Releases page</a>. Follow <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">the official Unity instructions</a> to import the package into a Unity project via the Unity Package Manager (UPM) window.</li>
+<li>Directly via the Unity Package Manager by configuring UPM to use the official <a href="https://dev.azure.com/aipmr/MixedReality-Unity-Packages/_packaging?_a=feed&amp;feed=Unity-packages">Mixed Reality UPM package registry</a>. See the <a href="unity/helloworld-unity-importwebrtc.html">Unity tutorial</a> for details on how to configure the register and import the packages into an existing Unity project.</li>
+</ul>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/docs/manual/installation.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

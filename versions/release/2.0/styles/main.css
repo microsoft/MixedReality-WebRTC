@@ -1,0 +1,350 @@
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16px;
+  color: rgb(68, 68, 68);
+  line-height: 1.6;
+}
+
+/* Customizing for the top-level index.html */
+
+article[data-uid="index"] h2 {
+  clear: left;
+  padding-top: 30px;
+}
+
+article[data-uid="index"] li, article[data-uid="index"] p {
+  font-weight: normal;
+  font-size: 16px;
+}
+
+article[data-uid="index"] h2 ~ * {
+  padding-left: 0;
+}
+
+article[data-uid="index"] h2 ~ * > li {
+  float: left;
+  width: 280px;
+  margin-right: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  list-style-type: none;
+}
+
+article[data-uid="index"] h2 ~ ol > li > ol, article[data-uid="index"] h2 ~ ul > li > ul {
+  padding-left: 16px;
+  list-style-type: disc;
+}
+
+article[data-uid="index"] h2 ~ ol > li > ol > li > ul {
+  padding-left: 0;
+  list-style-type: none;
+}
+
+article[data-uid="index"] h2 ~ ol > li > ol > li > ul > li {
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+article[data-uid="index"] h2 ~ ul > li > ul > li > ul {
+  padding-left: 15px;
+  list-style-type: circle;
+}
+
+/** Change the default color of code and links **/
+
+code {
+  color: #717374;
+  background-color: #f1f2f3;
+}
+
+a code {
+  color: #337ab7; /** Same as standard links **/
+  background-color: #f1f2f3;
+}
+
+a code:hover {
+  text-decoration: underline;
+}
+
+.hljs-keyword {
+  color: rgb(86,156,214);
+}
+
+.hljs-string {
+  color: rgb(214, 157, 133);
+}
+
+pre {
+  border: 0;
+}
+
+/** Title bar **/
+
+.navbar-brand > img {
+  display: inline;
+  width: 32px;
+  margin: 10px 10px 10px 0;
+}
+
+.navbar-brand > span {
+  color: white;
+  display: inline;
+  margin-right: 15px;
+  vertical-align: middle;
+}
+
+/** Search **/
+
+#search {
+  margin: 0;
+  margin-right: 50px;
+  padding: 0;
+}
+
+#search input {
+  border: 0;
+  border-radius: 0;
+  height: 50px;
+  background-color: #666;
+  color: white;
+}
+
+/** Branch selector **/
+
+#branch-selector {
+  margin: 0;
+  padding: 0;
+}
+
+#branch-selector select {
+  height: 50px;
+  padding: 0;
+  padding-left: 5px;
+  border-radius: 0;
+  border: 0;
+  color: #eee;
+  background-color: #0066b8;
+}
+
+/** Breadcrumb **/
+
+/* Hide breabcrumb on index page */
+body[data-uid="index"] .subnav {
+  display: none;
+}
+
+/* Adjust article content for removed breadcrumb */
+body[data-uid="index"] .article {
+  margin-top: 90px;
+}
+
+/** TOC nav bar (left) **/
+
+#toc span.expand-stub {
+  display: none;
+}
+
+#toc ul.nav.level1 > li {
+  color: #707070;
+  border-left: 1px solid #ccc;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 0;
+  padding: 10px 0 10px 0;
+}
+
+#toc ul.nav.level1 > li > a {
+  padding-left: 10px;
+}
+
+#toc ul.nav.level1 > li.active {
+  border-color: #0071bc;
+}
+
+#toc ul.nav.level2 {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+#toc ul.nav.level2 > li {
+  text-transform: capitalize;
+  font-size: 1.1rem;
+  padding: 5px 25px 5px 0px;
+}
+
+#toc ul.nav.level2 > li > a {
+  padding-left: 25px;
+}
+
+#toc ul.nav.level2 > li.active > a::before {
+  content: '';
+  position: absolute;
+  height: 7px;
+  width: 7px;
+  background-color: #0071BC;
+  top: 5px;
+  left: -9px;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  -o-border-radius: 100%;
+  border-radius: 100%;
+}
+
+#toc ul.nav.level2 > li.active > a {
+  font-weight: bold;
+  color: #0071bc !important;
+}
+
+#toc ul.nav.level3 > li > a {
+  padding-left: 35px;
+}
+
+/** Content **/
+
+#_content h1 {
+  color: rgb(68, 68, 68);
+  font-size: 40px;
+  font-weight: 100;
+  margin-top: 0;
+}
+
+#_content h2 {
+  color: rgb(68, 68, 68);
+  font-size: 30px;
+  font-weight: 100;
+  padding-top: 70px;
+  margin-top: -50px;
+}
+
+#_content h3 {
+  color: rgb(68, 68, 68);
+  font-size: 22px;
+  font-weight: 100;
+  padding-top: 70px;
+  margin-top: -50px;
+}
+
+/** Special blocks **/
+
+.alert {
+  color: inherit;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  border-left: 5px solid #eee;
+}
+
+.alert-danger {
+  border-left: 5px solid #f5d5d5;
+}
+
+.alert-warning {
+  border-left: 5px solid #faebcc;
+}
+
+.alert > h5 {
+  display: inline;
+  color: #969696;
+}
+
+.alert-danger > h5 {
+  color: #a75656;
+}
+
+.alert-warning > h5 {
+  color: #d3a344;
+}
+
+.alert > h5::before {
+  content: none;
+}
+
+/** Color theme for API **/
+
+/** These are not important, tune down **/
+.decalaration, .fieldValue, .parameters, .returns, .eventType {
+  color: #a2a2a2;
+}
+
+/** Major sections, increase visibility **/
+#fields, #properties, #methods, #events {
+    color: #337ac4;
+    font-weight: bold;
+    margin-top: 2em;
+}
+
+article h4 {
+  border: 0;
+  font-weight: bold;
+  margin-top: 2em;
+}
+
+/** Spacing !!! **/
+
+.level0.summary {
+  margin: 2em 0 2em 0;
+}
+
+.level1.summary {
+  margin: 1em 0 1em 0;
+}
+
+/** Glossary **/
+
+#_content[data-uid="glossary"] a em {
+  color: #337ac4;
+}
+
+#_content[data-uid="glossary"] h2 {
+  border-bottom: 1px solid #777;
+}
+
+#_content[data-uid="glossary"] h3 {
+  color: #337ac4;
+  border-left: 8px solid #337ac4;
+  margin-top: 30px;
+  padding-top: 0;
+  padding-left: 10px;
+}
+
+#_content[data-uid="glossary"] h3 .anchorjs-link {
+  left: 15px;
+}
+
+#_content[data-uid="glossary"] h4 {
+  font-weight: 600;
+  font-size: 90%;
+  color: #777;
+  margin-top: 1em;
+}
+
+#_content[data-uid="glossary"] blockquote {
+  padding: 0;
+  border: 0;
+  font-size: 90%;
+}
+
+#_content[data-uid="glossary"] blockquote p {
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+}
+
+#_content[data-uid="glossary"] blockquote p::after {
+  content: ":";
+}
+
+#_content[data-uid="glossary"] blockquote ul {
+  padding-left: 0;
+}
+
+#_content[data-uid="glossary"] blockquote li {
+  list-style-type: none;
+  display: inline;
+  margin-right: 3px;
+  background-color: #eee;
+  padding: 2px 5px;
+  border-radius: 5px;
+}

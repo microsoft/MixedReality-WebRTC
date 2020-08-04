@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Migration Guide | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Migration Guide | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.png">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="MixedReality-WebRTC">
+                <span>MixedReality-WebRTC</span>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="migration-guide">Migration Guide</h1>
+
+<p>This guide details the main steps to migrate between major release versions.</p>
+<h2 id="migrate-from-1x-to-2x">Migrate from 1.x to 2.x</h2>
+<p>The 2.0 release introduces some significant changes in the API compared to the 1.0 release in order to include support for multiple media tracks per peer connection.</p>
+<h3 id="old-c-library">Old C++ library</h3>
+<p>Previously in the 1.x release the <code>Microsoft.MixedReality.WebRTC.Native.dll</code> module acted both as an implementation DLL for the C# library as well as a C++ library for direct use in end-user C++ applications. This double usage had diverging constraints which were making the internal implementation unnecessarily complex.</p>
+<p>Starting from the 2.0 release, this module now exposes a pure C API providing the core implementation of MixedReality-WebRTC. This library can be used from C/C++ programs with ease, as the use of a C API:</p>
+<ul>
+<li>allows use from C programs, which was not previously possible;</li>
+<li>sidesteps C++ complications with DLLs (destructor, template and inlining, <em>etc.</em>).</li>
+</ul>
+<p>The library has been renamed to <code>mrwebrtc.dll</code> (<code>libmrwebrtc.so</code> on Android) to emphasize this change and the fact there is no C++ library anymore, only a C library.</p>
+<h3 id="c-library">C# library</h3>
+<p>The C# library exposes a transceiver API very similar to the one found in the WebRTC 1.0 standard, and therefore familiarity with that standard helps understanding the API model. The API is not guaranteed to exactly follow the standard, but generally stays pretty close to it.</p>
+<h4 id="standalone-audio-and-video-sources">Standalone audio and video sources</h4>
+<p>Audio and video sources (webcam, microphone, external callback-based source) are now standalone objects not tied to any peer connection. Those objects, called <em>track sources</em>, can be reused by many audio and video tracks, which allows usage scenario such as sharing a single webcam or microphone device among multiple peer connections.</p>
+<ul>
+<li>Users must create the audio and video track source objects explicitly, independently of the peer connection.
+<ul>
+<li>Device-based (microphone) audio track sources are created with the class method <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceAudioTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalAudioDeviceInitConfig_"><code>DeviceAudioTrackSource.CreateAsync()</code></a>.</li>
+<li>Video track sources are created with class methods such as <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceVideoTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalVideoDeviceInitConfig_"><code>DeviceVideoTrackSource.CreateAsync()</code></a> for device-based sources (webcam) or <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromI420ACallback_Microsoft_MixedReality_WebRTC_I420AVideoFrameRequestDelegate_"><code>ExternalVideoTrackSource.CreateFromI420ACallback()</code></a> for custom callback-based sources.</li>
+</ul>
+</li>
+<li>Users are owning those track source objects and must ensure they stay alive while in use by any audio or video track, and are properly disposed after use (<code>IDisposable</code>).</li>
+</ul>
+<h4 id="standalone-local-track-objects">Standalone local track objects</h4>
+<p>Audio and video tracks are now standalone objects, not owned by a peer connection, and not initially tied to any peer connection but bound to one on first use.</p>
+<ul>
+<li>Users must create the audio and video track objects explicitly, independently of the peer connection. Those tracks are created from a track source (see above).
+<ul>
+<li>Audio tracks are created with <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.LocalAudioTrack.html#Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_AudioTrackSource_Microsoft_MixedReality_WebRTC_LocalAudioTrackInitConfig_"><code>LocalAudioTrack.CreateFromSource()</code></a>.</li>
+<li>Video tracks are created with <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.LocalVideoTrack.html#Microsoft_MixedReality_WebRTC_LocalVideoTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_VideoTrackSource_Microsoft_MixedReality_WebRTC_LocalVideoTrackInitConfig_"><code>LocalVideoTrack.CreateFromSource()</code></a>.</li>
+</ul>
+</li>
+<li>Users are owning those track objects and must ensure they stay alive while in use by the peer connection they are bound to on first use (when first assigned to a transceiver; see below), and are properly disposed after use (<code>IDisposable</code>).</li>
+</ul>
+<p>Note that remote tracks remain owned by the peer connection which created them in response to an SDP offer or answer being received and applied, like in the previous 1.0 API.</p>
+<h4 id="transceivers">Transceivers</h4>
+<p>Previously in the 1.0 API the peer connection was based on an API similar to the track-based API of the pre-standard WebRTC specification. The 2.0 release introduces a different <em>transceiver</em>-based API for manipulating audio and video tracks, which is more closely based on the WebRTC 1.0 standard.</p>
+<ul>
+<li>A <em>transceiver</em> is a &quot;media pipe&quot; in charge of the encoding and transport of some audio or video tracks.</li>
+<li>Each transceiver has a media kind (audio <strong>or</strong> video), and a sender track slot and a receiver track slot. Audio tracks can be attached to <em>audio transceivers</em> (transceivers with a <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_MediaKind"><code>Transceiver.MediaKind</code></a> property equal to <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.MediaKind.html#Microsoft_MixedReality_WebRTC_MediaKind_Audio"><code>MediaKind.Audio</code></a>). Conversely, video tracks can be attached to <em>video transceivers</em> (<a class="xref" href="../api/Microsoft.MixedReality.WebRTC.MediaKind.html#Microsoft_MixedReality_WebRTC_MediaKind_Video"><code>MediaKind.Video</code></a>).</li>
+<li>An empty sender track slot on a transceiver makes it send (if its direction include sending) empty data, that is black frames for video or silence for audio. An empty receiver track slot on a transceiver means the received media data, if any (depends on direction), is discarded by the implementation.</li>
+<li>A peer connection owns an ordered collection of audio and video transceivers. Users must create a transceiver with <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>PeerConnection.AddTransceiver()</code></a>. Transceivers cannot be removed; they stay attached to the peer connection until that peer connection is destroyed.</li>
+<li>Transceivers have a media <em>direction</em> which indicates if they are currently sending and/or receiving media from the remote peer. This direction can be set by the user by changing the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_DesiredDirection"><code>Transceiver.DesiredDirection</code></a> property.</li>
+<li>Changing a transceiver direction requires an SDP session renegotiation, and therefore changing the value of the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_DesiredDirection"><code>Transceiver.DesiredDirection</code></a> property raises a <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_RenegotiationNeeded"><code>PeerConnection.RenegotiationNeeded</code></a> event. After the session has been renegotiated, the negotiated direction can be read from the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_NegotiatedDirection"><code>Transceiver.NegotiatedDirection</code></a> read-only property.</li>
+<li>Media tracks are attached to and removed from transceivers. Unlike in 1.0, <strong>this does not require any session negotiation</strong>. Tracks can be transparently (from the point of view of the session) attached to a transceiver, detached from it, attached to a different transceiver, <em>etc.</em> without any of these raising a <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_RenegotiationNeeded"><code>PeerConnection.RenegotiationNeeded</code></a> event.</li>
+</ul>
+<p>A typical workflow with the transceiver API is as follow:</p>
+<ol>
+<li>The <strong>offering peer</strong> creates some transceivers and create an SDP offer.</li>
+<li>The offer is sent to the <strong>answering peer</strong>.</li>
+<li>The <strong>answering peer</strong> accepts the offer; this automatically creates the transceivers present in the offer that the <strong>offering peer</strong> created in step 1.</li>
+<li>The <strong>answering peer</strong> optionally add more transceivers beyond the ones already existing.</li>
+<li>The <strong>answering peer</strong> creates an SDP answer.</li>
+<li>The answer is sent back to the <strong>offering peer</strong>.</li>
+<li>The <strong>offering peer</strong> accepts the answer; this automatically creates any additional transceiver that the <strong>answering peer</strong> added in step 4.</li>
+</ol>
+<p>Migrating from the 1.x release, users typically:</p>
+<ul>
+<li>On the <strong>offering peer</strong>, replace calls to <code>PeerConnection.AddLocalAudioTrack()</code> with:
+<ul>
+<li>a call to <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.DeviceAudioTrackSource.html#Microsoft_MixedReality_WebRTC_DeviceAudioTrackSource_CreateAsync_Microsoft_MixedReality_WebRTC_LocalAudioDeviceInitConfig_"><code>DeviceAudioTrackSource.CreateAsync()</code></a> to create the device-based (microphone) audio track source.</li>
+<li>a call to <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.LocalAudioTrack.html#Microsoft_MixedReality_WebRTC_LocalAudioTrack_CreateFromSource_Microsoft_MixedReality_WebRTC_AudioTrackSource_Microsoft_MixedReality_WebRTC_LocalAudioTrackInitConfig_"><code>LocalAudioTrack.CreateFromSource()</code></a> to create the audio track that will bind the microphone audio of that source to the transceiver sending it to the remote peer.</li>
+<li>a call to <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>PeerConnection.AddTransceiver()</code></a> to add an audio transceiver.</li>
+<li>assigning the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_LocalAudioTrack"><code>Transceiver.LocalAudioTrack</code></a> property to the audio track.</li>
+<li>setting the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_DesiredDirection"><code>Transceiver.DesiredDirection</code></a> to <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Transceiver.Direction.html#Microsoft_MixedReality_WebRTC_Transceiver_Direction_SendReceive"><code>Direction.SendReceive</code></a> or <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Transceiver.Direction.html#Microsoft_MixedReality_WebRTC_Transceiver_Direction_SendOnly"><code>Direction.SendOnly</code></a> depending on whether they expect to also receive an audio track from the remote peer.</li>
+</ul>
+</li>
+<li>On the <strong>answering peer</strong>, replace calls to <code>PeerConnection.AddLocalAudioTrack()</code> in the same way as on the offering peer, creating a track source and a track. However, do not immediately call <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_AddTransceiver_Microsoft_MixedReality_WebRTC_MediaKind_Microsoft_MixedReality_WebRTC_TransceiverInitSettings_"><code>PeerConnection.AddTransceiver()</code></a>, but instead wait for the offer to create the transceiver. This requires some coordination, either implicit (pre-established transceiver order) or explicit (user communication between the 2 peers, for example using data channels), to determine on each peer which transceiver to use for which track. Note that the Unity library uses implicit coordination via media lines (declarative model).</li>
+<li>Proceed similarly for video tracks.</li>
+</ul>
+<h4 id="signaling">Signaling</h4>
+<ul>
+<li>SDP messages are now encapsulated in a data structure for clarity (<a class="xref" href="../api/Microsoft.MixedReality.WebRTC.SdpMessage.html"><code>SdpMessage</code></a> and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.IceCandidate.html"><code>IceCandidate</code></a>).</li>
+</ul>
+<h3 id="unity-integration">Unity integration</h3>
+<p>Unlike the C# library, which stays close to the WebRTC 1.0 in terms of transceiver behavior, the Unity integration takes a step back and build some convenience features on top of the transceiver API of the C# library. For the user, this avoids having to deal manually with pairing transceivers and tracks, and relying instead on a much simpler declarative model.</p>
+<p>Users are encouraged to follow the updated <a href="unity/helloworld-unity.html">Unity tutorial</a> to understand how to setup a peer connection with this new API.</p>
+<h4 id="peer-connection">Peer connection</h4>
+<p>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> component now holds a collection of <em>media lines</em>, which can be described as a sort of &quot;transceiver intent&quot;. These describe the final result the user intend to produce after an SDP session is fully negotiated in terms of transceivers and their attached tracks. The component internally manages adding transceivers when needed to match the user's media line description, as well as creating and destroying local sender tracks when a source is assigned by the user to the media line or removed from it.</p>
+<h4 id="signaler">Signaler</h4>
+<ul>
+<li>The <code>PeerConnection.Signaler</code> property has been removed; the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> component is now only a helper to creating custom signaling solution, but is not required anymore.</li>
+<li>As a result, the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> component now has a <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_PeerConnection"><code>Signaler.PeerConnection</code></a> property which must be set up by the user. This is true in particular for the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html"><code>NodeDssSignaler</code></a> component which derives from the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.Signaler.html"><code>Signaler</code></a> abstract base component.</li>
+</ul>
+<h4 id="video">Video</h4>
+<ul>
+<li>The <code>LocalVideoSource</code> component, which was previously using a webcam to capture video frames, has been renamed into the more explicit <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html"><code>WebcamSource</code></a> component.</li>
+<li>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html"><code>WebcamSource</code></a> component derives from the abstract <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html"><code>VideoTrackSource</code></a> component, which is also the base class for the callback-based sources like the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html"><code>SceneVideoSource</code></a> component  (previously: <code>SceneVideoSender</code>) which captures its video frame from the rendering of any Unity Camera component.</li>
+<li>The <code>RemoteVideoSource</code> component has been renamed into the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html"><code>VideoReceiver</code></a> component.</li>
+<li>The <code>VideoSource</code> component has been split into <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html"><code>VideoTrackSource</code></a> for local sources and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html"><code>VideoReceiver</code></a> for remote sources.</li>
+<li>The <code>MediaPlayer</code> component has been renamed into the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html"><code>VideoRenderer</code></a> component for clarity, has it only deal with video rendering and not audio. This also prevent a name collision with the Unity built-in component. This component can render any video source exposing some method taking an <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.IVideoSource.html"><code>IVideoSource</code></a>, and most notably <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html"><code>VideoTrackSource</code></a> (local video) and  <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html"><code>VideoReceiver</code></a> (remote video).</li>
+</ul>
+<h4 id="audio">Audio</h4>
+<ul>
+<li>The <code>LocalAudioSource</code> component, which was previously using a microphone to capture audio frames, as been renamed into the more explicit <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html"><code>MicrophoneSource</code></a> component.</li>
+<li>The <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html"><code>MicrophoneSource</code></a> component derives from the abstract <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html"><code>AudioTrackSource</code></a> component to enable future customizing usages and for symmetry with video.</li>
+<li>The <code>RemoteAudioSource</code> component has been renamed into the <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html"><code>AudioReceiver</code></a> component. This component now forwards its audio to a local <a href="https://docs.unity3d.com/ScriptReference/AudioSource.html"><code>Unity.AudioSource</code></a> component on the same <a href="https://docs.unity3d.com/ScriptReference/GameObject.html"><code>GameObject</code></a>, which allows the audio to be injected into the Unity DSP pipeline and mixed with other audio sources from the scene. This in particular enables usage scenarios such as <em>spatial audio</em> (3D localization of audio sources for increased audio immersion).</li>
+<li>The <code>AudioSource</code> component has been split into <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioTrackSource.html"><code>AudioTrackSource</code></a> for local sources and <a class="xref" href="../api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html"><code>AudioReceiver</code></a> for remote sources.</li>
+</ul>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/docs/manual/migration-guide.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

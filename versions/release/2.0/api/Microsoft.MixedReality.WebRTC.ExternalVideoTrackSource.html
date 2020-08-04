@@ -1,0 +1,501 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class ExternalVideoTrackSource
+   | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class ExternalVideoTrackSource
+   | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.png">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="MixedReality-WebRTC">
+                <span>MixedReality-WebRTC</span>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource">
+  
+  
+  <h1 id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource" class="text-break">Class ExternalVideoTrackSource
+  </h1>
+  <div class="markdown level0 summary"><p>Video source for WebRTC video tracks based on a custom source
+of video frames managed by the user and external to the WebRTC
+implementation.</p>
+<p>This class is used to inject into the WebRTC engine a video track
+whose frames are produced by a user-managed source the WebRTC engine
+knows nothing about, like programmatically generated frames, including
+frames not strictly of video origin like a 3D rendered scene, or frames
+coming from a specific capture device not supported natively by WebRTC.
+This class serves as an adapter for such video frame sources.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html">VideoTrackSource</a></div>
+    <div class="level2"><span class="xref">ExternalVideoTrackSource</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="Microsoft.MixedReality.WebRTC.IVideoSource.html">IVideoSource</a></div>
+    <div><span class="xref">IDisposable</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_Name">VideoTrackSource.Name</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_Tracks">VideoTrackSource.Tracks</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_I420AVideoFrameReady">VideoTrackSource.I420AVideoFrameReady</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_Argb32VideoFrameReady">VideoTrackSource.Argb32VideoFrameReady</a>
+    </div>
+    <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_Enabled">VideoTrackSource.Enabled</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
+  <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class ExternalVideoTrackSource : VideoTrackSource, IVideoSource, IDisposable, VideoTrackSourceInterop.IVideoSource</code></pre>
+  </div>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource__frameRequestCallbackArgsHandle.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource._frameRequestCallbackArgsHandle%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/ExternalVideoTrackSource.cs/#L89">View Source</a>
+  </span>
+  <h4 id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource__frameRequestCallbackArgsHandle" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource._frameRequestCallbackArgsHandle">_frameRequestCallbackArgsHandle</h4>
+  <div class="markdown level1 summary"><p>GC handle to frame request callback args keeping the delegate alive
+while the callback is registered with the native implementation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected IntPtr _frameRequestCallbackArgsHandle</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_FrameEncoding.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.FrameEncoding%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/ExternalVideoTrackSource.cs/#L83">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_FrameEncoding_" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.FrameEncoding*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_FrameEncoding" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.FrameEncoding">FrameEncoding</h4>
+  <div class="markdown level1 summary"><p>Video encoding indicating the kind of frames the source is producing.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override VideoEncoding FrameEncoding { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoEncoding.html">VideoEncoding</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_FrameEncoding">VideoTrackSource.FrameEncoding</a></div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CompleteFrameRequest_System_UInt32_System_Int64_Microsoft_MixedReality_WebRTC_Argb32VideoFrame__.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32%2CSystem.Int64%2CMicrosoft.MixedReality.WebRTC.Argb32VideoFrame%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/ExternalVideoTrackSource.cs/#L138">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CompleteFrameRequest_" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CompleteFrameRequest_System_UInt32_System_Int64_Microsoft_MixedReality_WebRTC_Argb32VideoFrame__" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32,System.Int64,Microsoft.MixedReality.WebRTC.Argb32VideoFrame@)">CompleteFrameRequest(UInt32, Int64, Argb32VideoFrame)</h4>
+  <div class="markdown level1 summary"><p>Complete the current request by providing a video frame for it.
+This must be used if the video track source was created with
+<a class="xref" href="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromArgb32Callback_Microsoft_MixedReality_WebRTC_Argb32VideoFrameRequestDelegate_">CreateFromArgb32Callback(Argb32VideoFrameRequestDelegate)</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void CompleteFrameRequest(uint requestId, long timestampMs, in Argb32VideoFrame frame)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
+        <td><span class="parametername">requestId</span></td>
+        <td><p>The original request ID.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">timestampMs</span></td>
+        <td><p>The video frame timestamp.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Argb32VideoFrame.html">Argb32VideoFrame</a></td>
+        <td><span class="parametername">frame</span></td>
+        <td><p>The video frame used to complete the request.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CompleteFrameRequest_System_UInt32_System_Int64_Microsoft_MixedReality_WebRTC_I420AVideoFrame__.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32%2CSystem.Int64%2CMicrosoft.MixedReality.WebRTC.I420AVideoFrame%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/ExternalVideoTrackSource.cs/#L125">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CompleteFrameRequest_" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CompleteFrameRequest_System_UInt32_System_Int64_Microsoft_MixedReality_WebRTC_I420AVideoFrame__" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32,System.Int64,Microsoft.MixedReality.WebRTC.I420AVideoFrame@)">CompleteFrameRequest(UInt32, Int64, I420AVideoFrame)</h4>
+  <div class="markdown level1 summary"><p>Complete the current request by providing a video frame for it.
+This must be used if the video track source was created with
+<a class="xref" href="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromI420ACallback_Microsoft_MixedReality_WebRTC_I420AVideoFrameRequestDelegate_">CreateFromI420ACallback(I420AVideoFrameRequestDelegate)</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void CompleteFrameRequest(uint requestId, long timestampMs, in I420AVideoFrame frame)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
+        <td><span class="parametername">requestId</span></td>
+        <td><p>The original request ID.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">timestampMs</span></td>
+        <td><p>The video frame timestamp.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.I420AVideoFrame.html">I420AVideoFrame</a></td>
+        <td><span class="parametername">frame</span></td>
+        <td><p>The video frame used to complete the request.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromArgb32Callback_Microsoft_MixedReality_WebRTC_Argb32VideoFrameRequestDelegate_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromArgb32Callback(Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/ExternalVideoTrackSource.cs/#L106">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromArgb32Callback_" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromArgb32Callback*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromArgb32Callback_Microsoft_MixedReality_WebRTC_Argb32VideoFrameRequestDelegate_" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromArgb32Callback(Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate)">CreateFromArgb32Callback(Argb32VideoFrameRequestDelegate)</h4>
+  <div class="markdown level1 summary"><p>Create a new external video track source from a given user callback providing ARGB32-encoded frames.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ExternalVideoTrackSource CreateFromArgb32Callback(Argb32VideoFrameRequestDelegate frameCallback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Argb32VideoFrameRequestDelegate.html">Argb32VideoFrameRequestDelegate</a></td>
+        <td><span class="parametername">frameCallback</span></td>
+        <td><p>The callback that will be used to request frames for tracks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html">ExternalVideoTrackSource</a></td>
+        <td><p>The newly created track source.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromI420ACallback_Microsoft_MixedReality_WebRTC_I420AVideoFrameRequestDelegate_.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromI420ACallback(Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/ExternalVideoTrackSource.cs/#L96">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromI420ACallback_" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromI420ACallback*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CreateFromI420ACallback_Microsoft_MixedReality_WebRTC_I420AVideoFrameRequestDelegate_" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CreateFromI420ACallback(Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate)">CreateFromI420ACallback(I420AVideoFrameRequestDelegate)</h4>
+  <div class="markdown level1 summary"><p>Create a new external video track source from a given user callback providing I420A-encoded frames.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ExternalVideoTrackSource CreateFromI420ACallback(I420AVideoFrameRequestDelegate frameCallback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.I420AVideoFrameRequestDelegate.html">I420AVideoFrameRequestDelegate</a></td>
+        <td><span class="parametername">frameCallback</span></td>
+        <td><p>The callback that will be used to request frames for tracks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html">ExternalVideoTrackSource</a></td>
+        <td><p>The newly created track source.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_Dispose.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/ExternalVideoTrackSource.cs/#L144">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_Dispose_" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.Dispose*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_Dispose" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void Dispose()</code></pre>
+  </div>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_Dispose">VideoTrackSource.Dispose()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_ToString.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/ExternalVideoTrackSource.cs/#L159">View Source</a>
+  </span>
+  <a id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_ToString_" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.ToString*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_ToString" data-uid="Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="Microsoft.MixedReality.WebRTC.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_VideoTrackSource_ToString">VideoTrackSource.ToString()</a></div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="Microsoft.MixedReality.WebRTC.IVideoSource.html">IVideoSource</a>
+  </div>
+  <div>
+      <span class="xref">IDisposable</span>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/2.0/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/libs/Microsoft.MixedReality.WebRTC/ExternalVideoTrackSource.cs/#L80" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

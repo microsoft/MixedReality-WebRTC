@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Glossary | MixedReality-WebRTC Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Glossary | MixedReality-WebRTC Documentation ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../mr-webrtc_icon.png">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="glossary">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../mr-webrtc_icon.png" alt="MixedReality-WebRTC">
+                <span>MixedReality-WebRTC</span>
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" id="branch-selector">
+                <select name="branch"></select>
+              </form>
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="glossary">
+<h1 id="glossary">Glossary</h1>
+
+<h2 id="d">D</h2>
+<h3 id="data-channel">Data channel</h3>
+<p>A data channel is a &quot;pipe&quot; to send and receive random blobs of bytes.</p>
+<h2 id="l">L</h2>
+<h3 id="local-media-track">Local media track</h3>
+<p>A local media track is a <a href="#media-track"><em>media track</em></a> whose source is local to the peer connection, that is which has a local frame-producing <a href="#media-track-source"><em>media track source</em></a>. In other words the track is a sender track, which produce frames to be sent to the remote peer.</p>
+<blockquote>
+<p>See also</p>
+<ul>
+<li><a href="#media-track"><em>media track</em></a></li>
+<li><a href="#remote-media-track"><em>remote media track</em></a></li>
+</ul>
+</blockquote>
+<h2 id="m">M</h2>
+<h3 id="media">Media</h3>
+<p>The term <em>media</em> refers to either or both of <em>audio</em> and <em>video</em>. It does <strong>not</strong> include <a href="#data-channel"><em>data channels</em></a>.</p>
+<h3 id="media-track">Media track</h3>
+<p>A <em>media track</em> is a slim entity which bridges a <a href="#media-track-source"><em>media track source</em></a> with a <a href="#transceiver"><em>transceiver</em></a>.</p>
+<blockquote>
+<p>See also</p>
+<ul>
+<li><a href="#media"><em>media</em></a></li>
+<li><a href="#media-track-source"><em>media track source</em></a></li>
+<li><a href="#local-media-track"><em>local media track</em></a></li>
+<li><a href="#remote-media-track"><em>remote media track</em></a></li>
+</ul>
+</blockquote>
+<h3 id="media-track-source">Media track source</h3>
+<p>A <em>media track source</em> is an entity producing some <a href="#media"><em>media</em></a> frames. Those frames are made available to one or more <a href="#media-track"><em>media tracks</em></a>. The source itself is a standalone object not associated with any particular peer connection, and therefore can be used with multiple tracks from multiple peer connections at the same time.</p>
+<blockquote>
+<p>See also</p>
+<ul>
+<li><a href="#media"><em>media</em></a></li>
+<li><a href="#media-track-source"><em>media track source</em></a></li>
+</ul>
+</blockquote>
+<h2 id="p">P</h2>
+<h3 id="peer-connection">Peer connection</h3>
+<p>The peer connection is the main entity of WebRTC. It manages a connection to a single remote peer. The peer connection contains a collection of <a href="#transceiver"><em>transceivers</em></a>, which describe which <a href="#media"><em>media</em></a> is sent to and received from the remote peer, as well as a collection of <a href="#data-channel"><em>data channels</em></a>, both of which can be empty.</p>
+<blockquote>
+<p>See also</p>
+<ul>
+<li><a href="#transceiver"><em>transceiver</em></a></li>
+<li><a href="#data-channel"><em>data channel</em></a></li>
+</ul>
+</blockquote>
+<h2 id="r">R</h2>
+<h3 id="remote-media-track">Remote media track</h3>
+<p>A remote media track is a <a href="#media-track"><em>media track</em></a> whose source is remote to the peer connection, that is which receives its frame from the remote peer; this is a receiver track.</p>
+<blockquote>
+<p>See also</p>
+<ul>
+<li><a href="#media-track"><em>media track</em></a></li>
+<li><a href="#local-media-track"><em>local media track</em></a></li>
+</ul>
+</blockquote>
+<h2 id="t">T</h2>
+<h3 id="transceiver">Transceiver</h3>
+<p>A transceiver is a &quot;pipe&quot; for transporting some <a href="#media"><em>media</em></a> between two peers. Each transceiver is owned by a specific <a href="#peer-connection"><em>peer connection</em></a>, and describes how this media is encoded (audio or video codec type and options) and transported (transport options, like bandwidth).</p>
+<p>A transceiver always has exactly one <a href="#local-media-track"><em>local media track</em></a> (sender) and one <a href="#remote-media-track"><em>remote media track</em></a> (receiver), both of which can be <code>null</code>. If <code>null</code>, the transceiver acts as if a dummy track existed which draws its media frames from a null source (black frames for video, silence for audio).</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/2.0/docs/manual/glossary.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/branches.gen.js"></script>
+    <script type="text/javascript" src="../styles/branch-selector.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
