@@ -9,6 +9,7 @@
 var branches = [
   'master',
   'release/1.0',
+  'release/2.0',
 ]
 
 // Export to global scope
