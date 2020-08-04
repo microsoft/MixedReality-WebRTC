@@ -13,7 +13,7 @@ This package contains the native shared libraries (x86, x64, ARM) and C++ header
         <license type="expression">MIT</license>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <repository type="git" url="https://github.com/microsoft/MixedReality-WebRTC.git" branch="master" commit="__SOURCE_COMMIT_ID__" />
-        <iconUrl>https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/mr-webrtc_icon.png</iconUrl>
+        <iconUrl>https://raw.githubusercontent.com/microsoft/MixedReality-WebRTC/master/docs/mr-webrtc_icon.png</iconUrl>
         <tags>native WebRTC video audio data streaming realtime communication C++ cpp UWP</tags>
         <summary>MixedReality-WebRTC is a collection of components to help mixed reality app developers integrate audio, video, and data real-time communication into their application and improve their collaborative experience.
 
