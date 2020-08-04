@@ -6,11 +6,11 @@ The **C/C++ library** and **C# library** are distributed as NuGet packages for W
 
 ## Unity library
 
-UPM packages are available for download on the [GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases).
+UPM packages are available for download on [the GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases). Alternatively, the packages can be installed directly from [the Mixed Reality UPM package registry](https://dev.azure.com/aipmr/MixedReality-Unity-Packages/_packaging?_a=feed&feed=Unity-packages) by Unity without needing a manual download; see [Installation](installation.md#unity-library) for details.
 
 The library package contains prebuilt binaries for all supported Unity platforms: Windows Desktop (x86, x64), UWP (x86, x64, ARM), and Android (ARM64).
 
-See [Installation](installation.md#unity-library) for details on how to use those packages in an existing Unity project.
+See [Installation](installation.md#unity-library) for details on how to use those packages in an existing Unity project, whether downloaded manually or directly through the Unity Package Manager (UPM).
 
 ## NuGet packages
 

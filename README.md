@@ -18,9 +18,9 @@ MixedReality-WebRTC is part of the collection of repositories developed and main
 
 ## Download
 
-NuGet packages are available for stable releases (`release/*` branches). See the [Release page on GitHub](https://github.com/microsoft/MixedReality-WebRTC/releases).
+NuGet (C++, C#) and UPM (Unity) packages are available for stable releases (`release/*` branches). See the [Release page on GitHub](https://github.com/microsoft/MixedReality-WebRTC/releases) or the [Download documentation page](https://microsoft.github.io/MixedReality-WebRTC/manual/download.html) for details.
 
-_Note_: The `master` branch contains the code for the next release, and therefore sometimes contains breaking API changes from the latest stable release. It is therefore not guaranteed to work with NuGet packages, which are only available for stable releases. In particular, the Unity integration scripts are only guaranteed to be compatible with NuGet packages if copied from a `release/*` branch.
+_Note_: The `master` branch contains the code for the next release, and therefore sometimes contains breaking API changes from the latest stable release. It is therefore not guaranteed to work with NuGet packages, which are only available for stable releases. In particular, the Unity library scripts are only guaranteed to be compatible with NuGet packages if copied from a `release/*` branch, though it is strongly recommended to use the UPM packages instead.
 
 ## Build Status
 
