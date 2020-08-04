@@ -116,9 +116,18 @@
 </ul>
 <p>This will add a dependency to the currently selected C++ project. If multiple projects are using the MixedReality-WebRTC library, this process must be repeated for each project.</p>
 <h2 id="unity-library">Unity library</h2>
-<p>Starting from v2.0.0, a <a href="https://docs.unity3d.com/Manual/Packages.html">UPM package</a> named <code>com.microsoft.mixedreality.webrtc</code> is the main distribution method for the Unity library.</p>
-<p>This package is currently distributed as <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">an on-disk package (local package)</a> containing prebuilt binaries for all supported Unity platforms. Follow <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">the official Unity instructions</a> to import the library package into a Unity project via the Unity Package Manager (UPM) window.</p>
-<p>An optional package <code>com.microsoft.mixedreality.webrtc.samples</code> is also available which contains some samples to show how to use the Unity library. This samples package depends on the library package. It should not be used in production.</p>
+<p>Starting from v2.0.0, a <a href="https://docs.unity3d.com/Manual/Packages.html">UPM package</a> named <code>com.microsoft.mixedreality.webrtc</code> is the main distribution method for the Unity library. An optional package <code>com.microsoft.mixedreality.webrtc.samples</code> is also available which contains some samples to show how to use the Unity library. This samples package depends on the library package, and should not be used in production.</p>
+<p>The library package contains prebuilt binaries for all supported Unity platforms:</p>
+<ul>
+<li>Windows Desktop (x86, x64)</li>
+<li>Windows UWP (x86, x64, ARM)</li>
+<li>Android (ARM64)</li>
+</ul>
+<p>These packages are currently distributed in two ways:</p>
+<ul>
+<li>As <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">on-disk packages (local packages)</a> downloaded from <a href="https://github.com/microsoft/MixedReality-WebRTC/releases">the GitHub Releases page</a>. Follow <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">the official Unity instructions</a> to import the package into a Unity project via the Unity Package Manager (UPM) window.</li>
+<li>Directly via the Unity Package Manager by configuring UPM to use the official <a href="https://dev.azure.com/aipmr/MixedReality-Unity-Packages/_packaging?_a=feed&amp;feed=Unity-packages">Mixed Reality UPM package registry</a>. See the <a href="unity/helloworld-unity-importwebrtc.html">Unity tutorial</a> for details on how to configure the register and import the packages into an existing Unity project.</li>
+</ul>
 </article>
           </div>
           

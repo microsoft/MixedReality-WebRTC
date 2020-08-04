@@ -89,172 +89,40 @@
 <li>C# library : <code>Microsoft.MixedReality.WebRTC.dll</code> (single universal module for all platforms and architectures)</li>
 <li>Unity library itself (scripts and assets)</li>
 </ul>
+<p>The Unity library is distributed as a <a href="https://docs.unity3d.com/Manual/Packages.html">UPM package</a> containing all those components, including the prebuilt binaries for all supported Unity platforms. The library package itself, as well as the optional samples package, can be imported into an existing Unity project in two ways:</p>
+<ul>
+<li>Manually by downloading the UPM package(s) from <a href="https://github.com/microsoft/MixedReality-WebRTC/releases">the GitHub Releases page</a>. Packages imported that way are referred to by Unity as <a href="https://docs.unity3d.com/Manual/upm-ui-local.html"><em>on-disk packages</em> or <em>local packages</em></a>, and the installation process is described in <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">the official Unity instructions</a>.</li>
+<li>(Semi-)automatically via the UPM window inside the Unity Editor, after configuring UPM to use the official <a href="https://dev.azure.com/aipmr/MixedReality-Unity-Packages/_packaging?_a=feed&amp;feed=Unity-packages">Mixed Reality UPM package registry</a>.</li>
+</ul>
+<p>In the following, we describe the latter method.</p>
+<p>As of Unity versions 2018.4 LTS and 2019.4 LTS, the Unity Package Manager (UPM) supports custom UPM package registries, but does not have any UI to configure those. Instead, users need to modify the <code>&lt;UnityProject&gt;/Packages/manifest.json</code> file inside the project where they want to import the packages.</p>
+<p>Open the <code>&lt;UnityProject&gt;/Packages/manifest.json</code> file inside a text editor. The file should start with (or at least contain) a &quot;dependencies&quot; section listing all packages that the current project depends on. Insert a new section called &quot;scopedRegistries&quot; to enable the official Microsoft Mixed Reality UPM registry, and add the <code>com.microsoft.mixedreality.webrtc</code> package (library), and optionally the <code>com.microsoft.mixedreality.webrtc.samples</code> package (samples), as dependencies.</p>
+<pre><code class="lang-json">{
+   &quot;scopedRegistries&quot;: [
+      {
+        &quot;name&quot;: &quot;Microsoft Mixed Reality&quot;,
+        &quot;url&quot;: &quot;https://pkgs.dev.azure.com/aipmr/MixedReality-Unity-Packages/_packaging/Unity-packages/npm/registry/&quot;,
+        &quot;scopes&quot;: [&quot;com.microsoft.mixedreality&quot;]
+      }
+   ],
+   &quot;dependencies&quot;: {
+     &quot;com.microsoft.mixedreality.webrtc&quot;: &quot;2.0.0-preview.1&quot;,
+     &quot;com.microsoft.mixedreality.webrtc.samples&quot;: &quot;2.0.0-preview.1&quot;,
+     ...existing dependencies...
+</code></pre>
 <div class="NOTE">
 <h5>Note</h5>
-<p>There is currently no pre-packaged distribution method for Unity which include prebuilt binaries.</p>
+<p>Merely configuring the Mixed Reality UPM registry is not enough, as current LTS versions of Unity do not support listing packages from it automatically. Therefore the packages have to be added manually too in the &quot;dependencies&quot; section.</p>
 </div>
-<h2 id="copying-the-binaries">Copying the binaries</h2>
-<p>The binaries can be obtained either prebuilt from the NuGet packages, or from a local build of the Visual Studio solution provided in <a href="https://github.com/microsoft/MixedReality-WebRTC/">the GitHub repository</a>.</p>
-<ul>
-<li><p><strong>NuGet packages</strong> do not require any build step, so are the most convenient approach. But they are generally only available for stable releases (<em>e.g.</em> <a href="https://github.com/microsoft/MixedReality-WebRTC/tree/release/1.0/">the <code>release/1.0</code> branch</a>), so will be missing any newer development available on <a href="https://github.com/microsoft/MixedReality-WebRTC/tree/master/">the <code>master</code> branch</a>.</p>
-</li>
-<li><p><strong>A local build</strong> via the Visual Studio solution <code>Microsoft.MixedReality.WebRTC.sln</code> allows accessing the latest features, but may contain some API breaking changes since the latest stable release, so may require some code changes when upgrading an existing project using an earlier API version. See <a href="../building.html">Building from Sources</a> for details.</p>
-</li>
-</ul>
-<h3 id="nuget-packages">NuGet packages</h3>
-<p>The native implementation and C# library of MixedReality-WebRTC are available precompiled via NuGet packages. See the <a href="https://github.com/microsoft/MixedReality-WebRTC/releases">GitHub Releases page</a> for the latest packages.</p>
-<p>The packages can be downloaded from <a href="https://www.nuget.org/profiles/MicrosoftMR">nuget.org</a>. Once downloaded, they can be extracted by simply renaming their extension from <code>.nupkg</code> to <code>.zip</code>, and using any standard ZIP archive extraction method. After the packages are extracted, the DLLs can be copied as detailed on the <strong>Unity library</strong> section of the <a href="../installation.html">installation page</a>.</p>
-<h3 id="local-solution-build">Local solution build</h3>
-<p>If the native implementation and C# library are compiled from sources as explained in the <a href="../building.html">Building from Sources</a> page, they are available in one of the sub-folders under the <code>bin/</code> folder at the root of the repository of the MixedReality-WebRTC project.</p>
-<p>The C# library <code>Microsoft.MixedReality.WebRTC.dll</code> is a .NET Standard 2.0 library. This means it is compatible with all CPU architectures. The C# library is available from <code>bin\netstandard2.0\Debug</code> or <code>bin\netstandard2.0\Release</code> depending on the build configuration which was compiled. In doubt you should use the <code>Release</code> configuration, which can provide better performance. This module needs to be copied somehwere into the <code>libs\unity\library\Runtime\Plugins\</code> folder of the git repository checkout. This is done automatically by the build process of the Visual Studio solution, but can also be done via the command line with <code>xcopy</code>, assuming that the git repository of MixedReality-WebRTC was cloned in <code>D:\mr-webrtc</code>:</p>
-<pre><code class="lang-cmd">cd /D D:\testproj
-xcopy D:/mr-webrtc/bin/netstandard2.0/Release/Microsoft.MixedReality.WebRTC.dll libs/unity/library/Runtime/Plugins/Win32/x86_64/
-</code></pre>
-<p><em>Note</em>: By convention, and because of past experiences of getting errors when doing otherwise, the C# library is copied to the <code>Win32\x86_64</code> sub-folder where the native C library for the Unity editor is also located. It is unclear if this is best practice, as the Unity documentation is outdated on this topic.</p>
-<p>For the native C library <code>mrwebrtc.dll</code> things are a bit more complex. The DLL is compiled for a particular platform and architecture, in addition of the Debug or Release build configurations, and the correct variant needs to be used. On Windows, the Unity Editor needs a <strong>64-bit Desktop</strong> variant (<code>Debug</code> or <code>Release</code>); it is available from the <code>bin\Win32\x64\Release</code> folder (<code>Win32</code> is an alias for <code>Desktop</code>), and should be copied to the <code>libs\unity\library\Runtime\Plugins\Win32\x86_64\</code> folder. Again this is done automatically by the Visual Studio build process, but can be done manually with the following commands:</p>
-<pre><code class="lang-cmd">cd /D D:\testproj
-xcopy D:/mr-webrtc/bin/Win32/x64/Release/mrwebrtc.dll libs/unity/library/Runtime/Plugins/Win32/x86_64/
-</code></pre>
-<h2 id="importing-the-library">Importing the library</h2>
-<p>Once the necessary binaries have been added to <code>libs\unity\library\Runtime\Plugins</code>, the Unity library UPM package can be imported into any number of Unity projects.</p>
+<p>Once done, save the file and return to Unity. UPM will resolve the new packages via the configured registry, download the packages, and import them inside the Unity project.</p>
 <div class="WARNING">
 <h5>Warning</h5>
-<p>It is critical to setup the binaries first, before importing into a project and opening the Unity editor, otherwise the import settings might get overwritten by Unity. See <a href="#configuring-the-import-settings">Configuring the import settings</a> below for details.</p>
+<p>The library package <code>com.microsoft.mixedreality.webrtc</code> currently contains the debug symbols (PDBs) for Windows platforms, and is therefore fairly large (100+MB). Unity <em>will</em> take some time to download it, and may stop for several minutes at the &quot;resolving&quot; step (modal dialog). Be patient and let the process complete.</p>
 </div>
-<p>The Unity library already has the proper layout on disk of a UPM package, and a <code>package.json</code> file is provided. This means the package can be imported simply by following <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">the official Unity instructions for installing a local package</a>.</p>
-<h2 id="configuring-the-import-settings">Configuring the import settings</h2>
-<p>This step is normally not necessary.</p>
-<p>The git repository comes with pre-configured <code>.meta</code> files already setup. However we detail below the manual steps to configure those <code>.meta</code> files for the sake of clarity, and in case Unity deleted those files because the binaries have not been built yet (although using <code>git reset</code> is a faster and safer way to recover them), or if users want to get rid of the UPM package and incorporate a custom copy of the MixedReality-WebRTC into their Unity project and modify it.</p>
-<p>When building a Unity application for a given platform, another variant of the MixedReality-WebRTC native C library than the one the Unity editor uses may be required to deploy on that platform. In order for the C# library to be truly platform-independent, the name of all native C library variants is the same: <code>mrwebrtc</code>. This allows the C# code to reference that DLL with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.dllimportattribute?view=netcore-2.1">the same <code>DllImport</code> attribute path</a>. But this also means that multiple files with the same name exist in different folders, and Unity needs to know which one is associated with which build variant, to be able to deploy the correct one only. This is done by configuring the platform associated with a DLL in the import settings in the Unity inspector.</p>
-<div class="IMPORTANT">
-<h5>Important</h5>
-<p>The <code>mrwebrtc.dll</code> module was in v1.0 named <code>Microsoft.MixedReality.WebRTC.Native.dll</code> when this module was also the C++ library. The <code>Microsoft.MixedReality.WebRTC.Native</code> name is still in use in some NuGet packages, so depending on the installation method one or the other name are used. However the Unity project must use the <code>mrwebrtc.dll</code> name only for the C# library to find it.</p>
-</div>
-<p>When importing a UPM package into a Unity project, the content of the UPM package can be accessed from the <strong>Packages</strong> group of the <strong>Project</strong> window.</p>
+<p>After that the packages will be visible in the UPM window. It is recommended to ensure you have the latest version installed.</p>
+<p><img src="helloworld-unity-2.png" alt="Packages in the Project window"></p>
+<p>The packages content can be inspected from <strong>Project window</strong> &gt; <strong>Packages</strong>:</p>
 <p><img src="helloworld-unity-1b.png" alt="Packages in the Project window"></p>
-<p>To configure the import settings:</p>
-<ul>
-<li>In the <strong>Project</strong> window, select one of the <code>mrwebrtc.dll</code> files from the <code>Plugins</code> folder.</li>
-<li>The <strong>Inspector</strong> window now shows the import settings for the selected file, which contains option to configure the deploy platform(s) and architecture(s).</li>
-</ul>
-<p>For example, by selecting in the <strong>Inspector</strong> window:</p>
-<ul>
-<li><strong>Include Platforms: WSAPlayer</strong>, the DLL will be used by Unity on UWP platforms. <em>WSAPlayer</em> is the name Unity uses for its UWP standalone player.</li>
-<li><strong>CPU</strong> equal to <strong>x86_64</strong>, Unity will only deploy that DLL when deploying on a 64-bit Intel architecture.</li>
-</ul>
-<p>This way, multiple variants of the same-named <code>mrwebrtc.dll</code> can co-exist in different sub-folders of <code>Assets/Plugins/</code> and Unity will deploy and use the correct variant on each platform.</p>
-<div class="NOTE">
-<h5>Note</h5>
-<p>If Unity complains about &quot;<em>Multiple plugins with the same name 'mrwebrtc'</em>&quot;, then the configurations of the various <code>mrwebrtc.dll</code> files are not exclusive, and 2 or more files have been allowed for deploying on the same platform. Check the configuration of all variants again.</p>
-</div>
-<p>For <strong>Windows Desktop</strong>, the native implementation DLL variants are:</p>
-<table>
-<thead>
-<tr>
-<th>Path</th>
-<th>Include Platforms</th>
-<th>Settings</th>
-<th>Example use</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Plugins/Win32/x86</code></td>
-<td>Standalone</td>
-<td>x86</td>
-<td>32-bit Windows Desktop application</td>
-</tr>
-<tr>
-<td><code>Plugins/Win32/x86_64</code></td>
-<td>Editor</td>
-<td>CPU = x86_64, OS = Windows</td>
-<td>Unity Editor on Windows</td>
-</tr>
-<tr>
-<td></td>
-<td>Standalone</td>
-<td>x86_64</td>
-<td>64-bit Windows Desktop application</td>
-</tr>
-</tbody>
-</table>
-<p>For <strong>Windows UWP</strong>, the native implementation DLL variants are:</p>
-<table>
-<thead>
-<tr>
-<th>Path</th>
-<th>Include Platforms</th>
-<th>SDK</th>
-<th>CPU</th>
-<th>Example use</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Plugins/UWP/x86</code></td>
-<td>WSAPlayer</td>
-<td>UWP</td>
-<td>X86</td>
-<td>Microsoft HoloLens (1st gen)</td>
-</tr>
-<tr>
-<td><code>Plugins/UWP/x86_64</code></td>
-<td>WSAPlayer</td>
-<td>UWP</td>
-<td>X64</td>
-<td>64-bit UWP Desktop app on Windows</td>
-</tr>
-<tr>
-<td><code>Plugins/UWP/ARM</code></td>
-<td>WSAPlayer</td>
-<td>UWP</td>
-<td>ARM</td>
-<td>HoloLens 2 (compatibility)</td>
-</tr>
-</tbody>
-</table>
-<p>For <strong>Android</strong>, the native implementation archive <code>mrwebrc.aar</code> is configured as:</p>
-<table>
-<thead>
-<tr>
-<th>Path</th>
-<th>Include Platforms</th>
-<th>Example use</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Plugins/Android/arm64-v8a</code></td>
-<td>Android</td>
-<td>Android phone</td>
-</tr>
-</tbody>
-</table>
-<p>In all cases the &quot;Any Platform&quot; setting must be unchecked.</p>
-<div class="NOTE">
-<h5>Note</h5>
-<p>ARM64 is not supported. The ARM (32-bit) architecture variant can be used as a fallback on HoloLens 2 and other devices which support running 32-bit ARM applications on ARM64 hardware.</p>
-</div>
-<p><img src="helloworld-unity-3.png" alt="Configure the import settings for a native C++ DLL for UWP"></p>
-<p>If all variants are installed, the resulting hierarchy should look like this in the <strong>Project</strong> window:</p>
-<pre><code class="lang-shell">Plugins
-├─ Android
-|  └─ arm64-v8a
-|     └─ mrwebrtc.aar
-├─ Win32
-|  ├─ x86
-|  |  └─ mrwebrtc.dll
-|  └─ x86_64
-|     └─ mrwebrtc.dll
-└─ UWP
-   ├─ x86
-   |  └─ mrwebrtc.dll
-   ├─ x86_64
-   |  └─ mrwebrtc.dll
-   └─ ARM
-      └─ mrwebrtc.dll
-</code></pre>
-<p>Note that the <code>.meta</code> files where the import settings are saved do not appear in the <strong>Project</strong> window.</p>
 <hr>
 <p>Next : <a href="helloworld-unity-peerconnection.html">Creating a peer connection</a></p>
 </article>

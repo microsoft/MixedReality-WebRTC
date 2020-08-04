@@ -83,12 +83,16 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="building-from-sources">Building from sources</h1>
 
-<p>Building the C and C# libraries of MixedReality-WebRTC from sources involves two main steps:</p>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p>Building MixedReality-WebRTC from sources, and in particular the native <code>libwebrtc</code> implementation, is fairly involved, and is not required to use the various MixedReality-WebRTC libraries. Prebuilt binaries are available for C/C++ and C# project (NuGet packages) and Unity (UPM packages), which provide a much easier way to obtain and consume those libraries. See <a href="installation.html">Installation</a> for details.</p>
+</div>
+<p>Building the C/C++ and C# libraries of MixedReality-WebRTC from sources involves two main steps:</p>
 <ol>
-<li>Building the native C library for the specific platform(s) of interest:
+<li>Building the native C/C++ library for the specific platform(s) of interest:
 <ul>
-<li><a href="building-windows.html">Bulding for Windows platforms (Desktop and UWP)</a></li>
-<li><a href="android/building-android.html">Bulding for Android (Unity)</a></li>
+<li><a href="building-windows.html">Building for Windows platforms (Desktop and UWP)</a></li>
+<li><a href="android/building-android.html">Building for Android (Unity)</a></li>
 </ul>
 </li>
 <li><a href="building-cslib.html">Building the platform-independent C# library</a>.</li>

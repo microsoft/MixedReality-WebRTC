@@ -140,10 +140,156 @@
 </li>
 </ol>
 <p>On successful build, the binaries will be generated in a sub-directory under <code>bin/</code>, and the relevant DLLs will be copied by a post-build script to <code>libs\unity\library\Runtime\Plugins\</code> for the Unity library to consume them.</p>
+<h2 id="copying-the-binaries">Copying the binaries</h2>
+<p><em>Note: This section describes manual copying in case the Visual Studio solution is not used or the automated copying does not work for any reason. If the solution built successfully, the binaries should already have been copied (see above).</em></p>
+<p>The C# library <code>Microsoft.MixedReality.WebRTC.dll</code> is a .NET Standard 2.0 library. This means it is compatible with all CPU architectures. The C# library is available from <code>bin\netstandard2.0\Debug</code> or <code>bin\netstandard2.0\Release</code> depending on the build configuration which was compiled. In doubt you should use the <code>Release</code> configuration, which can provide better performance. This module needs to be copied somehwere into the <code>libs\unity\library\Runtime\Plugins\</code> folder of the git repository checkout. This is done automatically by the build process of the Visual Studio solution, but can also be done via the command line with <code>xcopy</code>, assuming that the git repository of MixedReality-WebRTC was cloned in <code>D:\mr-webrtc</code>:</p>
+<pre><code class="lang-cmd">cd /D D:\testproj
+xcopy D:/mr-webrtc/bin/netstandard2.0/Release/Microsoft.MixedReality.WebRTC.dll libs/unity/library/Runtime/Plugins/Win32/x86_64/
+</code></pre>
+<p><em>Note</em>: By convention, and because of past experiences of getting errors when doing otherwise, the C# library is copied to the <code>Win32\x86_64</code> sub-folder where the native C library for the Unity editor is also located. It is unclear if this is best practice, as the Unity documentation is outdated on this topic.</p>
+<p>For the native C library <code>mrwebrtc.dll</code> things are a bit more complex. The DLL is compiled for a particular platform and architecture, in addition of the Debug or Release build configurations, and the correct variant needs to be used. On Windows, the Unity Editor needs a <strong>64-bit Desktop</strong> variant (<code>Debug</code> or <code>Release</code>); it is available from the <code>bin\Win32\x64\Release</code> folder (<code>Win32</code> is an alias for <code>Desktop</code>), and should be copied to the <code>libs\unity\library\Runtime\Plugins\Win32\x86_64\</code> folder. Again this is done automatically by the Visual Studio build process, but can be done manually with the following commands:</p>
+<pre><code class="lang-cmd">cd /D D:\testproj
+xcopy D:/mr-webrtc/bin/Win32/x64/Release/mrwebrtc.dll libs/unity/library/Runtime/Plugins/Win32/x86_64/
+</code></pre>
+<h2 id="importing-the-library">Importing the library</h2>
+<p>Once the necessary binaries have been added to <code>libs\unity\library\Runtime\Plugins</code>, the Unity library UPM package can be imported into any number of Unity projects.</p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>It is critical to setup the binaries first, before importing into a project and opening the Unity editor, otherwise the import settings might get overwritten by Unity. See <a href="#configuring-the-import-settings">Configuring the import settings</a> below for details.</p>
+</div>
+<p>The Unity library already has the proper layout on disk of a UPM package, and a <code>package.json</code> file is provided. This means the package can be imported simply by following <a href="https://docs.unity3d.com/Manual/upm-ui-local.html">the official Unity instructions for installing a local package</a>.</p>
+<h2 id="configuring-the-import-settings">Configuring the import settings</h2>
+<p><em>Note: This step is normally not necessary, as the <code>.meta</code> files are already checked in the git repository and properly configured. It can happen that Unity deletes and recreates those files, therefore the configuration process is explained in details here anyway.</em></p>
 <div class="IMPORTANT">
 <h5>Important</h5>
-<p><strong>Be sure to build the solution before importing the Unity library package into any Unity project.</strong> As part of the build, the libraries are copied to the <code>Plugins</code> folder of the Unity library. There are already some associated <code>.meta</code> files, which have been committed to the git repository, to inform Unity of the platform of each DLL and how to deploy it. If the Unity project is opened first, before the DLLs are present, Unity will assume those <code>.meta</code> files are stale and will delete them, and then later will recreate some with a different default config once the DLLs are copied. This leads to errors about modules with duplicate names. See the <a href="unity/helloworld-unity-importwebrtc.html">Importing MixedReality-WebRTC</a> chapter of the &quot;Hello, Unity World!&quot; tutorial for more details.</p>
+<p><strong>Be sure to build the binaries before importing the Unity library package into any Unity project.</strong> As part of the build, the libraries are copied to the <code>Plugins</code> folder of the Unity library. There are already some associated <code>.meta</code> files, which have been committed to the git repository, to inform Unity of the platform of each DLL and how to deploy it. If the Unity project is opened first, before the DLLs are present, Unity will assume those <code>.meta</code> files are stale and will delete them, and then later will recreate some with a different default config once the DLLs are copied. This leads to errors about modules with duplicate names. If done correctly then none of the below is necessary.</p>
 </div>
+<p>The git repository comes with pre-configured <code>.meta</code> files already setup. However we detail below the manual steps to configure those <code>.meta</code> files for the sake of clarity, and in case Unity deleted those files because the binaries have not been built yet (although using <code>git reset</code> is a faster and safer way to recover them), or if users want to get rid of the UPM package and incorporate a custom copy of the MixedReality-WebRTC into their Unity project and modify it.</p>
+<p>When building a Unity application for a given platform, another variant of the MixedReality-WebRTC native C/C++ library than the one the Unity editor uses may be required to deploy on that platform. In order for the C# library to be truly platform-independent, the name of all native C/C++ library variants is the same: <code>mrwebrtc</code>. This allows the C# code to reference that DLL with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.dllimportattribute?view=netcore-3.1">the same <code>DllImport</code> attribute path</a>. But this also means that multiple files with the same name exist in different folders, and Unity needs to know which one is associated with which build variant, to be able to deploy the correct one only. This is done by configuring the platform associated with a DLL in the import settings in the Unity inspector.</p>
+<p>When importing a UPM package into a Unity project, the content of the UPM package can be accessed from the <strong>Packages</strong> group of the <strong>Project</strong> window.</p>
+<p><img src="unity/helloworld-unity-1b.png" alt="Packages in the Project window"></p>
+<p>To configure the import settings:</p>
+<ul>
+<li>In the <strong>Project</strong> window, select one of the <code>mrwebrtc.dll</code> files from the <code>Plugins</code> folder.</li>
+<li>The <strong>Inspector</strong> window now shows the import settings for the selected file, which contains option to configure the deploy platform(s) and architecture(s).</li>
+</ul>
+<p>For example, by selecting in the <strong>Inspector</strong> window:</p>
+<ul>
+<li><strong>Include Platforms: WSAPlayer</strong>, the DLL will be used by Unity on UWP platforms. <em>WSAPlayer</em> is the name Unity uses for its UWP standalone player.</li>
+<li><strong>CPU</strong> equal to <strong>x86_64</strong>, Unity will only deploy that DLL when deploying on a 64-bit Intel architecture.</li>
+</ul>
+<p>This way, multiple variants of the same-named <code>mrwebrtc.dll</code> can co-exist in different sub-folders of <code>Assets/Plugins/</code> and Unity will deploy and use the correct variant on each platform.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>If Unity complains about &quot;<em>Multiple plugins with the same name 'mrwebrtc'</em>&quot;, then the configurations of the various <code>mrwebrtc.dll</code> files are not exclusive, and 2 or more files have been allowed for deploying on the same platform. Check the configuration of all variants again.</p>
+</div>
+<p>For <strong>Windows Desktop</strong>, the native implementation DLL variants are:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Include Platforms</th>
+<th>Settings</th>
+<th>Example use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Plugins/Win32/x86</code></td>
+<td>Standalone</td>
+<td>x86</td>
+<td>32-bit Windows Desktop application</td>
+</tr>
+<tr>
+<td><code>Plugins/Win32/x86_64</code></td>
+<td>Editor</td>
+<td>CPU = x86_64, OS = Windows</td>
+<td>Unity Editor on Windows</td>
+</tr>
+<tr>
+<td></td>
+<td>Standalone</td>
+<td>x86_64</td>
+<td>64-bit Windows Desktop application</td>
+</tr>
+</tbody>
+</table>
+<p>For <strong>Windows UWP</strong>, the native implementation DLL variants are:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Include Platforms</th>
+<th>SDK</th>
+<th>CPU</th>
+<th>Example use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Plugins/UWP/x86</code></td>
+<td>WSAPlayer</td>
+<td>UWP</td>
+<td>X86</td>
+<td>Microsoft HoloLens (1st gen)</td>
+</tr>
+<tr>
+<td><code>Plugins/UWP/x86_64</code></td>
+<td>WSAPlayer</td>
+<td>UWP</td>
+<td>X64</td>
+<td>64-bit UWP Desktop app on Windows</td>
+</tr>
+<tr>
+<td><code>Plugins/UWP/ARM</code></td>
+<td>WSAPlayer</td>
+<td>UWP</td>
+<td>ARM</td>
+<td>HoloLens 2 (compatibility)</td>
+</tr>
+</tbody>
+</table>
+<div class="NOTE">
+<h5>Note</h5>
+<p>UWP ARM64 is not supported. The ARM (32-bit) architecture variant can be used as a fallback on HoloLens 2 and other devices which support running 32-bit ARM applications on ARM64 hardware.</p>
+</div>
+<p>For <strong>Android</strong>, the native implementation archive <code>mrwebrc.aar</code> is configured as:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Include Platforms</th>
+<th>Example use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Plugins/Android/arm64-v8a</code></td>
+<td>Android</td>
+<td>Android phone</td>
+</tr>
+</tbody>
+</table>
+<p>In all cases the &quot;Any Platform&quot; setting must be unchecked.</p>
+<p>If all variants are installed, the resulting hierarchy should look like this in the <strong>Project</strong> window:</p>
+<pre><code class="lang-shell">Plugins
+├─ Android
+|  └─ arm64-v8a
+|     └─ mrwebrtc.aar
+├─ Win32
+|  ├─ x86
+|  |  └─ mrwebrtc.dll
+|  └─ x86_64
+|     └─ mrwebrtc.dll
+└─ UWP
+   ├─ x86
+   |  └─ mrwebrtc.dll
+   ├─ x86_64
+   |  └─ mrwebrtc.dll
+   └─ ARM
+      └─ mrwebrtc.dll
+</code></pre>
+<p>Note that the <code>.meta</code> files where the import settings are saved do not appear in the <strong>Project</strong> window.</p>
 <h2 id="testing-the-build">Testing the build</h2>
 <p>Test the newly built libraries by <em>e.g.</em> running some of the Windows Desktop tests:</p>
 <ol>

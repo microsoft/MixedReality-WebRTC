@@ -1670,7 +1670,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/building-cslib.html",
-          "hash": "KA5akwNBiCQ8hTN5f9ERSg=="
+          "hash": "3CV36fuG+aYzojDUCmaOtw=="
         }
       },
       "is_incremental": false,
@@ -1682,7 +1682,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/building-windows.html",
-          "hash": "eMvig2uB+BuCO7x9OHPXvA=="
+          "hash": "e9dKTzrKjj/keNwESj2a3g=="
         }
       },
       "is_incremental": false,
@@ -1694,7 +1694,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/building.html",
-          "hash": "nlwJwTDzOPY+HC3Dbbx5CQ=="
+          "hash": "l6cHLBbtKwPwiQTZ9SSY2g=="
         }
       },
       "is_incremental": false,
@@ -2117,7 +2117,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/download.html",
-          "hash": "Hm7HsnPN2UDT3JwYmuvRxw=="
+          "hash": "aDhPSY7PeKzpmechjrHh0A=="
         }
       },
       "is_incremental": false,
@@ -2175,7 +2175,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/installation.html",
-          "hash": "RfJv6UataGWNgfW1ZhdGYA=="
+          "hash": "GrpW5g+/qABHZCtS132LIg=="
         }
       },
       "is_incremental": false,
@@ -2362,28 +2362,6 @@
     },
     {
       "type": "Resource",
-      "source_relative_path": "manual/unity/helloworld-unity-3.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/unity/helloworld-unity-3.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
-      "source_relative_path": "manual/unity/helloworld-unity-4.png",
-      "output": {
-        "resource": {
-          "relative_path": "manual/unity/helloworld-unity-4.png"
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Resource",
       "source_relative_path": "manual/unity/helloworld-unity-5.png",
       "output": {
         "resource": {
@@ -2489,7 +2467,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/helloworld-unity-importwebrtc.html",
-          "hash": "qGV7wk7rjabnQLnPvZL6tw=="
+          "hash": "pLfsAxXVJZft4ipR8AMjfg=="
         }
       },
       "is_incremental": false,
