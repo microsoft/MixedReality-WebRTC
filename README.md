@@ -26,14 +26,12 @@ _Note_: The `master` branch contains the code for the next release, and therefor
 
 | Branch | WebRTC | API | C library (`mrwebrtc`) | C# Library | Docs |
 |---|---|---|---|---|---|
-| [`release/1.0`](https://github.com/microsoft/MixedReality-WebRTC/tree/release/1.0) | [M71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Stable | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cpp-ci?branchName=release/1.0)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=24&branchName=release/1.0) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cs-ci?branchName=release/1.0)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=25&branchName=release/1.0) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-docs-ci?branchName=release/1.0)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=26&branchName=release/1.0) |
+| [`release/2.0`](https://github.com/microsoft/MixedReality-WebRTC/tree/release/2.0) | [M71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Stable | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cpp-ci?branchName=release/2.0)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=24&branchName=release/2.0) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cs-ci?branchName=release/2.0)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=25&branchName=release/2.0) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-docs-ci?branchName=release/2.0)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=26&branchName=release/2.0) |
 | [`master`](https://github.com/microsoft/MixedReality-WebRTC/tree/master) | [M71](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) | Unstable | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cpp-ci?branchName=master)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=24&branchName=master) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-cs-ci?branchName=master)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=25&branchName=master) | [![Build Status](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/build/status/mr-webrtc-docs-ci?branchName=master)](https://dev.azure.com/aipmr/MixedReality-WebRTC-CI/_build/latest?definitionId=26&branchName=master) |
 
-The [`release/1.0` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/release/1.0) contains the latest stable version of the API, from which the NuGet packages are published. When using the NuGet packages, the Unity integration scripts from this branch must be used to ensure API compatibility.
+The [`release/2.0` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/release/2.0) contains the latest stable version of the API, from which the NuGet and UPM packages are published.
 
-The [`master` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/master) contains the current up-to-date code with latest developments. Care is generally taken to keep this branch in a fairly clean state (branch can build, tests pass). However the `master` branch contains breaking changes compared to the latest release, and therefore is not compatible with NuGet packages and should be built from sources instead (see [Building from sources](https://microsoft.github.io/MixedReality-WebRTC/manual/building.html) documentation).
-
-Both branches are based off the [M71 milestone](https://groups.google.com/forum/#!msg/discuss-webrtc/HUpIxlDlkSE/qR1nswqZCwAJ) of the Google WebRTC library, which provides the underlying WebRTC native implementation.
+The [`master` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/master) contains the current up-to-date code with latest developments. Care is generally taken to keep this branch in a fairly clean state (branch can build, tests pass). However the `master` branch contains API breaking changes compared to the latest release, and therefore is not compatible with NuGet/UPM packages and should be built from sources instead (see [Building from sources](https://microsoft.github.io/MixedReality-WebRTC/manual/building.html) documentation).
 
 ## Documentation
 
@@ -67,7 +65,7 @@ The overall architecture is as follow:
 
 | Library | Lang | Description |
 |---|---|---|
-| `mrwebrtc` | C | Native C library providing a low-level interface to the [underlying WebRTC implementation from Google](https://opensource.google.com/projects/webrtc). Compared to the API exposed by the Google implementation (`PeerConnection`), the current interface is simplified to remove the burden of setup and configuring. It also tries to prevent common threading errors with the UWP wrappers. This library exposes are pure C API easily integrated into any C/C++ application. |
+| `mrwebrtc` | C/C++ | Native C/C++ library providing a low-level interface to the [underlying WebRTC implementation from Google](https://opensource.google.com/projects/webrtc). Compared to the API exposed by the Google implementation (`PeerConnection`), the current interface is simplified to remove the burden of setup and configuring. It also tries to prevent common threading errors with the UWP wrappers. This library exposes are pure C API easily integrated into any C/C++ application. |
 | `Microsoft.MixedReality.WebRTC` | C# 7.3 | C# .Net Standard 2.0 library providing access to the same API as the native C library, exposed with familiar C# concepts such as `async` / `await` and `Task`. |
 | `Microsoft.MixedReality.WebRTC.Unity` | C# 7.3 | Unity3D integration - a set of Unity [`MonoBehaviour` components](https://docs.unity3d.com/ScriptReference/MonoBehaviour.html) with almost no required setup, to enable rapid prototyping and simplify integration into an existing app. |
 | `Microsoft.MixedReality.WebRTC.Unity.Examples` | C# 7.3 | Unity3D samples showcasing typical use scenarios like a peer-to-peer video chat app. |
@@ -99,10 +97,10 @@ tools/             # Utility scripts
 
 The `Microsoft.MixedReality.WebRTC.sln` Visual Studio 2019 solution located at the root of the repository contains several projects:
 
-- The native C library `mrwebrtc`, which can be compiled:
+- The native C/C++ library `mrwebrtc`, which can be compiled:
   - for Windows Desktop with the `mrwebrtc-win32` project
   - for UWP with the `mrwebrtc-uwp` project
-- A C library unit tests project `mrwebrtc-win32-tests`
+- A C/C++ library unit tests project `mrwebrtc-win32-tests`
 - The C# library project `Microsoft.MixedReality.WebRTC`
 - A C# unit tests project `Microsoft.MixedReality.WebRTC.Tests`
 - A UWP C# sample app project `Microsoft.MixedReality.WebRTC.TestAppUWP` based on WPF and XAML which demonstrates audio / video / data communication by mean of a simple video chat app.
