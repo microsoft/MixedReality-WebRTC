@@ -124,7 +124,7 @@ _localVideoTrack = LocalVideoTrack.CreateFromSource(_webcamSource, videoTrackCon
 <pre><code class="lang-cs">var audioTrackConfig = new LocalAudioTrackInitConfig {
    trackName = &quot;microphone_track&quot;
 };
-_localAudioTrack = LocalAudioTrack.CreateFromDeviceAsync(_microphoneSource, audioTrackConfig);
+_localAudioTrack = LocalAudioTrack.CreateFromSource(_microphoneSource, audioTrackConfig);
 </code></pre>
 </li>
 </ol>
