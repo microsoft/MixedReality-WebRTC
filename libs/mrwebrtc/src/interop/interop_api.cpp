@@ -65,6 +65,10 @@ uint32_t MRS_CALL mrsReportLiveObjects() noexcept {
   return GlobalFactory::StaticReportLiveObjects();
 }
 
+mrsResult MRS_CALL mrsLibraryUseAudioDeviceModule2(bool use) noexcept {
+  return GlobalFactory::UseAudioDeviceModule2(use);
+}
+
 mrsShutdownOptions MRS_CALL mrsGetShutdownOptions() noexcept {
   return GlobalFactory::GetShutdownOptions();
 }

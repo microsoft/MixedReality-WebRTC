@@ -7,6 +7,10 @@
 #include "peer_connection.h"
 #include "utils.h"
 
+namespace webrtc {
+class ScopedCOMInitializer;
+}
+
 namespace Microsoft {
 namespace MixedReality {
 namespace WebRTC {
@@ -29,6 +33,10 @@ class GlobalFactory {
   /// at the time of the call. If the library is not initialized, this function
   /// returns 0. This is multithread-safe.
   static uint32_t StaticReportLiveObjects() noexcept;
+
+  /// Enable or disable the use of the new Audio Device Module (ADM2) on Windows
+  /// Desktop. See |mrsLibraryUseAudioDeviceModule2()| for details.
+  static mrsResult UseAudioDeviceModule2(bool use) noexcept;
 
   /// Get the library shutdown options. This function does not initialize the
   /// library, but will store the options for a future initializing. Conversely,
@@ -213,6 +221,9 @@ class GlobalFactory {
   /// require |mutex_| for access, but |init_mutex_| instead.
   std::unique_ptr<rtc::Thread> signaling_thread_ RTC_GUARDED_BY(init_mutex_);
 
+  /// COM initializer for worker thread (for ADM2).
+  std::unique_ptr<webrtc::ScopedCOMInitializer> worker_com_initializer_;
+
 #endif  // defined(WINUWP)
 
   /// Reference count to the library, for automated shutdown.
@@ -232,6 +243,13 @@ class GlobalFactory {
   std::vector<TrackedObject*> alive_objects_ RTC_GUARDED_BY(mutex_);
 
   rtc::scoped_refptr<ToggleAudioMixer> custom_audio_mixer_;
+
+ private:
+  /// On Windows, use the new Audio Device Module (ADM2) instead of the legacy
+  /// one (ADM1), to work around issues with unsupported devices in the ADM1
+  /// initializing code. This defaults to |true|.
+  /// https://bugs.chromium.org/p/webrtc/issues/detail?id=11081
+  static bool s_useAudioDeviceModule2;
 };
 
 }  // namespace WebRTC

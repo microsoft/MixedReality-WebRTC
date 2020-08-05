@@ -13,9 +13,18 @@
 
 #include <exception>
 
+#if !defined(MR_SHARING_ANDROID) && !defined(WINUWP)
+#pragma warning(push)
+#pragma warning(disable : 4100 4127 4244)
+#include "modules/audio_device/win/audio_device_core_win.h"
+#pragma warning(pop)
+#endif
+
 namespace Microsoft {
 namespace MixedReality {
 namespace WebRTC {
+
+bool GlobalFactory::s_useAudioDeviceModule2 = true;
 
 uint32_t GlobalFactory::StaticReportLiveObjects() noexcept {
   // Lock the instance to prevent shutdown if it already exists, while
@@ -25,6 +34,16 @@ uint32_t GlobalFactory::StaticReportLiveObjects() noexcept {
     return factory->ReportLiveObjects();
   }
   return 0;
+}
+
+mrsResult GlobalFactory::UseAudioDeviceModule2(bool use) noexcept {
+  if (GetInstancePtrImpl(/* ensure_initialized = */ false)) {
+    RTC_LOG(LS_ERROR)
+        << "Cannot enable or disable ADM2 after the library is initialized.";
+    return mrsResult::kInvalidOperation;
+  }
+  s_useAudioDeviceModule2 = use;
+  return mrsResult::kSuccess;
 }
 
 mrsShutdownOptions GlobalFactory::GetShutdownOptions() noexcept {
@@ -254,9 +273,41 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
                              signaling_thread_.get());
   signaling_thread_->Start();
 
+  // Use a null value to use the default platform implementation
+  rtc::scoped_refptr<webrtc::AudioDeviceModule> adm{nullptr};
+#if defined(MR_SHARING_WIN)
+  if (s_useAudioDeviceModule2) {
+    // Default to use the CoreAudio 2 ADM, which supports more devices like
+    // Azure Kinect DK. The ADM needs to be created on the worker thread where
+    // it will be used, and requires COM to be initialized.
+    adm =
+        worker_thread_->Invoke<rtc::scoped_refptr<webrtc::AudioDeviceModule> >(
+            RTC_FROM_HERE, [this] {
+              // Initializing COM for this thread is required. See
+              // AudioDeviceWindowsCore constructor in audio_device_core_win.cc
+              // for more details. Worker thread objects are generally not
+              // shared so assume Single-Threaded Apartmnet (STA).
+              worker_com_initializer_.reset(
+                  new webrtc::ScopedCOMInitializer(/*STA*/));
+              RTC_DCHECK(worker_com_initializer_->succeeded())
+                  << "Failed to initialize COM (STA) on WebRTC worker thread.";
+              return webrtc::CreateWindowsCoreAudioAudioDeviceModule();
+            });
+    if (!adm) {
+      RTC_LOG(LS_ERROR) << "Failed to create audio device module (CoreAudio).";
+      return Result::kUnknownError;
+    }
+    RTC_LOG(LS_INFO) << "Using new CoreAudio ADM2 on Windows for audio capture "
+                        "and playback.";
+  } else {
+    RTC_LOG(LS_INFO)
+        << "Using legacy ADM1 on Windows for audio capture and playback.";
+  }
+#endif  // !defined(MR_SHARING_WIN)
+
   peer_factory_ = webrtc::CreatePeerConnectionFactory(
       network_thread_.get(), worker_thread_.get(), signaling_thread_.get(),
-      nullptr, webrtc::CreateBuiltinAudioEncoderFactory(),
+      std::move(adm), webrtc::CreateBuiltinAudioEncoderFactory(),
       webrtc::CreateBuiltinAudioDecoderFactory(),
       std::unique_ptr<webrtc::VideoEncoderFactory>(
           new webrtc::MultiplexEncoderFactory(
@@ -317,6 +368,7 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
   network_thread_.reset();
   worker_thread_.reset();
   signaling_thread_.reset();
+  worker_com_initializer_.reset();
 #endif  // defined(WINUWP)
   return true;
 }

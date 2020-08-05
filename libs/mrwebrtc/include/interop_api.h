@@ -24,6 +24,24 @@ enum class mrsOptBool : int8_t { kTrue = -1, kFalse = 0, kUnset = 0b01010101 };
 /// Report live objects to debug output, and return the number of live objects.
 MRS_API uint32_t MRS_CALL mrsReportLiveObjects() noexcept;
 
+/// Enable or disable the use of the new Audio Device Module (ADM2) on Windows
+/// Desktop.
+///
+/// This mainly enables working around some unsupported devices plugged in which
+/// make the legacy module (ADM1) fail its initialization even if said devices
+/// are not later used. Therefore ADM2 is used by default, and this function is
+/// mainly used to disable it and fall back to the legacy ADM1 if needed.
+/// https://github.com/microsoft/MixedReality-WebRTC/issues/124
+///
+/// This function needs to be called before the peer connection factory is
+/// initialized, and therefore before any other library call, as most calls will
+/// initialize the peer connection factory. This cannot be toggled ON and OFF
+/// after that, and will fail if called too late.
+///
+/// This has no effect on UWP and non-Windows platforms, and will always
+/// succeed if called appropriately.
+MRS_API mrsResult MRS_CALL mrsLibraryUseAudioDeviceModule2(bool use) noexcept;
+
 /// Global MixedReality-WebRTC library shutdown options.
 enum class mrsShutdownOptions : uint32_t {
   kNone = 0,
