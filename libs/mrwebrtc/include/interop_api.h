@@ -24,6 +24,17 @@ enum class mrsOptBool : int8_t { kTrue = -1, kFalse = 0, kUnset = 0b01010101 };
 /// Report live objects to debug output, and return the number of live objects.
 MRS_API uint32_t MRS_CALL mrsReportLiveObjects() noexcept;
 
+/// Audio device modules for Windows Desktop.
+enum class mrsAudioDeviceModule : uint8_t {
+  /// Legacy module for backward compatibility. This is not recommended, unless
+  /// there is an issue with ADM2.
+  kADM1 = 1,
+
+  /// New CoreAudio module. This is the default and recommended audio module on
+  /// Windows Desktop.
+  kADM2 = 2
+};
+
 /// Enable or disable the use of the new Audio Device Module (ADM2) on Windows
 /// Desktop.
 ///
@@ -40,7 +51,8 @@ MRS_API uint32_t MRS_CALL mrsReportLiveObjects() noexcept;
 ///
 /// This has no effect on UWP and non-Windows platforms, and will always
 /// succeed if called appropriately.
-MRS_API mrsResult MRS_CALL mrsLibraryUseAudioDeviceModule2(bool use) noexcept;
+MRS_API mrsResult MRS_CALL
+mrsLibraryUseAudioDeviceModule(mrsAudioDeviceModule adm) noexcept;
 
 /// Global MixedReality-WebRTC library shutdown options.
 enum class mrsShutdownOptions : uint32_t {

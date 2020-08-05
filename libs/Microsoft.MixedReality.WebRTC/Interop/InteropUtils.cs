@@ -146,6 +146,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static unsafe extern uint LibraryReportLiveObjects();
 
         [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsLibraryUseAudioDeviceModule")]
+        public static unsafe extern uint LibraryUseAudioDeviceModule(AudioDeviceModule adm);
+
+        [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsGetShutdownOptions")]
         public static unsafe extern Library.ShutdownOptionsFlags LibraryGetShutdownOptions();
 

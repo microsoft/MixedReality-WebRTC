@@ -34,9 +34,9 @@ class GlobalFactory {
   /// returns 0. This is multithread-safe.
   static uint32_t StaticReportLiveObjects() noexcept;
 
-  /// Enable or disable the use of the new Audio Device Module (ADM2) on Windows
-  /// Desktop. See |mrsLibraryUseAudioDeviceModule2()| for details.
-  static mrsResult UseAudioDeviceModule2(bool use) noexcept;
+  /// Select the audio device module to use on Windows Desktop. See
+  /// |mrsLibraryUseAudioDeviceModule()| for details.
+  static mrsResult UseAudioDeviceModule(mrsAudioDeviceModule adm) noexcept;
 
   /// Get the library shutdown options. This function does not initialize the
   /// library, but will store the options for a future initializing. Conversely,
@@ -245,11 +245,10 @@ class GlobalFactory {
   rtc::scoped_refptr<ToggleAudioMixer> custom_audio_mixer_;
 
  private:
-  /// On Windows, use the new Audio Device Module (ADM2) instead of the legacy
-  /// one (ADM1), to work around issues with unsupported devices in the ADM1
-  /// initializing code. This defaults to |true|.
+  /// On Windows Desktop, configure the Audio Device Module (ADM) to use. This
+  /// defaults to |mrsAudioDeviceModule::kADM2|.
   /// https://bugs.chromium.org/p/webrtc/issues/detail?id=11081
-  static bool s_useAudioDeviceModule2;
+  static mrsAudioDeviceModule s_audioDeviceModule;
 };
 
 }  // namespace WebRTC
