@@ -6,7 +6,7 @@ The MixedReality-WebRTC libraries for Windows platforms (Desktop and UWP) are bu
 
 ### Environment and tooling
 
-- The NuGet packages for the input dependencies (see _Core input dependencies_ below) require in total approximately **10 GB of disk space**. Those dependencies contain unstripped `.lib` files much larger than the final compiled DLL libraries, for both the Debug and Release build configurations.
+- The low-level WebRTC implementation from Google (`webrtc.lib`) requires in total approximately **20 GB of disk space** when built for all supported Windows variants.
 
 - Due to Windows paths length limit, it is recommended to **clone the source repository close to the root** of the filesystem, _e.g._ `C:\mr-webrtc\` or similar, as the recursive external dependencies create a deep hierarchy which may otherwise produce paths beyond the OS limit and result in build failure.
 
@@ -22,15 +22,6 @@ The MixedReality-WebRTC libraries for Windows platforms (Desktop and UWP) are bu
 
 - The Unity library is officially supported for [Unity](https://unity3d.com/get-unity/download) version **2018.4.x** (LTS) and **2019.4.x** (LTS). However, we do our best to keep things working on other versions too where possible. Versions earlier than 2018.4.x may work but are not tested at all, and no support will be provided for those.
 
-### Core input dependencies
-
-The so-called _Core_ input dependencies are constituted of:
-
-- `webrtc.lib` : A static library containing the Google implementation of the WebRTC standard.
-- `Org.WebRtc.winmd` : A set of WinRT wrappers for accessing the WebRTC API from UWP.
-
-Those dependencies require many extra prerequisites. They are also complex and time-consuming to build. Therefore to save time and avoid headache the MixedReality-WebRTC solution consumes those dependencies as precompiled NuGet packages [available from nuget.org](https://www.nuget.org/packages?q=Microsoft.MixedReality.WebRTC.Native.Core). Those NuGet packages are compiled from [the WebRTC UWP project](https://github.com/webrtc-uwp/webrtc-uwp-sdk) maintained by Microsoft. So **there is no extra setup for those**.
-
 ## Cloning the repository
 
 The official repository containing the source code of MixedReality-WebRTC is [hosted on GitHub](https://github.com/microsoft/MixedReality-WebRTC). The latest developments are done on the `master` branch, while the latest stable release is a `release/*` branch.
@@ -43,7 +34,25 @@ git clone --recursive https://github.com/microsoft/MixedReality-WebRTC.git -b <b
 
 Note that **this may take some time (> 5 minutes)** due to the large number of submodules in [the WebRTC UWP SDK repository](https://github.com/webrtc-uwp/webrtc-uwp-sdk) this repository depends on.
 
-## Building the libraries
+### Building the core WebRTC implementation
+
+The so-called _Core_ implementation is constituted of:
+
+- `webrtc.lib` : A static library containing the Google implementation of the WebRTC standard.
+- `Org.WebRtc.winmd` : A set of WinRT wrappers for accessing the WebRTC API from UWP.
+
+Those libraries require several extra prerequisites. They are also complex and time-consuming to build. Therefore to save time and avoid headache a build script is provided in `tools\build\build.ps1` which checks for most prerequisites and build a single variant of `webrtc.lib`.
+
+```powershell
+cd tools\build
+.\build.ps1 -BuildConfig Release -BuildArch x64 -BuildPlatform Win32   # Desktop x64, e.g. Unity Editor
+.\build.ps1 -BuildConfig Release -BuildArch ARM -BuildPlatform UWP     # UWP ARM, e.g. HoloLens 2
+[...]
+```
+
+Not all build variants need to be built; you can build only the one(s) necessary for your target device(s).
+
+## Building the MixedReality-WebRTC libraries
 
 1. Open the `Microsoft.MixedReality.WebRTC.sln` Visual Studio solution located at the root of the freshly cloned repository.
 
@@ -57,7 +66,7 @@ Note that **this may take some time (> 5 minutes)** due to the large number of s
      - `x64` for the 64-bit Windows Desktop and UWP variants; this includes the x64 Desktop variant required by the Unity editor
      - `ARM` for the 32-bit Windows UWP ARM variant
 
-3. Build the solution with F7 or **Build > Build Solution**
+3. Build the solution with F7 or **Build > Build Solution**. This builds only 2 build variants (Desktop and UWP) for the selected architecture and build configuration. If you need other variants, repeat from step 2. and select them.
 
 On successful build, the binaries will be generated in a sub-directory under `bin/`, and the relevant DLLs will be copied by a post-build script to `libs\unity\library\Runtime\Plugins\` for the Unity library to consume them.
 
