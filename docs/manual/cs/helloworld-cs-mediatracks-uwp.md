@@ -59,7 +59,7 @@ Continue editing the `MainPage.xaml.cs` file and append in the `OnLoaded` method
    var audioTrackConfig = new LocalAudioTrackInitConfig {
       trackName = "microphone_track"
    };
-   _localAudioTrack = LocalAudioTrack.CreateFromDeviceAsync(_microphoneSource, audioTrackConfig);
+   _localAudioTrack = LocalAudioTrack.CreateFromSource(_microphoneSource, audioTrackConfig);
    ```
 
 ## Adding the transceivers
