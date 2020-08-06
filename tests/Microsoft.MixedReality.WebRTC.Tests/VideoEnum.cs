@@ -23,7 +23,7 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         [Test]
         public async Task EnumVideoDevices()
         {
-            List<VideoCaptureDevice> devices = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
+            IReadOnlyList<VideoCaptureDevice> devices = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
             foreach (var device in devices)
             {
                 Assert.That(device.id.Length, Is.GreaterThan(0));
@@ -38,14 +38,14 @@ namespace Microsoft.MixedReality.WebRTC.Tests
         [Test]
         public async Task EnumVideoFormats()
         {
-            List<VideoCaptureDevice> devices = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
+            IReadOnlyList<VideoCaptureDevice> devices = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
             if (devices.Count == 0)
             {
                 Assert.Inconclusive("Host device has no available video capture device.");
             }
             foreach (var device in devices)
             {
-                List<VideoCaptureFormat> formats = await DeviceVideoTrackSource.GetCaptureFormatsAsync(device.id);
+                IReadOnlyList<VideoCaptureFormat> formats = await DeviceVideoTrackSource.GetCaptureFormatsAsync(device.id);
                 foreach (var format in formats)
                 {
                     Assert.That(format.width, Is.GreaterThan(0));
