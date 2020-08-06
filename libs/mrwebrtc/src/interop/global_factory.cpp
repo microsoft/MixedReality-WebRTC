@@ -25,7 +25,7 @@ namespace MixedReality {
 namespace WebRTC {
 
 mrsAudioDeviceModule GlobalFactory::s_audioDeviceModule =
-    mrsAudioDeviceModule::kADM2;
+    mrsAudioDeviceModule::kDefault;
 
 uint32_t GlobalFactory::StaticReportLiveObjects() noexcept {
   // Lock the instance to prevent shutdown if it already exists, while
@@ -278,7 +278,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
   // Use a null value to use the default platform implementation
   rtc::scoped_refptr<webrtc::AudioDeviceModule> adm{nullptr};
 #if defined(MR_SHARING_WIN)
-  if (s_audioDeviceModule == mrsAudioDeviceModule::kADM2) {
+  if (s_audioDeviceModule == mrsAudioDeviceModule::kDefault) {
     // Default to use the CoreAudio 2 ADM, which supports more devices like
     // Azure Kinect DK. The ADM needs to be created on the worker thread where
     // it will be used, and requires COM to be initialized.
@@ -302,7 +302,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
     RTC_LOG(LS_INFO) << "Using new CoreAudio ADM2 on Windows for audio capture "
                         "and playback.";
   } else {
-    RTC_DCHECK(s_audioDeviceModule == mrsAudioDeviceModule::kADM1);
+    RTC_DCHECK(s_audioDeviceModule == mrsAudioDeviceModule::kLegacy);
     RTC_LOG(LS_INFO)
         << "Using legacy ADM1 on Windows for audio capture and playback.";
   }

@@ -24,33 +24,38 @@ enum class mrsOptBool : int8_t { kTrue = -1, kFalse = 0, kUnset = 0b01010101 };
 /// Report live objects to debug output, and return the number of live objects.
 MRS_API uint32_t MRS_CALL mrsReportLiveObjects() noexcept;
 
-/// Audio device modules for Windows Desktop.
+/// Available audio device modules for Windows Desktop. The audio device module
+/// is the internal audio component responsible for audio capture and playback.
+/// Those options are only meaningful for Windows Desktop; other platforms use a
+/// predefined platform-dependent built-in module.
 enum class mrsAudioDeviceModule : uint8_t {
-  /// Legacy module for backward compatibility. This is not recommended, unless
-  /// there is an issue with ADM2.
-  kADM1 = 1,
+  /// Legacy audio device module (ADM1) for backward compatibility. This is not
+  /// recommended, unless there is an issue with the default new module (ADM2).
+  kLegacy = 1,
 
-  /// New CoreAudio module. This is the default and recommended audio module on
-  /// Windows Desktop.
-  kADM2 = 2
+  /// New CoreAudio-based audio device module (ADM2). This is the default and
+  /// recommended audio module on Windows Desktop.
+  kDefault = 2
 };
 
-/// Enable or disable the use of the new Audio Device Module (ADM2) on Windows
-/// Desktop.
+/// Select the audio device module to use on Windows Desktop.
 ///
-/// This mainly enables working around some unsupported devices plugged in which
-/// make the legacy module (ADM1) fail its initialization even if said devices
-/// are not later used. Therefore ADM2 is used by default, and this function is
-/// mainly used to disable it and fall back to the legacy ADM1 if needed.
+/// By default the new CoreAudio-based audio device module (ADM2) is used, which
+/// provides better handling of unsupported devices than its predecessor (ADM1).
 /// https://github.com/microsoft/MixedReality-WebRTC/issues/124
 ///
+/// This function allows overwritting the default selection to force another
+/// module, mostly as a safety net would ADM2 present some issue.
+///
+/// The audio device module is a global object used by all peer connections.
 /// This function needs to be called before the peer connection factory is
 /// initialized, and therefore before any other library call, as most calls will
-/// initialize the peer connection factory. This cannot be toggled ON and OFF
-/// after that, and will fail if called too late.
+/// initialize the peer connection factory internally. Therefore, the audio
+/// device module cannot be changed after the library is initialized, and this
+/// call will fail with |mrsResult::kInvalidOperation| if invoked too late.
 ///
 /// This has no effect on UWP and non-Windows platforms, and will always
-/// succeed if called appropriately.
+/// succeed if timely called before the library is initialized.
 MRS_API mrsResult MRS_CALL
 mrsLibraryUseAudioDeviceModule(mrsAudioDeviceModule adm) noexcept;
 
