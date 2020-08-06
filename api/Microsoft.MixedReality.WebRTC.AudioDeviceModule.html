@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Enum Library.ShutdownOptionsFlags
+    <title>Enum AudioDeviceModule
    | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Enum Library.ShutdownOptionsFlags
+    <meta name="title" content="Enum AudioDeviceModule
    | MixedReality-WebRTC Documentation ">
     <meta name="generator" content="docfx 2.56.2.0">
     
@@ -22,7 +22,7 @@
     <meta property="docfx:rel" content="../">
     
   </head>
-  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags">
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="Microsoft.MixedReality.WebRTC.AudioDeviceModule">
     <div id="wrapper">
       <header>
         
@@ -82,19 +82,19 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.AudioDeviceModule">
   
   
-  <h1 id="Microsoft_MixedReality_WebRTC_Library_ShutdownOptionsFlags" data-uid="Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags" class="text-break">Enum Library.ShutdownOptionsFlags
+  <h1 id="Microsoft_MixedReality_WebRTC_AudioDeviceModule" data-uid="Microsoft.MixedReality.WebRTC.AudioDeviceModule" class="text-break">Enum AudioDeviceModule
   </h1>
-  <div class="markdown level0 summary"><p>Options for library shutdown.</p>
+  <div class="markdown level0 summary"><p>Audio device module for Windows Desktop platform.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
   <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
-  <h5 id="Microsoft_MixedReality_WebRTC_Library_ShutdownOptionsFlags_syntax">Syntax</h5>
+  <h5 id="Microsoft_MixedReality_WebRTC_AudioDeviceModule_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public enum ShutdownOptionsFlags : uint</code></pre>
+    <pre><code class="lang-csharp hljs">public enum AudioDeviceModule : byte</code></pre>
   </div>
   <h3 id="fields">Fields
   </h3>
@@ -107,26 +107,14 @@
     <thead>
     <tbody>
       <tr>
-        <td id="Microsoft_MixedReality_WebRTC_Library_ShutdownOptionsFlags_DebugBreakOnForceShutdown">DebugBreakOnForceShutdown</td>
-        <td><p>When forcing shutdown, either because <a class="xref" href="Microsoft.MixedReality.WebRTC.Library.html#Microsoft_MixedReality_WebRTC_Library_ForceShutdown">ForceShutdown()</a> is called or
-because the program terminates, and some objects are still alive, attempt
-to break into the debugger. This is not available for all platforms.</p>
+        <td id="Microsoft_MixedReality_WebRTC_AudioDeviceModule_DefaultModule">DefaultModule</td>
+        <td><p>New CoreAudio based audio device module (ADM2). This is the default.</p>
 </td>
       </tr>
       <tr>
-        <td id="Microsoft_MixedReality_WebRTC_Library_ShutdownOptionsFlags_Default">Default</td>
-        <td><p>Default options.</p>
-</td>
-      </tr>
-      <tr>
-        <td id="Microsoft_MixedReality_WebRTC_Library_ShutdownOptionsFlags_LogLiveObjects">LogLiveObjects</td>
-        <td><p>Log with <a class="xref" href="Microsoft.MixedReality.WebRTC.Library.html#Microsoft_MixedReality_WebRTC_Library_ReportLiveObjects">ReportLiveObjects()</a> all objects still alive, to help debugging.
-This is recommended to prevent deadlocks during shutdown.</p>
-</td>
-      </tr>
-      <tr>
-        <td id="Microsoft_MixedReality_WebRTC_Library_ShutdownOptionsFlags_None">None</td>
-        <td><p>Do nothing specific.</p>
+        <td id="Microsoft_MixedReality_WebRTC_AudioDeviceModule_LegacyModule">LegacyModule</td>
+        <td><p>Legacy audio device module (ADM1); not recommended unless there is an issue
+with the new default one.</p>
 </td>
       </tr>
     </tbody>
@@ -139,10 +127,10 @@ This is recommended to prevent deadlocks during shutdown.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_Library_ShutdownOptionsFlags.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_AudioDeviceModule.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.AudioDeviceModule%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/Library.cs/#L66" class="contribution-link">View Source</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/Library.cs/#L12" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

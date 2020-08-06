@@ -113,6 +113,24 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Argb32VideoFrameStorage.Width
   nameWithType: Argb32VideoFrameStorage.Width
+- uid: Microsoft.MixedReality.WebRTC.AudioDeviceModule
+  name: AudioDeviceModule
+  href: api/Microsoft.MixedReality.WebRTC.AudioDeviceModule.html
+  commentId: T:Microsoft.MixedReality.WebRTC.AudioDeviceModule
+  fullName: Microsoft.MixedReality.WebRTC.AudioDeviceModule
+  nameWithType: AudioDeviceModule
+- uid: Microsoft.MixedReality.WebRTC.AudioDeviceModule.DefaultModule
+  name: DefaultModule
+  href: api/Microsoft.MixedReality.WebRTC.AudioDeviceModule.html#Microsoft_MixedReality_WebRTC_AudioDeviceModule_DefaultModule
+  commentId: F:Microsoft.MixedReality.WebRTC.AudioDeviceModule.DefaultModule
+  fullName: Microsoft.MixedReality.WebRTC.AudioDeviceModule.DefaultModule
+  nameWithType: AudioDeviceModule.DefaultModule
+- uid: Microsoft.MixedReality.WebRTC.AudioDeviceModule.LegacyModule
+  name: LegacyModule
+  href: api/Microsoft.MixedReality.WebRTC.AudioDeviceModule.html#Microsoft_MixedReality_WebRTC_AudioDeviceModule_LegacyModule
+  commentId: F:Microsoft.MixedReality.WebRTC.AudioDeviceModule.LegacyModule
+  fullName: Microsoft.MixedReality.WebRTC.AudioDeviceModule.LegacyModule
+  nameWithType: AudioDeviceModule.LegacyModule
 - uid: Microsoft.MixedReality.WebRTC.AudioFrame
   name: AudioFrame
   href: api/Microsoft.MixedReality.WebRTC.AudioFrame.html
@@ -1443,6 +1461,19 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags.None
   fullName: Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags.None
   nameWithType: Library.ShutdownOptionsFlags.None
+- uid: Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule(Microsoft.MixedReality.WebRTC.AudioDeviceModule)
+  name: UseAudioDeviceModule(AudioDeviceModule)
+  href: api/Microsoft.MixedReality.WebRTC.Library.html#Microsoft_MixedReality_WebRTC_Library_UseAudioDeviceModule_Microsoft_MixedReality_WebRTC_AudioDeviceModule_
+  commentId: M:Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule(Microsoft.MixedReality.WebRTC.AudioDeviceModule)
+  fullName: Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule(Microsoft.MixedReality.WebRTC.AudioDeviceModule)
+  nameWithType: Library.UseAudioDeviceModule(AudioDeviceModule)
+- uid: Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule*
+  name: UseAudioDeviceModule
+  href: api/Microsoft.MixedReality.WebRTC.Library.html#Microsoft_MixedReality_WebRTC_Library_UseAudioDeviceModule_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule
+  nameWithType: Library.UseAudioDeviceModule
 - uid: Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig
   name: LocalAudioDeviceInitConfig
   href: api/Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.html

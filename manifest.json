@@ -62,6 +62,18 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.AudioDeviceModule.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.AudioDeviceModule.html",
+          "hash": "LJXPtdQGWvmm0qEl5smqrw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.AudioFrame.yml",
       "output": {
         ".html": {
@@ -426,7 +438,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags.html",
-          "hash": "8gouY6FjM2UDT3oZVRo7HA=="
+          "hash": "6ww5Mc7BSwkdi7BSEgfDZQ=="
         }
       },
       "is_incremental": false,
@@ -438,7 +450,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.Library.html",
-          "hash": "GJimqWTInNISV+mJwqFfXg=="
+          "hash": "ROP57UgAgBt2Il5uXZ3bUw=="
         }
       },
       "is_incremental": false,
@@ -1602,7 +1614,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "80NSfp1XflPbi8ZdTncdqQ=="
+          "hash": "R2TdsLB8YpGzR9M/6LyEOg=="
         }
       },
       "is_incremental": false,
@@ -1614,7 +1626,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "v4Zvq/TL1WJjh7SmtqHVZQ=="
+          "hash": "pyn5TWyuiWLKS4bkpw+qTQ=="
         }
       },
       "is_incremental": false,
@@ -2853,7 +2865,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 133,
+          "total_file_count": 134,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
