@@ -125,7 +125,7 @@ jobs:
     - task: MSBuild@1
       displayName: 'Build UWP wrappers'
       inputs:
-        solution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Org.WebRtc.WrapperGlue.Universal.vcxproj'
+        solution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Org.WebRtc.WrapperGlue.vcxproj'
         msbuildVersion: 15.0
         msbuildArchitecture: x64
         platform: '$(msbuildPlatform)'
