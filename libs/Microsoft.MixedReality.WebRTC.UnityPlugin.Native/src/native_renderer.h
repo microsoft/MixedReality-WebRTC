@@ -90,4 +90,6 @@ class NativeRenderer {
   static void MRS_CALL
   ArgbRemotevideoFrameCallback(void* user_data,
                                const mrsArgb32VideoFrame& frame);
+
+  static uint64_t m_frameId;
 };

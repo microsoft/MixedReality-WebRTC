@@ -17,23 +17,21 @@
 static IUnityInterfaces* s_UnityInterfaces = nullptr;
 static IUnityGraphics* s_Graphics = nullptr;
 
-extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API
-OnGraphicsDeviceEvent(UnityGfxDeviceEventType eventType) {
+
+extern "C" UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API OnGraphicsDeviceEvent(UnityGfxDeviceEventType eventType) {
   if (s_Graphics && s_UnityInterfaces) {
-    NativeRenderer::OnGraphicsDeviceEvent(eventType, s_Graphics->GetRenderer(),
-                                          s_UnityInterfaces);
+    NativeRenderer::OnGraphicsDeviceEvent(eventType, s_Graphics->GetRenderer(), s_UnityInterfaces);
   }
 }
 
-extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API
-UnityPluginLoad(IUnityInterfaces* unityInterfaces) {
+extern "C" UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API UnityPluginLoad(IUnityInterfaces* unityInterfaces) {
   s_UnityInterfaces = unityInterfaces;
   s_Graphics = s_UnityInterfaces->Get<IUnityGraphics>();
   s_Graphics->RegisterDeviceEventCallback(OnGraphicsDeviceEvent);
   OnGraphicsDeviceEvent(kUnityGfxDeviceEventInitialize);
 }
 
-extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload() {
+extern "C" UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API UnityPluginUnload() {
   if (s_Graphics) {
     s_Graphics->UnregisterDeviceEventCallback(OnGraphicsDeviceEvent);
     s_Graphics = nullptr;

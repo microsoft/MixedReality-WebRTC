@@ -370,6 +370,28 @@ void RenderApi_OpenGLCoreES::SimpleUpdateTexture(void* dstTexture,
   //  ctx->UpdateSubresource(dstD3DTexture, 0, nullptr, dataPtr, width, 0);
   //  ctx->Release();
   //}
+
+  //still not working
+  glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);  // release the mapped buffer
+
+  GLuint gltex = (GLuint)(size_t)(dstTexture);
+  glBindTexture(GL_TEXTURE_2D, gltex);
+
+  GLenum glFormat = GL_RGBA;
+
+  glTexSubImage2D(GL_TEXTURE_2D,      // Target
+                    0,                  // Mip Level
+                    0,       // xOffset
+                    0,       // yOffset
+                    width,   // Copy Width
+                    height,  // Copy Height
+                    glFormat, 
+                    GL_UNSIGNED_BYTE,
+                    dataPtr);  // Use PBO
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
 }
 
 #endif  // #if SUPPORT_OPENGL_UNIFIED

@@ -4,11 +4,11 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.0'
-        
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -28,8 +28,8 @@ task clean(type: Delete) {
 ext {
     compileSdkVersion = 29
     buildToolsVersion = "28.0.2"
-    minSdkVersion = 25
-    targetSdkVersion = 29
+    minSdkVersion = 21
+    targetSdkVersion = 25
     versionCode = 1
     versionName = "1.0"
 }

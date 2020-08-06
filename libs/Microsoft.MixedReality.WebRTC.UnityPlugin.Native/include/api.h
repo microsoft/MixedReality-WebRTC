@@ -4,7 +4,6 @@
 #pragma once
 
 #include "include/export.h"
-#include "include/video_frame.h"
 #include "src/mrs_errors.h"
 #include "include/interop_api.h"
 #include "../src/log_helpers.h"

@@ -22,6 +22,7 @@
 //  2. s_lock -- Static lock (class-level)
 //  3. m_lock -- Local lock (instance-level)
 
+uint64_t NativeRenderer::m_frameId{0};
 static std::mutex g_lock;
 static std::shared_ptr<RenderApi> g_renderApi;
 static std::set<PeerConnectionHandle> g_videoUpdateQueue;
@@ -128,7 +129,6 @@ void NativeRenderer::EnableRemoteVideo(mrsRemoteVideoTrackHandle videoTrackHandl
                                         VideoKind format,
                                         TextureDesc textureDescs[],
                                         int textureDescCount) {
-  Log_Debug("NativeRenderer::EnableRemoteVideo");
   if (!g_renderApi) {
     Log_Warning("NativeRenderer: Unity plugin not initialized.");
   }
@@ -173,8 +173,6 @@ void NativeRenderer::DisableRemoteVideo() {
 void NativeRenderer::I420ARemoteVideoFrameCallback(
     void* user_data,
     const mrsI420AVideoFrame& frame) {
-  UnityLogger::LogDebug("I420ARemoteVideoFrameCallback");
-
   if (auto renderer = NativeRenderer::Get(user_data)) {
     // RESEARCH: Do we need to keep a frame queue or is it fine to just render
     // the most recent frame?
@@ -232,7 +230,6 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
 
   /// RESEARCH: Can all native renderers be handled in a single draw call?
   for (auto renderer : renderers) {
-    UnityLogger::LogDebug("DoVideoUpdate renderer");
     if (!renderer)
       continue;
 
@@ -259,31 +256,34 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
 
       int index = 0;
       for (const TextureDesc& textureDesc : textures) {
-#if 1
+#if 0
         const std::vector<uint8_t>& src = remoteI420Frame->GetBuffer(index);
         g_renderApi->SimpleUpdateTexture(textureDesc.texture, textureDesc.width,
                                          textureDesc.height, src.data(),
                                          src.size());
 #else
-        // WARNING!!! There is an egregious memory leak somewhere in
-        // this code block. I suspect it is in the render API.
         VideoDesc videoDesc = {VideoFormat::R8, (uint32_t)textureDesc.width,
                                (uint32_t)textureDesc.height};
         RenderApi::TextureUpdate update;
         if (g_renderApi->BeginModifyTexture(videoDesc, &update)) {
           int copyPitch = std::min<int>(videoDesc.width, update.rowPitch);
+
           uint8_t* dst = static_cast<uint8_t*>(update.data);
           const uint8_t* src = remoteI420Frame->GetBuffer(index).data();
+
           for (int32_t r = 0; r < textureDesc.height; ++r) {
             memcpy(dst, src, copyPitch);
             dst += update.rowPitch;
             src += textureDesc.width;
           }
+
           g_renderApi->EndModifyTexture(textureDesc.texture, update, videoDesc);
         }
 #endif
         ++index;
       }
+
+      g_renderApi->ProcessEndOfFrame(m_frameId++);
 
       // Recycle the frame
       {

@@ -14,10 +14,14 @@
 #include "sdk/android/src/jni/jni_helpers.h"
 #include "sdk/android/src/jni/jvm.h"
 
+static bool isInialized = false;
+
 /// Auto-magic function called by the Java VM when the library is loaded.
 /// This is called on a thread which is already attached to the JVM, so has a
 /// valid JNIEnv already.
 extern "C" jint MRS_JNIEXPORT JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
+  if (isInialized) return 0;
+
   RTC_LOG(INFO) << "JNI_OnLoad() for MR-WebRTC";
 
   // This is supposed to be a handy helper which calls InitGlobalJniVariables()
@@ -59,6 +63,9 @@ extern "C" jint MRS_JNIEXPORT JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
 
   // As per JNI's specification, return the JNI version expected by the app.
   RTC_LOG(LS_INFO) << "Initialized Java with JNI version #" << jni_version;
+
+  isInialized = true;
+
   return jni_version;
 }
 

@@ -81,10 +81,12 @@ namespace Microsoft.MixedReality.WebRTC.UnityPlugin
                 height = item.height
             }).ToArray();
 
-            if (_peerConnection.Transceivers.Count > 0 && _peerConnection.Transceivers[0].RemoteVideoTrack != null)
+            foreach (RemoteVideoTrack remoteVideoTrack in _peerConnection.RemoteVideoTracks)
             {
-                uint res = NativeRendererInterop.EnableRemoteVideo(_peerConnection.Transceivers[0].RemoteVideoTrack.NativeHandle, _peerConnection.NativeHandle, format, interopTextures, interopTextures.Length);
+                uint res = NativeRendererInterop.EnableRemoteVideo(remoteVideoTrack.NativeHandle, _peerConnection.NativeHandle, format, interopTextures, interopTextures.Length);
                 WebRTC.Interop.Utils.ThrowOnErrorCode(res);
+                //Currently just goes with the first video track found. May not be ideal behavior once things get more complex?
+                break;
             }
         }
 
