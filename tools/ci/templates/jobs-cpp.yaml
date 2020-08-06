@@ -111,6 +111,22 @@ jobs:
       versionSpec: '>=2.7.16 <2.8.0'
     timeoutInMinutes: 5
 
+  # Clean-up unused files
+  - script: |
+      del /F /S /Q "depot_tools/external_bin/gsutil"
+      del /F /S /Q "chromium/third_party/protobuf"
+      del /F /S /Q "chromium/third_party/pycoverage"
+      del /F /S /Q "chromium/tools/android"
+      del /F /S /Q "chromium/tools/code_coverage"
+    workingDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform'
+    displayName: 'Clean-up unused files'
+
+  # Run component detection
+  - ${{ if eq(parameters.runComponentDetection, 'true') }}:
+    - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+      displayName: 'Component Detection'
+      timeoutInMinutes: 15
+
   # Build libwebrtc with the script from Google
   - task: PythonScript@0
     displayName: 'Build libwebrtc'
@@ -131,21 +147,6 @@ jobs:
         platform: '$(msbuildPlatform)'
         configuration: '${{parameters.buildConfig}}'
       timeoutInMinutes: 60
-
-  # Clean-up unused files
-  - script: |
-      del /F /S /Q "depot_tools/external_bin/gsutil"
-      del /F /S /Q "chromium/third_party/protobuf/java"
-      del /F /S /Q "chromium/tools/android"
-      del /F /S /Q "chromium/tools/code_coverage"
-    workingDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform'
-    displayName: 'Clean-up unused files'
-
-  # Run component detection
-  - ${{ if eq(parameters.runComponentDetection, 'true') }}:
-    - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-      displayName: 'Component Detection'
-      timeoutInMinutes: 15
 
   # Build mrwebrtc.dll
   - task: MSBuild@1
