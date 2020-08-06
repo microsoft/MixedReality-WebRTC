@@ -35,15 +35,15 @@ parameters:
   default: true
 
 jobs:
-- template: templates/jobs-cpp.yaml
-  parameters:
-    buildAgent: ${{parameters.buildAgent}}
-    buildPlatform: 'Win32'
-    buildArch: 'x86'
-    buildConfig: 'Debug'
-    runComponentDetection: ${{parameters.runComponentDetection}}
-    withTesting: true
-    publishArtifacts: false
+# - template: templates/jobs-cpp.yaml
+#   parameters:
+#     buildAgent: ${{parameters.buildAgent}}
+#     buildPlatform: 'Win32'
+#     buildArch: 'x86'
+#     buildConfig: 'Debug'
+#     runComponentDetection: ${{parameters.runComponentDetection}}
+#     withTesting: true
+#     publishArtifacts: false
 # - template: templates/jobs-cpp.yaml
 #   parameters:
 #     buildAgent: ${{parameters.buildAgent}}
@@ -71,15 +71,15 @@ jobs:
 #     runComponentDetection: ${{parameters.runComponentDetection}}
 #     withTesting: true
 #     publishArtifacts: false
-# - template: templates/jobs-cpp.yaml
-#   parameters:
-#     buildAgent: ${{parameters.buildAgent}}
-#     buildPlatform: 'UWP'
-#     buildArch: 'x86'
-#     buildConfig: 'Debug'
-#     runComponentDetection: ${{parameters.runComponentDetection}}
-#     withTesting: true
-#     publishArtifacts: false
+- template: templates/jobs-cpp.yaml
+  parameters:
+    buildAgent: ${{parameters.buildAgent}}
+    buildPlatform: 'UWP'
+    buildArch: 'x86'
+    buildConfig: 'Debug'
+    runComponentDetection: ${{parameters.runComponentDetection}}
+    withTesting: true
+    publishArtifacts: false
 # - template: templates/jobs-cpp.yaml
 #   parameters:
 #     buildAgent: ${{parameters.buildAgent}}

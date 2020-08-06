@@ -118,7 +118,19 @@ jobs:
       scriptSource: 'filePath'
       scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
       arguments: '-a prepare build -t webrtc -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper --cpp17'
-    timeoutInMinutes: 120
+    timeoutInMinutes: 60
+
+  # Build Org.WebRtc.WrapperGlub.lib
+  - ${{ if eq(parameters.buildPlatform, 'UWP') }}:
+    - task: MSBuild@1
+      displayName: 'Build UWP wrappers'
+      inputs:
+        solution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Org.WebRtc.WrapperGlue.Universal.vcxproj'
+        msbuildVersion: 15.0
+        msbuildArchitecture: x64
+        platform: '$(msbuildPlatform)'
+        configuration: '${{parameters.buildConfig}}'
+      timeoutInMinutes: 60
 
   # Clean-up unused files
   - script: |
@@ -137,7 +149,7 @@ jobs:
 
   # Build mrwebrtc.dll
   - task: MSBuild@1
-    displayName: 'Build mrwebrtc ($(buildTriple))'
+    displayName: 'Build mrwebrtc'
     inputs:
       solution: 'tools/build/mrwebrtc/${{parameters.buildPlatform}}/mrwebrtc-${{parameters.buildPlatform}}.vcxproj'
       msbuildVersion: 15.0
