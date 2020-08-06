@@ -117,7 +117,7 @@ jobs:
     inputs:
       scriptSource: 'filePath'
       scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
-      arguments: '-a build -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig)'
+      arguments: '-a prepare build -t webrtc -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper --cpp17'
     timeoutInMinutes: 120
 
   # Clean-up unused files
