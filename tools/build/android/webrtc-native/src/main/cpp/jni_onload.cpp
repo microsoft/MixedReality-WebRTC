@@ -64,6 +64,7 @@ extern "C" jint MRS_JNIEXPORT JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
   // As per JNI's specification, return the JNI version expected by the app.
   RTC_LOG(LS_INFO) << "Initialized Java with JNI version #" << jni_version;
 
+  // Initialization seems to be called twice on quest. This fixes it.
   isInialized = true;
 
   return jni_version;
