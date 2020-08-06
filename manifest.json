@@ -302,6 +302,18 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.ILogSink.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.ILogSink.html",
+          "hash": "26dqoEQEm3aYmvXvAlKq1g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.IVideoFrameQueue.yml",
       "output": {
         ".html": {
@@ -511,6 +523,30 @@
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.LocalVideoTrackInitConfig.html",
           "hash": "RcW2zoc+7QRjVDjEJsBmkw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.LogSeverity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.LogSeverity.html",
+          "hash": "AU/3lkIHHvKykMaeuMGRcA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.Logging.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.Logging.html",
+          "hash": "Sw/j527p5n5ZU6x3/n6TQw=="
         }
       },
       "is_incremental": false,
@@ -1566,7 +1602,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "+mqLXN9OuepWyS+8v9Af1w=="
+          "hash": "80NSfp1XflPbi8ZdTncdqQ=="
         }
       },
       "is_incremental": false,
@@ -1578,7 +1614,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "jbTa2KMnOxH5MW6nlrg3Yw=="
+          "hash": "v4Zvq/TL1WJjh7SmtqHVZQ=="
         }
       },
       "is_incremental": false,
@@ -2817,7 +2853,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 130,
+          "total_file_count": 133,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
