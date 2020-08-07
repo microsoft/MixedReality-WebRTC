@@ -140,13 +140,14 @@ function Build-UWPWrappers
 
     # Find MSBuild.exe
     $msbuildTool = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe"
-    if (-not (Test-Path $msbuildTool))
-    {
-        $msbuildTool = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe"
-        if (-not (Test-Path $msbuildTool))
-        {
-            Write-Error "Cannot find MSBuild.exe from Visual Studio 2019 install path"
-            exit 1
+    if (-not (Test-Path $msbuildTool)) {
+        $msbuildTool = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe"
+        if (-not (Test-Path $msbuildTool)) {
+            $msbuildTool = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe"
+            if (-not (Test-Path $msbuildTool)) {
+                Write-Error "Cannot find MSBuild.exe from Visual Studio 2019 install path."
+                exit 1
+            }
         }
     }
 
