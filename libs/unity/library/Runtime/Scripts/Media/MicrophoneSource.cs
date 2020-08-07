@@ -5,7 +5,7 @@ using System;
 using Microsoft.MixedReality.WebRTC.Unity.Editor;
 using UnityEngine;
 
-#if PLATFORM_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
 using UnityEngine.Android;
 #endif
 
@@ -35,7 +35,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [ToggleLeft]
         protected bool _autoGainControl = true;
 
-#if PLATFORM_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
         protected bool _androidRecordAudioRequestPending = false;
         protected float _androidRecordAudioRequestRetryUntilTime = 0f;
 #endif
@@ -47,7 +47,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 return;
             }
 
-#if PLATFORM_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             // Ensure Android binding is initialized before accessing the native implementation
             Android.Initialize();
 
@@ -110,7 +110,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-#if PLATFORM_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
         protected void OnApplicationFocus(bool hasFocus)
         {
             if (!hasFocus)
