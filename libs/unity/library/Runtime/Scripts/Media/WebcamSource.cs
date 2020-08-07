@@ -18,7 +18,7 @@ using global::Windows.Media.Capture;
 using global::Windows.ApplicationModel.Core;
 #endif
 
-#if PLATFORM_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
 using UnityEngine.Android;
 #endif
 
@@ -139,7 +139,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             framerate = 0.0
         };
 
-#if PLATFORM_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
         protected bool _androidCameraRequestPending = false;
         protected float _androidCameraRequestRetryUntilTime = 0f;
 #endif
@@ -151,7 +151,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 return;
             }
 
-#if PLATFORM_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             // Ensure Android binding is initialized before accessing the native implementation
             Android.Initialize();
 
@@ -240,7 +240,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     }
                 }
             }
-#elif PLATFORM_ANDROID
+#elif !UNITY_EDITOR && UNITY_ANDROID
             if (FormatMode == LocalVideoSourceFormatMode.Automatic)
             {
                 // Avoid constraining the framerate; this is generally not necessary (formats are listed
@@ -324,7 +324,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
         }
 
-#if PLATFORM_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
         protected void OnApplicationFocus(bool hasFocus)
         {
             if (!hasFocus)
