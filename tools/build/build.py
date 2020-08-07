@@ -1,12 +1,22 @@
 #!/usr/bin/env python
+# coding=utf-8
+#
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+import sys
+
+# Check Python version
+if __name__ == "__main__":
+    if (sys.version_info.major < 3):
+        print("This script requires Python 3.x (current version: %d.%d.%d)" % (sys.version_info.major, sys.version_info.minor, sys.version_info.micro))
+        sys.exit(1)
+
+from functools import reduce
 import re
 from optparse import OptionParser
 import os
 import subprocess
-import sys
 import winreg
 
 def colored(s, col):
@@ -178,7 +188,7 @@ class Build:
         print_step("Checkout")
         has_checkout = os.path.exists(self.webrtc_dir)
         if not has_checkout:
-            has_any_android = reduce(lambda has_android, tri : has_android or tri.cpu == 'android', self.build_triples, initializer = False)
+            has_any_android = reduce(lambda has_android, tri : has_android or tri.cpu == 'android', self.build_triples, False)
             self.checkout(with_android = has_any_android)
         else:
             print("Reusing existing checkout. Delete the '%s' folder to force a clean checkout." % self.webrtc_dir)
@@ -259,8 +269,16 @@ def main():
 
     # Invoke the build with the given options
     try:
-        targets = options.target.split(',')
-        cpus = options.cpu.split(',')
+        if hasattr(options, 'target') and options.target:
+            targets = options.target.split(',')
+        else:
+            print_warning("No target provided (-t,--target), assuming all supported targets (%s)" % ",".join(Build.TARGETS))
+            targets = Build.TARGETS
+        if hasattr(options, 'cpu') and options.cpu:
+            cpus = options.cpu.split(',')
+        else:
+            print_warning("No cpu provided (-c,--cpu), assuming all supported cpus (%s)" % ",".join(Build.CPUS))
+            cpus = Build.CPUS
         configs = []
         if options.debug:
             configs.append('debug')
@@ -271,7 +289,7 @@ def main():
     except Exception as ex:
         msg = getattr(ex, 'message', str(ex))
         parser.error(": " + msg if len(msg) > 0 else "Unknown exception")
-        sys.exit(2)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
