@@ -187,5 +187,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             UnityEngine.Object.Destroy(pc2_go);
             UnityEngine.Object.Destroy(sig_go);
         }
+
+        [UnityTest]
+        public IEnumerator DisableWhileInitializing()
+        {
+            // Create the component
+            var go = new GameObject("test_go");
+            go.SetActive(false); // prevent auto-activation of components
+            var pc = go.AddComponent<PeerConnection>();
+
+            for (int i = 0; i < 2; ++i)
+            {
+                go.SetActive(true);
+                go.SetActive(false);
+            }
+
+            UnityEngine.Object.Destroy(go);
+
+            // Terminate the coroutine.
+            yield return null;
+        }
     }
 }
