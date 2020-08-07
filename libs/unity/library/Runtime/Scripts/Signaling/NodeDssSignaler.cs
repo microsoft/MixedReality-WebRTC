@@ -372,7 +372,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void DebugLogLong(string str)
         {
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             // On Android, logcat truncates to ~1000 characters, so split manually instead.
             const int maxLineSize = 1000;
             int totalLength = str.Length;

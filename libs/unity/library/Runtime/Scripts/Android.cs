@@ -20,7 +20,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         public static void Initialize()
         {
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             if (IsInitialized)
             {
                 return;
