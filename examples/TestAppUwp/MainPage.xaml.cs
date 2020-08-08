@@ -144,16 +144,6 @@ namespace TestAppUwp
             RestoreSettings();
         }
 
-        /// <summary>
-        /// Check if this application instance is the first one launched on the host device.
-        /// </summary>
-        /// <returns><c>true</c> if the current application instance is the first and therefore only instance.</returns>
-        private static bool IsFirstInstance()
-        {
-            var firstInstance = AppInstance.FindOrRegisterInstanceForKey("{44CD414E-B604-482E-8CFD-A9E09076CABD}");
-            return firstInstance.IsCurrentInstance;
-        }
-
         private void RestoreSettings()
         {
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
@@ -208,7 +198,7 @@ namespace TestAppUwp
                 }
             }
 
-            if (!IsFirstInstance())
+            if (!Utils.IsFirstInstance())
             {
                 // Swap the peer IDs. This way two instances launched on the same machine connect
                 // to each other by default
@@ -278,22 +268,6 @@ namespace TestAppUwp
             //VideoProfileComboBox.SelectionChanged += VideoProfileComboBox_SelectionChanged;
 
             //videoPlayerElement.TransportControls = localVideoControls;
-
-
-
-            //using (_sessionViewModel.GetNegotiationDeferral())
-            //{
-            //    // As a convenience, add 1 audio and 1 video transceivers
-            //    // TODO - make that more flexible
-            //    AddPendingTransceiver(MediaKind.Audio, "audio_transceiver_0");
-            //    AddPendingTransceiver(MediaKind.Video, "video_transceiver_1");
-
-            //    // It is CRUCIAL to add any data channel BEFORE the SDP offer is sent, if data channels are
-            //    // to be used at all. Otherwise the SCTP will not be negotiated, and then all channels will
-            //    // stay forever in the kConnecting state.
-            //    // https://stackoverflow.com/questions/43788872/how-are-data-channels-negotiated-between-two-peers-with-webrtc
-            //    await _peerConnection.AddDataChannelAsync(ChatChannelID, "chat", true, true);
-            //}
 
             //chatInputBox.IsEnabled = true;
             //chatSendButton.IsEnabled = true;

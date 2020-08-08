@@ -1,0 +1,12 @@
+# Unity library overview
+
+The Unity library offers a simple way to add real-time communication to an existing Unity application. MixedReality-WebRTC provides a collection of Unity componenents ([`MonoBehaviour`](https://docs.unity3d.com/ScriptReference/MonoBehaviour.html)-derived classes) which encapsulate objects from the [underlying C# library](../cs/cs.md), and allow in-editor configuration as well as establishing a connection to a remote peer both in standalone and in [Play mode](https://docs.unity3d.com/Manual/GameView.html).
+
+- The [`PeerConnection`](xref:Microsoft.MixedReality.WebRTC.Unity.PeerConnection) component is the entry point for configuring and establishing a peer-to-peer connection.
+- The peer connection component makes use of a signaler (generally derived from the [`Signaler`](xref:Microsoft.MixedReality.WebRTC.Unity.Signaler) base class utility) to handle the [SDP](https://en.wikipedia.org/wiki/Session_Description_Protocol) messages dispatching. This process continues even after the connection started, as it handles all tracks and transceivers (re-)negotiations, even after a direct peer-to-peer connection for media transport is established.
+- Audio and video sources capturing from a local audio (microphone) and video (webcam) capture device are handled by the [`MicrophoneSource`](xref:Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource) and [`WebcamSource`](xref:Microsoft.MixedReality.WebRTC.Unity.WebcamSource) components, respectively. Those sources can be shared with multiple peer connections.
+- For remote tracks, the [`AudioReceiver`](xref:Microsoft.MixedReality.WebRTC.Unity.AudioReceiver) and [`VideoReceiver`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoReceiver) respectively handle configuring a remote audio and video track streamed from the remote peer. Unlike the previous track sources, those component encapsulate tracks and are tied with a specific peer connection.
+- Rendering of both local and remote video sources can be handled by the [`VideoRenderer`](xref:Microsoft.MixedReality.WebRTC.Unity.VideoRenderer) utility component, which connects to a video renderer source and renders it using a custom shader into a Unity Texture2D object, which can be later applied on a mesh to be rendered in the scene.
+
+> [!NOTE]
+> The local audio is never played out locally (no local frame callback), only streamed to the remote peer. The local video can be played locally by registering a frame callback with the video track source.

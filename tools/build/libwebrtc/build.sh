@@ -7,7 +7,9 @@
 
 set -o errexit
 set -o nounset
-set -o pipefail
+# This breaks checkout on ADO, throwing some SIGPIPE for no apparent reason.
+# See http://www.pixelbeat.org/programming/sigpipe_handling.html for details.
+#set -o pipefail
 
 #-----------------------------------------------------------------------------
 function check-err() {
@@ -100,6 +102,16 @@ else()
     set(libwebrtc-src-dir $libwebrtc_src_dir)
     set(libwebrtc-out-dir $libwebrtc_out_dir)
 endif()
+EOF
+    # Also write the gradle config
+    local libwebrtc_bin_dir=$SRC_DIR/src/out/$TARGET_OS/$TARGET_CPU
+    # TODO - WSL2 path support
+    filename="$BUILD_DIR/../android/mrwebrtc.gradle"
+    cat >$filename <<EOF
+// THIS FILE IS GENERATED - DO NOT EDIT - CHANGES WILL BE LOST
+
+// Path to the bin folder of libwebrtc, excluding the build variant (Debug/Release)
+gradle.ext.webrtcBinDir = '$libwebrtc_bin_dir'
 EOF
 }
 

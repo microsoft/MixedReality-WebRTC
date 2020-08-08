@@ -14,6 +14,8 @@ namespace TestNetCoreConsole
         {
             Transceiver audioTransceiver = null;
             Transceiver videoTransceiver = null;
+            AudioTrackSource audioTrackSource = null;
+            VideoTrackSource videoTrackSource = null;
             LocalAudioTrack localAudioTrack = null;
             LocalVideoTrack localVideoTrack = null;
 
@@ -23,12 +25,12 @@ namespace TestNetCoreConsole
                 bool needAudio = Array.Exists(args, arg => (arg == "-a") || (arg == "--audio"));
 
                 // Asynchronously retrieve a list of available video capture devices (webcams).
-                var deviceList = await PeerConnection.GetVideoCaptureDevicesAsync();
+                var deviceList = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
 
                 // For example, print them to the standard output
                 foreach (var device in deviceList)
                 {
-                   Console.WriteLine($"Found webcam {device.name} (id: {device.id})");
+                    Console.WriteLine($"Found webcam {device.name} (id: {device.id})");
                 }
 
                 // Create a new peer connection automatically disposed at the end of the program
@@ -48,7 +50,13 @@ namespace TestNetCoreConsole
                 if (needVideo)
                 {
                     Console.WriteLine("Opening local webcam...");
-                    localVideoTrack = await LocalVideoTrack.CreateFromDeviceAsync();
+                    videoTrackSource = await DeviceVideoTrackSource.CreateAsync();
+
+                    Console.WriteLine("Create local video track...");
+                    var trackSettings = new LocalVideoTrackInitConfig { trackName = "webcam_track" };
+                    localVideoTrack = LocalVideoTrack.CreateFromSource(videoTrackSource, trackSettings);
+
+                    Console.WriteLine("Create video transceiver and add webcam track...");
                     videoTransceiver = pc.AddTransceiver(MediaKind.Video);
                     videoTransceiver.DesiredDirection = Transceiver.Direction.SendReceive;
                     videoTransceiver.LocalVideoTrack = localVideoTrack;
@@ -58,7 +66,13 @@ namespace TestNetCoreConsole
                 if (needAudio)
                 {
                     Console.WriteLine("Opening local microphone...");
-                    localAudioTrack = await LocalAudioTrack.CreateFromDeviceAsync();
+                    audioTrackSource = await DeviceAudioTrackSource.CreateAsync();
+
+                    Console.WriteLine("Create local audio track...");
+                    var trackSettings = new LocalAudioTrackInitConfig { trackName = "mic_track" };
+                    localAudioTrack = LocalAudioTrack.CreateFromSource(audioTrackSource, trackSettings);
+
+                    Console.WriteLine("Create audio transceiver and add mic track...");
                     audioTransceiver = pc.AddTransceiver(MediaKind.Audio);
                     audioTransceiver.DesiredDirection = Transceiver.Direction.SendReceive;
                     audioTransceiver.LocalAudioTrack = localAudioTrack;
@@ -67,14 +81,16 @@ namespace TestNetCoreConsole
                 // Setup signaling
                 Console.WriteLine("Starting signaling...");
                 var signaler = new NamedPipeSignaler.NamedPipeSignaler(pc, "testpipe");
-                signaler.SdpMessageReceived += async (SdpMessage message) => {
+                signaler.SdpMessageReceived += async (SdpMessage message) =>
+                {
                     await pc.SetRemoteDescriptionAsync(message);
                     if (message.Type == SdpMessageType.Offer)
                     {
                         pc.CreateAnswer();
                     }
                 };
-                signaler.IceCandidateReceived += (IceCandidate candidate) => {
+                signaler.IceCandidateReceived += (IceCandidate candidate) =>
+                {
                     pc.AddIceCandidate(candidate);
                 };
                 await signaler.StartAsync();
@@ -118,6 +134,11 @@ namespace TestNetCoreConsole
             localVideoTrack?.Dispose();
 
             Console.WriteLine("Program termined.");
+
+            localAudioTrack.Dispose();
+            localVideoTrack.Dispose();
+            audioTrackSource.Dispose();
+            videoTrackSource.Dispose();
         }
     }
 }

@@ -80,50 +80,130 @@ struct mrsRemoteVideoTrackConfig;
 struct mrsDataChannelConfig;
 struct mrsDataChannelCallbacks;
 
-/// Opaque handle to a native PeerConnection interop object.
-using mrsPeerConnectionHandle = void*;
+/// Opaque handle to a native interop object.
+using mrsObjectHandle = void*;
 
-/// Opaque handle to a native MediaTrack interop object.
-using mrsMediaTrackHandle = void*;
+/// Opaque handle to a native reference-counted interop object.
+using mrsRefCountedObjectHandle = mrsObjectHandle;
+
+/// Opaque handle to a native PeerConnection interop object.
+using mrsPeerConnectionHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native Transceiver interop object.
-using mrsTransceiverHandle = void*;
+using mrsTransceiverHandle = mrsObjectHandle;
+
+/// Opaque handle to a native AudioTrackSource interop object.
+using mrsAudioTrackSourceHandle = mrsRefCountedObjectHandle;
+
+/// Opaque handle to a native VideoTrackSource interop object.
+using mrsVideoTrackSourceHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native LocalAudioTrack interop object.
-using mrsLocalAudioTrackHandle = void*;
+using mrsLocalAudioTrackHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native LocalVideoTrack interop object.
-using mrsLocalVideoTrackHandle = void*;
+using mrsLocalVideoTrackHandle = mrsRefCountedObjectHandle;
 
 /// Opaque handle to a native RemoteAudioTrack interop object.
-using mrsRemoteAudioTrackHandle = void*;
+using mrsRemoteAudioTrackHandle = mrsObjectHandle;
 
 /// Opaque handle to a native RemoteVideoTrack interop object.
-using mrsRemoteVideoTrackHandle = void*;
+using mrsRemoteVideoTrackHandle = mrsObjectHandle;
 
 /// Opaque handle to a native DataChannel interop object.
-using mrsDataChannelHandle = void*;
+using mrsDataChannelHandle = mrsObjectHandle;
 
 /// Opaque handle to a native ExternalVideoTrackSource interop object.
-using mrsExternalVideoTrackSourceHandle = void*;
+using mrsExternalVideoTrackSourceHandle = mrsVideoTrackSourceHandle;
+
+/// Opaque handle to a native DeviceVideoTrackSource interop object.
+using mrsDeviceVideoTrackSourceHandle = mrsVideoTrackSourceHandle;
+
+/// Opaque handle to a native DeviceAudioTrackSource interop object.
+using mrsDeviceAudioTrackSourceHandle = mrsAudioTrackSourceHandle;
 
 //
 // Video capture enumeration
 //
 
-/// Callback invoked for each enumerated video capture device.
-using mrsVideoCaptureDeviceEnumCallback = void(MRS_CALL*)(const char* id,
-                                                          const char* name,
-                                                          void* user_data);
+/// Kind of video profile. Equal to org::webRtc::VideoProfileKind.
+///
+/// These are equivalent to the "known video profiles" found in the UWP
+/// MediaCapture API, with the addition of the
+/// |mrsVideoProfileKind::kUnspecified| placeholder value indicating "no
+/// profile" or "default profile" depending on the context.
+/// https://docs.microsoft.com/en-us/uwp/api/windows.media.capture.knownvideoprofile?view=winrt-19041
+enum class mrsVideoProfileKind : int32_t {
+  kUnspecified,
+  kVideoRecording,
+  kHighQualityPhoto,
+  kBalancedVideoAndPhoto,
+  kVideoConferencing,
+  kPhotoSequence,
+  kHighFrameRate,
+  kVariablePhotoSequence,
+  kHdrWithWcgVideo,
+  kHdrWithWcgPhoto,
+  kVideoHdr8,
+};
 
-/// Callback invoked on video capture device enumeration completed.
+/// Video capture device info.
+struct mrsVideoCaptureDeviceInfo {
+  // Unique identifier of the capture device, used to start capture.
+  const char* id;
+
+  // Optional friendly name of the capture device, for UI display. If the device
+  // does not have a friendly name, the implementation returns the same value as
+  // |id|, to ensure this value is not an emtpy string.
+  const char* name;
+};
+
+/// Video profile info.
+struct mrsVideoProfileInfo {
+  // Unique identifier of the video profile.
+  const char* id;
+};
+
+/// Video capture format info.
+struct mrsVideoCaptureFormatInfo {
+  // Capture width, in pixels.
+  uint32_t width;
+
+  // Capture height, in pixels.
+  uint32_t height;
+
+  // Maximum capture framerate, in frames per seconds. Video capture devices
+  // commonly have adaptive framerate based on luminosity, and this value
+  // reports the maximum framerate the device supports.
+  float framerate;
+
+  // Capture format as a FOURCC code.
+  // https://docs.microsoft.com/en-us/windows/win32/medfound/video-fourccs
+  uint32_t fourcc;
+};
+
+/// Callback invoked for each enumerated video capture device.
+using mrsVideoCaptureDeviceEnumCallback = void(
+    MRS_CALL*)(void* user_data, const mrsVideoCaptureDeviceInfo* device_info);
+
+/// Callback invoked on video capture device enumeration completed. If the
+/// result is not |mrsResult::kSuccess| then some or all of the devices might
+/// not have been enumerated.
 using mrsVideoCaptureDeviceEnumCompletedCallback =
-    void(MRS_CALL*)(void* user_data);
+    void(MRS_CALL*)(void* user_data, mrsResult result);
 
 /// Enumerate the video capture devices asynchronously.
-/// For each device found, invoke the mandatory |callback|.
-/// At the end of the enumeration, invoke the optional |completedCallback| if it
-/// was provided (non-null).
+///
+/// If the enumeration starts successfully, that is the function returns
+/// |mrsResult::kSuccess|, then for each device found the implementation invokes
+/// the mandatory |enumCallback|. At the end of the enumeration, it invokes the
+/// optional |completedCallback| if it was provided (non-null). Note that those
+/// calls are asynchonous and not necessarily done before
+/// |mrsEnumVideoCaptureDevicesAsync()| returned.
+///
+/// If the enumeration fails to start, the function returns an error code; in
+/// that case no callback is invoked.
+///
 /// On UWP this must *not* be called from the main UI thread, otherwise a
 /// |mrsResult::kWrongThread| error might be returned.
 MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
@@ -132,25 +212,91 @@ MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureDevicesAsync(
     mrsVideoCaptureDeviceEnumCompletedCallback completedCallback,
     void* completedCallbackUserData) noexcept;
 
+/// Callback invoked for each enumerated video capture device.
+using mrsVideoProfileEnumCallback =
+    void(MRS_CALL*)(void* user_data, const mrsVideoProfileInfo* profile_info);
+
+/// Callback invoked on video profile enumeration completed. If the result is
+/// not |mrsResult::kSuccess| then some or all of the profiles might not have
+/// been enumerated.
+using mrsVideoProfileEnumCompletedCallback = void(MRS_CALL*)(void* user_data,
+                                                             mrsResult result);
+
+/// Asynchronously enumerate the video profiles for the given capture device,
+/// possibly restricted to the specified profile kind.
+///
+/// If the enumeration starts successfully, that is the function returns
+/// |mrsResult::kSuccess|, then for each video profile found for the given
+/// capture device the implementation invokes the mandatory |enumCallback|. At
+/// the end of the enumeration, it invokes the optional |completedCallback| if
+/// it was provided (non-null). Note that those calls are asynchonous and not
+/// necessarily done before |mrsEnumVideoProfilesAsync()| returned.
+///
+/// If the enumeration fails to start, the function returns an error code; in
+/// that case no callback is invoked.
+///
+/// If the video capture device does not support video profiles, this function
+/// succeeds and returns an empty list.
+///
+/// On UWP this must *not* be called from the main UI thread, otherwise a
+/// |mrsResult::kWrongThread| error might be returned.
+MRS_API mrsResult MRS_CALL mrsEnumVideoProfilesAsync(
+    const char* device_id,
+    mrsVideoProfileKind profile_kind,
+    mrsVideoProfileEnumCallback enumCallback,
+    void* enumCallbackUserData,
+    mrsVideoProfileEnumCompletedCallback completedCallback,
+    void* completedCallbackUserData) noexcept;
+
 /// Callback invoked for each enumerated video capture format.
-using mrsVideoCaptureFormatEnumCallback = void(MRS_CALL*)(uint32_t width,
-                                                          uint32_t height,
-                                                          double framerate,
-                                                          uint32_t encoding,
-                                                          void* user_data);
+using mrsVideoCaptureFormatEnumCallback = void(
+    MRS_CALL*)(void* user_data, const mrsVideoCaptureFormatInfo* format_info);
 
-/// Callback invoked on video capture format enumeration completed.
+/// Callback invoked on video capture format enumeration completed. If the
+/// result is not |mrsResult::kSuccess| then some or all of the device formats
+/// might not have been enumerated.
 using mrsVideoCaptureFormatEnumCompletedCallback =
-    void(MRS_CALL*)(mrsResult result, void* user_data);
+    void(MRS_CALL*)(void* user_data, mrsResult result);
 
-/// Enumerate the video capture formats asynchronously.
-/// For each device found, invoke the mandatory |callback|.
-/// At the end of the enumeration, invoke the optional |completedCallback| if it
-/// was provided (non-null).
+/// Asynchronously enumerate the capture formats of a video capture device.
+///
+/// The capture formats are enumerated for the given video capture device:
+/// - If the device does not support video profiles, |profile_id| and
+/// |profile_kind| are both ignored, and all capture formats supported by the
+/// specified device are enumerated.
+/// - If the device supports video profiles, enumeration depends on the values
+/// of the profile ID and kind. The profile ID string |profile_id| can be null
+/// or an empty string, meaning no specified profile ID. The profile kind
+/// |profile_kind| can be |mrsVideoProfileKind::Unspecified| to indicate no
+/// specified profile kind. |profile_id| or |profile_kind| can be specified (but
+/// not both) to limit the enumeration:
+///   - If neither profile ID nor kind are specified, the capture formats for
+///   the default video profile are enumerated.
+///   - If profile ID is specified, only capture formats for that specific
+///   profile are enumerated.
+///   - If profile kind is specified, capture formats for all profiles
+///   associated with the given kind are enumerated.
+///
+/// If the enumeration starts successfully, that is the function returns
+/// |mrsResult::kSuccess|, then for each format found the implementation invokes
+/// the mandatory |enumCallback|. At the end of the enumeration, it invokes the
+/// optional |completedCallback| if it was provided (non-null). Note that those
+/// calls are asynchonous and not necessarily done before
+/// |mrsEnumVideoCaptureFormatsAsync()| returned. The |completedCallback|
+/// contains the result of the overall enumeration, therefore it is recommended
+/// to provide it. Only when it returns |mrsResult::kSuccess| is the caller
+/// ensured all capture formats have been enumerated successfully.
+///
+/// If the enumeration fails to even start, the function returns an error code;
+/// in that case no callback is invoked, not even the |completedCallback| if
+/// provided.
+///
 /// On UWP this must *not* be called from the main UI thread, otherwise a
 /// |mrsResult::kWrongThread| error might be returned.
 MRS_API mrsResult MRS_CALL mrsEnumVideoCaptureFormatsAsync(
     const char* device_id,
+    const char* profile_id,
+    mrsVideoProfileKind profile_kind,
     mrsVideoCaptureFormatEnumCallback enumCallback,
     void* enumCallbackUserData,
     mrsVideoCaptureFormatEnumCompletedCallback completedCallback,
@@ -177,8 +323,8 @@ struct mrsIceCandidate {
 /// the JSEP offer/answer exchange successfully.
 using mrsPeerConnectionConnectedCallback = void(MRS_CALL*)(void* user_data);
 
-/// Callback invoked when a local SDP message has been prepared and is ready to be
-/// sent by the user via the signaling service.
+/// Callback invoked when a local SDP message has been prepared and is ready to
+/// be sent by the user via the signaling service.
 using mrsPeerConnectionLocalSdpReadytoSendCallback = void(
     MRS_CALL*)(void* user_data, mrsSdpMessageType type, const char* sdp_data);
 
@@ -212,8 +358,8 @@ enum class mrsIceGatheringState : int32_t {
 using mrsPeerConnectionIceStateChangedCallback =
     void(MRS_CALL*)(void* user_data, mrsIceConnectionState new_state);
 
-/// Callback invoked when a renegotiation of the current session needs to occur to
-/// account for new parameters (e.g. added or removed tracks).
+/// Callback invoked when a renegotiation of the current session needs to occur
+/// to account for new parameters (e.g. added or removed tracks).
 using mrsPeerConnectionRenegotiationNeededCallback =
     void(MRS_CALL*)(void* user_data);
 
@@ -255,16 +401,14 @@ struct mrsRemoteVideoTrackAddedInfo {
 /// Callback invoked when a remote audio track is added to a connection.
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsLocalAudioTrackRemoveRef()| and
-/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionAudioTrackAddedCallback =
     void(MRS_CALL*)(void* user_data, const mrsRemoteAudioTrackAddedInfo* info);
 
 /// Callback invoked when a remote audio track is removed from a connection.
 /// The |audio_track| and |audio_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsLocalAudioTrackRemoveRef()| and
-/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionAudioTrackRemovedCallback =
     void(MRS_CALL*)(void* user_data,
                     mrsRemoteAudioTrackHandle audio_track,
@@ -273,16 +417,14 @@ using mrsPeerConnectionAudioTrackRemovedCallback =
 /// Callback invoked when a remote video track is added to a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsLocalVideoTrackRemoveRef()| and
-/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionVideoTrackAddedCallback =
     void(MRS_CALL*)(void* user_data, const mrsRemoteVideoTrackAddedInfo* info);
 
 /// Callback invoked when a remote video track is removed from a connection.
 /// The |video_track| and |video_transceiver| handle hold a reference to the
 /// underlying native object they are associated with, and therefore must be
-/// released with |mrsLocalVideoTrackRemoveRef()| and
-/// |mrsTransceiverRemoveRef()|, respectively, to avoid memory leaks.
+/// released with |mrsRefCountedObjectRemoveRef()| to avoid memory leaks.
 using mrsPeerConnectionVideoTrackRemovedCallback =
     void(MRS_CALL*)(void* user_data,
                     mrsRemoteVideoTrackHandle video_track,
@@ -312,9 +454,9 @@ struct mrsDataChannelAddedInfo {
   const char* label{nullptr};
 };
 
-/// Callback invoked when a data channel is added to the peer connection. This is
-/// called for both channels that are created locally and ones that are created
-/// by the remote peer.
+/// Callback invoked when a data channel is added to the peer connection. This
+/// is called for both channels that are created locally and ones that are
+/// created by the remote peer.
 ///
 /// Use this callback to call |mrsDataChannelRegisterCallbacks| on new data
 /// channels and to start listening for messages/state changes.
@@ -420,9 +562,9 @@ struct mrsPeerConnectionConfiguration {
 /// On UWP this must be invoked from another thread than the main UI thread.
 /// The newly-created peer connection native resource is reference-counted, and
 /// has a single reference when this function returns. Additional references may
-/// be added with |mrsPeerConnectionAddRef| and removed with
-/// |mrsPeerConnectionRemoveRef|. When the last reference is removed, the native
-/// object is destroyed.
+/// be added with |mrsRefCountedObjectAddRef| and removed with
+/// |mrsRefCountedObjectRemoveRef|. When the last reference is removed, the
+/// native object is destroyed.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionCreate(const mrsPeerConnectionConfiguration* config,
                         mrsPeerConnectionHandle* peer_handle_out) noexcept;
@@ -458,18 +600,18 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterIceStateChangedCallback(
     mrsPeerConnectionIceStateChangedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback invoked when a renegotiation of the current session needs
-/// to occur to account for new parameters (e.g. added or removed tracks).
+/// Register a callback invoked when a renegotiation of the current session
+/// needs to occur to account for new parameters (e.g. added or removed tracks).
 MRS_API void MRS_CALL mrsPeerConnectionRegisterRenegotiationNeededCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionRenegotiationNeededCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback invoked when a remote audio track is added to the current
-/// peer connection.
-/// Note that the arguments include some object handles, which each hold a
-/// reference to the corresponding object and therefore must be released, even
-/// if the user does not make use of them in the callback.
+/// Register a callback invoked when a remote audio track is added to the
+/// current peer connection. Note that the arguments include some object
+/// handles, which each hold a reference to the corresponding object and
+/// therefore must be released, even if the user does not make use of them in
+/// the callback.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackAddedCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionAudioTrackAddedCallback callback,
@@ -485,11 +627,11 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterAudioTrackRemovedCallback(
     mrsPeerConnectionAudioTrackRemovedCallback callback,
     void* user_data) noexcept;
 
-/// Register a callback invoked when a remote video track is added to the current
-/// peer connection.
-/// Note that the arguments include some object handles, which each hold a
-/// reference to the corresponding object and therefore must be released, even
-/// if the user does not make use of them in the callback.
+/// Register a callback invoked when a remote video track is added to the
+/// current peer connection. Note that the arguments include some object
+/// handles, which each hold a reference to the corresponding object and
+/// therefore must be released, even if the user does not make use of them in
+/// the callback.
 MRS_API void MRS_CALL mrsPeerConnectionRegisterVideoTrackAddedCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionVideoTrackAddedCallback callback,
@@ -518,21 +660,6 @@ MRS_API void MRS_CALL mrsPeerConnectionRegisterDataChannelRemovedCallback(
     mrsPeerConnectionHandle peer_handle,
     mrsPeerConnectionDataChannelRemovedCallback callback,
     void* user_data) noexcept;
-
-/// Kind of video profile. Equivalent to org::webRtc::VideoProfileKind.
-enum class mrsVideoProfileKind : int32_t {
-  kUnspecified,
-  kVideoRecording,
-  kHighQualityPhoto,
-  kBalancedVideoAndPhoto,
-  kVideoConferencing,
-  kPhotoSequence,
-  kHighFrameRate,
-  kVariablePhotoSequence,
-  kHdrWithWcgVideo,
-  kHdrWithWcgPhoto,
-  kVideoHdr8,
-};
 
 enum class mrsTransceiverStateUpdatedReason : int32_t {
   kLocalDesc,
@@ -740,7 +867,7 @@ MRS_API mrsResult MRS_CALL mrsPeerConnectionSetRemoteDescriptionAsync(
 /// Close a peer connection, removing all tracks and disconnecting from the
 /// remote peer currently connected. This does not invalidate the handle nor
 /// destroy the native peer connection object, but leaves it in a state where it
-/// can only be destroyed by calling |mrsPeerConnectionRemoveRef()|.
+/// can only be destroyed by calling |mrsRefCountedObjectRemoveRef()|.
 MRS_API mrsResult MRS_CALL
 mrsPeerConnectionClose(mrsPeerConnectionHandle peer_handle) noexcept;
 

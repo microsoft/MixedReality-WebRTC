@@ -62,6 +62,17 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    // See e.g. examples/aarproject/app/build.gradle
+    // Note: com.google.code.findbugs is for @Nullable,
+    // see https://stackoverflow.com/questions/19030954/cant-find-nullable-inside-javax-annotation
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    // Local build of libwebrtc.jar; see mrwebrtc.gradle included from settings.gradle
+    // Note that this is a compileOnly dependency because the content of libwebrtc.jar is then
+    // embedded into libwebrtc.aar, which is itself merged into mrwebrtc.aar, so libwebrtc.jar
+    // should not be added to the runtime dependencies.
+    fulldebugCompileOnly files("${gradle.webrtcBinDir}/Debug/lib.java/sdk/android/libwebrtc.jar")
+    debugCompileOnly files("${gradle.webrtcBinDir}/Debug/lib.java/sdk/android/libwebrtc.jar")
+    releaseCompileOnly files("${gradle.webrtcBinDir}/Release/lib.java/sdk/android/libwebrtc.jar")
 }
 
 // Merge the libwebrtc.aar containing the Java interop classes for WebRTC

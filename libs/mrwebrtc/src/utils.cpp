@@ -103,6 +103,55 @@ const char* ToString(webrtc::RtpTransceiverDirection dir) {
 const char* ToString(bool value) {
   return (value ? "true" : "false");
 }
+
+absl::string_view ObjectTypeToString(ObjectType type) {
+  switch (type) {
+    case ObjectType::kPeerConnection:
+      return "PeerConnection";
+    case ObjectType::kLocalAudioTrack:
+      return "LocalAudioTrack";
+    case ObjectType::kLocalVideoTrack:
+      return "LocalVideoTrack";
+    case ObjectType::kRemoteAudioTrack:
+      return "RemoteAudioTrack";
+    case ObjectType::kRemoteVideoTrack:
+      return "RemoteVideoTrack";
+    case ObjectType::kDataChannel:
+      return "DataChannel";
+    case ObjectType::kAudioTransceiver:
+      return "AudioTransceiver";
+    case ObjectType::kVideoTransceiver:
+      return "VideoTransceiver";
+    case ObjectType::kDeviceAudioTrackSource:
+      return "DeviceAudioTrackSource";
+    case ObjectType::kDeviceVideoTrackSource:
+      return "DeviceVideoTrackSource";
+    case ObjectType::kExternalVideoTrackSource:
+      return "ExternalVideoTrackSource";
+    default:
+      RTC_NOTREACHED();
+      return "<UnknownObjectType>";
+  }
+}
+
+std::string ObjectToString(TrackedObject* obj) {
+  // rtc::StringBuilder doesn't support std::string_view, nor Append(). And
+  // asbl::string_view is not constexpr-friendly on MSVC due to strlen().
+  // rtc::SimpleStringBuilder supports Append(), but cannot dynamically resize.
+  // Assume that the object name will not be too long, and use that one.
+  char buffer[512];
+  rtc::SimpleStringBuilder builder(buffer);
+  if (obj) {
+    builder << "(";
+    absl::string_view sv = ObjectTypeToString(obj->GetObjectType());
+    builder.Append(sv.data(), sv.length());
+    builder << ") " << obj->GetName();
+  } else {
+    builder << "NULL";
+  }
+  return builder.str();
+}
+
 bool IsValidAudioTrackBufferPadBehavior(
     mrsAudioTrackReadBufferPadBehavior pad_behavior) {
   return pad_behavior >= mrsAudioTrackReadBufferPadBehavior::kDoNotPad &&

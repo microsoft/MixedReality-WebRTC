@@ -12,30 +12,6 @@
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL mrsExternalVideoTrackSourceAddRef(
-    mrsExternalVideoTrackSourceHandle handle) noexcept {
-  if (auto track = static_cast<ExternalVideoTrackSource*>(handle)) {
-    track->AddRef();
-  } else {
-    RTC_LOG(LS_WARNING)
-        << "Trying to add reference to NULL ExternalVideoTrackSource object.";
-  }
-}
-
-void MRS_CALL mrsExternalVideoTrackSourceRemoveRef(
-    mrsExternalVideoTrackSourceHandle handle) noexcept {
-  if (auto track = static_cast<ExternalVideoTrackSource*>(handle)) {
-    const std::string name = track->GetName();
-    if (track->RemoveRef() == 0) {
-      RTC_LOG(LS_VERBOSE) << "Destroyed ExternalVideoTrackSource \""
-                          << name.c_str() << "\" (0 ref).";
-    }
-  } else {
-    RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
-                           "ExternalVideoTrackSource object.";
-  }
-}
-
 mrsResult MRS_CALL mrsExternalVideoTrackSourceCreateFromI420ACallback(
     mrsRequestExternalI420AVideoFrameCallback callback,
     void* user_data,
@@ -184,9 +160,11 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromI420A(
   if (!custom_source) {
     return {};
   }
-  RefPtr<ExternalVideoTrackSource> track_source =
-      ExternalVideoTrackSource::createFromI420A(std::move(global_factory),
-                                                custom_source);
+  // Tracks need to be created from the worker thread
+  rtc::Thread* const worker_thread = global_factory->GetWorkerThread();
+  auto track_source = worker_thread->Invoke<RefPtr<ExternalVideoTrackSource>>(
+      RTC_FROM_HERE, rtc::Bind(&ExternalVideoTrackSource::createFromI420A,
+                               std::move(global_factory), custom_source));
   if (!track_source) {
     return {};
   }
@@ -203,9 +181,11 @@ RefPtr<ExternalVideoTrackSource> ExternalVideoTrackSourceCreateFromArgb32(
   if (!custom_source) {
     return {};
   }
-  RefPtr<ExternalVideoTrackSource> track_source =
-      ExternalVideoTrackSource::createFromArgb32(std::move(global_factory),
-                                                 custom_source);
+  // Tracks need to be created from the worker thread
+  rtc::Thread* const worker_thread = global_factory->GetWorkerThread();
+  auto track_source = worker_thread->Invoke<RefPtr<ExternalVideoTrackSource>>(
+      RTC_FROM_HERE, rtc::Bind(&ExternalVideoTrackSource::createFromArgb32,
+                               std::move(global_factory), custom_source));
   if (!track_source) {
     return {};
   }

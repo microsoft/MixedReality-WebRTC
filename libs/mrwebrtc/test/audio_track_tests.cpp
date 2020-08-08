@@ -4,6 +4,7 @@
 #include "pch.h"
 
 #include "audio_frame.h"
+#include "device_audio_track_source_interop.h"
 #include "interop_api.h"
 #include "local_audio_track_interop.h"
 #include "remote_audio_track_interop.h"
@@ -105,13 +106,6 @@ TEST_P(AudioTrackTests, Simple) {
        &track_added2_ev](const mrsRemoteAudioTrackAddedInfo* info) {
         audio_track2 = info->track_handle;
         audio_transceiver2 = info->audio_transceiver_handle;
-        // Test user data here
-        {
-          ASSERT_EQ(nullptr, mrsRemoteAudioTrackGetUserData(audio_track2));
-          mrsRemoteAudioTrackSetUserData(audio_track2, audio_transceiver2);
-          ASSERT_EQ(audio_transceiver2,
-                    mrsRemoteAudioTrackGetUserData(audio_track2));
-        }
         track_added2_ev.Set();
       };
   mrsPeerConnectionRegisterAudioTrackAddedCallback(pair.pc2(),
@@ -127,11 +121,20 @@ TEST_P(AudioTrackTests, Simple) {
                                             &audio_transceiver1));
   ASSERT_NE(nullptr, audio_transceiver1);
 
+  // Create the audio source #1
+  mrsLocalAudioDeviceInitConfig device_config{};
+  mrsDeviceAudioTrackSourceHandle audio_source1{};
+  ASSERT_EQ(Result::kSuccess,
+            mrsDeviceAudioTrackSourceCreate(&device_config, &audio_source1));
+  ASSERT_NE(nullptr, audio_source1);
+
   // Create the local audio track #1
-  mrsLocalAudioTrackInitConfig config{};
+  mrsLocalAudioTrackInitSettings init_settings{};
+  init_settings.track_name = "test_audio_track";
   mrsLocalAudioTrackHandle audio_track1{};
-  ASSERT_EQ(Result::kSuccess, mrsLocalAudioTrackCreateFromDevice(
-                                  &config, "test_audio_track", &audio_track1));
+  ASSERT_EQ(Result::kSuccess,
+            mrsLocalAudioTrackCreateFromSource(&init_settings, audio_source1,
+                                               &audio_track1));
   ASSERT_NE(nullptr, audio_track1);
 
   // Audio tracks start enabled
@@ -241,7 +244,8 @@ TEST_P(AudioTrackTests, Simple) {
 
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);
-  mrsLocalAudioTrackRemoveRef(audio_track1);
+  mrsRefCountedObjectRemoveRef(audio_track1);
+  mrsRefCountedObjectRemoveRef(audio_source1);
 }
 
 TEST_P(AudioTrackTests, Muted) {
@@ -274,11 +278,20 @@ TEST_P(AudioTrackTests, Muted) {
                                             &audio_transceiver1));
   ASSERT_NE(nullptr, audio_transceiver1);
 
+  // Create the audio source #1
+  mrsLocalAudioDeviceInitConfig device_config{};
+  mrsDeviceAudioTrackSourceHandle audio_source1{};
+  ASSERT_EQ(Result::kSuccess,
+            mrsDeviceAudioTrackSourceCreate(&device_config, &audio_source1));
+  ASSERT_NE(nullptr, audio_source1);
+
   // Create the local audio track #1
-  mrsLocalAudioTrackInitConfig config{};
+  mrsLocalAudioTrackInitSettings init_settings{};
+  init_settings.track_name = "test_audio_track";
   mrsLocalAudioTrackHandle audio_track1{};
-  ASSERT_EQ(Result::kSuccess, mrsLocalAudioTrackCreateFromDevice(
-                                  &config, "test_audio_track", &audio_track1));
+  ASSERT_EQ(Result::kSuccess,
+            mrsLocalAudioTrackCreateFromSource(&init_settings, audio_source1,
+                                               &audio_track1));
   ASSERT_NE(nullptr, audio_track1);
 
   // Audio tracks start enabled
@@ -376,7 +389,8 @@ TEST_P(AudioTrackTests, Muted) {
 
   // Clean-up
   mrsRemoteAudioTrackRegisterFrameCallback(audio_track2, nullptr, nullptr);
-  mrsLocalAudioTrackRemoveRef(audio_track1);
+  mrsRefCountedObjectRemoveRef(audio_track1);
+  mrsRefCountedObjectRemoveRef(audio_source1);
 }
 
 #endif  // MRSW_EXCLUDE_DEVICE_TESTS

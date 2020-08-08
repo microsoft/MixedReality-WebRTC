@@ -23,32 +23,36 @@ enum class ObjectType : int {
   kPeerConnection,
   kLocalAudioTrack,
   kLocalVideoTrack,
-  kExternalVideoTrackSource,
   kRemoteAudioTrack,
   kRemoteVideoTrack,
   kDataChannel,
   kAudioTransceiver,
   kVideoTransceiver,
+  kDeviceAudioTrackSource,
+  kDeviceVideoTrackSource,
+  kExternalVideoTrackSource,
+  kAudioTrackReadBuffer,
 };
 
 /// Object tracked for interop, exposing helper methods for debugging purpose.
+/// This is the base class for both mrsObject and mrsRefCountedObject, as
+/// internally all objects are reference-counted for historical reasons, but as
+/// exposed through the API only standalone objects created by the user are
+/// reference counted.
 class TrackedObject : public RefCountedBase {
  public:
   TrackedObject(RefPtr<GlobalFactory> global_factory, ObjectType object_type);
   ~TrackedObject() noexcept override;
 
-  constexpr ObjectType GetObjectType() const noexcept { return object_type_; }
+  MRS_NODISCARD constexpr ObjectType GetObjectType() const noexcept {
+    return object_type_;
+  }
 
-  /// Retrieve the name of the object. The exact meaning depends on the actual
-  /// object, and may be user-set or reused from another field of the object,
-  /// but will generally allow the user to identify the object instance during
-  /// debugging. There is no other meaning to this.
-  /// Note that this may be called while the library is not initialized,
-  /// including during static deinitializing of the process, therefore the
-  /// implementation must not rely on WebRTC objects. Generally the
-  /// implementation should locally cache a string value to comply with this
-  /// limitation.
-  virtual std::string GetName() const = 0;
+  void SetName(absl::string_view name) {
+    name_.assign(name.data(), name.size());
+  }
+
+  MRS_NODISCARD std::string GetName() const { return name_; }
 
   MRS_NODISCARD constexpr void* GetUserData() const noexcept {
     return user_data_;
@@ -62,6 +66,7 @@ class TrackedObject : public RefCountedBase {
   RefPtr<GlobalFactory> global_factory_;
   const ObjectType object_type_;
   void* user_data_{nullptr};
+  std::string name_;
 };
 
 }  // namespace WebRTC

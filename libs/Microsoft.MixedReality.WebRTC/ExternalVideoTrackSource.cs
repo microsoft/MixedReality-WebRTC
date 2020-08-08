@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.MixedReality.WebRTC.Interop;
 
 namespace Microsoft.MixedReality.WebRTC
@@ -71,7 +69,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// Video source for WebRTC video tracks based on a custom source
     /// of video frames managed by the user and external to the WebRTC
     /// implementation.
-    /// 
+    ///
     /// This class is used to inject into the WebRTC engine a video track
     /// whose frames are produced by a user-managed source the WebRTC engine
     /// knows nothing about, like programmatically generated frames, including
@@ -79,25 +77,10 @@ namespace Microsoft.MixedReality.WebRTC
     /// coming from a specific capture device not supported natively by WebRTC.
     /// This class serves as an adapter for such video frame sources.
     /// </summary>
-    public class ExternalVideoTrackSource : IDisposable
+    public class ExternalVideoTrackSource : VideoTrackSource
     {
-        /// <summary>
-        /// A name for the external video track source, used for logging and debugging.
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
-
-        /// <summary>
-        /// List of local video tracks this source is providing raw video frames to.
-        /// </summary>
-        public List<LocalVideoTrack> Tracks { get; } = new List<LocalVideoTrack>();
-
-        /// <summary>
-        /// Handle to the native ExternalVideoTrackSource object.
-        /// </summary>
-        /// <remarks>
-        /// In native land this is a <code>Microsoft::MixedReality::WebRTC::ExternalVideoTrackSourceHandle</code>.
-        /// </remarks>
-        internal ExternalVideoTrackSourceHandle _nativeHandle { get; private set; } = new ExternalVideoTrackSourceHandle();
+        /// <inheritdoc/>
+        public override VideoEncoding FrameEncoding { get; }
 
         /// <summary>
         /// GC handle to frame request callback args keeping the delegate alive
@@ -125,14 +108,10 @@ namespace Microsoft.MixedReality.WebRTC
             return ExternalVideoTrackSourceInterop.CreateExternalVideoTrackSourceFromArgb32Callback(frameCallback);
         }
 
-        internal ExternalVideoTrackSource(IntPtr frameRequestCallbackArgsHandle)
+        internal ExternalVideoTrackSource(IntPtr frameRequestCallbackArgsHandle, VideoEncoding videoEncoding)
         {
             _frameRequestCallbackArgsHandle = frameRequestCallbackArgsHandle;
-        }
-
-        internal void SetHandle(ExternalVideoTrackSourceHandle nativeHandle)
-        {
-            _nativeHandle = nativeHandle;
+            FrameEncoding = videoEncoding;
         }
 
         /// <summary>
@@ -145,7 +124,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="frame">The video frame used to complete the request.</param>
         public void CompleteFrameRequest(uint requestId, long timestampMs, in I420AVideoFrame frame)
         {
-            ExternalVideoTrackSourceInterop.CompleteFrameRequest(_nativeHandle, requestId, timestampMs, frame);
+            ExternalVideoTrackSourceInterop.CompleteFrameRequest((ExternalVideoTrackSourceHandle)_nativeHandle, requestId, timestampMs, frame);
         }
 
         /// <summary>
@@ -158,11 +137,11 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="frame">The video frame used to complete the request.</param>
         public void CompleteFrameRequest(uint requestId, long timestampMs, in Argb32VideoFrame frame)
         {
-            ExternalVideoTrackSourceInterop.CompleteFrameRequest(_nativeHandle, requestId, timestampMs, frame);
+            ExternalVideoTrackSourceInterop.CompleteFrameRequest((ExternalVideoTrackSourceHandle)_nativeHandle, requestId, timestampMs, frame);
         }
 
         /// <inheritdoc/>
-        public void Dispose()
+        public override void Dispose()
         {
             if (_nativeHandle.IsClosed)
             {
@@ -170,45 +149,10 @@ namespace Microsoft.MixedReality.WebRTC
             }
 
             // Unregister and release the track callbacks
-            ExternalVideoTrackSourceInterop.ExternalVideoTrackSource_Shutdown(_nativeHandle);
+            ExternalVideoTrackSourceInterop.ExternalVideoTrackSource_Shutdown((ExternalVideoTrackSourceHandle)_nativeHandle);
             Utils.ReleaseWrapperRef(_frameRequestCallbackArgsHandle);
 
-            // Destroy the native object. This may be delayed if a P/Invoke callback is underway,
-            // but will be handled at some point anyway, even if the managed instance is gone.
-            _nativeHandle.Dispose();
-        }
-
-        internal void OnTrackAddedToSource(LocalVideoTrack track)
-        {
-            Debug.Assert(!_nativeHandle.IsClosed);
-            Debug.Assert(!Tracks.Contains(track));
-            Tracks.Add(track);
-        }
-
-        internal void OnTrackRemovedFromSource(LocalVideoTrack track)
-        {
-            Debug.Assert(!_nativeHandle.IsClosed);
-            bool removed = Tracks.Remove(track);
-            Debug.Assert(removed);
-        }
-
-        internal void OnTracksRemovedFromSource(List<LocalVideoTrack> tracks)
-        {
-            Debug.Assert(!_nativeHandle.IsClosed);
-            var remainingTracks = new List<LocalVideoTrack>();
-            foreach (var track in tracks)
-            {
-                if (track.Source == this)
-                {
-                    bool removed = Tracks.Remove(track);
-                    Debug.Assert(removed);
-                }
-                else
-                {
-                    remainingTracks.Add(track);
-                }
-            }
-            tracks = remainingTracks;
+            base.Dispose();
         }
 
         /// <inheritdoc/>

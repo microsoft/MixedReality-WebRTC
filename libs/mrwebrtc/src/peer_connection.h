@@ -79,14 +79,6 @@ class PeerConnection : public TrackedObject,
   static ErrorOr<RefPtr<PeerConnection>> create(
       const mrsPeerConnectionConfiguration& config);
 
-  /// Set the name of the peer connection. This is a friendly name opaque to the
-  /// implementation, used mainly for debugging and logging.
-  void SetName(absl::string_view name) {
-    name_.assign(name.data(), name.size());
-  }
-
-  std::string GetName() const override { return name_; }
-
   //
   // Signaling
   //
@@ -476,10 +468,6 @@ class PeerConnection : public TrackedObject,
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_;
 
  protected:
-  /// Peer connection name assigned by the user. This has no meaning for the
-  /// implementation.
-  std::string name_;
-
   /// User callback invoked when the peer connection received a new data channel
   /// from the remote peer and added it locally.
   DataChannelAddedCallback data_channel_added_callback_
@@ -590,7 +578,7 @@ class PeerConnection : public TrackedObject,
 
   /// Collection of data channels from their label.
   /// This contains only data channels with a non-empty label.
-  std::unordered_multimap<str, std::shared_ptr<DataChannel>>
+  std::unordered_multimap<std::string, std::shared_ptr<DataChannel>>
       data_channel_from_label_ RTC_GUARDED_BY(data_channel_mutex_);
 
   /// Mutex for data structures related to data channels.

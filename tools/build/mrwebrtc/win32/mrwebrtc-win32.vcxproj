@@ -85,7 +85,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;UNICODE;_WINDLL;MR_SHARING_WIN;MRS_USE_STR_WRAPPER;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;UNICODE;_WINDLL;MR_SHARING_WIN;_SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(MRWebRTCProjectRoot)libs\mrwebrtc\include;$(MRWebRTCProjectRoot)libs\mrwebrtc\src;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc;$(WebRTCCoreRepoPath)webrtc\xplatform$(WebRTCCoreRepoPath)webrtc\xplatform\chromium;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\generated\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\sdk\windows\wrapper\override\cppwinrt;$(WebRTCCoreRepoPath)webrtc\xplatform\chromium\third_party\abseil-cpp;$(WebRTCCoreRepoPath)webrtc\xplatform\webrtc\third_party\idl;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib;$(WebRTCCoreRepoPath)webrtc\xplatform\zsLib-eventing;$(WebRTCCoreRepoPath)webrtc\xplatform\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -123,41 +123,49 @@
   <ItemGroup>
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\pch.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\audio_frame.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\audio_track_source_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\data_channel_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\device_audio_track_source_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\device_video_track_source_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\export.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\external_video_track_source_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\interop_api.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\local_video_track_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\peer_connection_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\ref_counted_object_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\result.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\transceiver_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\local_audio_track_interop.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\object_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\remote_audio_track_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\remote_video_track_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\video_frame.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\include\video_track_source_interop.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\audio_frame_observer.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\callback.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\data_channel.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\global_factory.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\audio_track_read_buffer.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\device_audio_track_source.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\device_video_track_source.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\external_video_track_source.h" />
-    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\external_video_track_source_impl.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_video_track.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\mrs_errors.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\peer_connection.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\refptr.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\ref_counted_base.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\sdp_utils.h" />
-    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\str.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\targetver.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\tracked_object.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\utils.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\video_frame_observer.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\audio_track_source.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_audio_track.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\media_track.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_audio_track.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_video_track.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\transceiver.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\video_track_source.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\toggle_audio_mixer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -167,32 +175,41 @@
     </ClCompile>
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\audio_frame_observer.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\data_channel.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\audio_track_source_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\data_channel_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\device_audio_track_source_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\device_video_track_source_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\external_video_track_source_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\global_factory.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\interop_api.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\local_video_track_interop.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\peer_connection_interop.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\audio_track_read_buffer.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\external_video_track_source.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_video_track.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\transceiver_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\local_audio_track_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\local_video_track_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\object_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\peer_connection_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\ref_counted_object_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\remote_audio_track_interop.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\remote_video_track_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\transceiver_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\interop\video_track_source_interop.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\audio_track_read_buffer.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\device_audio_track_source.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\device_video_track_source.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\external_video_track_source.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_video_track.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\audio_track_source.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\local_audio_track.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\media_track.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_audio_track.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\remote_video_track.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\transceiver.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\media\video_track_source.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\mrs_errors.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\peer_connection.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\sdp_utils.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\str.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\toggle_audio_mixer.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\tracked_object.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\utils.cpp" />
     <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\video_frame_observer.cpp" />
-    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\src\toggle_audio_mixer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MRWebRTCProjectRoot)libs\mrwebrtc\docs\design.md" />

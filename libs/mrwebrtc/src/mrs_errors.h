@@ -21,6 +21,7 @@ class Error {
   /// Create an empty "error" wrapping a non-error result.
   /// Preferred over the default constructor for readability.
   static Error OK();
+  static Error None();
 
   /// Create an empty "error" wrapping a non-error result.
   Error() = default;

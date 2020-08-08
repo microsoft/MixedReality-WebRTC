@@ -82,18 +82,61 @@ pre {
 /** Title bar **/
 
 .navbar-brand > img {
+  display: inline;
   width: 32px;
   margin: 10px 10px 10px 0;
 }
 
+.navbar-brand > span {
+  color: white;
+  display: inline;
+  margin-right: 15px;
+  vertical-align: middle;
+}
+
+/** Search **/
+
+#search {
+  margin: 0;
+  margin-right: 50px;
+  padding: 0;
+}
+
+#search input {
+  border: 0;
+  border-radius: 0;
+  height: 50px;
+  background-color: #666;
+  color: white;
+}
+
 /** Branch selector **/
 
+#branch-selector {
+  margin: 0;
+  padding: 0;
+}
+
 #branch-selector select {
-  height: 34px;
-  padding: 6px 12px;
-  padding-top: 3px;
-  border-radius: 4px;
-  border: 1px solid gray;
+  height: 50px;
+  padding: 0;
+  padding-left: 5px;
+  border-radius: 0;
+  border: 0;
+  color: #eee;
+  background-color: #0066b8;
+}
+
+/** Breadcrumb **/
+
+/* Hide breabcrumb on index page */
+body[data-uid="index"] .subnav {
+  display: none;
+}
+
+/* Adjust article content for removed breadcrumb */
+body[data-uid="index"] .article {
+  margin-top: 90px;
 }
 
 /** TOC nav bar (left) **/

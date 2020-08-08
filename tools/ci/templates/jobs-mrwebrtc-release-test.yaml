@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-# [TEMPLATE] Test Microsoft.MixedReality.WebRTC.Native.(Desktop|UWP)
+# [TEMPLATE] Test native mrwebrtc NuGet packages (Desktop and UWP)
 
 parameters:
 # Package agent pool
@@ -28,13 +28,32 @@ jobs:
     demands:
     - msbuild
     - vstest
-  variables:
-    packageName: 'Microsoft.MixedReality.WebRTC.Native.${{parameters.testPlatform}}'
   steps:
+
+  # Compute package name
+  - task: PythonScript@0
+    displayName: 'Compute package name'
+    inputs:
+      scriptSource: inline
+      script: |
+        import sys;
+        platform = sys.argv[1];
+        print("Platform : %s" % platform);
+        if (platform == 'Desktop'):
+          packageName = "mrwebrtc"
+        elif (platform == 'UWP'):
+          packageName = "mrwebrtc_uwp"
+        else:
+          print("##vso[task.complete result=Failed;]Unknown platform %s" % platform)
+          sys.exit(1)
+        print("NuGet package name : %s" % packageName)
+        print("##vso[task.setvariable variable=packageName;]%s" % packageName)
+      arguments: '${{parameters.testPlatform}}'
 
   # Checkout
   - checkout: self
     fetchDepth: '50'
+    clean: true
 
   # Use NuGet 5.2.0 to work around auth issues in previous versions
   - task: NuGetToolInstaller@1

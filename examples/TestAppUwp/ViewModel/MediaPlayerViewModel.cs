@@ -65,7 +65,7 @@ namespace TestAppUwp
         {
             get
             {
-                lock (_mediaPlaybackLock) 
+                lock (_mediaPlaybackLock)
                 {
                     return _videoWidth;
                 }
@@ -117,7 +117,10 @@ namespace TestAppUwp
                 DisplayName = "Local microphone (default device)",
                 Factory = async () =>
                 {
-                    return await LocalAudioTrack.CreateFromDeviceAsync();
+                    // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
+                    var source = await DeviceAudioTrackSource.CreateAsync();
+                    var settings = new LocalAudioTrackInitConfig();
+                    return LocalAudioTrack.CreateFromSource(source, settings);
                 }
             });
 
@@ -126,7 +129,10 @@ namespace TestAppUwp
                 DisplayName = "Local webcam (default device)",
                 Factory = async () =>
                 {
-                    return await LocalVideoTrack.CreateFromDeviceAsync();
+                    // FIXME - this leaks 'source', never disposed (and is the track itself disposed??)
+                    var source = await DeviceVideoTrackSource.CreateAsync();
+                    var settings = new LocalVideoTrackInitConfig();
+                    return LocalVideoTrack.CreateFromSource(source, settings);
                 }
             });
 
@@ -358,7 +364,7 @@ namespace TestAppUwp
         /// Stop playback of the local video from the local webcam, and remove the local
         /// audio and video tracks from the peer connection. This is called on the UI thread.
         /// </summary>
-        private async void StopLocalMedia()
+        private void StopLocalMedia()
         {
             lock (_mediaPlaybackLock)
             {

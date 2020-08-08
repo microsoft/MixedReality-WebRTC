@@ -16,8 +16,7 @@ trigger:
     include:
     - docs/*
     - libs/Microsoft.MixedReality.WebRTC/*
-    - libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Microsoft.MixedReality.WebRTC.Unity/*
-    - libs/Microsoft.MixedReality.WebRTC.Unity/Assets/Microsoft.MixedReality.WebRTC.Unity.Editor/*
+    - libs/unity/library/*
 
 # Do not trigger CI on PRs
 pr: none

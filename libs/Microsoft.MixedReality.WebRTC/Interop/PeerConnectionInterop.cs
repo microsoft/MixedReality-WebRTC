@@ -12,49 +12,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     /// <summary>
     /// Handle to a native peer connection object.
     /// </summary>
-    public sealed class PeerConnectionHandle : SafeHandle
-    {
-        /// <summary>
-        /// Check if the current handle is invalid, which means it is not referencing
-        /// an actual native object. Note that a valid handle only means that the internal
-        /// handle references a native object, but does not guarantee that the native
-        /// object is still accessible. It is only safe to access the native object if
-        /// the handle is not closed, which implies it being valid.
-        /// </summary>
-        public override bool IsInvalid
-        {
-            get
-            {
-                return (handle == IntPtr.Zero);
-            }
-        }
-
-        /// <summary>
-        /// Default constructor for an invalid handle.
-        /// </summary>
-        public PeerConnectionHandle() : base(IntPtr.Zero, ownsHandle: true)
-        {
-        }
-
-        /// <summary>
-        /// Constructor for a valid handle referencing the given native object.
-        /// </summary>
-        /// <param name="handle">The valid internal handle to the native object.</param>
-        public PeerConnectionHandle(IntPtr handle) : base(IntPtr.Zero, ownsHandle: true)
-        {
-            SetHandle(handle);
-        }
-
-        /// <summary>
-        /// Release the native object while the handle is being closed.
-        /// </summary>
-        /// <returns>Return <c>true</c> if the native object was successfully released.</returns>
-        protected override bool ReleaseHandle()
-        {
-            PeerConnectionInterop.PeerConnection_RemoveRef(handle);
-            return true;
-        }
-    }
+    internal sealed class PeerConnectionHandle : RefCountedObjectHandle { }
 
     internal class PeerConnectionInterop
     {
@@ -65,59 +23,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         private delegate void IceStateChangedDelegate(IntPtr peer, IceConnectionState newState);
         private delegate void IceGatheringStateChangedDelegate(IntPtr peer, IceGatheringState newState);
         private delegate void RenegotiationNeededDelegate(IntPtr peer);
-
-        // Callbacks for internal enumeration implementation only
-        public delegate void VideoCaptureDeviceEnumCallbackImpl(string id, string name);
-        public delegate void VideoCaptureDeviceEnumCompletedCallbackImpl();
-        public delegate void VideoCaptureFormatEnumCallbackImpl(uint width, uint height, double framerate, uint fourcc);
-        public delegate void VideoCaptureFormatEnumCompletedCallbackImpl(Exception e);
-
-        public class EnumVideoCaptureDeviceWrapper
-        {
-            public VideoCaptureDeviceEnumCallbackImpl enumCallback;
-            public VideoCaptureDeviceEnumCompletedCallbackImpl completedCallback;
-            // Keep delegates alive!
-            public VideoCaptureDeviceEnumCallback EnumTrampoline;
-            public VideoCaptureDeviceEnumCompletedCallback CompletedTrampoline;
-        }
-
-        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCallback))]
-        public static void VideoCaptureDevice_EnumCallback(string id, string name, IntPtr userData)
-        {
-            var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
-            wrapper.enumCallback(id, name); // this is mandatory, never null
-        }
-
-        [MonoPInvokeCallback(typeof(VideoCaptureDeviceEnumCompletedCallback))]
-        public static void VideoCaptureDevice_EnumCompletedCallback(IntPtr userData)
-        {
-            var wrapper = Utils.ToWrapper<EnumVideoCaptureDeviceWrapper>(userData);
-            wrapper.completedCallback(); // this is optional, allows to be null
-        }
-
-        public class EnumVideoCaptureFormatsWrapper
-        {
-            public VideoCaptureFormatEnumCallbackImpl enumCallback;
-            public VideoCaptureFormatEnumCompletedCallbackImpl completedCallback;
-            // Keep delegates alive!
-            public VideoCaptureFormatEnumCallback EnumTrampoline;
-            public VideoCaptureFormatEnumCompletedCallback CompletedTrampoline;
-        }
-
-        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCallback))]
-        public static void VideoCaptureFormat_EnumCallback(uint width, uint height, double framerate, uint fourcc, IntPtr userData)
-        {
-            var wrapper = Utils.ToWrapper<EnumVideoCaptureFormatsWrapper>(userData);
-            wrapper.enumCallback(width, height, framerate, fourcc); // this is mandatory, never null
-        }
-
-        [MonoPInvokeCallback(typeof(VideoCaptureFormatEnumCompletedCallback))]
-        public static void VideoCaptureFormat_EnumCompletedCallback(uint resultCode, IntPtr userData)
-        {
-            var exception = (resultCode == /*MRS_SUCCESS*/0 ? null : new Exception());
-            var wrapper = Utils.ToWrapper<EnumVideoCaptureFormatsWrapper>(userData);
-            wrapper.completedCallback(exception); // this is optional, allows to be null
-        }
 
         /// <summary>
         /// Utility to lock all optional delegates registered with the native plugin for the duration
@@ -219,7 +124,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void AudioTrackAddedCallback(IntPtr peer, in RemoteAudioTrackAddedInfo info)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
-            IntPtr transceiver = TransceiverInterop.Transceiver_GetUserData(info.audioTransceiverHandle);
+            IntPtr transceiver = ObjectInterop.Object_GetUserData(new TransceiverInterop.TransceiverHandle(info.audioTransceiverHandle));
             Debug.Assert(transceiver != IntPtr.Zero); // must have been set by the TransceiverAdded event
             var transceiverWrapper = Utils.ToWrapper<Transceiver>(transceiver);
             var remoteAudioTrackWrapper = RemoteAudioTrackInterop.CreateWrapper(peerWrapper, in info);
@@ -230,7 +135,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void AudioTrackRemovedCallback(IntPtr userData, IntPtr audioTrackHandle, IntPtr audioTransceiverHandle)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(userData);
-            IntPtr audioTrackRef = RemoteAudioTrackInterop.RemoteAudioTrack_GetUserData(audioTrackHandle);
+            IntPtr audioTrackRef = ObjectInterop.Object_GetUserData(new RemoteAudioTrackInterop.RemoteAudioTrackHandle(audioTrackHandle));
             var audioTrackWrapper = Utils.ToWrapper<RemoteAudioTrack>(audioTrackRef);
             peerWrapper.OnAudioTrackRemoved(audioTrackWrapper);
         }
@@ -239,7 +144,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void VideoTrackAddedCallback(IntPtr peer, in RemoteVideoTrackAddedInfo info)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(peer);
-            IntPtr transceiver = TransceiverInterop.Transceiver_GetUserData(info.videoTransceiverHandle);
+            IntPtr transceiver = ObjectInterop.Object_GetUserData(new TransceiverInterop.TransceiverHandle(info.videoTransceiverHandle));
             Debug.Assert(transceiver != IntPtr.Zero); // must have been set by the TransceiverAdded event
             var transceiverWrapper = Utils.ToWrapper<Transceiver>(transceiver);
             var remoteVideoTrackWrapper = RemoteVideoTrackInterop.CreateWrapper(peerWrapper, in info);
@@ -250,7 +155,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public static void VideoTrackRemovedCallback(IntPtr userData, IntPtr videoTrackHandle, IntPtr videoTransceiverHandle)
         {
             var peerWrapper = Utils.ToWrapper<PeerConnection>(userData);
-            IntPtr videoTrackRef = RemoteVideoTrackInterop.RemoteVideoTrack_GetUserData(videoTrackHandle);
+            IntPtr videoTrackRef = ObjectInterop.Object_GetUserData(new RemoteVideoTrackInterop.RemoteVideoTrackHandle(videoTrackHandle));
             var videoTrackWrapper = Utils.ToWrapper<RemoteVideoTrack>(videoTrackRef);
             peerWrapper.OnVideoTrackRemoved(videoTrackWrapper);
         }
@@ -348,151 +253,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             [MarshalAs(UnmanagedType.LPStr)]
             public string Content;
             public int SdpMlineIndex;
-        }
-
-        /// <summary>
-        /// Helper structure to pass parameters to the native implementation when creating a local audio track.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        internal ref struct LocalAudioTrackInteropInitConfig
-        {
-            /// <summary>
-            /// Constructor for creating a local audio track.
-            /// </summary>
-            /// <param name="track">The newly created track wrapper.</param>
-            /// <param name="settings">The settings to initialize the newly created native track.</param>
-            /// <seealso cref="LocalAudioTrack.CreateFromDeviceAsync(LocalAudioTrackSettings)"/>
-            public LocalAudioTrackInteropInitConfig(LocalAudioTrack track, LocalAudioTrackSettings settings)
-            {
-            }
-        }
-
-        /// <summary>
-        /// Helper structure to pass parameters to the native implementation when creating a local video track
-        /// by opening a local video capture device.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        internal ref struct LocalVideoTrackInteropInitConfig
-        {
-            /// <summary>
-            /// Video capture device unique identifier, as returned by <see cref="PeerConnection.GetVideoCaptureDevicesAsync"/>.
-            /// </summary>
-            public string VideoDeviceId;
-
-            /// <summary>
-            /// Optional video profile unique identifier to use.
-            /// Ignored if the video capture device specified by <see cref="VideoDeviceId"/> does not
-            /// support video profiles.
-            /// </summary>
-            /// <remarks>
-            /// This is generally preferred over <see cref="VideoProfileKind"/> to get full
-            /// control over the video profile selection. Specifying both this and <see cref="VideoProfileKind"/>
-            /// is discouraged, as it over-constraints the selection algorithm.
-            /// </remarks>
-            /// <seealso xref="MediaCapture.IsVideoProfileSupported(string)"/>
-            public string VideoProfileId;
-
-            /// <summary>
-            /// Optional video profile kind to select a video profile from.
-            /// Ignored if the video capture device specified by <see cref="VideoDeviceId"/> does not
-            /// support video profiles.
-            /// </summary>
-            /// <remarks>
-            /// This is generally preferred over <see cref="VideoProfileId"/> to find a matching
-            /// capture format (resolution and/or framerate) when one does not care about which video
-            /// profile provides this capture format. Specifying both this and <see cref="VideoProfileId"/>
-            /// is discouraged, as it over-constraints the selection algorithm.
-            /// </remarks>
-            /// <seealso xref="MediaCapture.IsVideoProfileSupported(string)"/>
-            public VideoProfileKind VideoProfileKind;
-
-            /// <summary>
-            /// Optional capture resolution width, in pixels, or zero for no constraint.
-            /// </summary>
-            public uint Width;
-
-            /// <summary>
-            /// Optional capture resolution height, in pixels, or zero for no constraint.
-            /// </summary>
-            public uint Height;
-
-            /// <summary>
-            /// Optional capture framerate, in frames per second (FPS), or zero for no constraint.
-            /// </summary>
-            public double Framerate;
-
-            /// <summary>
-            /// Enable Mixed Reality Capture (MRC). This flag is ignored if the platform doesn't support MRC.
-            /// </summary>
-            public mrsBool EnableMixedRealityCapture;
-
-            /// <summary>
-            /// When MRC is enabled, enable the on-screen recording indicator.
-            /// </summary>
-            public mrsBool EnableMRCRecordingIndicator;
-
-            /// <summary>
-            /// Constructor for creating a local video track from a wrapper and some user settings.
-            /// </summary>
-            /// <param name="track">The newly created track wrapper.</param>
-            /// <param name="settings">The settings to initialize the newly created native track.</param>
-            /// <seealso cref="LocalVideoTrack.CreateFromDeviceAsync(LocalVideoTrackSettings)"/>
-            public LocalVideoTrackInteropInitConfig(LocalVideoTrack track, LocalVideoTrackSettings settings)
-            {
-                if (settings != null)
-                {
-                    VideoDeviceId = settings.videoDevice.id;
-                    VideoProfileId = settings.videoProfileId;
-                    VideoProfileKind = settings.videoProfileKind;
-                    Width = settings.width.GetValueOrDefault(0);
-                    Height = settings.height.GetValueOrDefault(0);
-                    Framerate = settings.framerate.GetValueOrDefault(0.0);
-                    EnableMixedRealityCapture = (mrsBool)settings.enableMrc;
-                    EnableMRCRecordingIndicator = (mrsBool)settings.enableMrcRecordingIndicator;
-                }
-                else
-                {
-                    VideoDeviceId = string.Empty;
-                    VideoProfileId = string.Empty;
-                    VideoProfileKind = VideoProfileKind.Unspecified;
-                    Width = 0;
-                    Height = 0;
-                    Framerate = 0.0;
-                    EnableMixedRealityCapture = mrsBool.True;
-                    EnableMRCRecordingIndicator = mrsBool.True;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Helper structure to pass parameters to the native implementation when creating a local video track
-        /// from an existing external video track source.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        internal ref struct LocalVideoTrackFromExternalSourceInteropInitConfig
-        {
-            /// <summary>
-            /// Handle to native external video track source.
-            /// </summary>
-            public IntPtr SourceHandle;
-
-            /// <summary>
-            /// Name of the newly-created track. This must be a valid SDP token.
-            /// </summary>
-            [MarshalAs(UnmanagedType.LPStr)]
-            public string TrackName;
-
-            /// <summary>
-            /// Constructor for creating a local video track from a wrapper and an existing external source.
-            /// </summary>
-            /// <param name="source">The external source to use with the newly created native track.</param>
-            /// <param name="trackName">The newly created track name. This must be a valid SDP token.</param>
-            /// <seealso cref="LocalVideoTrack.CreateFromExternalSource(string, ExternalVideoTrackSource)"/>
-            public LocalVideoTrackFromExternalSourceInteropInitConfig(string trackName, ExternalVideoTrackSource source)
-            {
-                SourceHandle = source._nativeHandle.DangerousGetHandle();
-                TrackName = trackName;
-            }
         }
 
         /// <summary>
@@ -608,18 +368,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         // Note - none of those method arguments can be SafeHandle; use IntPtr instead.
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void VideoCaptureDeviceEnumCallback(string id, string name, IntPtr userData);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void VideoCaptureDeviceEnumCompletedCallback(IntPtr userData);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void VideoCaptureFormatEnumCallback(uint width, uint height, double framerate, uint fourcc, IntPtr userData);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        public delegate void VideoCaptureFormatEnumCompletedCallback(uint resultCode, IntPtr userData);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void PeerConnectionDataChannelAddedCallback(IntPtr userData, in DataChannelAddedInfo info);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
@@ -684,25 +432,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
 
         #region P/Invoke static functions
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsEnumVideoCaptureDevicesAsync")]
-        public static extern uint EnumVideoCaptureDevicesAsync(VideoCaptureDeviceEnumCallback enumCallback, IntPtr userData,
-            VideoCaptureDeviceEnumCompletedCallback completedCallback, IntPtr completedUserData);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsEnumVideoCaptureFormatsAsync")]
-        public static extern uint EnumVideoCaptureFormatsAsync(string deviceId, VideoCaptureFormatEnumCallback enumCallback,
-            IntPtr userData, VideoCaptureFormatEnumCompletedCallback completedCallback, IntPtr completedUserData);
-
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsPeerConnectionAddRef")]
-        public static unsafe extern void PeerConnection_AddRef(PeerConnectionHandle handle);
-
-        // Note - This is used during SafeHandle.ReleaseHandle(), so cannot use PeerConnectionHandle
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsPeerConnectionRemoveRef")]
-        public static unsafe extern void PeerConnection_RemoveRef(IntPtr handle);
 
         [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
             EntryPoint = "mrsPeerConnectionCreate")]

@@ -1298,12 +1298,13 @@ namespace Microsoft.MixedReality.WebRTC
                 // Create the transceiver implementation
                 settings = settings ?? new TransceiverInitSettings();
                 TransceiverInterop.InitConfig config = new TransceiverInterop.InitConfig(mediaKind, settings);
-                uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, config, out IntPtr transceiverHandle);
+                uint res = PeerConnectionInterop.PeerConnection_AddTransceiver(_nativePeerhandle, config,
+                    out IntPtr transceiverHandle);
                 Utils.ThrowOnErrorCode(res);
 
                 // The implementation fires the TransceiverAdded event, which creates the wrapper and
                 // stores a reference in the UserData of the native object.
-                IntPtr transceiver = TransceiverInterop.Transceiver_GetUserData(transceiverHandle);
+                IntPtr transceiver = ObjectInterop.Object_GetUserData(new TransceiverInterop.TransceiverHandle(transceiverHandle));
                 Debug.Assert(transceiver != IntPtr.Zero);
                 var wrapper = Utils.ToWrapper<Transceiver>(transceiver);
                 return wrapper;
@@ -1963,128 +1964,6 @@ namespace Microsoft.MixedReality.WebRTC
                     throw new InvalidOperationException("Cannot invoke native method with invalid peer connection handle.");
                 }
             }
-        }
-
-        /// <summary>
-        /// Get the list of video capture devices available on the local host machine.
-        /// </summary>
-        /// <returns>The list of available video capture devices.</returns>
-        /// <remarks>
-        /// Assign one of the returned <see cref="VideoCaptureDevice"/> to the <see cref="LocalVideoTrackSettings.videoDevice"/>
-        /// field to force a local video track to use that device when creating it with
-        /// <see cref="LocalVideoTrack.CreateFromDeviceAsync(LocalVideoTrackSettings)"/>.
-        /// </remarks>
-        public static Task<List<VideoCaptureDevice>> GetVideoCaptureDevicesAsync()
-        {
-            // Ensure the logging system is ready before using PInvoke.
-            MainEventSource.Log.Initialize();
-
-            // Always call this on a background thread, this is possibly the first call to the library so needs
-            // to initialize the global factory, and that cannot be done from the main UI thread on UWP.
-            return Task.Run(() =>
-            {
-                var devices = new List<VideoCaptureDevice>();
-                var eventWaitHandle = new ManualResetEventSlim(initialState: false);
-                var wrapper = new PeerConnectionInterop.EnumVideoCaptureDeviceWrapper()
-                {
-                    enumCallback = (id, name) =>
-                    {
-                        devices.Add(new VideoCaptureDevice() { id = id, name = name });
-                    },
-                    completedCallback = () =>
-                    {
-                        // On enumeration end, signal the caller thread
-                        eventWaitHandle.Set();
-                    },
-                    // Keep delegates alive
-                    EnumTrampoline = PeerConnectionInterop.VideoCaptureDevice_EnumCallback,
-                    CompletedTrampoline = PeerConnectionInterop.VideoCaptureDevice_EnumCompletedCallback
-                };
-
-                // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
-                var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
-                IntPtr userData = GCHandle.ToIntPtr(handle);
-
-                // Execute the native async callback
-                uint res = PeerConnectionInterop.EnumVideoCaptureDevicesAsync(
-                    wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
-                if (res != Utils.MRS_SUCCESS)
-                {
-                    // Clean-up and release the wrapper delegates
-                    handle.Free();
-
-                    Utils.ThrowOnErrorCode(res);
-                    return null; // for the compiler
-                }
-
-                // Wait for end of enumerating
-                eventWaitHandle.Wait();
-
-                // Clean-up and release the wrapper delegates
-                handle.Free();
-
-                return devices;
-            });
-        }
-
-        /// <summary>
-        /// Enumerate the video capture formats for the specified video capture device.
-        /// </summary>
-        /// <param name="deviceId">Unique identifier of the video capture device to enumerate the
-        /// capture formats of, as retrieved from the <see cref="VideoCaptureDevice.id"/> field of
-        /// a capture device enumerated with <see cref="GetVideoCaptureDevicesAsync"/>.</param>
-        /// <returns>The list of available video capture formats for the specified video capture device.</returns>
-        public static Task<List<VideoCaptureFormat>> GetVideoCaptureFormatsAsync(string deviceId)
-        {
-            // Ensure the logging system is ready before using PInvoke.
-            MainEventSource.Log.Initialize();
-
-            // Always call this on a background thread, this is possibly the first call to the library so needs
-            // to initialize the global factory, and that cannot be done from the main UI thread on UWP.
-            return Task.Run(() =>
-            {
-                var formats = new List<VideoCaptureFormat>();
-                var eventWaitHandle = new EventWaitHandle(initialState: false, EventResetMode.ManualReset);
-                var wrapper = new PeerConnectionInterop.EnumVideoCaptureFormatsWrapper()
-                {
-                    enumCallback = (width, height, framerate, fourcc) =>
-                    {
-                        formats.Add(new VideoCaptureFormat() { width = width, height = height, framerate = framerate, fourcc = fourcc });
-                    },
-                    completedCallback = (Exception _) =>
-                    {
-                        // On enumeration end, signal the caller thread
-                        eventWaitHandle.Set();
-                    },
-                    // Keep delegates alive
-                    EnumTrampoline = PeerConnectionInterop.VideoCaptureFormat_EnumCallback,
-                    CompletedTrampoline = PeerConnectionInterop.VideoCaptureFormat_EnumCompletedCallback
-                };
-
-                // Prevent garbage collection of the wrapper delegates until the enumeration is completed.
-                var handle = GCHandle.Alloc(wrapper, GCHandleType.Normal);
-                IntPtr userData = GCHandle.ToIntPtr(handle);
-
-                // Execute the native async callback.
-                uint res = PeerConnectionInterop.EnumVideoCaptureFormatsAsync(deviceId,
-                    wrapper.EnumTrampoline, userData, wrapper.CompletedTrampoline, userData);
-                if (res != Utils.MRS_SUCCESS)
-                {
-                    // Clean-up and release the wrapper delegates
-                    handle.Free();
-
-                    Utils.ThrowOnErrorCode(res);
-                    return null; // for the compiler
-                }
-
-                // Wait for end of enumerating
-                eventWaitHandle.WaitOne();
-
-                // Clean-up and release the wrapper delegates
-                handle.Free();
-
-                return formats;
-            });
         }
 
         /// <summary>

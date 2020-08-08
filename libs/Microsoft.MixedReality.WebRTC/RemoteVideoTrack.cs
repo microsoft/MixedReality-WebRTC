@@ -11,7 +11,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// <summary>
     /// Video track receiving video frames from the remote peer.
     /// </summary>
-    public class RemoteVideoTrack : MediaTrack, IVideoTrack
+    public class RemoteVideoTrack : MediaTrack, IVideoSource, VideoTrackSourceInterop.IVideoSource
     {
         /// <summary>
         /// Enabled status of the track. If enabled, receives video frames from the remote peer as
@@ -30,15 +30,80 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
-        /// <summary>
-        /// Event that occurs when a video frame has been received from the remote peer.
-        /// </summary>
-        public event I420AVideoFrameDelegate I420AVideoFrameReady;
+        /// <inheritdoc/>
+        public VideoEncoding FrameEncoding => VideoEncoding.I420A;
 
-        /// <summary>
-        /// Event that occurs when a video frame has been received from the remote peer.
-        /// </summary>
-        public event Argb32VideoFrameDelegate Argb32VideoFrameReady;
+        /// <inheritdoc/>
+        public event I420AVideoFrameDelegate I420AVideoFrameReady
+        {
+            add
+            {
+                bool isFirstHandler;
+                lock (_videoFrameReadyLock)
+                {
+                    isFirstHandler = (_videoFrameReady == null);
+                    _videoFrameReady += value;
+                }
+                // Do out of lock since this dispatches to the worker thread.
+                if (isFirstHandler)
+                {
+                    RemoteVideoTrackInterop.RemoteVideoTrack_RegisterI420AFrameCallback(
+                        _nativeHandle, VideoTrackSourceInterop.I420AFrameCallback, _selfHandle);
+                }
+            }
+            remove
+            {
+                bool isLastHandler;
+                lock (_videoFrameReadyLock)
+                {
+                    _videoFrameReady -= value;
+                    isLastHandler = (_videoFrameReady == null);
+                }
+                // Do out of lock since this dispatches to the worker thread.
+                if (isLastHandler)
+                {
+                    RemoteVideoTrackInterop.RemoteVideoTrack_RegisterI420AFrameCallback(
+                        _nativeHandle, null, IntPtr.Zero);
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public event Argb32VideoFrameDelegate Argb32VideoFrameReady
+        {
+            // TODO - Remove ARGB callbacks, use I420 callbacks only and expose some conversion
+            // utility to convert from ARGB to I420 when needed (to be called by the user).
+            add
+            {
+                bool isFirstHandler;
+                lock (_videoFrameReadyLock)
+                {
+                    isFirstHandler = (_argb32VideoFrameReady == null);
+                    _argb32VideoFrameReady += value;
+                }
+                // Do out of lock since this dispatches to the worker thread.
+                if (isFirstHandler)
+                {
+                    RemoteVideoTrackInterop.RemoteVideoTrack_RegisterArgb32FrameCallback(
+                        _nativeHandle, VideoTrackSourceInterop.Argb32FrameCallback, _selfHandle);
+                }
+            }
+            remove
+            {
+                bool isLastHandler;
+                lock (_videoFrameReadyLock)
+                {
+                    _argb32VideoFrameReady -= value;
+                    isLastHandler = (_argb32VideoFrameReady == null);
+                }
+                // Do out of lock since this dispatches to the worker thread.
+                if (isLastHandler)
+                {
+                    RemoteVideoTrackInterop.RemoteVideoTrack_RegisterArgb32FrameCallback(
+                        _nativeHandle, null, IntPtr.Zero);
+                }
+            }
+        }
 
         /// <summary>
         /// Handle to the native RemoteVideoTrack object.
@@ -46,7 +111,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>
         /// In native land this is a <code>Microsoft::MixedReality::WebRTC::RemoteVideoTrackHandle</code>.
         /// </remarks>
-        internal IntPtr _nativeHandle = IntPtr.Zero;
+        internal RemoteVideoTrackInterop.RemoteVideoTrackHandle _nativeHandle = null;
 
         /// <summary>
         /// Handle to self for interop callbacks. This adds a reference to the current object, preventing
@@ -54,45 +119,21 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         private IntPtr _selfHandle = IntPtr.Zero;
 
-        /// <summary>
-        /// Callback arguments to ensure delegates registered with the native layer don't go out of scope.
-        /// </summary>
-        private RemoteVideoTrackInterop.InteropCallbackArgs _interopCallbackArgs;
+        // Frame internal event handlers.
+        private readonly object _videoFrameReadyLock = new object();
+        private event I420AVideoFrameDelegate _videoFrameReady;
+        private event Argb32VideoFrameDelegate _argb32VideoFrameReady;
 
         public IntPtr NativeHandle => _nativeHandle;
 
         // Constructor for interop-based creation; SetHandle() will be called later
-        internal RemoteVideoTrack(IntPtr handle, PeerConnection peer, string trackName) : base(peer, trackName)
+        internal RemoteVideoTrack(RemoteVideoTrackInterop.RemoteVideoTrackHandle handle, PeerConnection peer, string trackName)
+            : base(peer, trackName)
         {
+            Debug.Assert(!handle.IsClosed);
             _nativeHandle = handle;
-            RegisterInteropCallbacks();
-        }
-
-        private void RegisterInteropCallbacks()
-        {
-            _interopCallbackArgs = new RemoteVideoTrackInterop.InteropCallbackArgs()
-            {
-                Track = this,
-                I420AFrameCallback = RemoteVideoTrackInterop.I420AFrameCallback,
-                Argb32FrameCallback = RemoteVideoTrackInterop.Argb32FrameCallback,
-            };
+            // Note that this prevents the object from being garbage-collected until it is disposed.
             _selfHandle = Utils.MakeWrapperRef(this);
-            RemoteVideoTrackInterop.RemoteVideoTrack_RegisterI420AFrameCallback(
-                _nativeHandle, _interopCallbackArgs.I420AFrameCallback, _selfHandle);
-            RemoteVideoTrackInterop.RemoteVideoTrack_RegisterArgb32FrameCallback(
-                _nativeHandle, _interopCallbackArgs.Argb32FrameCallback, _selfHandle);
-        }
-
-        private void UnregisterInteropCallbacks()
-        {
-            if (_selfHandle != IntPtr.Zero)
-            {
-                RemoteVideoTrackInterop.RemoteVideoTrack_RegisterI420AFrameCallback(_nativeHandle, null, IntPtr.Zero);
-                RemoteVideoTrackInterop.RemoteVideoTrack_RegisterArgb32FrameCallback(_nativeHandle, null, IntPtr.Zero);
-                Utils.ReleaseWrapperRef(_selfHandle);
-                _selfHandle = IntPtr.Zero;
-                _interopCallbackArgs = null;
-            }
         }
 
         /// <summary>
@@ -100,28 +141,32 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         internal void DestroyNative()
         {
-            if (_nativeHandle == IntPtr.Zero)
+            if (_nativeHandle.IsClosed)
             {
                 return;
             }
 
             Debug.Assert(PeerConnection == null); // see OnTrackRemoved
 
-            UnregisterInteropCallbacks();
+            // Unregister interop callbacks
+            _videoFrameReady = null;
+            _argb32VideoFrameReady = null;
+            Utils.ReleaseWrapperRef(_selfHandle);
+            _selfHandle = IntPtr.Zero;
 
-            _nativeHandle = IntPtr.Zero;
+            _nativeHandle.Dispose();
         }
 
-        internal void OnI420AFrameReady(I420AVideoFrame frame)
+        void VideoTrackSourceInterop.IVideoSource.OnI420AFrameReady(I420AVideoFrame frame)
         {
             MainEventSource.Log.I420ARemoteVideoFrameReady(frame.width, frame.height);
-            I420AVideoFrameReady?.Invoke(frame);
+            _videoFrameReady?.Invoke(frame);
         }
 
-        internal void OnArgb32FrameReady(Argb32VideoFrame frame)
+        void VideoTrackSourceInterop.IVideoSource.OnArgb32FrameReady(Argb32VideoFrame frame)
         {
             MainEventSource.Log.Argb32RemoteVideoFrameReady(frame.width, frame.height);
-            Argb32VideoFrameReady?.Invoke(frame);
+            _argb32VideoFrameReady?.Invoke(frame);
         }
 
         internal override void OnMute(bool muted)

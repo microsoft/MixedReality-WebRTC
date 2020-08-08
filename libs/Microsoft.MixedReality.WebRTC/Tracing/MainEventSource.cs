@@ -1,11 +1,39 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+
 using System;
+#if MR_SHARING_ENABLE_TRACING
 using System.Diagnostics.Tracing;
+#endif
 
 namespace Microsoft.MixedReality.WebRTC.Tracing
 {
+#if !MR_SHARING_ENABLE_TRACING
+
+    [Flags]
+    internal enum EventKeywords { }
+
+    internal enum EventLevel
+    {
+        LogAlways = 0,
+        Critical = 1,
+        Error = 2,
+        Warning = 3,
+        Verbose = 4,
+        Informational = 5,
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    internal sealed class EventAttribute : Attribute
+    {
+        public EventAttribute(int eventId) { }
+        public EventLevel Level { get; set; }
+        public EventKeywords Keywords { get; set; }
+    }
+
+#endif
+
     /// <summary>
     /// Global event source for logging and tracing.
     /// 
@@ -23,9 +51,17 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
     /// (GUID: 00AEE89E-B531-4F20-A2C5-D02F37CB6AA1) which can be captured with Windows Performance
     /// Recorder (WPR). The <c>tools/tracing/</c> folder contains a WPR profile (*.wprp) which can be
     /// imported in wpr.exe to activate that event provider and record its events.
+    /// 
+    /// Some platforms like Unity do not support ETW events, and will transpile any <c>WriteEvent()</c>
+    /// call to an exception when using IL2CPP. To handle that case, this class is defined as doing nothing
+    /// unless the MR_SHARING_ENABLE_TRACING symbol is defined.
     /// </remarks>
+#if MR_SHARING_ENABLE_TRACING
     [EventSource(Name = "Microsoft.MixedReality.WebRTC", Guid = "00AEE89E-B531-4F20-A2C5-D02F37CB6AA1")]
     internal sealed class MainEventSource : EventSource
+#else
+    internal sealed class MainEventSource
+#endif
     {
         /// <summary>
         /// Global event source instance to use for logging events.
@@ -75,10 +111,16 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
             // https://issuetracker.unity3d.com/issues/il2cpp-etw-events-are-not-triggered-by-eventsource-class
         }
 
+#if !MR_SHARING_ENABLE_TRACING
+        private void WriteEvent(int eventId) { }
+        private void WriteEvent(int eventId, int arg0) { }
+        private void WriteEvent(int eventId, params object[] args) { }
+#endif
+
         //[Event(0x10, Level = EventLevel.Error)]
         public void NativeError(uint res) { /*WriteEvent(0x10, res);*/ }
 
-        #region Connection
+#region Connection
 
         [Event(0x1001, Level = EventLevel.Informational, Keywords = Keywords.Connection)]
         public void Connected() { WriteEvent(0x1001); }
@@ -95,9 +137,9 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         [Event(0x1005, Level = EventLevel.Informational, Keywords = Keywords.Connection)]
         public void IceGatheringStateChanged(IceGatheringState newState) { WriteEvent(0x1005, (int)newState); }
 
-        #endregion
+#endregion
 
-        #region SDP
+#region SDP
 
         // DEPRECATED; see 0x2006
         //[Event(0x2001, Level = EventLevel.Informational, Keywords = Keywords.Sdp)]
@@ -124,9 +166,9 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         [Event(0x2006, Level = EventLevel.Informational, Keywords = Keywords.Sdp)]
         public void LocalSdpReady(SdpMessageType type, string sdp) { WriteEvent(0x2006, (int)type, sdp); }
 
-        #endregion
+#endregion
 
-        #region Media
+#region Media
 
         // 0x3001 - TrackAdded (deprecated)
         // 0x3002 - TrackRemoved (deprecated)
@@ -215,9 +257,9 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         [Event(0x3209, Level = EventLevel.Informational, Keywords = Keywords.Media)]
         public void AudioTrackRemoved(string trackName) { WriteEvent(0x3209, trackName); }
 
-        #endregion
+#endregion
 
-        #region DataChannel
+#region DataChannel
 
         [Event(0x4001, Level = EventLevel.Informational, Keywords = Keywords.DataChannel)]
         public void DataChannelAdded(int id, string label) { WriteEvent(0x4001, id, label); }
@@ -240,9 +282,12 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
         [Event(0x4006, Level = EventLevel.Verbose, Keywords = Keywords.DataChannel)]
         public void DataChannelMessageReceived(int id, int byteSize) { WriteEvent(0x4006, id, byteSize); }
 
-        #endregion
+#endregion
 
-        #region EventWrite overloads
+        
+#if MR_SHARING_ENABLE_TRACING
+
+#region EventWrite overloads
 
         [NonEvent]
         public unsafe void WriteEvent(int eventId, int arg1, int arg2, int arg3, int arg4)
@@ -339,6 +384,8 @@ namespace Microsoft.MixedReality.WebRTC.Tracing
             WriteEventCore(eventId, 3, dataDesc);
         }
 
-        #endregion
+#endregion
+
+#endif
     }
 }

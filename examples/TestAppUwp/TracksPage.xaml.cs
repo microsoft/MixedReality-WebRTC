@@ -19,7 +19,7 @@ namespace TestAppUwp
         public Type PageType;
     }
 
-    public class TrackViewModel : TrackViewModelBase
+    public class LocalTrackViewModel : TrackViewModelBase
     {
         public readonly Symbol Symbol;
 
@@ -30,7 +30,7 @@ namespace TestAppUwp
             get { return "status..."; }
         }
 
-        public TrackViewModel(Symbol symbol)
+        public LocalTrackViewModel(Symbol symbol)
         {
             Symbol = symbol;
         }
@@ -45,7 +45,7 @@ namespace TestAppUwp
         {
             if ((container is FrameworkElement) && (item != null) && (item is TrackViewModelBase))
             {
-                if (item is TrackViewModel)
+                if (item is LocalTrackViewModel)
                 {
                     return Normal;
                 }

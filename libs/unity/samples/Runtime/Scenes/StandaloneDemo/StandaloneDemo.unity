@@ -599,15 +599,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29b5ec2fdf160bb4ebd2d5159450fd2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackName: video_C
-  AutoStartOnEnabled: 1
-  PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 447630320}
+        m_MethodName: StartRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   VideoStreamStopped:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 447630320}
+        m_MethodName: StopRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   Colors:
   - serializedVersion: 2
     rgba: 65340
@@ -630,9 +649,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 447630319}
-  MaxVideoFramerate: 30
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 744769662}
   FramePresentStatHolder: {fileID: 238596599}
@@ -2021,10 +2038,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VideoStreamStarted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 989215900}
+        m_MethodName: StartRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   VideoStreamStopped:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 989215900}
+        m_MethodName: StopRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &989215900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2037,9 +2076,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 989215899}
-  MaxVideoFramerate: 30
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 694614437}
   FramePresentStatHolder: {fileID: 1213993069}
@@ -2452,7 +2489,7 @@ GameObject:
   - component: {fileID: 1221709218}
   - component: {fileID: 1221709217}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2496,8 +2533,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
-  far clip plane: 100
+  near clip plane: 0.01
+  far clip plane: 10
   field of view: 43
   orthographic: 0
   orthographic size: 5
@@ -3101,10 +3138,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VideoStreamStarted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1533694090}
+        m_MethodName: StartRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   VideoStreamStopped:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1533694090}
+        m_MethodName: StopRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1533694090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3117,9 +3176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 1533694088}
-  MaxVideoFramerate: 30
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 521926238}
   FramePresentStatHolder: {fileID: 1833828032}
@@ -3198,10 +3255,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64dff3d25ffa2ee4f907d396ed9c1ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AutoInitializeOnStart: 1
   AutoCreateOfferOnRenegotiationNeeded: 1
   AutoLogErrorsToUnityConsole: 1
-  Signaler: {fileID: 0}
   IceServers:
   - Type: 1
     Uri: stun.l.google.com:19302
@@ -3217,18 +3272,22 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _mediaLines:
-  - _kind: 1
-    _sender: {fileID: 0}
+  - _mediaKind: 1
+    _source: {fileID: 0}
     _receiver: {fileID: 1533694088}
-  - _kind: 1
-    _sender: {fileID: 0}
+    _senderTrackName: 
+  - _mediaKind: 1
+    _source: {fileID: 0}
     _receiver: {fileID: 0}
-  - _kind: 1
-    _sender: {fileID: 0}
+    _senderTrackName: 
+  - _mediaKind: 1
+    _source: {fileID: 0}
     _receiver: {fileID: 1712234956}
-  - _kind: 1
-    _sender: {fileID: 0}
+    _senderTrackName: 
+  - _mediaKind: 1
+    _source: {fileID: 0}
     _receiver: {fileID: 0}
+    _senderTrackName: 
 --- !u!4 &1537901324
 Transform:
   m_ObjectHideFlags: 0
@@ -3300,15 +3359,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29b5ec2fdf160bb4ebd2d5159450fd2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackName: video_B
-  AutoStartOnEnabled: 1
-  PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1645256672}
+        m_MethodName: StartRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   VideoStreamStopped:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1645256672}
+        m_MethodName: StopRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   Colors:
   - serializedVersion: 2
     rgba: 65535
@@ -3329,9 +3407,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 1645256671}
-  MaxVideoFramerate: 30
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 2120561397}
   FramePresentStatHolder: {fileID: 503339848}
@@ -3525,10 +3601,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VideoStreamStarted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1712234957}
+        m_MethodName: StartRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   VideoStreamStopped:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1712234957}
+        m_MethodName: StopRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1712234957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3541,9 +3639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 1712234956}
-  MaxVideoFramerate: 30
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 1149091332}
   FramePresentStatHolder: {fileID: 1933715438}
@@ -4554,10 +4650,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64dff3d25ffa2ee4f907d396ed9c1ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AutoInitializeOnStart: 1
   AutoCreateOfferOnRenegotiationNeeded: 1
   AutoLogErrorsToUnityConsole: 1
-  Signaler: {fileID: 0}
   IceServers:
   - Type: 1
     Uri: stun.l.google.com:19302
@@ -4573,18 +4667,22 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _mediaLines:
-  - _kind: 1
-    _sender: {fileID: 8066520111486228012}
+  - _mediaKind: 1
+    _source: {fileID: 8066520111486228012}
     _receiver: {fileID: 0}
-  - _kind: 1
-    _sender: {fileID: 1645256671}
+    _senderTrackName: 
+  - _mediaKind: 1
+    _source: {fileID: 1645256671}
     _receiver: {fileID: 0}
-  - _kind: 1
-    _sender: {fileID: 447630319}
+    _senderTrackName: 
+  - _mediaKind: 1
+    _source: {fileID: 447630319}
     _receiver: {fileID: 0}
-  - _kind: 1
-    _sender: {fileID: 0}
+    _senderTrackName: 
+  - _mediaKind: 1
+    _source: {fileID: 0}
     _receiver: {fileID: 989215899}
+    _senderTrackName: 
 --- !u!114 &114460246451956513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4642,8 +4740,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1754267569312648}
-        m_MethodName: Connect
+      - m_Target: {fileID: 114452440398351871}
+        m_MethodName: StartConnectionIgnoreError
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4947,9 +5045,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6b02c5bb7ab6b4ea6996c956ebdd21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 0}
-  VideoSource: {fileID: 8066520111486228012}
-  MaxVideoFramerate: 30
+  MaxFramerate: 30
   EnableStatistics: 1
   FrameLoadStatHolder: {fileID: 8067683105943324948}
   FramePresentStatHolder: {fileID: 8067683106531057167}
@@ -5031,15 +5127,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29b5ec2fdf160bb4ebd2d5159450fd2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackName: video_A
-  AutoStartOnEnabled: 1
-  PreferredVideoCodec: 
   VideoStreamStarted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7953653824726563719}
+        m_MethodName: StartRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   VideoStreamStopped:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7953653824726563719}
+        m_MethodName: StopRendering
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   Colors:
   - serializedVersion: 2
     rgba: 8847615

@@ -24,13 +24,13 @@ RemoteAudioTrack::RemoteAudioTrack(
                  owner),
       track_(std::move(track)),
       receiver_(std::move(receiver)),
-      transceiver_(transceiver),
-      track_name_(track_->id()) {
+      transceiver_(transceiver) {
   RTC_CHECK(owner_);
   RTC_CHECK(track_);
   RTC_CHECK(receiver_);
   RTC_CHECK(transceiver_);
   RTC_CHECK(transceiver_->GetMediaKind() == mrsMediaKind::kAudio);
+  name_ = track_->id();
   kind_ = mrsTrackKind::kAudioTrack;
   transceiver_->OnRemoteTrackAdded(this);
   track_->AddSink(this);
@@ -80,7 +80,7 @@ void RemoteAudioTrack::InitSsrc(int ssrc) {
 
 std::unique_ptr<AudioTrackReadBuffer> RemoteAudioTrack::CreateReadBuffer() const
     noexcept {
-  return std::make_unique<AudioTrackReadBuffer>(track_);
+  return std::make_unique<AudioTrackReadBuffer>(global_factory_, track_);
 }
 
 }  // namespace WebRTC

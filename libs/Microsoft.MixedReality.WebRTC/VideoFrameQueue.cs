@@ -268,10 +268,8 @@ namespace Microsoft.MixedReality.WebRTC
             _queuedFrameTimeAverage.Clear();
             _dequeuedFrameTimeAverage.Clear();
             _droppedFrameTimeAverage.Clear();
-            while (_frameQueue.TryDequeue(out T frame))
-            {
-                _unusedFramePool.Push(frame);
-            }
+            while (_frameQueue.TryDequeue(out T _)) { }
+            _unusedFramePool.Clear();
             _stopwatch.Restart();
         }
 

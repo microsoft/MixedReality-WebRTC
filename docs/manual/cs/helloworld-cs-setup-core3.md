@@ -1,6 +1,6 @@
 # Creating a project
 
-In this tutorial we use [.NET Core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0) to create a C# Desktop application. Because there is currently no simple solution to display raw video frames from a .NET Core application, like there is with UWP, we will limit this tutorial to creating a simple console application without graphics. Think of it as a recording tool to broadcast audio and/or video to a remote device.
+In this tutorial we use [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1) to create a C# Desktop application. Because there is currently no simple solution to display raw video frames from a .NET Core application, like there is with UWP, we will limit this tutorial to creating a simple console application without graphics. Think of it as a recording tool to broadcast audio and/or video to a remote device.
 
 > [!Note]
 > This tutorial assumes that the host device where the app will be running during the tutorial has access to:
@@ -8,9 +8,9 @@ In this tutorial we use [.NET Core 3.0](https://dotnet.microsoft.com/download/do
 > - a webcam, or any other video capture device recognized by WebRTC
 > - a microphone, or any other audio capture device recognized by WebRTC
 
-## Install .NET Core 3.0
+## Install .NET Core 3.1
 
-Download the latest .NET Core 3.0 **SDK** (and not Runtime) from its [download page](https://dotnet.microsoft.com/download/dotnet-core/3.0) and install it.
+Download the latest .NET Core 3.1 **SDK** (and not Runtime) from its [download page](https://dotnet.microsoft.com/download/dotnet-core/3.1) and install it.
 
 > [!Warning]
 > Visual Studio v16.3 or later is required, otherwise the console application might not run correctly inside Visual Studio.
@@ -29,7 +29,7 @@ This generates a folder named `TestNetCoreConsole` which contains the following 
 - **`Program.cs`** : The C# source code for the application
 
 > [!Note]
-> Starting Visual Studio v16.3, this project can also be generated from the Visual Studio wizard by creating a new project and selecting **Console App (.NET Core)**, which will default to .NET Core 3.0. Previous versions of Visual Studio default to .NET Core 2.1 or lower.
+> Starting Visual Studio v16.3, this project can also be generated from the Visual Studio wizard by creating a new project and selecting **Console App (.NET Core)**, which will default to .NET Core 3.1.
 
 ## Open the .NET Core project in Visual Studio 2019
 
@@ -62,7 +62,7 @@ After that, `TestNetCoreConsole.csproj` should contain a reference to the packag
 
 ## Test the reference
 
-In order to ensure everything works fine and the `Microsoft.MixedReality.WebRTC` assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method [`PeerConnection.GetVideoCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync). This is more simple than creating objects, as there is no clean-up needed after use.
+In order to ensure everything works fine and the `Microsoft.MixedReality.WebRTC` assembly can be used, we will use one of its functions to list the video capture devices, as a test. This makes uses of the static method [`DeviceVideoTrackSource.GetCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync). This is more simple than creating objects, as there is no clean-up needed after use.
 
 Edit the `Program.cs` file:
 
@@ -79,7 +79,7 @@ Edit the `Program.cs` file:
    static async Task Main(string[] args)
    ```
 
-3. Change the body of the `Main` function to call [`GetVideoCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.PeerConnection.GetVideoCaptureDevicesAsync) and display the list of devices found on the standard output.
+3. Change the body of the `Main` function to call [`GetCaptureDevicesAsync()`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.GetCaptureDevicesAsync) and display the list of devices found on the standard output.
 
    ```cs
    static async Task Main(string[] args)
@@ -87,7 +87,7 @@ Edit the `Program.cs` file:
        try
        {
            // Asynchronously retrieve a list of available video capture devices (webcams).
-           var deviceList = await PeerConnection.GetVideoCaptureDevicesAsync();
+           var deviceList = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
 
            // For example, print them to the standard output
            foreach (var device in deviceList)
@@ -108,7 +108,7 @@ Launch the application again. This time the terminal window shows a list of devi
 Found webcam <some webcam name> (id: <some long ID>)
 ```
 
-Note that there might be multiple lines if multiple capture devices are available, which is unusual but can happen _e.g._ if you plug a USB webcam into a laptop which already has an integrated webcam. In general the first capture device listed will be the default one used by WebRTC, although it is possible to explicitly select a device (see [`LocalVideoTrack.CreateFromDeviceAsync()`](xref:Microsoft.MixedReality.WebRTC.LocalVideoTrack.CreateFromDeviceAsync(Microsoft.MixedReality.WebRTC.LocalVideoTrackSettings)) for more details).
+Note that there might be multiple lines if multiple capture devices are available, which is unusual but can happen _e.g._ if you plug a USB webcam into a laptop which already has an integrated webcam. In general the first capture device listed will be the default one used by WebRTC, although it is possible to explicitly select a device (see [`DeviceVideoTrackSource.CreateAsync()`](xref:Microsoft.MixedReality.WebRTC.DeviceVideoTrackSource.CreateAsync(Microsoft.MixedReality.WebRTC.LocalVideoDeviceInitConfig)) for more details).
 
 ----
 

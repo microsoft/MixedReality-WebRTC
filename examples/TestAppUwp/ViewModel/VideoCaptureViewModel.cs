@@ -14,7 +14,6 @@ namespace TestAppUwp
     {
         public readonly string Id;
         public readonly string DisplayName;
-        public readonly Symbol Symbol = Symbol.Video;
 
         public VideoCaptureDeviceInfo(string id, string displayName)
         {
@@ -99,7 +98,7 @@ namespace TestAppUwp
         /// Collection of video profiles for the currently selected video capture device
         /// and video profile kind.
         /// </summary>
-        public CollectionViewModel<MediaCaptureVideoProfile> VideoProfiles
+        public CollectionViewModel<VideoProfile> VideoProfiles
         {
             get { return _videoProfiles; }
             private set
@@ -116,9 +115,6 @@ namespace TestAppUwp
                 }
             }
         }
-
-        public CollectionViewModel<MediaCaptureVideoProfileMediaDescription> RecordMediaDescs { get; private set; }
-            = new CollectionViewModel<MediaCaptureVideoProfileMediaDescription>();
 
         /// <summary>
         /// Property indicating whether a track can be created based on the currently selected items.
@@ -142,8 +138,8 @@ namespace TestAppUwp
             = new CollectionViewModel<VideoCaptureDeviceInfo>();
         private CollectionViewModel<VideoCaptureFormatViewModel> _videoCaptureFormats
             = new CollectionViewModel<VideoCaptureFormatViewModel>();
-        private CollectionViewModel<MediaCaptureVideoProfile> _videoProfiles
-            = new CollectionViewModel<MediaCaptureVideoProfile>();
+        private CollectionViewModel<VideoProfile> _videoProfiles
+            = new CollectionViewModel<VideoProfile>();
         private VideoProfileKind _selectedVideoProfileKind = VideoProfileKind.Unspecified;
         private bool _canCreateTrack = false;
         private string _errorMessage;
@@ -160,7 +156,7 @@ namespace TestAppUwp
             ErrorMessage = null;
             try
             {
-                await RequestMediaAccessAsync(StreamingCaptureMode.Video);
+                await Utils.RequestMediaAccessAsync(StreamingCaptureMode.Video);
             }
             catch (UnauthorizedAccessException uae)
             {
@@ -182,7 +178,7 @@ namespace TestAppUwp
             // would yield some devices that might become unavailable by the time
             // WebRTC internally opens the video capture device.
             // This is more for demo purpose here because using the UWP API is nicer.
-            var devices = await PeerConnection.GetVideoCaptureDevicesAsync();
+            var devices = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
             var deviceList = new CollectionViewModel<VideoCaptureDeviceInfo>();
             foreach (var device in devices)
             {
@@ -210,23 +206,16 @@ namespace TestAppUwp
             }
         }
 
-        public void RefreshVideoProfiles(VideoCaptureDeviceInfo item, VideoProfileKind kind)
+        public async void RefreshVideoProfiles(VideoCaptureDeviceInfo item, VideoProfileKind kind)
         {
-            var videoProfiles = new CollectionViewModel<MediaCaptureVideoProfile>();
+            // Clear formats, which are profile-dependent. This ensures the former list doesn't
+            // stay visible if the current profile kind is not supported (does not return any profile).
+            VideoCaptureFormats.Clear();
+
+            var videoProfiles = new CollectionViewModel<VideoProfile>();
             if (item != null)
             {
-                IReadOnlyList<MediaCaptureVideoProfile> profiles;
-                if (kind == VideoProfileKind.Unspecified)
-                {
-                    profiles = MediaCapture.FindAllVideoProfiles(item.Id);
-                }
-                else
-                {
-                    // VideoProfileKind and KnownVideoProfile are the same with the exception of
-                    // `Unspecified` that takes value 0.
-                    var profile = (KnownVideoProfile)((int)kind - 1);
-                    profiles = MediaCapture.FindKnownVideoProfiles(item.Id, profile);
-                }
+                IReadOnlyList<VideoProfile> profiles = await DeviceVideoTrackSource.GetCaptureProfilesAsync(item.Id, kind);
                 foreach (var profile in profiles)
                 {
                     videoProfiles.Add(profile);
@@ -253,31 +242,25 @@ namespace TestAppUwp
             var formats = new CollectionViewModel<VideoCaptureFormatViewModel>();
             if (item != null)
             {
-                if (MediaCapture.IsVideoProfileSupported(item.Id))
+                IReadOnlyList<VideoCaptureFormat> formatsList;
+                string profileId = VideoProfiles.SelectedItem?.uniqueId;
+                if (string.IsNullOrEmpty(profileId))
                 {
-                    foreach (var desc in VideoProfiles.SelectedItem?.SupportedRecordMediaDescription)
-                    {
-                        var formatVM = new VideoCaptureFormatViewModel();
-                        formatVM.Format.width = desc.Width;
-                        formatVM.Format.height = desc.Height;
-                        formatVM.Format.framerate = desc.FrameRate;
-                        //formatVM.Format.fourcc = desc.Subtype; // TODO: string => FOURCC
-                        formatVM.FormatEncodingDisplayName = desc.Subtype;
-                        formats.Add(formatVM);
-                    }
+                    // Device doesn't support video profiles; fall back on flat list of capture formats.
+                    formatsList = await DeviceVideoTrackSource.GetCaptureFormatsAsync(item.Id);
                 }
                 else
                 {
-                    // Device doesn't support video profiles; fall back on flat list of capture formats.
-                    List<VideoCaptureFormat> formatsList = await PeerConnection.GetVideoCaptureFormatsAsync(item.Id);
-                    foreach (var format in formatsList)
+                    // Enumerate formats for the specified profile only
+                    formatsList = await DeviceVideoTrackSource.GetCaptureFormatsAsync(item.Id, profileId);
+                }
+                foreach (var format in formatsList)
+                {
+                    formats.Add(new VideoCaptureFormatViewModel
                     {
-                        formats.Add(new VideoCaptureFormatViewModel
-                        {
-                            Format = format,
-                            FormatEncodingDisplayName = FourCCToString(format.fourcc)
-                        });
-                    }
+                        Format = format,
+                        FormatEncodingDisplayName = FourCCToString(format.fourcc)
+                    });
                 }
             }
             VideoCaptureFormats = formats;
@@ -288,63 +271,43 @@ namespace TestAppUwp
 
         public async Task AddVideoTrackFromDeviceAsync(string trackName)
         {
-            await RequestMediaAccessAsync(StreamingCaptureMode.Video);
+            await Utils.RequestMediaAccessAsync(StreamingCaptureMode.Video);
 
+            // Create the source
             VideoCaptureDeviceInfo deviceInfo = VideoCaptureDevices.SelectedItem;
             if (deviceInfo == null)
             {
                 throw new InvalidOperationException("No video capture device selected");
             }
-            var settings = new LocalVideoTrackSettings
+            var deviceConfig = new LocalVideoDeviceInitConfig
             {
-                trackName = trackName,
                 videoDevice = new VideoCaptureDevice { id = deviceInfo.Id },
             };
             VideoCaptureFormatViewModel formatInfo = VideoCaptureFormats.SelectedItem;
             if (formatInfo != null)
             {
-                settings.width = formatInfo.Format.width;
-                settings.height = formatInfo.Format.height;
-                settings.framerate = formatInfo.Format.framerate;
+                deviceConfig.width = formatInfo.Format.width;
+                deviceConfig.height = formatInfo.Format.height;
+                deviceConfig.framerate = formatInfo.Format.framerate;
             }
-            var track = await LocalVideoTrack.CreateFromDeviceAsync(settings);
+            if (deviceInfo.SupportsVideoProfiles)
+            {
+                VideoProfile profile = VideoProfiles.SelectedItem;
+                deviceConfig.videoProfileId = profile?.uniqueId;
+                deviceConfig.videoProfileKind = SelectedVideoProfileKind;
+            }
+            var source = await DeviceVideoTrackSource.CreateAsync(deviceConfig);
+            // FIXME - this leaks the source, never disposed
 
-            SessionModel.Current.VideoTracks.Add(new VideoTrackViewModel
+            // Crate the track
+            var trackConfig = new LocalVideoTrackInitConfig
             {
-                Track = track,
-                TrackImpl = track,
-                IsRemote = false,
-                DeviceName = deviceInfo.DisplayName
-            });
-            SessionModel.Current.LocalTracks.Add(new TrackViewModel(Symbol.Video) { DisplayName = deviceInfo.DisplayName });
-        }
+                trackName = trackName,
+            };
+            var track = LocalVideoTrack.CreateFromSource(source, trackConfig);
+            // FIXME - this probably leaks the track, never disposed
 
-        private async Task RequestMediaAccessAsync(StreamingCaptureMode mode)
-        {
-            // Ensure that the UWP app was authorized to capture audio (cap:microphone)
-            // or video (cap:webcam), otherwise the native plugin will fail.
-            try
-            {
-                MediaCapture mediaAccessRequester = new MediaCapture();
-                var mediaSettings = new MediaCaptureInitializationSettings
-                {
-                    AudioDeviceId = "",
-                    VideoDeviceId = "",
-                    StreamingCaptureMode = mode,
-                    PhotoCaptureSource = PhotoCaptureSource.VideoPreview
-                };
-                await mediaAccessRequester.InitializeAsync(mediaSettings);
-            }
-            catch (UnauthorizedAccessException uae)
-            {
-                Logger.Log("Access to A/V denied, check app permissions: " + uae.Message);
-                throw uae;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Failed to initialize A/V with unknown exception: " + ex.Message);
-                throw ex;
-            }
+            SessionModel.Current.AddVideoTrack(track, deviceInfo.DisplayName);
         }
     }
 }

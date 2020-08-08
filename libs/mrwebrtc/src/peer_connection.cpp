@@ -343,7 +343,7 @@ void PeerConnection::RemoveDataChannel(
   // Cache variables which require a dispatch to the signaling thread
   // to minimize the risk of a deadlock with the data channel lock below.
   const int id = data_channel.id();
-  const str label = data_channel.label();
+  const std::string label = data_channel.label();
 
   // Move the channel to destroy out of the internal data structures
   std::shared_ptr<DataChannel> data_channel_ptr;
@@ -445,7 +445,7 @@ void PeerConnection::OnDataChannelAdded(
       info.handle = (void*)&data_channel;
       info.id = data_channel.id();
       info.flags = data_channel.flags();
-      str label_str = data_channel.label();  // keep alive
+      std::string label_str = data_channel.label();  // keep alive
       info.label = label_str.c_str();
       added_cb(&info);
 
@@ -568,14 +568,11 @@ void PeerConnection::Close() noexcept {
     return;
   }
 
-  // Keep a reference to the implementation while shutting down, but clear the
-  // visible value in |peer_| to ensure |IsClosed()| returns false. This
-  // prevents other methods from being able to create new objects like
-  // transceivers.
-  rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc(std::move(peer_));
-
   // Close the connection
-  pc->Close();
+  peer_->Close();
+
+  // At this point no callbacks should be called anymore, so it's safe to reset
+  // the transceiver/track data.
 
   {
     rtc::CritScope lock(&transceivers_mutex_);
@@ -619,7 +616,7 @@ void PeerConnection::Close() noexcept {
   // global factory shuts down and terminates the threads, which potentially
   // happens just after this call when called from the destructor if this is the
   // last object alive.
-  pc = nullptr;
+  peer_ = nullptr;
 }
 
 bool PeerConnection::IsClosed() const noexcept {
@@ -1008,9 +1005,7 @@ void PeerConnection::OnRemoveTrack(
 
 void PeerConnection::OnLocalDescCreated(
     webrtc::SessionDescriptionInterface* desc) noexcept {
-  if (!peer_) {
-    return;
-  }
+  RTC_DCHECK(peer_);
   rtc::scoped_refptr<webrtc::SetSessionDescriptionObserver> observer =
       new rtc::RefCountedObject<SessionDescObserver>([this] {
         if (IsUnifiedPlan()) {

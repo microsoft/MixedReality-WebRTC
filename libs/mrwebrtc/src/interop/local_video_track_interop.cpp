@@ -7,75 +7,53 @@
 
 #include "global_factory.h"
 #include "local_video_track_interop.h"
-#include "media/external_video_track_source_impl.h"
+#include "media/external_video_track_source.h"
 #include "media/local_video_track.h"
+#include "media/video_track_source.h"
 #include "utils.h"
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-void MRS_CALL
-mrsLocalVideoTrackAddRef(mrsLocalVideoTrackHandle handle) noexcept {
-  if (auto track = static_cast<LocalVideoTrack*>(handle)) {
-    track->AddRef();
-  } else {
-    RTC_LOG(LS_WARNING)
-        << "Trying to add reference to NULL LocalVideoTrack object.";
-  }
-}
-
-void MRS_CALL
-mrsLocalVideoTrackRemoveRef(mrsLocalVideoTrackHandle handle) noexcept {
-  if (auto track = static_cast<LocalVideoTrack*>(handle)) {
-    const std::string name = track->GetName();
-    if (track->RemoveRef() == 0) {
-      RTC_LOG(LS_VERBOSE) << "Destroyed LocalVideoTrack \"" << name.c_str()
-                          << "\" (0 ref).";
-    }
-  } else {
-    RTC_LOG(LS_WARNING) << "Trying to remove reference from NULL "
-                           "LocalVideoTrack object.";
-  }
-}
-
-// mrsLocalVideoTrackCreateFromDevice -> interop_api.cpp
-
-mrsResult MRS_CALL mrsLocalVideoTrackCreateFromExternalSource(
-    const mrsLocalVideoTrackFromExternalSourceInitConfig* config,
+mrsResult MRS_CALL mrsLocalVideoTrackCreateFromSource(
+    const mrsLocalVideoTrackInitSettings* init_settings,
+    mrsVideoTrackSourceHandle source_handle,
     mrsLocalVideoTrackHandle* track_handle_out) noexcept {
-  if (!config || !track_handle_out || !config->source_handle) {
+  if (!init_settings) {
+    RTC_LOG(LS_ERROR) << "Invalid NULL local video track init settings.";
+    return Result::kInvalidParameter;
+  }
+  if (mrsBool::kFalse == mrsSdpIsValidToken(init_settings->track_name)) {
+    RTC_LOG(LS_ERROR) << "Local video track name " << init_settings->track_name
+                      << " is not a valid SDP token.";
+    return Result::kInvalidParameter;
+  }
+  if (!source_handle) {
+    RTC_LOG(LS_ERROR) << "Invalid track source handle.";
+    return Result::kInvalidParameter;
+  }
+  if (!track_handle_out) {
+    RTC_LOG(LS_ERROR) << "Invalid NULL local video track handle reference.";
     return Result::kInvalidParameter;
   }
   *track_handle_out = nullptr;
 
-  auto track_source =
-      static_cast<detail::ExternalVideoTrackSourceImpl*>(config->source_handle);
-  if (!track_source) {
-    return Result::kInvalidNativeHandle;
-  }
-
-  std::string track_name_str;
-  if (!IsStringNullOrEmpty(config->track_name)) {
-    track_name_str = config->track_name;
-  } else {
-    track_name_str = "external_track";
-  }
-
   RefPtr<GlobalFactory> global_factory(GlobalFactory::InstancePtr());
   auto pc_factory = global_factory->GetPeerConnectionFactory();
   if (!pc_factory) {
-    return Result::kUnknownError;
+    return Result::kInvalidOperation;
   }
 
-  // The video track keeps a reference to the video source; let's hope this
-  // does not change, because this is not explicitly mentioned in the docs,
-  // and the video track is the only one keeping the video source alive.
+  // Create the audio track
+  auto source = static_cast<VideoTrackSource*>(source_handle);
   rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
-      pc_factory->CreateVideoTrack(track_name_str, track_source->impl());
+      pc_factory->CreateVideoTrack(init_settings->track_name,
+                                   source->impl().get());
   if (!video_track) {
+    RTC_LOG(LS_ERROR) << "Failed to create local video track from source.";
     return Result::kUnknownError;
   }
 
-  // Create the video track wrapper
+  // Create the audio track wrapper
   RefPtr<LocalVideoTrack> track =
       new LocalVideoTrack(std::move(global_factory), std::move(video_track));
   *track_handle_out = track.release();

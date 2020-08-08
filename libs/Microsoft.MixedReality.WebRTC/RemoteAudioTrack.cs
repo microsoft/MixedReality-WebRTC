@@ -20,7 +20,7 @@ namespace Microsoft.MixedReality.WebRTC
     /// being played, call <see cref="OutputToDevice(bool)"/> in a <see cref="PeerConnection.AudioTrackAdded"/>
     /// handler (or later).
     /// </remarks>
-    public class RemoteAudioTrack : MediaTrack, IAudioTrack
+    public class RemoteAudioTrack : MediaTrack, IAudioSource
     {
         /// <summary>
         /// Enabled status of the track. If enabled, receives audio frames from the remote peer as
@@ -39,17 +39,7 @@ namespace Microsoft.MixedReality.WebRTC
             }
         }
 
-        /// <summary>
-        /// Event that occurs when an audio frame has been received from the remote peer.
-        /// </summary>
-        /// <remarks>
-        /// WebRTC audio tracks produce an audio frame every 10 ms.
-        /// If you want to process the audio frames as soon as they are received, without conversions,
-        /// subscribe to <see cref="AudioFrameReady"/>.
-        /// If you want the audio frames to be buffered (and optionally resampled) automatically,
-        /// and you want the application to control when new audio data is read, create an
-        /// <see cref="AudioTrackReadBuffer"/> using <see cref="CreateReadBuffer"/>.
-        /// </remarks>
+        /// <inheritdoc/>
         public event AudioFrameDelegate AudioFrameReady;
 
         /// <summary>
@@ -77,17 +67,7 @@ namespace Microsoft.MixedReality.WebRTC
             return (bool)RemoteAudioTrackInterop.RemoteAudioTrack_IsOutputToDevice(_nativeHandle);
         }
 
-        /// <summary>
-        /// Starts buffering the audio data from the remote track in an <see cref="AudioTrackReadBuffer"/>.
-        /// </summary>
-        /// <remarks>
-        /// WebRTC audio tracks produce an audio frame every 10 ms.
-        /// If you want the audio frames to be buffered (and optionally resampled) automatically,
-        /// and you want the application to control when new audio data is read, create an
-        /// <see cref="AudioTrackReadBuffer"/> using <see cref="CreateReadBuffer"/>.
-        /// If you want to process the audio frames as soon as they are received, without conversions,
-        /// subscribe to <see cref="AudioFrameReady"/> instead.
-        /// </remarks>
+        /// <inheritdoc/>
         public AudioTrackReadBuffer CreateReadBuffer()
         {
             uint res = RemoteAudioTrackInterop.RemoteAudioTrack_CreateReadBuffer(_nativeHandle,
@@ -102,7 +82,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// <remarks>
         /// In native land this is a <code>mrsRemoteAudioTrackHandle</code>.
         /// </remarks>
-        internal IntPtr _nativeHandle = IntPtr.Zero;
+        internal RemoteAudioTrackInterop.RemoteAudioTrackHandle _nativeHandle = null;
 
         /// <summary>
         /// Handle to self for interop callbacks. This adds a reference to the current object, preventing
@@ -116,8 +96,10 @@ namespace Microsoft.MixedReality.WebRTC
         private RemoteAudioTrackInterop.InteropCallbackArgs _interopCallbackArgs;
 
         // Constructor for interop-based creation; SetHandle() will be called later
-        internal RemoteAudioTrack(IntPtr handle, PeerConnection peer, string trackName) : base(peer, trackName)
+        internal RemoteAudioTrack(RemoteAudioTrackInterop.RemoteAudioTrackHandle handle, PeerConnection peer, string trackName)
+            : base(peer, trackName)
         {
+            Debug.Assert(!handle.IsClosed);
             _nativeHandle = handle;
             RegisterInteropCallbacks();
         }
@@ -150,7 +132,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         internal void DestroyNative()
         {
-            if (_nativeHandle == IntPtr.Zero)
+            if (_nativeHandle.IsClosed)
             {
                 return;
             }
@@ -159,7 +141,7 @@ namespace Microsoft.MixedReality.WebRTC
 
             UnregisterInteropCallbacks();
 
-            _nativeHandle = IntPtr.Zero;
+            _nativeHandle.Dispose();
         }
 
         internal void OnFrameReady(AudioFrame frame)
