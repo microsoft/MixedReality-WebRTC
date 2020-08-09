@@ -124,7 +124,7 @@ namespace Microsoft.MixedReality.WebRTC
         private event I420AVideoFrameDelegate _videoFrameReady;
         private event Argb32VideoFrameDelegate _argb32VideoFrameReady;
 
-        public IntPtr NativeHandle => _nativeHandle;
+        public IntPtr NativeHandle => _nativeHandle.DangerousGetHandle();
 
         // Constructor for interop-based creation; SetHandle() will be called later
         internal RemoteVideoTrack(RemoteVideoTrackInterop.RemoteVideoTrackHandle handle, PeerConnection peer, string trackName)

@@ -31,7 +31,7 @@
     <ProjectGuid>{3D2AAA9E-C000-4669-AC09-D755D5FAC7D3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>Microsoft.MixedReality.WebRTC.UnityPlugin.Native.Win32</ProjectName>
+    <ProjectName>mrwebrtc-unityplugin-win32</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
