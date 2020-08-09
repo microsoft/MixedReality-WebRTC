@@ -60,9 +60,7 @@ function verify-arguments() {
 #-----------------------------------------------------------------------------
 function merge-archives() {
     # Create temporary working directory
-    TEMP_DIR="$(cd "$(mktemp -d $PWD/build/tmp/mrwebrtc-merge.XXXXXXXX)" && pwd)"
-    echo $PWD
-    echo $TEMP_DIR
+    TEMP_DIR="$(cd "$(mktemp -d /tmp/mrwebrtc-merge.XXXXXXXX)" && pwd)"
 
     # Ensure output folder exists and rewrite OUTPUT as absolute path
     local OUTPUT_DIR="$(dirname "$OUTPUT")"
@@ -108,7 +106,6 @@ function merge-archives() {
     # Copy .java classes from libwebrtc into mrwebrtc
     echo -e "\e[39mCopy org.webrtc Java classes\e[39m"
     cp -R -t $TMP_MRWEBRTC/classes $TMP_LIBWEBRTC/classes/*
-    cp $TMP_LIBWEBRTC/jni/arm64-v8a/libjingle_peerconnection_so.so $TMP_MRWEBRTC/jni/arm64-v8a/libjingle_peerconnection_so.so 
 
     # Repack classes.jar
     echo -e "\e[39mRepack classes.jar\e[39m"
@@ -135,9 +132,11 @@ while getopts l:m:o:vh OPTION; do
 done
 
 # Replace C:/ for /mnt/c/ if using gradle in windows
-MRWEBRTC_AAR=${MRWEBRTC_AAR/C://mnt/c}
+DRIVE_CHAR=${MRWEBRTC_AAR:0:1}
+echo $DRIVE_CHAR
+MRWEBRTC_AAR=${MRWEBRTC_AAR/$DRIVE_CHAR://mnt/${DRIVE_CHAR,,}}
 MRWEBRTC_AAR=${MRWEBRTC_AAR//\\//}
-echo -e "\e[39mPath to mrwebrtc.aar $MRWEBRTC_AAR\e[39m"
+echo -e "\e[39mAAR Path : \e[96m$MRWEBRTC_AAR\e[39m"
 
 # Ensure all arguments have reasonable values
 verify-arguments
