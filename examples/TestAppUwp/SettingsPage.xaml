@@ -102,6 +102,30 @@
                     <TextBox Margin="16,0,0,0" Width="250" PlaceholderText="extra_video_param_remote"
                              Text="{x:Bind SessionModel.PreferredVideoCodecExtraParamsRemote, Mode=TwoWay}"/>
                 </StackPanel>
+                <TextBlock Text="H.264 options" Style="{StaticResource TitleTextBlockStyle}" Margin="0,16,0,0"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">Profile:</TextBlock>
+                    <ComboBox Width="200" SelectedIndex="{x:Bind SessionModel.H264Config.Profile, Mode=TwoWay, Converter={StaticResource ProfileToIndexConverter}}">
+                        <ComboBoxItem>ConstrainedBaseline</ComboBoxItem>
+                        <ComboBoxItem>Baseline</ComboBoxItem>
+                        <ComboBoxItem>Main</ComboBoxItem>
+                        <ComboBoxItem>ConstrainedHigh</ComboBoxItem>
+                        <ComboBoxItem>High</ComboBoxItem>
+                    </ComboBox>
+                    <TextBlock VerticalAlignment="Center" Margin="16,0,16,0">RC mode:</TextBlock>
+                    <ComboBox Width="150" SelectedIndex="{x:Bind SessionModel.H264Config.RcMode, Mode=TwoWay, Converter={StaticResource RcModeToIndexConverter}}">
+                        <ComboBoxItem>Default</ComboBoxItem>
+                        <ComboBoxItem>CBR</ComboBoxItem>
+                        <ComboBoxItem>VBR</ComboBoxItem>
+                        <ComboBoxItem>Quality</ComboBoxItem>
+                    </ComboBox>
+                    <TextBlock VerticalAlignment="Center" Margin="16,0,0,0">Max QP:</TextBlock>
+                    <TextBox Margin="16,0,0,0"  PlaceholderText="-1"
+                             Text="{x:Bind SessionModel.H264Config.MaxQp, Mode=TwoWay, Converter={StaticResource QualityValueConverter}, ConverterParameter=51}"/>
+                    <TextBlock VerticalAlignment="Center" Margin="16,0,0,0">Quality:</TextBlock>
+                    <TextBox Margin="16,0,0,0" PlaceholderText="-1"
+                             Text="{x:Bind SessionModel.H264Config.Quality, Mode=TwoWay, Converter={StaticResource QualityValueConverter}, ConverterParameter=100}"/>
+                </StackPanel>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

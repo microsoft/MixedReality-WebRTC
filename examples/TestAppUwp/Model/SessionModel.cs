@@ -272,6 +272,8 @@ namespace TestAppUwp
             set { SetProperty(ref _preferredVideoCodecExtraParamsRemote, value); }
         }
 
+        public PeerConnection.H264Config H264Config = new PeerConnection.H264Config();
+
         /// <summary>
         /// Helper class to temporarily defer an automated negotiation until this object
         /// is disposed.
@@ -520,6 +522,8 @@ namespace TestAppUwp
             _peerConnection.PreferredVideoCodec = PreferredVideoCodec ?? "";
             _peerConnection.PreferredVideoCodecExtraParamsLocal = PreferredVideoCodecExtraParamsLocal ?? "";
             _peerConnection.PreferredVideoCodecExtraParamsRemote = PreferredVideoCodecExtraParamsRemote ?? "";
+
+            PeerConnection.SetH264Config(H264Config);
 
             // This cannot be inside the lock, otherwise the UI thread has the lock and block on the WebRTC
             // signaling thread, which itself might invoked a callback into the UI thread which might require
