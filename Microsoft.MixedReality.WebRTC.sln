@@ -41,9 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestReceiveAV", "examples\T
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementation", "Implementation", "{5A873D0C-4D1E-4AAA-AE3A-BFC96E796431}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.MixedReality.WebRTC.UnityPlugin.Native.Win32", "libs\Microsoft.MixedReality.WebRTC.UnityPlugin.Native\src\win32\Microsoft.MixedReality.WebRTC.UnityPlugin.Native.vcxproj", "{3D2AAA9E-C000-4669-AC09-D755D5FAC7D3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.MixedReality.WebRTC.UnityPlugin", "libs\Microsoft.MixedReality.WebRTC.UnityPlugin\Microsoft.MixedReality.WebRTC.UnityPlugin.csproj", "{8D754C57-2340-4E9A-87D3-2B0729879F74}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mrwebrtc-unityplugin-win32", "libs\Microsoft.MixedReality.WebRTC.UnityPlugin.Native\src\win32\Microsoft.MixedReality.WebRTC.UnityPlugin.Native.vcxproj", "{3D2AAA9E-C000-4669-AC09-D755D5FAC7D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -185,22 +183,6 @@ Global
 		{3D2AAA9E-C000-4669-AC09-D755D5FAC7D3}.Release|x64.Build.0 = Release|x64
 		{3D2AAA9E-C000-4669-AC09-D755D5FAC7D3}.Release|x86.ActiveCfg = Release|Win32
 		{3D2AAA9E-C000-4669-AC09-D755D5FAC7D3}.Release|x86.Build.0 = Release|Win32
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Debug|ARM.Build.0 = Debug|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Debug|x64.Build.0 = Debug|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Debug|x86.Build.0 = Debug|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Release|ARM.ActiveCfg = Release|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Release|ARM.Build.0 = Release|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Release|x64.ActiveCfg = Release|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Release|x64.Build.0 = Release|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Release|x86.ActiveCfg = Release|Any CPU
-		{8D754C57-2340-4E9A-87D3-2B0729879F74}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -69,11 +69,10 @@ class NativeRenderer {
   static std::map<PeerConnectionHandle, std::shared_ptr<NativeRenderer>>
       g_renderers;
 
+  //these refs by peerhandle should be changed to ref by videohandle
   static void DestroyUnsafe(PeerConnectionHandle peerHandle);
-  static std::shared_ptr<NativeRenderer> GetUnsafe(
-      PeerConnectionHandle peerHandle);
-  static std::vector<std::shared_ptr<NativeRenderer>> MultiGetUnsafe(
-      const std::set<PeerConnectionHandle>& peerHandles);
+  static std::shared_ptr<NativeRenderer> GetUnsafe(PeerConnectionHandle peerHandle);
+  static std::vector<std::shared_ptr<NativeRenderer>> MultiGetUnsafe(const std::set<PeerConnectionHandle>& peerHandles);
 
   PeerConnectionHandle m_handle{nullptr};
   std::mutex m_lock;
@@ -85,11 +84,9 @@ class NativeRenderer {
   void Shutdown();
 
   static void MRS_CALL
-  I420ARemoteVideoFrameCallback(void* user_data,
-                                const mrsI420AVideoFrame& frame);
+  I420ARemoteVideoFrameCallback(void* user_data, const mrsI420AVideoFrame& frame);
   static void MRS_CALL
-  ArgbRemotevideoFrameCallback(void* user_data,
-                               const mrsArgb32VideoFrame& frame);
+  ArgbRemotevideoFrameCallback(void* user_data, const mrsArgb32VideoFrame& frame);
 
   static uint64_t m_frameId;
 };

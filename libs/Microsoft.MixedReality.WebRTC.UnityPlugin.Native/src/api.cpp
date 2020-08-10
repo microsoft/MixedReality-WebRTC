@@ -83,7 +83,7 @@ mrsNativeRenderer_Destroy(PeerConnectionHandle peerHandle) noexcept {
 
 mrsResult MRS_CALL
 mrsNativeRenderer_EnableRemoteVideo(mrsRemoteVideoTrackHandle videoHandle,
-                                    PeerConnectionHandle peerHandle,
+                                    PeerConnectionHandle peerHandle, //this can be gotten rid of
                                     VideoKind format,
                                     TextureDesc textures[],
                                     int textureCount) noexcept {
