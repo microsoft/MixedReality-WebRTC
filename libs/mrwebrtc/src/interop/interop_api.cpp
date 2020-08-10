@@ -6,6 +6,7 @@
 #include "pch.h"
 
 #include "api/stats/rtcstats_objects.h"
+#include "third_party/winuwp_h264/H264Encoder/H264Encoder.h"
 
 #include "audio_track_source_interop.h"
 #include "data_channel.h"
@@ -736,4 +737,31 @@ mrsResult MRS_CALL mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report) {
     return Result::kSuccess;
   }
   return Result::kInvalidNativeHandle;
+}
+
+void MRS_CALL mrsSetH264Config(const mrsH264Config* config) {
+#define CHECK_ENUM_VALUE(NAME)                                        \
+  static_assert((int)webrtc::H264::NAME == (int)mrsH264Profile::NAME, \
+                "webrtc::H264::Profile does not match mrsH264Profile")
+  CHECK_ENUM_VALUE(kProfileConstrainedBaseline);
+  CHECK_ENUM_VALUE(kProfileBaseline);
+  CHECK_ENUM_VALUE(kProfileMain);
+  CHECK_ENUM_VALUE(kProfileConstrainedHigh);
+  CHECK_ENUM_VALUE(kProfileHigh);
+#undef CHECK_ENUM_VALUE
+
+#define CHECK_ENUM_VALUE(NAME)                                        \
+  static_assert((int)mrsH264RcMode::k##NAME ==                               \
+                    (int)webrtc::WinUWPH264EncoderImpl::RcMode::k##NAME, \
+                "WinUWPH264EncoderImpl::RcMode does not match mrsH264RcMode")
+  CHECK_ENUM_VALUE(Unset);
+  CHECK_ENUM_VALUE(CBR);
+  CHECK_ENUM_VALUE(VBR);
+  CHECK_ENUM_VALUE(Quality);
+#undef CHECK_ENUM_VALUE
+
+  webrtc::WinUWPH264EncoderImpl::global_profile.store((webrtc::H264::Profile)config->profile);
+  webrtc::WinUWPH264EncoderImpl::global_rc_mode.store((webrtc::WinUWPH264EncoderImpl::RcMode)config->rc_mode);
+  webrtc::WinUWPH264EncoderImpl::global_max_qp.store(config->max_qp);
+  webrtc::WinUWPH264EncoderImpl::global_quality.store(config->quality);
 }
