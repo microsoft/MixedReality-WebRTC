@@ -4,13 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Microsoft.MixedReality.WebRTC.UnityPlugin;
-using UnityEngine.EventSystems;
-using UnityEngine.XR.WSA.Input;
 
 namespace Microsoft.MixedReality.WebRTC.UnityPlugin
 {
@@ -20,7 +14,7 @@ namespace Microsoft.MixedReality.WebRTC.UnityPlugin
 		private static bool _pluginInitialized;
 
 		private static HashSet<NativeVideoRenderer> _nativeVideoRenderersRefs = new HashSet<NativeVideoRenderer>();
-		
+
 		public static void AddRef(NativeVideoRenderer nativeVideoRenderer)
 		{
 			Debug.Log("NativeRenderingPluginUpdate AddRef");
@@ -48,13 +42,13 @@ namespace Microsoft.MixedReality.WebRTC.UnityPlugin
 		public static void DecRef(NativeVideoRenderer nativeVideoRenderer)
 		{
 			_nativeVideoRenderersRefs.Remove(nativeVideoRenderer);
-			
+
 			if (_nativeVideoRenderersRefs.Count == 0)
 			{
 				Destroy(_owner);
 				_owner = null;
 			}
-				
+
 #if WEBRTC_DEBUGGING
 			Debug.Log($"NativeRenderingPluginUpdate.DecRef: {_nativeVideoRenderersRefs}");
 #endif
@@ -73,7 +67,7 @@ namespace Microsoft.MixedReality.WebRTC.UnityPlugin
 		private IEnumerator CallPluginAtEndOfFrames()
 		{
 			IntPtr videoUpdateMethod = NativeRenderer.GetVideoUpdateMethod();
-			
+
 			while (true)
 			{
 				// Wait until all frame rendering is done
