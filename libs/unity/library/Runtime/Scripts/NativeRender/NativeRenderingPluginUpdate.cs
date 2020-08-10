@@ -1,0 +1,107 @@
+﻿//
+// Copyright (C) Microsoft. All rights reserved.
+//
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+using Microsoft.MixedReality.WebRTC.UnityPlugin;
+using UnityEngine.EventSystems;
+using UnityEngine.XR.WSA.Input;
+
+namespace Microsoft.MixedReality.WebRTC.UnityPlugin
+{
+	public class NativeRenderingPluginUpdate : MonoBehaviour
+	{
+		private static GameObject _owner;
+		private static bool _pluginInitialized;
+
+		private static HashSet<NativeVideoRenderer> _nativeVideoRenderersRefs = new HashSet<NativeVideoRenderer>();
+		
+		public static void AddRef(NativeVideoRenderer nativeVideoRenderer)
+		{
+			Debug.Log("NativeRenderingPluginUpdate AddRef");
+			if (_nativeVideoRenderersRefs.Count == 0)
+			{
+				if (!_pluginInitialized)
+				{
+					_pluginInitialized = true;
+					NativeRenderer.SetLoggingFunctions(
+						LogDebugCallback,
+						LogErrorCallback,
+						LogWarningCallback);
+				}
+				_owner = new GameObject("mrwebrtc-unityplugin");
+				_owner.AddComponent<NativeRenderingPluginUpdate>();
+			}
+
+			_nativeVideoRenderersRefs.Add(nativeVideoRenderer);
+
+#if WEBRTC_DEBUGGING
+			Debug.Log($"NativeRenderingPluginUpdate.AddRef: {_nativeVideoRenderersRefs.Count}");
+#endif
+		}
+
+		public static void DecRef(NativeVideoRenderer nativeVideoRenderer)
+		{
+			_nativeVideoRenderersRefs.Remove(nativeVideoRenderer);
+			
+			if (_nativeVideoRenderersRefs.Count == 0)
+			{
+				Destroy(_owner);
+				_owner = null;
+			}
+				
+#if WEBRTC_DEBUGGING
+			Debug.Log($"NativeRenderingPluginUpdate.DecRef: {_nativeVideoRenderersRefs}");
+#endif
+		}
+
+		private void Start()
+		{
+			StartCoroutine(nameof(CallPluginAtEndOfFrames));
+		}
+
+		private void OnDestroy()
+		{
+			StopAllCoroutines();
+		}
+
+		private IEnumerator CallPluginAtEndOfFrames()
+		{
+			IntPtr videoUpdateMethod = NativeRenderer.GetVideoUpdateMethod();
+			
+			while (true)
+			{
+				// Wait until all frame rendering is done
+				yield return new WaitForEndOfFrame();
+
+				// No specific event ID needed, since we only handle one thing.
+				if (_nativeVideoRenderersRefs.Count > 0) GL.IssuePluginEvent(videoUpdateMethod, 0);
+			}
+		}
+
+		[AOT.MonoPInvokeCallback(typeof(LogCallback))]
+		public static void LogDebugCallback(string str)
+		{
+#if WEBRTC_DEBUGGING
+			Debug.Log(str);
+#endif
+		}
+
+		[AOT.MonoPInvokeCallback(typeof(LogCallback))]
+		public static void LogWarningCallback(string str)
+		{
+			Debug.LogWarning(str);
+		}
+
+		[AOT.MonoPInvokeCallback(typeof(LogCallback))]
+		public static void LogErrorCallback(string str)
+		{
+			Debug.LogError(str);
+		}
+	}
+}
