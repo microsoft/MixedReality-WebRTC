@@ -193,7 +193,14 @@ namespace TestAppUwp
             // Detach old source
             if (_playbackVideoTrack?.Track != null)
             {
-                _playbackVideoTrack.Track.I420AVideoFrameReady -= VideoTrack_I420AFrameReady;
+                try
+                {
+                    _playbackVideoTrack.Track.I420AVideoFrameReady -= VideoTrack_I420AFrameReady;
+                }
+                catch (ObjectDisposedException)
+                {
+                    // This may happen if the track is remote and has already been disposed. Ignore.
+                }
                 _videoWidth = 0;
                 _videoHeight = 0;
                 _videoStatsTimer.Stop();
