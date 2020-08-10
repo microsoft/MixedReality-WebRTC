@@ -12,5 +12,8 @@
         <local:BooleanInverter x:Key="BooleanInverter"/>
         <local:VisibleIfNotEmptyConverter x:Key="VisibleIfNotEmptyConverter"/>
         <local:StringFormatConverter x:Key="StringFormatConverter"/>
+        <local:QualityValueConverter x:Key="QualityValueConverter"/>
+        <local:ProfileToIndexConverter x:Key="ProfileToIndexConverter"/>
+        <local:RcModeToIndexConverter x:Key="RcModeToIndexConverter"/>
     </Application.Resources>
 </Application>
