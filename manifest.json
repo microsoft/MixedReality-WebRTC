@@ -698,6 +698,42 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.html",
+          "hash": "iITCzp3SHBAT0H36j3oe9A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.html",
+          "hash": "hSVnwDWjBDL2jOExU+7lUQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.html",
+          "hash": "j/oNFcxggkCQ42g8pePtUw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSendDelegate.yml",
       "output": {
         ".html": {
@@ -846,7 +882,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.PeerConnection.html",
-          "hash": "JSurxfB3N6rokdVTxpeRdA=="
+          "hash": "7ZnHT0dxzvAA33pZR8q/Iw=="
         }
       },
       "is_incremental": false,
@@ -1614,7 +1650,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "R2TdsLB8YpGzR9M/6LyEOg=="
+          "hash": "69J4HXzYbxmQ5YhgoEStRA=="
         }
       },
       "is_incremental": false,
@@ -1626,7 +1662,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "pyn5TWyuiWLKS4bkpw+qTQ=="
+          "hash": "d2+0Cpz1dbkSaDWqBEl9uw=="
         }
       },
       "is_incremental": false,
@@ -2865,7 +2901,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 134,
+          "total_file_count": 137,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

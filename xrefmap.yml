@@ -2392,6 +2392,96 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.GetSimpleStatsAsync
   nameWithType: PeerConnection.GetSimpleStatsAsync
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264Config
+  name: PeerConnection.H264Config
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.H264Config
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264Config
+  nameWithType: PeerConnection.H264Config
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.MaxQp
+  name: MaxQp
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264Config_MaxQp
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.MaxQp
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.MaxQp
+  nameWithType: PeerConnection.H264Config.MaxQp
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.Profile
+  name: Profile
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264Config_Profile
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.Profile
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.Profile
+  nameWithType: PeerConnection.H264Config.Profile
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.Quality
+  name: Quality
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264Config_Quality
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.Quality
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.Quality
+  nameWithType: PeerConnection.H264Config.Quality
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.RcMode
+  name: RcMode
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264Config_RcMode
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.RcMode
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264Config.RcMode
+  nameWithType: PeerConnection.H264Config.RcMode
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile
+  name: PeerConnection.H264Profile
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile
+  nameWithType: PeerConnection.H264Profile
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.Baseline
+  name: Baseline
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264Profile_Baseline
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.Baseline
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.Baseline
+  nameWithType: PeerConnection.H264Profile.Baseline
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.ConstrainedBaseline
+  name: ConstrainedBaseline
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264Profile_ConstrainedBaseline
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.ConstrainedBaseline
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.ConstrainedBaseline
+  nameWithType: PeerConnection.H264Profile.ConstrainedBaseline
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.ConstrainedHigh
+  name: ConstrainedHigh
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264Profile_ConstrainedHigh
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.ConstrainedHigh
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.ConstrainedHigh
+  nameWithType: PeerConnection.H264Profile.ConstrainedHigh
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.High
+  name: High
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264Profile_High
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.High
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.High
+  nameWithType: PeerConnection.H264Profile.High
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.Main
+  name: Main
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264Profile_Main
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.Main
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264Profile.Main
+  nameWithType: PeerConnection.H264Profile.Main
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode
+  name: PeerConnection.H264RcMode
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.html
+  commentId: T:Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode
+  nameWithType: PeerConnection.H264RcMode
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.CBR
+  name: CBR
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264RcMode_CBR
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.CBR
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.CBR
+  nameWithType: PeerConnection.H264RcMode.CBR
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.Quality
+  name: Quality
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264RcMode_Quality
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.Quality
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.Quality
+  nameWithType: PeerConnection.H264RcMode.Quality
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.VBR
+  name: VBR
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.html#Microsoft_MixedReality_WebRTC_PeerConnection_H264RcMode_VBR
+  commentId: F:Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.VBR
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.H264RcMode.VBR
+  nameWithType: PeerConnection.H264RcMode.VBR
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.IceCandidateReadytoSend
   name: IceCandidateReadytoSend
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_IceCandidateReadytoSend
@@ -2628,6 +2718,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetFrameHeightRoundMode
   nameWithType: PeerConnection.SetFrameHeightRoundMode
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetH264Config(Microsoft.MixedReality.WebRTC.PeerConnection.H264Config)
+  name: SetH264Config(PeerConnection.H264Config)
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetH264Config_Microsoft_MixedReality_WebRTC_PeerConnection_H264Config_
+  commentId: M:Microsoft.MixedReality.WebRTC.PeerConnection.SetH264Config(Microsoft.MixedReality.WebRTC.PeerConnection.H264Config)
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetH264Config(Microsoft.MixedReality.WebRTC.PeerConnection.H264Config)
+  nameWithType: PeerConnection.SetH264Config(PeerConnection.H264Config)
+- uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetH264Config*
+  name: SetH264Config
+  href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetH264Config_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.PeerConnection.SetH264Config
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.PeerConnection.SetH264Config
+  nameWithType: PeerConnection.SetH264Config
 - uid: Microsoft.MixedReality.WebRTC.PeerConnection.SetRemoteDescriptionAsync(Microsoft.MixedReality.WebRTC.SdpMessage)
   name: SetRemoteDescriptionAsync(SdpMessage)
   href: api/Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_SetRemoteDescriptionAsync_Microsoft_MixedReality_WebRTC_SdpMessage_
