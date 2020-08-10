@@ -165,10 +165,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [Editor.ToggleLeft]
         public bool AutoLogErrorsToUnityConsole = true;
 
-        [Tooltip("Automatically connect peer on enable.")] 
-        [Editor.ToggleLeft]
-        public bool AutoInitializeOnStart = true;
-
         #endregion
 
 
@@ -282,7 +278,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// that the <see cref="Peer"/> property is non-<c>null</c> to confirm that the connection
         /// is in fact initialized.
         /// </remarks>
-        public Task InitializeAsync(CancellationToken token = default(CancellationToken))
+        private Task InitializeAsync(CancellationToken token = default(CancellationToken))
         {
             CreateNativePeerConnection();
 
@@ -580,7 +576,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <remarks>
         /// <see cref="Peer"/> will be <c>null</c> afterward.
         /// </remarks>
-        public void Uninitialize()
+        private void Uninitialize()
         {
             Debug.Assert(_nativePeer.Initialized);
             // Fire signals before doing anything else to allow listeners to clean-up,
@@ -632,7 +628,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 OnError.AddListener(OnError_Listener);
             }
-            if (AutoInitializeOnStart) InitializeAsync();
+            InitializeAsync();
         }
 
         /// <summary>
@@ -643,7 +639,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private void OnDisable()
         {
-            if (AutoInitializeOnStart) Uninitialize();
+            Uninitialize();
             OnError.RemoveListener(OnError_Listener);
         }
 
