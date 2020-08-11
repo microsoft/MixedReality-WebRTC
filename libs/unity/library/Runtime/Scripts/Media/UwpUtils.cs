@@ -24,14 +24,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             var permissionTcs = new TaskCompletionSource<bool>();
             UnityEngine.WSA.Application.InvokeOnUIThread(() =>
             {
-                // Request UWP access to audio capture. The OS may show some popup dialog to the
+                // Request UWP access to audio or video capture. The OS may show some popup dialog to the
                 // user to request permission. This will succeed only if the user grants permission.
                 try
                 {
-                    // On UWP the app must have the "microphone" capability, and the user must allow microphone
-                    // access. So check that access before trying to initialize the WebRTC library, as this
-                    // may result in a popup window being displayed the first time, which needs to be accepted
-                    // before the microphone can be accessed by WebRTC.
                     var mediaAccessRequester = new MediaCapture();
                     var mediaSettings = new MediaCaptureInitializationSettings();
                     mediaSettings.AudioDeviceId = "";
@@ -43,7 +39,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         if (task.Exception != null)
                         {
-                            Debug.LogError($"Audio access failure: {task.Exception.InnerException.Message}.");
+                            Debug.LogError($"Media access failure: {task.Exception.InnerException.Message}.");
                             permissionTcs.SetResult(false);
                         }
                         else
@@ -55,7 +51,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 catch (Exception ex)
                 {
                     // Log an error and prevent activation
-                    Debug.LogError($"Audio access failure: {ex.Message}.");
+                    Debug.LogError($"Media access failure: {ex.Message}.");
                     permissionTcs.SetResult(false);
                 }
             },

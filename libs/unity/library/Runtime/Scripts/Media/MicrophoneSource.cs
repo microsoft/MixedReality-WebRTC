@@ -11,7 +11,7 @@ using UnityEngine.Android;
 #endif
 
 #if UNITY_WSA && !UNITY_EDITOR
-using Windows.Media.Capture;
+using global::Windows.Media.Capture;
 #endif
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -46,11 +46,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected async Task<WebRTC.AudioTrackSource> InitAsync()
         {
-
-
             // Continue the task outside the Unity app context, in order to avoid deadlock
             // if OnDisable waits on this task.
-            bool accessGranted = await RequestAccessAsync().ConfigureAwait(false);
+            bool accessGranted = await RequestAccessAsync().ConfigureAwait(continueOnCapturedContext: false);
             if (!accessGranted)
             {
                 return null;

@@ -156,7 +156,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             // Continue the task outside the Unity app context, in order to avoid deadlock
             // if OnDisable waits on this task.
-            bool accessGranted = await RequestAccessAsync().ConfigureAwait(false);
+            bool accessGranted = await RequestAccessAsync().ConfigureAwait(continueOnCapturedContext: false);
             if (!accessGranted)
             {
                 return null;
