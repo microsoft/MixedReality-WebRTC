@@ -63,29 +63,34 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Cancel the initialization task and dispose its result when it completes.
         /// </summary>
         /// <remarks>
-        /// This waits synchronously for the end of the initialization task. Note that this may
-        /// cause deadlocks if the task requires the same thread to finish.
-        ///
         /// Any exceptions from the initialization task are silently dropped; the task itself
         /// must take care of reporting.
         /// </remarks>
-        public void AbortInitTask()
+        /// <returns>
+        /// A <see cref="Task"/> that will complete when the initialization task has ended
+        /// and its result has been disposed.
+        /// </returns>
+        public Task AbortInitTask()
         {
-            if (_initTask != null)
+            if (_initTask == null)
             {
-                try
-                {
-                    _cts?.Cancel();
-                    _initTask.Result?.Dispose();
-                }
-                catch(Exception)
-                {
-                    // Ignore; rely on _initTask itself to do the necessary reporting.
-                }
+                return Task.CompletedTask;
             }
-            _cts?.Dispose();
-            _cts = null;
+
+            _cts?.Cancel();
+            var capturedCts = _cts;
+            var res = _initTask.ContinueWith(task =>
+            {
+                if (task.Status == TaskStatus.RanToCompletion)
+                {
+                    task.Result?.Dispose();
+                }
+                capturedCts?.Dispose();
+            }
+            );
             _initTask = null;
+            _cts = null;
+            return res;
         }
     }
 }

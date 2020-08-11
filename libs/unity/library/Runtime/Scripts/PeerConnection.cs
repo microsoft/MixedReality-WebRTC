@@ -688,9 +688,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             try
             {
-                // Continue the task outside the Unity app context, in order to avoid deadlock
-                // if OnDisable waits on this task.
-                await nativePeer.InitializeAsync(config, token).ConfigureAwait(false);
+                await nativePeer.InitializeAsync(config, token);
                 return nativePeer;
             }
             catch (OperationCanceledException canceled) { throw canceled; }

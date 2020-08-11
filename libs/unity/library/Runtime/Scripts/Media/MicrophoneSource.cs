@@ -121,7 +121,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected void OnDisable()
         {
-            _initHelper.AbortInitTask();
+            /// Wait synchronously for the end of the initialization task, so that after the component
+            /// has been disabled the device is released and free to be used again.
+            /// Note that the initialization task needs not to be continued on the app thread, or it
+            /// will deadlock.
+            _initHelper.AbortInitTask().Wait();
             DisposeSource();
         }
 
