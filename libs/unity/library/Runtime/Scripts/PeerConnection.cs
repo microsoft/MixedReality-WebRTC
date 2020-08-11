@@ -250,57 +250,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Initialize the underlying WebRTC peer connection.
-        /// </summary>
-        /// <remarks>
-        /// This method must be called once before using the peer connection. If <see cref="AutoInitializeOnStart"/>
-        /// is <c>true</c> then it is automatically called during <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
-        ///
-        /// This method is asynchronous and completes its task when the initializing completed.
-        /// On successful completion, it also trigger the <see cref="OnInitialized"/> event.
-        /// Note however that this completion is free-threaded and complete immediately when the
-        /// underlying peer connection is initialized, whereas any <see cref="OnInitialized"/>
-        /// event handler is invoked when control returns to the main Unity app thread. The former
-        /// is faster, but does not allow accessing the underlying peer connection because it
-        /// returns before <see cref="OnPostInitialize"/> executed. Therefore it is generally
-        /// recommended to listen to the <see cref="OnInitialized"/> event, and ignore the returned
-        /// <see xref="System.Threading.Tasks.Task"/> object.
-        ///
-        /// If the peer connection is already initialized, this method returns immediately with
-        /// a <see xref="System.Threading.Tasks.Task.CompletedTask"/> object. The caller can check
-        /// that the <see cref="Peer"/> property is non-<c>null</c> to confirm that the connection
-        /// is in fact initialized.
-        /// </remarks>
-        private async Task<WebRTC.PeerConnection> InitializeAsync(CancellationToken token)
-        {
-            // Create the peer connection managed wrapper and its native implementation
-            var nativePeer = new WebRTC.PeerConnection();
-
-            nativePeer.AudioTrackAdded +=
-                (RemoteAudioTrack track) =>
-                {
-                    // Tracks will be output by AudioReceivers, so avoid outputting them twice.
-                    track.OutputToDevice(false);
-                };
-
-            // Ensure Android binding is initialized before accessing the native implementation
-            Android.Initialize();
-
-            // Continue the task outside the Unity app context, in order to avoid deadlock
-            // if OnDisable waits on this task.
-#if UNITY_WSA && !UNITY_EDITOR
-            // FIXME - Use ADM2 instead, this /maybe/ avoids this.
-            // On UWP the app must have the "microphone" capability, and the user must allow microphone
-            // access. This is due to the audio module (ADM1) being initialized at startup, even if no audio
-            // track is used. Preventing access to audio crashes the ADM1 at startup and the entire application.
-            await UwpUtils.RequestAccessAsync(StreamingCaptureMode.Audio)
-            .ConfigureAwait(continueOnCapturedContext: false);
-#endif
-            return await InitializePluginAsync(nativePeer, token)
-                .ConfigureAwait(continueOnCapturedContext: false);
-        }
-
-        /// <summary>
         /// Add a new media line of the given kind.
         ///
         /// This method creates a media line, which expresses an intent from the user to get a transceiver.
@@ -629,7 +578,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 OnError.AddListener(OnError_Listener);
             }
             var cts = new CancellationTokenSource();
-            _initHelper.TrackInitTask(InitializeAsync(cts.Token), cts);
+            _initHelper.TrackInitTask(InitializePluginAsync(cts.Token), cts);
         }
 
         protected override void Update()
@@ -697,11 +646,35 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Internal handler to actually initialize the plugin.
+        /// Initialize the underlying WebRTC peer connection.
         /// </summary>
-        private async Task<WebRTC.PeerConnection> InitializePluginAsync(WebRTC.PeerConnection nativePeer, CancellationToken token)
+        /// <remarks>
+        /// This method is asynchronous and completes its task when the initializing completed.
+        /// On successful completion, it also trigger the <see cref="OnInitialized"/> event.
+        /// Note however that this completion is free-threaded and complete immediately when the
+        /// underlying peer connection is initialized, whereas any <see cref="OnInitialized"/>
+        /// event handler is invoked when control returns to the main Unity app thread. The former
+        /// is faster, but does not allow accessing the underlying peer connection because it
+        /// returns before <see cref="OnPostInitialize"/> executed. Therefore it is generally
+        /// recommended to listen to the <see cref="OnInitialized"/> event, and ignore the returned
+        /// <see xref="System.Threading.Tasks.Task"/> object.
+        /// </remarks>
+        private async Task<WebRTC.PeerConnection> InitializePluginAsync(CancellationToken token)
         {
-            Debug.Log("Initializing WebRTC plugin...");
+            // Create the peer connection managed wrapper and its native implementation
+            var nativePeer = new WebRTC.PeerConnection();
+
+            nativePeer.AudioTrackAdded +=
+                (RemoteAudioTrack track) =>
+                {
+                    // Tracks will be output by AudioReceivers, so avoid outputting them twice.
+                    track.OutputToDevice(false);
+                };
+
+            // Ensure Android binding is initialized before accessing the native implementation
+            Android.Initialize();
+
+            Debug.Log("Initializing WebRTC Peer Connection...");
             var config = new PeerConnectionConfiguration();
             foreach (var server in IceServers)
             {
