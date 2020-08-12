@@ -16,7 +16,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 {
     internal static class UwpUtils
     {
-        internal static async Task<bool> RequestAccessAsync(StreamingCaptureMode mode)
+        internal static Task<bool> RequestAccessAsync(StreamingCaptureMode mode)
         {
             // Note that the UWP UI thread and the main Unity app thread are always different.
             // https://docs.unity3d.com/Manual/windowsstore-appcallbacks.html
@@ -56,7 +56,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 }
             },
             waitUntilDone: false);
-            return await permissionTcs.Task.ConfigureAwait(false);
+            return permissionTcs.Task;
         }
     }
 }

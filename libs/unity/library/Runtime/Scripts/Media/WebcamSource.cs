@@ -154,6 +154,23 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private async Task<WebRTC.VideoTrackSource> InitAsync()
         {
+            // Cache public properties on the Unity app thread.
+            int width = Constraints.width;
+            int height = Constraints.height;
+            double framerate = Constraints.framerate;
+            var deviceConfig = new LocalVideoDeviceInitConfig
+            {
+                videoDevice = WebcamDevice,
+                videoProfileId = VideoProfileId,
+                videoProfileKind = VideoProfileKind,
+                width = (width > 0 ? (uint?)width : null),
+                height = (height > 0 ? (uint?)height : null),
+                framerate = (framerate > 0 ? (double?)framerate : null),
+                enableMrc = EnableMixedRealityCapture,
+                enableMrcRecordingIndicator = EnableMRCRecordingIndicator
+            };
+            var formatMode = FormatMode;
+
             // Continue the task outside the Unity app context, in order to avoid deadlock
             // if OnDisable waits on this task.
             bool accessGranted = await RequestAccessAsync().ConfigureAwait(continueOnCapturedContext: false);
@@ -161,24 +178,25 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 return null;
             }
+            return await CreateSourceAsync(formatMode, deviceConfig).ConfigureAwait(continueOnCapturedContext: false);
+        }
 
+        // This method might be run outside the app thread and should not access the Unity API.
+        private static async Task<WebRTC.VideoTrackSource> CreateSourceAsync(
+            LocalVideoSourceFormatMode formatMode, LocalVideoDeviceInitConfig deviceConfig)
+        {
             // Handle automatic capture format constraints
-            string videoProfileId = VideoProfileId;
-            var videoProfileKind = VideoProfileKind;
-            int width = Constraints.width;
-            int height = Constraints.height;
-            double framerate = Constraints.framerate;
 #if ENABLE_WINMD_SUPPORT
-            if (FormatMode == LocalVideoSourceFormatMode.Automatic)
+            if (formatMode == LocalVideoSourceFormatMode.Automatic)
             {
                 // Do not constrain resolution by default, unless the device calls for it (see below).
-                width = 0; // auto
-                height = 0; // auto
+                deviceConfig.width = 0; // auto
+                deviceConfig.height = 0; // auto
 
                 // Avoid constraining the framerate; this is generally not necessary (formats are listed
                 // with higher framerates first) and is error-prone as some formats report 30.0 FPS while
                 // others report 29.97 FPS.
-                framerate = 0; // auto
+                deviceConfig.framerate = 0; // auto
 
                 // For HoloLens, use video profile to reduce resolution and save power/CPU/bandwidth
                 if (global::Windows.Graphics.Holographic.HolographicSpace.IsAvailable)
@@ -188,27 +206,27 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         if (global::Windows.ApplicationModel.Package.Current.Id.Architecture == global::Windows.System.ProcessorArchitecture.X86)
                         {
                             // Holographic AR (transparent) x86 platform - Assume HoloLens 1
-                            videoProfileKind = WebRTC.VideoProfileKind.VideoRecording; // No profile in VideoConferencing
-                            width = 896; // Target 896 x 504
+                            deviceConfig.videoProfileKind = WebRTC.VideoProfileKind.VideoRecording; // No profile in VideoConferencing
+                            deviceConfig.width = 896; // Target 896 x 504
                         }
                         else
                         {
                             // Holographic AR (transparent) non-x86 platform - Assume HoloLens 2
-                            videoProfileKind = WebRTC.VideoProfileKind.VideoConferencing;
-                            width = 960; // Target 960 x 540
+                            deviceConfig.videoProfileKind = WebRTC.VideoProfileKind.VideoConferencing;
+                            deviceConfig.width = 960; // Target 960 x 540
                         }
                     }
                 }
             }
 #elif !UNITY_EDITOR && UNITY_ANDROID
-            if (FormatMode == LocalVideoSourceFormatMode.Automatic)
+            if (formatMode == LocalVideoSourceFormatMode.Automatic)
             {
                 // Avoid constraining the framerate; this is generally not necessary (formats are listed
                 // with higher framerates first) and is error-prone as some formats report 30.0 FPS while
                 // others report 29.97 FPS.
-                framerate = 0; // auto
+                deviceConfig.framerate = 0; // auto
 
-                string deviceId = WebcamDevice.id;
+                string deviceId = deviceConfig.videoDevice.id;
                 if (string.IsNullOrEmpty(deviceId))
                 {
                     // Continue the task outside the Unity app context, in order to avoid deadlock
@@ -238,13 +256,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         {
                             hasFormat = true;
                             smallestDiff = diff;
-                            width = (int)fmt.width;
-                            height = (int)fmt.height;
+                            deviceConfig.width = fmt.width;
+                            deviceConfig.height = fmt.height;
                         }
                     }
                     if (hasFormat)
                     {
-                        Debug.Log($"WebcamSource automated mode selected resolution {width}x{height} for Android video capture device #{deviceId}.");
+                        Debug.Log($"WebcamSource automated mode selected resolution {deviceConfig.width}x{deviceConfig.height} for Android video capture device #{deviceId}.");
                     }
                 }
             }
@@ -268,39 +286,28 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             //#endif
 
             // Create the track
-            var deviceConfig = new LocalVideoDeviceInitConfig
-            {
-                videoDevice = WebcamDevice,
-                videoProfileId = videoProfileId,
-                videoProfileKind = videoProfileKind,
-                width = (width > 0 ? (uint?)width : null),
-                height = (height > 0 ? (uint?)height : null),
-                framerate = (framerate > 0 ? (double?)framerate : null),
-                enableMrc = EnableMixedRealityCapture,
-                enableMrcRecordingIndicator = EnableMRCRecordingIndicator
-            };
+            var createTask = DeviceVideoTrackSource.CreateAsync(deviceConfig);
+
+            // Continue the task outside the Unity app context, in order to avoid deadlock
+            // if OnDisable waits on this task.
+            return await createTask.ConfigureAwait(continueOnCapturedContext: false);
+        }
+
+        protected void Update()
+        {
+            WebRTC.VideoTrackSource source = null;
             try
             {
-                var createTask = DeviceVideoTrackSource.CreateAsync(deviceConfig);
-
-                // Continue the task outside the Unity app context, in order to avoid deadlock
-                // if OnDisable waits on this task.
-                return await createTask.ConfigureAwait(continueOnCapturedContext: false);
+                source = _initHelper.Result;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"Failed to create device track source for {nameof(WebcamSource)} component '{name}'.");
                 Debug.LogException(ex, this);
-                throw ex;
             }
-        }
-
-        protected void Update()
-        {
-            var result = _initHelper.Result;
-            if (result != null)
+            if (source != null)
             {
-                AttachSource(result);
+                AttachSource(source);
             }
         }
 

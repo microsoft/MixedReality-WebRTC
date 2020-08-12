@@ -46,6 +46,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected async Task<WebRTC.AudioTrackSource> InitAsync()
         {
+            // Cache public properties on the Unity app thread.
+            var deviceConfig = new LocalAudioDeviceInitConfig
+            {
+                AutoGainControl = _autoGainControl,
+            };
+
             // Continue the task outside the Unity app context, in order to avoid deadlock
             // if OnDisable waits on this task.
             bool accessGranted = await RequestAccessAsync().ConfigureAwait(continueOnCapturedContext: false);
@@ -53,32 +59,33 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 return null;
             }
+            return await CreateSourceAsync(deviceConfig).ConfigureAwait(continueOnCapturedContext: false);
+        }
 
-            var initConfig = new LocalAudioDeviceInitConfig
-            {
-                AutoGainControl = _autoGainControl,
-            };
+        // This method might be run outside the app thread and should not access the Unity API.
+        private static async Task<WebRTC.AudioTrackSource> CreateSourceAsync(LocalAudioDeviceInitConfig deviceConfig)
+        {
+            var createTask = DeviceAudioTrackSource.CreateAsync(deviceConfig);
+            // Continue the task outside the Unity app context, in order to avoid deadlock
+            // if OnDisable waits on this task.
+            return await createTask.ConfigureAwait(continueOnCapturedContext: false);
+        }
+
+        protected void Update()
+        {
+            WebRTC.AudioTrackSource source = null;
             try
             {
-                var createTask = DeviceAudioTrackSource.CreateAsync(initConfig);
-                // Continue the task outside the Unity app context, in order to avoid deadlock
-                // if OnDisable waits on this task.
-                return await createTask.ConfigureAwait(continueOnCapturedContext: false);
+                source = _initHelper.Result;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"Failed to create device track source for {nameof(MicrophoneSource)} component '{name}'.");
                 Debug.LogException(ex, this);
-                throw ex;
             }
-        }
-
-        protected void Update()
-        {
-            var result = _initHelper.Result;
-            if (result != null)
+            if (source != null)
             {
-                AttachSource(result);
+                AttachSource(source);
             }
         }
 

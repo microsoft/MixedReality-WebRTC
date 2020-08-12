@@ -37,25 +37,35 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Check if the initialization task has generated a result.
         /// </summary>
+        /// <remarks>
+        /// If the initialization fails with an exception, this rethrows the exception.
+        /// </remarks>
         /// <returns>
         /// The result of the initialization task if there is one and it has just successfully completed;
-        /// <c>null</c> if there is no task or if it has thrown an exception.
+        /// <c>null</c> if there is no task.
         /// </returns>
         public T Result
         {
             get
             {
-                T result = null;
                 if (_initTask != null && _initTask.IsCompleted)
                 {
-                    if (!_initTask.IsFaulted)
-                    {
-                        result = _initTask.Result;
-                    }
+                    var task = _initTask;
+
+                    // Reset the state.
                     _initTask = null;
                     _cts?.Dispose();
+
+                    if (task.IsFaulted)
+                    {
+                        throw task.Exception.InnerException;
+                    }
+                    else
+                    {
+                        return task.Result;
+                    }
                 }
-                return result;
+                return null;
             }
         }
 
@@ -63,8 +73,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// Cancel the initialization task and dispose its result when it completes.
         /// </summary>
         /// <remarks>
-        /// Any exceptions from the initialization task are silently dropped; the task itself
-        /// must take care of reporting.
+        /// Any exceptions from the initialization task are silently dropped.
         /// </remarks>
         /// <returns>
         /// A <see cref="Task"/> that will complete when the initialization task has ended
