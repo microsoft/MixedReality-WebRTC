@@ -7,16 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
-using System.Collections.Concurrent;
 using System.Text;
 using System.Runtime.CompilerServices;
 
 #if UNITY_WSA && !UNITY_EDITOR
-using global::Windows.UI.Core;
-using global::Windows.Foundation;
-using global::Windows.Media.Core;
 using global::Windows.Media.Capture;
-using global::Windows.ApplicationModel.Core;
 #endif
 
 [assembly: InternalsVisibleTo("Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime")]
@@ -661,6 +656,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private async Task<WebRTC.PeerConnection> InitializePluginAsync(CancellationToken token)
         {
+            // Ensure Android binding is initialized before accessing the native implementation
+            Android.Initialize();
+
+#if UNITY_WSA && !UNITY_EDITOR
+            if (Library.UsedAudioDeviceModule == AudioDeviceModule.LegacyModule)
+            {
+                // Preventing access to audio crashes the ADM1 at startup and the entire application.
+                bool permissionGranted = await UwpUtils.RequestAccessAsync(StreamingCaptureMode.Audio);
+                if (!permissionGranted)
+                {
+                    return null;
+                }
+            }
+#endif
             // Create the peer connection managed wrapper and its native implementation
             var nativePeer = new WebRTC.PeerConnection();
 
@@ -670,9 +679,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     // Tracks will be output by AudioReceivers, so avoid outputting them twice.
                     track.OutputToDevice(false);
                 };
-
-            // Ensure Android binding is initialized before accessing the native implementation
-            Android.Initialize();
 
             Debug.Log("Initializing WebRTC Peer Connection...");
             var config = new PeerConnectionConfiguration();
@@ -697,18 +703,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 nativePeer.Dispose();
                 token.ThrowIfCancellationRequested();
 
-                InvokeOnAppThread(() =>
-                {
-                    var errorMessage = new StringBuilder();
-                    errorMessage.Append("WebRTC plugin initializing failed. See full log for exception details.\n");
-                    while (ex is AggregateException ae)
-                    {
-                        errorMessage.Append($"AggregationException: {ae.Message}\n");
-                        ex = ae.InnerException;
-                    }
-                    errorMessage.Append($"Exception: {ex.Message}");
-                    OnError.Invoke(errorMessage.ToString());
-                });
+                EnsureIsMainAppThread();
+                var errorMessage = new StringBuilder();
+                errorMessage.Append("WebRTC plugin initializing failed. See full log for exception details.\n");
+                errorMessage.Append($"Exception: {ex.Message}");
+                OnError.Invoke(errorMessage.ToString());
                 throw ex;
             }
         }

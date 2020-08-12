@@ -44,7 +44,7 @@ enum class mrsAudioDeviceModule : uint8_t {
 /// provides better handling of unsupported devices than its predecessor (ADM1).
 /// https://github.com/microsoft/MixedReality-WebRTC/issues/124
 ///
-/// This function allows overwritting the default selection to force another
+/// This function allows overwriting the default selection to force another
 /// module, mostly as a safety net would ADM2 present some issue.
 ///
 /// The audio device module is a global object used by all peer connections.
@@ -58,6 +58,10 @@ enum class mrsAudioDeviceModule : uint8_t {
 /// succeed if timely called before the library is initialized.
 MRS_API mrsResult MRS_CALL
 mrsLibraryUseAudioDeviceModule(mrsAudioDeviceModule adm) noexcept;
+
+/// Get the audio device module to use on Windows Desktop.
+/// By default the new CoreAudio-based audio device module (ADM2) is used.
+MRS_API mrsAudioDeviceModule MRS_CALL mrsLibraryGetAudioDeviceModule() noexcept;
 
 /// Global MixedReality-WebRTC library shutdown options.
 enum class mrsShutdownOptions : uint32_t {
