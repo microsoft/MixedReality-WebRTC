@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -140,8 +141,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         };
 
 #if !UNITY_EDITOR && UNITY_ANDROID
-        protected TaskCompletionSource<bool> _androidPermissionRequestTcs;
-        protected float _androidCameraRequestRetryUntilTime = 0f;
+        private TaskCompletionSource<bool> _androidPermissionRequestTcs;
+        private object _androidPermissionRequestLock = new object();
 #endif
 
         private AsyncInitHelper<WebRTC.VideoTrackSource> _initHelper = new AsyncInitHelper<WebRTC.VideoTrackSource>();
@@ -149,10 +150,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         protected void OnEnable()
         {
             Debug.Assert(Source == null);
-            _initHelper.TrackInitTask(InitAsync());
+            var cts = new CancellationTokenSource();
+            _initHelper.TrackInitTask(InitAsync(cts.Token), cts);
         }
 
-        private async Task<WebRTC.VideoTrackSource> InitAsync()
+        private async Task<WebRTC.VideoTrackSource> InitAsync(CancellationToken token)
         {
             // Cache public properties on the Unity app thread.
             int width = Constraints.width;
@@ -173,7 +175,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             // Continue the task outside the Unity app context, in order to avoid deadlock
             // if OnDisable waits on this task.
-            bool accessGranted = await RequestAccessAsync().ConfigureAwait(continueOnCapturedContext: false);
+            bool accessGranted = await RequestAccessAsync(token).ConfigureAwait(continueOnCapturedContext: false);
             if (!accessGranted)
             {
                 return null;
@@ -320,29 +322,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
             // If focus is restored after a pending request, check the permission again
-            if (_androidPermissionRequestTcs != null)
+            lock(_androidPermissionRequestLock)
             {
-                if (Permission.HasUserAuthorizedPermission(Permission.Camera))
+                if (_androidPermissionRequestTcs != null)
                 {
-                    // If now authorized, start capture as if just enabled
-                    Debug.Log("User granted authorization to access webcam, starting WebcamSource now...");
-                    _androidPermissionRequestTcs.SetResult(true);
-                    _androidPermissionRequestTcs = null;
-                }
-                else if (Time.time > _androidCameraRequestRetryUntilTime)
-                {
-                    // OnApplicationFocus(true) may be called for unrelated reason(s) so do not disable on first call,
-                    // but instead retry during a given period after the request was made, until we're reasonably
-                    // confident that the user dialog was actually answered (that is, that OnApplicationFocus(true) was
-                    // called because of that dialog, and not because of another reason).
-                    // This may lead to false positives (checking permission after the user denied it), but the user
-                    // dialog will not popup again, so this is all in the background and essentially harmless.
-                    // Here some reasonable time passed since we made the permission request, and we still get a denied
-                    // answer, so assume the user actually denied it and stop retrying.
-                    _androidPermissionRequestTcs.SetResult(false);
-                    _androidPermissionRequestTcs = null;
-                    _androidCameraRequestRetryUntilTime = 0f;
-                    Debug.LogError("User denied Camera permission; cannot use WebcamSource.");
+                    if (Permission.HasUserAuthorizedPermission(Permission.Camera))
+                    {
+                        // If now authorized, start capture as if just enabled
+                        Debug.Log("User granted authorization to access webcam, starting WebcamSource now...");
+                        _androidPermissionRequestTcs.SetResult(true);
+                        _androidPermissionRequestTcs = null;
+                    }
                 }
             }
         }
@@ -358,7 +348,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             DisposeSource();
         }
 
-        private Task<bool> RequestAccessAsync()
+        private Task<bool> RequestAccessAsync(CancellationToken token)
         {
 #if !UNITY_EDITOR && UNITY_ANDROID
             // Ensure Android binding is initialized before accessing the native implementation
@@ -367,23 +357,54 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Check for permission to access the camera
             if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
             {
-                Debug.Assert(_androidPermissionRequestTcs == null);
-
-                // Monitor the OnApplicationFocus(true) event during the next 5 minutes,
-                // and check for permission again each time (see below why).
-                _androidPermissionRequestTcs = new TaskCompletionSource<bool>();
-                _androidCameraRequestRetryUntilTime = Time.time + 300;
-
                 // Display dialog requesting user permission. This will return immediately,
-                // and unfortunately there's no good way to tell when this completes. As a rule
-                // of thumb, application should lose focus, so check when focus resumes should
-                // be sufficient without having to poll every frame.
-                Permission.RequestUserPermission(Permission.Microphone);
+                // and unfortunately there's no good way to tell when this completes.
+                Permission.RequestUserPermission(Permission.Camera);
 
-                // Continue the task outside the Unity app context, in order to avoid deadlock
-                // if OnDisable waits on this task.
-                return _androidPermissionRequestTcs.Task;
+                // As a rule of thumb, application should lose focus, so check when focus resumes should
+                // be sufficient without having to poll every frame.
+                // Monitor the OnApplicationFocus(true) event during the next 5 minutes,
+                // and check for permission again each time.
+                var tcs = new TaskCompletionSource<bool>();
+                lock(_androidPermissionRequestLock)
+                {
+                    Debug.Assert(_androidPermissionRequestTcs == null);
+                    _androidPermissionRequestTcs = tcs;
+                }
+                Task.Delay(TimeSpan.FromMinutes(5)).ContinueWith(_ =>
+                {
+                    lock (_androidPermissionRequestLock)
+                    {
+                        // Check if the component is still waiting on the same permission request.
+                        // If it has been disabled and then re-enabled, _androidPermissionRequestTcs will be different.
+                        if (_androidPermissionRequestTcs == tcs)
+                        {
+                            Debug.LogError("User denied camera permission; cannot use WebcamSource.");
+                            _androidPermissionRequestTcs.SetResult(false);
+                            _androidPermissionRequestTcs = null;
+                        }
+                    }
+                });
+
+                // If the initialization is canceled, end the task and reset the TCS.
+                token.Register(() =>
+                {
+                    lock (_androidPermissionRequestLock)
+                    {
+                        // Check if the component is still waiting on the same permission request.
+                        // If the request has completed or timed out, _androidPermissionRequestTcs will be null.
+                        if (_androidPermissionRequestTcs != null)
+                        {
+                            Debug.Assert(_androidPermissionRequestTcs == tcs);
+                            _androidPermissionRequestTcs.SetCanceled();
+                            _androidPermissionRequestTcs = null;
+                        }
+                    }
+                });
+                return tcs.Task;
             }
+
+            // Already has permission.
             return Task.FromResult(true);
 #elif UNITY_WSA && !UNITY_EDITOR
             return UwpUtils.RequestAccessAsync(StreamingCaptureMode.Video);
