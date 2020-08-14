@@ -253,7 +253,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
     factoryConfig->audioRenderingEnabled = true;
     factoryConfig->enableAudioBufferEvents = false;
     factoryConfig->customAudioMixer =
-        reinterpret_cast<uint64_t>(custom_audio_mixer_.get());
+        reinterpret_cast<std::uintptr_t>(custom_audio_mixer_.get());
     impl_ = std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
     impl_->thisWeak_ = impl_;  // mimic wrapper_create()
     impl_->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
