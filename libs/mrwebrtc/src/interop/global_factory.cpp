@@ -221,6 +221,7 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
     return Result::kSuccess;
   }
 
+  custom_audio_mixer_ = new rtc::RefCountedObject<ToggleAudioMixer>();
 #if defined(WINUWP)
   RTC_CHECK(!impl_);
   auto mw = winrt::Windows::ApplicationModel::Core::CoreApplication::MainView();
@@ -251,6 +252,8 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
     factoryConfig->audioCapturingEnabled = true;
     factoryConfig->audioRenderingEnabled = true;
     factoryConfig->enableAudioBufferEvents = false;
+    factoryConfig->customAudioMixer =
+        reinterpret_cast<uint64_t>(custom_audio_mixer_.get());
     impl_ = std::make_shared<wrapper::impl::org::webRtc::WebRtcFactory>();
     impl_->thisWeak_ = impl_;  // mimic wrapper_create()
     impl_->wrapper_init_org_webRtc_WebRtcFactory(factoryConfig);
@@ -260,7 +263,6 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
   // Cache the peer connection factory
   peer_factory_ = impl_->peerConnectionFactory();
 #else  // defined(WINUWP)
-  custom_audio_mixer_ = new rtc::RefCountedObject<ToggleAudioMixer>();
   network_thread_ = rtc::Thread::CreateWithSocketServer();
   RTC_CHECK(network_thread_.get());
   network_thread_->SetName("WebRTC network thread", network_thread_.get());
