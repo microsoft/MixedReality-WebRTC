@@ -1163,7 +1163,7 @@ struct mrsH264Config {
 ///
 /// The passed value will apply to all tracks that start streaming, from any
 /// PeerConnection created by the application, after the call to this function.
-MRS_API void MRS_CALL mrsSetH264Config(const mrsH264Config* config);
+MRS_API mrsResult MRS_CALL mrsSetH264Config(const mrsH264Config* config);
 
 
 }  // extern "C"

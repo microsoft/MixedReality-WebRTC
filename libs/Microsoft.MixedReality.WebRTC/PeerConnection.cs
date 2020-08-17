@@ -2102,7 +2102,8 @@ namespace Microsoft.MixedReality.WebRTC
         /// <param name="config"></param>
         public static void SetH264Config(H264Config config)
         {
-            Utils.SetH264Config(new Utils.H264Config(config));
+            uint res = Utils.SetH264Config(new Utils.H264Config(config));
+            Utils.ThrowOnErrorCode(res);
         }
 
         internal void OnConnected()
