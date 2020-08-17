@@ -984,7 +984,7 @@ DeviceVideoTrackSource::~DeviceVideoTrackSource() {
     JNIEnv* env = webrtc::jni::GetEnv();
     RTC_DCHECK(env);
     webrtc::ScopedJavaLocalRef<jclass> pc_factory_class =
-        webrtc::GetClass(env, "org/webrtc/UnityUtility");
+        webrtc::GetClass(env, "com/microsoft/mixedreality/webrtc/AndroidCameraInterop");
     jmethodID stop_camera_method =
         webrtc::GetStaticMethodID(env, pc_factory_class.obj(), "StopCamera",
                                   "(Lorg/webrtc/VideoCapturer;)V");

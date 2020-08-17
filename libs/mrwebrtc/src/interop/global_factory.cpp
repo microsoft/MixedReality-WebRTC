@@ -373,7 +373,9 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
   network_thread_.reset();
   worker_thread_.reset();
   signaling_thread_.reset();
+#if defined(MR_SHARING_WIN)
   worker_com_initializer_.reset();
+#endif  // defined(MR_SHARING_WIN)
 #endif  // defined(WINUWP)
   return true;
 }

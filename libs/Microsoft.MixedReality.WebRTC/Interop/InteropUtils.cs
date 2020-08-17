@@ -310,6 +310,6 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         };
 
         [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsSetH264Config")]
-        internal static unsafe extern void SetH264Config(H264Config value);
+        internal static unsafe extern uint SetH264Config(H264Config value);
     }
 }
