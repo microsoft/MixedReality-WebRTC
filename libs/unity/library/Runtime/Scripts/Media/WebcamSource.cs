@@ -251,7 +251,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 string deviceId = WebcamDevice.id;
                 if (string.IsNullOrEmpty(deviceId))
                 {
-                    List<VideoCaptureDevice> listedDevices = await PeerConnection.GetVideoCaptureDevicesAsync();
+                    IReadOnlyList<VideoCaptureDevice> listedDevices = await PeerConnection.GetVideoCaptureDevicesAsync();
                     if (listedDevices.Count > 0)
                     {
                         deviceId = listedDevices[0].id;
@@ -260,7 +260,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 if (!string.IsNullOrEmpty(deviceId))
                 {
                     // Find the closest format to 720x480, independent of framerate
-                    List<VideoCaptureFormat> formats = await DeviceVideoTrackSource.GetCaptureFormatsAsync(deviceId);
+                    IReadOnlyList<VideoCaptureFormat> formats = await DeviceVideoTrackSource.GetCaptureFormatsAsync(deviceId);
                     double smallestDiff = double.MaxValue;
                     bool hasFormat = false;
                     foreach (var fmt in formats)
