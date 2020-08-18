@@ -39,7 +39,7 @@ namespace TestAppUwp
     /// as the default implicit converter:
     /// - <c>true</c> <=> <c>Visibility.Collapsed</c>
     /// - <c>false</c> <=> <c>Visibility.Visible</c>
-    /// 
+    ///
     /// Useful for mapping a property <c>IsHidden</c> to the visibility of a control.
     /// </summary>
     public class BooleanToVisibilityInvertedConverter : IValueConverter
@@ -200,6 +200,70 @@ namespace TestAppUwp
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException("StringFormatConverter is a one-way converter by design.");
+        }
+    }
+
+    public class QualityValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            // Unset = -1.
+            if (value == null)
+            {
+                return "-1";
+            }
+
+            return value.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            var s = (string)value;
+            int parsed;
+            try
+            {
+                parsed = int.Parse(s);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            // parameter is the max value for this.
+            var max = int.Parse((string)parameter);
+            if (parsed < 0 || parsed > max)
+            {
+                return null;
+            }
+            return parsed;
+        }
+    }
+
+    public class ProfileToIndexConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return (int)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return (PeerConnection.H264Profile)value;
+        }
+    }
+
+    public class RcModeToIndexConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            // null = unset (0). Bump the other values by 1.
+            return value == null ? 0 : ((int)value + 1);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            // 0 = unset (null). Offset the other values by -1.
+            return ((int)value == 0) ? null : (PeerConnection.H264RcMode?)((int)value - 1);
         }
     }
 }

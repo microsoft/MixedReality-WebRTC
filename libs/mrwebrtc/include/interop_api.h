@@ -1118,4 +1118,56 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
 MRS_API mrsResult MRS_CALL
 mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report);
 
+
+/// H.264 encoding profile.
+enum class mrsH264Profile : int32_t {
+  kProfileConstrainedBaseline,
+  kProfileBaseline,
+  kProfileMain,
+  kProfileConstrainedHigh,
+  kProfileHigh,
+};
+
+/// Rate control mode for the Media Foundation H.264 encoder. See
+/// https://docs.microsoft.com/en-us/windows/win32/medfound/h-264-video-encoder
+/// for details.
+enum class mrsH264RcMode : int32_t {
+  kUnset = -1,
+  kCBR = 0,
+  kVBR = 1,
+  kQuality = 2
+};
+
+/// Configuration for the Media Foundation H.264 encoder.
+struct mrsH264Config {
+
+  /// H.264 profile.
+  /// Note: by default we should use what's passed by WebRTC on codec
+  /// initialization (which seems to be always ConstrainedBaseline), but we use
+  /// Baseline to avoid changing behavior compared to earlier versions.
+  mrsH264Profile profile = mrsH264Profile::kProfileBaseline;
+
+  /// Rate control mode.
+  mrsH264RcMode rc_mode = mrsH264RcMode::kUnset;
+
+  /// If set to a value between 0 and 51, determines the max QP to use for
+  /// encoding.
+  int max_qp = -1;
+
+  /// If set to a value between 0 and 100, determines the target quality value.
+  /// The effect of this depends on the encoder and on the rate control mode
+  /// chosen. In the Quality RC mode this will be the target for the whole
+  /// stream, while in VBR it might be used as a target for individual frames
+  /// while the average quality of the stream is determined by the target
+  /// bitrate.
+  int quality = -1;
+};
+
+/// Set the configuration used by the H.264 encoder.
+///
+/// The passed value will apply to all tracks that start streaming, from any
+/// PeerConnection created by the application, after the call to this function.
+MRS_API mrsResult MRS_CALL mrsSetH264Config(const mrsH264Config* config);
+
+
 }  // extern "C"

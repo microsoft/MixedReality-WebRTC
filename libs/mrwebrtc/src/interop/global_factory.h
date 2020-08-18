@@ -222,9 +222,10 @@ class GlobalFactory {
   /// require |mutex_| for access, but |init_mutex_| instead.
   std::unique_ptr<rtc::Thread> signaling_thread_ RTC_GUARDED_BY(init_mutex_);
 
+#if defined(MR_SHARING_WIN)
   /// COM initializer for worker thread (for ADM2).
   std::unique_ptr<webrtc::ScopedCOMInitializer> worker_com_initializer_;
-
+#endif  // defined(MR_SHARING_WIN)
 #endif  // defined(WINUWP)
 
   /// Reference count to the library, for automated shutdown.

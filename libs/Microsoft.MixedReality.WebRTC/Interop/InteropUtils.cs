@@ -295,5 +295,25 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             }
             return string.Join(";", streamIDs.ToArray());
         }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct H264Config
+        {
+            internal int Profile;
+            internal int RcMode;
+            internal int MaxQp;
+            internal int Quality;
+
+            internal H264Config(PeerConnection.H264Config config)
+            {
+                Profile = (int)config.Profile;
+                RcMode = config.RcMode.HasValue ? (int)config.RcMode : -1;
+                MaxQp = config.MaxQp.GetValueOrDefault(-1);
+                Quality = config.Quality.GetValueOrDefault(-1);
+            }
+        };
+
+        [DllImport(dllPath, CallingConvention = CallingConvention.StdCall, EntryPoint = "mrsSetH264Config")]
+        internal static unsafe extern uint SetH264Config(H264Config value);
     }
 }
