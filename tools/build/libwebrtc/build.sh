@@ -41,12 +41,23 @@ OPTIONS:
     -h              Show this message.
     -v              Verbose mode. Print all executed commands.
     -c BUILD_CONFIG Build configuration. Default is 'Release'. Possible values are: 'Debug', 'Release'.
+    -p              Prepare the build (generate ninja files) without running it. This is generally not
+                    needed, as the default is to both prepare and build. Mainly useful for CI.
+    -b              Build without prepare. This requires a previous prepare pass. This is generally not
+                    needed, as the default is to both prepare and build. Mainly useful for CI.
 EOF
 }
 
 #-----------------------------------------------------------------------------
 function verify-arguments() {
     VERBOSE=${VERBOSE:-0}
+    PREPARE=${PREPARE:-0}
+    BUILD=${BUILD:-0}
+    if [ "$PREPARE" = 0 ] && [ "$BUILD" = 0 ]; then
+      # Default without any of (-p,-b) is to do both
+      PREPARE=1
+      BUILD=1
+    fi
     BUILD_CONFIG=${BUILD_CONFIG:-Release}
     DEPOT_TOOLS_DIR=$WORK_DIR/depot_tools
     PATH=$DEPOT_TOOLS_DIR:$DEPOT_TOOLS_DIR/python276_bin:$PATH
@@ -145,10 +156,12 @@ function copy-artifacts-to-unity-sample() {
 # Main
 
 # Read command line
-while getopts c:vh OPTION; do
+while getopts c:vpbh OPTION; do
     case ${OPTION} in
     c) BUILD_CONFIG=$OPTARG ;;
     v) VERBOSE=1 ;;
+    p) PREPARE=1 ;;
+    b) BUILD=1 ;;
     h | ?) usage && exit 0 ;;
     esac
 done
@@ -166,16 +179,16 @@ verify-arguments
 echo -e "\e[39mBuilding: \e[96m$TARGET_OS/$TARGET_CPU/$BUILD_CONFIG\e[39m"
 
 # Generate the WebRTC Ninja build config files
-configure-build
+[ $PREPARE = '0' ] || configure-build
 
 # Run the WebRTC Ninja build
-compile-webrtc
+[ $BUILD = '0' ] || compile-webrtc
 
 # Package the build artifacts for the current platform
-package-webrtc
+[ $BUILD = '0' ] || package-webrtc
 
 # Print paths to build artifacts
-print-summary
+[ $BUILD = '0' ] || print-summary
 
 # Write file ./.libwebrtc.cmake
 write-cmakelists-config
@@ -184,6 +197,10 @@ write-cmakelists-config
 write-build-config
 
 # Copy build artifacts to Unity sample
-copy-artifacts-to-unity-sample
+[ $BUILD = '0' ] || copy-artifacts-to-unity-sample
 
-echo -e "\e[39m\e[1mBuild complete.\e[0m\e[39m"
+if [ $BUILD = '0' ]; then
+  echo -e "\e[39m\e[1mPrepare complete.\e[0m\e[39m"
+else
+  echo -e "\e[39m\e[1mBuild complete.\e[0m\e[39m"
+fi
