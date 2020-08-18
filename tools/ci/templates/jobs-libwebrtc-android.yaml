@@ -114,9 +114,12 @@ jobs:
 
   # Clean-up unused files
   - script: |
-      rm -rf "blink"
-      rm -rf "catapult"
-    workingDirectory: 'external/libwebrtc/webrtc/src/third_party'
+      rm -rf third_party/blink
+      rm -rf third_party/catapult
+      rm -rf third_party/perfetto
+      rm -rf third_party/pycoverage
+      rm -rf tools/code_coverage
+    workingDirectory: 'external/libwebrtc/webrtc/src'
     displayName: 'Clean-up unused files'
 
   # List available disk space after clean-up
