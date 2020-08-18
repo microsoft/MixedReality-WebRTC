@@ -135,6 +135,8 @@ jobs:
   - script: |
       del /F /S /Q "depot_tools/external_bin/gsutil"
       del /F /S /Q "chromium/third_party/protobuf/java"
+      del /F /S /Q "chromium/third_party/protobuf/ruby"
+      del /F /S /Q "chromium/third_party/pycoverage"
       del /F /S /Q "chromium/tools/android"
       del /F /S /Q "chromium/tools/code_coverage"
     workingDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform'
