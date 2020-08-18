@@ -116,7 +116,7 @@ jobs:
   - script: |
       rm -rf "blink"
       rm -rf "catapult"
-    workingDirectory: 'external/libwebrtc/webrtc/src'
+    workingDirectory: 'external/libwebrtc/webrtc/src/third_party'
     displayName: 'Clean-up unused files'
 
   # List available disk space after clean-up
