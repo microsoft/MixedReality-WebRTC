@@ -7,7 +7,7 @@
 
 #include "api/stats/rtcstats_objects.h"
 
-#if defined(MR_SHARING_WIN)
+#if defined(WINUWP)
 // Stop WinRT from polluting the global namespace
 // https://developercommunity.visualstudio.com/content/problem/859178/asyncinfoh-defines-the-error-symbol-at-global-name.html
 // This is defined in pch.h but for some reason it must be here to work.
@@ -473,8 +473,7 @@ mrsBool MRS_CALL mrsSdpIsValidToken(const char* token) noexcept {
 }
 
 void MRS_CALL mrsSetFrameHeightRoundMode(FrameHeightRoundMode value) {
-  PeerConnection::SetFrameHeightRoundMode(
-      (PeerConnection::FrameHeightRoundMode)value);
+  PeerConnection::SetFrameHeightRoundMode(value);
 }
 
 void MRS_CALL mrsMemCpy(void* dst, const void* src, uint64_t size) noexcept {
@@ -747,7 +746,7 @@ mrsResult MRS_CALL mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report) {
 }
 
 mrsResult MRS_CALL mrsSetH264Config(const mrsH264Config* config) {
-#if defined(MR_SHARING_WIN)
+#if defined(WINUWP)
 #define CHECK_ENUM_VALUE(NAME)                                        \
   static_assert((int)webrtc::H264::NAME == (int)mrsH264Profile::NAME, \
                 "webrtc::H264::Profile does not match mrsH264Profile")
@@ -775,9 +774,10 @@ mrsResult MRS_CALL mrsSetH264Config(const mrsH264Config* config) {
   webrtc::WinUWPH264EncoderImpl::global_max_qp.store(config->max_qp);
   webrtc::WinUWPH264EncoderImpl::global_quality.store(config->quality);
   return mrsResult::kSuccess;
-#else   // defined(MR_SHARING_WIN)
+#else   // defined(WINUWP)
+  (void)config;
   RTC_LOG(LS_ERROR) << "Setting H.264 configuration is not supported on "
-                       "non-Windows platforms";
+                       "non-UWP platforms";
   return mrsResult::kUnsupported;
-#endif  // defined(MR_SHARING_WIN)
+#endif  // defined(WINUWP)
 }

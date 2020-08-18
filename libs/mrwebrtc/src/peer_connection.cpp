@@ -34,14 +34,11 @@
     defined(_WIN32_WINNT_WIN10) &&                          \
     _WIN32_WINNT >= _WIN32_WINNT_WIN10 /* Win10 */
 
-// Defined in
-// external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/third_party/winuwp_h264/H264Encoder/H264Encoder.cc
-static constexpr int kFrameHeightCrop = 1;
-extern int webrtc__WinUWPH264EncoderImpl__frame_height_round_mode;
-
 // Stop WinRT from polluting the global namespace
 // https://developercommunity.visualstudio.com/content/problem/859178/asyncinfoh-defines-the-error-symbol-at-global-name.html
 #define _HIDE_GLOBAL_ASYNC_STATUS 1
+
+#include "third_party/winuwp_h264/H264Encoder/H264Encoder.h"
 
 #include <Windows.Foundation.h>
 #include <windows.graphics.holographic.h>
@@ -108,8 +105,17 @@ namespace Microsoft {
 namespace MixedReality {
 namespace WebRTC {
 void PeerConnection::SetFrameHeightRoundMode(FrameHeightRoundMode value) {
+#define CHECK_ENUM_VALUE(NAME1, NAME2)                                           \
+  static_assert((int)FrameHeightRoundMode::k##NAME1 ==                           \
+                    (int)webrtc::WinUWPH264EncoderImpl::FrameHeightRoundMode::k##NAME2, \
+                "WinUWPH264EncoderImpl::FrameHeightRoundMode does not match FrameHeightRoundMode");
+  CHECK_ENUM_VALUE(None, NoChange);
+  CHECK_ENUM_VALUE(Crop, Crop);
+  CHECK_ENUM_VALUE(Pad, Pad);
+#undef CHECK_ENUM_VALUE
   if (IsHololens()) {
-    webrtc__WinUWPH264EncoderImpl__frame_height_round_mode = (int)value;
+    webrtc::WinUWPH264EncoderImpl::global_frame_height_round_mode.store(
+        (webrtc::WinUWPH264EncoderImpl::FrameHeightRoundMode)value);
   }
 }
 }  // namespace WebRTC

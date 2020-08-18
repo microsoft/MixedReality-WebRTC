@@ -286,25 +286,6 @@ class PeerConnection : public TrackedObject,
     video_track_removed_callback_ = std::move(callback);
   }
 
-  /// Rounding mode of video frame height for |SetFrameHeightRoundMode()|.
-  /// This is only used on HoloLens 1 (UWP x86).
-  enum class FrameHeightRoundMode {
-    /// Leave frames unchanged.
-    kNone = 0,
-
-    /// Crop frame height to the nearest multiple of 16 pixels.
-    /// ((height - nearestLowerMultipleOf16) / 2) rows are cropped from the top
-    /// and (height - nearestLowerMultipleOf16 - croppedRowsTop) rows are
-    /// cropped from the bottom.
-    kCrop = 1,
-
-    /// Pad frame height to the nearest multiple of 16 pixels.
-    /// ((nearestHigherMultipleOf16 - height) / 2) rows are added symmetrically
-    /// at the top and (nearestHigherMultipleOf16 - height - addedRowsTop) rows
-    /// are added symmetrically at the bottom.
-    kPad = 2
-  };
-
   /// [HoloLens 1 only]
   /// Use this function to select whether resolutions where height is not a
   /// multiple of 16 pixels should be cropped, padded or left unchanged.
