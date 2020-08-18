@@ -1461,19 +1461,19 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags.None
   fullName: Microsoft.MixedReality.WebRTC.Library.ShutdownOptionsFlags.None
   nameWithType: Library.ShutdownOptionsFlags.None
-- uid: Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule(Microsoft.MixedReality.WebRTC.AudioDeviceModule)
-  name: UseAudioDeviceModule(AudioDeviceModule)
-  href: api/Microsoft.MixedReality.WebRTC.Library.html#Microsoft_MixedReality_WebRTC_Library_UseAudioDeviceModule_Microsoft_MixedReality_WebRTC_AudioDeviceModule_
-  commentId: M:Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule(Microsoft.MixedReality.WebRTC.AudioDeviceModule)
-  fullName: Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule(Microsoft.MixedReality.WebRTC.AudioDeviceModule)
-  nameWithType: Library.UseAudioDeviceModule(AudioDeviceModule)
-- uid: Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule*
-  name: UseAudioDeviceModule
-  href: api/Microsoft.MixedReality.WebRTC.Library.html#Microsoft_MixedReality_WebRTC_Library_UseAudioDeviceModule_
-  commentId: Overload:Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule
+- uid: Microsoft.MixedReality.WebRTC.Library.UsedAudioDeviceModule
+  name: UsedAudioDeviceModule
+  href: api/Microsoft.MixedReality.WebRTC.Library.html#Microsoft_MixedReality_WebRTC_Library_UsedAudioDeviceModule
+  commentId: P:Microsoft.MixedReality.WebRTC.Library.UsedAudioDeviceModule
+  fullName: Microsoft.MixedReality.WebRTC.Library.UsedAudioDeviceModule
+  nameWithType: Library.UsedAudioDeviceModule
+- uid: Microsoft.MixedReality.WebRTC.Library.UsedAudioDeviceModule*
+  name: UsedAudioDeviceModule
+  href: api/Microsoft.MixedReality.WebRTC.Library.html#Microsoft_MixedReality_WebRTC_Library_UsedAudioDeviceModule_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Library.UsedAudioDeviceModule
   isSpec: "True"
-  fullName: Microsoft.MixedReality.WebRTC.Library.UseAudioDeviceModule
-  nameWithType: Library.UseAudioDeviceModule
+  fullName: Microsoft.MixedReality.WebRTC.Library.UsedAudioDeviceModule
+  nameWithType: Library.UsedAudioDeviceModule
 - uid: Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig
   name: LocalAudioDeviceInitConfig
   href: api/Microsoft.MixedReality.WebRTC.LocalAudioDeviceInitConfig.html
@@ -3686,6 +3686,67 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.Android.IsInitialized
   nameWithType: Android.IsInitialized
+- uid: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1
+  name: AsyncInitHelper<T>
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper-1.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1
+  name.vb: AsyncInitHelper(Of T)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper<T>
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper(Of T)
+  nameWithType: AsyncInitHelper<T>
+  nameWithType.vb: AsyncInitHelper(Of T)
+- uid: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.AbortInitTask
+  name: AbortInitTask()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper-1.html#Microsoft_MixedReality_WebRTC_Unity_AsyncInitHelper_1_AbortInitTask
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.AbortInitTask
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper<T>.AbortInitTask()
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper(Of T).AbortInitTask()
+  nameWithType: AsyncInitHelper<T>.AbortInitTask()
+  nameWithType.vb: AsyncInitHelper(Of T).AbortInitTask()
+- uid: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.AbortInitTask*
+  name: AbortInitTask
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper-1.html#Microsoft_MixedReality_WebRTC_Unity_AsyncInitHelper_1_AbortInitTask_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.AbortInitTask
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper<T>.AbortInitTask
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper(Of T).AbortInitTask
+  nameWithType: AsyncInitHelper<T>.AbortInitTask
+  nameWithType.vb: AsyncInitHelper(Of T).AbortInitTask
+- uid: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.Result
+  name: Result
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper-1.html#Microsoft_MixedReality_WebRTC_Unity_AsyncInitHelper_1_Result
+  commentId: P:Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.Result
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper<T>.Result
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper(Of T).Result
+  nameWithType: AsyncInitHelper<T>.Result
+  nameWithType.vb: AsyncInitHelper(Of T).Result
+- uid: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.Result*
+  name: Result
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper-1.html#Microsoft_MixedReality_WebRTC_Unity_AsyncInitHelper_1_Result_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.Result
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper<T>.Result
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper(Of T).Result
+  nameWithType: AsyncInitHelper<T>.Result
+  nameWithType.vb: AsyncInitHelper(Of T).Result
+- uid: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.TrackInitTask(Task{`0},CancellationTokenSource)
+  name: TrackInitTask(Task<T>, CancellationTokenSource)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper-1.html#Microsoft_MixedReality_WebRTC_Unity_AsyncInitHelper_1_TrackInitTask_Task__0__CancellationTokenSource_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.TrackInitTask(Task{`0},CancellationTokenSource)
+  name.vb: TrackInitTask(Task(Of T), CancellationTokenSource)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper<T>.TrackInitTask(Task<T>, CancellationTokenSource)
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper(Of T).TrackInitTask(Task(Of T), CancellationTokenSource)
+  nameWithType: AsyncInitHelper<T>.TrackInitTask(Task<T>, CancellationTokenSource)
+  nameWithType.vb: AsyncInitHelper(Of T).TrackInitTask(Task(Of T), CancellationTokenSource)
+- uid: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.TrackInitTask*
+  name: TrackInitTask
+  href: api/Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper-1.html#Microsoft_MixedReality_WebRTC_Unity_AsyncInitHelper_1_TrackInitTask_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper`1.TrackInitTask
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper<T>.TrackInitTask
+  fullName.vb: Microsoft.MixedReality.WebRTC.Unity.AsyncInitHelper(Of T).TrackInitTask
+  nameWithType: AsyncInitHelper<T>.TrackInitTask
+  nameWithType.vb: AsyncInitHelper(Of T).TrackInitTask
 - uid: Microsoft.MixedReality.WebRTC.Unity.AudioReceiver
   name: AudioReceiver
   href: api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html
@@ -4802,6 +4863,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.OnEnable
   nameWithType: MicrophoneSource.OnEnable
+- uid: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.Update
+  name: Update()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html#Microsoft_MixedReality_WebRTC_Unity_MicrophoneSource_Update
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.Update
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.Update()
+  nameWithType: MicrophoneSource.Update()
+- uid: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.Update*
+  name: Update
+  href: api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html#Microsoft_MixedReality_WebRTC_Unity_MicrophoneSource_Update_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.Update
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.Update
+  nameWithType: MicrophoneSource.Update
 - uid: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler
   name: NodeDssSignaler
   href: api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html
@@ -5041,6 +5115,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.StartConnectionIgnoreError
   nameWithType: PeerConnection.StartConnectionIgnoreError
+- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Update
+  name: Update()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Update
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Update
+  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Update()
+  nameWithType: PeerConnection.Update()
+- uid: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Update*
+  name: Update
+  href: api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html#Microsoft_MixedReality_WebRTC_Unity_PeerConnection_Update_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Update
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.PeerConnection.Update
+  nameWithType: PeerConnection.Update
 - uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource
   name: SceneVideoSource
   href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html
@@ -5725,6 +5812,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.WebcamSource.OnEnable
   nameWithType: WebcamSource.OnEnable
+- uid: Microsoft.MixedReality.WebRTC.Unity.WebcamSource.Update
+  name: Update()
+  href: api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html#Microsoft_MixedReality_WebRTC_Unity_WebcamSource_Update
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.Update
+  fullName: Microsoft.MixedReality.WebRTC.Unity.WebcamSource.Update()
+  nameWithType: WebcamSource.Update()
+- uid: Microsoft.MixedReality.WebRTC.Unity.WebcamSource.Update*
+  name: Update
+  href: api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html#Microsoft_MixedReality_WebRTC_Unity_WebcamSource_Update_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.WebcamSource.Update
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.WebcamSource.Update
+  nameWithType: WebcamSource.Update
 - uid: Microsoft.MixedReality.WebRTC.Unity.WebcamSource.VideoProfileId
   name: VideoProfileId
   href: api/Microsoft.MixedReality.WebRTC.Unity.WebcamSource.html#Microsoft_MixedReality_WebRTC_Unity_WebcamSource_VideoProfileId
