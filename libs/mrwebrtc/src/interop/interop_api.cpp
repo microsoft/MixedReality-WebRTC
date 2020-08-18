@@ -6,6 +6,11 @@
 #include "pch.h"
 
 #include "api/stats/rtcstats_objects.h"
+
+// Stop WinRT from polluting the global namespace
+// https://developercommunity.visualstudio.com/content/problem/859178/asyncinfoh-defines-the-error-symbol-at-global-name.html
+// This is defined in pch.h but for some reason it must be here to work.
+#define _HIDE_GLOBAL_ASYNC_STATUS 1
 #include "third_party/winuwp_h264/H264Encoder/H264Encoder.h"
 
 #include "audio_track_source_interop.h"
