@@ -41,23 +41,29 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Select the audio device module to use on Windows Desktop.
+        /// Audio device module to use on Windows Desktop.
         /// </summary>
-        /// <param name="adm">The module to use.</param>
         /// <remarks>
-        /// The ADM must be configured before any peer connection is created/initialized;
+        /// The ADM can only be changed before any peer connection is created/initialized;
         /// otherwise an <see cref="InvalidOperationException"/> is raised.
-        /// 
+        ///
         /// This has no effect on UWP or non-Windows platforms.
         /// </remarks>
         /// <exception cref="InvalidOperationException">
         /// The peer connection factory was already initialized, therefore the audio device
         /// module cannot be changed anymore.
         /// </exception>
-        public static void UseAudioDeviceModule(AudioDeviceModule adm)
+        public static AudioDeviceModule UsedAudioDeviceModule
         {
-            uint res = Utils.LibraryUseAudioDeviceModule(adm);
-            Utils.ThrowOnErrorCode(res);
+            get
+            {
+                return Utils.LibraryGetAudioDeviceModule();
+            }
+            set
+            {
+                uint res = Utils.LibraryUseAudioDeviceModule(value);
+                Utils.ThrowOnErrorCode(res);
+            }
         }
 
         /// <summary>

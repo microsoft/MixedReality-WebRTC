@@ -37,6 +37,7 @@ class GlobalFactory {
   /// Select the audio device module to use on Windows Desktop. See
   /// |mrsLibraryUseAudioDeviceModule()| for details.
   static mrsResult UseAudioDeviceModule(mrsAudioDeviceModule adm) noexcept;
+  static mrsAudioDeviceModule GetAudioDeviceModule() noexcept;
 
   /// Get the library shutdown options. This function does not initialize the
   /// library, but will store the options for a future initializing. Conversely,

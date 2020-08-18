@@ -1220,7 +1220,14 @@ namespace Microsoft.MixedReality.WebRTC
             // Wait for any pending initializing to finish.
             // This must be outside of the lock because the initialization task will
             // eventually need to acquire the lock to complete.
-            initTask.Wait();
+            try
+            {
+                initTask.Wait();
+            }
+            catch (Exception)
+            {
+                // Discard; since we are closing, we don't care if initialization failed.
+            }
 
             // Close the native peer connection, disconnecting from the remote peer if currently connected.
             // This will invalidate all handles to transceivers and remote tracks, as the corresponding

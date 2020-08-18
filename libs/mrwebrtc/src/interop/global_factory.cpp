@@ -48,6 +48,10 @@ mrsResult GlobalFactory::UseAudioDeviceModule(
   return mrsResult::kSuccess;
 }
 
+mrsAudioDeviceModule GlobalFactory::GetAudioDeviceModule() noexcept {
+  return s_audioDeviceModule;
+}
+
 mrsShutdownOptions GlobalFactory::GetShutdownOptions() noexcept {
   GlobalFactory* const factory = GetInstance();
   std::lock_guard<std::recursive_mutex> lock(factory->mutex_);

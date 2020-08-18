@@ -78,6 +78,10 @@ mrsLibraryUseAudioDeviceModule(mrsAudioDeviceModule adm) noexcept {
   return GlobalFactory::UseAudioDeviceModule(adm);
 }
 
+mrsAudioDeviceModule MRS_CALL mrsLibraryGetAudioDeviceModule() noexcept {
+  return GlobalFactory::GetAudioDeviceModule();
+}
+
 mrsShutdownOptions MRS_CALL mrsGetShutdownOptions() noexcept {
   return GlobalFactory::GetShutdownOptions();
 }
