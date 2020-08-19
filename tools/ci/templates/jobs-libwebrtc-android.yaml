@@ -116,7 +116,9 @@ jobs:
   - script: |
       rm -rf depot_tools/external_bin/gsutil
       rm -rf webrtc/src/examples/androidtests
+      mv webrtc/src/third_party/auto/BUILD.gn ./BUILD.gn.auto
       rm -rf webrtc/src/third_party/auto
+      mv ./BUILD.gn.auto webrtc/src/third_party/auto/BUILD.gn
       rm -rf webrtc/src/third_party/blink
       rm -rf webrtc/src/third_party/catapult
       rm -rf webrtc/src/third_party/perfetto
