@@ -114,12 +114,22 @@ jobs:
 
   # Clean-up unused files
   - script: |
-      rm -rf third_party/blink
-      rm -rf third_party/catapult
-      rm -rf third_party/perfetto
-      rm -rf third_party/pycoverage
-      rm -rf tools/code_coverage
-    workingDirectory: 'external/libwebrtc/webrtc/src'
+      rm -rf depot_tools/external_bin/gsutil
+      rm -rf webrtc/src/examples/androidtests
+      #mv webrtc/src/third_party/auto/BUILD.gn ./BUILD.gn.auto
+      #rm -rf webrtc/src/third_party/auto
+      #mkdir -p webrtc/src/third_party/auto
+      #mv ./BUILD.gn.auto webrtc/src/third_party/auto/BUILD.gn
+      rm -rf webrtc/src/third_party/blink
+      rm -rf webrtc/src/third_party/catapult
+      rm -rf webrtc/src/third_party/perfetto
+      rm -rf webrtc/src/third_party/protobuf/java
+      rm -rf webrtc/src/third_party/protobuf/ruby
+      rm -rf webrtc/src/third_party/pycoverage
+      rm -rf webrtc/src/third_party/WebKit
+      rm -rf webrtc/src/tools/code_coverage
+      rm -rf webrtc/src/tools/android/loading
+    workingDirectory: 'external/libwebrtc'
     displayName: 'Clean-up unused files'
 
   # List available disk space after clean-up
