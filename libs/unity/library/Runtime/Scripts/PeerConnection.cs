@@ -7,16 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
-using System.Collections.Concurrent;
 using System.Text;
 using System.Runtime.CompilerServices;
 
 #if UNITY_WSA && !UNITY_EDITOR
-using global::Windows.UI.Core;
-using global::Windows.Foundation;
-using global::Windows.Media.Core;
 using global::Windows.Media.Capture;
-using global::Windows.ApplicationModel.Core;
 #endif
 
 [assembly: InternalsVisibleTo("Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime")]
@@ -224,19 +219,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         #region Private variables
 
         /// <summary>
-        /// Underlying native peer connection wrapper.
-        /// </summary>
-        /// <remarks>
-        /// Unlike the public <see cref="Peer"/> property, this is never <c>NULL</c>,
-        /// but can be an uninitialized peer.
-        /// </remarks>
-        private WebRTC.PeerConnection _nativePeer = null;
-
-        /// <summary>
         /// List of transceiver media lines and their associated media sender/receiver components.
         /// </summary>
         [SerializeField]
         private List<MediaLine> _mediaLines = new List<MediaLine>();
+
+        private AsyncInitHelper<WebRTC.PeerConnection> _initHelper = new AsyncInitHelper<WebRTC.PeerConnection>();
 
         // Indicates if Awake has been called. Used by media lines to figure out whether to
         // invoke callbacks or not.
@@ -254,50 +242,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public static Task<IReadOnlyList<VideoCaptureDevice>> GetVideoCaptureDevicesAsync()
         {
             return DeviceVideoTrackSource.GetCaptureDevicesAsync();
-        }
-
-        /// <summary>
-        /// Initialize the underlying WebRTC peer connection.
-        /// </summary>
-        /// <remarks>
-        /// This method must be called once before using the peer connection. If <see cref="AutoInitializeOnStart"/>
-        /// is <c>true</c> then it is automatically called during <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html">MonoBehaviour.Start()</a>.
-        ///
-        /// This method is asynchronous and completes its task when the initializing completed.
-        /// On successful completion, it also trigger the <see cref="OnInitialized"/> event.
-        /// Note however that this completion is free-threaded and complete immediately when the
-        /// underlying peer connection is initialized, whereas any <see cref="OnInitialized"/>
-        /// event handler is invoked when control returns to the main Unity app thread. The former
-        /// is faster, but does not allow accessing the underlying peer connection because it
-        /// returns before <see cref="OnPostInitialize"/> executed. Therefore it is generally
-        /// recommended to listen to the <see cref="OnInitialized"/> event, and ignore the returned
-        /// <see xref="System.Threading.Tasks.Task"/> object.
-        ///
-        /// If the peer connection is already initialized, this method returns immediately with
-        /// a <see xref="System.Threading.Tasks.Task.CompletedTask"/> object. The caller can check
-        /// that the <see cref="Peer"/> property is non-<c>null</c> to confirm that the connection
-        /// is in fact initialized.
-        /// </remarks>
-        private Task InitializeAsync(CancellationToken token = default(CancellationToken))
-        {
-            CreateNativePeerConnection();
-
-            // Ensure Android binding is initialized before accessing the native implementation
-            Android.Initialize();
-
-#if UNITY_WSA && !UNITY_EDITOR
-            if (UnityEngine.WSA.Application.RunningOnUIThread())
-#endif
-            {
-                return RequestAccessAndInitAsync(token);
-            }
-#if UNITY_WSA && !UNITY_EDITOR
-            else
-            {
-                UnityEngine.WSA.Application.InvokeOnUIThread(() => RequestAccessAndInitAsync(token), waitUntilDone: true);
-                return Task.CompletedTask;
-            }
-#endif
         }
 
         /// <summary>
@@ -376,7 +320,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // then add any missing one.
 
             // Update all transceivers, whether previously existing or just created above
-            var transceivers = _nativePeer.Transceivers;
+            var transceivers = Peer.Transceivers;
             int index = 0;
             foreach (var mediaLine in _mediaLines)
             {
@@ -406,7 +350,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         Name = $"mrsw#{index}",
                         InitialDesiredDirection = wantsDir
                     };
-                    tr = _nativePeer.AddTransceiver(mediaLine.MediaKind, settings);
+                    tr = Peer.AddTransceiver(mediaLine.MediaKind, settings);
                     try
                     {
                         mediaLine.PairTransceiver(tr);
@@ -423,7 +367,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             // Create the offer
             AutoCreateOfferOnRenegotiationNeeded = true;
-            return _nativePeer.CreateOffer();
+            return Peer.CreateOffer();
         }
 
         /// <summary>
@@ -484,7 +428,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // the transceiver, but they are both monotonically increasing, so sorting by one or the other
             // yields the same ordered collection, which allows pairing transceivers and media lines.
             // TODO - Ensure PeerConnection.Transceivers is already sorted
-            var transceivers = new List<Transceiver>(_nativePeer.AssociatedTransceivers);
+            var transceivers = new List<Transceiver>(Peer.AssociatedTransceivers);
             transceivers.Sort((tr1, tr2) => (tr1.MlineIndex - tr2.MlineIndex));
             int numAssociatedTransceivers = transceivers.Count;
             int numMatching = Math.Min(numAssociatedTransceivers, _mediaLines.Count);
@@ -578,7 +522,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private void Uninitialize()
         {
-            Debug.Assert(_nativePeer.Initialized);
+            Debug.Assert(Peer != null && Peer.Initialized);
             // Fire signals before doing anything else to allow listeners to clean-up,
             // including un-registering any callback from the connection.
             OnShutdown.Invoke();
@@ -586,6 +530,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Prevent publicly accessing the native peer after it has been deinitialized.
             // This does not prevent systems caching a reference from accessing it, but it
             // is their responsibility to check that the peer is initialized.
+            var nativePeer = Peer;
             Peer = null;
 
             // Detach all transceivers. This prevents senders/receivers from trying to access
@@ -597,8 +542,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
             // Close the connection and release native resources.
-            _nativePeer.Dispose();
-            _nativePeer = null;
+            nativePeer.Dispose();
         }
 
         #endregion
@@ -628,7 +572,32 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 OnError.AddListener(OnError_Listener);
             }
-            InitializeAsync();
+            var cts = new CancellationTokenSource();
+            _initHelper.TrackInitTask(InitializePluginAsync(cts.Token), cts);
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+
+            var nativePeer = _initHelper.Result;
+            {
+                if (nativePeer != null)
+                {
+                    Debug.Log("WebRTC plugin initialized successfully.");
+
+                    if (AutoCreateOfferOnRenegotiationNeeded)
+                    {
+                        nativePeer.RenegotiationNeeded += Peer_RenegotiationNeeded;
+                    }
+
+                    // Once the peer is initialized, it becomes publicly accessible.
+                    // This prevent scripts from accessing it before it is initialized.
+                    Peer = nativePeer;
+
+                    OnInitialized.Invoke();
+                }
+            }
         }
 
         /// <summary>
@@ -639,8 +608,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         private void OnDisable()
         {
-            Uninitialize();
-            OnError.RemoveListener(OnError_Listener);
+            _initHelper.AbortInitTask();
+
+            if (Peer != null)
+            {
+                Uninitialize();
+                OnError.RemoveListener(OnError_Listener);
+            }
         }
 
         private void OnDestroy()
@@ -667,68 +641,46 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         /// <summary>
-        /// Create a new native peer connection and register event handlers to it.
-        /// This does not initialize the peer connection yet.
+        /// Initialize the underlying WebRTC peer connection.
         /// </summary>
-        private void CreateNativePeerConnection()
+        /// <remarks>
+        /// This method is asynchronous and completes its task when the initializing completed.
+        /// On successful completion, it also trigger the <see cref="OnInitialized"/> event.
+        /// Note however that this completion is free-threaded and complete immediately when the
+        /// underlying peer connection is initialized, whereas any <see cref="OnInitialized"/>
+        /// event handler is invoked when control returns to the main Unity app thread. The former
+        /// is faster, but does not allow accessing the underlying peer connection because it
+        /// returns before <see cref="OnPostInitialize"/> executed. Therefore it is generally
+        /// recommended to listen to the <see cref="OnInitialized"/> event, and ignore the returned
+        /// <see xref="System.Threading.Tasks.Task"/> object.
+        /// </remarks>
+        private async Task<WebRTC.PeerConnection> InitializePluginAsync(CancellationToken token)
         {
-            // Create the peer connection managed wrapper and its native implementation
-            _nativePeer = new WebRTC.PeerConnection();
+            // Ensure Android binding is initialized before accessing the native implementation
+            Android.Initialize();
 
-            _nativePeer.AudioTrackAdded +=
+#if UNITY_WSA && !UNITY_EDITOR
+            if (Library.UsedAudioDeviceModule == AudioDeviceModule.LegacyModule)
+            {
+                // Preventing access to audio crashes the ADM1 at startup and the entire application.
+                bool permissionGranted = await UwpUtils.RequestAccessAsync(StreamingCaptureMode.Audio);
+                if (!permissionGranted)
+                {
+                    return null;
+                }
+            }
+#endif
+            // Create the peer connection managed wrapper and its native implementation
+            var nativePeer = new WebRTC.PeerConnection();
+
+            nativePeer.AudioTrackAdded +=
                 (RemoteAudioTrack track) =>
                 {
                     // Tracks will be output by AudioReceivers, so avoid outputting them twice.
                     track.OutputToDevice(false);
                 };
-        }
 
-        /// <summary>
-        /// Internal helper to ensure device access and continue initialization.
-        /// </summary>
-        /// <remarks>
-        /// On UWP this must be called from the main UI thread.
-        /// </remarks>
-        private Task RequestAccessAndInitAsync(CancellationToken token)
-        {
-#if UNITY_WSA && !UNITY_EDITOR
-            // FIXME - Use ADM2 instead, this /maybe/ avoids this.
-            // On UWP the app must have the "microphone" capability, and the user must allow microphone
-            // access. This is due to the audio module (ADM1) being initialized at startup, even if no audio
-            // track is used. Preventing access to audio crashes the ADM1 at startup and the entire application.
-            var mediaAccessRequester = new MediaCapture();
-            var mediaSettings = new MediaCaptureInitializationSettings();
-            mediaSettings.AudioDeviceId = "";
-            mediaSettings.VideoDeviceId = "";
-            mediaSettings.StreamingCaptureMode = StreamingCaptureMode.Audio;
-            mediaSettings.PhotoCaptureSource = PhotoCaptureSource.VideoPreview;
-            mediaSettings.SharingMode = MediaCaptureSharingMode.SharedReadOnly; // for MRC and lower res camera
-            var accessTask = mediaAccessRequester.InitializeAsync(mediaSettings).AsTask(token);
-            return accessTask.ContinueWith(prevTask =>
-            {
-                token.ThrowIfCancellationRequested();
-
-                if (prevTask.Exception == null)
-                {
-                    InitializePluginAsync(token);
-                }
-                else
-                {
-                    var ex = prevTask.Exception;
-                    InvokeOnAppThread(() => OnError.Invoke($"Audio access failure: {ex.Message}."));
-                }
-            }, token);
-#else
-            return InitializePluginAsync(token);
-#endif
-        }
-
-        /// <summary>
-        /// Internal handler to actually initialize the plugin.
-        /// </summary>
-        private Task InitializePluginAsync(CancellationToken token)
-        {
-            Debug.Log("Initializing WebRTC plugin...");
+            Debug.Log("Initializing WebRTC Peer Connection...");
             var config = new PeerConnectionConfiguration();
             foreach (var server in IceServers)
             {
@@ -739,56 +691,32 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     TurnPassword = IceCredential
                 });
             }
-            return _nativePeer.InitializeAsync(config, token).ContinueWith((initTask) =>
+
+            try
             {
+                await nativePeer.InitializeAsync(config, token);
+                return nativePeer;
+            }
+            catch (OperationCanceledException canceled) { throw canceled; }
+            catch (Exception ex)
+            {
+                nativePeer.Dispose();
                 token.ThrowIfCancellationRequested();
 
-                Exception ex = initTask.Exception;
-                if (ex != null)
-                {
-                    InvokeOnAppThread(() =>
-                    {
-                        var errorMessage = new StringBuilder();
-                        errorMessage.Append("WebRTC plugin initializing failed. See full log for exception details.\n");
-                        while (ex is AggregateException ae)
-                        {
-                            errorMessage.Append($"AggregationException: {ae.Message}\n");
-                            ex = ae.InnerException;
-                        }
-                        errorMessage.Append($"Exception: {ex.Message}");
-                        OnError.Invoke(errorMessage.ToString());
-                    });
-                    throw initTask.Exception;
-                }
-
-                InvokeOnAppThread(OnPostInitialize);
-            }, token);
-        }
-
-        /// <summary>
-        /// Callback fired on the main Unity app thread once the WebRTC plugin was initialized successfully.
-        /// </summary>
-        private void OnPostInitialize()
-        {
-            Debug.Log("WebRTC plugin initialized successfully.");
-
-            if (AutoCreateOfferOnRenegotiationNeeded)
-            {
-                _nativePeer.RenegotiationNeeded += Peer_RenegotiationNeeded;
+                EnsureIsMainAppThread();
+                var errorMessage = new StringBuilder();
+                errorMessage.Append("WebRTC plugin initializing failed. See full log for exception details.\n");
+                errorMessage.Append($"Exception: {ex.Message}");
+                OnError.Invoke(errorMessage.ToString());
+                throw ex;
             }
-
-            // Once the peer is initialized, it becomes publicly accessible.
-            // This prevent scripts from accessing it before it is initialized.
-            Peer = _nativePeer;
-
-            OnInitialized.Invoke();
         }
 
         private void Peer_RenegotiationNeeded()
         {
             // If already connected, update the connection on the fly.
             // If not, wait for user action and don't automatically connect.
-            if (AutoCreateOfferOnRenegotiationNeeded && _nativePeer.IsConnected)
+            if (AutoCreateOfferOnRenegotiationNeeded && Peer.IsConnected)
             {
                 // Defer to the main app thread, because this implementation likely will
                 // again trigger the renegotiation needed event, which is not re-entrant.

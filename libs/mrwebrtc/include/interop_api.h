@@ -24,6 +24,45 @@ enum class mrsOptBool : int8_t { kTrue = -1, kFalse = 0, kUnset = 0b01010101 };
 /// Report live objects to debug output, and return the number of live objects.
 MRS_API uint32_t MRS_CALL mrsReportLiveObjects() noexcept;
 
+/// Available audio device modules for Windows Desktop. The audio device module
+/// is the internal audio component responsible for audio capture and playback.
+/// Those options are only meaningful for Windows Desktop; other platforms use a
+/// predefined platform-dependent built-in module.
+enum class mrsAudioDeviceModule : uint8_t {
+  /// Legacy audio device module (ADM1) for backward compatibility. This is not
+  /// recommended, unless there is an issue with the default new module (ADM2).
+  kLegacy = 1,
+
+  /// New CoreAudio-based audio device module (ADM2). This is the default and
+  /// recommended audio module on Windows Desktop.
+  kDefault = 2
+};
+
+/// Select the audio device module to use on Windows Desktop.
+///
+/// By default the new CoreAudio-based audio device module (ADM2) is used, which
+/// provides better handling of unsupported devices than its predecessor (ADM1).
+/// https://github.com/microsoft/MixedReality-WebRTC/issues/124
+///
+/// This function allows overwriting the default selection to force another
+/// module, mostly as a safety net would ADM2 present some issue.
+///
+/// The audio device module is a global object used by all peer connections.
+/// This function needs to be called before the peer connection factory is
+/// initialized, and therefore before any other library call, as most calls will
+/// initialize the peer connection factory internally. Therefore, the audio
+/// device module cannot be changed after the library is initialized, and this
+/// call will fail with |mrsResult::kInvalidOperation| if invoked too late.
+///
+/// This has no effect on UWP and non-Windows platforms, and will always
+/// succeed if timely called before the library is initialized.
+MRS_API mrsResult MRS_CALL
+mrsLibraryUseAudioDeviceModule(mrsAudioDeviceModule adm) noexcept;
+
+/// Get the audio device module to use on Windows Desktop.
+/// By default the new CoreAudio-based audio device module (ADM2) is used.
+MRS_API mrsAudioDeviceModule MRS_CALL mrsLibraryGetAudioDeviceModule() noexcept;
+
 /// Global MixedReality-WebRTC library shutdown options.
 enum class mrsShutdownOptions : uint32_t {
   kNone = 0,
@@ -1078,5 +1117,57 @@ mrsStatsReportGetObjects(mrsStatsReportHandle report_handle,
 /// Release a stats report.
 MRS_API mrsResult MRS_CALL
 mrsStatsReportRemoveRef(mrsStatsReportHandle stats_report);
+
+
+/// H.264 encoding profile.
+enum class mrsH264Profile : int32_t {
+  kProfileConstrainedBaseline,
+  kProfileBaseline,
+  kProfileMain,
+  kProfileConstrainedHigh,
+  kProfileHigh,
+};
+
+/// Rate control mode for the Media Foundation H.264 encoder. See
+/// https://docs.microsoft.com/en-us/windows/win32/medfound/h-264-video-encoder
+/// for details.
+enum class mrsH264RcMode : int32_t {
+  kUnset = -1,
+  kCBR = 0,
+  kVBR = 1,
+  kQuality = 2
+};
+
+/// Configuration for the Media Foundation H.264 encoder.
+struct mrsH264Config {
+
+  /// H.264 profile.
+  /// Note: by default we should use what's passed by WebRTC on codec
+  /// initialization (which seems to be always ConstrainedBaseline), but we use
+  /// Baseline to avoid changing behavior compared to earlier versions.
+  mrsH264Profile profile = mrsH264Profile::kProfileBaseline;
+
+  /// Rate control mode.
+  mrsH264RcMode rc_mode = mrsH264RcMode::kUnset;
+
+  /// If set to a value between 0 and 51, determines the max QP to use for
+  /// encoding.
+  int max_qp = -1;
+
+  /// If set to a value between 0 and 100, determines the target quality value.
+  /// The effect of this depends on the encoder and on the rate control mode
+  /// chosen. In the Quality RC mode this will be the target for the whole
+  /// stream, while in VBR it might be used as a target for individual frames
+  /// while the average quality of the stream is determined by the target
+  /// bitrate.
+  int quality = -1;
+};
+
+/// Set the configuration used by the H.264 encoder.
+///
+/// The passed value will apply to all tracks that start streaming, from any
+/// PeerConnection created by the application, after the call to this function.
+MRS_API mrsResult MRS_CALL mrsSetH264Config(const mrsH264Config* config);
+
 
 }  // extern "C"

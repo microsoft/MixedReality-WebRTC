@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -1009,5 +1008,50 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Tests.Runtime
             Object.Destroy(pc1_go);
             Object.Destroy(pc2_go);
         }
+
+        // These tests need a local device to work, and will fail on CI agents.
+        // Uncomment to run.
+
+        //[UnityTest]
+        //public IEnumerator DisableWhileInitializingWebcam()
+        //{
+        //    // Create the component
+        //    var go = new GameObject("test_go");
+        //    go.SetActive(false); // prevent auto-activation of components
+        //    var pc = go.AddComponent<WebcamSource>();
+
+        //    for (int i = 0; i < 2; ++i)
+        //    {
+        //        go.SetActive(true);
+        //        go.SetActive(false);
+        //    }
+
+        //    UnityEngine.Object.Destroy(go);
+
+        //    // Terminate the coroutine.
+        //    yield return null;
+        //}
+
+        //[UnityTest]
+        //public IEnumerator DisableWhileInitializingMicrophone()
+        //{
+        //    // Create the component
+        //    var go = new GameObject("test_go");
+        //    go.SetActive(false); // prevent auto-activation of components
+        //    var pc = go.AddComponent<MicrophoneSource>();
+
+        //    for (int i = 0; i < 2; ++i)
+        //    {
+        //        go.SetActive(true);
+        //        go.SetActive(false);
+        //    }
+
+        //    UnityEngine.Object.Destroy(go);
+
+        //    // Terminate the coroutine.
+        //    yield return null;
+        //}
     }
+
+
 }

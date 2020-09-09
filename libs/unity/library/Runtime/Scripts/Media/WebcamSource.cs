@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 #if ENABLE_WINMD_SUPPORT
@@ -10,7 +12,6 @@ using global::Windows.Graphics.Holographic;
 #endif
 
 #if UNITY_WSA && !UNITY_EDITOR
-using System.Threading.Tasks;
 using global::Windows.UI.Core;
 using global::Windows.Foundation;
 using global::Windows.Media.Core;
@@ -18,7 +19,7 @@ using global::Windows.Media.Capture;
 using global::Windows.ApplicationModel.Core;
 #endif
 
-#if PLATFORM_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
 using UnityEngine.Android;
 #endif
 
@@ -139,86 +140,65 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             framerate = 0.0
         };
 
-#if PLATFORM_ANDROID
-        protected bool _androidCameraRequestPending = false;
-        protected float _androidCameraRequestRetryUntilTime = 0f;
+#if !UNITY_EDITOR && UNITY_ANDROID
+        private TaskCompletionSource<bool> _androidPermissionRequestTcs;
+        private object _androidPermissionRequestLock = new object();
 #endif
 
-        protected async void OnEnable()
+        private AsyncInitHelper<WebRTC.VideoTrackSource> _initHelper = new AsyncInitHelper<WebRTC.VideoTrackSource>();
+
+        protected void OnEnable()
         {
-            if (Source != null)
-            {
-                return;
-            }
+            Debug.Assert(Source == null);
+            var cts = new CancellationTokenSource();
+            _initHelper.TrackInitTask(InitAsync(cts.Token), cts);
+        }
 
-#if PLATFORM_ANDROID
-            // Ensure Android binding is initialized before accessing the native implementation
-            Android.Initialize();
-
-            // Check for permission to access the camera
-            if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
-            {
-                if (!_androidCameraRequestPending)
-                {
-                    // Monitor the OnApplicationFocus(true) event during the next 5 minutes,
-                    // and check for permission again each time (see below why).
-                    _androidCameraRequestPending = true;
-                    _androidCameraRequestRetryUntilTime = Time.time + 300;
-
-                    // Display dialog requesting user permission. This will return immediately,
-                    // and unfortunately there's no good way to tell when this completes. As a rule
-                    // of thumb, application should lose focus, so check when focus resumes should
-                    // be sufficient without having to poll every frame.
-                    Permission.RequestUserPermission(Permission.Camera);
-                }
-                return;
-            }
-#elif UNITY_WSA && !UNITY_EDITOR
-            // Request UWP access to video capture. The OS may show some popup dialog to the
-            // user to request permission. This will succeed only if the user grants permission.
-            try
-            {
-                // Note that the UWP UI thread and the main Unity app thread are always different.
-                // https://docs.unity3d.com/Manual/windowsstore-appcallbacks.html
-                // We leave the code below as an example of generic handling in case this would be used in
-                // some other place, and in case a future version of Unity decided to change that assumption,
-                // but currently OnEnable() is always invoked from the main Unity app thread so here the first
-                // branch is never taken.
-                if (UnityEngine.WSA.Application.RunningOnUIThread())
-                {
-                    await RequestAccessAsync();
-                }
-                else
-                {
-                    UnityEngine.WSA.Application.InvokeOnUIThread(() => RequestAccessAsync(), waitUntilDone: true);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log an error and prevent activation
-                Debug.LogError($"Video access failure: {ex.Message}.");
-                this.enabled = false;
-                return;
-            }
-#endif
-
-            // Handle automatic capture format constraints
-            string videoProfileId = VideoProfileId;
-            var videoProfileKind = VideoProfileKind;
+        private async Task<WebRTC.VideoTrackSource> InitAsync(CancellationToken token)
+        {
+            // Cache public properties on the Unity app thread.
             int width = Constraints.width;
             int height = Constraints.height;
             double framerate = Constraints.framerate;
+            var deviceConfig = new LocalVideoDeviceInitConfig
+            {
+                videoDevice = WebcamDevice,
+                videoProfileId = VideoProfileId,
+                videoProfileKind = VideoProfileKind,
+                width = (width > 0 ? (uint?)width : null),
+                height = (height > 0 ? (uint?)height : null),
+                framerate = (framerate > 0 ? (double?)framerate : null),
+                enableMrc = EnableMixedRealityCapture,
+                enableMrcRecordingIndicator = EnableMRCRecordingIndicator
+            };
+            var formatMode = FormatMode;
+
+            // Continue the task outside the Unity app context, in order to avoid deadlock
+            // if OnDisable waits on this task.
+            bool accessGranted = await RequestAccessAsync(token).ConfigureAwait(continueOnCapturedContext: false);
+            if (!accessGranted)
+            {
+                return null;
+            }
+            return await CreateSourceAsync(formatMode, deviceConfig).ConfigureAwait(continueOnCapturedContext: false);
+        }
+
+        // This method might be run outside the app thread and should not access the Unity API.
+        private static async Task<WebRTC.VideoTrackSource> CreateSourceAsync(
+            LocalVideoSourceFormatMode formatMode, LocalVideoDeviceInitConfig deviceConfig)
+        {
+            // Handle automatic capture format constraints
 #if ENABLE_WINMD_SUPPORT
-            if (FormatMode == LocalVideoSourceFormatMode.Automatic)
+            if (formatMode == LocalVideoSourceFormatMode.Automatic)
             {
                 // Do not constrain resolution by default, unless the device calls for it (see below).
-                width = 0; // auto
-                height = 0; // auto
+                deviceConfig.width = 0; // auto
+                deviceConfig.height = 0; // auto
 
                 // Avoid constraining the framerate; this is generally not necessary (formats are listed
                 // with higher framerates first) and is error-prone as some formats report 30.0 FPS while
                 // others report 29.97 FPS.
-                framerate = 0; // auto
+                deviceConfig.framerate = 0; // auto
 
                 // For HoloLens, use video profile to reduce resolution and save power/CPU/bandwidth
                 if (global::Windows.Graphics.Holographic.HolographicSpace.IsAvailable)
@@ -228,30 +208,34 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         if (global::Windows.ApplicationModel.Package.Current.Id.Architecture == global::Windows.System.ProcessorArchitecture.X86)
                         {
                             // Holographic AR (transparent) x86 platform - Assume HoloLens 1
-                            videoProfileKind = WebRTC.VideoProfileKind.VideoRecording; // No profile in VideoConferencing
-                            width = 896; // Target 896 x 504
+                            deviceConfig.videoProfileKind = WebRTC.VideoProfileKind.VideoRecording; // No profile in VideoConferencing
+                            deviceConfig.width = 896; // Target 896 x 504
                         }
                         else
                         {
                             // Holographic AR (transparent) non-x86 platform - Assume HoloLens 2
-                            videoProfileKind = WebRTC.VideoProfileKind.VideoConferencing;
-                            width = 960; // Target 960 x 540
+                            deviceConfig.videoProfileKind = WebRTC.VideoProfileKind.VideoConferencing;
+                            deviceConfig.width = 960; // Target 960 x 540
                         }
                     }
                 }
             }
-#elif PLATFORM_ANDROID
-            if (FormatMode == LocalVideoSourceFormatMode.Automatic)
+#elif !UNITY_EDITOR && UNITY_ANDROID
+            if (formatMode == LocalVideoSourceFormatMode.Automatic)
             {
                 // Avoid constraining the framerate; this is generally not necessary (formats are listed
                 // with higher framerates first) and is error-prone as some formats report 30.0 FPS while
                 // others report 29.97 FPS.
-                framerate = 0; // auto
+                deviceConfig.framerate = 0; // auto
 
-                string deviceId = WebcamDevice.id;
+                string deviceId = deviceConfig.videoDevice.id;
                 if (string.IsNullOrEmpty(deviceId))
                 {
-                    IReadOnlyList<VideoCaptureDevice> listedDevices = await PeerConnection.GetVideoCaptureDevicesAsync();
+                    // Continue the task outside the Unity app context, in order to avoid deadlock
+                    // if OnDisable waits on this task.
+                    IReadOnlyList<VideoCaptureDevice> listedDevices =
+                        await PeerConnection.GetVideoCaptureDevicesAsync()
+                        .ConfigureAwait(continueOnCapturedContext: false);
                     if (listedDevices.Count > 0)
                     {
                         deviceId = listedDevices[0].id;
@@ -260,7 +244,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 if (!string.IsNullOrEmpty(deviceId))
                 {
                     // Find the closest format to 720x480, independent of framerate
-                    IReadOnlyList<VideoCaptureFormat> formats = await DeviceVideoTrackSource.GetCaptureFormatsAsync(deviceId);
+                    // Continue the task outside the Unity app context, in order to avoid deadlock
+                    // if OnDisable waits on this task.
+                    IReadOnlyList<VideoCaptureFormat> formats =
+                        await DeviceVideoTrackSource.GetCaptureFormatsAsync(deviceId)
+                        .ConfigureAwait(continueOnCapturedContext: false);
                     double smallestDiff = double.MaxValue;
                     bool hasFormat = false;
                     foreach (var fmt in formats)
@@ -270,13 +258,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         {
                             hasFormat = true;
                             smallestDiff = diff;
-                            width = (int)fmt.width;
-                            height = (int)fmt.height;
+                            deviceConfig.width = fmt.width;
+                            deviceConfig.height = fmt.height;
                         }
                     }
                     if (hasFormat)
                     {
-                        Debug.Log($"WebcamSource automated mode selected resolution {width}x{height} for Android video capture device #{deviceId}.");
+                        Debug.Log($"WebcamSource automated mode selected resolution {deviceConfig.width}x{deviceConfig.height} for Android video capture device #{deviceId}.");
                     }
                 }
             }
@@ -300,31 +288,32 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             //#endif
 
             // Create the track
-            var deviceConfig = new LocalVideoDeviceInitConfig
-            {
-                videoDevice = WebcamDevice,
-                videoProfileId = videoProfileId,
-                videoProfileKind = videoProfileKind,
-                width = (width > 0 ? (uint?)width : null),
-                height = (height > 0 ? (uint?)height : null),
-                framerate = (framerate > 0 ? (double?)framerate : null),
-                enableMrc = EnableMixedRealityCapture,
-                enableMrcRecordingIndicator = EnableMRCRecordingIndicator
-            };
+            var createTask = DeviceVideoTrackSource.CreateAsync(deviceConfig);
+
+            // Continue the task outside the Unity app context, in order to avoid deadlock
+            // if OnDisable waits on this task.
+            return await createTask.ConfigureAwait(continueOnCapturedContext: false);
+        }
+
+        protected void Update()
+        {
+            WebRTC.VideoTrackSource source = null;
             try
             {
-                var source = await DeviceVideoTrackSource.CreateAsync(deviceConfig);
-                AttachSource(source);
+                source = _initHelper.Result;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"Failed to create device track source for {nameof(WebcamSource)} component '{name}'.");
                 Debug.LogException(ex, this);
-                return;
+            }
+            if (source != null)
+            {
+                AttachSource(source);
             }
         }
 
-#if PLATFORM_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
         protected void OnApplicationFocus(bool hasFocus)
         {
             if (!hasFocus)
@@ -332,34 +321,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 return;
             }
 
-            // If focus is restored after a pending camera access request, check the permission again
-            if (_androidCameraRequestPending)
+            // If focus is restored after a pending request, check the permission again
+            lock(_androidPermissionRequestLock)
             {
-                _androidCameraRequestPending = false;
-
-                if (Permission.HasUserAuthorizedPermission(Permission.Camera))
+                if (_androidPermissionRequestTcs != null)
                 {
-                    // If now authorized, start capture as if just enabled
-                    Debug.Log("User granted authorization to access webcam, starting WebcamSource now...");
-                    OnEnable();
-                }
-                else if (Time.time <= _androidCameraRequestRetryUntilTime)
-                {
-                    // OnApplicationFocus(true) may be called for unrelated reason(s) so do not disable on first call,
-                    // but instead retry during a given period after the request was made, until we're reasonably
-                    // confident that the user dialog was actually answered (that is, that OnApplicationFocus(true) was
-                    // called because of that dialog, and not because of another reason).
-                    // This may lead to false positives (checking permission after the user denied it), but the user
-                    // dialog will not popup again, so this is all in the background and essentially harmless.
-                    _androidCameraRequestPending = true;
-                }
-                else
-                {
-                    // Some reasonable time passed since we made the permission request, and we still get a denied
-                    // answer, so assume the user actually denied it and stop retrying.
-                    _androidCameraRequestRetryUntilTime = 0f;
-                    Debug.LogError("User denied Camera permission; cannot use WebcamSource. Forcing enabled=false.");
-                    enabled = false;
+                    if (Permission.HasUserAuthorizedPermission(Permission.Camera))
+                    {
+                        // If now authorized, start capture as if just enabled
+                        Debug.Log("User granted authorization to access webcam, starting WebcamSource now...");
+                        _androidPermissionRequestTcs.SetResult(true);
+                        _androidPermissionRequestTcs = null;
+                    }
                 }
             }
         }
@@ -367,31 +340,77 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         protected void OnDisable()
         {
+            /// Wait synchronously for the end of the initialization task, so that after the component
+            /// has been disabled the device is released and free to be used again.
+            /// Note that the initialization task needs not to be continued on the app thread, or it
+            /// will deadlock.
+            _initHelper.AbortInitTask().Wait();
             DisposeSource();
         }
 
-#if UNITY_WSA && !UNITY_EDITOR
-        /// <summary>
-        /// Internal UWP helper to ensure device access.
-        /// </summary>
-        /// <remarks>
-        /// This must be called from the main UWP UI thread (not the main Unity app thread).
-        /// </remarks>
-        private Task RequestAccessAsync()
+        private Task<bool> RequestAccessAsync(CancellationToken token)
         {
-            // On UWP the app must have the "webcam" capability, and the user must allow webcam
-            // access. So check that access before trying to initialize the WebRTC library, as this
-            // may result in a popup window being displayed the first time, which needs to be accepted
-            // before the camera can be accessed by WebRTC.
-            var mediaAccessRequester = new MediaCapture();
-            var mediaSettings = new MediaCaptureInitializationSettings();
-            mediaSettings.AudioDeviceId = "";
-            mediaSettings.VideoDeviceId = "";
-            mediaSettings.StreamingCaptureMode = StreamingCaptureMode.Video;
-            mediaSettings.PhotoCaptureSource = PhotoCaptureSource.VideoPreview;
-            mediaSettings.SharingMode = MediaCaptureSharingMode.SharedReadOnly; // for MRC and lower res camera
-            return mediaAccessRequester.InitializeAsync(mediaSettings).AsTask();
-        }
+#if !UNITY_EDITOR && UNITY_ANDROID
+            // Ensure Android binding is initialized before accessing the native implementation
+            Android.Initialize();
+
+            // Check for permission to access the camera
+            if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
+            {
+                // Display dialog requesting user permission. This will return immediately,
+                // and unfortunately there's no good way to tell when this completes.
+                Permission.RequestUserPermission(Permission.Camera);
+
+                // As a rule of thumb, application should lose focus, so check when focus resumes should
+                // be sufficient without having to poll every frame.
+                // Monitor the OnApplicationFocus(true) event during the next 5 minutes,
+                // and check for permission again each time.
+                var tcs = new TaskCompletionSource<bool>();
+                lock(_androidPermissionRequestLock)
+                {
+                    Debug.Assert(_androidPermissionRequestTcs == null);
+                    _androidPermissionRequestTcs = tcs;
+                }
+                Task.Delay(TimeSpan.FromMinutes(5)).ContinueWith(_ =>
+                {
+                    lock (_androidPermissionRequestLock)
+                    {
+                        // Check if the component is still waiting on the same permission request.
+                        // If it has been disabled and then re-enabled, _androidPermissionRequestTcs will be different.
+                        if (_androidPermissionRequestTcs == tcs)
+                        {
+                            Debug.LogError("User denied camera permission; cannot use WebcamSource.");
+                            _androidPermissionRequestTcs.SetResult(false);
+                            _androidPermissionRequestTcs = null;
+                        }
+                    }
+                });
+
+                // If the initialization is canceled, end the task and reset the TCS.
+                token.Register(() =>
+                {
+                    lock (_androidPermissionRequestLock)
+                    {
+                        // Check if the component is still waiting on the same permission request.
+                        // If the request has completed or timed out, _androidPermissionRequestTcs will be null.
+                        if (_androidPermissionRequestTcs != null)
+                        {
+                            Debug.Assert(_androidPermissionRequestTcs == tcs);
+                            _androidPermissionRequestTcs.SetCanceled();
+                            _androidPermissionRequestTcs = null;
+                        }
+                    }
+                });
+                return tcs.Task;
+            }
+
+            // Already has permission.
+            return Task.FromResult(true);
+#elif UNITY_WSA && !UNITY_EDITOR
+            return UwpUtils.RequestAccessAsync(StreamingCaptureMode.Video);
+#else
+            return Task.FromResult(true);
 #endif
+        }
     }
 }

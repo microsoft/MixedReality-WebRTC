@@ -38,6 +38,7 @@ _If applicable, add screenshots to help explain your problem._
 
 **Environment**
 _Please fill the information for **each peer** if different_
+ - MR-WebRTC version (package version, or specific commit if building from source)
  - Platform: [e.g. Windows Desktop, UWP, Unity Editor, Unity Android Player, Unity Standalone Player (Windows Desktop), Unity WSA Player (UWP)]
  - Architecture: [e.g. x86, x64, ARM, ARM64; Unity Editor is x64 on Windows]
  - Unity version (if applicable): [e.g. 2018.4, 2019.1]

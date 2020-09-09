@@ -9,11 +9,6 @@ parameters:
   displayName: 'Build Agent Pool'
   type: string
   default: ''
-# Restore PDBs of libwebrtc from Core build
-- name: restoreCorePdbs
-  displayName: 'Restore core PDBs'
-  type: boolean
-  default: true
 # Run Component Governance detection and submit results
 - name: runComponentDetection
   displayName: 'Run component detection'
@@ -109,64 +104,6 @@ jobs:
       versionSpec: 5.2.0
     timeoutInMinutes: 5
 
-  # Compute the PDB package variables
-  - ${{ if eq(parameters.restoreCorePdbs, 'true') }}:
-    - task: PowerShell@2
-      displayName: 'Compute libwebrtc PDB package variables'
-      inputs:
-        targetType: 'filePath'
-        filePath: '$(Build.SourcesDirectory)/tools/ci/computePdbPackageVars.ps1'
-      env:
-        # Read $(MRWebRTC_PdbPackageVersion) from pipeline variables
-        WRITE_VERSION: 'false'
-      timeoutInMinutes: 5
-
-  # Download the PDBs for libwebrtc
-  - ${{ if eq(parameters.restoreCorePdbs, 'true') }}:
-    - task: UniversalPackages@0
-      displayName: 'Download libwebrtc PDBs'
-      inputs:
-        command: download
-        vstsFeed: $(MRWebRTC_PdbFeed)
-        vstsFeedPackage: $(MRWebRTC_PdbPackageName)
-        vstsPackageVersion: $(MRWebRTC_PdbPackageVersion)
-        downloadDirectory: '$(Build.SourcesDirectory)\_pdbs'
-      timeoutInMinutes: 10
-
-  # Move PDBs back into their original location for the linker to find them
-  - ${{ if eq(parameters.restoreCorePdbs, 'true') }}:
-    - task: PowerShell@2
-      displayName: 'Move libwebrtc PDBs back in place'
-      inputs:
-        targetType: 'filePath'
-        filePath: '$(Build.SourcesDirectory)/tools/ci/copyPdbsForBuilding.ps1'
-        arguments: '-BuildConfig ${{parameters.buildConfig}} -BuildPlatform ${{parameters.buildPlatform}} -SourcePath "$(Build.SourcesDirectory)/_pdbs" -OutputPath "bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}"'
-      timeoutInMinutes: 10
-
-  # Generate custom packages.config to restore only the necessary packages for the current build triple.
-  # This helps both with decreasing restore time and with minimizing disk space to avoid the 10GB limit.
-  # This task sets $(PackagesConfigFile) to the filename of the generated 'packages.config' file.
-  - ${{ if eq(parameters.restoreCorePdbs, 'true') }}:
-    - task: PowerShell@2
-      displayName: 'Generate packages.config for build triple'
-      inputs:
-        targetType: 'filePath'
-        filePath: '$(Build.SourcesDirectory)/tools/ci/generateCppPackagesConfig.ps1'
-        arguments: '-BuildConfig ${{parameters.buildConfig}} -BuildPlatform ${{parameters.buildPlatform}} -BuildArch ${{parameters.buildArch}} -InputFile "$(Build.SourcesDirectory)/tools/build/mrwebrtc/${{parameters.buildPlatform}}/packages.config" -OutputFile "bin/${{parameters.buildPlatform}}/${{parameters.buildArch}}/${{parameters.buildConfig}}/packages.config"'
-      timeoutInMinutes: 5
-
-  # Restore the NuGet packages containing prebuilt libwebrtc (for mrwebrtc build)
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
-    displayName: 'NuGet restore mrwebrtc'
-    inputs:
-      command: 'restore'
-      restoreSolution: '$(PackagesConfigFile)'
-      restoreDirectory: '$(Build.SourcesDirectory)/packages'
-      includeNuGetOrg: true
-      feedsToUse: 'config'
-      nugetConfigPath: '$(NuGetConfigPath)'
-    timeoutInMinutes: 30
-
   # Ensure that Python 2.7.16+ is the default; the Google scripts don't work with Python 3.x
   - task: UsePythonVersion@0
     displayName: 'Use Python 2.7.16+ x64 for Google GN'
@@ -174,32 +111,16 @@ jobs:
       versionSpec: '>=2.7.16 <2.8.0'
     timeoutInMinutes: 5
 
-  # Prepare the environment with the setup script from Google
-  - task: PythonScript@0
-    displayName: 'Prepare WebRTC env'
-    inputs:
-      scriptSource: 'filePath'
-      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
-      arguments: '-a prepare -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig)'
-    timeoutInMinutes: 10
-
   # Clean-up unused files
   - script: |
       del /F /S /Q "depot_tools/external_bin/gsutil"
       del /F /S /Q "chromium/third_party/protobuf/java"
+      del /F /S /Q "chromium/third_party/protobuf/ruby"
+      del /F /S /Q "chromium/third_party/pycoverage"
       del /F /S /Q "chromium/tools/android"
       del /F /S /Q "chromium/tools/code_coverage"
     workingDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform'
     displayName: 'Clean-up unused files'
-
-  # Generate custom .vcxproj to import only the necessary packages for the current build triple
-  - ${{ if eq(parameters.restoreCorePdbs, 'true') }}:
-    - task: PowerShell@2
-      displayName: 'Modify .vcxproj for build triple'
-      inputs:
-        targetType: filePath
-        filePath: tools/ci/modifyCppProject.ps1
-        arguments: '-BuildConfig ${{parameters.buildConfig}} -BuildPlatform ${{parameters.buildPlatform}} -BuildArch ${{parameters.buildArch}} -ProjectFile "tools/build/mrwebrtc/${{parameters.buildPlatform}}/mrwebrtc-${{parameters.buildPlatform}}.vcxproj"'
 
   # Run component detection
   - ${{ if eq(parameters.runComponentDetection, 'true') }}:
@@ -207,9 +128,30 @@ jobs:
       displayName: 'Component Detection'
       timeoutInMinutes: 15
 
+  # Build libwebrtc with the script from Google
+  - task: PythonScript@0
+    displayName: 'Build libwebrtc'
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a prepare build -t webrtc -p $(scriptPlatform) --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper --cpp17'
+    timeoutInMinutes: 60
+
+  # Build Org.WebRtc.WrapperGlub.lib
+  - ${{ if eq(parameters.buildPlatform, 'UWP') }}:
+    - task: MSBuild@1
+      displayName: 'Build UWP wrappers'
+      inputs:
+        solution: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Org.WebRtc.WrapperGlue.vcxproj'
+        msbuildVersion: 15.0
+        msbuildArchitecture: x64
+        platform: '$(msbuildPlatform)'
+        configuration: '${{parameters.buildConfig}}'
+      timeoutInMinutes: 60
+
   # Build mrwebrtc.dll
   - task: MSBuild@1
-    displayName: 'Build mrwebrtc ($(buildTriple))'
+    displayName: 'Build mrwebrtc'
     inputs:
       solution: 'tools/build/mrwebrtc/${{parameters.buildPlatform}}/mrwebrtc-${{parameters.buildPlatform}}.vcxproj'
       msbuildVersion: 15.0

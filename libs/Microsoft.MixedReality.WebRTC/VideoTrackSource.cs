@@ -197,8 +197,6 @@ namespace Microsoft.MixedReality.WebRTC
             // Unregister interop callbacks
             _videoFrameReady = null;
             _argb32VideoFrameReady = null;
-            Utils.ReleaseWrapperRef(_selfHandle);
-            _selfHandle = IntPtr.Zero;
 
             // Unregister from tracks
             // TODO...
@@ -207,6 +205,11 @@ namespace Microsoft.MixedReality.WebRTC
             // Destroy the native object. This may be delayed if a P/Invoke callback is underway,
             // but will be handled at some point anyway, even if the managed instance is gone.
             _nativeHandle.Dispose();
+
+            // _selfHandle is used by the FrameReady callbacks. Only release it once the native
+            // source is disposed and the callbacks are not called anymore.
+            Utils.ReleaseWrapperRef(_selfHandle);
+            _selfHandle = IntPtr.Zero;
         }
 
         /// <summary>

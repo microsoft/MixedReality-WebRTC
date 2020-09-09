@@ -7,6 +7,23 @@ using System;
 namespace Microsoft.MixedReality.WebRTC
 {
     /// <summary>
+    /// Audio device module for Windows Desktop platform.
+    /// </summary>
+    public enum AudioDeviceModule : byte
+    {
+        /// <summary>
+        /// Legacy audio device module (ADM1); not recommended unless there is an issue
+        /// with the new default one.
+        /// </summary>
+        LegacyModule = 1,
+
+        /// <summary>
+        /// New CoreAudio based audio device module (ADM2). This is the default.
+        /// </summary>
+        DefaultModule = 2
+    }
+
+    /// <summary>
     /// Container for library-wise global settings of MixedReality-WebRTC.
     /// </summary>
     public static class Library
@@ -21,6 +38,32 @@ namespace Microsoft.MixedReality.WebRTC
         public static uint ReportLiveObjects()
         {
             return Utils.LibraryReportLiveObjects();
+        }
+
+        /// <summary>
+        /// Audio device module to use on Windows Desktop.
+        /// </summary>
+        /// <remarks>
+        /// The ADM can only be changed before any peer connection is created/initialized;
+        /// otherwise an <see cref="InvalidOperationException"/> is raised.
+        ///
+        /// This has no effect on UWP or non-Windows platforms.
+        /// </remarks>
+        /// <exception cref="InvalidOperationException">
+        /// The peer connection factory was already initialized, therefore the audio device
+        /// module cannot be changed anymore.
+        /// </exception>
+        public static AudioDeviceModule UsedAudioDeviceModule
+        {
+            get
+            {
+                return Utils.LibraryGetAudioDeviceModule();
+            }
+            set
+            {
+                uint res = Utils.LibraryUseAudioDeviceModule(value);
+                Utils.ThrowOnErrorCode(res);
+            }
         }
 
         /// <summary>

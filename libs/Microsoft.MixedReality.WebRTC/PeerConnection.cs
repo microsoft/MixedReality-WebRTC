@@ -1225,7 +1225,14 @@ namespace Microsoft.MixedReality.WebRTC
             // Wait for any pending initializing to finish.
             // This must be outside of the lock because the initialization task will
             // eventually need to acquire the lock to complete.
-            initTask.Wait();
+            try
+            {
+                initTask.Wait();
+            }
+            catch (Exception)
+            {
+                // Discard; since we are closing, we don't care if initialization failed.
+            }
 
             // Close the native peer connection, disconnecting from the remote peer if currently connected.
             // This will invalidate all handles to transceivers and remote tracks, as the corresponding
@@ -2009,6 +2016,106 @@ namespace Microsoft.MixedReality.WebRTC
         public static void SetFrameHeightRoundMode(FrameHeightRoundMode value)
         {
             Utils.SetFrameHeightRoundMode(value);
+        }
+
+        /// <summary>
+        /// H.264 Encoding profile.
+        /// </summary>
+        public enum H264Profile
+        {
+            /// <summary>
+            /// Constrained Baseline profile.
+            /// </summary>
+            ConstrainedBaseline,
+
+            /// <summary>
+            /// Baseline profile.
+            /// </summary>
+            Baseline,
+
+            /// <summary>
+            /// Main profile.
+            /// </summary>
+            Main,
+
+            /// <summary>
+            /// Constrained High profile.
+            /// </summary>
+            ConstrainedHigh,
+
+            /// <summary>
+            /// High profile.
+            /// </summary>
+            High
+        };
+
+        /// <summary>
+        /// Rate control mode for the Media Foundation H.264.
+        /// See https://docs.microsoft.com/en-us/windows/win32/medfound/h-264-video-encoder for details.
+        /// </summary>
+        public enum H264RcMode
+        {
+            /// <summary>
+            /// Constant Bit Rate.
+            /// </summary>
+            CBR,
+
+            /// <summary>
+            /// Variable Bit Rate.
+            /// </summary>
+            VBR,
+
+            /// <summary>
+            /// Constant quality.
+            /// </summary>
+            Quality
+        };
+
+        /// <summary>
+        /// Configuration for the Media Foundation H.264 encoder.
+        /// </summary>
+        public struct H264Config
+        {
+            /// <summary>
+            /// H.264 profile.
+            /// Note : by default we should use what's passed by WebRTC on codec
+            /// initialization (which seems to be always ConstrainedBaseline), but we use
+            /// Baseline to avoid changing behavior compared to earlier versions.
+            /// </summary>
+            public H264Profile Profile;
+
+            /// <summary>
+            /// Rate control mode.
+            /// </summary>
+            public H264RcMode? RcMode;
+
+            /// <summary>
+            /// If set to a value between 0 and 51, determines the max QP to use for
+            /// encoding.
+            /// </summary>
+            public int? MaxQp;
+
+            /// <summary>
+            /// If set to a value between 0 and 100, determines the target quality value.
+            /// The effect of this depends on the encoder and on the rate control mode
+            /// chosen. In the Quality RC mode this will be the target for the whole
+            /// stream, while in VBR it might be used as a target for individual frames
+            /// while the average quality of the stream is determined by the target
+            /// bitrate.
+            /// </summary>
+            public int? Quality;
+        };
+
+        /// <summary>
+        /// Set the configuration used by the H.264 encoder.
+        /// The passed value will apply to all tracks that start streaming, from any
+        /// PeerConnection created by the application, after the call to this function.
+        /// </summary>
+        /// <param name="config"></param>
+        public static void SetH264Config(H264Config config)
+        {
+            uint res = Utils.SetH264Config(new Utils.H264Config(config));
+            Utils.ThrowOnErrorCode(res);
         }
 
         internal void OnConnected()

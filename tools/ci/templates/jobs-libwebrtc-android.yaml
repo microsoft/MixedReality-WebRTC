@@ -103,9 +103,44 @@ jobs:
       ./checkout.sh -v
     displayName: 'Checkout libwebrtc'
 
+  # Prepare libwebrtc build
+  - script: |
+      # Unset JAVA_HOME, which points to the install removed by the image clean step
+      unset JAVA_HOME
+      # Build
+      cd $(toolsDir)/libwebrtc
+      ./build.sh -v -c ${{parameters.buildConfig}} -p
+    displayName: 'Prepare libwebrtc'
+
+  # Clean-up unused files
+  - script: |
+      rm -rf depot_tools/external_bin/gsutil
+      rm -rf webrtc/src/examples/androidtests
+      #mv webrtc/src/third_party/auto/BUILD.gn ./BUILD.gn.auto
+      #rm -rf webrtc/src/third_party/auto
+      #mkdir -p webrtc/src/third_party/auto
+      #mv ./BUILD.gn.auto webrtc/src/third_party/auto/BUILD.gn
+      rm -rf webrtc/src/third_party/blink
+      rm -rf webrtc/src/third_party/catapult
+      rm -rf webrtc/src/third_party/perfetto
+      rm -rf webrtc/src/third_party/protobuf/java
+      rm -rf webrtc/src/third_party/protobuf/ruby
+      rm -rf webrtc/src/third_party/pycoverage
+      rm -rf webrtc/src/third_party/WebKit
+      rm -rf webrtc/src/tools/code_coverage
+      rm -rf webrtc/src/tools/android/loading
+    workingDirectory: 'external/libwebrtc'
+    displayName: 'Clean-up unused files'
+
   # List available disk space after clean-up
   - bash: df -h
     displayName: 'Available Disk Space'
+
+  # Run component detection
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      sourceScanPath: '$(Build.SourcesDirectory)'
 
   # Build libwebrtc
   - script: |
@@ -113,7 +148,7 @@ jobs:
       unset JAVA_HOME
       # Build
       cd $(toolsDir)/libwebrtc
-      ./build.sh -v -c ${{parameters.buildConfig}}
+      ./build.sh -v -c ${{parameters.buildConfig}} -b
     displayName: 'Build libwebrtc'
 
   # Build mrwebrtc
