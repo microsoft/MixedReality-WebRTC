@@ -317,6 +317,7 @@ TYPED_TEST_P(TransceiverTests, InvalidName) {
   ASSERT_EQ(nullptr, transceiver_handle1);
 }
 
+#if 0
 TYPED_TEST_P(TransceiverTests, SetDirection) {
   using Media = MediaTrait<TypeParam::MediaType>;
 
@@ -451,6 +452,7 @@ TYPED_TEST_P(TransceiverTests, SetDirection) {
     ASSERT_EQ(mrsTransceiverDirection::kRecvOnly, dir_desired1);
   }
 }
+#endif
 
 TYPED_TEST_P(TransceiverTests, SetDirection_InvalidHandle) {
   ASSERT_EQ(
@@ -535,7 +537,7 @@ TYPED_TEST_P(TransceiverTests, StreamIDs) {
 // Note: All tests must be listed in this macro
 REGISTER_TYPED_TEST_CASE_P(TransceiverTests,
                            InvalidName,
-                           SetDirection,
+                           //SetDirection,
                            SetDirection_InvalidHandle,
                            SetLocalTrack_InvalidHandle,
                            SetLocalTrackSendRecv,
