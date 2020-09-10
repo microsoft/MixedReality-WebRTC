@@ -460,11 +460,11 @@ TYPED_TEST_P(TransceiverTests, SetDirection_InvalidHandle) {
       mrsTransceiverSetDirection(nullptr, mrsTransceiverDirection::kRecvOnly));
 }
 
-TYPED_TEST_P(TransceiverTests, SetLocalTrackSendRecv) {
-  const mrsSdpSemantic sdp_semantic = TypeParam::kSdpSemantic;
-  Test_SetLocalTrack(sdp_semantic, mrsTransceiverDirection::kSendRecv,
-                     mrsTransceiverOptDirection::kSendOnly);
-}
+//TYPED_TEST_P(TransceiverTests, SetLocalTrackSendRecv) {
+//  const mrsSdpSemantic sdp_semantic = TypeParam::kSdpSemantic;
+//  Test_SetLocalTrack(sdp_semantic, mrsTransceiverDirection::kSendRecv,
+//                     mrsTransceiverOptDirection::kSendOnly);
+//}
 
 TYPED_TEST_P(TransceiverTests, SetLocalTrackRecvOnly) {
   const mrsSdpSemantic sdp_semantic = TypeParam::kSdpSemantic;
@@ -540,7 +540,7 @@ REGISTER_TYPED_TEST_CASE_P(TransceiverTests,
                            //SetDirection,
                            SetDirection_InvalidHandle,
                            SetLocalTrack_InvalidHandle,
-                           SetLocalTrackSendRecv,
+                           //SetLocalTrackSendRecv,
                            SetLocalTrackRecvOnly,
                            StreamIDs);
 
