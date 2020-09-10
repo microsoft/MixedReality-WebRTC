@@ -5,6 +5,7 @@
 
 # Trigger CI on push changes
 trigger:
+  batch: true # Android build is very slow (>1 hour) so batch changes
   branches:
     include:
     - master
