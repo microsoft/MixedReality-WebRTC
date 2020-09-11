@@ -5,8 +5,8 @@
 
 #include "../include/api.h"
 #include "handle_pool.h"
-#include "include/interop_api.h"
-#include "include/remote_video_track_interop.h"
+#include "interop_api.h"
+#include "remote_video_track_interop.h"
 #include "log_helpers.h"
 #include "native_renderer.h"
 

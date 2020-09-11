@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "include/export.h"
-#include "src/mrs_errors.h"
-#include "include/interop_api.h"
+#include "export.h"
+#include "mrs_errors.h"
+#include "interop_api.h"
 #include "../src/log_helpers.h"
 
 extern "C" {
