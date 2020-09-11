@@ -15,9 +15,9 @@ namespace Microsoft.MixedReality.WebRTC
     [AddComponentMenu("MixedReality-WebRTC/Native Video Renderer")]
     public class NativeVideoRenderer : MonoBehaviour
     {
-	    [SerializeField] 
+	    [SerializeField]
 	    private RawImage _rawImage;
-	    
+
         private RemoteVideoTrack _source;
         private Material videoMaterial;
         private NativeRenderer nativeRenderer;
@@ -25,11 +25,18 @@ namespace Microsoft.MixedReality.WebRTC
         private Texture2D textureY;
         private Texture2D textureU;
         private Texture2D textureV;
-        
+
         private VideoFrameQueue<I420AVideoFrameStorage> _i420aFrameQueue;
+
+        private void Awake()
+        {
+	        NativeRenderingPluginUpdate.AddRef(this);
+        }
 
         private void OnDestroy()
         {
+	        NativeRenderingPluginUpdate.DecRef(this);
+
 	        // Teardown will also get called when the PeerConnection is destroyed.
 	        // So this is probably going to be called twice in many cases.
 	        TearDown();
@@ -67,7 +74,7 @@ namespace Microsoft.MixedReality.WebRTC
 	                break;
             }
         }
-        
+
         private void I420AVideoFrameReady(I420AVideoFrame frame)
         {
 	        // Clear the video display to not confuse the user who could otherwise
@@ -80,11 +87,9 @@ namespace Microsoft.MixedReality.WebRTC
 	        // Subscription is only used to ge the frame dimensions to generate the textures. So Unsubscribe once that is done.
 	        _source.I420AVideoFrameReady -= I420AVideoFrameReady;
 	        _i420aFrameQueue = null;
-	        
-	        NativeRenderingPluginUpdate.AddRef(this);
 
 	        CreateEmptyVideoTextures(width, height, 128);
-	        nativeRenderer = new NativeRenderer(_source.PeerConnection); //the need for this peer connectionc an be gotten rid of, it should just go off video handles
+	        nativeRenderer = new NativeRenderer(_source.PeerConnection); //the need for this peer connection can be gotten rid of, it should just go off video handles
 	        RegisterRemoteTextures();
         }
 
@@ -101,10 +106,9 @@ namespace Microsoft.MixedReality.WebRTC
 	        CreateEmptyVideoTextures(4,4,128);
 	        TearDown();
         }
-        
+
         private void TearDown()
         {
-	        NativeRenderingPluginUpdate.DecRef(this);
 	        try
 	        {
 		        nativeRenderer?.DisableRemoteVideo();
