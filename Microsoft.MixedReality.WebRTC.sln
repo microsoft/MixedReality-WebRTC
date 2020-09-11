@@ -41,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestReceiveAV", "examples\T
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementation", "Implementation", "{5A873D0C-4D1E-4AAA-AE3A-BFC96E796431}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mrwebrtc-unityplugin-win32", "libs\Microsoft.MixedReality.WebRTC.UnityPlugin.Native\src\win32\Microsoft.MixedReality.WebRTC.UnityPlugin.Native.vcxproj", "{3D2AAA9E-C000-4669-AC09-D755D5FAC7D3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mrwebrtc-unityplugin-win32", "tools\build\mrwebrtc-unityplugin\win32\mrwebrtc-unityplugin-win32.vcxproj", "{3D2AAA9E-C000-4669-AC09-D755D5FAC7D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
