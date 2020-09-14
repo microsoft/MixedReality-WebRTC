@@ -1,0 +1,38 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# MixedReality-WebRTC build pipeline for Android CI
+
+# Trigger CI on push changes
+trigger:
+  batch: true # Android build is very slow (>1 hour) so batch changes
+  branches:
+    include:
+    - master
+    - release/*
+    exclude:
+    - docs/*
+
+# Do not trigger CI on PRs
+pr: none
+
+# Give a unique name to the build each time it runs
+name: ci-android-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+
+parameters:
+- name: clean
+  displayName: 'Clean build'
+  type: boolean
+  default: true
+
+stages:
+
+# Compile mrwebrtc
+- stage: build
+  displayName: 'Build mrwebrtc'
+  jobs:
+
+  # Build mrwebrtc.aar for Android
+  - template: templates/jobs-libwebrtc-android.yaml
+    parameters:
+      buildConfig: 'Debug'
