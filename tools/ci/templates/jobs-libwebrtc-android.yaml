@@ -169,7 +169,7 @@ jobs:
       contents: 'mrwebrtc.aar'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
 
-  # Publish mrwebrtc.dll and mrwebrtc.pdb
+  # Publish mrwebrtc.aar
   - task: PublishPipelineArtifact@0
     displayName: 'Publish mrwebrtc'
     inputs:
