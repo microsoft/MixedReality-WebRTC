@@ -131,6 +131,20 @@ while getopts l:m:o:vh OPTION; do
     esac
 done
 
+# Update path for libwebrtc build under WSL2
+if grep -q microsoft /proc/version; then
+    echo "WSL-path-adaption: Detected WSL, adapting path now ..."
+    echo "Raw: ${MRWEBRTC_AAR}"
+    echo "Adapt to format: /mnt/\$driveletter\\windows_subdir\\..."
+    MRWEBRTC_AAR="$(sed -r 's/(^\w):/\/mnt\/\L\1/' <<< ${MRWEBRTC_AAR})"
+    echo "Intermediate path adaption result: ${MRWEBRTC_AAR}"
+    echo "Now adapt to format: /mnt/\$driveletter/windows_subdir/..."
+    MRWEBRTC_AAR="$(sed -r 's/\\/\//g' <<< ${MRWEBRTC_AAR})"
+    echo "Final path adaption result: ${MRWEBRTC_AAR}"
+else
+    echo "WSL-path-adaption: Detected native Linux, skipping path adaption!"
+fi
+
 # Ensure all arguments have reasonable values
 verify-arguments
 
