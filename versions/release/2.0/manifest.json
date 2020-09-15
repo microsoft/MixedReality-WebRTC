@@ -1554,7 +1554,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.VideoTrackSource.html",
-          "hash": "+s6Sa/+NtEqJ+sZPSkvH7Q=="
+          "hash": "67AjrySHepyRk+kaOUal1g=="
         }
       },
       "is_incremental": false,
@@ -2021,7 +2021,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-mediatracks-uwp.html",
-          "hash": "iT3V6fjP+yU0c1JdNOIm5A=="
+          "hash": "9vRbvW+9B4GLW/C7S/EzHQ=="
         }
       },
       "is_incremental": false,
@@ -2093,7 +2093,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/cs/helloworld-cs-signaling-uwp.html",
-          "hash": "eu8/3fcBNh4elN8DqQ/3Vg=="
+          "hash": "FolraBHCGB7h+oNUtDRgdQ=="
         }
       },
       "is_incremental": false,
