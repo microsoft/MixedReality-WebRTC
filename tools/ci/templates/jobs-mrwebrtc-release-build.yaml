@@ -85,7 +85,7 @@ jobs:
     submodules: recursive
     fetchDepth: '50'
     clean: ${{parameters.clean}}
-  
+
   # Generate custom .vcxproj to skip any NuGet package related to webrtc.lib, since this pipeline
   # is recompiling libwebrtc from sources. This saves both build time and disk space.
   - task: PowerShell@2
@@ -142,12 +142,6 @@ jobs:
     workingDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform'
     displayName: 'Clean-up unused files'
 
-  # Run component detection
-  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-    displayName: 'Component Detection'
-    inputs:
-      sourceScanPath: '$(Build.SourcesDirectory)'
-
   # Build webrtc.lib
   - task: PythonScript@0
     displayName: 'Build webrtc.lib'
@@ -180,6 +174,14 @@ jobs:
       platform: '$(msbuildPlatform)'
       configuration: '${{parameters.buildConfig}}'
     timeoutInMinutes: 20
+
+  # Run component detection
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      sourceScanPath: '$(Build.SourcesDirectory)'
+      scanType: 'Register'
+      failOnAlert: true
 
   # Stage artifacts
   - task: CopyFiles@2
