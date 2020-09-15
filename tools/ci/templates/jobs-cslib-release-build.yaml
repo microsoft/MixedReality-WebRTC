@@ -14,7 +14,7 @@ parameters:
   displayName: 'Clean build'
   type: boolean
   default: true
- 
+
 jobs:
 
 # Compile Microsoft.MixedReality.WebRTC.dll
@@ -33,6 +33,14 @@ jobs:
       projects: 'libs/Microsoft.MixedReality.WebRTC/Microsoft.MixedReality.WebRTC.csproj'
       arguments: '-f netstandard2.0 --no-incremental -c Release'
       workingDirectory: 'libs/Microsoft.MixedReality.WebRTC'
+
+  # Run component detection
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      sourceScanPath: '$(Build.SourcesDirectory)'
+      scanType: 'Register'
+      failOnAlert: true
 
   # # Download mrwebrtc.dll (Win32-x64-buildConfig) for testing
   # - ${{ if eq(parameters.withTesting, 'true') }}:

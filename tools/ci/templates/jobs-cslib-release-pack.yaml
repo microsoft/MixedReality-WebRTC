@@ -127,6 +127,8 @@ jobs:
     displayName: 'Component Detection before signing'
     inputs:
       sourceScanPath: '$(Build.BinariesDirectory)'
+      scanType: 'Register'
+      failOnAlert: true
 
   # Sign package content
   - task: DownloadSecureFile@1
