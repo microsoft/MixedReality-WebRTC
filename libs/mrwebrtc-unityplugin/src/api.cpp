@@ -70,25 +70,24 @@ mrsNativeRenderer_SetLoggingFunctions(UnityLogger::LogFunction logDebugFunc,
 using namespace Microsoft::MixedReality::WebRTC;
 
 mrsResult MRS_CALL
-mrsNativeRenderer_Create(PeerConnectionHandle peerHandle) noexcept {
-  NativeRenderer::Create(peerHandle);
+mrsNativeRenderer_Create(mrsRemoteVideoTrackHandle videoHandle) noexcept {
+  NativeRenderer::Create(videoHandle);
   return Result::kSuccess;
 }
 
 mrsResult MRS_CALL
-mrsNativeRenderer_Destroy(PeerConnectionHandle peerHandle) noexcept {
-  NativeRenderer::Destroy(peerHandle);
+mrsNativeRenderer_Destroy(mrsRemoteVideoTrackHandle videoHandle) noexcept {
+  NativeRenderer::Destroy(videoHandle);
   return Result::kSuccess;
 }
 
 mrsResult MRS_CALL
 mrsNativeRenderer_EnableRemoteVideo(mrsRemoteVideoTrackHandle videoHandle,
-                                    PeerConnectionHandle peerHandle, //this can be gotten rid of
                                     VideoKind format,
                                     TextureDesc textures[],
                                     int textureCount) noexcept {
   UnityLogger::LogDebug("mrsNativeRenderer_EnableRemoteVideo");
-  if (auto renderer = NativeRenderer::Get(peerHandle)) {
+  if (auto renderer = NativeRenderer::Get(videoHandle)) {
     renderer->EnableRemoteVideo(videoHandle, format, textures, textureCount);
   }
   return Result::kSuccess;

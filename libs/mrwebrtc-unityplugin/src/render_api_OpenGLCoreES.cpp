@@ -204,11 +204,6 @@ class RenderApi_OpenGLCoreES : public RenderApi {
                                 const TextureUpdate& update,
                                 const VideoDesc& desc,
                                 const std::vector<VideoRect>& rects = {});
-  virtual void SimpleUpdateTexture(void* dstTexture,
-                                   uint32_t width,
-                                   uint32_t height,
-                                   const uint8_t* dataPtr,
-                                   size_t dataLen);
 
  private:
   void CreateResources();
@@ -354,44 +349,6 @@ void RenderApi_OpenGLCoreES::EndModifyTexture(
 
   auto bufferId = (GLuint)(size_t)update.handle;
   m_pool->ReleasePixelBuffer(bufferId);
-}
-
-void RenderApi_OpenGLCoreES::SimpleUpdateTexture(void* dstTexture,
-                                                 uint32_t width,
-                                                 uint32_t height,
-                                                 const uint8_t* dataPtr,
-                                                 size_t dataLen) {
-  UnityLogger::LogDebug("RenderApi_OpenGLCoreES::SimpleUpdateTexture");
-  // TODO: Implement OpenGL version of this
-  //if (dataLen >= width * height) {
-  //  auto dstD3DTexture = (ID3D11Texture2D*)dstTexture;
-  //  ID3D11DeviceContext* ctx = nullptr;
-  //  m_device->GetImmediateContext(&ctx);
-  //  ctx->UpdateSubresource(dstD3DTexture, 0, nullptr, dataPtr, width, 0);
-  //  ctx->Release();
-  //}
-
-  //still not working
-  glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);  // release the mapped buffer
-
-  GLuint gltex = (GLuint)(size_t)(dstTexture);
-  glBindTexture(GL_TEXTURE_2D, gltex);
-
-  GLenum glFormat = GL_RGBA;
-
-  glTexSubImage2D(GL_TEXTURE_2D,      // Target
-                    0,                  // Mip Level
-                    0,       // xOffset
-                    0,       // yOffset
-                    width,   // Copy Width
-                    height,  // Copy Height
-                    glFormat, 
-                    GL_UNSIGNED_BYTE,
-                    dataPtr);  // Use PBO
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-
 }
 
 #endif  // #if SUPPORT_OPENGL_UNIFIED

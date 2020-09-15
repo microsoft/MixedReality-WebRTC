@@ -27,11 +27,6 @@ class RenderApi_D3D12 : public RenderApi {
                                 const TextureUpdate& update,
                                 const VideoDesc& desc,
                                 const std::vector<VideoRect>& rects = {});
-  virtual void SimpleUpdateTexture(void* dstTexture,
-                                   uint32_t width,
-                                   uint32_t height,
-                                   const uint8_t* dataPtr,
-                                   size_t dataLen);
 
  private:
   ID3D12Resource* GetUploadResource(UINT64 size);
@@ -211,21 +206,6 @@ void RenderApi_D3D12::EndModifyTexture(void* dstTexture,
   s_D3D12CmdList->Close();
   s_D3D12FenceValue =
       s_D3D12->ExecuteCommandList(s_D3D12CmdList, 1, &resourceState);
-}
-
-void RenderApi_D3D12::SimpleUpdateTexture(void* dstTexture,
-                                          uint32_t width,
-                                          uint32_t height,
-                                          const uint8_t* dataPtr,
-                                          size_t dataLen) {
-  // TODO: Implement DX12 version of this
-  if (dataLen >= width * height) {
-    auto dstD3DTexture = (ID3D11Texture2D*)dstTexture;
-    ID3D11DeviceContext* ctx = nullptr;
-    m_device->GetImmediateContext(&ctx);
-    ctx->UpdateSubresource(dstD3DTexture, 0, nullptr, dataPtr, width, 0);
-    ctx->Release();
-  }
 }
 
 #endif  // #if SUPPORT_D3D12

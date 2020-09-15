@@ -19,12 +19,12 @@ namespace Microsoft.MixedReality.WebRTC
 	    private RawImage _rawImage;
 
         private RemoteVideoTrack _source;
-        private Material videoMaterial;
-        private NativeRenderer nativeRenderer;
+        private Material _videoMaterial;
+        private NativeRenderer _nativeRenderer;
 
-        private Texture2D textureY;
-        private Texture2D textureU;
-        private Texture2D textureV;
+        private Texture2D _textureY;
+        private Texture2D _textureU;
+        private Texture2D _textureV;
 
         private VideoFrameQueue<I420AVideoFrameStorage> _i420aFrameQueue;
 
@@ -89,7 +89,7 @@ namespace Microsoft.MixedReality.WebRTC
 	        _i420aFrameQueue = null;
 
 	        CreateEmptyVideoTextures(width, height, 128);
-	        nativeRenderer = new NativeRenderer(_source.PeerConnection); //the need for this peer connection can be gotten rid of, it should just go off video handles
+	        _nativeRenderer = new NativeRenderer(_source.NativeHandle); //the need for this peer connectionc an be gotten rid of, it should just go off video handles
 	        RegisterRemoteTextures();
         }
 
@@ -109,111 +109,112 @@ namespace Microsoft.MixedReality.WebRTC
 
         private void TearDown()
         {
+	        NativeRenderingPluginUpdate.DecRef(this);
 	        try
 	        {
-		        nativeRenderer?.DisableRemoteVideo();
-		        nativeRenderer?.Dispose();
+		        _nativeRenderer?.DisableRemoteVideo();
+		        _nativeRenderer?.Dispose();
 	        }
 	        finally
 	        {
-		        nativeRenderer = null;
+		        _nativeRenderer = null;
 	        }
 	        _source = null;
         }
 
         private void RegisterRemoteTextures()
         {
-	        if (nativeRenderer != null && textureY != null)
+	        if (_nativeRenderer != null && _textureY != null)
             {
                 TextureDesc[] textures = new TextureDesc[3]
                 {
                     new TextureDesc
                     {
-                        texture = textureY.GetNativeTexturePtr(),
-                        width = textureY.width,
-                        height = textureY.height,
+                        texture = _textureY.GetNativeTexturePtr(),
+                        width = _textureY.width,
+                        height = _textureY.height,
                     },
                     new TextureDesc
                     {
-                        texture = textureU.GetNativeTexturePtr(),
-                        width = textureU.width,
-                        height = textureU.height,
+                        texture = _textureU.GetNativeTexturePtr(),
+                        width = _textureU.width,
+                        height = _textureU.height,
                     },
                     new TextureDesc
                     {
-                        texture = textureV.GetNativeTexturePtr(),
-                        width = textureV.width,
-                        height = textureV.height,
+                        texture = _textureV.GetNativeTexturePtr(),
+                        width = _textureV.width,
+                        height = _textureV.height,
                     },
                 };
 #if WEBRTC_DEBUGGING
                 Debug.Log(string.Format("RegisteringRemoteTextures: {0:X16}, {1:X16}, {2:X16}", textures[0].texture.ToInt64(), textures[1].texture.ToInt64(), textures[2].texture.ToInt64()));
 #endif
-                nativeRenderer.EnableRemoteVideo(VideoKind.I420, textures);
+                _nativeRenderer.EnableRemoteVideo(VideoKind.I420, textures);
             }
         }
 
         private void CreateEmptyVideoTextures(int width, int height, byte defaultY)
 		{
-			videoMaterial = _rawImage.material;
+			_videoMaterial = _rawImage.material;
 
 			int lumaWidth = width;
 			int lumaHeight = height;
 			int chromaWidth = lumaWidth / 2;
 			int chromaHeight = lumaHeight / 2;
 
-			if (textureY == null || (textureY.width != lumaWidth || textureY.height != lumaHeight))
+			if (_textureY == null || (_textureY.width != lumaWidth || _textureY.height != lumaHeight))
 			{
-				textureY = new Texture2D(lumaWidth, lumaHeight, TextureFormat.R8, false, true);
+				_textureY = new Texture2D(lumaWidth, lumaHeight, TextureFormat.R8, false, true);
 			}
-			if (textureU == null || (textureU.width != chromaWidth || textureU.height != chromaHeight))
+			if (_textureU == null || (_textureU.width != chromaWidth || _textureU.height != chromaHeight))
 			{
-				textureU = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, false, true);
+				_textureU = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, false, true);
 			}
-			if (textureV == null || (textureV.width != chromaWidth || textureV.height != chromaHeight))
+			if (_textureV == null || (_textureV.width != chromaWidth || _textureV.height != chromaHeight))
 			{
-				textureV = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, false, true);
+				_textureV = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, false, true);
 			}
 
 			{
-				byte[] pixels = textureY.GetRawTextureData();
-				for (int i = 0; i < textureY.width * textureY.height; ++i)
+				byte[] pixels = _textureY.GetRawTextureData();
+				for (int i = 0; i < _textureY.width * _textureY.height; ++i)
 				{
 					pixels[i] = defaultY;
 				}
-				textureY.LoadRawTextureData(pixels);
-				textureY.Apply();
+				_textureY.LoadRawTextureData(pixels);
+				_textureY.Apply();
 			}
 			{
-				byte[] pixels = textureU.GetRawTextureData();
-				for (int h = 0, index = 0; h < textureU.height; ++h)
+				byte[] pixels = _textureU.GetRawTextureData();
+				for (int h = 0, index = 0; h < _textureU.height; ++h)
 				{
-					float value = 255f * h / textureU.height;
-					for (int w = 0; w < textureU.width; ++w, ++index)
+					float value = 255f * h / _textureU.height;
+					for (int w = 0; w < _textureU.width; ++w, ++index)
 					{
 						pixels[index] = (byte)value;
 					}
 				}
-				textureU.LoadRawTextureData(pixels);
-				textureU.Apply();
+				_textureU.LoadRawTextureData(pixels);
+				_textureU.Apply();
 			}
 			{
-				byte[] pixels = textureV.GetRawTextureData();
-				for (int h = 0, index = 0; h < textureV.height; ++h)
+				byte[] pixels = _textureV.GetRawTextureData();
+				for (int h = 0, index = 0; h < _textureV.height; ++h)
 				{
-					for (int w = 0; w < textureV.width; ++w, ++index)
+					for (int w = 0; w < _textureV.width; ++w, ++index)
 					{
-						float value = 255f * w / textureV.width;
+						float value = 255f * w / _textureV.width;
 						pixels[index] = (byte)value;
 					}
 				}
-				textureV.LoadRawTextureData(pixels);
-				textureV.Apply();
+				_textureV.LoadRawTextureData(pixels);
+				_textureV.Apply();
 			}
 
-			videoMaterial.SetTexture("_UPlane", textureU);
-			videoMaterial.SetTexture("_YPlane", textureY);
-			videoMaterial.SetTexture("_VPlane", textureV);
+			_videoMaterial.SetTexture("_UPlane", _textureU);
+			_videoMaterial.SetTexture("_YPlane", _textureY);
+			_videoMaterial.SetTexture("_VPlane", _textureV);
 		}
     }
 }

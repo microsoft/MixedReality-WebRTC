@@ -27,7 +27,7 @@ set_target_properties(
 # Base path to Microsoft.MixedReality.WebRTC.Native project.
 set(mrwebrtc-dir ../../../../../../../libs/mrwebrtc)
 # Base path to Microsoft.MixedReality.WebRTC.UnityPlugin.Native project.
-set(mrwebrtc-unityplugin-dir ../../../../../../../libs/Microsoft.MixedReality.WebRTC.UnityPlugin.Native)
+set(mrwebrtc-unityplugin-dir ../../../../../../../libs/mrwebrtc-unityplugin)
 
 # List of source files to compile.
 add_library(
@@ -45,7 +45,7 @@ add_library(
 target_include_directories(
         mrwebrtc-unityplugin
         PRIVATE
-        ${mrwebrtc-dir}
+        ${mrwebrtc-dir}/src
         ${mrwebrtc-dir}/include
         ${mrwebrtc-unityplugin-dir}
         ${mrwebrtc-unityplugin-dir}/src

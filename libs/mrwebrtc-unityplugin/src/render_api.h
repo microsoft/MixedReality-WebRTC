@@ -31,11 +31,6 @@ class RenderApi {
                                 const TextureUpdate& update,
                                 const VideoDesc& desc,
                                 const std::vector<VideoRect>& rects = {}) = 0;
-  virtual void SimpleUpdateTexture(void* dstTexture,
-                                   uint32_t width,
-                                   uint32_t height,
-                                   const uint8_t* dataPtr,
-                                   size_t dataLen) = 0;
 };
 
 // Create a graphics API implementation instance for the given API type.

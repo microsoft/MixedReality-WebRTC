@@ -226,11 +226,6 @@ class RenderApi_D3D11 : public RenderApi {
                                 const TextureUpdate& update,
                                 const VideoDesc& desc,
                                 const std::vector<VideoRect>& rects = {});
-  virtual void SimpleUpdateTexture(void* dstTexture,
-                                   uint32_t width,
-                                   uint32_t height,
-                                   const uint8_t* dataPtr,
-                                   size_t dataLen);
 
  private:
   void CreateResources();
@@ -378,25 +373,6 @@ void RenderApi_D3D11::EndModifyTexture(void* dstTexture,
 #endif
   m_pool->ReleaseStagingTexture(srcD3DTexture);
   ctx->Release();
-}
-
-void RenderApi_D3D11::SimpleUpdateTexture(void* dstTexture,
-                                          uint32_t width,
-                                          uint32_t height,
-                                          const uint8_t* dataPtr,
-                                          size_t dataLen) {
-  // Assuming texture is R8 format.
-  if (dataLen >= (size_t)width * height) {
-    auto dstD3DTexture = (ID3D11Texture2D*)dstTexture;
-    D3D11_TEXTURE2D_DESC desc;
-    dstD3DTexture->GetDesc(&desc);
-    if (desc.Width == width && desc.Height == height) {
-      ID3D11DeviceContext* ctx = nullptr;
-      m_device->GetImmediateContext(&ctx);
-      ctx->UpdateSubresource(dstD3DTexture, 0, nullptr, dataPtr, width, 0);
-      ctx->Release();
-    }
-  }
 }
 
 #endif  // #if SUPPORT_D3D11

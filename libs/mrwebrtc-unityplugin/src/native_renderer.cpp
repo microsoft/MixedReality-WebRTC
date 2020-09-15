@@ -25,11 +25,10 @@
 uint64_t NativeRenderer::m_frameId{0};
 static std::mutex g_lock;
 static std::shared_ptr<RenderApi> g_renderApi;
-static std::set<PeerConnectionHandle> g_videoUpdateQueue;
+static std::set<mrsRemoteVideoTrackHandle> g_videoUpdateQueue;
 static std::vector<std::shared_ptr<I420VideoFrame>> g_freeI420VideoFrames;
 static std::vector<std::shared_ptr<ArgbVideoFrame>> g_freeArgbVideoFrames;
-std::map<PeerConnectionHandle, std::shared_ptr<NativeRenderer>>
-    NativeRenderer::g_renderers;
+std::map<mrsRemoteVideoTrackHandle, std::shared_ptr<NativeRenderer>> NativeRenderer::g_renderers;
 
 void I420VideoFrame::CopyFrame(const mrsI420AVideoFrame& frame) {
   width = frame.width_;
@@ -48,57 +47,53 @@ void I420VideoFrame::CopyFrame(const mrsI420AVideoFrame& frame) {
   memcpy(vbuffer.data(), frame.vdata_, vsize);
 }
 
-void NativeRenderer::Create(PeerConnectionHandle peerHandle) {
+void NativeRenderer::Create(mrsRemoteVideoTrackHandle videoTrackHandle) {
   {
     // Global lock
     std::lock_guard guard(g_lock);
-    auto existing = NativeRenderer::GetUnsafe(peerHandle);
+    auto existing = NativeRenderer::GetUnsafe(videoTrackHandle);
     if (existing) {
-      NativeRenderer::DestroyUnsafe(peerHandle);
+      NativeRenderer::DestroyUnsafe(videoTrackHandle);
     }
-    g_renderers.emplace(peerHandle,
-                        std::make_shared<NativeRenderer>(peerHandle));
+    g_renderers.emplace(videoTrackHandle, std::make_shared<NativeRenderer>(videoTrackHandle));
   }
 }
 
-void NativeRenderer::Destroy(PeerConnectionHandle peerHandle) {
+void NativeRenderer::Destroy(mrsRemoteVideoTrackHandle videoTrackHandle) {
   {
     // Global lock
     std::lock_guard guard(g_lock);
-    DestroyUnsafe(peerHandle);
+    DestroyUnsafe(videoTrackHandle);
   }
 }
 
-void NativeRenderer::DestroyUnsafe(PeerConnectionHandle peerHandle) {
-  auto existing = NativeRenderer::GetUnsafe(peerHandle);
+void NativeRenderer::DestroyUnsafe(mrsRemoteVideoTrackHandle videoTrackHandle) {
+  auto existing = NativeRenderer::GetUnsafe(videoTrackHandle);
   if (existing) {
     existing->Shutdown();
-    g_renderers.erase(peerHandle);
+    g_renderers.erase(videoTrackHandle);
   }
 }
 
-std::shared_ptr<NativeRenderer> NativeRenderer::Get(
-    PeerConnectionHandle peerHandle) {
+std::shared_ptr<NativeRenderer> NativeRenderer::Get(mrsRemoteVideoTrackHandle videoTrackHandle) {
   {
     // Global lock
     std::lock_guard guard(g_lock);
-    return GetUnsafe(peerHandle);
+    return GetUnsafe(videoTrackHandle);
   }
 }
 
-std::shared_ptr<NativeRenderer> NativeRenderer::GetUnsafe(
-    PeerConnectionHandle peerHandle) {
-  auto iter = g_renderers.find(peerHandle);
+std::shared_ptr<NativeRenderer> NativeRenderer::GetUnsafe(mrsRemoteVideoTrackHandle videoTrackHandle) {
+  auto iter = g_renderers.find(videoTrackHandle);
   if (iter == g_renderers.end())
     return nullptr;
   else
     return iter->second;
 }
 
-std::vector<std::shared_ptr<NativeRenderer>> NativeRenderer::MultiGetUnsafe(
-    const std::set<PeerConnectionHandle>& peerHandles) {
+std::vector<std::shared_ptr<NativeRenderer>> NativeRenderer::MultiGetUnsafe(const std::set<mrsRemoteVideoTrackHandle>& videoTrackHandles) {
   std::vector<std::shared_ptr<NativeRenderer>> renderers;
-  for (auto peerHandle : peerHandles) {
+  for (auto peerHandle : videoTrackHandles) {
     auto renderer = GetUnsafe(peerHandle);
     if (renderer) {
       renderers.push_back(renderer);
@@ -107,8 +102,7 @@ std::vector<std::shared_ptr<NativeRenderer>> NativeRenderer::MultiGetUnsafe(
   return std::move(renderers);
 }
 
-NativeRenderer::NativeRenderer(PeerConnectionHandle peerHandle)
-    : m_handle(peerHandle) {
+NativeRenderer::NativeRenderer(mrsRemoteVideoTrackHandle videoTrackHandle) : m_handle(videoTrackHandle) {
   Log_Debug("NativeRenderer::NativeRenderer");
   if (!g_renderApi) {
     Log_Warning("NativeRenderer: Unity plugin not initialized.");
@@ -256,14 +250,8 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
 
       int index = 0;
       for (const TextureDesc& textureDesc : textures) {
-#if 0
-        const std::vector<uint8_t>& src = remoteI420Frame->GetBuffer(index);
-        g_renderApi->SimpleUpdateTexture(textureDesc.texture, textureDesc.width,
-                                         textureDesc.height, src.data(),
-                                         src.size());
-#else
-        VideoDesc videoDesc = {VideoFormat::R8, (uint32_t)textureDesc.width,
-                               (uint32_t)textureDesc.height};
+
+        VideoDesc videoDesc = {VideoFormat::R8, (uint32_t)textureDesc.width, (uint32_t)textureDesc.height};
         RenderApi::TextureUpdate update;
         if (g_renderApi->BeginModifyTexture(videoDesc, &update)) {
           int copyPitch = std::min<int>(videoDesc.width, update.rowPitch);
@@ -279,7 +267,7 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
 
           g_renderApi->EndModifyTexture(textureDesc.texture, update, videoDesc);
         }
-#endif
+
         ++index;
       }
 

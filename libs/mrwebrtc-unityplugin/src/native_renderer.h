@@ -45,14 +45,14 @@ struct ArgbVideoFrame {
 
 class NativeRenderer {
  public:
-  static void Create(PeerConnectionHandle peerHandle);
-  static void Destroy(PeerConnectionHandle peerHandle);
-  static std::shared_ptr<NativeRenderer> Get(PeerConnectionHandle peerHandle);
+  static void Create(mrsRemoteVideoTrackHandle videoHandle);
+  static void Destroy(mrsRemoteVideoTrackHandle videoHandle);
+  static std::shared_ptr<NativeRenderer> Get(mrsRemoteVideoTrackHandle videoHandle);
 
-  NativeRenderer(PeerConnectionHandle peerHandle);
+  NativeRenderer(mrsRemoteVideoTrackHandle videoHandle);
   ~NativeRenderer();
 
-  PeerConnectionHandle Handle() const { return m_handle; }
+  mrsRemoteVideoTrackHandle Handle() const { return m_handle; }
 
   void EnableRemoteVideo(mrsRemoteVideoTrackHandle videoTrackHandle,
                          VideoKind format,
@@ -66,15 +66,13 @@ class NativeRenderer {
                                     IUnityInterfaces* unityInterfaces);
 
  private:
-  static std::map<PeerConnectionHandle, std::shared_ptr<NativeRenderer>>
-      g_renderers;
+  static std::map<mrsRemoteVideoTrackHandle, std::shared_ptr<NativeRenderer>> g_renderers;
 
-  //these refs by peerhandle should be changed to ref by videohandle
-  static void DestroyUnsafe(PeerConnectionHandle peerHandle);
-  static std::shared_ptr<NativeRenderer> GetUnsafe(PeerConnectionHandle peerHandle);
-  static std::vector<std::shared_ptr<NativeRenderer>> MultiGetUnsafe(const std::set<PeerConnectionHandle>& peerHandles);
+  static void DestroyUnsafe(mrsRemoteVideoTrackHandle videoHandle);
+  static std::shared_ptr<NativeRenderer> GetUnsafe(mrsRemoteVideoTrackHandle videoHandle);
+  static std::vector<std::shared_ptr<NativeRenderer>> MultiGetUnsafe(const std::set<mrsRemoteVideoTrackHandle>& videoHandles);
 
-  PeerConnectionHandle m_handle{nullptr};
+  mrsRemoteVideoTrackHandle m_handle{nullptr};
   std::mutex m_lock;
   std::vector<TextureDesc> m_remoteTextures;
   VideoKind m_remoteVideoFormat{VideoKind::kNone};

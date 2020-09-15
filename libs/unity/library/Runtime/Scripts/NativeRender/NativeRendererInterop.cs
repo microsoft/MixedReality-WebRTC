@@ -1,11 +1,15 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.MixedReality.WebRTC.Interop;
 
-namespace Microsoft.MixedReality.WebRTC.UnityPlugin.Interop
+namespace Microsoft.MixedReality.WebRTC.UnityPlugin
 {
-    internal class NativeRendererInterop
+    internal static class NativeRendererInterop
     {
+        private const string _dllPath = "mrwebrtc-unityplugin";
+        
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct TextureDesc
         {
@@ -14,36 +18,28 @@ namespace Microsoft.MixedReality.WebRTC.UnityPlugin.Interop
             public int height;
         }
 
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsNativeRenderer_Create")]
-        public static extern uint Create(PeerConnectionHandle peerConnectionHandle);
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_Create")]
+        public static extern uint Create(IntPtr videoHandle);
 
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsNativeRenderer_Destroy")]
-        public static extern uint Destroy(PeerConnectionHandle peerConnectionHandle);
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_Destroy")]
+        public static extern uint Destroy(IntPtr videoHandle);
 
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsNativeRenderer_EnableLocalVideo")]
-        public static extern uint EnableLocalVideo(PeerConnectionHandle peerConnectionHandle, VideoKind format, TextureDesc[] textures, int textureCount);
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_EnableLocalVideo")]
+        public static extern uint EnableLocalVideo(IntPtr videoHandle, VideoKind format, TextureDesc[] textures, int textureCount);
 
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsNativeRenderer_DisableLocalVideo")]
-        public static extern uint DisableLocalVideo(PeerConnectionHandle peerConnectionHandle);
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_DisableLocalVideo")]
+        public static extern uint DisableLocalVideo(IntPtr videoHandle);
 
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsNativeRenderer_EnableRemoteVideo")]
-        public static extern uint EnableRemoteVideo(IntPtr videoHandle, PeerConnectionHandle peerConnectionHandle, VideoKind format, TextureDesc[] textures, int textureCount);
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_EnableRemoteVideo")]
+        public static extern uint EnableRemoteVideo(IntPtr videoHandle, VideoKind format, TextureDesc[] textures, int textureCount);
 
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsNativeRenderer_DisableRemoteVideo")]
-        public static extern uint DisableRemoteVideo(PeerConnectionHandle peerConnectionHandle);
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_DisableRemoteVideo")]
+        public static extern uint DisableRemoteVideo(IntPtr videoHandle);
 
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsNativeRenderer_GetVideoUpdateMethod")]
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_GetVideoUpdateMethod")]
         public static extern IntPtr GetVideoUpdateMethod();
 
-        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
-            EntryPoint = "mrsNativeRenderer_SetLoggingFunctions")]
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_SetLoggingFunctions")]
         public static extern void SetLoggingFunctions(LogCallback logDebugCallback, LogCallback logErrorCallback, LogCallback logWarningCallback);
     }
 }
