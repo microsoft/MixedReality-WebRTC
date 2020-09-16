@@ -47,8 +47,8 @@ target_include_directories(
         PRIVATE
         ${mrwebrtc-dir}/src
         ${mrwebrtc-dir}/include
-        ${mrwebrtc-unityplugin-dir}
         ${mrwebrtc-unityplugin-dir}/src
+        ${mrwebrtc-unityplugin-dir}/include
 )
 
 # Build and link Microsoft.MixedReality.WebRTC.Native.so.
