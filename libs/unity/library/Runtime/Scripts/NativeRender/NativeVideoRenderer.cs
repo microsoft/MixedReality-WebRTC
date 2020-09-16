@@ -109,7 +109,6 @@ namespace Microsoft.MixedReality.WebRTC
 
         private void TearDown()
         {
-	        NativeRenderingPluginUpdate.DecRef(this);
 	        try
 	        {
 		        _nativeRenderer?.DisableRemoteVideo();
