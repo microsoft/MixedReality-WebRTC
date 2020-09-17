@@ -15,12 +15,15 @@
 #include "sdk/android/src/jni/jvm.h"
 
 static bool isInialized = false;
+static jint jni_version;
 
 /// Auto-magic function called by the Java VM when the library is loaded.
 /// This is called on a thread which is already attached to the JVM, so has a
 /// valid JNIEnv already.
 extern "C" jint MRS_JNIEXPORT JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
-  if (isInialized) return 0;
+  // mrwebrtc-unityplugin also seems to call this method, and it wants back whatever
+  // jni_version initially return.
+  if (isInialized) return jni_version;
 
   RTC_LOG(INFO) << "JNI_OnLoad() for MR-WebRTC";
 
@@ -31,7 +34,7 @@ extern "C" jint MRS_JNIEXPORT JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
 
   // Manually initalize the global C++ variables with the current JVM and its
   // environment for the current thread (from sdk/android/src/jni/jvm.cc).
-  jint jni_version = webrtc::jni::InitGlobalJniVariables(jvm);
+  jni_version = webrtc::jni::InitGlobalJniVariables(jvm);
   RTC_DCHECK_GE(jni_version, 0);
   if (jni_version < 0) {
     RTC_LOG(LS_ERROR) << "Failed to initialize JVM during JNI_OnLoad().";
