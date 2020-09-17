@@ -35,23 +35,21 @@ typedef void(MRS_CALL* VideoRenderMethod)();
 
 /// Create a native renderer and return a handle to it.
 MRS_API mrsResult MRS_CALL
-mrsNativeRenderer_Create(PeerConnectionHandle peerHandle) noexcept;
+mrsNativeRenderer_Create(mrsRemoteVideoTrackHandle videoHandle) noexcept;
 
 /// Destroy a native renderer.
 MRS_API mrsResult MRS_CALL
-mrsNativeRenderer_Destroy(PeerConnectionHandle peerHandle) noexcept;
+mrsNativeRenderer_Destroy(mrsRemoteVideoTrackHandle videoHandle) noexcept;
 
 //// Register textures for remote video and start rendering it.
 MRS_API mrsResult MRS_CALL
 mrsNativeRenderer_EnableRemoteVideo(mrsRemoteVideoTrackHandle videoHandle,
-                                    PeerConnectionHandle peerHandle,
                                     VideoKind format,
                                     TextureDesc textures[],
                                     int textureCount) noexcept;
 
 /// Clear remote textures and stop rendering remote video.
-MRS_API mrsResult MRS_CALL
-mrsNativeRenderer_DisableRemoteVideo(PeerConnectionHandle peerHandle) noexcept;
+MRS_API mrsResult MRS_CALL mrsNativeRenderer_DisableRemoteVideo(mrsRemoteVideoTrackHandle videoHandle) noexcept;
 
 /// Returns the rendering method called by Unity.
 MRS_API VideoRenderMethod MRS_CALL
