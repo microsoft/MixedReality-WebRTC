@@ -2,11 +2,11 @@
 uid: index
 title: Index
 ---
-# MixedReality-WebRTC documentation (v2.0)
+# MixedReality-WebRTC documentation (latest)
 
-This is the MixedReality-WebRTC documentation for version 2.0, built from the [the `release/2.0` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/release/2.0/).
+This is the MixedReality-WebRTC documentation for [the `master` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/master/), which contains the latest features and API changes. In general this latest API is **incompatible with the NuGet packages**.
 
-For the documentation corresponding to other branches/versions, use the drop-down selection at the top right of this page.
+For the documentation corresponding to other branches, including [the `release/1.0` branch](https://github.com/microsoft/MixedReality-WebRTC/tree/release/1.0/) from which the NuGet 1.x packages are built, use the drop-down selection at the top right of this page.
 
 ## User Manual
 
