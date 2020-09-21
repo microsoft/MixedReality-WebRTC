@@ -78,8 +78,15 @@ dependencies {
 // Merge the libwebrtc.aar containing the Java interop classes for WebRTC
 // into the mrwebrtc.aar archive containing the native JNI library.
 task mergeLibwebrtcArchive(type: Exec) {
-   workingDir "$projectDir"
-   commandLine 'bash','./merge-archives.sh','-m',"$projectDir/build/outputs/aar/mrwebrtc.aar",'-o','./build/outputs/aar/merged/mrwebrtc.aar'
+    workingDir "$projectDir"   
+    println "Merge-archive.sh: Current working directory is $projectDir"
+
+    // For a Windows based path amount of backslashes is irrelevant, adding some more to escape
+    String WslRobustPath = "$projectDir".replaceAll("\\\\","\\\\\\\\")
+
+    commandLine 'bash','./merge-archives.sh','-m',
+                       "$WslRobustPath/build/outputs/aar/mrwebrtc.aar",'-o',
+                       './build/outputs/aar/merged/mrwebrtc.aar'
 }
 
 // Copy the final AAR archive to the Plugins folder of the Unity library.

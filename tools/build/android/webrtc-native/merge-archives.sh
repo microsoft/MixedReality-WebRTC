@@ -131,12 +131,26 @@ while getopts l:m:o:vh OPTION; do
     esac
 done
 
-# Replace C:/ for /mnt/c/ if using gradle in windows
 DRIVE_CHAR=${MRWEBRTC_AAR:0:1}
-echo $DRIVE_CHAR
-MRWEBRTC_AAR=${MRWEBRTC_AAR/$DRIVE_CHAR://mnt/${DRIVE_CHAR,,}}
-MRWEBRTC_AAR=${MRWEBRTC_AAR//\\//}
-echo -e "\e[39mAAR Path : \e[96m$MRWEBRTC_AAR\e[39m"
+if [[ $MRWEBRTC_AAR = $DRIVE_CHAR:* ]] then
+    # Replace C:/ for /mnt/c/ if using gradle in windows
+    echo "WSL-path-adaption: Detected windows path, adapting path now .."
+    MRWEBRTC_AAR=${MRWEBRTC_AAR/$DRIVE_CHAR://mnt/${DRIVE_CHAR,,}}
+    MRWEBRTC_AAR=${MRWEBRTC_AAR//\\//}
+    echo -e "\e[39mAAR Path : \e[96m$MRWEBRTC_AAR\e[39m"
+elif grep -q microsoft /proc/version; then
+    # Update path for libwebrtc build under WSL2
+    echo "WSL-path-adaption: Detected WSL, adapting path now ..."
+    echo "Raw: ${MRWEBRTC_AAR}"
+    echo "Adapt to format: /mnt/\$driveletter\\windows_subdir\\..."
+    MRWEBRTC_AAR="$(sed -r 's/(^\w):/\/mnt\/\L\1/' <<< ${MRWEBRTC_AAR})"
+    echo "Intermediate path adaption result: ${MRWEBRTC_AAR}"
+    echo "Now adapt to format: /mnt/\$driveletter/windows_subdir/..."
+    MRWEBRTC_AAR="$(sed -r 's/\\/\//g' <<< ${MRWEBRTC_AAR})"
+    echo "Final path adaption result: ${MRWEBRTC_AAR}"
+else
+    echo "WSL-path-adaption: Detected native Linux, skipping path adaption!"
+fi
 
 # Ensure all arguments have reasonable values
 verify-arguments
