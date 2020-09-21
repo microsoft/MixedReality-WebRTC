@@ -3,6 +3,15 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2020-09-15
+
+713c01d9670b3d4fbd7f996c04dd72153c1bcd41
+
+### Fixed
+
+- (330084c) Fix Unity build on Android (#537)
+- (4504214) Fix support for Visual Studio Professional in build script (#515)
+
 ## [2.0.0] - 2020-08-04
 
 2c5b29aa1acf40fad02b561d7c79f56642f77236
