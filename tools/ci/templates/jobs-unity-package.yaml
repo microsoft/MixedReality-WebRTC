@@ -107,6 +107,12 @@ jobs:
           Write-Host $file
           Remove-Item -Path $file -Force
         }
+        Write-Host "Removing PDB .meta files from Unity package Plugins/ folder..."
+        Get-ChildItem -Recurse '$(Build.SourcesDirectory)/libs/unity/library/Runtime/Plugins/*.pdb.meta' | ForEach-Object {
+          $file = $_
+          Write-Host $file
+          Remove-Item -Path $file -Force
+        }
       displayName: 'Delete PDBs'
 
   # For debugging, list the packages content before signing
