@@ -10,6 +10,7 @@ tests/Microsoft.MixedReality.WebRTC.Tests/bin
 tests/Microsoft.MixedReality.WebRTC.Tests/build
 tests/Microsoft.MixedReality.WebRTC.Tests/obj
 examples/TestNetCoreConsole/bin
+docs/template/mr-webrtc/styles/branches.gen.js
 
 # Visual Studio + Code
 .vs
