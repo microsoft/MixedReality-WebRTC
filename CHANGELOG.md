@@ -3,6 +3,15 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2020-09-30
+
+821a72b70219e6c640b70f46424a193778eeb56d
+
+### Fixed
+
+- (821a72b7) Fix Android build via Windows WSL2
+- (b3053472) Fix Unity warning due to extra .meta files for removed PDBs
+
 ## [2.0.1] - 2020-09-15
 
 713c01d9670b3d4fbd7f996c04dd72153c1bcd41
