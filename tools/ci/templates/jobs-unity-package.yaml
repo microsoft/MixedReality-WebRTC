@@ -103,7 +103,7 @@ jobs:
     - task: CopyFiles@2
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)/libs/unity/library'
-        content: '**\*.pdb'
+        contents: '**/*.pdb'
         targetFolder: '$(Build.ArtifactStagingDirectory)/pdbs/'
         overWrite: 'true'
         flattenFolders: 'false'
@@ -111,9 +111,9 @@ jobs:
     - task: DeleteFiles@1
       inputs:
         SourceFolder: '$(Build.SourcesDirectory)/libs/unity/library'
-        content: |
-          '**\*.pdb'
-          '**\*.pdb.meta'
+        contents: |
+          '**/*.pdb'
+          '**/*.pdb.meta'
         RemoveSourceFolder: 'false'
       displayName: 'Delete PDBs from NPM package'
 
