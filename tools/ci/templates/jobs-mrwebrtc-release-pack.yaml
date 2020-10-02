@@ -170,14 +170,14 @@ jobs:
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
-      content: '**/*.pdb'
+      content: '**\*.pdb'
       targetFolder: '$(Build.ArtifactStagingDirectory)/pdbs/$(packageName).${{parameters.nugetPackageVersion}}'
       overWrite: 'true'
       flattenFolders: 'false'
   - task: DeleteFiles@1
     inputs:
       SourceFolder: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
-      content: '**/*.pdb'
+      content: '**\*.pdb'
       RemoveSourceFolder: 'false'
 
   # For debugging, list the package content before signing
