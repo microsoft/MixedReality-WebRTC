@@ -278,7 +278,7 @@ jobs:
       artifact: 'nuget_mrwebrtc_${{parameters.packagePlatform}}'
 
   # Publish PDBs
-  - task: PublishBuildArtifacts@1
+  - task: PublishPipelineArtifact@1
     displayName: 'Publish PDBs'
     inputs:
       path: '$(Build.ArtifactStagingDirectory)/pdbs/$(packageName).${{parameters.nugetPackageVersion}}'

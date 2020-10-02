@@ -216,7 +216,7 @@ jobs:
       artifact: 'upm_samples'
 
   # Publish PDBs
-  - task: PublishBuildArtifacts@1
+  - task: PublishPipelineArtifact@1
     displayName: 'Publish PDBs'
     inputs:
       path: '$(Build.ArtifactStagingDirectory)/pdbs'
