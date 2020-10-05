@@ -18,7 +18,7 @@ parameters:
 - name: withPdbs
   displayName: 'Include PDBs in UPM packages'
   type: boolean
-  default: true
+  default: false
 - name: clean
   displayName: 'Clean build'
   type: boolean
