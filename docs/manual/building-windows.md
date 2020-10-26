@@ -66,7 +66,7 @@ Not all build variants need to be built; you can build only the one(s) necessary
      - `x64` for the 64-bit Windows Desktop and UWP variants; this includes the x64 Desktop variant required by the Unity editor
      - `ARM` for the 32-bit Windows UWP ARM variant
 
-3. Build the solution with F7 or **Build > Build Solution**. This builds only 2 build variants (Desktop and UWP) for the selected architecture and build configuration. If you need other variants, repeat from step 2. and select them.
+3. Build the solution with F6 or **Build > Build Solution**. This builds only 2 build variants (Desktop and UWP) for the selected architecture and build configuration. If you need other variants, repeat from step 2. and select them.
 
 On successful build, the binaries will be generated in a sub-directory under `bin/`, and the relevant DLLs will be copied by a post-build script to `libs\unity\library\Runtime\Plugins\` for the Unity library to consume them.
 
