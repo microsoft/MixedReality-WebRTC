@@ -87,7 +87,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 	        _i420aFrameQueue = null;
 
 	        CreateEmptyVideoTextures(width, height, 128);
-	        _nativeRenderer = new NativeRenderer(_source.NativeHandle); //the need for this peer connectionc an be gotten rid of, it should just go off video handles
+	        _nativeRenderer = new NativeRenderer(_source.NativeHandle); 
 	        RegisterRemoteTextures();
         }
 
