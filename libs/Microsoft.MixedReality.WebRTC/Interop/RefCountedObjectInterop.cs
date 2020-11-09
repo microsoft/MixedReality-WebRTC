@@ -9,7 +9,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     /// <summary>
     /// Handle to a native reference-counted object.
     /// </summary>
-    public abstract class RefCountedObjectHandle : ObjectHandle
+    internal abstract class RefCountedObjectHandle : ObjectHandle
     {
         /// <summary>
         /// Release the native object while the handle is being closed.

@@ -6,17 +6,17 @@ using UnityEngine;
 using Microsoft.MixedReality.WebRTC.UnityPlugin;
 using UnityEngine.UI;
 
-namespace Microsoft.MixedReality.WebRTC
+namespace Microsoft.MixedReality.WebRTC.Unity
 {
 	/// <summary>
 	/// This will render the video stream through native calls with DX11 or OpenGL, completely bypassing C# marshalling.
-	/// This provides a considerable performance improvement.
+	/// This provides a considerable performance improvement compared to <see cref="VideoRenderer"/>.
 	/// </summary>
     [AddComponentMenu("MixedReality-WebRTC/Native Video Renderer")]
     public class NativeVideoRenderer : MonoBehaviour
     {
-	    [SerializeField]
-	    private RawImage _rawImage;
+		[SerializeField]
+		private RawImage _rawImage;
 
         private RemoteVideoTrack _source;
         private Material _videoMaterial;
@@ -46,7 +46,7 @@ namespace Microsoft.MixedReality.WebRTC
         {
             if (_i420aFrameQueue != null)
             {
-	            if (_i420aFrameQueue.TryDequeue(out I420AVideoFrameStorage frame))
+	            if (_i420aFrameQueue.TryDequeue(out I420AVideoFrameStorage frame) && _nativeRenderer == null)
 	            {
 		            StartNativeRendering((int)frame.Width, (int)frame.Height);
 	            }
@@ -77,9 +77,7 @@ namespace Microsoft.MixedReality.WebRTC
 
         private void I420AVideoFrameReady(I420AVideoFrame frame)
         {
-	        // Clear the video display to not confuse the user who could otherwise
-	        // think that the video is still playing but is lagging/frozen.
-	        _i420aFrameQueue.Enqueue(frame);
+	        _i420aFrameQueue?.Enqueue(frame);
         }
 
         private void StartNativeRendering(int width, int height)

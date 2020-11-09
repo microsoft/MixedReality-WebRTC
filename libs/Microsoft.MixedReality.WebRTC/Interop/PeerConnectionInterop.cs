@@ -12,7 +12,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     /// <summary>
     /// Handle to a native peer connection object.
     /// </summary>
-    public sealed class PeerConnectionHandle : RefCountedObjectHandle { }
+    internal sealed class PeerConnectionHandle : RefCountedObjectHandle { }
 
     internal class PeerConnectionInterop
     {

@@ -10,7 +10,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
     /// <summary>
     /// Handle to a native object.
     /// </summary>
-    public abstract class ObjectHandle : SafeHandle
+    internal abstract class ObjectHandle : SafeHandle
     {
         /// <summary>
         /// Check if the current handle is invalid, which means it is not referencing

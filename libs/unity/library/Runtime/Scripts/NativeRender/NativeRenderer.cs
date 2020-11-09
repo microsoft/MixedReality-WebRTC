@@ -43,6 +43,7 @@ namespace Microsoft.MixedReality.WebRTC.UnityPlugin
 
         /// <summary>
         /// Starts renderering the local video stream to the provided textures.
+        /// Only kI420 is currently supported.
         /// </summary>
         /// <param name="format"></param>
         /// <param name="textures"></param>
@@ -69,6 +70,7 @@ namespace Microsoft.MixedReality.WebRTC.UnityPlugin
 
         /// <summary>
         /// Starts rendering the remote video stream to the provided textures.
+        /// Only kI420 is currently supported.
         /// </summary>
         /// <param name="format"></param>
         /// <param name="textures"></param>
@@ -80,7 +82,7 @@ namespace Microsoft.MixedReality.WebRTC.UnityPlugin
                 width = item.width,
                 height = item.height
             }).ToArray();
-            
+
             uint res = NativeRendererInterop.EnableRemoteVideo(_videoHandle, format, interopTextures, interopTextures.Length);
             WebRTC.Interop.Utils.ThrowOnErrorCode(res);
         }

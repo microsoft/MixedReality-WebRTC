@@ -741,11 +741,6 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
-        /// Accessor for the native peer connection handle.
-        /// </summary>
-        public PeerConnectionHandle NativeHandle => _nativePeerhandle;
-
-        /// <summary>
         /// Indicates whether the peer connection is established and can exchange some
         /// track content (audio/video/data) with the remote peer.
         /// </summary>

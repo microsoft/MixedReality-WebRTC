@@ -1,6 +1,6 @@
-﻿// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
-
+﻿//
+// Copyright (C) Microsoft. All rights reserved.
+//
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,14 +8,14 @@ using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.UnityPlugin
 {
-	public class NativeRenderingPluginUpdate : MonoBehaviour
+	internal class NativeRenderingPluginUpdate : MonoBehaviour
 	{
 		private static GameObject _owner;
 		private static bool _pluginInitialized;
 
-		private static HashSet<NativeVideoRenderer> _nativeVideoRenderersRefs = new HashSet<NativeVideoRenderer>();
-		
-		public static void AddRef(NativeVideoRenderer nativeVideoRenderer)
+		private static HashSet<MonoBehaviour> _nativeVideoRenderersRefs = new HashSet<MonoBehaviour>();
+
+		public static void AddRef(MonoBehaviour nativeVideoRenderer)
 		{
 			Debug.Log("NativeRenderingPluginUpdate AddRef");
 			if (_nativeVideoRenderersRefs.Count == 0)
@@ -39,16 +39,16 @@ namespace Microsoft.MixedReality.WebRTC.UnityPlugin
 #endif
 		}
 
-		public static void DecRef(NativeVideoRenderer nativeVideoRenderer)
+		public static void DecRef(MonoBehaviour nativeVideoRenderer)
 		{
 			_nativeVideoRenderersRefs.Remove(nativeVideoRenderer);
-			
+
 			if (_nativeVideoRenderersRefs.Count == 0)
 			{
 				Destroy(_owner);
 				_owner = null;
 			}
-				
+
 #if WEBRTC_DEBUGGING
 			Debug.Log($"NativeRenderingPluginUpdate.DecRef: {_nativeVideoRenderersRefs}");
 #endif
@@ -67,7 +67,7 @@ namespace Microsoft.MixedReality.WebRTC.UnityPlugin
 		private IEnumerator CallPluginAtEndOfFrames()
 		{
 			IntPtr videoUpdateMethod = NativeRenderer.GetVideoUpdateMethod();
-			
+
 			while (true)
 			{
 				// Wait until all frame rendering is done

@@ -144,10 +144,12 @@ void NativeRenderer::EnableRemoteVideo(mrsRemoteVideoTrackHandle videoTrackHandl
         break;
 
       case VideoKind::kARGB:
+        Log_Warning("NativeRenderer: kARGB not currently supported.");
         // TODO
         break;
 
       case VideoKind::kNone:
+        Log_Warning("NativeRenderer: No VideoKind specified.");
         // TODO
         break;
     }
