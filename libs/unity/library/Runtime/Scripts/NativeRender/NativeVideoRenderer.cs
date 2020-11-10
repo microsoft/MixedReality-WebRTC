@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using UnityEngine;
-using Microsoft.MixedReality.WebRTC.UnityPlugin;
 using UnityEngine.UI;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -20,7 +18,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private RemoteVideoTrack _source;
         private Material _videoMaterial;
-        private NativeRenderer _nativeRenderer;
+        private NativeVideo _nativeVideo;
 
         private Texture2D _textureY;
         private Texture2D _textureU;
@@ -46,7 +44,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             if (_i420aFrameQueue != null)
             {
-                if (_i420aFrameQueue.TryDequeue(out I420AVideoFrameStorage frame) && _nativeRenderer == null)
+                if (_i420aFrameQueue.TryDequeue(out I420AVideoFrameStorage frame) && _nativeVideo == null)
                 {
                     StartNativeRendering((int)frame.Width, (int)frame.Height);
                 }
@@ -87,7 +85,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _i420aFrameQueue = null;
 
             CreateEmptyVideoTextures(width, height, 128);
-            _nativeRenderer = new NativeRenderer(_source.NativeHandle);
+            _nativeVideo = new NativeVideo(_source.NativeHandle);
             RegisterRemoteTextures();
         }
 
@@ -109,19 +107,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             try
             {
-                _nativeRenderer?.DisableRemoteVideo();
-                _nativeRenderer?.Dispose();
+                _nativeVideo?.DisableRemoteVideo();
+                _nativeVideo?.Dispose();
             }
             finally
             {
-                _nativeRenderer = null;
+                _nativeVideo = null;
             }
             _source = null;
         }
 
         private void RegisterRemoteTextures()
         {
-            if (_nativeRenderer != null && _textureY != null)
+            if (_nativeVideo != null && _textureY != null)
             {
                 TextureDesc[] textures = new TextureDesc[3]
                 {
@@ -147,7 +145,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 #if WEBRTC_DEBUGGING
                 Debug.Log(string.Format("RegisteringRemoteTextures: {0:X16}, {1:X16}, {2:X16}", textures[0].texture.ToInt64(), textures[1].texture.ToInt64(), textures[2].texture.ToInt64()));
 #endif
-                _nativeRenderer.EnableRemoteVideo(VideoKind.I420, textures);
+                _nativeVideo.EnableRemoteVideo(VideoKind.I420, textures);
             }
         }
 

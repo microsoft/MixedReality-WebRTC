@@ -93,9 +93,8 @@ mrsNativeRenderer_EnableRemoteVideo(mrsRemoteVideoTrackHandle videoHandle,
   return Result::kSuccess;
 }
 
-mrsResult MRS_CALL
-mrsNativeRenderer_DisableRemoteVideo(PeerConnectionHandle peerHandle) noexcept {
-  if (auto renderer = NativeRenderer::Get(peerHandle)) {
+mrsResult MRS_CALL mrsNativeRenderer_DisableRemoteVideo(mrsRemoteVideoTrackHandle videoHandle) noexcept {
+  if (auto renderer = NativeRenderer::Get(videoHandle)) {
     renderer->DisableRemoteVideo();
   }
   return Result::kSuccess;

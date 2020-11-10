@@ -4,12 +4,12 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.MixedReality.WebRTC.UnityPlugin
+namespace Microsoft.MixedReality.WebRTC.Unity
 {
-    internal static class NativeRendererInterop
+    internal static class NativeVideoInterop
     {
         private const string _dllPath = "mrwebrtc-unityplugin";
-        
+
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct TextureDesc
         {

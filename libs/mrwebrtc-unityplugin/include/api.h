@@ -11,9 +11,6 @@ extern "C" {
 
 using mrsResult = Microsoft::MixedReality::WebRTC::Result;
 
-/// Opaque handle to a native PeerConnection C++ object.
-using PeerConnectionHandle = void*;
-
 //
 // Native rendering
 //
