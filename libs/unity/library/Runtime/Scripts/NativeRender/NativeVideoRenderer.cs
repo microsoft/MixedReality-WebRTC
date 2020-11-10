@@ -8,15 +8,15 @@ using UnityEngine.UI;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
-	/// <summary>
-	/// This will render the video stream through native calls with DX11 or OpenGL, completely bypassing C# marshalling.
-	/// This provides a considerable performance improvement compared to <see cref="VideoRenderer"/>.
-	/// </summary>
+    /// <summary>
+    /// This will render the video stream through native calls with DX11 or OpenGL, completely bypassing C# marshalling.
+    /// This provides a considerable performance improvement compared to <see cref="VideoRenderer"/>.
+    /// </summary>
     [AddComponentMenu("MixedReality-WebRTC/Native Video Renderer")]
     public class NativeVideoRenderer : MonoBehaviour
     {
-		[SerializeField]
-		private RawImage _rawImage;
+        [SerializeField]
+        private RawImage _rawImage;
 
         private RemoteVideoTrack _source;
         private Material _videoMaterial;
@@ -30,30 +30,30 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void Awake()
         {
-	        NativeRenderingPluginUpdate.AddRef(this);
+            NativeRenderingPluginUpdate.AddRef(this);
         }
 
         private void OnDestroy()
         {
-	        NativeRenderingPluginUpdate.DecRef(this);
+            NativeRenderingPluginUpdate.DecRef(this);
 
-	        // Teardown will also get called when the PeerConnection is destroyed.
-	        // So this is probably going to be called twice in many cases.
-	        TearDown();
+            // Teardown will also get called when the PeerConnection is destroyed.
+            // So this is probably going to be called twice in many cases.
+            TearDown();
         }
 
         private void Update()
         {
             if (_i420aFrameQueue != null)
             {
-	            if (_i420aFrameQueue.TryDequeue(out I420AVideoFrameStorage frame) && _nativeRenderer == null)
-	            {
-		            StartNativeRendering((int)frame.Width, (int)frame.Height);
-	            }
+                if (_i420aFrameQueue.TryDequeue(out I420AVideoFrameStorage frame) && _nativeRenderer == null)
+                {
+                    StartNativeRendering((int)frame.Width, (int)frame.Height);
+                }
             }
         }
 
-	    /// <summary>
+        /// <summary>
         /// Start rendering the passed source.
         /// </summary>
         /// <remarks>
@@ -61,34 +61,34 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public void StartRendering(IVideoSource source)
         {
-	        _source = source as RemoteVideoTrack;
-	        Debug.Assert(_source != null, "NativeVideoRender currently only supports RemoteVideoTack");
+            _source = source as RemoteVideoTrack;
+            Debug.Assert(_source != null, "NativeVideoRender currently only supports RemoteVideoTack");
 
-	        switch (source.FrameEncoding)
+            switch (source.FrameEncoding)
             {
                 case VideoEncoding.I420A:
-	                _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(2);
-	                _source.I420AVideoFrameReady += I420AVideoFrameReady;
+                    _i420aFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(2);
+                    _source.I420AVideoFrameReady += I420AVideoFrameReady;
                     break;
                 case VideoEncoding.Argb32:
-	                break;
+                    break;
             }
         }
 
         private void I420AVideoFrameReady(I420AVideoFrame frame)
         {
-	        _i420aFrameQueue?.Enqueue(frame);
+            _i420aFrameQueue?.Enqueue(frame);
         }
 
         private void StartNativeRendering(int width, int height)
         {
-	        // Subscription is only used to ge the frame dimensions to generate the textures. So Unsubscribe once that is done.
-	        _source.I420AVideoFrameReady -= I420AVideoFrameReady;
-	        _i420aFrameQueue = null;
+            // Subscription is only used to ge the frame dimensions to generate the textures. So Unsubscribe once that is done.
+            _source.I420AVideoFrameReady -= I420AVideoFrameReady;
+            _i420aFrameQueue = null;
 
-	        CreateEmptyVideoTextures(width, height, 128);
-	        _nativeRenderer = new NativeRenderer(_source.NativeHandle); 
-	        RegisterRemoteTextures();
+            CreateEmptyVideoTextures(width, height, 128);
+            _nativeRenderer = new NativeRenderer(_source.NativeHandle);
+            RegisterRemoteTextures();
         }
 
         /// <summary>
@@ -99,29 +99,29 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </remarks>
         public void StopRendering(IVideoSource _)
         {
-	        // Clear the video display to not confuse the user who could otherwise
-	        // think that the video is still playing but is lagging/frozen.
-	        CreateEmptyVideoTextures(4,4,128);
-	        TearDown();
+            // Clear the video display to not confuse the user who could otherwise
+            // think that the video is still playing but is lagging/frozen.
+            CreateEmptyVideoTextures(4,4,128);
+            TearDown();
         }
 
         private void TearDown()
         {
-	        try
-	        {
-		        _nativeRenderer?.DisableRemoteVideo();
-		        _nativeRenderer?.Dispose();
-	        }
-	        finally
-	        {
-		        _nativeRenderer = null;
-	        }
-	        _source = null;
+            try
+            {
+                _nativeRenderer?.DisableRemoteVideo();
+                _nativeRenderer?.Dispose();
+            }
+            finally
+            {
+                _nativeRenderer = null;
+            }
+            _source = null;
         }
 
         private void RegisterRemoteTextures()
         {
-	        if (_nativeRenderer != null && _textureY != null)
+            if (_nativeRenderer != null && _textureY != null)
             {
                 TextureDesc[] textures = new TextureDesc[3]
                 {
@@ -152,66 +152,66 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         private void CreateEmptyVideoTextures(int width, int height, byte defaultY)
-		{
-			_videoMaterial = _rawImage.material;
+        {
+            _videoMaterial = _rawImage.material;
 
-			int lumaWidth = width;
-			int lumaHeight = height;
-			int chromaWidth = lumaWidth / 2;
-			int chromaHeight = lumaHeight / 2;
+            int lumaWidth = width;
+            int lumaHeight = height;
+            int chromaWidth = lumaWidth / 2;
+            int chromaHeight = lumaHeight / 2;
 
-			if (_textureY == null || (_textureY.width != lumaWidth || _textureY.height != lumaHeight))
-			{
-				_textureY = new Texture2D(lumaWidth, lumaHeight, TextureFormat.R8, false, true);
-			}
-			if (_textureU == null || (_textureU.width != chromaWidth || _textureU.height != chromaHeight))
-			{
-				_textureU = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, false, true);
-			}
-			if (_textureV == null || (_textureV.width != chromaWidth || _textureV.height != chromaHeight))
-			{
-				_textureV = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, false, true);
-			}
+            if (_textureY == null || (_textureY.width != lumaWidth || _textureY.height != lumaHeight))
+            {
+                _textureY = new Texture2D(lumaWidth, lumaHeight, TextureFormat.R8, false, true);
+            }
+            if (_textureU == null || (_textureU.width != chromaWidth || _textureU.height != chromaHeight))
+            {
+                _textureU = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, false, true);
+            }
+            if (_textureV == null || (_textureV.width != chromaWidth || _textureV.height != chromaHeight))
+            {
+                _textureV = new Texture2D(chromaWidth, chromaHeight, TextureFormat.R8, false, true);
+            }
 
-			{
-				byte[] pixels = _textureY.GetRawTextureData();
-				for (int i = 0; i < _textureY.width * _textureY.height; ++i)
-				{
-					pixels[i] = defaultY;
-				}
-				_textureY.LoadRawTextureData(pixels);
-				_textureY.Apply();
-			}
-			{
-				byte[] pixels = _textureU.GetRawTextureData();
-				for (int h = 0, index = 0; h < _textureU.height; ++h)
-				{
-					float value = 255f * h / _textureU.height;
-					for (int w = 0; w < _textureU.width; ++w, ++index)
-					{
-						pixels[index] = (byte)value;
-					}
-				}
-				_textureU.LoadRawTextureData(pixels);
-				_textureU.Apply();
-			}
-			{
-				byte[] pixels = _textureV.GetRawTextureData();
-				for (int h = 0, index = 0; h < _textureV.height; ++h)
-				{
-					for (int w = 0; w < _textureV.width; ++w, ++index)
-					{
-						float value = 255f * w / _textureV.width;
-						pixels[index] = (byte)value;
-					}
-				}
-				_textureV.LoadRawTextureData(pixels);
-				_textureV.Apply();
-			}
+            {
+                byte[] pixels = _textureY.GetRawTextureData();
+                for (int i = 0; i < _textureY.width * _textureY.height; ++i)
+                {
+                    pixels[i] = defaultY;
+                }
+                _textureY.LoadRawTextureData(pixels);
+                _textureY.Apply();
+            }
+            {
+                byte[] pixels = _textureU.GetRawTextureData();
+                for (int h = 0, index = 0; h < _textureU.height; ++h)
+                {
+                    float value = 255f * h / _textureU.height;
+                    for (int w = 0; w < _textureU.width; ++w, ++index)
+                    {
+                        pixels[index] = (byte)value;
+                    }
+                }
+                _textureU.LoadRawTextureData(pixels);
+                _textureU.Apply();
+            }
+            {
+                byte[] pixels = _textureV.GetRawTextureData();
+                for (int h = 0, index = 0; h < _textureV.height; ++h)
+                {
+                    for (int w = 0; w < _textureV.width; ++w, ++index)
+                    {
+                        float value = 255f * w / _textureV.width;
+                        pixels[index] = (byte)value;
+                    }
+                }
+                _textureV.LoadRawTextureData(pixels);
+                _textureV.Apply();
+            }
 
-			_videoMaterial.SetTexture("_UPlane", _textureU);
-			_videoMaterial.SetTexture("_YPlane", _textureY);
-			_videoMaterial.SetTexture("_VPlane", _textureV);
-		}
+            _videoMaterial.SetTexture("_UPlane", _textureU);
+            _videoMaterial.SetTexture("_YPlane", _textureY);
+            _videoMaterial.SetTexture("_VPlane", _textureV);
+        }
     }
 }
