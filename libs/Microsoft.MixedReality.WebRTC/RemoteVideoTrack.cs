@@ -124,6 +124,9 @@ namespace Microsoft.MixedReality.WebRTC
         private event I420AVideoFrameDelegate _videoFrameReady;
         private event Argb32VideoFrameDelegate _argb32VideoFrameReady;
 
+        /// <summary>
+        /// Retrieves an unsafe handle to video track. Currently for internal use by the Unity NativeVideoRenderer component.
+        /// </summary>
         public IntPtr NativeHandle => _nativeHandle.DangerousGetHandle();
 
         // Constructor for interop-based creation; SetHandle() will be called later
