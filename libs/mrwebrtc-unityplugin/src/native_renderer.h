@@ -45,8 +45,8 @@ struct ArgbVideoFrame {
 
 class NativeRenderer {
  public:
-  static void Create(mrsRemoteVideoTrackHandle videoHandle);
-  static void Destroy(mrsRemoteVideoTrackHandle videoHandle);
+  static NativeRenderer* Create(mrsRemoteVideoTrackHandle videoTrackHandle);
+  static void Destroy(mrsNativeVideoHandle nativeVideoHandle);
   static std::shared_ptr<NativeRenderer> Get(mrsRemoteVideoTrackHandle videoHandle);
 
   NativeRenderer(mrsRemoteVideoTrackHandle videoHandle);
@@ -54,8 +54,7 @@ class NativeRenderer {
 
   mrsRemoteVideoTrackHandle Handle() const { return m_handle; }
 
-  void EnableRemoteVideo(mrsRemoteVideoTrackHandle videoTrackHandle,
-                         VideoKind format,
+  void EnableRemoteVideo(VideoKind format,
                          TextureDesc textureDescs[],
                          int textureDescCount);
   void DisableRemoteVideo();
@@ -66,11 +65,7 @@ class NativeRenderer {
                                     IUnityInterfaces* unityInterfaces);
 
  private:
-  static std::map<mrsRemoteVideoTrackHandle, std::shared_ptr<NativeRenderer>> g_renderers;
-
-  static void DestroyUnsafe(mrsRemoteVideoTrackHandle videoHandle);
-  static std::shared_ptr<NativeRenderer> GetUnsafe(mrsRemoteVideoTrackHandle videoHandle);
-  static std::vector<std::shared_ptr<NativeRenderer>> MultiGetUnsafe(const std::set<mrsRemoteVideoTrackHandle>& videoHandles);
+  static std::set<mrsNativeVideoHandle> g_nativeVideos;
 
   mrsRemoteVideoTrackHandle m_handle{nullptr};
   std::mutex m_lock;
@@ -81,10 +76,8 @@ class NativeRenderer {
 
   void Shutdown();
 
-  static void MRS_CALL
-  I420ARemoteVideoFrameCallback(void* user_data, const mrsI420AVideoFrame& frame);
-  static void MRS_CALL
-  ArgbRemotevideoFrameCallback(void* user_data, const mrsArgb32VideoFrame& frame);
+  static void MRS_CALL I420ARemoteVideoFrameCallback(void* user_data, const mrsI420AVideoFrame& frame);
+  static void MRS_CALL ArgbRemotevideoFrameCallback(void* user_data, const mrsArgb32VideoFrame& frame);
 
   static uint64_t m_frameId;
 };

@@ -10,6 +10,7 @@
 extern "C" {
 
 using mrsResult = Microsoft::MixedReality::WebRTC::Result;
+using mrsNativeVideoHandle = mrsObjectHandle;
 
 //
 // Native rendering
@@ -31,22 +32,22 @@ struct TextureDesc {
 typedef void(MRS_CALL* VideoRenderMethod)();
 
 /// Create a native renderer and return a handle to it.
-MRS_API mrsResult MRS_CALL
-mrsNativeRenderer_Create(mrsRemoteVideoTrackHandle videoHandle) noexcept;
+MRS_API mrsNativeVideoHandle MRS_CALL
+mrsNativeRenderer_Create(mrsRemoteVideoTrackHandle videoTrackHandle) noexcept;
 
 /// Destroy a native renderer.
 MRS_API mrsResult MRS_CALL
-mrsNativeRenderer_Destroy(mrsRemoteVideoTrackHandle videoHandle) noexcept;
+mrsNativeRenderer_Destroy(mrsNativeVideoHandle nativeVideoHandle) noexcept;
 
 //// Register textures for remote video and start rendering it.
 MRS_API mrsResult MRS_CALL
-mrsNativeRenderer_EnableRemoteVideo(mrsRemoteVideoTrackHandle videoHandle,
+mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
                                     VideoKind format,
                                     TextureDesc textures[],
                                     int textureCount) noexcept;
 
 /// Clear remote textures and stop rendering remote video.
-MRS_API mrsResult MRS_CALL mrsNativeRenderer_DisableRemoteVideo(mrsRemoteVideoTrackHandle videoHandle) noexcept;
+MRS_API mrsResult MRS_CALL mrsNativeRenderer_DisableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle) noexcept;
 
 /// Returns the rendering method called by Unity.
 MRS_API VideoRenderMethod MRS_CALL

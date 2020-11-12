@@ -25,10 +25,10 @@
 uint64_t NativeRenderer::m_frameId{0};
 static std::mutex g_lock;
 static std::shared_ptr<RenderApi> g_renderApi;
-static std::set<mrsRemoteVideoTrackHandle> g_videoUpdateQueue;
+static std::set<mrsNativeVideoHandle> g_nativeVideoUpdateQueue;
 static std::vector<std::shared_ptr<I420VideoFrame>> g_freeI420VideoFrames;
 static std::vector<std::shared_ptr<ArgbVideoFrame>> g_freeArgbVideoFrames;
-std::map<mrsRemoteVideoTrackHandle, std::shared_ptr<NativeRenderer>> NativeRenderer::g_renderers;
+std::set<mrsNativeVideoHandle> NativeRenderer::g_nativeVideos;
 
 void I420VideoFrame::CopyFrame(const mrsI420AVideoFrame& frame) {
   width = frame.width_;
@@ -47,59 +47,24 @@ void I420VideoFrame::CopyFrame(const mrsI420AVideoFrame& frame) {
   memcpy(vbuffer.data(), frame.vdata_, vsize);
 }
 
-void NativeRenderer::Create(mrsRemoteVideoTrackHandle videoTrackHandle) {
+NativeRenderer* NativeRenderer::Create(mrsRemoteVideoTrackHandle videoTrackHandle) {
   {
     // Global lock
     std::lock_guard guard(g_lock);
-    auto existing = NativeRenderer::GetUnsafe(videoTrackHandle);
-    if (existing) {
-      NativeRenderer::DestroyUnsafe(videoTrackHandle);
-    }
-    g_renderers.emplace(videoTrackHandle, std::make_shared<NativeRenderer>(videoTrackHandle));
+    auto nativeVideo = new NativeRenderer(videoTrackHandle);
+    g_nativeVideos.insert(nativeVideo);
+    return nativeVideo;
   }
 }
 
-void NativeRenderer::Destroy(mrsRemoteVideoTrackHandle videoTrackHandle) {
+void NativeRenderer::Destroy(mrsNativeVideoHandle nativeVideoHandle) {
   {
     // Global lock
     std::lock_guard guard(g_lock);
-    DestroyUnsafe(videoTrackHandle);
+    NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle;
+    nativeVideo->Shutdown();
+    g_nativeVideos.erase(nativeVideoHandle);
   }
-}
-
-void NativeRenderer::DestroyUnsafe(mrsRemoteVideoTrackHandle videoTrackHandle) {
-  auto existing = NativeRenderer::GetUnsafe(videoTrackHandle);
-  if (existing) {
-    existing->Shutdown();
-    g_renderers.erase(videoTrackHandle);
-  }
-}
-
-std::shared_ptr<NativeRenderer> NativeRenderer::Get(mrsRemoteVideoTrackHandle videoTrackHandle) {
-  {
-    // Global lock
-    std::lock_guard guard(g_lock);
-    return GetUnsafe(videoTrackHandle);
-  }
-}
-
-std::shared_ptr<NativeRenderer> NativeRenderer::GetUnsafe(mrsRemoteVideoTrackHandle videoTrackHandle) {
-  auto iter = g_renderers.find(videoTrackHandle);
-  if (iter == g_renderers.end())
-    return nullptr;
-  else
-    return iter->second;
-}
-
-std::vector<std::shared_ptr<NativeRenderer>> NativeRenderer::MultiGetUnsafe(const std::set<mrsRemoteVideoTrackHandle>& videoTrackHandles) {
-  std::vector<std::shared_ptr<NativeRenderer>> renderers;
-  for (auto peerHandle : videoTrackHandles) {
-    auto renderer = GetUnsafe(peerHandle);
-    if (renderer) {
-      renderers.push_back(renderer);
-    }
-  }
-  return std::move(renderers);
 }
 
 NativeRenderer::NativeRenderer(mrsRemoteVideoTrackHandle videoTrackHandle) : m_handle(videoTrackHandle) {
@@ -119,8 +84,7 @@ void NativeRenderer::Shutdown() {
   DisableRemoteVideo();
 }
 
-void NativeRenderer::EnableRemoteVideo(mrsRemoteVideoTrackHandle videoTrackHandle,
-                                        VideoKind format,
+void NativeRenderer::EnableRemoteVideo(VideoKind format,
                                         TextureDesc textureDescs[],
                                         int textureDescCount) {
   if (!g_renderApi) {
@@ -138,8 +102,9 @@ void NativeRenderer::EnableRemoteVideo(mrsRemoteVideoTrackHandle videoTrackHandl
           m_remoteTextures[1] = textureDescs[1];
           m_remoteTextures[2] = textureDescs[2];
           mrsRemoteVideoTrackRegisterI420AFrameCallback(
-              videoTrackHandle, NativeRenderer::I420ARemoteVideoFrameCallback,
-              m_handle);
+              m_handle, 
+              NativeRenderer::I420ARemoteVideoFrameCallback,
+              this);
         }
         break;
 
@@ -169,7 +134,9 @@ void NativeRenderer::DisableRemoteVideo() {
 void NativeRenderer::I420ARemoteVideoFrameCallback(
     void* user_data,
     const mrsI420AVideoFrame& frame) {
-  if (auto renderer = NativeRenderer::Get(user_data)) {
+
+    NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(user_data);
+
     // RESEARCH: Do we need to keep a frame queue or is it fine to just render
     // the most recent frame?
 
@@ -181,31 +148,29 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
 
     // Acquire a video frame buffer from the free list.
     {
-      // Global lock
-      std::lock_guard guard(g_lock);
-      if (renderer->m_nextI420RemoteVideoFrame == nullptr) {
-        // TODO: Encapsulate this logic.
-        if (g_freeI420VideoFrames.size()) {
-          renderer->m_nextI420RemoteVideoFrame = g_freeI420VideoFrames.back();
-          g_freeI420VideoFrames.pop_back();
-        } else {
-          renderer->m_nextI420RemoteVideoFrame =
-              std::make_shared<I420VideoFrame>();
+        // Global lock
+        std::lock_guard guard(g_lock);
+        if (nativeVideo->m_nextI420RemoteVideoFrame == nullptr) {
+            // TODO: Encapsulate this logic.
+            if (g_freeI420VideoFrames.size()) {
+                nativeVideo->m_nextI420RemoteVideoFrame = g_freeI420VideoFrames.back();
+                g_freeI420VideoFrames.pop_back();
+            } else {
+                nativeVideo->m_nextI420RemoteVideoFrame = std::make_shared<I420VideoFrame>();
+            }
         }
-      }
     }
 
     // Copy the incoming video frame to the buffer.
-    renderer->m_nextI420RemoteVideoFrame->CopyFrame(frame);
+    nativeVideo->m_nextI420RemoteVideoFrame->CopyFrame(frame);
 
     // Queue the renderer for the next video update.
     {
-      // Global lock
-      std::lock_guard guard(g_lock);
-      // Register this renderer for the next video update.
-      g_videoUpdateQueue.emplace(renderer->m_handle);
+        // Global lock
+        std::lock_guard guard(g_lock);
+        // Register this renderer for the next video update.
+        g_nativeVideoUpdateQueue.emplace(nativeVideo);
     }
-  }
 }
 
 /// Renders current frame of all queued NativeRenderers.
@@ -213,21 +178,12 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
   if (!g_renderApi)
     return;
 
-  // Copy and zero out the video update queue.
-  std::vector<std::shared_ptr<NativeRenderer>> renderers;
-  {
-    // Global lock
-    std::lock_guard guard(g_lock);
-    // Gather queued native renderers.
-    renderers = NativeRenderer::MultiGetUnsafe(g_videoUpdateQueue);
-    // Clear the queue.
-    g_videoUpdateQueue.clear();
-  }
-
   /// RESEARCH: Can all native renderers be handled in a single draw call?
-  for (auto renderer : renderers) {
-    if (!renderer)
+  for (auto nativeVideoHandle : g_nativeVideoUpdateQueue) {
+    if (!nativeVideoHandle)
       continue;
+
+    NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(nativeVideoHandle);
 
     // TODO: Support ARGB format.
 
@@ -236,13 +192,13 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
     std::shared_ptr<ArgbVideoFrame> remoteArgbFrame;
     {
       // Instance lock
-      std::lock_guard guard(renderer->m_lock);
+      std::lock_guard guard(nativeVideo->m_lock);
       // Copy the remote textures and current video frame.
-      textures = renderer->m_remoteTextures;
-      remoteI420Frame = renderer->m_nextI420RemoteVideoFrame;
-      remoteArgbFrame = renderer->m_nextArgbRemoteVideoFrame;
-      renderer->m_nextI420RemoteVideoFrame = nullptr;
-      renderer->m_nextArgbRemoteVideoFrame = nullptr;
+      textures = nativeVideo->m_remoteTextures;
+      remoteI420Frame = nativeVideo->m_nextI420RemoteVideoFrame;
+      remoteArgbFrame = nativeVideo->m_nextArgbRemoteVideoFrame;
+      nativeVideo->m_nextI420RemoteVideoFrame = nullptr;
+      nativeVideo->m_nextArgbRemoteVideoFrame = nullptr;
     }
 
     if (remoteI420Frame) {

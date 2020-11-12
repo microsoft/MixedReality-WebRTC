@@ -17,7 +17,6 @@
 static IUnityInterfaces* s_UnityInterfaces = nullptr;
 static IUnityGraphics* s_Graphics = nullptr;
 
-
 extern "C" UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API OnGraphicsDeviceEvent(UnityGfxDeviceEventType eventType) {
   if (s_Graphics && s_UnityInterfaces) {
     NativeRenderer::OnGraphicsDeviceEvent(eventType, s_Graphics->GetRenderer(), s_UnityInterfaces);
@@ -69,34 +68,33 @@ mrsNativeRenderer_SetLoggingFunctions(UnityLogger::LogFunction logDebugFunc,
 
 using namespace Microsoft::MixedReality::WebRTC;
 
+mrsNativeVideoHandle MRS_CALL
+mrsNativeRenderer_Create(mrsRemoteVideoTrackHandle videoTrackHandle) noexcept {
+  NativeRenderer* nativeVideo = NativeRenderer::Create(videoTrackHandle);
+  return nativeVideo;
+}
+
 mrsResult MRS_CALL
-mrsNativeRenderer_Create(mrsRemoteVideoTrackHandle videoHandle) noexcept {
-  NativeRenderer::Create(videoHandle);
+mrsNativeRenderer_Destroy(mrsNativeVideoHandle nativeVideoHandle) noexcept {
+  NativeRenderer::Destroy(nativeVideoHandle);
   return Result::kSuccess;
 }
 
 mrsResult MRS_CALL
-mrsNativeRenderer_Destroy(mrsRemoteVideoTrackHandle videoHandle) noexcept {
-  NativeRenderer::Destroy(videoHandle);
-  return Result::kSuccess;
-}
-
-mrsResult MRS_CALL
-mrsNativeRenderer_EnableRemoteVideo(mrsRemoteVideoTrackHandle videoHandle,
+mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
                                     VideoKind format,
                                     TextureDesc textures[],
                                     int textureCount) noexcept {
   UnityLogger::LogDebug("mrsNativeRenderer_EnableRemoteVideo");
-  if (auto renderer = NativeRenderer::Get(videoHandle)) {
-    renderer->EnableRemoteVideo(videoHandle, format, textures, textureCount);
-  }
+  NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(nativeVideoHandle);
+  //NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle;
+  nativeVideo->EnableRemoteVideo(format, textures, textureCount);
   return Result::kSuccess;
 }
 
-mrsResult MRS_CALL mrsNativeRenderer_DisableRemoteVideo(mrsRemoteVideoTrackHandle videoHandle) noexcept {
-  if (auto renderer = NativeRenderer::Get(videoHandle)) {
-    renderer->DisableRemoteVideo();
-  }
+mrsResult MRS_CALL mrsNativeRenderer_DisableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle) noexcept {
+  NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle;
+  nativeVideo->DisableRemoteVideo();
   return Result::kSuccess;
 }
 
