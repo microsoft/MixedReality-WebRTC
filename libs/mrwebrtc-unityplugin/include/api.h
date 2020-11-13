@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "export.h"
 #include "mrs_errors.h"
 #include "interop_api.h"
 #include "../src/log_helpers.h"
@@ -29,28 +30,29 @@ struct TextureDesc {
 };
 
 /// Signature of rendering method called by Unity.
-typedef void(MRS_CALL* VideoRenderMethod)();
+typedef void(MR_UNITYPLUGIN__CALL* VideoRenderMethod)();
 
 /// Create a native renderer and return a handle to it.
-MRS_API mrsNativeVideoHandle MRS_CALL
+MR_UNITYPLUGIN__API mrsNativeVideoHandle MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_Create(mrsRemoteVideoTrackHandle videoTrackHandle) noexcept;
 
 /// Destroy a native renderer.
-MRS_API mrsResult MRS_CALL
+MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_Destroy(mrsNativeVideoHandle nativeVideoHandle) noexcept;
 
 //// Register textures for remote video and start rendering it.
-MRS_API mrsResult MRS_CALL
+MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
                                     VideoKind format,
                                     TextureDesc textures[],
                                     int textureCount) noexcept;
 
 /// Clear remote textures and stop rendering remote video.
-MRS_API mrsResult MRS_CALL mrsNativeRenderer_DisableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle) noexcept;
+MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
+mrsNativeRenderer_DisableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle) noexcept;
 
 /// Returns the rendering method called by Unity.
-MRS_API VideoRenderMethod MRS_CALL
+MR_UNITYPLUGIN__API VideoRenderMethod MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_GetVideoUpdateMethod() noexcept;
 
 //
@@ -58,7 +60,7 @@ mrsNativeRenderer_GetVideoUpdateMethod() noexcept;
 //
 
 /// Pipe log entries to Unity's log.
-MRS_API void MRS_CALL
+MR_UNITYPLUGIN__API void MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_SetLoggingFunctions(UnityLogger::LogFunction logDebugFunc,
                                       UnityLogger::UnityLogger::LogFunction logErrorFunc,
                                       UnityLogger::LogFunction logWarningFunc);

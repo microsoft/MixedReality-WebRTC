@@ -89,7 +89,8 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
       <AdditionalDependencies>mrwebrtc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -147,9 +148,7 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\Unity\IUnityGraphicsMetal.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\Unity\IUnityInterface.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\video_types.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="exports.def" />
+    <ClInclude Include="..\..\..\..\libs\mrwebrtc-unityplugin\include\export.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="AfterBuild">

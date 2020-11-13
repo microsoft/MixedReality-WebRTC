@@ -37,7 +37,7 @@ extern "C" UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API UnityPluginUnload() {
   }
 }
 
-void MRS_CALL
+void MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_SetLoggingFunctions(UnityLogger::LogFunction logDebugFunc,
                                       UnityLogger::LogFunction logErrorFunc,
                                       UnityLogger::LogFunction logWarningFunc) {
@@ -68,19 +68,19 @@ mrsNativeRenderer_SetLoggingFunctions(UnityLogger::LogFunction logDebugFunc,
 
 using namespace Microsoft::MixedReality::WebRTC;
 
-mrsNativeVideoHandle MRS_CALL
+mrsNativeVideoHandle MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_Create(mrsRemoteVideoTrackHandle videoTrackHandle) noexcept {
   NativeRenderer* nativeVideo = NativeRenderer::Create(videoTrackHandle);
   return nativeVideo;
 }
 
-mrsResult MRS_CALL
+mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_Destroy(mrsNativeVideoHandle nativeVideoHandle) noexcept {
   NativeRenderer::Destroy(nativeVideoHandle);
   return Result::kSuccess;
 }
 
-mrsResult MRS_CALL
+mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
                                     VideoKind format,
                                     TextureDesc textures[],
@@ -92,12 +92,14 @@ mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
   return Result::kSuccess;
 }
 
-mrsResult MRS_CALL mrsNativeRenderer_DisableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle) noexcept {
+mrsResult MR_UNITYPLUGIN__CALL 
+mrsNativeRenderer_DisableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle) noexcept {
   NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle;
   nativeVideo->DisableRemoteVideo();
   return Result::kSuccess;
 }
 
-VideoRenderMethod MRS_CALL mrsNativeRenderer_GetVideoUpdateMethod() noexcept {
+VideoRenderMethod MR_UNITYPLUGIN__CALL 
+mrsNativeRenderer_GetVideoUpdateMethod() noexcept {
   return NativeRenderer::DoVideoUpdate;
 }
