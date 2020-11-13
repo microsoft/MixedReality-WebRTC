@@ -92,7 +92,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         public MonoPInvokeCallbackAttribute(Type t) { }
     }
 
-    public static class Utils
+    internal static class Utils
     {
         // Note that on Windows due to a "bug" in LoadLibraryEx() this filename must not contain any '.'.
         // See https://github.com/dotnet/runtime/issues/7223
@@ -135,7 +135,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        public struct SdpFilter
+        internal struct SdpFilter
         {
             public string CodecName;
             public string ExtraParams;
