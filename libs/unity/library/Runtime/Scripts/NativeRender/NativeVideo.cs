@@ -27,7 +27,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// </summary>
     internal class NativeVideo : IDisposable
     {
-        private IntPtr _videoHandle;
+        private IntPtr _nativeVideoHandle;
 
         /// <summary>
         /// Creates a NativeRenderer for the provided PeerConnection.
@@ -35,10 +35,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <param name="peerConnection"></param>
         public NativeVideo(IntPtr videoHandle)
         {
-            uint res = NativeVideoInterop.Create(videoHandle);
-            WebRTC.Interop.Utils.ThrowOnErrorCode(res);
-            _videoHandle = videoHandle;
-            // _nativeHandle = peerConnection.NativeHandle;
+	        _nativeVideoHandle = NativeVideoInterop.Create(videoHandle);
         }
 
         /// <summary>
@@ -55,7 +52,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 width = item.width,
                 height = item.height
             }).ToArray();
-            uint res = NativeVideoInterop.EnableLocalVideo(_videoHandle, format, interopTextures, interopTextures.Length);
+            uint res = NativeVideoInterop.EnableLocalVideo(_nativeVideoHandle, format, interopTextures, interopTextures.Length);
             WebRTC.Interop.Utils.ThrowOnErrorCode(res);
         }
 
@@ -64,7 +61,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         public void DisableLocalVideo()
         {
-            uint res = NativeVideoInterop.DisableLocalVideo(_videoHandle);
+            uint res = NativeVideoInterop.DisableLocalVideo(_nativeVideoHandle);
             WebRTC.Interop.Utils.ThrowOnErrorCode(res);
         }
 
@@ -83,7 +80,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 height = item.height
             }).ToArray();
 
-            uint res = NativeVideoInterop.EnableRemoteVideo(_videoHandle, format, interopTextures, interopTextures.Length);
+            uint res = NativeVideoInterop.EnableRemoteVideo(_nativeVideoHandle, format, interopTextures, interopTextures.Length);
             WebRTC.Interop.Utils.ThrowOnErrorCode(res);
         }
 
@@ -92,7 +89,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         public void DisableRemoteVideo()
         {
-            uint res = NativeVideoInterop.DisableRemoteVideo(_videoHandle);
+            uint res = NativeVideoInterop.DisableRemoteVideo(_nativeVideoHandle);
             WebRTC.Interop.Utils.ThrowOnErrorCode(res);
         }
 
@@ -118,8 +115,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         public void Dispose()
         {
-            NativeVideoInterop.Destroy(_videoHandle);
-            _videoHandle = IntPtr.Zero;
+            NativeVideoInterop.Destroy(_nativeVideoHandle);
+            _nativeVideoHandle = IntPtr.Zero;
         }
     }
 }
