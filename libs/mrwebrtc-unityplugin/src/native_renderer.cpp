@@ -206,9 +206,13 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
       if (textures.size() < 3)
         continue;
 
+      if (remoteI420Frame->width != textures[0].width || remoteI420Frame->height != textures[0].height) {
+        Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with.");
+        continue;
+      }
+
       int index = 0;
       for (const TextureDesc& textureDesc : textures) {
-
         VideoDesc videoDesc = {VideoFormat::R8, (uint32_t)textureDesc.width, (uint32_t)textureDesc.height};
         RenderApi::TextureUpdate update;
         if (g_renderApi->BeginModifyTexture(videoDesc, &update)) {
