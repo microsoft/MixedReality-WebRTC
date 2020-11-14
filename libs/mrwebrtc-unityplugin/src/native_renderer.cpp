@@ -128,6 +128,7 @@ void NativeRenderer::DisableRemoteVideo() {
     std::lock_guard guard(m_lock);
     m_remoteTextures.clear();
     m_remoteVideoFormat = VideoKind::kNone;
+    mrsRemoteVideoTrackRegisterI420AFrameCallback(m_handle, nullptr, nullptr);
   }
 }
 

@@ -41,6 +41,8 @@ MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_Destroy(mrsNativeVideoHandle nativeVideoHandle) noexcept;
 
 //// Register textures for remote video and start rendering it.
+//// Calling this will override anything that is currently
+//// subscribed to the FrameReady call back on the VideoTrack.
 MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
                                     VideoKind format,

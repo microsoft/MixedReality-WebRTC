@@ -67,6 +67,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Starts rendering the remote video stream to the provided textures.
         /// Only kI420 is currently supported.
+        ///
+        /// Calling this will override anything that is currently
+        /// subscribed to the FrameReady call back on the VideoTrack.
         /// </summary>
         /// <param name="format"></param>
         /// <param name="textures"></param>
