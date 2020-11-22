@@ -107,8 +107,8 @@ Next, edit `MainPage.xaml.cs`:
        await capture.InitializeAsync(settings);
 
        // Retrieve a list of available video capture devices (webcams).
-       List<VideoCaptureDevice> deviceList =
-           await DeviceVideoTrackSource.GetCaptureFormatsAsync(); 
+       IReadOnlyList<VideoCaptureDevice> deviceList = 
+       await DeviceVideoTrackSource.GetCaptureDevicesAsync(); 
 
        // Get the device list and, for example, print them to the debugger console
        foreach (var device in deviceList)
