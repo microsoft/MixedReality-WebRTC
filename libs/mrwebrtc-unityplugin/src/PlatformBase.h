@@ -43,8 +43,10 @@ https://github.com/Unity-Technologies/NativeRenderingPlugin
 #if _MSC_VER
 	#define UNITY_WIN 1
 #elif defined(__APPLE__)
-	#if defined(__arm__) || defined(__arm64__)
-		#define UNITY_IPHONE 1
+	#if TARGET_OS_TV
+		#define UNITY_TVOS 1
+	#elif TARGET_OS_IOS
+		#define UNITY_IOS 1
 	#else
 		#define UNITY_OSX 1
 	#endif

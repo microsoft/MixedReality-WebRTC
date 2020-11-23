@@ -15,7 +15,7 @@
 #include <string>
 #include <string_view>
 
-#if defined(MR_SHARING_WIN)
+#if defined(MR_UNITYPLUGIN_SHARING_WIN)
 
 #include "targetver.h"
 
@@ -31,7 +31,7 @@
 
 #include <windows.h>
 
-#elif defined(MR_SHARING_ANDROID)
+#elif defined(MR_UNITYPLUGIN_SHARING_ANDROID)
 
 #define WEBRTC_POSIX 1
 #define WEBRTC_ANDROID 1
