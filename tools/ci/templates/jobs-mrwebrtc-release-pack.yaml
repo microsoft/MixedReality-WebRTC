@@ -166,6 +166,20 @@ jobs:
      Copy-Item $srcFile $dstDir -Force
     displayName: 'Copy API headers'
 
+  # Move PDBs into their own hierarchy
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
+      contents: '**/*.pdb'
+      targetFolder: '$(Build.ArtifactStagingDirectory)/pdbs/$(packageName).${{parameters.nugetPackageVersion}}'
+      overWrite: 'true'
+      flattenFolders: 'false'
+  - task: DeleteFiles@1
+    inputs:
+      SourceFolder: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
+      contents: '**/*.pdb'
+      RemoveSourceFolder: 'false'
+
   # For debugging, list the package content before signing
   - powershell: |
      foreach ($f in $(Get-ChildItem -Path $(Build.BinariesDirectory) -Recurse)) {
@@ -258,7 +272,14 @@ jobs:
 
   # Publish the signed NuGet package for the Release pipeline
   - task: PublishPipelineArtifact@1
-    displayName: 'Publish'
+    displayName: 'Publish NuGet'
     inputs:
       path: '$(Build.ArtifactStagingDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}'
       artifact: 'nuget_mrwebrtc_${{parameters.packagePlatform}}'
+
+  # Publish PDBs
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish PDBs'
+    inputs:
+      path: '$(Build.ArtifactStagingDirectory)/pdbs/$(packageName).${{parameters.nugetPackageVersion}}'
+      artifact: 'pdbs_mrwebrtc_${{parameters.packagePlatform}}'

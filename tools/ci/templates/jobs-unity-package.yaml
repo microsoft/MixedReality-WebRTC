@@ -100,14 +100,22 @@ jobs:
 
   # Delete PDBs if not needed
   - ${{ if eq(parameters.withPdbs, false) }}:
-    - pwsh: |
-        Write-Host "Removing PDBs from Unity package Plugins/ folder..."
-        Get-ChildItem -Recurse '$(Build.SourcesDirectory)/libs/unity/library/Runtime/Plugins/*.pdb' | ForEach-Object {
-          $file = $_
-          Write-Host $file
-          Remove-Item -Path $file -Force
-        }
-      displayName: 'Delete PDBs'
+    - task: CopyFiles@2
+      inputs:
+        sourceFolder: '$(Build.SourcesDirectory)/libs/unity/library'
+        contents: '**/*.pdb'
+        targetFolder: '$(Build.ArtifactStagingDirectory)/pdbs/'
+        overWrite: 'true'
+        flattenFolders: 'false'
+      displayName: 'Move PDBs into separate package'
+    - task: DeleteFiles@1
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)/libs/unity/library'
+        contents: |
+          '**/*.pdb'
+          '**/*.pdb.meta'
+        RemoveSourceFolder: 'false'
+      displayName: 'Delete PDBs from NPM package'
 
   # For debugging, list the packages content before signing
   - powershell: |
@@ -206,6 +214,13 @@ jobs:
     inputs:
       path: '$(Build.SourcesDirectory)/libs/unity/samples/$(PackedSamplesFilename)'
       artifact: 'upm_samples'
+
+  # Publish PDBs
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish PDBs'
+    inputs:
+      path: '$(Build.ArtifactStagingDirectory)/pdbs'
+      artifact: 'upm_pdbs'
 
   # The tasks below can replace the publish tasks above to publish directly to an NPM register
   # instead of as an Azure Pipeline Artifact. Unfortunately Azure DevOps currently does not
