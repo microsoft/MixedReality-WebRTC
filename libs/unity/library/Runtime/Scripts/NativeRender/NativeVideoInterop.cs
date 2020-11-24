@@ -19,22 +19,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         }
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_Create")]
-        public static extern uint Create(IntPtr videoHandle);
+        public static extern IntPtr Create(IntPtr videoTrackHandle);
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_Destroy")]
-        public static extern uint Destroy(IntPtr videoHandle);
+        public static extern uint Destroy(IntPtr nativeVideoHandle);
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_EnableLocalVideo")]
-        public static extern uint EnableLocalVideo(IntPtr videoHandle, VideoKind format, TextureDesc[] textures, int textureCount);
+        public static extern uint EnableLocalVideo(IntPtr nativeVideoHandle, VideoKind format, TextureDesc[] textures, int textureCount);
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_DisableLocalVideo")]
-        public static extern uint DisableLocalVideo(IntPtr videoHandle);
+        public static extern uint DisableLocalVideo(IntPtr nativeVideoHandle);
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_EnableRemoteVideo")]
-        public static extern uint EnableRemoteVideo(IntPtr videoHandle, VideoKind format, TextureDesc[] textures, int textureCount);
+        public static extern uint EnableRemoteVideo(IntPtr nativeVideoHandle, VideoKind format, TextureDesc[] textures, int textureCount);
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_DisableRemoteVideo")]
-        public static extern uint DisableRemoteVideo(IntPtr videoHandle);
+        public static extern uint DisableRemoteVideo(IntPtr nativeVideoHandle);
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_GetVideoUpdateMethod")]
         public static extern IntPtr GetVideoUpdateMethod();
