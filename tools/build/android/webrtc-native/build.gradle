@@ -17,7 +17,7 @@ android {
         }
         externalNativeBuild {
             cmake {
-                cppFlags "-std=c++14 -DANDROID_STL=c++_shared -DMRS_USE_STR_WRAPPER -DMR_SHARING_ANDROID -DUNITY_ANDROID -DWEBRTC_POSIX -DWEBRTC_ANDROID -DSUPPORT_OPENGL_ES=1" 
+                cppFlags "-std=c++14 -DANDROID_STL=c++_shared -DMR_SHARING_ANDROID -DWEBRTC_POSIX -DWEBRTC_ANDROID" 
             }
         }
     }
