@@ -1,0 +1,69 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        project.archivesBaseName = "mrwebrtc-unityplugin"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        ndk {
+            abiFilters "arm64-v8a"
+        }
+        packagingOptions {
+            doNotStrip "*/arm64-v8a/*.so"
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++17 -DANDROID_STL=c++_shared -DMR_SHARING_ANDROID -DMR_UNITYPLUGIN_SHARING_ANDROID -DUNITY_ANDROID -DSUPPORT_OPENGL_ES=1"
+            }
+        }
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            jniDebuggable true
+            debuggable true
+        }
+        release {
+            minifyEnabled false
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    externalNativeBuild {
+        cmake {
+            path "./src/main/cpp/CMakeLists.txt"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation project(':webrtc-native')
+}
+
+task copyToUnitySample {
+    copy {
+        from './build/outputs/aar'
+        include "*.aar"
+        into '../../../../libs/unity/library/Runtime/Plugins/arm64-v8a'
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'externalNativeBuildRelease') {
+        task.finalizedBy copyToUnitySample
+    } else if (task.name == 'externalNativeBuildDebug') {
+        task.finalizedBy copyToUnitySample
+    }
+}

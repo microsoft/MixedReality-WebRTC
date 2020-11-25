@@ -131,8 +131,17 @@ while getopts l:m:o:vh OPTION; do
     esac
 done
 
-# Update path for libwebrtc build under WSL2
+DRIVE_CHAR=${MRWEBRTC_AAR:0:1}
+if [[ $MRWEBRTC_AAR == $DRIVE_CHAR:* ]]; then
+    # Replace C:/ for /mnt/c/ if using gradle in windows
+    echo "Detected windows path, adapting path now .."
+    MRWEBRTC_AAR=${MRWEBRTC_AAR/$DRIVE_CHAR://mnt/${DRIVE_CHAR,,}}
+    MRWEBRTC_AAR=${MRWEBRTC_AAR//\\//}
+    echo -e "\e[39mAAR Path : \e[96m$MRWEBRTC_AAR\e[39m"
+fi
+
 if grep -q microsoft /proc/version; then
+    # Update path for libwebrtc build under WSL2
     echo "WSL-path-adaption: Detected WSL, adapting path now ..."
     echo "Raw: ${MRWEBRTC_AAR}"
     echo "Adapt to format: /mnt/\$driveletter\\windows_subdir\\..."
