@@ -39,6 +39,13 @@
     <NativeUnityPluginSourceFiles Include="$(OutputPath)\Microsoft.MixedReality.WebRTC.dll;$(OutputPath)\Microsoft.MixedReality.WebRTC.pdb" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="package.props">
+      <Pack>true</Pack>
+      <PackagePath>build\$(PackageId).props</PackagePath>
+    </None>
+</ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Copy SourceFiles="@(NativeUnityPluginSourceFiles)" DestinationFolder="$(ProjectDir)..\unity\library\Runtime\Plugins\Win32\x86_64" />
   </Target>
