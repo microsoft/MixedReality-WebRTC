@@ -223,12 +223,16 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
           int copyPitch = std::min<int>(videoDesc.width, update.rowPitch);
 
           uint8_t* dst = static_cast<uint8_t*>(update.data);
-          const uint8_t* src = remoteI420Frame->GetBuffer(index).data();
 
-          for (int32_t r = 0; r < textureDesc.height; ++r) {
-            memcpy(dst, src, copyPitch);
-            dst += update.rowPitch;
-            src += textureDesc.width;
+          // It is possible for one buffer to be empty, each buffer must be checked.
+          // TODO can this be checked earlier and the frame completely omitted? Tried but craused crash. Investigate.
+          const uint8_t* src = remoteI420Frame->GetBuffer(index).data();
+          if (src != nullptr) {
+              for (int32_t r = 0; r < textureDesc.height; ++r) {
+                memcpy(dst, src, copyPitch);
+                dst += update.rowPitch;
+                src += textureDesc.width;
+              }
           }
 
           g_renderApi->EndModifyTexture(textureDesc.texture, update, videoDesc);
