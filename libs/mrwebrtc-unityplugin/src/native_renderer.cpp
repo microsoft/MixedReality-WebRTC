@@ -162,16 +162,19 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
         }
     }
 
-    // Copy the incoming video frame to the buffer.
-    nativeVideo->m_nextI420RemoteVideoFrame->CopyFrame(frame);
+    if (nativeVideo->m_nextI420RemoteVideoFrame != nullptr) {
 
-    // Queue the renderer for the next video update.
-    {
-        // Global lock
-        std::lock_guard guard(g_lock);
-        // Register this renderer for the next video update.
-        g_nativeVideoUpdateQueue.emplace(nativeVideo);
-    }
+        // Copy the incoming video frame to the buffer.
+        nativeVideo->m_nextI420RemoteVideoFrame->CopyFrame(frame);
+
+        // Queue the renderer for the next video update.
+        {
+            // Global lock
+            std::lock_guard guard(g_lock);
+            // Register this renderer for the next video update.
+            g_nativeVideoUpdateQueue.emplace(nativeVideo);
+        }
+    }    
 }
 
 /// Renders current frame of all queued NativeRenderers.
