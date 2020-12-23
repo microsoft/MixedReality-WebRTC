@@ -101,7 +101,7 @@ public class AndroidCameraInterop {
     CaptureFormat captureFormat = null;
     for (String name : deviceNames) {
       // Ignore devices with mismatching name only if a name was specified
-      if (hasDeviceName && (deviceName != name)) {
+      if (hasDeviceName && (!deviceName.equals(name))) {
         continue;
       }
 
