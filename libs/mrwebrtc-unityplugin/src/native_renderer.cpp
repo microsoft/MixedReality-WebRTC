@@ -136,6 +136,9 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
     void* user_data,
     const mrsI420AVideoFrame& frame) {
 
+    // It is possible for one buffer to be empty, each buffer must be checked.
+    if (frame.ydata_ == nullptr || frame.udata_ == nullptr || frame.vdata_ == nullptr) return;
+
     NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(user_data);
 
     // RESEARCH: Do we need to keep a frame queue or is it fine to just render
@@ -224,15 +227,11 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
 
           uint8_t* dst = static_cast<uint8_t*>(update.data);
 
-          // It is possible for one buffer to be empty, each buffer must be checked.
-          // TODO can this be checked earlier and the frame completely omitted? Tried but craused crash. Investigate.
           const uint8_t* src = remoteI420Frame->GetBuffer(index).data();
-          if (src != nullptr) {
-              for (int32_t r = 0; r < textureDesc.height; ++r) {
-                memcpy(dst, src, copyPitch);
-                dst += update.rowPitch;
-                src += textureDesc.width;
-              }
+          for (int32_t r = 0; r < textureDesc.height; ++r) {
+            memcpy(dst, src, copyPitch);
+            dst += update.rowPitch;
+            src += textureDesc.width;
           }
 
           g_renderApi->EndModifyTexture(textureDesc.texture, update, videoDesc);
