@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace Microsoft.MixedReality.WebRTC.Unity
    | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../mr-webrtc_icon.png">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -65,11 +65,11 @@
       <div class="container body-content">
         
         <div id="search-results">
-          <div class="search-list"></div>
+          <div class="search-list">Search Results for <span></span></div>
           <div class="sr-items">
             <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
           </div>
-          <ul id="pagination"></ul>
+          <ul id="pagination" data-first="First" data-prev="Previous" data-next="Next" data-last="Last"></ul>
         </div>
       </div>
       <div role="main" class="container body-content hide-when-search">
@@ -159,6 +159,10 @@ inspector window, though direct manipulation via code is also possible.</p>
 audio capture device (microphone). The audio source can be used to create one or more
 audio tracks sharing the same audio content.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.html">NativeVideoRenderer</a></h4>
+      <section><p>This will render the video stream through native calls with DX11 or OpenGL, completely bypassing C# marshalling.
+This provides a considerable performance improvement compared to <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a>.</p>
+</section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html">NodeDssSignaler</a></h4>
       <section><p>Simple signaler for debug and testing.
 This is based on <a href="https://github.com/bengreenier/node-dss">https://github.com/bengreenier/node-dss</a> and SHOULD NOT BE USED FOR PRODUCTION.</p>
@@ -185,6 +189,8 @@ for simplicity and safety, and leaves the implementation with instead with two s
 <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_SdpMessage_">SendMessageAsync(SdpMessage)</a> and <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.Signaler.html#Microsoft_MixedReality_WebRTC_Unity_Signaler_SendMessageAsync_IceCandidate_">SendMessageAsync(IceCandidate)</a> to
 implement, as well as handling received messages.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.TextureDesc.html">TextureDesc</a></h4>
+      <section></section>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html">UniformColorVideoSource</a></h4>
       <section><p>A video source producing some colored frames generated programmatically.</p>
 </section>
@@ -237,6 +243,12 @@ a video capture format.</p>
       <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.html">LocalVideoSourceFormatMode</a></h4>
       <section><p>Video capture format selection mode for a local video source.</p>
 </section>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoKind.html">VideoKind</a></h4>
+      <section></section>
+    <h3 id="delegates">Delegates
+  </h3>
+      <h4><a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.LogCallback.html">LogCallback</a></h4>
+      <section></section>
 </article>
           </div>
           
@@ -247,7 +259,8 @@ a video capture format.</p>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>

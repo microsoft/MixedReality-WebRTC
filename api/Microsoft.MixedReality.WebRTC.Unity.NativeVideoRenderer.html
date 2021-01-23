@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Delegate TransceiverDirectionChangedDelegate
+    <title>Class NativeVideoRenderer
    | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Delegate TransceiverDirectionChangedDelegate
+    <meta name="title" content="Class NativeVideoRenderer
    | MixedReality-WebRTC Documentation ">
     <meta name="generator" content="docfx 2.56.6.0">
     
@@ -22,7 +22,7 @@
     <meta property="docfx:rel" content="../">
     
   </head>
-  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="Microsoft.MixedReality.WebRTC.TransceiverDirectionChangedDelegate">
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer">
     <div id="wrapper">
       <header>
         
@@ -82,19 +82,38 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.TransceiverDirectionChangedDelegate">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer">
   
   
-  <h1 id="Microsoft_MixedReality_WebRTC_TransceiverDirectionChangedDelegate" data-uid="Microsoft.MixedReality.WebRTC.TransceiverDirectionChangedDelegate" class="text-break">Delegate TransceiverDirectionChangedDelegate
+  <h1 id="Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer" data-uid="Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer" class="text-break">Class NativeVideoRenderer
   </h1>
-  <div class="markdown level0 summary"><p>Delegate for the <a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_DirectionChanged">DirectionChanged</a> event.</p>
+  <div class="markdown level0 summary"><p>This will render the video stream through native calls with DX11 or OpenGL, completely bypassing C# marshalling.
+This provides a considerable performance improvement compared to <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoRenderer.html">VideoRenderer</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
-  <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
-  <h5 id="Microsoft_MixedReality_WebRTC_TransceiverDirectionChangedDelegate_syntax">Syntax</h5>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">NativeVideoRenderer</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
+  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate void TransceiverDirectionChangedDelegate(Transceiver transceiver);</code></pre>
+    <pre><code class="lang-csharp hljs">public class NativeVideoRenderer : MonoBehaviour</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_StartRendering_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StartRendering*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_StartRendering_IVideoSource_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StartRendering(IVideoSource)">StartRendering(IVideoSource)</h4>
+  <div class="markdown level1 summary"><p>Start rendering the passed source.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void StartRendering(IVideoSource source)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -107,13 +126,46 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.html">Transceiver</a></td>
-        <td><span class="parametername">transceiver</span></td>
-        <td><p>The transceiver whose <a class="xref" href="Microsoft.MixedReality.WebRTC.Transceiver.html#Microsoft_MixedReality_WebRTC_Transceiver_NegotiatedDirection">NegotiatedDirection</a> property changed.</p>
-</td>
+        <td><span class="xref">IVideoSource</span></td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_StartRendering_IVideoSource__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Can be used to handle <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_VideoStreamStarted">VideoStreamStarted</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_VideoStreamStarted">VideoStreamStarted</a>.</p>
+</div>
+  
+  
+  <a id="Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_StopRendering_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StopRendering*"></a>
+  <h4 id="Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_StopRendering_IVideoSource_" data-uid="Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StopRendering(IVideoSource)">StopRendering(IVideoSource)</h4>
+  <div class="markdown level1 summary"><p>Stop rendering the passed source. Must be called with the same source passed to <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.html#Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_StartRendering_IVideoSource_">StartRendering(IVideoSource)</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void StopRendering(IVideoSource _)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IVideoSource</span></td>
+        <td><span class="parametername">_</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_StopRendering_IVideoSource__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Can be used to handle <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoTrackSource.html#Microsoft_MixedReality_WebRTC_Unity_VideoTrackSource_VideoStreamStopped">VideoStreamStopped</a> or <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html#Microsoft_MixedReality_WebRTC_Unity_VideoReceiver_VideoStreamStopped">VideoStreamStopped</a>.</p>
+</div>
 </article>
           </div>
           
@@ -121,12 +173,6 @@
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
-                  <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_TransceiverDirectionChangedDelegate.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.TransceiverDirectionChangedDelegate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/Transceiver.cs/#L41" class="contribution-link">View Source</a>
-                  </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">

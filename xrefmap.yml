@@ -3154,6 +3154,19 @@ references:
   commentId: E:Microsoft.MixedReality.WebRTC.RemoteVideoTrack.I420AVideoFrameReady
   fullName: Microsoft.MixedReality.WebRTC.RemoteVideoTrack.I420AVideoFrameReady
   nameWithType: RemoteVideoTrack.I420AVideoFrameReady
+- uid: Microsoft.MixedReality.WebRTC.RemoteVideoTrack.NativeHandle
+  name: NativeHandle
+  href: api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html#Microsoft_MixedReality_WebRTC_RemoteVideoTrack_NativeHandle
+  commentId: P:Microsoft.MixedReality.WebRTC.RemoteVideoTrack.NativeHandle
+  fullName: Microsoft.MixedReality.WebRTC.RemoteVideoTrack.NativeHandle
+  nameWithType: RemoteVideoTrack.NativeHandle
+- uid: Microsoft.MixedReality.WebRTC.RemoteVideoTrack.NativeHandle*
+  name: NativeHandle
+  href: api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html#Microsoft_MixedReality_WebRTC_RemoteVideoTrack_NativeHandle_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.RemoteVideoTrack.NativeHandle
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.RemoteVideoTrack.NativeHandle
+  nameWithType: RemoteVideoTrack.NativeHandle
 - uid: Microsoft.MixedReality.WebRTC.RemoteVideoTrack.ToString
   name: ToString()
   href: api/Microsoft.MixedReality.WebRTC.RemoteVideoTrack.html#Microsoft_MixedReality_WebRTC_RemoteVideoTrack_ToString
@@ -4508,6 +4521,12 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.Manual
   fullName: Microsoft.MixedReality.WebRTC.Unity.LocalVideoSourceFormatMode.Manual
   nameWithType: LocalVideoSourceFormatMode.Manual
+- uid: Microsoft.MixedReality.WebRTC.Unity.LogCallback
+  name: LogCallback
+  href: api/Microsoft.MixedReality.WebRTC.Unity.LogCallback.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.LogCallback
+  fullName: Microsoft.MixedReality.WebRTC.Unity.LogCallback
+  nameWithType: LogCallback
 - uid: Microsoft.MixedReality.WebRTC.Unity.MediaLine
   name: MediaLine
   href: api/Microsoft.MixedReality.WebRTC.Unity.MediaLine.html
@@ -4876,6 +4895,38 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.Update
   nameWithType: MicrophoneSource.Update
+- uid: Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer
+  name: NativeVideoRenderer
+  href: api/Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer
+  fullName: Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer
+  nameWithType: NativeVideoRenderer
+- uid: Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StartRendering(IVideoSource)
+  name: StartRendering(IVideoSource)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.html#Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_StartRendering_IVideoSource_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StartRendering(IVideoSource)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StartRendering(IVideoSource)
+  nameWithType: NativeVideoRenderer.StartRendering(IVideoSource)
+- uid: Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StartRendering*
+  name: StartRendering
+  href: api/Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.html#Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_StartRendering_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StartRendering
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StartRendering
+  nameWithType: NativeVideoRenderer.StartRendering
+- uid: Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StopRendering(IVideoSource)
+  name: StopRendering(IVideoSource)
+  href: api/Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.html#Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_StopRendering_IVideoSource_
+  commentId: M:Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StopRendering(IVideoSource)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StopRendering(IVideoSource)
+  nameWithType: NativeVideoRenderer.StopRendering(IVideoSource)
+- uid: Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StopRendering*
+  name: StopRendering
+  href: api/Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.html#Microsoft_MixedReality_WebRTC_Unity_NativeVideoRenderer_StopRendering_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StopRendering
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.Unity.NativeVideoRenderer.StopRendering
+  nameWithType: NativeVideoRenderer.StopRendering
 - uid: Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler
   name: NodeDssSignaler
   href: api/Microsoft.MixedReality.WebRTC.Unity.NodeDssSignaler.html
@@ -5380,6 +5431,30 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.Signaler.Update
   nameWithType: Signaler.Update
+- uid: Microsoft.MixedReality.WebRTC.Unity.TextureDesc
+  name: TextureDesc
+  href: api/Microsoft.MixedReality.WebRTC.Unity.TextureDesc.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.TextureDesc
+  fullName: Microsoft.MixedReality.WebRTC.Unity.TextureDesc
+  nameWithType: TextureDesc
+- uid: Microsoft.MixedReality.WebRTC.Unity.TextureDesc.height
+  name: height
+  href: api/Microsoft.MixedReality.WebRTC.Unity.TextureDesc.html#Microsoft_MixedReality_WebRTC_Unity_TextureDesc_height
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.TextureDesc.height
+  fullName: Microsoft.MixedReality.WebRTC.Unity.TextureDesc.height
+  nameWithType: TextureDesc.height
+- uid: Microsoft.MixedReality.WebRTC.Unity.TextureDesc.texture
+  name: texture
+  href: api/Microsoft.MixedReality.WebRTC.Unity.TextureDesc.html#Microsoft_MixedReality_WebRTC_Unity_TextureDesc_texture
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.TextureDesc.texture
+  fullName: Microsoft.MixedReality.WebRTC.Unity.TextureDesc.texture
+  nameWithType: TextureDesc.texture
+- uid: Microsoft.MixedReality.WebRTC.Unity.TextureDesc.width
+  name: width
+  href: api/Microsoft.MixedReality.WebRTC.Unity.TextureDesc.html#Microsoft_MixedReality_WebRTC_Unity_TextureDesc_width
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.TextureDesc.width
+  fullName: Microsoft.MixedReality.WebRTC.Unity.TextureDesc.width
+  nameWithType: TextureDesc.width
 - uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource
   name: UniformColorVideoSource
   href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html
@@ -5477,6 +5552,30 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints.width
   fullName: Microsoft.MixedReality.WebRTC.Unity.VideoCaptureConstraints.width
   nameWithType: VideoCaptureConstraints.width
+- uid: Microsoft.MixedReality.WebRTC.Unity.VideoKind
+  name: VideoKind
+  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoKind.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.VideoKind
+  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoKind
+  nameWithType: VideoKind
+- uid: Microsoft.MixedReality.WebRTC.Unity.VideoKind.ARGB
+  name: ARGB
+  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoKind.html#Microsoft_MixedReality_WebRTC_Unity_VideoKind_ARGB
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.VideoKind.ARGB
+  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoKind.ARGB
+  nameWithType: VideoKind.ARGB
+- uid: Microsoft.MixedReality.WebRTC.Unity.VideoKind.I420
+  name: I420
+  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoKind.html#Microsoft_MixedReality_WebRTC_Unity_VideoKind_I420
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.VideoKind.I420
+  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoKind.I420
+  nameWithType: VideoKind.I420
+- uid: Microsoft.MixedReality.WebRTC.Unity.VideoKind.None
+  name: None
+  href: api/Microsoft.MixedReality.WebRTC.Unity.VideoKind.html#Microsoft_MixedReality_WebRTC_Unity_VideoKind_None
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.VideoKind.None
+  fullName: Microsoft.MixedReality.WebRTC.Unity.VideoKind.None
+  nameWithType: VideoKind.None
 - uid: Microsoft.MixedReality.WebRTC.Unity.VideoReceiver
   name: VideoReceiver
   href: api/Microsoft.MixedReality.WebRTC.Unity.VideoReceiver.html
