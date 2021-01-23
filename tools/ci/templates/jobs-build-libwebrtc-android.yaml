@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-# [TEMPLATE] Compile libwebrtc on Android
+# [TEMPLATE] Build libwebrtc on Android
 
 parameters:
 - name: buildConfig
@@ -14,8 +14,8 @@ parameters:
 
 jobs:
 
-# Compile libwebrtc
-- job: libwebrtc_${{parameters.buildConfig}}
+# Build libwebrtc
+- job: libwebrtc_android-arm64-${{parameters.buildConfig}}
   timeoutInMinutes: 360
   pool:
     vmImage: 'ubuntu-18.04'
