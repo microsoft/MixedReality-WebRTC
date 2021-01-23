@@ -135,6 +135,14 @@ jobs:
       flattenFolders: false
       preserveTimestamp: true
     timeoutInMinutes: 15
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
+      CleanTargetFolder: true
+      flattenFolders: false
+      preserveTimestamp: true
+    timeoutInMinutes: 15
   # - task: CopyFiles@2
   #   inputs:
   #     SourceFolder: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
@@ -153,14 +161,6 @@ jobs:
   #       Org.WebRtc.WrapperGlue.lib
   #       Org.WebRtc.WrapperGlue.pdb
   #     TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
-  #     CleanTargetFolder: true
-  #     flattenFolders: false
-  #     preserveTimestamp: true
-  #   timeoutInMinutes: 15
-  # - task: CopyFiles@2
-  #   inputs:
-  #     SourceFolder: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
-  #     TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
   #     CleanTargetFolder: true
   #     flattenFolders: false
   #     preserveTimestamp: true
@@ -264,7 +264,18 @@ jobs:
     inputs:
       source: 'current'
       artifact: 'libwebrtc_UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
+      patterns: |
+        webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\**\webrtc.lib
+        webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\**\pdbs\**\*.pdb
       path: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download libwebrtc UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
+    inputs:
+      source: 'current'
+      artifact: 'libwebrtc_UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
+      patterns: |
+        webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper/**
+      path: 'external/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
 
   # List restored files
   - powershell: |
@@ -316,14 +327,6 @@ jobs:
         Org.WebRtc.WrapperGlue.lib
         Org.WebRtc.WrapperGlue.pdb
       TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
-      CleanTargetFolder: true
-      flattenFolders: false
-      preserveTimestamp: true
-    timeoutInMinutes: 15
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
       CleanTargetFolder: true
       flattenFolders: false
       preserveTimestamp: true
