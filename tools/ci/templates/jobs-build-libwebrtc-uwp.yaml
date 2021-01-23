@@ -285,7 +285,7 @@ jobs:
     displayName: 'List restored files'
     timeoutInMinutes: 5
   - powershell: |
-      foreach ($f in $(Get-ChildItem -Path webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper -Recurse)) {
+      foreach ($f in $(Get-ChildItem -Path external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper -Recurse)) {
         Write-Host $f.FullName
       }
     displayName: 'List restored files'
