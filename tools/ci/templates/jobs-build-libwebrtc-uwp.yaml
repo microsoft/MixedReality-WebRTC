@@ -267,7 +267,7 @@ jobs:
       patterns: |
         webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\**\webrtc.lib
         webrtc-uwp-sdk\webrtc\xplatform\webrtc\OUTPUT\**\pdbs\**\*.pdb
-      path: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+      path: 'external'
   - task: DownloadPipelineArtifact@2
     displayName: 'Download libwebrtc UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
     inputs:
@@ -275,11 +275,17 @@ jobs:
       artifact: 'libwebrtc_UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
       patterns: |
         webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper/**
-      path: 'external/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
+      path: 'external'
 
   # List restored files
   - powershell: |
       foreach ($f in $(Get-ChildItem -Path external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT -Recurse)) {
+        Write-Host $f.FullName
+      }
+    displayName: 'List restored files'
+    timeoutInMinutes: 5
+  - powershell: |
+      foreach ($f in $(Get-ChildItem -Path webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper -Recurse)) {
         Write-Host $f.FullName
       }
     displayName: 'List restored files'
