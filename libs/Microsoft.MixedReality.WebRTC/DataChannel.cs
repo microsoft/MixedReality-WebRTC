@@ -198,7 +198,6 @@ namespace Microsoft.MixedReality.WebRTC
         /// <exception xref="System.Exception">The internal buffer is full.</exception>
         /// <exception cref="DataChannelNotOpenException">The data channel is not open yet.</exception>
         /// <seealso cref="PeerConnection.InitializeAsync"/>
-        /// <seealso cref="PeerConnection.Initialized"/>
         /// <seealso cref="BufferingChanged"/>
         public void SendMessage(byte[] message)
         {
@@ -222,7 +221,6 @@ namespace Microsoft.MixedReality.WebRTC
         /// <exception xref="InvalidOperationException">The native data channel is not initialized.</exception>
         /// <exception xref="Exception">The internal buffer is full.</exception>
         /// <seealso cref="PeerConnection.InitializeAsync"/>
-        /// <seealso cref="PeerConnection.Initialized"/>
         /// <seealso cref="BufferingChanged"/>
         public void SendMessage(IntPtr message, ulong size)
         {
