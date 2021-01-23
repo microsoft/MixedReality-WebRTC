@@ -166,4 +166,4 @@ jobs:
     displayName: 'Publish'
     inputs:
       artifactName: 'libwebrtc_android-arm64-${{parameters.buildConfig}}'
-      targetPath: '$(Build.ArtifactStagingDirectory)/drop/androidarm64/${{parameters.buildConfig}}'
+      targetPath: '$(Build.ArtifactStagingDirectory)/drop/android/arm64/${{parameters.buildConfig}}'
