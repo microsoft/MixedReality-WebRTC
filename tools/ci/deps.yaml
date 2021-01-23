@@ -1,0 +1,72 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# MixedReality-WebRTC build pipeline for project dependencies
+
+# Trigger CI on push changes to external/ only
+trigger:
+  branches:
+    include:
+    - master
+    - release/*
+    exclude:
+    - docs/*
+  paths:
+    include:
+    - external
+
+# Do not trigger CI on PRs
+pr: none
+
+# Give a unique name to the build each time it runs
+name: deps-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
+
+stages:
+
+# Build libwebrtc
+- stage: build
+  displayName: 'Build'
+  jobs:
+
+  # Build libwebrtc.so for Android
+  # - template: templates/jobs-libwebrtc-android.yaml
+  #   parameters:
+  #     buildConfig: 'Debug'
+  # - template: templates/jobs-libwebrtc-android.yaml
+  #   parameters:
+  #     buildConfig: 'Release'
+
+  # Build webrtc.lib for Windows Desktop
+  - template: templates/jobs-build-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+  # - template: templates/jobs-build-libwebrtc-win32.yaml
+  #   parameters:
+  #     buildAgent: 'Hosted VS2017'
+  #     buildArch: 'x86'
+  #     buildConfig: 'Release'
+  # - template: templates/jobs-build-libwebrtc-win32.yaml
+  #   parameters:
+  #     buildAgent: 'Hosted VS2017'
+  #     buildArch: 'x64'
+  #     buildConfig: 'Debug'
+  # - template: templates/jobs-build-libwebrtc-win32.yaml
+  #   parameters:
+  #     buildAgent: 'Hosted VS2017'
+  #     buildArch: 'x64'
+  #     buildConfig: 'Release'
+
+  # Build webrtc.lib for Windows UWP
+  - template: templates/jobs-build-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+
+# Publish libwebrtc
+# - stage: publish
+#   displayName: 'Publish'
+#   dependsOn: build
+#   jobs:
