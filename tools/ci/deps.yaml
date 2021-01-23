@@ -80,16 +80,26 @@ stages:
       inputs:
         source: 'current'
         artifact: 'libwebrtc_Win32-x64-Debug'
-        path: 'external'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
     - task: DownloadPipelineArtifact@2
       displayName: 'Download libwebrtc UWP-x86-Debug'
       inputs:
         source: 'current'
         artifact: 'libwebrtc_Win32-x64-Debug'
-        path: 'external'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
     - powershell: |
-        foreach ($f in $(Get-ChildItem -Path external -Recurse)) {
+        foreach ($f in $(Get-ChildItem -Path $(Build.ArtifactStagingDirectory)/libwebrtc -Recurse)) {
           Write-Host $f.FullName
         }
       displayName: 'List restored external/'
       timeoutInMinutes: 5
+    - task: UniversalPackages@0
+      displayName: Publish
+      inputs:
+        command: publish
+        publishDirectory: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+        vstsFeedPublish: 'aipmr/mr-webrtc'
+        vstsFeedPackagePublish: 'libwebrtc'
+        packagePublishDescription: 'Prebuilt libwebrtc from branch $(Build.SourceBranch) at $(Build.SourceVersion)'
+        versionOption: custom
+        versionPublish: '0.0.1-alpha0001'
