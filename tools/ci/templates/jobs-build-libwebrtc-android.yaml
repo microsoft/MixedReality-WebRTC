@@ -15,7 +15,7 @@ parameters:
 jobs:
 
 # Build libwebrtc
-- job: libwebrtc_android-arm64-${{parameters.buildConfig}}
+- job: libwebrtc_android_arm64_${{parameters.buildConfig}}
   timeoutInMinutes: 360
   pool:
     vmImage: 'ubuntu-18.04'
