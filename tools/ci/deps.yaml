@@ -29,9 +29,9 @@ stages:
   jobs:
 
   # Build libwebrtc.so for Android
-  # - template: templates/jobs-libwebrtc-android.yaml
-  #   parameters:
-  #     buildConfig: 'Debug'
+  - template: templates/jobs-build-libwebrtc-android.yaml
+    parameters:
+      buildConfig: 'Debug'
   # - template: templates/jobs-libwebrtc-android.yaml
   #   parameters:
   #     buildConfig: 'Release'
@@ -76,6 +76,12 @@ stages:
       name: 'Hosted VS2017'
     steps:
     - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc android-arm64-Debug'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_android-arm64-Debug'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc/android/arm64/Debug'
+    - task: DownloadPipelineArtifact@2
       displayName: 'Download libwebrtc Win32-x86-Debug'
       inputs:
         source: 'current'
@@ -93,13 +99,13 @@ stages:
         }
       displayName: 'List restored external/'
       timeoutInMinutes: 5
-    - task: UniversalPackages@0
-      displayName: Publish
-      inputs:
-        command: publish
-        publishDirectory: '$(Build.ArtifactStagingDirectory)/libwebrtc'
-        vstsFeedPublish: 'aipmr/mr-webrtc'
-        vstsFeedPackagePublish: 'libwebrtc'
-        packagePublishDescription: 'Prebuilt libwebrtc from branch $(Build.SourceBranch) at $(Build.SourceVersion)'
-        versionOption: custom
-        versionPublish: '0.0.1-alpha0001'
+    # - task: UniversalPackages@0
+    #   displayName: Publish
+    #   inputs:
+    #     command: publish
+    #     publishDirectory: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+    #     vstsFeedPublish: 'aipmr/mr-webrtc'
+    #     vstsFeedPackagePublish: 'libwebrtc'
+    #     packagePublishDescription: 'Prebuilt libwebrtc from branch $(Build.SourceBranch) at $(Build.SourceVersion)'
+    #     versionOption: custom
+    #     versionPublish: '0.0.1-alpha0001'
