@@ -79,13 +79,13 @@ stages:
       displayName: 'Download libwebrtc Win32-x86-Debug'
       inputs:
         source: 'current'
-        artifact: 'libwebrtc_Win32-x64-Debug'
+        artifact: 'libwebrtc_Win32-x86-Debug'
         path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
     - task: DownloadPipelineArtifact@2
       displayName: 'Download libwebrtc UWP-x86-Debug'
       inputs:
         source: 'current'
-        artifact: 'libwebrtc_Win32-x64-Debug'
+        artifact: 'libwebrtc_UWP-x86-Debug'
         path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
     - powershell: |
         foreach ($f in $(Get-ChildItem -Path $(Build.ArtifactStagingDirectory)/libwebrtc -Recurse)) {
