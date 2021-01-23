@@ -104,7 +104,7 @@ stages:
       inputs:
         command: publish
         publishDirectory: '$(Build.ArtifactStagingDirectory)/libwebrtc'
-        vstsFeedPublish: 'aipmr/mr-webrtc'
+        vstsFeedPublish: 'MixedReality-WebRTC-CI/mr-webrtc'
         vstsFeedPackagePublish: 'libwebrtc'
         packagePublishDescription: 'Prebuilt libwebrtc from branch $(Build.SourceBranch) at $(Build.SourceVersion)'
         versionOption: custom

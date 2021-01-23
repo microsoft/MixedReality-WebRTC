@@ -58,6 +58,158 @@ jobs:
       filePath: tools/ci/mapVariables.ps1
       arguments: 'UWP ${{parameters.buildArch}} ${{parameters.buildConfig}}'
 
+  # # Clean IDLs
+  # - task: PythonScript@0
+  #   displayName: Clean IDLs
+  #   inputs:
+  #     scriptSource: 'filePath'
+  #     scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+  #     arguments: '-a clean --cleanOptions cleanidls'
+  #     failOnStderr: false
+
+  # # Restore any NuGet package (C++/WinRT, ...)
+  # - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
+  #   displayName: 'Restore NuGet packages for Org.WebRtc'
+  #   inputs:
+  #     command: restore
+  #     restoreSolution: '$(projectRoot)Org.WebRtc.Universal/packages.config'
+  #     restoreDirectory: ../../../solutions/packages
+  #   timeoutInMinutes: 10
+
+  # Prepare build
+  - task: PythonScript@0
+    displayName: 'Prepare build'
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a prepare -t webrtc -p winuwp --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper --cpp17'
+      failOnStderr: false
+
+  # Clean-up unused files
+  - script: |
+      del /F /S /Q "depot_tools/external_bin/gsutil"
+      del /F /S /Q "chromium/third_party/protobuf/java"
+      del /F /S /Q "chromium/tools/android"
+      del /F /S /Q "chromium/tools/code_coverage"
+    workingDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform'
+    displayName: 'Clean-up unused files'
+
+  # Run component detection
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+
+  # Build webrtc.lib
+  - task: PythonScript@0
+    displayName: 'Build webrtc.lib ($(buildTriple))'
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
+      arguments: '-a build -t webrtc -p winuwp --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper --cpp17'
+      failOnStderr: false
+    timeoutInMinutes: 120
+
+  # # Build the UWP wrapper
+  # - task: MSBuild@1
+  #   displayName: 'Build Org.WebRTC WinRT wrappers ($(buildTriple))'
+  #   inputs:
+  #     solution: '$(projectRoot)Org.WebRtc.Universal/Org.WebRtc.vcxproj'
+  #     msbuildVersion: '15.0'
+  #     msbuildArchitecture: x64
+  #     platform: ${{parameters.buildArch}}
+  #     configuration: ${{parameters.buildConfig}}
+  #   timeoutInMinutes: 180
+
+  # Stage artifact files for publish
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+      Contents: |
+        webrtc.lib
+        pdbs\**\*.pdb
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+      CleanTargetFolder: true
+      flattenFolders: false
+      preserveTimestamp: true
+    timeoutInMinutes: 15
+  # - task: CopyFiles@2
+  #   inputs:
+  #     SourceFolder: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+  #     Contents: |
+  #       Org.WebRtc.dll
+  #       Org.WebRtc.pdb
+  #     TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+  #     CleanTargetFolder: true
+  #     flattenFolders: false
+  #     preserveTimestamp: true
+  #   timeoutInMinutes: 15
+  # - task: CopyFiles@2
+  #   inputs:
+  #     SourceFolder: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+  #     Contents: |
+  #       Org.WebRtc.WrapperGlue.lib
+  #       Org.WebRtc.WrapperGlue.pdb
+  #     TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
+  #     CleanTargetFolder: true
+  #     flattenFolders: false
+  #     preserveTimestamp: true
+  #   timeoutInMinutes: 15
+  # - task: CopyFiles@2
+  #   inputs:
+  #     SourceFolder: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
+  #     TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
+  #     CleanTargetFolder: true
+  #     flattenFolders: false
+  #     preserveTimestamp: true
+  #   timeoutInMinutes: 15
+
+  # List content of artifacts folder
+  - powershell: |
+      foreach ($f in $(Get-ChildItem -Path $(Build.ArtifactStagingDirectory)/drop -Recurse)) {
+        Write-Host $f.FullName
+      }
+    displayName: 'List artifacts to publish'
+    timeoutInMinutes: 5
+
+  # Publish artifacts
+  - task: PublishPipelineArtifact@0
+    displayName: 'Publish ($(buildTriple))'
+    inputs:
+      artifactName: 'libwebrtc_$(buildTriple)'
+      targetPath: '$(Build.ArtifactStagingDirectory)/drop'
+    timeoutInMinutes: 15
+
+# Build Org.WebRtc wrapper
+- job: orgwebrtc_UWP_${{parameters.buildArch}}_${{parameters.buildConfig}}
+  dependsOn: libwebrtc_UWP_${{parameters.buildArch}}_${{parameters.buildConfig}}
+  timeoutInMinutes: 360
+  pool:
+    name: ${{parameters.buildAgent}}
+    demands:
+    - msbuild
+  variables:
+    buildTriple: UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}
+    projectRoot: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/'
+  steps:
+
+  # Install Python 2.7.17 and select as default
+  - template: 'steps-install-python2x.yaml'
+    parameters:
+      tempFolder: '$(Build.BinariesDirectory)\py27'
+      pythonVersion: '2.7.17'
+
+  # Checkout
+  - checkout: self
+    submodules: recursive
+    clean: true
+
+  # Map build* variables to script* ones
+  - task: PowerShell@2
+    displayName: Map script variables
+    inputs:
+      targetType: filePath
+      filePath: tools/ci/mapVariables.ps1
+      arguments: 'UWP ${{parameters.buildArch}} ${{parameters.buildConfig}}'
+
   # Clean IDLs
   - task: PythonScript@0
     displayName: Clean IDLs
@@ -94,19 +246,38 @@ jobs:
     workingDirectory: 'external/webrtc-uwp-sdk/webrtc/xplatform'
     displayName: 'Clean-up unused files'
 
+  # Download libwebrtc from previous job
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download libwebrtc UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
+    inputs:
+      source: 'current'
+      artifact: 'libwebrtc_UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
+      path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+
+  # Restore libwebrtc
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+      Contents: |
+        webrtc.lib
+        pdbs\**\*.pdb
+      TargetFolder: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
+      CleanTargetFolder: false
+      flattenFolders: false
+      preserveTimestamp: true
+    timeoutInMinutes: 15
+
+  # List restored files
+  - powershell: |
+      foreach ($f in $(Get-ChildItem -Path external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT -Recurse)) {
+        Write-Host $f.FullName
+      }
+    displayName: 'List restored files'
+    timeoutInMinutes: 5
+
   # Run component detection
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'
-
-  # Build webrtc.lib
-  - task: PythonScript@0
-    displayName: 'Build webrtc.lib ($(buildTriple))'
-    inputs:
-      scriptSource: 'filePath'
-      scriptPath: 'external/webrtc-uwp-sdk/scripts/run.py'
-      arguments: '-a build -t webrtc -p winuwp --cpus $(scriptArch) -c $(scriptConfig) --noColor --noWrapper --cpp17'
-      failOnStderr: false
-    timeoutInMinutes: 120
 
   # Build the UWP wrapper
   - task: MSBuild@1
@@ -120,17 +291,6 @@ jobs:
     timeoutInMinutes: 180
 
   # Stage artifact files for publish
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
-      Contents: |
-        webrtc.lib
-        pdbs\**\*.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
-      CleanTargetFolder: true
-      flattenFolders: false
-      preserveTimestamp: true
-    timeoutInMinutes: 15
   - task: CopyFiles@2
     inputs:
       SourceFolder: 'external/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
@@ -174,6 +334,6 @@ jobs:
   - task: PublishPipelineArtifact@0
     displayName: 'Publish ($(buildTriple))'
     inputs:
-      artifactName: 'libwebrtc_$(buildTriple)'
+      artifactName: 'orgwebrtc_$(buildTriple)'
       targetPath: '$(Build.ArtifactStagingDirectory)/drop'
     timeoutInMinutes: 15
