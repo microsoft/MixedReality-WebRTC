@@ -92,7 +92,7 @@ jobs:
       Contents: |
         webrtc.lib
         pdbs\**\*.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
       CleanTargetFolder: true
       flattenFolders: false
       preserveTimestamp: true

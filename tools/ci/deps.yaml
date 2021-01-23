@@ -66,7 +66,30 @@ stages:
       buildConfig: 'Debug'
 
 # Publish libwebrtc
-# - stage: publish
-#   displayName: 'Publish'
-#   dependsOn: build
-#   jobs:
+- stage: publish
+  displayName: 'Publish'
+  dependsOn: build
+  jobs:
+  - job: publish
+    timeoutInMinutes: 60
+    pool:
+      name: 'Hosted VS2017'
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc Win32-x86-Debug'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_Win32-x64-Debug'
+        path: 'external'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc UWP-x86-Debug'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_Win32-x64-Debug'
+        path: 'external'
+    - powershell: |
+        foreach ($f in $(Get-ChildItem -Path external -Recurse)) {
+          Write-Host $f.FullName
+        }
+      displayName: 'List restored external/'
+      timeoutInMinutes: 5

@@ -126,7 +126,7 @@ jobs:
       Contents: |
         webrtc.lib
         pdbs\**\*.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
       CleanTargetFolder: true
       flattenFolders: false
       preserveTimestamp: true
@@ -137,7 +137,7 @@ jobs:
       Contents: |
         Org.WebRtc.dll
         Org.WebRtc.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.Universal/Build/Output/Org.WebRtc/${{parameters.buildConfig}}/${{parameters.buildArch}}'
       CleanTargetFolder: true
       flattenFolders: false
       preserveTimestamp: true
@@ -148,7 +148,7 @@ jobs:
       Contents: |
         Org.WebRtc.WrapperGlue.lib
         Org.WebRtc.WrapperGlue.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/windows/projects/msvc/Org.WebRtc.WrapperGlue.Universal/Build/Output/Org.WebRtc.WrapperGlue/${{parameters.buildConfig}}/${{parameters.buildArch}}'
       CleanTargetFolder: true
       flattenFolders: false
       preserveTimestamp: true
@@ -156,7 +156,7 @@ jobs:
   - task: CopyFiles@2
     inputs:
       SourceFolder: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/winrt_headers'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/xplatform/webrtc/sdk/windows/wrapper'
       CleanTargetFolder: true
       flattenFolders: false
       preserveTimestamp: true
