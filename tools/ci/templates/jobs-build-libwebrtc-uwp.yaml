@@ -252,20 +252,7 @@ jobs:
     inputs:
       source: 'current'
       artifact: 'libwebrtc_UWP-${{parameters.buildArch}}-${{parameters.buildConfig}}'
-      path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
-
-  # Restore libwebrtc
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)/drop/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
-      Contents: |
-        webrtc.lib
-        pdbs\**\*.pdb
-      TargetFolder: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
-      CleanTargetFolder: false
-      flattenFolders: false
-      preserveTimestamp: true
-    timeoutInMinutes: 15
+      path: 'external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT/webrtc/$(scriptPlatform)/${{parameters.buildArch}}/${{parameters.buildConfig}}'
 
   # List restored files
   - powershell: |
