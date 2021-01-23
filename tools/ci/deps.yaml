@@ -99,13 +99,13 @@ stages:
         }
       displayName: 'List restored external/'
       timeoutInMinutes: 5
-    # - task: UniversalPackages@0
-    #   displayName: Publish
-    #   inputs:
-    #     command: publish
-    #     publishDirectory: '$(Build.ArtifactStagingDirectory)/libwebrtc'
-    #     vstsFeedPublish: 'aipmr/mr-webrtc'
-    #     vstsFeedPackagePublish: 'libwebrtc'
-    #     packagePublishDescription: 'Prebuilt libwebrtc from branch $(Build.SourceBranch) at $(Build.SourceVersion)'
-    #     versionOption: custom
-    #     versionPublish: '0.0.1-alpha0001'
+    - task: UniversalPackages@0
+      displayName: Publish
+      inputs:
+        command: publish
+        publishDirectory: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+        vstsFeedPublish: 'aipmr/mr-webrtc'
+        vstsFeedPackagePublish: 'libwebrtc'
+        packagePublishDescription: 'Prebuilt libwebrtc from branch $(Build.SourceBranch) at $(Build.SourceVersion)'
+        versionOption: custom
+        versionPublish: '0.0.1-alpha0001'
