@@ -50,16 +50,6 @@ jobs:
     submodules: recursive
     clean: true
 
-  # Compute the PDB package variables
-  - task: PowerShell@2
-    displayName: 'Compute PDB package variables'
-    inputs:
-      targetType: filePath
-      filePath: tools/ci/computePdbPackageVars.ps1
-    env:
-      # Compute and write $(MRWebRTC_PdbPackageVersion) from build pipeline variables
-      WRITE_VERSION: 'true'
-
   # Map build* variables to script* ones
   - task: PowerShell@2
     displayName: Map script variables
