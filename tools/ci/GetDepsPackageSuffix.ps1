@@ -5,7 +5,7 @@ param(
 )
 
 # Get latest version of Universal Package 'libwebrtc' from 'mr-webrtc' feed
-$versions = Invoke-RestMethod -Uri "https://feeds.dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/packaging/Feeds/mr-webrtc/Packages/7276ea84-464b-42ae-a37c-f2e2c56abcd4?api-version=6.1-preview.1"
+$versions = Invoke-RestMethod -Headers @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN" } -Uri "https://feeds.dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/packaging/Feeds/mr-webrtc/Packages/7276ea84-464b-42ae-a37c-f2e2c56abcd4?api-version=6.1-preview.1"
 if ([int]$versions.count -le 0) {
     throw "Cannot find any dependency package version. REST query returned:`n$versions"
 }
