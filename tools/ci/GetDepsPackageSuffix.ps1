@@ -5,16 +5,14 @@ param(
 )
 
 # Get latest version of Universal Package 'libwebrtc' from 'mr-webrtc' feed
-$versions = Invoke-RestMethod -Method Get -Headers @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN" } -Uri "https://feeds.dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/packaging/Feeds/mr-webrtc/Packages/7276ea84-464b-42ae-a37c-f2e2c56abcd4?api-version=6.1-preview.1"
-if ([int]$versions.count -le 0) {
-    throw "Cannot find any dependency package version. REST query returned:`n$versions"
+$response = Invoke-RestMethod -Method Get -Headers @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN" } -Uri "https://feeds.dev.azure.com/aipmr/MixedReality-WebRTC-CI/_apis/packaging/Feeds/mr-webrtc/Packages/7276ea84-464b-42ae-a37c-f2e2c56abcd4?api-version=6.1-preview.1"
+if ([int]$response.count -le 0) {
+    throw "Cannot find any dependency package version. REST query returned:`n$response"
 }
-Write-Host "Received:"
-Write-Host $versions
 $LatestVersion = ""
-foreach ($details in $versions.value) {
-    if ($details.isLatest) {
-        $LatestVersion = $details.normalizedVersion
+foreach ($version in $response.versions) {
+    if ($version.isLatest) {
+        $LatestVersion = $version.normalizedVersion
         break
     }
 }
