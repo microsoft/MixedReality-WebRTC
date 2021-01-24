@@ -23,52 +23,52 @@ name: deps-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 stages:
 
-# Build libwebrtc
-- stage: build
-  displayName: 'Build'
-  jobs:
+# # Build libwebrtc
+# - stage: build
+#   displayName: 'Build'
+#   jobs:
 
-  # Build libwebrtc.so for Android
-  - template: templates/jobs-build-libwebrtc-android.yaml
-    parameters:
-      buildConfig: 'Debug'
-  # - template: templates/jobs-libwebrtc-android.yaml
-  #   parameters:
-  #     buildConfig: 'Release'
+#   # Build libwebrtc.so for Android
+#   - template: templates/jobs-build-libwebrtc-android.yaml
+#     parameters:
+#       buildConfig: 'Debug'
+#   # - template: templates/jobs-libwebrtc-android.yaml
+#   #   parameters:
+#   #     buildConfig: 'Release'
 
-  # Build webrtc.lib for Windows Desktop
-  - template: templates/jobs-build-libwebrtc-win32.yaml
-    parameters:
-      buildAgent: 'Hosted VS2017'
-      buildArch: 'x86'
-      buildConfig: 'Debug'
-  # - template: templates/jobs-build-libwebrtc-win32.yaml
-  #   parameters:
-  #     buildAgent: 'Hosted VS2017'
-  #     buildArch: 'x86'
-  #     buildConfig: 'Release'
-  # - template: templates/jobs-build-libwebrtc-win32.yaml
-  #   parameters:
-  #     buildAgent: 'Hosted VS2017'
-  #     buildArch: 'x64'
-  #     buildConfig: 'Debug'
-  # - template: templates/jobs-build-libwebrtc-win32.yaml
-  #   parameters:
-  #     buildAgent: 'Hosted VS2017'
-  #     buildArch: 'x64'
-  #     buildConfig: 'Release'
+#   # Build webrtc.lib for Windows Desktop
+#   - template: templates/jobs-build-libwebrtc-win32.yaml
+#     parameters:
+#       buildAgent: 'Hosted VS2017'
+#       buildArch: 'x86'
+#       buildConfig: 'Debug'
+#   # - template: templates/jobs-build-libwebrtc-win32.yaml
+#   #   parameters:
+#   #     buildAgent: 'Hosted VS2017'
+#   #     buildArch: 'x86'
+#   #     buildConfig: 'Release'
+#   # - template: templates/jobs-build-libwebrtc-win32.yaml
+#   #   parameters:
+#   #     buildAgent: 'Hosted VS2017'
+#   #     buildArch: 'x64'
+#   #     buildConfig: 'Debug'
+#   # - template: templates/jobs-build-libwebrtc-win32.yaml
+#   #   parameters:
+#   #     buildAgent: 'Hosted VS2017'
+#   #     buildArch: 'x64'
+#   #     buildConfig: 'Release'
 
-  # Build webrtc.lib for Windows UWP
-  - template: templates/jobs-build-libwebrtc-uwp.yaml
-    parameters:
-      buildAgent: 'Hosted VS2017'
-      buildArch: 'x86'
-      buildConfig: 'Debug'
+#   # Build webrtc.lib for Windows UWP
+#   - template: templates/jobs-build-libwebrtc-uwp.yaml
+#     parameters:
+#       buildAgent: 'Hosted VS2017'
+#       buildArch: 'x86'
+#       buildConfig: 'Debug'
 
 # Publish libwebrtc
 - stage: publish
   displayName: 'Publish'
-  dependsOn: build
+  #dependsOn: build
   jobs:
   - job: publish
     timeoutInMinutes: 60
