@@ -75,6 +75,13 @@ stages:
     pool:
       name: 'Hosted VS2017'
     steps:
+    - task: PowerShell@2
+      inputs:
+        targetType: 'filePath'
+        filePath: 'tools/ci/GetDepsPackageSuffix.ps1'
+        arguments: '-GitBranch $(Build.SourceBranch) -GitCommitSha1 $(Build.SourceVersion)'
+        failOnStderr: false
+        pwsh: true
     - task: DownloadPipelineArtifact@2
       displayName: 'Download libwebrtc android-arm64-Debug'
       inputs:
@@ -108,4 +115,4 @@ stages:
         vstsFeedPackagePublish: 'libwebrtc'
         packagePublishDescription: 'Prebuilt libwebrtc from branch $(Build.SourceBranch) at $(Build.SourceVersion)'
         versionOption: custom
-        versionPublish: '0.0.1-alpha0001'
+        versionPublish: '$(DepsPackageVersion)'
