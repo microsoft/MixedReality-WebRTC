@@ -82,6 +82,8 @@ stages:
         arguments: '-GitBranch $(Build.SourceBranch) -GitCommitSha1 $(Build.SourceVersion)'
         failOnStderr: false
         pwsh: true
+      env:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     - task: DownloadPipelineArtifact@2
       displayName: 'Download libwebrtc android-arm64-Debug'
       inputs:
