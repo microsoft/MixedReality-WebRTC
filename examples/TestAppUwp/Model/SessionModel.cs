@@ -93,10 +93,7 @@ namespace TestAppUwp
         /// <summary>
         /// Is the peer connection successfully initialized and ready to be used?
         /// </summary>
-        public bool IsPeerInitialized
-        {
-            get { return _peerConnection.Initialized; }
-        }
+        public bool IsPeerInitialized { get; private set; }
 
         /// <summary>
         /// SDP semantic to use for establishing a session. Changes only have effect before
@@ -398,6 +395,7 @@ namespace TestAppUwp
                     IceServers = new List<IceServer> { _iceServer }
                 };
                 await _peerConnection.InitializeAsync(config);
+                IsPeerInitialized = true;
                 RaisePropertyChanged("IsPeerInitialized");
             }
             catch (Exception ex)

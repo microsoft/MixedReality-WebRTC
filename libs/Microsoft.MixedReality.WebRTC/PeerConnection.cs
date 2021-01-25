@@ -406,7 +406,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// - <see cref="_eventPending"/>
         /// - <see cref="_event"/>
         /// </summary>
-        private object _lock = new object();
+        private readonly object _lock = new object();
 
         /// <summary>
         /// Number of concurrent calls currently suspending the event.
@@ -728,7 +728,23 @@ namespace Microsoft.MixedReality.WebRTC
 
         /// <summary>
         /// Boolean property indicating whether the peer connection has been initialized.
+        /// 
+        /// <div class="WARNING alert alert-warning">
+        /// <h5>Warning</h5>
+        /// <p>
+        /// This property will be deprecated and later removed in future versions.
+        /// 
+        /// The value of this property is undefined while the asynchronous task resulting from a call to
+        /// <see cref="InitializeAsync(PeerConnectionConfiguration, CancellationToken)"/> is pending. This
+        /// means its value is only relevant before the call (and then it is <c>false</c>) or after the
+        /// asynchronous call completed (and then it is <c>true</c>), but not while the initialization is
+        /// underway. For this reason, it is recommended NOT to use this property, and instead to rely on logic
+        /// around <see cref="InitializeAsync(PeerConnectionConfiguration, CancellationToken)"/> and
+        /// <see cref="Close"/> alone. Generally this means awaiting the initialize call (<c>await</c> operator)
+        /// before using the peer connection object for anything else.</p>
+        /// </div>
         /// </summary>
+        [Obsolete("This property has confusing semantic and will be removed in a future version. Await the task returned by InitializeAsync() instead.", error: false)]
         public bool Initialized
         {
             get
@@ -977,7 +993,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// changes to <see cref="_nativePeerhandle"/>, <see cref="_selfHandle"/>,
         /// <see cref="_initTask"/>, and <see cref="_isClosing"/>.
         /// </summary>
-        private object _openCloseLock = new object();
+        private readonly object _openCloseLock = new object();
 
         private PeerConnectionInterop.PeerCallbackArgs _peerCallbackArgs;
 
@@ -989,7 +1005,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// - <see cref="RemoteAudioTracks"/>
         /// - <see cref="RemoteVideoTracks"/>
         /// </summary>
-        private object _tracksLock = new object();
+        private readonly object _tracksLock = new object();
 
         /// <summary>
         /// Implementation of <see cref="RenegotiationNeeded"/> adding the capability to delay the event.
@@ -1016,7 +1032,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// Most other methods will fail unless this call completes successfully, as it initializes the
         /// underlying native implementation object required to create and manipulate the peer connection.
         ///
-        /// Once this call asynchronously completed, the <see cref="Initialized"/> property becomes <c>true</c>.
+        /// Once this call asynchronously completed, the <see cref="Initialized"/> property is <c>true</c>.
         /// </summary>
         /// <param name="config">Configuration for initializing the peer connection.</param>
         /// <param name="token">Optional cancellation token for the initialize task. This is only used if
