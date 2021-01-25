@@ -9,8 +9,6 @@ trigger:
     include:
     - master
     - release/*
-    exclude:
-    - docs/*
   paths:
     include:
     - external
@@ -23,52 +21,77 @@ name: deps-$(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:r)
 
 stages:
 
-# # Build libwebrtc
-# - stage: build
-#   displayName: 'Build'
-#   jobs:
+# Build libwebrtc
+- stage: build
+  displayName: 'Build'
+  jobs:
 
-#   # Build libwebrtc.so for Android
-#   - template: templates/jobs-build-libwebrtc-android.yaml
-#     parameters:
-#       buildConfig: 'Debug'
-#   # - template: templates/jobs-libwebrtc-android.yaml
-#   #   parameters:
-#   #     buildConfig: 'Release'
+  # Build libwebrtc.so for Android
+  - template: templates/jobs-build-libwebrtc-android.yaml
+    parameters:
+      buildConfig: 'Debug'
+  - template: templates/jobs-build-libwebrtc-android.yaml
+    parameters:
+      buildConfig: 'Release'
 
-#   # Build webrtc.lib for Windows Desktop
-#   - template: templates/jobs-build-libwebrtc-win32.yaml
-#     parameters:
-#       buildAgent: 'Hosted VS2017'
-#       buildArch: 'x86'
-#       buildConfig: 'Debug'
-#   # - template: templates/jobs-build-libwebrtc-win32.yaml
-#   #   parameters:
-#   #     buildAgent: 'Hosted VS2017'
-#   #     buildArch: 'x86'
-#   #     buildConfig: 'Release'
-#   # - template: templates/jobs-build-libwebrtc-win32.yaml
-#   #   parameters:
-#   #     buildAgent: 'Hosted VS2017'
-#   #     buildArch: 'x64'
-#   #     buildConfig: 'Debug'
-#   # - template: templates/jobs-build-libwebrtc-win32.yaml
-#   #   parameters:
-#   #     buildAgent: 'Hosted VS2017'
-#   #     buildArch: 'x64'
-#   #     buildConfig: 'Release'
+  # Build webrtc.lib for Windows Desktop
+  - template: templates/jobs-build-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+  - template: templates/jobs-build-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+  - template: templates/jobs-build-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'x64'
+      buildConfig: 'Debug'
+  - template: templates/jobs-build-libwebrtc-win32.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'x64'
+      buildConfig: 'Release'
 
-#   # Build webrtc.lib for Windows UWP
-#   - template: templates/jobs-build-libwebrtc-uwp.yaml
-#     parameters:
-#       buildAgent: 'Hosted VS2017'
-#       buildArch: 'x86'
-#       buildConfig: 'Debug'
+  # Build webrtc.lib for Windows UWP
+  - template: templates/jobs-build-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'x86'
+      buildConfig: 'Debug'
+  - template: templates/jobs-build-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'x86'
+      buildConfig: 'Release'
+  - template: templates/jobs-build-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'x64'
+      buildConfig: 'Debug'
+  - template: templates/jobs-build-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'x64'
+      buildConfig: 'Release'
+  - template: templates/jobs-build-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'ARM'
+      buildConfig: 'Debug'
+  - template: templates/jobs-build-libwebrtc-uwp.yaml
+    parameters:
+      buildAgent: 'Hosted VS2017'
+      buildArch: 'ARM'
+      buildConfig: 'Release'
 
 # Publish libwebrtc
 - stage: publish
   displayName: 'Publish'
-  #dependsOn: build
+  dependsOn: build
   jobs:
   - job: publish
     timeoutInMinutes: 60
@@ -76,6 +99,7 @@ stages:
       name: 'Hosted VS2017'
     steps:
     - task: PowerShell@2
+      displayName: 'Set Package Version'
       inputs:
         targetType: 'filePath'
         filePath: 'tools/ci/GetDepsPackageSuffix.ps1'
@@ -84,6 +108,7 @@ stages:
         pwsh: true
       env:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      timeoutInMinutes: 5
     - task: DownloadPipelineArtifact@2
       displayName: 'Download libwebrtc android-arm64-Debug'
       inputs:
@@ -91,16 +116,70 @@ stages:
         artifact: 'libwebrtc_android-arm64-Debug'
         path: '$(Build.ArtifactStagingDirectory)/libwebrtc/android/arm64/Debug'
     - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc android-arm64-Release'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_android-arm64-Release'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc/android/arm64/Release'
+    - task: DownloadPipelineArtifact@2
       displayName: 'Download libwebrtc Win32-x86-Debug'
       inputs:
         source: 'current'
         artifact: 'libwebrtc_Win32-x86-Debug'
         path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
     - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc Win32-x86-Release'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_Win32-x86-Release'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc Win32-x64-Debug'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_Win32-x64-Debug'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc Win32-x64-Release'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_Win32-x64-Release'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+    - task: DownloadPipelineArtifact@2
       displayName: 'Download libwebrtc UWP-x86-Debug'
       inputs:
         source: 'current'
         artifact: 'libwebrtc_UWP-x86-Debug'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc UWP-x86-Release'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_UWP-x86-Release'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc UWP-x64-Debug'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_UWP-x64-Debug'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc UWP-x64-Release'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_UWP-x64-Release'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc UWP-ARM-Debug'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_UWP-ARM-Debug'
+        path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download libwebrtc UWP-ARM-Release'
+      inputs:
+        source: 'current'
+        artifact: 'libwebrtc_UWP-ARM-Release'
         path: '$(Build.ArtifactStagingDirectory)/libwebrtc'
     - powershell: |
         foreach ($f in $(Get-ChildItem -Path $(Build.ArtifactStagingDirectory)/libwebrtc -Recurse)) {
