@@ -89,11 +89,6 @@ enum class Result : std::uint32_t {
   /// Some audio-only function was called on a video-only object or vice-versa.
   /// For example, trying to get the local audio track of a video transceiver.
   kInvalidMediaKind = 0x80000401,
-
-  /// The internal audio resampler used in the audio track read buffer doesn't
-  /// support the specified input/output frequency ratio. Use a different output
-  /// frequency for the current audio source to solve the issue.
-  kAudioResamplingNotSupported = 0x80000402,
 };
 
 }  // namespace WebRTC

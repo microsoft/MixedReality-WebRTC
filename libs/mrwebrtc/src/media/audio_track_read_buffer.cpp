@@ -60,9 +60,9 @@ AudioTrackReadBuffer::Buffer::Buffer() {
 }
 AudioTrackReadBuffer::Buffer::~Buffer() {}
 
-Result AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
-                                              int dst_sample_rate,
-                                              int dst_channels) {
+void AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
+                                            int dst_sample_rate,
+                                            int dst_channels) {
   assert(frame.number_of_channels == 1 || frame.number_of_channels == 2);
   assert(dst_channels == 1 || dst_channels == 2);
 
@@ -71,11 +71,11 @@ Result AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
   std::vector<short> buffer_front;
   std::vector<short> buffer_back;
 
-  const short* curr_data;  //< Current version of the processed data.
-  size_t src_count;        //< Includes samples from *all* channels.
+  const short* curr_data; //< Current version of the processed data.
+  size_t src_count;  //< Includes samples from *all* channels.
   int curr_channels = frame.number_of_channels;
 
-  // Ensure source is s16 (16-bit signed)
+  // ensure source is 16 bit
   if (frame.bits_per_sample == 16) {
     curr_data = (short*)frame.audio_data.data();
     src_count = frame.number_of_frames * frame.number_of_channels;
@@ -83,21 +83,17 @@ Result AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
     buffer_front.resize(frame.audio_data.size());
     short* data = buffer_front.data();
     // 8 bit data is unsigned8, 16 bit is signed16
-    for (size_t i = 0; i < frame.audio_data.size(); ++i) {
-      //   0 * 257 - 32768 == -32768
-      // 255 * 257 - 32768 ==  32767
-      data[i] = ((int)frame.audio_data[i] * 257) - 32768;
+    for (int i = 0; i < (int)frame.audio_data.size(); ++i) {
+      data[i] = ((int)frame.audio_data[i] * 256) - 32768;
     }
     curr_data = data;
     src_count = buffer_front.size();
     swap(buffer_front, buffer_back);
   } else {
-    RTC_LOG(LS_ERROR) << "Unsupported audio bit size (not 8-bit nor 16-bit). "
-                         "Dropping audio frame.";
-    return Result::kInvalidParameter;
+    FATAL();
+    return;
   }
 
-  // Stereo -> Mono
   if (frame.number_of_channels == 2 && dst_channels == 1) {
     // average L&R
     buffer_front.resize(src_count / 2);
@@ -112,32 +108,14 @@ Result AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
     swap(buffer_front, buffer_back);
   }
 
-  // Resample
   if ((int)frame.sample_rate != dst_sample_rate) {
+    // match sample rate
     buffer_front.resize((src_count * dst_sample_rate / frame.sample_rate) + 1);
     short* data = buffer_front.data();
-    int res = resampler_->ResetIfNeeded(frame.sample_rate, dst_sample_rate,
-                                        curr_channels);
-    if (res != 0) {
-      RTC_LOG(LS_ERROR)
-          << "Resampler does not implement conversion of sample rate "
-          << frame.sample_rate << " -> " << dst_sample_rate
-          << ". Dropping audio frame.";
-      data_.clear();
-      used_ = 0;
-      return Result::kAudioResamplingNotSupported;
-    }
+    resampler_->ResetIfNeeded(frame.sample_rate, dst_sample_rate, curr_channels);
     size_t count;
-    res = resampler_->Push(curr_data, src_count, data, buffer_front.size(),
-                           count);
-    if (res != 0) {
-      RTC_LOG(LS_ERROR) << "Resampler failed to adjust for sample rate ("
-                        << frame.sample_rate << " -> " << dst_sample_rate
-                        << "). Dropping audio frame.";
-      data_.clear();
-      used_ = 0;
-      return Result::kUnknownError;
-    }
+    int res = resampler_->Push(curr_data, src_count, data, buffer_front.size(), count);
+    RTC_DCHECK(res == 0);
 
     curr_data = data;
     src_count = count;
@@ -148,7 +126,7 @@ Result AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
   if (curr_channels == 1 && dst_channels == 2) {
     // duplicate
     data_.resize(src_count * 2);
-    for (size_t i = 0; i < src_count; ++i) {
+    for (int i = 0; i < (int)src_count; ++i) {
       float val = (float)curr_data[i] / 32768.0f;
       data_[2 * i + 0] = val;
       data_[2 * i + 1] = val;
@@ -162,17 +140,15 @@ Result AudioTrackReadBuffer::Buffer::addFrame(const Frame& frame,
   used_ = 0;
   channels_ = dst_channels;
   rate_ = dst_sample_rate;
-  return Result::kSuccess;
 }
 
-Result AudioTrackReadBuffer::Read(
-    int sample_rate,
-    int num_channels,
-    mrsAudioTrackReadBufferPadBehavior pad_behavior,
-    float* samples_out,
-    int num_samples_max,
-    int* num_samples_read_out,
-    bool* has_overrun_out) noexcept {
+void AudioTrackReadBuffer::Read(int sample_rate,
+                                int num_channels,
+                                mrsAudioTrackReadBufferPadBehavior pad_behavior,
+                                float* samples_out,
+                                int num_samples_max,
+                                int* num_samples_read_out,
+                                bool* has_overrun_out) noexcept {
   float* dst = samples_out;
   int dst_len = num_samples_max;  // number of points remaining
 
@@ -207,14 +183,9 @@ Result AudioTrackReadBuffer::Read(
       }
 
       if (frame) {
-        Result res = buffer_.addFrame(*frame, sample_rate, num_channels);
-        if (res != Result::kSuccess) {
-          *num_samples_read_out = num_samples_max - dst_len;
-          return res;
-        }
+        buffer_.addFrame(*frame, sample_rate, num_channels);
       } else {
-        // No more input.
-        // Pad output buffer if requested by caller.
+        // no more input! fill with sin wave
         constexpr float freq = 2 * 222 * float(M_PI);
         switch (pad_behavior) {
           case mrsAudioTrackReadBufferPadBehavior::kDoNotPad:
@@ -234,13 +205,13 @@ Result AudioTrackReadBuffer::Read(
             RTC_NOTREACHED();
             break;
         }
+
         *num_samples_read_out = num_samples_max - dst_len;
-        return Result::kSuccess;  // and return
+        return;  // and return
       }
     }
   }
   *num_samples_read_out = num_samples_max;
-  return Result::kSuccess;
 }
 
 }  // namespace WebRTC
