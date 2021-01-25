@@ -118,10 +118,10 @@ mrsAudioTrackReadBufferRead(mrsAudioTrackReadBufferHandle buffer,
 
   auto stream = static_cast<AudioTrackReadBuffer*>(buffer);
   bool has_overrun;
-  stream->Read(sample_rate, num_channels, pad_behavior, samples_out,
+  Result res = stream->Read(sample_rate, num_channels, pad_behavior, samples_out,
                num_samples_max, num_samples_read_out, &has_overrun);
   *has_overrun_out = has_overrun ? mrsBool::kTrue : mrsBool::kFalse;
-  return Result::kSuccess;
+  return res;
 }
 
 void MRS_CALL

@@ -8,6 +8,7 @@
 
 #include "export.h"
 #include "refptr.h"
+#include "result.h"
 #include "tracked_object.h"
 
 enum class mrsAudioTrackReadBufferPadBehavior;
@@ -20,7 +21,8 @@ struct AudioFrame;
 class PeerConnection;
 
 /// Implementation of |mrsAudioTrackReadBufferHandle|.
-class AudioTrackReadBuffer : public TrackedObject, webrtc::AudioTrackSinkInterface {
+class AudioTrackReadBuffer : public TrackedObject,
+                             webrtc::AudioTrackSinkInterface {
  public:
   /// Create a new stream which buffers |bufferMs| milliseconds of audio.
   /// WebRTC delivers audio at 10ms intervals so pass a multiple of 10.
@@ -32,13 +34,13 @@ class AudioTrackReadBuffer : public TrackedObject, webrtc::AudioTrackSinkInterfa
   ~AudioTrackReadBuffer();
 
   /// See |mrsAudioTrackReadBufferRead|.
-  void Read(int sample_rate,
-            int num_channels,
-            mrsAudioTrackReadBufferPadBehavior pad_behavior,
-            float* samples_out,
-            int num_samples_max,
-            int* num_samples_read_out,
-            bool* has_overrun_out) noexcept;
+  Result Read(int sample_rate,
+              int num_channels,
+              mrsAudioTrackReadBufferPadBehavior pad_behavior,
+              float* samples_out,
+              int num_samples_max,
+              int* num_samples_read_out,
+              bool* has_overrun_out) noexcept;
 
   /// AudioTrackSinkInterface implementation.
   virtual void OnData(const void* audio_data,
@@ -46,7 +48,6 @@ class AudioTrackReadBuffer : public TrackedObject, webrtc::AudioTrackSinkInterfa
                       int sample_rate,
                       size_t number_of_channels,
                       size_t number_of_frames);
-
 
  private:
   const rtc::scoped_refptr<webrtc::AudioTrackInterface> track_;
@@ -86,7 +87,7 @@ class AudioTrackReadBuffer : public TrackedObject, webrtc::AudioTrackSinkInterfa
       return take;
     }
     // Extract/resample data from frame and add it to our buffer.
-    void addFrame(const Frame& frame, int dstSampleRate, int dstChannels);
+    Result addFrame(const Frame& frame, int dstSampleRate, int dstChannels);
   };
   // Only accessed from callers of Read - no locking needed.
   Buffer buffer_;

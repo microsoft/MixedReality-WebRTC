@@ -98,7 +98,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         // See https://github.com/dotnet/runtime/issues/7223
         internal const string dllPath = "mrwebrtc";
 
-        // Error codes returned by the interop API -- see mrs_errors.h
+        // Error codes returned by the interop API -- see result.h
         internal const uint MRS_SUCCESS = 0u;
         internal const uint MRS_E_UNKNOWN = 0x80000000u;
         internal const uint MRS_E_INVALID_PARAMETER = 0x80000001u;
@@ -113,6 +113,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         internal const uint MRS_E_PEER_CONNECTION_CLOSED = 0x80000101u;
         internal const uint MRS_E_SCTP_NOT_NEGOTIATED = 0x80000301u;
         internal const uint MRS_E_INVALID_DATA_CHANNEL_ID = 0x80000302u;
+        internal const uint MRS_E_INVALID_MEDIA_KIND = 0x80000401u;
+        internal const uint MRS_E_AUDIO_RESAMPLING_NOT_SUPPORTED = 0x80000402u;
 
         public static IntPtr MakeWrapperRef(object wrapper)
         {
@@ -263,6 +265,12 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
             case MRS_E_INVALID_DATA_CHANNEL_ID:
                 return new ArgumentOutOfRangeException("Invalid ID passed to AddDataChannelAsync().");
+
+            case MRS_E_INVALID_MEDIA_KIND:
+                return new InvalidOperationException("Some audio-only function was called on a video-only object or vice-versa.");
+
+            case MRS_E_AUDIO_RESAMPLING_NOT_SUPPORTED:
+                return new NotSupportedException("Audio resampling for the given input/output frequencies is not supported. Try requesting a different output frequency.");
             }
         }
 
