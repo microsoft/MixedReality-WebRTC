@@ -29,7 +29,7 @@ This package contains the C# and native C++ libraries (x86, x64) for Windows Des
         <file src="lib\netstandard2.0\Microsoft.MixedReality.WebRTC.xml" target="lib\netstandard2.0" />
 
         <!-- .props -->
-        <file src="Microsoft.MixedReality.WebRTC.props" target="build\" />
+        <file src="Microsoft.MixedReality.WebRTC.props" target="build\netstandard2.0" />
 
         <!-- NOTICE -->
         <file src="content\NOTICE" target="content\NOTICE" />
