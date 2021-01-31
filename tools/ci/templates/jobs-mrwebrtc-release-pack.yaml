@@ -236,7 +236,7 @@ jobs:
       packDestination: '$(Build.ArtifactStagingDirectory)/unsigned/$(packageName).${{parameters.nugetPackageVersion}}'
       versioningScheme: 'byEnvVar'
       versionEnvVar: 'NUGET_VERSION'
-      basePath: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
+      basePath: '$(Build.BinariesDirectory)/$(packageName)'
     env:
       NUGET_VERSION: '${{parameters.nugetPackageVersion}}'
 
