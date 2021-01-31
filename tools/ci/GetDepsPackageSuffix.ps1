@@ -71,7 +71,10 @@ function Get-GitCommitHash([string]$gitRef) {
 #   Version = array of (major, minor) versions as integer
 function Get-LatestRelease() {
     # List all branches
-    $refs = &git show-ref --heads
+    $refs = &git show-ref
+    if ($LASTEXITCODE -ne 0) {
+        throw "List refs failed with error code $_"
+    }
     $refs = $refs | ForEach-Object {
         $kv = $_ -split " "
         [pscustomobject]@{
@@ -81,10 +84,12 @@ function Get-LatestRelease() {
     }
 
     # Truncate to release branches only and parse version from branch name
-    $releases = $refs | Where-Object { $_.Name.StartsWith("refs/heads/release/") }
+    $releaseRefsPrefix = "refs/remotes/origin/release/"
+    $releases = $refs | Where-Object { $_.Name.StartsWith($releaseRefsPrefix) }
     $releases | ForEach-Object {
-        $ver = Get-SemVer $_.Name.Remove(0, "refs/heads/release/".Length)
+        $ver = Get-SemVer $_.Name.Remove(0, $releaseRefsPrefix.Length)
         $_ | Add-Member -NotePropertyName Version -NotePropertyValue $ver
+        Write-Host "Found release version: $($ver[0]).$($ver[1])"
     }
 
     # Find latest version
@@ -174,7 +179,10 @@ Write-Host "GitBranch: $GitBranch"
 if ($GitCommitSha1.Length -lt 8) {
     throw "Invalid git commit hash $GitCommitSha1 with less than 8 characters"
 }
-$GitCommitSha1 = $GitCommitSha1.ToLowerInvariant().Remove(8)
+$GitCommitSha1 = $GitCommitSha1.ToLowerInvariant()
+if ($GitCommitSha1.Length -gt 8) {
+    $GitCommitSha1 = $GitCommitSha1.Remove(8)
+}
 Write-Host "GitCommitSha1: $GitCommitSha1"
 
 # Compute package version suffix based on source branch
@@ -186,6 +194,7 @@ $DepsPackageVersion = switch -Regex ($GitBranch) {
         $rel = $GitBranch -replace '^release/(\d+)\.(\d+)', '$1 $2' -split " "
         $relMajor = [int]$rel[0]
         $relMinor = [int]$rel[1]
+        Write-Host "Detected release branch for version $relMajor.$relMinor"
         $latest = Get-LatestPublished $relMajor $relMinor
         if ($latest[0] -ge 0) {
             $relPatch = $latest[2] + 1
@@ -200,7 +209,7 @@ $DepsPackageVersion = switch -Regex ($GitBranch) {
         $release = Get-LatestRelease
         $relMajorLatest = $release.Version[0]
         $relMinorLatest = $release.Version[1]
-        $relHashLatest = Get-GitCommitHash "refs/heads/release/$relMajorLatest.$relMinorLatest"
+        $relHashLatest = Get-GitCommitHash "refs/remotes/origin/release/$relMajorLatest.$relMinorLatest"
         if ($false) { # TODO : if(isBreaking)
             $relMajor = $relMajorLatest + 1
             $relMinor = $relMinorLatest
@@ -213,7 +222,7 @@ $DepsPackageVersion = switch -Regex ($GitBranch) {
         # Compute beta suffix using git height
         # Add git commit SHA1 as build metadata (does not participate in versioning)
         $height = Get-GitHeightSinceCommit $relHashLatest
-        Write-Host "Commit $GitCommitSha1 is $height commits ahead of $GitBranch"
+        Write-Host "Commit $GitCommitSha1 is $height commits ahead of origin/release/$relMajorLatest.$relMinorLatest ($relHashLatest)"
         $height = "$height".PadLeft(4, [char]'0')
         $suffix = "beta$height+$GitCommitSha1"
         "$relMajor.$relMinor.$relPatch-$suffix"
@@ -223,7 +232,7 @@ $DepsPackageVersion = switch -Regex ($GitBranch) {
         $release = Get-LatestRelease
         $relMajorLatest = $release.Version[0]
         $relMinorLatest = $release.Version[1]
-        $relHashLatest = Get-GitCommitHash "refs/heads/release/$relMajorLatest.$relMinorLatest"
+        $relHashLatest = Get-GitCommitHash "refs/remotes/origin/release/$relMajorLatest.$relMinorLatest"
         if ($false) { # TODO : if(isBreaking)
             $relMajor = $relMajorLatest + 1
             $relMinor = $relMinorLatest
@@ -232,16 +241,17 @@ $DepsPackageVersion = switch -Regex ($GitBranch) {
             $relMinor = $relMinorLatest + 1
         }
         $relPatch = 0
-        Write-Host "On main branch, assuming minor update: $relMajorLatest.$relMinorLatest -> $relMajor.$relMinor.$relPatch"
+        Write-Host "On topic branch $GitBranch, assuming minor update: $relMajorLatest.$relMinorLatest -> $relMajor.$relMinor.$relPatch"
         # Compute beta suffix using git height
         # Add git commit SHA1 as build metadata (does not participate in versioning)
         $height = Get-GitHeightSinceCommit $relHashLatest
-        Write-Host "Commit $GitCommitSha1 is $height commits ahead of $GitBranch"
+        Write-Host "Commit $GitCommitSha1 is $height commits ahead of origin/release/$relMajorLatest.$relMinorLatest ($relHashLatest)"
         $height = "$height".PadLeft(4, [char]'0')
-        # Use latest branch item as short branch name. Note: this is prone to collisions!
+        # Use latest branch item as short branch name.
         $branchStems = $GitBranch -split "/"
         $branchShortName = $branchStems[$branchStems.Count - 1]
-        $suffix = "alpha$height-$branchShortName+$GitCommitSha1"
+        # Include both short branch name AND commit SHA1 in prerelease suffix to avoid any collision
+        $suffix = "alpha$height-$branchShortName-$GitCommitSha1"
         "$relMajor.$relMinor.$relPatch-$suffix"
     }
 }
