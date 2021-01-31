@@ -26,97 +26,97 @@ parameters:
 
 stages:
 
-# Compile all build variants on Windows (Desktop and UWP).
-# This is done as a separate stage from packing to ensure all builds
-# for all variants succeeded before starting to pack anything.
-- stage: build
-  displayName: 'Build'
-  jobs:
+# # Compile all build variants on Windows (Desktop and UWP).
+# # This is done as a separate stage from packing to ensure all builds
+# # for all variants succeeded before starting to pack anything.
+# - stage: build
+#   displayName: 'Build'
+#   jobs:
 
-  # Build all variants of mrwebrtc.dll for Windows Desktop
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'Win32'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x86'
-      buildConfig: 'Debug'
-      clean: '${{parameters.clean}}'
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'Win32'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x86'
-      buildConfig: 'Release'
-      clean: '${{parameters.clean}}'
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'Win32'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x64'
-      buildConfig: 'Debug'
-      clean: '${{parameters.clean}}'
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'Win32'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x64'
-      buildConfig: 'Release'
-      clean: '${{parameters.clean}}'
+#   # Build all variants of mrwebrtc.dll for Windows Desktop
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'Win32'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x86'
+#       buildConfig: 'Debug'
+#       clean: '${{parameters.clean}}'
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'Win32'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x86'
+#       buildConfig: 'Release'
+#       clean: '${{parameters.clean}}'
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'Win32'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x64'
+#       buildConfig: 'Debug'
+#       clean: '${{parameters.clean}}'
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'Win32'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x64'
+#       buildConfig: 'Release'
+#       clean: '${{parameters.clean}}'
 
-  # Build all variants of mrwebrtc.dll for Windows UWP
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'UWP'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x86'
-      buildConfig: 'Debug'
-      clean: '${{parameters.clean}}'
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'UWP'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x86'
-      buildConfig: 'Release'
-      clean: '${{parameters.clean}}'
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'UWP'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x64'
-      buildConfig: 'Debug'
-      clean: '${{parameters.clean}}'
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'UWP'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'x64'
-      buildConfig: 'Release'
-      clean: '${{parameters.clean}}'
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'UWP'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'ARM'
-      buildConfig: 'Debug'
-      clean: '${{parameters.clean}}'
-  - template: templates/jobs-mrwebrtc-release-build.yaml
-    parameters:
-      buildPlatform: 'UWP'
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      buildArch: 'ARM'
-      buildConfig: 'Release'
-      clean: '${{parameters.clean}}'
+#   # Build all variants of mrwebrtc.dll for Windows UWP
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'UWP'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x86'
+#       buildConfig: 'Debug'
+#       clean: '${{parameters.clean}}'
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'UWP'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x86'
+#       buildConfig: 'Release'
+#       clean: '${{parameters.clean}}'
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'UWP'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x64'
+#       buildConfig: 'Debug'
+#       clean: '${{parameters.clean}}'
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'UWP'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'x64'
+#       buildConfig: 'Release'
+#       clean: '${{parameters.clean}}'
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'UWP'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'ARM'
+#       buildConfig: 'Debug'
+#       clean: '${{parameters.clean}}'
+#   - template: templates/jobs-mrwebrtc-release-build.yaml
+#     parameters:
+#       buildPlatform: 'UWP'
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       buildArch: 'ARM'
+#       buildConfig: 'Release'
+#       clean: '${{parameters.clean}}'
 
-  # Build all variants of Microsoft.MixedReality.WebRTC.dll for release.
-  # This builds only the Release build config; the Debug config is not published.
-  - template: templates/jobs-cslib-release-build.yaml
-    parameters:
-      buildAgent: '$(MRWebRTC.BuildAgent)'
-      clean: '${{parameters.clean}}'
+#   # Build all variants of Microsoft.MixedReality.WebRTC.dll for release.
+#   # This builds only the Release build config; the Debug config is not published.
+#   - template: templates/jobs-cslib-release-build.yaml
+#     parameters:
+#       buildAgent: '$(MRWebRTC.BuildAgent)'
+#       clean: '${{parameters.clean}}'
 
 # Pack and sign the NuGet packages
 - stage: pack
-  dependsOn: build
+  #dependsOn: build
   displayName: 'Pack'
   jobs:
 

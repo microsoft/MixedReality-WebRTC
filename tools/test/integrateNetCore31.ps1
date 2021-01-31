@@ -61,7 +61,7 @@ dotnet restore --force --force-evaluate --verbosity detailed --source $testDir
 
 # Add some code that references the package
 $programFile = Join-Path $testDir "Program.cs" -Resolve
-(Get-Content -Path $programFile) | ForEach-Object {
+Get-Content -Path $programFile | ForEach-Object {
     switch -regex ($_) {
         '^using System;.*' {
             @"
