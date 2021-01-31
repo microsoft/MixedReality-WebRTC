@@ -52,6 +52,7 @@ jobs:
     displayName: 'Use NuGet 5.2.0'
     inputs:
       versionSpec: 5.2.0
+    timeoutInMinutes: 5
 
   # Download NuGet package
   - task: DownloadPipelineArtifact@2
@@ -61,6 +62,7 @@ jobs:
       artifact: 'nuget_cslib_${{parameters.testPlatform}}'
       patterns: '**/$(packageName).${{parameters.nugetPackageVersion}}.nupkg'
       path: '$(Build.BinariesDirectory)/nuget/$(packageName)'
+    timeoutInMinutes: 10
 
   # Check package signing
   - task: PowerShell@2
@@ -69,3 +71,14 @@ jobs:
       targetType: 'filePath'
       filePath: 'tools/ci/checkSigning.ps1'
       arguments: '-PackageFolder "$(Build.BinariesDirectory)/nuget/$(packageName)" -TempFolder "$(Build.BinariesDirectory)/unpack/$(packageName)"'
+    timeoutInMinutes: 10
+
+  # Check integration
+  - ${{ if eq(parameters.testPlatform, 'Desktop') }}:
+    - task: PowerShell@2
+      displayName: 'Test integration'
+      inputs:
+        targetType: 'filePath'
+        filePath: 'tools/test/integrateNetCore31.ps1'
+        arguments: '-PackageVersion ${{parameters.nugetPackageVersion}} -SourceDirectory "$(Build.BinariesDirectory)/nuget"'
+      timeoutInMinutes: 10

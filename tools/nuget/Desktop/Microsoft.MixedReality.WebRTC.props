@@ -1,0 +1,9 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Condition="'$(NuGetProjectStyle)' != 'PackageReference'">
+    <Content Include="$(MSBuildThisFileDirectory)\..\..\runtimes\win10-$(PlatformTarget)\native\mrwebrtc.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>false</Visible>
+      <Link>mrwebrtc.dll</Link>
+    </Content>
+  </ItemGroup>
+</Project>

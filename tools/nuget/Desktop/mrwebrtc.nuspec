@@ -2,7 +2,7 @@
 <package>
     <metadata>
         <id>mrwebrtc</id>
-        <version>__VERSION_STRING__</version>
+        <version>0.0.1-alpha0001</version>
         <authors>Microsoft</authors>
         <copyright>&#169; Microsoft Corporation. All rights reserved.</copyright>
         <description>MixedReality-WebRTC is a collection of components to help mixed reality app developers integrate audio, video, and data real-time communication into their application and improve their collaborative experience.
@@ -21,22 +21,22 @@ This package contains the native shared libraries (x86, x64) and C++ headers for
     </metadata>
     <files>
         <!-- mrwebrtc.dll and its import library -->
-        <file src="runtimes\win10-x86\native\debug\mrwebrtc.dll" target="runtimes\win10-x86\native\debug" />
-        <file src="runtimes\win10-x86\native\debug\mrwebrtc.lib" target="runtimes\win10-x86\native\debug" />
-        <file src="runtimes\win10-x86\native\release\mrwebrtc.dll" target="runtimes\win10-x86\native\release" />
-        <file src="runtimes\win10-x86\native\release\mrwebrtc.lib" target="runtimes\win10-x86\native\release" />
-        <file src="runtimes\win10-x64\native\debug\mrwebrtc.dll" target="runtimes\win10-x64\native\debug" />
-        <file src="runtimes\win10-x64\native\debug\mrwebrtc.lib" target="runtimes\win10-x64\native\debug" />
-        <file src="runtimes\win10-x64\native\release\mrwebrtc.dll" target="runtimes\win10-x64\native\release" />
-        <file src="runtimes\win10-x64\native\release\mrwebrtc.lib" target="runtimes\win10-x64\native\release" />
+        <file src="bin\Win32\x86\Debug\mrwebrtc.dll" target="runtimes\win10-x86\native\debug" />
+        <file src="bin\Win32\x86\Debug\mrwebrtc.lib" target="runtimes\win10-x86\native\debug" />
+        <file src="bin\Win32\x86\Release\mrwebrtc.dll" target="runtimes\win10-x86\native\release" />
+        <file src="bin\Win32\x86\Release\mrwebrtc.lib" target="runtimes\win10-x86\native\release" />
+        <file src="bin\Win32\x64\Debug\mrwebrtc.dll" target="runtimes\win10-x64\native\debug" />
+        <file src="bin\Win32\x64\Debug\mrwebrtc.lib" target="runtimes\win10-x64\native\debug" />
+        <file src="bin\Win32\x64\Release\mrwebrtc.dll" target="runtimes\win10-x64\native\release" />
+        <file src="bin\Win32\x64\Release\mrwebrtc.lib" target="runtimes\win10-x64\native\release" />
         
         <!-- .props -->
-        <file src="build\native\mrwebrtc.props" target="build\native" />
+        <file src="tools\nuget\Desktop\mrwebrtc.props" target="build\native" />
 
         <!-- headers-->
-        <file src="build\native\include\mrwebrtc\*.h" target="build\native\include\mrwebrtc" />
+        <file src="libs\mrwebrtc\include\*.h" target="build\native\include\mrwebrtc" />
 
         <!-- NOTICE -->
-        <file src="content\NOTICE" target="content\NOTICE" />
+        <file src="NOTICE" target="content\NOTICE" />
     </files>
 </package>
