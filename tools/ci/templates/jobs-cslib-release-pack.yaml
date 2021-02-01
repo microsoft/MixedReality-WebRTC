@@ -53,7 +53,7 @@ jobs:
   - pwsh: |
       Write-Host "Git Commit ID: $env:BUILD_COMMIT_ID"
       # Replace commit ID
-      Get-Content -Raw -Encoding UTF8 -Path "$env:NUSPEC_FILE" | ForEach-Object {
+      (Get-Content -Raw -Encoding UTF8 -Path "$env:NUSPEC_FILE") | ForEach-Object {
         $_ -replace "__SOURCE_COMMIT_ID__","$env:BUILD_COMMIT_ID"
       } | Set-Content -Path "$env:NUSPEC_FILE" -Encoding UTF8
       # Print new content for debugging
