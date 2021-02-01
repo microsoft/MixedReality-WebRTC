@@ -186,7 +186,7 @@ jobs:
     inputs:
       sourceFolder: '$(Build.BinariesDirectory)/$(packageName)'
       contents: '**/*.pdb'
-      targetFolder: '$(Build.ArtifactStagingDirectory)/pdbs/$(packageName)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)/pdbs/$(packageName).${{parameters.nugetPackageVersion}}'
       overWrite: 'true'
       flattenFolders: 'false'
   - task: DeleteFiles@1
