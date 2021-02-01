@@ -80,5 +80,5 @@ jobs:
       inputs:
         targetType: 'filePath'
         filePath: 'tools/test/integrateNetCore31.ps1'
-        arguments: '-PackageVersion ${{parameters.nugetPackageVersion}} -SourceDirectory "$(Build.BinariesDirectory)/nuget"'
+        arguments: '-PackageVersion ${{parameters.nugetPackageVersion}} -SourceDirectory "$(Build.BinariesDirectory)/nuget/$(packageName)"'
       timeoutInMinutes: 10
