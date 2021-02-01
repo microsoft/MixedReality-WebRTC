@@ -66,7 +66,7 @@ jobs:
       Write-Host "--- $env:NUSPEC_FILE ---"
       Get-Content -Path $env:NUSPEC_FILE
       Write-Host "------------------------"
-    displayName: 'Update NuGet version'
+    displayName: 'Update commit ID in nuspec'
     env:
       NUSPEC_FILE: 'tools/nuget/${{parameters.packagePlatform}}/$(packageName).nuspec'
       BUILD_COMMIT_ID: '$(Build.SourceVersion)'
