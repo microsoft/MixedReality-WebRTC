@@ -2,53 +2,42 @@
 
 In order to use the Unity library, the following pieces are required:
 
-- Native implementation : `mrwebrtc.dll` (one variant per platform and architecture)
+- Native implementation : `mrwebrtc.dll` (one variant per platform and per architecture)
 - C# library : `Microsoft.MixedReality.WebRTC.dll` (single universal module for all platforms and architectures)
 - Unity library itself (scripts and assets)
 
-The Unity library is distributed as a [UPM package](https://docs.unity3d.com/Manual/Packages.html) containing all those components, including the prebuilt binaries for all supported Unity platforms. The library package itself, as well as the optional samples package, can be imported into an existing Unity project in two ways:
+The Unity library is distributed as a package containing all those components, including the prebuilt binaries for all supported Unity platforms. The library package itself, as well as the optional samples package, can be imported into an existing Unity project in two ways:
 
-- Manually by downloading the UPM package(s) from [the GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases). Packages imported that way are referred to by Unity as [_on-disk packages_ or _local packages_](https://docs.unity3d.com/Manual/upm-ui-local.html), and the installation process is described in [the official Unity instructions](https://docs.unity3d.com/Manual/upm-ui-local.html).
-- (Semi-)automatically via the UPM window inside the Unity Editor, after configuring UPM to use the official [Mixed Reality UPM package registry](https://dev.azure.com/aipmr/MixedReality-Unity-Packages/_packaging?_a=feed&feed=Unity-packages).
+- Using the [Mixed Reality Feature Tool](https://aka.ms/MRFeatureToolDocs), a free Microsoft utility to manage Mixed Reality packages for Unity. This is the recommended way, which takes care of installing any required dependency and automatically download and install the package(s) into an existing Unity project. It can be downloaded from https://aka.ms/MRFeatureTool. A step-by-step process to discover and install Mixed Reality packages into an existing Unity project is detailed in [the official documentation](https://aka.ms/MRFeatureToolDocs).
 
-In the following, we describe the latter method.
-
-As of Unity versions 2018.4 LTS and 2019.4 LTS, the Unity Package Manager (UPM) supports custom UPM package registries, but does not have any UI to configure those. Instead, users need to modify the `<UnityProject>/Packages/manifest.json` file inside the project where they want to import the packages.
-
-Open the `<UnityProject>/Packages/manifest.json` file inside a text editor. The file should start with (or at least contain) a "dependencies" section listing all packages that the current project depends on. Insert a new section called "scopedRegistries" to enable the official Microsoft Mixed Reality UPM registry, and add the `com.microsoft.mixedreality.webrtc` package (library), and optionally the `com.microsoft.mixedreality.webrtc.samples` package (samples), as dependencies.
-
-```json
-{
-   "scopedRegistries": [
-      {
-        "name": "Microsoft Mixed Reality",
-        "url": "https://pkgs.dev.azure.com/aipmr/MixedReality-Unity-Packages/_packaging/Unity-packages/npm/registry/",
-        "scopes": ["com.microsoft.mixedreality"]
-      }
-   ],
-   "dependencies": {
-     "com.microsoft.mixedreality.webrtc": "2.0.0-preview.1",
-     "com.microsoft.mixedreality.webrtc.samples": "2.0.0-preview.1",
-     ...existing dependencies...
-```
+- Manually by downloading the package(s) from [the GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases). Packages imported that way are referred to by Unity as _on-disk packages_ or _local packages_, and the installation process is described in [the official Unity instructions](https://docs.unity3d.com/Manual/upm-ui-tarball.html).
 
 > [!NOTE]
->
-> Merely configuring the Mixed Reality UPM registry is not enough, as current LTS versions of Unity do not support listing packages from it automatically. Therefore the packages have to be added manually too in the "dependencies" section.
+> If an existing Unity project manifest already contains a `Microsoft Mixed Reality` entry in the `scopedRegistries` section, is is recommended that it be removed.
 
-Once done, save the file and return to Unity. UPM will resolve the new packages via the configured registry, download the packages, and import them inside the Unity project.
+In the following, we describe the latter method, which essentially consists in manually replicating the steps that the Mixed Reality Feature Tool would oherwise perform automatically for you.
 
-> [!WARNING]
->
-> The library package `com.microsoft.mixedreality.webrtc` currently contains the debug symbols (PDBs) for Windows platforms, and is therefore fairly large (100+MB). Unity _will_ take some time to download it, and may stop for several minutes at the "resolving" step (modal dialog). Be patient and let the process complete.
+- Download the latest release of the `com.microsoft.mixedreality.webrtc` package (`.tgz` archive) from [the GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases). Direct donwload links are available at the bottom of each release section under the Assets drop-down list.
 
-After that the packages will be visible in the UPM window. It is recommended to ensure you have the latest version installed.
+  ![Packages download from the GitHub Releases page](helloworld-unity-2.png)
 
-![Packages in the Project window](helloworld-unity-2.png)
+- Save it under a known location of your choice. At this point there is no need to unpack the archive, as Unity is able to directly import the package compressed.
 
-The packages content can be inspected from **Project window** > **Packages**:
+- If using Unity 2018, expand the archive to a folder of your choice. Unity 2019+ supports directly installing a package from a `.tgz` archive, but this option is not available in Unity 2018.
 
-![Packages in the Project window](helloworld-unity-1b.png)
+- Open your Unity project, and in the main menu navigate to **Window** > **Package Manager**.
+
+- In the Package Manager window:
+
+  - For **Unity 2019+**, click on the "+" button in the _top_ left corner and select **Add package from tarball...** from the popup menu. Then select the `.tgz` archive of the `com.microsoft.mixedreality.webrtc` package downloaded earlier.
+
+    ![Add package from tarball menu in the Package Manager window](helloworld-unity-2b.png)
+
+  - For **Unity 2018**, or if you want to install the package from an expanded archive folder, click on the "+" button located in the _bottom_ left corner and select **Add package from disk...** from the popup menu. Then select the folder where you expanded the `.tgz` archive of the `com.microsoft.mixedreality.webrtc` package downloaded earlier.
+
+    ![Add package from disk menu in the Package Manager window](helloworld-unity-2c.png)
+
+- Repeat the process to install the optional `com.microsoft.mixedreality.webrtc.samples` package if needed, which contains optional samples showing how to use the MixedReality-WebRTC Unity library.
 
 ----
 
