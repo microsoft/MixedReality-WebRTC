@@ -2261,7 +2261,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/download.html",
-          "hash": "30sha2YDxfiR0pdqlsgubQ=="
+          "hash": "3tCOWf5zcQAvILu+ZNtm0A=="
         }
       },
       "is_incremental": false,
@@ -2319,7 +2319,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/installation.html",
-          "hash": "wrVSeyv4qnE62NFsl4XcPw=="
+          "hash": "oyxl3AHKTc+zWMTKyQ544w=="
         }
       },
       "is_incremental": false,
@@ -2344,6 +2344,17 @@
         ".html": {
           "relative_path": "manual/migration-guide.html",
           "hash": "JE1s/NHb2viqhfYEKODPPA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/mr-feature-tool.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/mr-feature-tool.png"
         }
       },
       "is_incremental": false,
@@ -2506,6 +2517,28 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-2b.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-2b.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "manual/unity/helloworld-unity-2c.png",
+      "output": {
+        "resource": {
+          "relative_path": "manual/unity/helloworld-unity-2c.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "manual/unity/helloworld-unity-5.png",
       "output": {
         "resource": {
@@ -2611,7 +2644,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/unity/helloworld-unity-importwebrtc.html",
-          "hash": "QpW7ZrBbXvkSJWbizVnosg=="
+          "hash": "1t67pj1KsSVKVilF/2c1kg=="
         }
       },
       "is_incremental": false,
