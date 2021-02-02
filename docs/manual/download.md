@@ -6,11 +6,22 @@ The **C/C++ library** and **C# library** are distributed as NuGet packages for W
 
 ## Unity library
 
-UPM packages are available for download on [the GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases). Alternatively, the packages can be installed directly from [the Mixed Reality UPM package registry](https://dev.azure.com/aipmr/MixedReality-Unity-Packages/_packaging?_a=feed&feed=Unity-packages) by Unity without needing a manual download; see [Installation](installation.md#unity-library) for details.
+UPM packages are distributed in two ways:
 
-The library package contains prebuilt binaries for all supported Unity platforms: Windows Desktop (x86, x64), UWP (x86, x64, ARM), and Android (ARM64).
+- Using the [Mixed Reality Feature Tool](https://aka.ms/MRFeatureToolDocs), a free Microsoft utility to manage Mixed Reality packages for Unity. This is the recommended way, which takes care of installing any required dependency and automatically download and install the package(s) into an existing Unity project.
 
-See [Installation](installation.md#unity-library) for details on how to use those packages in an existing Unity project, whether downloaded manually or directly through the Unity Package Manager (UPM).
+- Via direct download on [the GitHub Releases page](https://github.com/microsoft/MixedReality-WebRTC/releases) for manual installation. See the Unity documentation [Installing a package from a local tarball file](https://docs.unity3d.com/Manual/upm-ui-tarball.html).
+
+> [!NOTE]
+> If an existing Unity project manifest already contains a `Microsoft Mixed Reality` entry in the `scopedRegistries` section, is is recommended that it be removed.
+
+The library package contains prebuilt binaries for all supported Unity platforms:
+
+- Windows Desktop (x86, x64)
+- Windows UWP (x86, x64, ARM)
+- Android (ARM64)
+
+See [Installation](installation.md#unity-library) for more details on how to install and use those packages in an existing Unity project, whether via the Mixed Reality Feature Tool or manually via direct download on the GitHub Releases page.
 
 ## NuGet packages
 
