@@ -30,6 +30,9 @@ This package contains the C# and native C++ libraries (x86, x64, ARM) for UWP (U
         <file src="lib\uap10.0\Microsoft.MixedReality.WebRTC.dll" target="lib\uap10.0" />
         <file src="lib\uap10.0\Microsoft.MixedReality.WebRTC.xml" target="lib\uap10.0" />
 
+        <!-- .props -->
+        <file src="Microsoft.MixedReality.WebRTC.UWP.props" target="build\uap10.0" />
+
         <!-- NOTICE -->
         <file src="content\NOTICE" target="content\NOTICE" />
     </files>
