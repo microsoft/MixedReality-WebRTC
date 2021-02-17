@@ -31,9 +31,6 @@ This package contains the C# and native C++ libraries (x86, x64) for Windows Des
         <!-- .props -->
         <file src="tools\nuget\Desktop\Microsoft.MixedReality.WebRTC.props" target="build\netstandard2.0" />
 
-        <!-- .props -->
-        <file src="Microsoft.MixedReality.WebRTC.props" target="build\netstandard2.0" />
-
         <!-- NOTICE -->
         <file src="NOTICE" target="content\NOTICE" />
     </files>
