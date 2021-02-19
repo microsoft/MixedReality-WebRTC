@@ -53,6 +53,11 @@ void DataChannel::SetMessageCallback(MessageCallback callback) noexcept {
   message_callback_ = callback;
 }
 
+void DataChannel::SetMessageExCallback(MessageExCallback callback) noexcept {
+  std::lock_guard<std::mutex> lock(mutex_);
+  message_ex_callback_ = callback;
+}
+
 void DataChannel::SetBufferingCallback(BufferingCallback callback) noexcept {
   std::lock_guard<std::mutex> lock(mutex_);
   buffering_callback_ = callback;
@@ -80,6 +85,16 @@ bool DataChannel::Send(const void* data, size_t size) noexcept {
   return data_channel_->Send(buffer);
 }
 
+bool DataChannel::SendEx(mrsMessageKind messageKind, const void* data, size_t size) noexcept {
+  if (data_channel_->buffered_amount() + size > GetMaxBufferingSize()) {
+    return false;
+  }
+
+  rtc::CopyOnWriteBuffer bufferStorage((const char*)data, size);
+  webrtc::DataBuffer buffer(bufferStorage, messageKind == mrsMessageKind::kBinary);
+  return data_channel_->Send(buffer);
+}
+
 void DataChannel::InvokeOnStateChange() const noexcept {
   std::lock_guard<std::mutex> lock(mutex_);
   if (state_callback_) {
@@ -98,6 +113,10 @@ void DataChannel::OnMessage(const webrtc::DataBuffer& buffer) noexcept {
   std::lock_guard<std::mutex> lock(mutex_);
   if (message_callback_) {
     message_callback_(buffer.data.data(), buffer.data.size());
+  }
+  if (message_ex_callback_) {
+    mrsMessageKind kind = buffer.binary ? mrsMessageKind::kBinary : mrsMessageKind::kText;
+    message_ex_callback_(kind, buffer.data.data(), buffer.data.size());
   }
 }
 
