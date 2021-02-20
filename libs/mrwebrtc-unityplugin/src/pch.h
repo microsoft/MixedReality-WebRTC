@@ -10,6 +10,7 @@
 #endif
 
 #include <cassert>
+#include <cstdarg>
 #include <cstdint>
 #include <functional>
 #include <string>
@@ -29,7 +30,8 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>
+#include <Windows.h>
+#include <DbgHelp.h>
 
 #elif defined(MR_UNITYPLUGIN_SHARING_ANDROID)
 
