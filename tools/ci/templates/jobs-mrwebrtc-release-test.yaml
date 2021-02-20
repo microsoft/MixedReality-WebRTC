@@ -77,3 +77,13 @@ jobs:
       targetType: 'filePath'
       filePath: 'tools/ci/checkSigning.ps1'
       arguments: '-PackageFolder "$(Build.BinariesDirectory)/nuget/$(packageName)" -TempFolder "$(Build.BinariesDirectory)/unpack/$(packageName)"'
+
+  # Check integration
+  - ${{ if eq(parameters.testPlatform, 'Desktop') }}:
+    - task: PowerShell@2
+      displayName: 'Test integration'
+      inputs:
+        targetType: 'filePath'
+        filePath: 'tools/test/integrateWin32.ps1'
+        arguments: '-PackageVersion ${{parameters.nugetPackageVersion}} -SourceDirectory "$(Build.BinariesDirectory)/nuget/$(packageName)" -TemplateDirectory "tools/test/mrwebrtc_integration"'
+      timeoutInMinutes: 10
