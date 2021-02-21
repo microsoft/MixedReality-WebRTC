@@ -87,8 +87,16 @@ mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
                                     int textureCount) noexcept {
   UnityLogger::LogDebug("mrsNativeRenderer_EnableRemoteVideo");
   NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(nativeVideoHandle);
-  //NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle;
-  nativeVideo->EnableRemoteVideo(format, textures, textureCount);
+  nativeVideo->SetRemoteVideoTextures(format, textures, textureCount);
+  return Result::kSuccess;
+}
+
+mrsResult MR_UNITYPLUGIN__CALL
+mrsNativeRenderer_UpdateTextures(mrsNativeVideoHandle nativeVideoHandle,
+                                 TextureDesc textures[]) noexcept {
+  UnityLogger::LogDebug("mrsNativeRenderer_UpdateTextures");
+  NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(nativeVideoHandle);
+  nativeVideo->UpdateTextures(textures);
   return Result::kSuccess;
 }
 
@@ -103,3 +111,10 @@ VideoRenderMethod MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_GetVideoUpdateMethod() noexcept {
   return NativeRenderer::DoVideoUpdate;
 }
+
+void MR_UNITYPLUGIN__CALL
+mrsNativeRenderer_SetTextureSizeChangeCallback(NativeRenderer::TextureSizeChangeCallback callback) noexcept {
+  UnityLogger::LogDebug("mrsNativeRenderer_SetTextureSizeChangeCallback");
+  NativeRenderer::SetTextureSizeChangeCallback(callback);
+}
+

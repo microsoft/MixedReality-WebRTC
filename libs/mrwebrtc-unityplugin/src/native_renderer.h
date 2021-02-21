@@ -7,8 +7,6 @@
 #include <mutex>
 #include <set>
 
-#include "render_api.h"
-
 using mrsI420AVideoFrame = Microsoft::MixedReality::WebRTC::I420AVideoFrame;
 using mrsArgb32VideoFrame = Microsoft::MixedReality::WebRTC::Argb32VideoFrame;
 
@@ -54,9 +52,10 @@ class NativeRenderer {
 
   mrsRemoteVideoTrackHandle Handle() const { return m_handle; }
 
-  void EnableRemoteVideo(VideoKind format,
+  void SetRemoteVideoTextures(VideoKind format,
                          TextureDesc textureDescs[],
                          int textureDescCount);
+  void UpdateTextures(TextureDesc textureDescs[]);
   void DisableRemoteVideo();
 
   static void MRS_CALL DoVideoUpdate();
@@ -64,7 +63,10 @@ class NativeRenderer {
                                     UnityGfxRenderer deviceType,
                                     IUnityInterfaces* unityInterfaces);
 
- private:
+  typedef void (*TextureSizeChangeCallback)(int width, int height, mrsRemoteVideoTrackHandle handle);
+  static void SetTextureSizeChangeCallback(TextureSizeChangeCallback textureSizeChangeCallback);
+
+private:
   static std::set<mrsNativeVideoHandle> g_nativeVideos;
 
   mrsRemoteVideoTrackHandle m_handle{nullptr};
@@ -78,6 +80,8 @@ class NativeRenderer {
 
   static void MRS_CALL I420ARemoteVideoFrameCallback(void* user_data, const mrsI420AVideoFrame& frame);
   static void MRS_CALL ArgbRemotevideoFrameCallback(void* user_data, const mrsArgb32VideoFrame& frame);
+
+  static TextureSizeChangeCallback g_textureSizeChangeCallback;
 
   static uint64_t m_frameId;
 };

@@ -4,6 +4,7 @@
 #include "pch.h"
 
 #include "../include/api.h"
+#include "render_api.h"
 #include "handle_pool.h"
 #include "interop_api.h"
 #include "remote_video_track_interop.h"
@@ -29,6 +30,7 @@ static std::set<mrsNativeVideoHandle> g_nativeVideoUpdateQueue;
 static std::vector<std::shared_ptr<I420VideoFrame>> g_freeI420VideoFrames;
 static std::vector<std::shared_ptr<ArgbVideoFrame>> g_freeArgbVideoFrames;
 std::set<mrsNativeVideoHandle> NativeRenderer::g_nativeVideos;
+NativeRenderer::TextureSizeChangeCallback NativeRenderer::g_textureSizeChangeCallback = nullptr;
 
 void I420VideoFrame::CopyFrame(const mrsI420AVideoFrame& frame) {
   width = frame.width_;
@@ -79,17 +81,22 @@ NativeRenderer::~NativeRenderer() {
   // Log_Debug("NativeRenderer::~NativeRenderer");
 }
 
+void NativeRenderer::SetTextureSizeChangeCallback(TextureSizeChangeCallback textureSizeChangeCallback) {
+  g_textureSizeChangeCallback = textureSizeChangeCallback;
+}
+
 void NativeRenderer::Shutdown() {
   Log_Debug("NativeRenderer::Shutdown");
   DisableRemoteVideo();
 }
 
-void NativeRenderer::EnableRemoteVideo(VideoKind format,
+void NativeRenderer::SetRemoteVideoTextures(VideoKind format,
                                         TextureDesc textureDescs[],
                                         int textureDescCount) {
   if (!g_renderApi) {
     Log_Warning("NativeRenderer: Unity plugin not initialized.");
   }
+  Log_Debug("SetRemoteVideoTextures");
   {
     // Instance lock
     std::lock_guard guard(m_lock);
@@ -101,10 +108,7 @@ void NativeRenderer::EnableRemoteVideo(VideoKind format,
           m_remoteTextures[0] = textureDescs[0];
           m_remoteTextures[1] = textureDescs[1];
           m_remoteTextures[2] = textureDescs[2];
-          mrsRemoteVideoTrackRegisterI420AFrameCallback(
-              m_handle, 
-              NativeRenderer::I420ARemoteVideoFrameCallback,
-              this);
+          mrsRemoteVideoTrackRegisterI420AFrameCallback(m_handle, NativeRenderer::I420ARemoteVideoFrameCallback, this);
         }
         break;
 
@@ -119,6 +123,19 @@ void NativeRenderer::EnableRemoteVideo(VideoKind format,
         break;
     }
   }
+}
+
+void NativeRenderer::UpdateTextures(TextureDesc textureDescs[]) {
+  Log_Debug("UpdateTextures");
+  //{
+  //  // Instance lock
+  //  std::lock_guard guard(m_lock);
+  //  m_remoteTextures.clear();
+  //  m_remoteTextures.resize(3);
+  //  m_remoteTextures[0] = textureDescs[0];
+  //  m_remoteTextures[1] = textureDescs[1];
+  //  m_remoteTextures[2] = textureDescs[2];
+  //}
 }
 
 void NativeRenderer::DisableRemoteVideo() {
@@ -214,7 +231,8 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
         continue;
 
       if (remoteI420Frame->width != textures[0].width || remoteI420Frame->height != textures[0].height) {
-        Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with.");
+        Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with. Resizing.");
+        g_textureSizeChangeCallback(remoteI420Frame->width, remoteI420Frame->height, nativeVideo->m_handle);
         continue;
       }
 
