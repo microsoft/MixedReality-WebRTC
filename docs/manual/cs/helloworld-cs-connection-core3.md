@@ -63,3 +63,6 @@ Run the two instances of the application again. This time both terminals print a
 If launched with the audio or video capture flags, the capturer instance records those media and send them via the network to the other instance, which invokes the remote frame callback and print a message every 60 frames. After that, you can press any key to stop each instance. The signaler and peer connection will close and the program will terminate.
 
 ![Peer connections connecting to each other](cs7.png)
+
+Note: From the version 2.0, there is some changes in the way a transceiver is added. Therefore, according to the tutorial context, the client which creates an offer PeerConnection.CreateOffer() should be starting with Video capture, -a or -audio argument, then you can see video datas are sent from the client to the server. Otherwise, no video datas are transfered from the client to the server, or viceversa. This is disscused in the issue id 678.
+This 
