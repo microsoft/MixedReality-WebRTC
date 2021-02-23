@@ -127,15 +127,15 @@ void NativeRenderer::SetRemoteVideoTextures(VideoKind format,
 
 void NativeRenderer::UpdateTextures(TextureDesc textureDescs[]) {
   Log_Debug("UpdateTextures");
-  //{
-  //  // Instance lock
-  //  std::lock_guard guard(m_lock);
-  //  m_remoteTextures.clear();
-  //  m_remoteTextures.resize(3);
-  //  m_remoteTextures[0] = textureDescs[0];
-  //  m_remoteTextures[1] = textureDescs[1];
-  //  m_remoteTextures[2] = textureDescs[2];
-  //}
+  {
+    // Instance lock
+    std::lock_guard guard(m_lock);
+    m_remoteTextures.clear();
+    m_remoteTextures.resize(3);
+    m_remoteTextures[0] = textureDescs[0];
+    m_remoteTextures[1] = textureDescs[1];
+    m_remoteTextures[2] = textureDescs[2];
+  }
 }
 
 void NativeRenderer::DisableRemoteVideo() {
@@ -157,6 +157,12 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
     if (frame.ydata_ == nullptr || frame.udata_ == nullptr || frame.vdata_ == nullptr) return;
 
     NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(user_data);
+    
+    if ((int)frame.width_ != nativeVideo->m_remoteTextures[0].width || (int)frame.height_ != nativeVideo->m_remoteTextures[0].height) {
+        Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with. Resizing.");
+        g_textureSizeChangeCallback(frame.width_, frame.height_, nativeVideo->m_handle);
+        return;
+    }
 
     // RESEARCH: Do we need to keep a frame queue or is it fine to just render
     // the most recent frame?
@@ -230,11 +236,11 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
       if (textures.size() < 3)
         continue;
 
-      if (remoteI420Frame->width != textures[0].width || remoteI420Frame->height != textures[0].height) {
-        Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with. Resizing.");
-        g_textureSizeChangeCallback(remoteI420Frame->width, remoteI420Frame->height, nativeVideo->m_handle);
-        continue;
-      }
+      //if (remoteI420Frame->width != textures[0].width || remoteI420Frame->height != textures[0].height) {
+      //  Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with. Resizing.");
+      //  g_textureSizeChangeCallback(remoteI420Frame->width, remoteI420Frame->height, nativeVideo->m_handle);
+      //  continue;
+      //}
 
       int index = 0;
       for (const TextureDesc& textureDesc : textures) {
