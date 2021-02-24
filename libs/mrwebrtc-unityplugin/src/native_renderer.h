@@ -20,7 +20,7 @@ struct I420VideoFrame {
   std::vector<uint8_t> ubuffer;
   std::vector<uint8_t> vbuffer;
 
-  void CopyFrame(const mrsI420AVideoFrame& frame);
+  bool CopyFrame(const mrsI420AVideoFrame& frame);
 
   const std::vector<uint8_t>& GetBuffer(int i) {
     switch (i) {

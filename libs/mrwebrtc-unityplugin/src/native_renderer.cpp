@@ -32,7 +32,7 @@ static std::vector<std::shared_ptr<ArgbVideoFrame>> g_freeArgbVideoFrames;
 std::set<mrsNativeVideoHandle> NativeRenderer::g_nativeVideos;
 NativeRenderer::TextureSizeChangeCallback NativeRenderer::g_textureSizeChangeCallback = nullptr;
 
-void I420VideoFrame::CopyFrame(const mrsI420AVideoFrame& frame) {
+bool I420VideoFrame::CopyFrame(const mrsI420AVideoFrame& frame) {
   width = frame.width_;
   height = frame.height_;
   ystride = frame.ystride_;
@@ -41,12 +41,19 @@ void I420VideoFrame::CopyFrame(const mrsI420AVideoFrame& frame) {
   size_t ysize = (size_t)ystride * height;
   size_t usize = (size_t)ustride * height / 2;
   size_t vsize = (size_t)vstride * height / 2;
-  ybuffer.resize(ysize);
-  ubuffer.resize(usize);
-  vbuffer.resize(vsize);
+  try { 
+    ybuffer.resize(ysize);
+    ubuffer.resize(usize);
+    vbuffer.resize(vsize);
+  }
+  catch (std::bad_alloc const&) {
+    Log_Warning("Copy Frame Resize Failed.");
+    return false;
+  }
   memcpy(ybuffer.data(), frame.ydata_, ysize);
   memcpy(ubuffer.data(), frame.udata_, usize);
   memcpy(vbuffer.data(), frame.vdata_, vsize);
+  return true;
 }
 
 NativeRenderer* NativeRenderer::Create(mrsRemoteVideoTrackHandle videoTrackHandle) {
@@ -191,7 +198,9 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
     if (nativeVideo->m_nextI420RemoteVideoFrame != nullptr) {
 
         // Copy the incoming video frame to the buffer.
-        nativeVideo->m_nextI420RemoteVideoFrame->CopyFrame(frame);
+        if (!nativeVideo->m_nextI420RemoteVideoFrame->CopyFrame(frame)) {
+            return;
+        }
 
         // Queue the renderer for the next video update.
         {
@@ -232,15 +241,6 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
     }
 
     if (remoteI420Frame) {
-      // Render the frame to the textures.
-      if (textures.size() < 3)
-        continue;
-
-      //if (remoteI420Frame->width != textures[0].width || remoteI420Frame->height != textures[0].height) {
-      //  Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with. Resizing.");
-      //  g_textureSizeChangeCallback(remoteI420Frame->width, remoteI420Frame->height, nativeVideo->m_handle);
-      //  continue;
-      //}
 
       int index = 0;
       for (const TextureDesc& textureDesc : textures) {
