@@ -8,3 +8,7 @@ insert_final_newline = true
 [*.cs]
 indent_style = space
 indent_size = 4
+
+[*.cpp]
+indent_style = space
+indent_size = 2
