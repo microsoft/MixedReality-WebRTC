@@ -157,59 +157,74 @@ void NativeRenderer::DisableRemoteVideo() {
 }
 
 void NativeRenderer::I420ARemoteVideoFrameCallback(
-    void* user_data,
-    const mrsI420AVideoFrame& frame) {
+  void* user_data,
+  const mrsI420AVideoFrame& frame) {
 
-    // It is possible for one buffer to be empty, each buffer must be checked.
-    if (frame.ydata_ == nullptr || frame.udata_ == nullptr || frame.vdata_ == nullptr) return;
+  // It is possible for one buffer to be empty, each buffer must be checked.
+  if (frame.ydata_ == nullptr || frame.udata_ == nullptr || frame.vdata_ == nullptr) return;
 
-    NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(user_data);
+  NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(user_data);
     
-    if ((int)frame.width_ != nativeVideo->m_remoteTextures[0].width || (int)frame.height_ != nativeVideo->m_remoteTextures[0].height) {
-        Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with. Resizing.");
-        g_textureSizeChangeCallback(frame.width_, frame.height_, nativeVideo->m_handle);
-        return;
+  if ((int)frame.width_ != nativeVideo->m_remoteTextures[0].width || (int)frame.height_ != nativeVideo->m_remoteTextures[0].height) {
+    Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with. Resizing.");
+    g_textureSizeChangeCallback(frame.width_, frame.height_, nativeVideo->m_handle);
+    return;
+  }
+
+  // Acquire a video frame buffer from the free list with the global lock.
+  std::shared_ptr<I420VideoFrame> remoteI420Frame = nullptr;
+  {
+    // Global lock
+    std::lock_guard guard(g_lock);
+    if (g_freeI420VideoFrames.size()) {
+        remoteI420Frame = g_freeI420VideoFrames.back();
+        g_freeI420VideoFrames.pop_back();
+    } else {
+        remoteI420Frame = std::make_shared<I420VideoFrame>();
     }
+  }
 
-    // RESEARCH: Do we need to keep a frame queue or is it fine to just render
-    // the most recent frame?
+  // I don't see how this could happen, but it was here so I will leave it.
+  if (remoteI420Frame == nullptr) {
+    Log_Warning("remoteI420Frame null in I420ARemoteVideoFrameCallback.");
+    return;
+  }
 
-    // The performance trade-off being made here is to lock g_lock two times,
-    // preferring to copy the frame buffer outside any lock. Alternatively, the
-    // copy operation could be done inside g_lock scope. This would result in a
-    // single g_lock, but the lock would be held for a longer period of time
-    // every video frame, for every video stream. RESEARCH: Which is better?
+  // Copy frame outside of any lock for perf.
+  // This may consume more time on this thread unnecessarily, but
+  // will block the render update thread for less time.
+  bool frameCopySuccess = remoteI420Frame->CopyFrame(frame);
 
-    // Acquire a video frame buffer from the free list.
+  bool shouldUpdateFrame = false;
+  if (frameCopySuccess) {
     {
-        // Global lock
-        std::lock_guard guard(g_lock);
-        if (nativeVideo->m_nextI420RemoteVideoFrame == nullptr) {
-            // TODO: Encapsulate this logic.
-            if (g_freeI420VideoFrames.size()) {
-                nativeVideo->m_nextI420RemoteVideoFrame = g_freeI420VideoFrames.back();
-                g_freeI420VideoFrames.pop_back();
-            } else {
-                nativeVideo->m_nextI420RemoteVideoFrame = std::make_shared<I420VideoFrame>();
-            }
-        }
+      // Set new copied frame on nativeVideo while in the instance lock of the
+      // NativeVideo otherwise the render update loop may grab it pre-emptively.
+      std::lock_guard guard(nativeVideo->m_lock);
+      // Only update if null, otherwise this means the frame previously
+      // added has not yet been processed.
+      if (nativeVideo->m_nextI420RemoteVideoFrame == nullptr) {
+        nativeVideo->m_nextI420RemoteVideoFrame = remoteI420Frame;
+        shouldUpdateFrame = true;
+      }
     }
+  }
 
-    if (nativeVideo->m_nextI420RemoteVideoFrame != nullptr) {
-
-        // Copy the incoming video frame to the buffer.
-        if (!nativeVideo->m_nextI420RemoteVideoFrame->CopyFrame(frame)) {
-            return;
-        }
-
-        // Queue the renderer for the next video update.
-        {
-            // Global lock
-            std::lock_guard guard(g_lock);
-            // Register this renderer for the next video update.
-            g_nativeVideoUpdateQueue.emplace(nativeVideo);
-        }
-    }    
+  if (shouldUpdateFrame) {
+    // Queue the renderer for the next video update.
+    {
+      // Global lock
+      std::lock_guard guard(g_lock);
+      g_nativeVideoUpdateQueue.emplace(nativeVideo);
+    }
+  } else {
+    // If frame copy failed or was unnecessary, recycle frame
+    {
+      // Global lock
+      std::lock_guard guard(g_lock);
+      g_freeI420VideoFrames.push_back(remoteI420Frame);
+    }
+  }
 }
 
 /// Renders current frame of all queued NativeRenderers.
