@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "audio_frame_observer.h"
 #include "audio_track_source_interop.h"
 #include "export.h"
 #include "interop_api.h"
