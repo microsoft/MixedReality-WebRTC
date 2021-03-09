@@ -66,7 +66,7 @@ class NativeRenderer {
                                     IUnityInterfaces* unityInterfaces);
 
   typedef void (*TextureSizeChangeCallback)(int width, int height, mrsRemoteVideoTrackHandle handle);
-  static void SetTextureSizeChangeCallback(TextureSizeChangeCallback textureSizeChangeCallback);
+  static void SetTextureSizeChangeCallback(TextureSizeChangeCallback textureSizeChangeCallback) noexcept;
 
 private:
   static std::set<mrsNativeVideoHandle> g_nativeVideos;

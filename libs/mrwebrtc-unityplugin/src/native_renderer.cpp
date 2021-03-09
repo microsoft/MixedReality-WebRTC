@@ -87,7 +87,7 @@ NativeRenderer::~NativeRenderer() {
   // Log_Debug("NativeRenderer::~NativeRenderer");
 }
 
-void NativeRenderer::SetTextureSizeChangeCallback(TextureSizeChangeCallback textureSizeChangeCallback) {
+void NativeRenderer::SetTextureSizeChangeCallback(TextureSizeChangeCallback textureSizeChangeCallback) noexcept {
   g_textureSizeChangeCallback = textureSizeChangeCallback;
 }
 
