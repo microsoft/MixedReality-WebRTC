@@ -4,7 +4,6 @@
 #include "pch.h"
 
 #include "../include/api.h"
-#include "render_api.h"
 #include "handle_pool.h"
 #include "interop_api.h"
 #include "remote_video_track_interop.h"

@@ -7,6 +7,8 @@
 #include <mutex>
 #include <set>
 
+#include "render_api.h"
+
 using mrsI420AVideoFrame = Microsoft::MixedReality::WebRTC::I420AVideoFrame;
 using mrsArgb32VideoFrame = Microsoft::MixedReality::WebRTC::Argb32VideoFrame;
 

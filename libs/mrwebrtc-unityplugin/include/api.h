@@ -7,7 +7,6 @@
 #include "mrs_errors.h"
 #include "interop_api.h"
 #include "../src/log_helpers.h"
-//#include "../src/native_renderer.h"
 
 extern "C" {
 
