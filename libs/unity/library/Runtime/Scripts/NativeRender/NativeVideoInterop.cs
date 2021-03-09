@@ -32,6 +32,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_EnableRemoteVideo")]
         public static extern uint EnableRemoteVideo(IntPtr nativeVideoHandle, VideoKind format, TextureDesc[] textures, int textureCount);
+        
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_UpdateTextures")]
+        public static extern uint UpdateTextures(IntPtr nativeVideoHandle, TextureDesc[] textures);
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_DisableRemoteVideo")]
         public static extern uint DisableRemoteVideo(IntPtr nativeVideoHandle);
@@ -41,5 +44,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_SetLoggingFunctions")]
         public static extern void SetLoggingFunctions(LogCallback logDebugCallback, LogCallback logErrorCallback, LogCallback logWarningCallback);
+        
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_SetTextureSizeChangeCallback")]
+        public static extern void SetTextureSizeChangeCallback(TextureSizeChangeCallback logDebugCallback);
     }
 }

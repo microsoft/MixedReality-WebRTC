@@ -27,6 +27,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         LogDebugCallback,
                         LogErrorCallback,
                         LogWarningCallback);
+                    NativeVideo.SetTextureChangeCallback();
                 }
                 _owner = new GameObject("mrwebrtc-unityplugin");
                 _owner.AddComponent<NativeRenderingPluginUpdate>();

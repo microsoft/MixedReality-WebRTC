@@ -164,11 +164,15 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
   if (frame.ydata_ == nullptr || frame.udata_ == nullptr || frame.vdata_ == nullptr) return;
 
   NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(user_data);
-    
-  if ((int)frame.width_ != nativeVideo->m_remoteTextures[0].width || (int)frame.height_ != nativeVideo->m_remoteTextures[0].height) {
-    Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with. Resizing.");
-    g_textureSizeChangeCallback(frame.width_, frame.height_, nativeVideo->m_handle);
-    return;
+ 
+  {
+    // Instance lock in case they get updated from UpdateTextures
+    std::lock_guard guard(nativeVideo->m_lock);
+    if ((int)frame.width_ != nativeVideo->m_remoteTextures[0].width || (int)frame.height_ != nativeVideo->m_remoteTextures[0].height) {
+      Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with. Resizing.");
+      g_textureSizeChangeCallback(frame.width_, frame.height_, nativeVideo->m_handle);
+      return;
+    }
   }
 
   // Acquire a video frame buffer from the free list with the global lock.

@@ -2,11 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
     public delegate void LogCallback(string str);
+    public delegate void TextureSizeChangeCallback(int width, int height, IntPtr videoHandle);
 
     public enum VideoKind : int
     {
@@ -27,7 +29,15 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     /// </summary>
     internal class NativeVideo : IDisposable
     {
-        // private IntPtr _videoHandle;
+        /// <summary>
+        /// Callback for when the texture size of stream changes in a NativeVideo.
+        /// This callback will not occur on the main thread.
+        /// Unity must handle this resize, it cannot be done entirely in DX11.
+        /// </summary>
+        public event TextureSizeChangeCallback TextureSizeChanged;
+
+        private static Dictionary<IntPtr, NativeVideo> lookupDictionary = new Dictionary<IntPtr, NativeVideo>();
+        
         private IntPtr _nativeVideoHandle;
 
         /// <summary>
@@ -36,7 +46,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <param name="peerConnection"></param>
         public NativeVideo(IntPtr videoHandle)
         {
-	        _nativeVideoHandle = NativeVideoInterop.Create(videoHandle);
+            _nativeVideoHandle = NativeVideoInterop.Create(videoHandle);
+            if (lookupDictionary.ContainsKey(videoHandle)) lookupDictionary[videoHandle] = this;
+            else lookupDictionary.Add(videoHandle, this);
         }
 
         /// <summary>
@@ -84,6 +96,18 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
             NativeVideoInterop.EnableRemoteVideo(_nativeVideoHandle, format, interopTextures, interopTextures.Length);
         }
+        
+        public void UpdateTextures(TextureDesc[] textures)
+        {
+            var interopTextures = textures.Select(item => new NativeVideoInterop.TextureDesc
+            {
+                texture = item.texture,
+                width = item.width,
+                height = item.height
+            }).ToArray();
+
+            NativeVideoInterop.UpdateTextures(_nativeVideoHandle, interopTextures);
+        }
 
         /// <summary>
         /// Stops rendering the remote video stream.
@@ -91,6 +115,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public void DisableRemoteVideo()
         {
             NativeVideoInterop.DisableRemoteVideo(_nativeVideoHandle);
+            if (lookupDictionary.ContainsKey(_nativeVideoHandle)) lookupDictionary.Remove(_nativeVideoHandle);
         }
 
         /// <summary>
@@ -100,6 +125,20 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public static IntPtr GetVideoUpdateMethod()
         {
             return NativeVideoInterop.GetVideoUpdateMethod();
+        }
+        
+        /// Sets callback handlers for the logging of debug, warning, and error messages.
+        /// </summary>
+        public static void SetTextureChangeCallback()
+        {
+            NativeVideoInterop.SetTextureSizeChangeCallback(TextureSizeChangeCallback);
+        }
+
+        [AOT.MonoPInvokeCallback(typeof(LogCallback))]
+        private static void TextureSizeChangeCallback(int width, int height, IntPtr videoHandle)
+        {
+            lookupDictionary.TryGetValue(videoHandle, out NativeVideo nativeVideo);
+            nativeVideo?.TextureSizeChanged?.Invoke(width, height, videoHandle);
         }
 
         /// <summary>
