@@ -83,7 +83,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void I420AVideoFrameReady(I420AVideoFrame frame)
         {
-            _i420AFrameQueue?.Enqueue(frame);
+            _i420AFrameQueue.Enqueue(frame);
         }
 
         private void StartNativeRendering(int width, int height)
@@ -134,7 +134,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
             _source = null;
         }
-        
+
         private void RegisterRemoteTextures()
         {
             if (_nativeVideo != null && _textureY != null)

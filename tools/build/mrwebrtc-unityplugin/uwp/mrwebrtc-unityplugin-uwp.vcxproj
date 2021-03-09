@@ -173,7 +173,7 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\Unity\IUnityGraphicsMetal.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\Unity\IUnityInterface.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\video_types.h" />
-    <ClInclude Include="..\..\..\..\libs\mrwebrtc-unityplugin\include\export.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\include\export.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="AfterBuild">

@@ -41,7 +41,7 @@
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\native_renderer.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\render_api.h" />
     <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\PlatformBase.h" />
-    <ClInclude Include="..\..\..\..\libs\mrwebrtc-unityplugin\include\export.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\include\export.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="interop">
