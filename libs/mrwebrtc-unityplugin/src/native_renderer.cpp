@@ -98,11 +98,11 @@ void NativeRenderer::Shutdown() {
 
 void NativeRenderer::SetRemoteVideoTextures(VideoKind format,
                                         TextureDesc textureDescs[],
-                                        int textureDescCount) {
+                                        int textureDescCount) noexcept {
   if (!g_renderApi) {
     Log_Warning("NativeRenderer: Unity plugin not initialized.");
   }
-  Log_Debug("SetRemoteVideoTextures");
+
   {
     // Instance lock
     std::lock_guard guard(m_lock);
@@ -110,7 +110,14 @@ void NativeRenderer::SetRemoteVideoTextures(VideoKind format,
     switch (format) {
       case VideoKind::kI420:
         if (textureDescCount == 3) {
-          m_remoteTextures.resize(3);
+
+          try {
+            m_remoteTextures.resize(3);
+          } catch (std::bad_alloc const&) {
+            Log_Warning("Resize fail in SetRemoteVideoTextures.");
+            return;
+          }
+
           m_remoteTextures[0] = textureDescs[0];
           m_remoteTextures[1] = textureDescs[1];
           m_remoteTextures[2] = textureDescs[2];

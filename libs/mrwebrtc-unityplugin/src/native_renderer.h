@@ -56,7 +56,7 @@ class NativeRenderer {
 
   void SetRemoteVideoTextures(VideoKind format,
                          TextureDesc textureDescs[],
-                         int textureDescCount);
+                         int textureDescCount) noexcept;
   void UpdateTextures(TextureDesc textureDescs[]);
   void DisableRemoteVideo();
 
