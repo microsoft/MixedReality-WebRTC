@@ -85,26 +85,30 @@ mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
                                     VideoKind format,
                                     TextureDesc textures[],
                                     int textureCount) noexcept {
-  UnityLogger::LogDebug("mrsNativeRenderer_EnableRemoteVideo");
-  NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(nativeVideoHandle);
-  nativeVideo->SetRemoteVideoTextures(format, textures, textureCount);
-  return Result::kSuccess;
+  if (NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle) {
+    nativeVideo->SetRemoteVideoTextures(format, textures, textureCount);
+    return Result::kSuccess;
+  }
+  return Result::kInvalidNativeHandle;
 }
 
 mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_UpdateTextures(mrsNativeVideoHandle nativeVideoHandle,
                                  TextureDesc textures[]) noexcept {
-  UnityLogger::LogDebug("mrsNativeRenderer_UpdateTextures");
-  NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(nativeVideoHandle);
-  nativeVideo->UpdateTextures(textures);
-  return Result::kSuccess;
+  if (NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle) {
+    nativeVideo->UpdateTextures(textures);
+    return Result::kSuccess;
+  }
+  return Result::kInvalidNativeHandle;
 }
 
 mrsResult MR_UNITYPLUGIN__CALL 
 mrsNativeRenderer_DisableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle) noexcept {
-  NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle;
-  nativeVideo->DisableRemoteVideo();
-  return Result::kSuccess;
+  if (NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle) {
+    nativeVideo->DisableRemoteVideo();
+    return Result::kSuccess;
+  }
+  return Result::kInvalidNativeHandle;
 }
 
 VideoRenderMethod MR_UNITYPLUGIN__CALL 
@@ -114,7 +118,6 @@ mrsNativeRenderer_GetVideoUpdateMethod() noexcept {
 
 void MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_SetTextureSizeChanged(NativeRenderer::TextureSizeChangeCallback callback) noexcept {
-  UnityLogger::LogDebug("mrsNativeRenderer_SetTextureSizeChangeCallback");
   NativeRenderer::SetTextureSizeChangeCallback(callback);
 }
 
