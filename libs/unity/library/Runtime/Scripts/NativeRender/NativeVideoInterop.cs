@@ -45,7 +45,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_SetLoggingFunctions")]
         public static extern void SetLoggingFunctions(LogCallback logDebugCallback, LogCallback logErrorCallback, LogCallback logWarningCallback);
         
-        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_SetTextureSizeChangeCallback")]
-        public static extern void SetTextureSizeChangeCallback(TextureSizeChangeCallback logDebugCallback);
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_SetTextureSizeChanged")]
+        public static extern void SetTextureSizeChanged(TextureSizeChangeCallback logDebugCallback);
     }
 }

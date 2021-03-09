@@ -73,5 +73,5 @@ mrsNativeRenderer_SetLoggingFunctions(UnityLogger::LogFunction logDebugFunc,
                                       UnityLogger::LogFunction logWarningFunc);
 
 MR_UNITYPLUGIN__API void MR_UNITYPLUGIN__CALL
-mrsNativeRenderer_SetTextureSizeChangeCallback(TextureSizeChangeCallback callback) noexcept;
+mrsNativeRenderer_SetTextureSizeChanged(TextureSizeChangeCallback callback) noexcept;
 }

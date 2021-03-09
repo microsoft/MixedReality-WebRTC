@@ -131,7 +131,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         public static void SetTextureChangeCallback()
         {
-            NativeVideoInterop.SetTextureSizeChangeCallback(TextureSizeChangeCallback);
+            NativeVideoInterop.SetTextureSizeChanged(TextureSizeChangeCallback);
         }
 
         [AOT.MonoPInvokeCallback(typeof(LogCallback))]

@@ -113,7 +113,7 @@ mrsNativeRenderer_GetVideoUpdateMethod() noexcept {
 }
 
 void MR_UNITYPLUGIN__CALL
-mrsNativeRenderer_SetTextureSizeChangeCallback(NativeRenderer::TextureSizeChangeCallback callback) noexcept {
+mrsNativeRenderer_SetTextureSizeChanged(NativeRenderer::TextureSizeChangeCallback callback) noexcept {
   UnityLogger::LogDebug("mrsNativeRenderer_SetTextureSizeChangeCallback");
   NativeRenderer::SetTextureSizeChangeCallback(callback);
 }
