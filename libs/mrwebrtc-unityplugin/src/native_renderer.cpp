@@ -138,13 +138,17 @@ void NativeRenderer::SetRemoteVideoTextures(VideoKind format,
   }
 }
 
-void NativeRenderer::UpdateTextures(TextureDesc textureDescs[]) {
-  Log_Debug("UpdateTextures");
+void NativeRenderer::UpdateTextures(TextureDesc textureDescs[]) noexcept {
   {
     // Instance lock
     std::lock_guard guard(m_lock);
     m_remoteTextures.clear();
-    m_remoteTextures.resize(3);
+    try {
+      m_remoteTextures.resize(3);
+    } catch (std::bad_alloc const&) {
+      Log_Warning("Resize fail in SetRemoteVideoTextures.");
+      return;
+    }
     m_remoteTextures[0] = textureDescs[0];
     m_remoteTextures[1] = textureDescs[1];
     m_remoteTextures[2] = textureDescs[2];

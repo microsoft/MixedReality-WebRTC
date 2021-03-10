@@ -26,8 +26,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private Texture2D _textureU;
         private Texture2D _textureV;
 
-        private VideoFrameQueue<I420AVideoFrameStorage> _i420AFrameQueue = new VideoFrameQueue<I420AVideoFrameStorage>(2);
-
         private int dirtyWidth;
         private int dirtyHeight;
         
@@ -47,15 +45,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void Update()
         {
-            if (_nativeVideo != null && (_textureY.width != dirtyWidth || _textureY.height != dirtyHeight))
+            if (_nativeVideo != null && (_textureY == null || _textureY.width != dirtyWidth || _textureY.height != dirtyHeight))
             {
                 CreateEmptyVideoTextures(dirtyWidth, dirtyHeight, 128);
                 _nativeVideo.UpdateTextures(GetTextureDescArray());
-            }
-            
-            if (_nativeVideo == null && _i420AFrameQueue.TryDequeue(out I420AVideoFrameStorage frame))
-            {
-                StartNativeRendering((int)frame.Width, (int)frame.Height);
             }
         }
 
@@ -73,36 +66,22 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             switch (source.FrameEncoding)
             {
                 case VideoEncoding.I420A:
-                    _i420AFrameQueue.Clear();
-                    _source.I420AVideoFrameReady += I420AVideoFrameReady;
+                    _nativeVideo = new NativeVideo(_source.NativeHandle);
+                    _nativeVideo.TextureSizeChanged += TextureSizeChangeCallback;
+                    // Just send down a small texture initially, will get resized once frames actually arrive.
+                    // Implement way to get resolution from IVideoSource?
+                    CreateEmptyVideoTextures(4, 4, 128);
+                    _nativeVideo.EnableRemoteVideo(VideoKind.I420, GetTextureDescArray());
                     break;
                 case VideoEncoding.Argb32:
                     break;
             }
-        }
-
-        private void I420AVideoFrameReady(I420AVideoFrame frame)
-        {
-            _i420AFrameQueue.Enqueue(frame);
-        }
-
-        private void StartNativeRendering(int width, int height)
-        {
-            // Subscription is only used to ge the frame dimensions to generate the textures. So Unsubscribe once that is done.
-            _source.I420AVideoFrameReady -= I420AVideoFrameReady;
-            _i420AFrameQueue.Clear();
-
-            CreateEmptyVideoTextures(width, height, 128);
-            _nativeVideo = new NativeVideo(_source.NativeHandle);
-            _nativeVideo.TextureSizeChanged += TextureSizeChangeCallback;
-            RegisterRemoteTextures();
         }
         
         private void TextureSizeChangeCallback(int width, int height, IntPtr videoHandle)
         {
             // This may get called many times from different threads.
             Debug.Log("TextureSizeChangeCallback " + width + " " + height);
-            // nativeTextureDirty = true;
             dirtyWidth = width;
             dirtyHeight = height;
         }
@@ -135,18 +114,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             _source = null;
         }
 
-        private void RegisterRemoteTextures()
-        {
-            if (_nativeVideo != null && _textureY != null)
-            {
-                TextureDesc[] textures = GetTextureDescArray();
-#if WEBRTC_DEBUGGING
-                Debug.Log(string.Format("RegisteringRemoteTextures: {0:X16}, {1:X16}, {2:X16}", textures[0].texture.ToInt64(), textures[1].texture.ToInt64(), textures[2].texture.ToInt64()));
-#endif
-                _nativeVideo.EnableRemoteVideo(VideoKind.I420, textures);
-            }
-        }
-
         private TextureDesc[] GetTextureDescArray()
         {
             return new TextureDesc[3]
@@ -172,7 +139,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             };
         }
 
-        private void CreateEmptyVideoTextures(int width, int height, byte defaultY)
+        private void CreateEmptyVideoTextures(int width, int height, byte defaultValue)
         {
             Debug.Log($"Creating empty textures {width} {height}");
             
@@ -203,7 +170,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 byte[] pixels = _textureY.GetRawTextureData();
                 for (int i = 0; i < _textureY.width * _textureY.height; ++i)
                 {
-                    pixels[i] = defaultY;
+                    pixels[i] = defaultValue;
                 }
                 _textureY.LoadRawTextureData(pixels);
                 _textureY.Apply();
@@ -212,10 +179,9 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 byte[] pixels = _textureU.GetRawTextureData();
                 for (int h = 0, index = 0; h < _textureU.height; ++h)
                 {
-                    float value = 255f * h / _textureU.height;
                     for (int w = 0; w < _textureU.width; ++w, ++index)
                     {
-                        pixels[index] = (byte)value;
+                        pixels[index] = defaultValue;
                     }
                 }
                 _textureU.LoadRawTextureData(pixels);
@@ -227,8 +193,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     for (int w = 0; w < _textureV.width; ++w, ++index)
                     {
-                        float value = 255f * w / _textureV.width;
-                        pixels[index] = (byte)value;
+                        pixels[index] = defaultValue;
                     }
                 }
                 _textureV.LoadRawTextureData(pixels);

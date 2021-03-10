@@ -57,7 +57,7 @@ class NativeRenderer {
   void SetRemoteVideoTextures(VideoKind format,
                          TextureDesc textureDescs[],
                          int textureDescCount) noexcept;
-  void UpdateTextures(TextureDesc textureDescs[]);
+  void UpdateTextures(TextureDesc textureDescs[]) noexcept;
   void DisableRemoteVideo();
 
   static void MRS_CALL DoVideoUpdate();
