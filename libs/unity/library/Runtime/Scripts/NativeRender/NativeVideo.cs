@@ -36,7 +36,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// </summary>
         public event TextureSizeChangeCallback TextureSizeChanged;
 
-        private static Dictionary<IntPtr, NativeVideo> lookupDictionary = new Dictionary<IntPtr, NativeVideo>();
+        private static Dictionary<IntPtr, NativeVideo> _lookupDictionary = new Dictionary<IntPtr, NativeVideo>();
         
         private IntPtr _nativeVideoHandle;
 
@@ -47,7 +47,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public NativeVideo(IntPtr videoHandle)
         {
             _nativeVideoHandle = NativeVideoInterop.Create(videoHandle);
-            lookupDictionary[videoHandle] = this;
+            _lookupDictionary[videoHandle] = this;
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public void DisableRemoteVideo()
         {
             NativeVideoInterop.DisableRemoteVideo(_nativeVideoHandle);
-            lookupDictionary.Remove(_nativeVideoHandle);
+            _lookupDictionary.Remove(_nativeVideoHandle);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         [AOT.MonoPInvokeCallback(typeof(LogCallback))]
         private static void TextureSizeChangeCallback(int width, int height, IntPtr videoHandle)
         {
-            lookupDictionary.TryGetValue(videoHandle, out NativeVideo nativeVideo);
+            _lookupDictionary.TryGetValue(videoHandle, out NativeVideo nativeVideo);
             nativeVideo?.TextureSizeChanged?.Invoke(width, height, videoHandle);
         }
 
