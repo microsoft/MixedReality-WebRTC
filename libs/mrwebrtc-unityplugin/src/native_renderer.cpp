@@ -171,7 +171,7 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
   const mrsI420AVideoFrame& frame) {
 
   // It is possible for one buffer to be empty, each buffer must be checked.
-  if (frame.ydata_ == nullptr || frame.udata_ == nullptr || frame.vdata_ == nullptr) return;
+  if (frame.ydata_ == nullptr || frame.udata_ == nullptr || frame.vdata_ == nullptr) {return;
 
   NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(user_data);
  
@@ -179,8 +179,9 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
     // Instance lock in case they get updated from UpdateTextures
     std::lock_guard guard(nativeVideo->m_lock);
     if ((int)frame.width_ != nativeVideo->m_remoteTextures[0].width || (int)frame.height_ != nativeVideo->m_remoteTextures[0].height) {
-      Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with. Resizing.");
-      g_textureSizeChangeCallback(frame.width_, frame.height_, nativeVideo->m_handle);
+      if (g_textureSizeChangeCallback != nullptr) {
+        g_textureSizeChangeCallback(frame.width_, frame.height_, nativeVideo->m_handle);
+      }
       return;
     }
   }
@@ -191,18 +192,17 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
     // Global lock
     std::lock_guard guard(g_lock);
     if (g_freeI420VideoFrames.size()) {
-        remoteI420Frame = g_freeI420VideoFrames.back();
-        g_freeI420VideoFrames.pop_back();
+      remoteI420Frame = g_freeI420VideoFrames.back();
+      g_freeI420VideoFrames.pop_back();
     } else {
+      try {
         remoteI420Frame = std::make_shared<I420VideoFrame>();
+      } catch (std::bad_alloc const&) {
+        return;
+      }
     }
   }
 
-  // I don't see how this could happen, but it was here so I will leave it.
-  if (remoteI420Frame == nullptr) {
-    Log_Warning("remoteI420Frame null in I420ARemoteVideoFrameCallback.");
-    return;
-  }
 
   // Copy frame outside of any lock for perf.
   // This may consume more time on this thread unnecessarily, but
