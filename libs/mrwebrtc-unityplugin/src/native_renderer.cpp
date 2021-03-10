@@ -213,33 +213,27 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
 
   bool shouldUpdateFrame = false;
   if (frameCopySuccess) {
-    {
-      // Set new copied frame on nativeVideo while in the instance lock of the
-      // NativeVideo otherwise the render update loop may grab it pre-emptively.
-      std::lock_guard guard(nativeVideo->m_lock);
-      // Only update if null, otherwise this means the frame previously
-      // added has not yet been processed.
-      if (nativeVideo->m_nextI420RemoteVideoFrame == nullptr) {
-        nativeVideo->m_nextI420RemoteVideoFrame = remoteI420Frame;
-        shouldUpdateFrame = true;
-      }
+    // Set new copied frame on nativeVideo while in the instance lock of the
+    // NativeVideo otherwise the render update loop may grab it pre-emptively.
+    std::lock_guard guard(nativeVideo->m_lock);
+    // Only update if null, otherwise this means the frame previously
+    // added has not yet been processed.
+    if (nativeVideo->m_nextI420RemoteVideoFrame == nullptr) {
+      nativeVideo->m_nextI420RemoteVideoFrame = remoteI420Frame;
+      shouldUpdateFrame = true;
     }
   }
 
   if (shouldUpdateFrame) {
     // Queue the renderer for the next video update.
-    {
-      // Global lock
-      std::lock_guard guard(g_lock);
-      g_nativeVideoUpdateQueue.emplace(nativeVideo);
-    }
+    // Global lock
+    std::lock_guard guard(g_lock);
+    g_nativeVideoUpdateQueue.emplace(nativeVideo);
   } else {
     // If frame copy failed or was unnecessary, recycle frame
-    {
-      // Global lock
-      std::lock_guard guard(g_lock);
-      g_freeI420VideoFrames.push_back(std::move(remoteI420Frame));
-    }
+    // Global lock
+    std::lock_guard guard(g_lock);
+    g_freeI420VideoFrames.push_back(std::move(remoteI420Frame));
   }
 }
 
