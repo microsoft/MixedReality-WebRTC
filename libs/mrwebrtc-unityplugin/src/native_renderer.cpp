@@ -171,7 +171,9 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
   const mrsI420AVideoFrame& frame) {
 
   // It is possible for one buffer to be empty, each buffer must be checked.
-  if (frame.ydata_ == nullptr || frame.udata_ == nullptr || frame.vdata_ == nullptr) return;
+  if (frame.ydata_ == nullptr || frame.udata_ == nullptr || frame.vdata_ == nullptr) {
+    return;
+  }
 
   NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(user_data);
  
@@ -191,7 +193,7 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
     // Global lock
     std::lock_guard guard(g_lock);
     if (g_freeI420VideoFrames.size()) {
-        remoteI420Frame = g_freeI420VideoFrames.back();
+        remoteI420Frame = std::move(g_freeI420VideoFrames.back());
         g_freeI420VideoFrames.pop_back();
     } else {
         remoteI420Frame = std::make_shared<I420VideoFrame>();
@@ -236,7 +238,7 @@ void NativeRenderer::I420ARemoteVideoFrameCallback(
     {
       // Global lock
       std::lock_guard guard(g_lock);
-      g_freeI420VideoFrames.push_back(remoteI420Frame);
+      g_freeI420VideoFrames.push_back(std::move(remoteI420Frame));
     }
   }
 }
