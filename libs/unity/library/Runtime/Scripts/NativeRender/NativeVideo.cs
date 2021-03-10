@@ -120,13 +120,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// <summary>
         /// Returns the native rendering update method to be called by Unity.
         /// </summary>
-        /// <returns></returns>
         public static IntPtr GetVideoUpdateMethod()
         {
             return NativeVideoInterop.GetVideoUpdateMethod();
         }
         
-        /// Sets callback handlers for the logging of debug, warning, and error messages.
+        /// <summary>
+        /// Sets callback for texture size changes mid stream.
         /// </summary>
         public static void SetTextureChangeCallback()
         {
