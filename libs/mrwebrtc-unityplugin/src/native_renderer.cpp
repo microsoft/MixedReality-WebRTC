@@ -38,8 +38,8 @@ bool I420VideoFrame::CopyFrame(const mrsI420AVideoFrame& frame) {
   ustride = frame.ustride_;
   vstride = frame.vstride_;
   size_t ysize = (size_t)ystride * height;
-  size_t usize = (size_t)ustride * height / 2;
-  size_t vsize = (size_t)vstride * height / 2;
+  size_t usize = (size_t)ustride * (height + 1) / 2;
+  size_t vsize = (size_t)vstride * (height + 1) / 2;
   try { 
     ybuffer.resize(ysize);
     ubuffer.resize(usize);
