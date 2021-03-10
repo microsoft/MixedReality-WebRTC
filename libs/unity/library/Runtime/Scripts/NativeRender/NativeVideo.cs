@@ -47,8 +47,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public NativeVideo(IntPtr videoHandle)
         {
             _nativeVideoHandle = NativeVideoInterop.Create(videoHandle);
-            if (lookupDictionary.ContainsKey(videoHandle)) lookupDictionary[videoHandle] = this;
-            else lookupDictionary.Add(videoHandle, this);
+            lookupDictionary[videoHandle] = this;
         }
 
         /// <summary>
@@ -115,7 +114,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public void DisableRemoteVideo()
         {
             NativeVideoInterop.DisableRemoteVideo(_nativeVideoHandle);
-            if (lookupDictionary.ContainsKey(_nativeVideoHandle)) lookupDictionary.Remove(_nativeVideoHandle);
+            lookupDictionary.Remove(_nativeVideoHandle);
         }
 
         /// <summary>
