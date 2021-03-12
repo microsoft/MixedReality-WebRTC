@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Microsoft.MixedReality.WebRTC.Unity
 {
@@ -64,6 +65,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 width = item.width,
                 height = item.height
             }).ToArray();
+            
             NativeVideoInterop.EnableLocalVideo(_nativeVideoHandle, format, interopTextures, interopTextures.Length);
         }
 
@@ -81,23 +83,27 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         ///
         /// Calling this will override anything that is currently
         /// subscribed to the FrameReady call back on the VideoTrack.
+        ///
+        /// It is not necessary to send a textures array, if none is specified
+        /// or a texture array of the wrong size is specified, the TextureSizeChanged
+        /// callback will be fired and the textures can be updated with UpdateRemoteTextures.
         /// </summary>
         /// <param name="format"></param>
         /// <param name="textures"></param>
         public void EnableRemoteVideo(VideoKind format, TextureDesc[] textures)
         {
-            var interopTextures = textures.Select(item => new NativeVideoInterop.TextureDesc
+            if (textures != null)
             {
-                texture = item.texture,
-                width = item.width,
-                height = item.height
-            }).ToArray();
+                UpdateRemoteTextures(format, textures);
+            }
 
-            NativeVideoInterop.EnableRemoteVideo(_nativeVideoHandle, format, interopTextures, interopTextures.Length);
+            NativeVideoInterop.EnableRemoteVideo(_nativeVideoHandle, format);
         }
         
-        public void UpdateTextures(TextureDesc[] textures)
+        public void UpdateRemoteTextures(VideoKind format, TextureDesc[] textures)
         {
+            if (!ValidateFrameTextures(format, textures)) return;
+            
             var interopTextures = textures.Select(item => new NativeVideoInterop.TextureDesc
             {
                 texture = item.texture,
@@ -105,7 +111,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 height = item.height
             }).ToArray();
 
-            NativeVideoInterop.UpdateTextures(_nativeVideoHandle, interopTextures);
+            NativeVideoInterop.UpdateRemoteTextures(_nativeVideoHandle, format, interopTextures, interopTextures.Length);
         }
 
         /// <summary>
@@ -155,6 +161,23 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             NativeVideoInterop.Destroy(_nativeVideoHandle);
             _nativeVideoHandle = IntPtr.Zero;
+        }
+
+        private bool ValidateFrameTextures(VideoKind format, TextureDesc[] textures)
+        {
+            if (format == VideoKind.I420 && textures.Length != 3)
+            {
+                Debug.LogWarning("VideoKind.I420 expects three textures.");
+                return false;
+            }
+            
+            if (format == VideoKind.ARGB)
+            {
+                Debug.LogWarning("ARGB not implemented.");
+                return false;
+            }
+
+            return true;
         }
     }
 }

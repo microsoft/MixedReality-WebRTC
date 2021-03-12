@@ -45,10 +45,19 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private void Update()
         {
-            if (_nativeVideo != null && (_textureY == null || _textureY.width != dirtyWidth || _textureY.height != dirtyHeight))
+            if (_nativeVideo != null && 
+                (_textureY == null || _textureY.width != dirtyWidth || _textureY.height != dirtyHeight) &&
+                dirtyWidth != 0 && dirtyHeight != 0)
             {
-                CreateEmptyVideoTextures(dirtyWidth, dirtyHeight, 128);
-                _nativeVideo.UpdateTextures(GetTextureDescArray());
+                switch (_source.FrameEncoding)
+                {
+                    case VideoEncoding.I420A:
+                        CreateEmptyVideoTextures(dirtyWidth, dirtyHeight, 128);
+                        _nativeVideo.UpdateRemoteTextures(VideoKind.I420, GetTextureDescArray());
+                        break;
+                    case VideoEncoding.Argb32:
+                        break;
+                }
             }
         }
 
@@ -68,10 +77,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 case VideoEncoding.I420A:
                     _nativeVideo = new NativeVideo(_source.NativeHandle);
                     _nativeVideo.TextureSizeChanged += TextureSizeChangeCallback;
-                    // Just send down a small texture initially, will get resized once frames actually arrive.
-                    // Implement way to get resolution from IVideoSource?
-                    CreateEmptyVideoTextures(4, 4, 128);
-                    _nativeVideo.EnableRemoteVideo(VideoKind.I420, GetTextureDescArray());
+                    _nativeVideo.EnableRemoteVideo(VideoKind.I420, null);
                     break;
                 case VideoEncoding.Argb32:
                     break;

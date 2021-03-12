@@ -22,7 +22,7 @@ struct I420VideoFrame {
   std::vector<uint8_t> ubuffer;
   std::vector<uint8_t> vbuffer;
 
-  bool CopyFrame(const mrsI420AVideoFrame& frame);
+  bool CopyFrame(const mrsI420AVideoFrame& frame) noexcept;
 
   const std::vector<uint8_t>& GetBuffer(int i) {
     switch (i) {
@@ -54,10 +54,10 @@ class NativeRenderer {
 
   mrsRemoteVideoTrackHandle Handle() const { return m_handle; }
 
-  void SetRemoteVideoTextures(VideoKind format,
-                         TextureDesc textureDescs[],
-                         int textureDescCount) noexcept;
-  void UpdateTextures(TextureDesc textureDescs[]) noexcept;
+  void EnableRemoteVideo(VideoKind format) noexcept;
+  void UpdateRemoteTextures(VideoKind format,
+                            TextureDesc textureDescs[],
+                            int textureDescCount) noexcept;
   void DisableRemoteVideo();
 
   static void MRS_CALL DoVideoUpdate();
@@ -65,8 +65,8 @@ class NativeRenderer {
                                     UnityGfxRenderer deviceType,
                                     IUnityInterfaces* unityInterfaces);
 
-  typedef void (*TextureSizeChangeCallback)(int width, int height, mrsRemoteVideoTrackHandle handle);
-  static void SetTextureSizeChangeCallback(TextureSizeChangeCallback textureSizeChangeCallback) noexcept;
+  typedef void (*mrsTextureSizeChangedCallback)(int width, int height, mrsRemoteVideoTrackHandle handle);
+  static void SetTextureSizeChangeCallback(mrsTextureSizeChangedCallback textureSizeChangeCallback) noexcept;
 
 private:
   static std::set<mrsNativeVideoHandle> g_nativeVideos;
@@ -83,7 +83,7 @@ private:
   static void MRS_CALL I420ARemoteVideoFrameCallback(void* user_data, const mrsI420AVideoFrame& frame);
   static void MRS_CALL ArgbRemotevideoFrameCallback(void* user_data, const mrsArgb32VideoFrame& frame);
 
-  static TextureSizeChangeCallback g_textureSizeChangeCallback;
+  static mrsTextureSizeChangedCallback g_textureSizeChangeCallback;
 
   static uint64_t m_frameId;
 };

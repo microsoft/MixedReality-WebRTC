@@ -12,7 +12,7 @@ extern "C" {
 
 using mrsResult = Microsoft::MixedReality::WebRTC::Result;
 using mrsNativeVideoHandle = mrsObjectHandle;
-typedef void (*TextureSizeChangeCallback)(int width, int height, mrsRemoteVideoTrackHandle handle); // would like to know how to put this in native_renderer.h
+typedef void (*mrsTextureSizeChangedCallback)(int width, int height, mrsRemoteVideoTrackHandle handle); // would like to know how to put this in native_renderer.h
 
 //
 // Native rendering
@@ -46,13 +46,13 @@ mrsNativeRenderer_Destroy(mrsNativeVideoHandle nativeVideoHandle) noexcept;
 //// subscribed to the FrameReady call back on the VideoTrack.
 MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
-                                    VideoKind format,
-                                    TextureDesc textures[],
-                                    int textureCount) noexcept;
+                                    VideoKind format) noexcept;
 
 MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
-mrsNativeRenderer_UpdateTextures(mrsNativeVideoHandle nativeVideoHandle,
-                                 TextureDesc textures[]) noexcept;
+mrsNativeRenderer_UpdateRemoteTextures(mrsNativeVideoHandle nativeVideoHandle,
+                                 VideoKind format,
+                                 TextureDesc textures[],
+                                 int textureCount) noexcept;
 
 /// Clear remote textures and stop rendering remote video.
 MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
@@ -73,5 +73,5 @@ mrsNativeRenderer_SetLoggingFunctions(UnityLogger::LogFunction logDebugFunc,
                                       UnityLogger::LogFunction logWarningFunc);
 
 MR_UNITYPLUGIN__API void MR_UNITYPLUGIN__CALL
-mrsNativeRenderer_SetTextureSizeChanged(TextureSizeChangeCallback callback) noexcept;
+mrsNativeRenderer_SetTextureSizeChanged(mrsTextureSizeChangedCallback callback) noexcept;
 }

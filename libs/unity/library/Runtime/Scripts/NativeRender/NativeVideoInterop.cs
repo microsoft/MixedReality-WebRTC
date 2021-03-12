@@ -31,10 +31,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         public static extern uint DisableLocalVideo(IntPtr nativeVideoHandle);
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_EnableRemoteVideo")]
-        public static extern uint EnableRemoteVideo(IntPtr nativeVideoHandle, VideoKind format, TextureDesc[] textures, int textureCount);
+        public static extern uint EnableRemoteVideo(IntPtr nativeVideoHandle, VideoKind format);
         
-        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_UpdateTextures")]
-        public static extern uint UpdateTextures(IntPtr nativeVideoHandle, TextureDesc[] textures);
+        [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_UpdateRemoteTextures")]
+        public static extern uint UpdateRemoteTextures(IntPtr nativeVideoHandle, VideoKind format, TextureDesc[] textures, int textureCount);
 
         [DllImport(_dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "mrsNativeRenderer_DisableRemoteVideo")]
         public static extern uint DisableRemoteVideo(IntPtr nativeVideoHandle);
