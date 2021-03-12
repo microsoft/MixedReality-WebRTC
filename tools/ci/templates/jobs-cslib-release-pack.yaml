@@ -36,28 +36,41 @@ jobs:
   - checkout: self
     fetchDepth: '50'
 
+  # Compute package name and lib folder
+  - pwsh: |
+      $packageName = "Microsoft.MixedReality.WebRTC"
+      if ("$env:PACKAGE_PLATFORM" -eq "UWP") {
+        $packageName += ".UWP"
+      }
+      Write-Host "Package name = $packageName"
+      Write-Host "##vso[task.setvariable variable=packageName;]$packageName"
+    displayName: 'Compute package name'
+    env:
+      PACKAGE_PLATFORM: '${{parameters.packagePlatform}}'
+    timeoutInMinutes: 5
+
+  # Update commit ID in .nuspec file
+  - pwsh: |
+      Write-Host "Git Commit ID: $env:BUILD_COMMIT_ID"
+      # Replace commit ID
+      # Note the magic parenthesis around (Get-Content) which makes Set-Content work... Dont' ask me.
+      (Get-Content -Raw -Encoding UTF8 -Path "$env:NUSPEC_FILE") | ForEach-Object {
+        $_ -replace "__SOURCE_COMMIT_ID__","$env:BUILD_COMMIT_ID"
+      } | Set-Content -Path "$env:NUSPEC_FILE" -Encoding UTF8
+      # Print new content for debugging
+      Write-Host "--- $env:NUSPEC_FILE ---"
+      Get-Content -Path $env:NUSPEC_FILE
+      Write-Host "------------------------"
+    displayName: 'Update commit ID in nuspec'
+    env:
+      NUSPEC_FILE: 'tools/nuget/${{parameters.packagePlatform}}/$(packageName).nuspec'
+      BUILD_COMMIT_ID: '$(Build.SourceVersion)'
+
   # Use NuGet 5.2.0 to work around auth issues in previous versions
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet 5.2.0'
     inputs:
       versionSpec: 5.2.0
-
-  # Compute package name and lib folder
-  - pwsh: |
-      $packageName = "Microsoft.MixedReality.WebRTC"
-      $libFolder = "lib\netstandard2.0\"
-      if ("$env:PACKAGE_PLATFORM" -eq "UWP") {
-        $packageName += ".UWP"
-        $libFolder = "lib\uap10.0\"
-      }
-      Write-Host "Package name = $packageName"
-      Write-Host "Library folder = $libFolder"
-      Write-Host "##vso[task.setvariable variable=packageName;]$packageName"
-      Write-Host "##vso[task.setvariable variable=libFolder;]$libFolder"
-    displayName: 'Compute variables'
-    env:
-      PACKAGE_PLATFORM: '${{parameters.packagePlatform}}'
-    timeoutInMinutes: 5
 
   # Download all binaries from the previous stage
   - task: DownloadPipelineArtifact@2
@@ -66,7 +79,7 @@ jobs:
       source: 'current'
       artifact: 'cslib'
       patterns: '**/Microsoft.MixedReality.WebRTC.@(dll|xml)'
-      path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/$(libFolder)'
+      path: '$(Build.BinariesDirectory)/$(packageName)/bin/netstandard2.0/Release'
   - ${{ if eq(parameters.packagePlatform, 'Desktop') }}:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download mrwebrtc library (Win32-x86-Release)'
@@ -74,14 +87,14 @@ jobs:
         source: 'current'
         artifact: 'mrwebrtc_Win32-x86-Release'
         patterns: '**/mrwebrtc.dll'
-        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x86/native'
+        path: '$(Build.BinariesDirectory)/$(packageName)/bin/Win32/x86/Release'
     - task: DownloadPipelineArtifact@2
       displayName: 'Download mrwebrtc library (Win32-x64-Release)'
       inputs:
         source: 'current'
         artifact: 'mrwebrtc_Win32-x64-Release'
         patterns: '**/mrwebrtc.dll'
-        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x64/native'
+        path: '$(Build.BinariesDirectory)/$(packageName)/bin/Win32/x64/Release'
   - ${{ if eq(parameters.packagePlatform, 'UWP') }}:
     - task: DownloadPipelineArtifact@2
       displayName: 'Download mrwebrtc library (UWP-x86-Release)'
@@ -89,31 +102,41 @@ jobs:
         source: 'current'
         artifact: 'mrwebrtc_UWP-x86-Release'
         patterns: '**/mrwebrtc.dll'
-        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x86/native'
+        path: '$(Build.BinariesDirectory)/$(packageName)/bin/UWP/x86/Release'
     - task: DownloadPipelineArtifact@2
       displayName: 'Download mrwebrtc library (UWP-x64-Release)'
       inputs:
         source: 'current'
         artifact: 'mrwebrtc_UWP-x64-Release'
         patterns: '**/mrwebrtc.dll'
-        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-x64/native'
+        path: '$(Build.BinariesDirectory)/$(packageName)/bin/UWP/x64/Release'
     - task: DownloadPipelineArtifact@2
       displayName: 'Download mrwebrtc library (UWP-ARM-Release)'
       inputs:
         source: 'current'
         artifact: 'mrwebrtc_UWP-ARM-Release'
         patterns: '**/mrwebrtc.dll'
-        path: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}/runtimes/win10-arm/native'
+        path: '$(Build.BinariesDirectory)/$(packageName)/bin/UWP/ARM/Release'
 
   # Copy the NOTICE file
   - powershell: |
      $srcFile = Join-Path "$(Build.SourcesDirectory)" "NOTICE" -Resolve
-     $dstFile = Join-Path "$(Build.BinariesDirectory)" "$(packageName).${{parameters.nugetPackageVersion}}/content/NOTICE"
+     $dstFile = Join-Path "$(Build.BinariesDirectory)" "$(packageName)/NOTICE"
      $dstDir = Split-Path -Path $dstFile -Parent
      New-Item -Path $dstDir -ItemType Directory -ErrorAction Ignore | Out-Null
      Write-Host "Copying $srcFile -> $dstFile"
      Copy-Item $srcFile $dstFile -Force
     displayName: 'Copy NOTICE'
+
+  # Copy the .props file
+  - powershell: |
+     $srcFile = Join-Path "$(Build.SourcesDirectory)" "tools/nuget/${{parameters.packagePlatform}}/$(packageName).props" -Resolve
+     $dstFile = Join-Path "$(Build.BinariesDirectory)" "$(packageName)/tools/nuget/${{parameters.packagePlatform}}/$(packageName).props"
+     $dstDir = Split-Path -Path $dstFile -Parent
+     New-Item -Path $dstDir -ItemType Directory -ErrorAction Ignore | Out-Null
+     Write-Host "Copying $srcFile -> $dstFile"
+     Copy-Item $srcFile $dstFile -Force
+    displayName: 'Copy .props file'
 
   # For debugging, list the package content before signing
   - powershell: |
@@ -141,8 +164,8 @@ jobs:
     displayName: 'Sign package content'
     inputs:
       signConfigXml: '$(SignConfigFile_Content.secureFilePath)'
-      inPathRoot: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
-      outPathRoot: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
+      inPathRoot: '$(Build.BinariesDirectory)/$(packageName)'
+      outPathRoot: '$(Build.BinariesDirectory)/$(packageName)'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
@@ -153,30 +176,16 @@ jobs:
      }
     displayName: 'List package content'
 
-  # Update package version in .nuspec file. This needs to be a valid version
-  # otherwise "nuget pack" will fail, even if we override the version.
-  - pwsh: |
-      Write-Host "NuGet package version: $env:NUGET_VERSION"
-      $template = Get-Content -Raw -Encoding UTF8 -Path "$env:NUSPEC_FILE"
-      $content = $template -replace "__VERSION_STRING__","$env:NUGET_VERSION"
-      $content = $content -replace "__SOURCE_COMMIT_ID__","$env:BUILD_COMMIT_ID"
-      Set-Content -Path "$env:NUSPEC_FILE" -Encoding UTF8 -Value $content
-    displayName: 'Update NuGet version'
-    env:
-      NUSPEC_FILE: 'tools/nuget/${{parameters.packagePlatform}}/$(packageName).nuspec'
-      NUGET_VERSION: '${{parameters.nugetPackageVersion}}'
-      BUILD_COMMIT_ID: '$(Build.SourceVersion)'
-
   # Create the NuGet package
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2  # NuGetCommand@2
     displayName: 'NuGet pack'
     inputs:
       command: pack
       packagesToPack: 'tools/nuget/${{parameters.packagePlatform}}/$(packageName).nuspec'
-      packDestination: '$(Build.ArtifactStagingDirectory)/unsigned/$(packageName)'
+      packDestination: '$(Build.ArtifactStagingDirectory)/unsigned/$(packageName).${{parameters.nugetPackageVersion}}'
       versioningScheme: 'byEnvVar'
       versionEnvVar: 'NUGET_VERSION'
-      basePath: '$(Build.BinariesDirectory)/$(packageName).${{parameters.nugetPackageVersion}}'
+      basePath: '$(Build.BinariesDirectory)/$(packageName)'
     env:
       NUGET_VERSION: '${{parameters.nugetPackageVersion}}'
 
@@ -200,7 +209,7 @@ jobs:
     displayName: 'Sign NuGet package'
     inputs:
       signConfigXml: '$(SignConfigFile_NuGet.secureFilePath)'
-      inPathRoot: '$(Build.ArtifactStagingDirectory)/unsigned/$(packageName)'
+      inPathRoot: '$(Build.ArtifactStagingDirectory)/unsigned/$(packageName).${{parameters.nugetPackageVersion}}'
       outPathRoot: '$(Build.ArtifactStagingDirectory)/signed/$(packageName).${{parameters.nugetPackageVersion}}'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
