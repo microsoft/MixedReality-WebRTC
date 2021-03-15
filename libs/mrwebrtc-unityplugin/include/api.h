@@ -41,13 +41,16 @@ mrsNativeRenderer_Create(mrsRemoteVideoTrackHandle videoTrackHandle) noexcept;
 MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_Destroy(mrsNativeVideoHandle nativeVideoHandle) noexcept;
 
-//// Register textures for remote video and start rendering it.
+//// Subscribe video handle to recieve frame callabcks.
 //// Calling this will override anything that is currently
 //// subscribed to the FrameReady call back on the VideoTrack.
 MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
                                     VideoKind format) noexcept;
 
+//// Register the native texture handles which the stream 
+//// will be rendered into. Generally is called in response
+//// to the TextureSizeChanged callback.
 MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_UpdateRemoteTextures(mrsNativeVideoHandle nativeVideoHandle,
                                  VideoKind format,

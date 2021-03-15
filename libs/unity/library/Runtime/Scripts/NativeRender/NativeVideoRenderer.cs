@@ -26,8 +26,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private Texture2D _textureU;
         private Texture2D _textureV;
 
-        private int dirtyWidth;
-        private int dirtyHeight;
+        private int _dirtyWidth;
+        private int _dirtyHeight;
         
         private void Awake()
         {
@@ -46,13 +46,13 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         private void Update()
         {
             if (_nativeVideo != null && 
-                (_textureY == null || _textureY.width != dirtyWidth || _textureY.height != dirtyHeight) &&
-                dirtyWidth != 0 && dirtyHeight != 0)
+                (_textureY == null || _textureY.width != _dirtyWidth || _textureY.height != _dirtyHeight) &&
+                _dirtyWidth != 0 && _dirtyHeight != 0)
             {
                 switch (_source.FrameEncoding)
                 {
                     case VideoEncoding.I420A:
-                        CreateEmptyVideoTextures(dirtyWidth, dirtyHeight, 128);
+                        CreateEmptyVideoTextures(_dirtyWidth, _dirtyHeight, 128);
                         _nativeVideo.UpdateRemoteTextures(VideoKind.I420, GetTextureDescArray());
                         break;
                     case VideoEncoding.Argb32:
@@ -88,8 +88,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             // This may get called many times from different threads.
             Debug.Log("TextureSizeChangeCallback " + width + " " + height);
-            dirtyWidth = width;
-            dirtyHeight = height;
+            _dirtyWidth = width;
+            _dirtyHeight = height;
         }
 
         /// <summary>
@@ -149,8 +149,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         {
             Debug.Log($"Creating empty textures {width} {height}");
             
-            dirtyWidth = width;
-            dirtyHeight = height;
+            _dirtyWidth = width;
+            _dirtyHeight = height;
             
             _videoMaterial = _rawImage.material;
 
