@@ -5455,6 +5455,12 @@ references:
   commentId: F:Microsoft.MixedReality.WebRTC.Unity.TextureDesc.width
   fullName: Microsoft.MixedReality.WebRTC.Unity.TextureDesc.width
   nameWithType: TextureDesc.width
+- uid: Microsoft.MixedReality.WebRTC.Unity.TextureSizeChangeCallback
+  name: TextureSizeChangeCallback
+  href: api/Microsoft.MixedReality.WebRTC.Unity.TextureSizeChangeCallback.html
+  commentId: T:Microsoft.MixedReality.WebRTC.Unity.TextureSizeChangeCallback
+  fullName: Microsoft.MixedReality.WebRTC.Unity.TextureSizeChangeCallback
+  nameWithType: TextureSizeChangeCallback
 - uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource
   name: UniformColorVideoSource
   href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html

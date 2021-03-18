@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Delegate PeerConnection.DataChannelAddedDelegate
+    <title>Delegate TextureSizeChangeCallback
    | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Delegate PeerConnection.DataChannelAddedDelegate
+    <meta name="title" content="Delegate TextureSizeChangeCallback
    | MixedReality-WebRTC Documentation ">
     <meta name="generator" content="docfx 2.56.7.0">
     
@@ -22,7 +22,7 @@
     <meta property="docfx:rel" content="../">
     
   </head>
-  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate">
+  <body data-spy="scroll" data-target="#affix" data-offset="120" data-uid="Microsoft.MixedReality.WebRTC.Unity.TextureSizeChangeCallback">
     <div id="wrapper">
       <header>
         
@@ -82,19 +82,18 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate">
+            <article class="content wrap" id="_content" data-uid="Microsoft.MixedReality.WebRTC.Unity.TextureSizeChangeCallback">
   
   
-  <h1 id="Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAddedDelegate" data-uid="Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate" class="text-break">Delegate PeerConnection.DataChannelAddedDelegate
+  <h1 id="Microsoft_MixedReality_WebRTC_Unity_TextureSizeChangeCallback" data-uid="Microsoft.MixedReality.WebRTC.Unity.TextureSizeChangeCallback" class="text-break">Delegate TextureSizeChangeCallback
   </h1>
-  <div class="markdown level0 summary"><p>Delegate for <a class="xref" href="Microsoft.MixedReality.WebRTC.PeerConnection.html#Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAdded">DataChannelAdded</a> event.</p>
-</div>
+  <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.html">Microsoft.MixedReality.WebRTC</a></h6>
-  <h6><strong>Assembly</strong>: Microsoft.MixedReality.WebRTC.dll</h6>
-  <h5 id="Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAddedDelegate_syntax">Syntax</h5>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Microsoft.MixedReality.WebRTC.Unity.html">Microsoft.MixedReality.WebRTC.Unity</a></h6>
+  <h6><strong>Assembly</strong>: cs.temp.dll.dll</h6>
+  <h5 id="Microsoft_MixedReality_WebRTC_Unity_TextureSizeChangeCallback_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate void DataChannelAddedDelegate(DataChannel channel);</code></pre>
+    <pre><code class="lang-csharp hljs">public delegate void TextureSizeChangeCallback(int width, int height, IntPtr videoHandle);</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -107,10 +106,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Microsoft.MixedReality.WebRTC.DataChannel.html">DataChannel</a></td>
-        <td><span class="parametername">channel</span></td>
-        <td><p>The newly added data channel.</p>
-</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">width</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">height</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">videoHandle</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -121,12 +129,6 @@
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
-                  <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/new/master/apiSpec/new?filename=Microsoft_MixedReality_WebRTC_PeerConnection_DataChannelAddedDelegate.md&amp;value=---%0Auid%3A%20Microsoft.MixedReality.WebRTC.PeerConnection.DataChannelAddedDelegate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/libs/Microsoft.MixedReality.WebRTC/PeerConnection.cs/#L592" class="contribution-link">View Source</a>
-                  </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
