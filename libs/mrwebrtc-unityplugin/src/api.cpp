@@ -82,24 +82,42 @@ mrsNativeRenderer_Destroy(mrsNativeVideoHandle nativeVideoHandle) noexcept {
 
 mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
-                                    VideoKind format,
-                                    TextureDesc textures[],
-                                    int textureCount) noexcept {
-  UnityLogger::LogDebug("mrsNativeRenderer_EnableRemoteVideo");
-  NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(nativeVideoHandle);
-  //NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle;
-  nativeVideo->EnableRemoteVideo(format, textures, textureCount);
-  return Result::kSuccess;
+                                    VideoKind format) noexcept {
+  if (NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle) {
+    nativeVideo->EnableRemoteVideo(format);
+    return Result::kSuccess;
+  }
+  return Result::kInvalidNativeHandle;
+}
+
+mrsResult MR_UNITYPLUGIN__CALL
+mrsNativeRenderer_UpdateRemoteTextures(mrsNativeVideoHandle nativeVideoHandle,
+                                 VideoKind format,
+                                 TextureDesc textures[],
+                                 int textureCount) noexcept {
+  if (NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle) {
+    nativeVideo->UpdateRemoteTextures(format, textures, textureCount);
+    return Result::kSuccess;
+  }
+  return Result::kInvalidNativeHandle;
 }
 
 mrsResult MR_UNITYPLUGIN__CALL 
 mrsNativeRenderer_DisableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle) noexcept {
-  NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle;
-  nativeVideo->DisableRemoteVideo();
-  return Result::kSuccess;
+  if (NativeRenderer* nativeVideo = (NativeRenderer*)nativeVideoHandle) {
+    nativeVideo->DisableRemoteVideo();
+    return Result::kSuccess;
+  }
+  return Result::kInvalidNativeHandle;
 }
 
 VideoRenderMethod MR_UNITYPLUGIN__CALL 
 mrsNativeRenderer_GetVideoUpdateMethod() noexcept {
   return NativeRenderer::DoVideoUpdate;
 }
+
+void MR_UNITYPLUGIN__CALL
+mrsNativeRenderer_SetTextureSizeChanged(NativeRenderer::mrsTextureSizeChangedCallback callback) noexcept {
+  NativeRenderer::SetTextureSizeChangeCallback(callback);
+}
+

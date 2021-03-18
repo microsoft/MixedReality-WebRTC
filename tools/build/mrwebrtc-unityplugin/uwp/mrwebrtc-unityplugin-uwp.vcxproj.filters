@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\pch.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\api.cpp">
+      <Filter>interop</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\log_helpers.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\native_renderer.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\render_api.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\render_api_D3D11.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\render_api_D3D12.cpp" />
+    <ClCompile Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\render_api_OpenGLCoreES.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\pch.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\video_types.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\Unity\IUnityGraphics.h">
+      <Filter>Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\Unity\IUnityGraphicsD3D9.h">
+      <Filter>Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\Unity\IUnityGraphicsD3D11.h">
+      <Filter>Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\Unity\IUnityGraphicsD3D12.h">
+      <Filter>Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\Unity\IUnityGraphicsMetal.h">
+      <Filter>Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\Unity\IUnityInterface.h">
+      <Filter>Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\targetver.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\include\api.h">
+      <Filter>interop</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\log_helpers.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\native_renderer.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\render_api.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\src\PlatformBase.h" />
+    <ClInclude Include="$(MRWebRTCProjectRoot)libs\mrwebrtc-unityplugin\include\export.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="interop">
+      <UniqueIdentifier>{053773c7-d9a5-4bb6-b0a1-9992f5af25c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Unity">
+      <UniqueIdentifier>{477bfa31-74b1-47c7-a5c7-f4fc886eaabe}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

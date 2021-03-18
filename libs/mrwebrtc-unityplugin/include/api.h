@@ -12,6 +12,7 @@ extern "C" {
 
 using mrsResult = Microsoft::MixedReality::WebRTC::Result;
 using mrsNativeVideoHandle = mrsObjectHandle;
+typedef void (*mrsTextureSizeChangedCallback)(int width, int height, mrsRemoteVideoTrackHandle handle); // would like to know how to put this in native_renderer.h
 
 //
 // Native rendering
@@ -40,14 +41,21 @@ mrsNativeRenderer_Create(mrsRemoteVideoTrackHandle videoTrackHandle) noexcept;
 MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_Destroy(mrsNativeVideoHandle nativeVideoHandle) noexcept;
 
-//// Register textures for remote video and start rendering it.
+//// Subscribe video handle to recieve frame callabcks.
 //// Calling this will override anything that is currently
 //// subscribed to the FrameReady call back on the VideoTrack.
 MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_EnableRemoteVideo(mrsNativeVideoHandle nativeVideoHandle,
-                                    VideoKind format,
-                                    TextureDesc textures[],
-                                    int textureCount) noexcept;
+                                    VideoKind format) noexcept;
+
+//// Register the native texture handles which the stream 
+//// will be rendered into. Generally is called in response
+//// to the TextureSizeChanged callback.
+MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
+mrsNativeRenderer_UpdateRemoteTextures(mrsNativeVideoHandle nativeVideoHandle,
+                                 VideoKind format,
+                                 TextureDesc textures[],
+                                 int textureCount) noexcept;
 
 /// Clear remote textures and stop rendering remote video.
 MR_UNITYPLUGIN__API mrsResult MR_UNITYPLUGIN__CALL
@@ -64,6 +72,9 @@ mrsNativeRenderer_GetVideoUpdateMethod() noexcept;
 /// Pipe log entries to Unity's log.
 MR_UNITYPLUGIN__API void MR_UNITYPLUGIN__CALL
 mrsNativeRenderer_SetLoggingFunctions(UnityLogger::LogFunction logDebugFunc,
-                                      UnityLogger::UnityLogger::LogFunction logErrorFunc,
+                                      UnityLogger::LogFunction logErrorFunc,
                                       UnityLogger::LogFunction logWarningFunc);
+
+MR_UNITYPLUGIN__API void MR_UNITYPLUGIN__CALL
+mrsNativeRenderer_SetTextureSizeChanged(mrsTextureSizeChangedCallback callback) noexcept;
 }

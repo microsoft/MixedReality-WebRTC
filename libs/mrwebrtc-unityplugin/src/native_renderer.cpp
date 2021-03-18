@@ -29,22 +29,30 @@ static std::set<mrsNativeVideoHandle> g_nativeVideoUpdateQueue;
 static std::vector<std::shared_ptr<I420VideoFrame>> g_freeI420VideoFrames;
 static std::vector<std::shared_ptr<ArgbVideoFrame>> g_freeArgbVideoFrames;
 std::set<mrsNativeVideoHandle> NativeRenderer::g_nativeVideos;
+NativeRenderer::mrsTextureSizeChangedCallback NativeRenderer::g_textureSizeChangeCallback = nullptr;
 
-void I420VideoFrame::CopyFrame(const mrsI420AVideoFrame& frame) {
+bool I420VideoFrame::CopyFrame(const mrsI420AVideoFrame& frame) noexcept {
   width = frame.width_;
   height = frame.height_;
   ystride = frame.ystride_;
   ustride = frame.ustride_;
   vstride = frame.vstride_;
   size_t ysize = (size_t)ystride * height;
-  size_t usize = (size_t)ustride * height / 2;
-  size_t vsize = (size_t)vstride * height / 2;
-  ybuffer.resize(ysize);
-  ubuffer.resize(usize);
-  vbuffer.resize(vsize);
+  size_t usize = (size_t)ustride * (height + 1) / 2;
+  size_t vsize = (size_t)vstride * (height + 1) / 2;
+  try { 
+    ybuffer.resize(ysize);
+    ubuffer.resize(usize);
+    vbuffer.resize(vsize);
+  }
+  catch (std::bad_alloc const&) {
+    Log_Warning("Copy Frame Resize Failed.");
+    return false;
+  }
   memcpy(ybuffer.data(), frame.ydata_, ysize);
   memcpy(ubuffer.data(), frame.udata_, usize);
   memcpy(vbuffer.data(), frame.vdata_, vsize);
+  return true;
 }
 
 NativeRenderer* NativeRenderer::Create(mrsRemoteVideoTrackHandle videoTrackHandle) {
@@ -79,44 +87,74 @@ NativeRenderer::~NativeRenderer() {
   // Log_Debug("NativeRenderer::~NativeRenderer");
 }
 
+void NativeRenderer::SetTextureSizeChangeCallback(mrsTextureSizeChangedCallback textureSizeChangeCallback) noexcept {
+  g_textureSizeChangeCallback = textureSizeChangeCallback;
+}
+
 void NativeRenderer::Shutdown() {
   Log_Debug("NativeRenderer::Shutdown");
   DisableRemoteVideo();
 }
 
-void NativeRenderer::EnableRemoteVideo(VideoKind format,
-                                        TextureDesc textureDescs[],
-                                        int textureDescCount) {
+void NativeRenderer::EnableRemoteVideo(VideoKind format) noexcept {
   if (!g_renderApi) {
     Log_Warning("NativeRenderer: Unity plugin not initialized.");
   }
+
+  switch (format) {
+    case VideoKind::kI420:
+        mrsRemoteVideoTrackRegisterI420AFrameCallback(m_handle, NativeRenderer::I420ARemoteVideoFrameCallback, this);
+      break;
+    case VideoKind::kARGB:
+      Log_Warning("NativeRenderer: kARGB not currently supported.");
+      // TODO
+      break;
+    case VideoKind::kNone:
+      Log_Warning("NativeRenderer: No VideoKind specified.");
+      // TODO
+      break;
+  }
+}
+
+void NativeRenderer::UpdateRemoteTextures(VideoKind format,
+                                          TextureDesc textureDescs[],
+                                          int textureDescCount) noexcept {
   {
-    // Instance lock
-    std::lock_guard guard(m_lock);
-    m_remoteVideoFormat = format;
-    switch (format) {
-      case VideoKind::kI420:
-        if (textureDescCount == 3) {
-          m_remoteTextures.resize(3);
-          m_remoteTextures[0] = textureDescs[0];
-          m_remoteTextures[1] = textureDescs[1];
-          m_remoteTextures[2] = textureDescs[2];
-          mrsRemoteVideoTrackRegisterI420AFrameCallback(
-              m_handle, 
-              NativeRenderer::I420ARemoteVideoFrameCallback,
-              this);
-        }
-        break;
+    if (!g_renderApi) {
+      Log_Warning("NativeRenderer: Unity plugin not initialized.");
+    }
 
-      case VideoKind::kARGB:
-        Log_Warning("NativeRenderer: kARGB not currently supported.");
-        // TODO
-        break;
+    {
+      // Instance lock
+      std::lock_guard guard(m_lock);
+      m_remoteVideoFormat = format;
+      switch (m_remoteVideoFormat) {
+        case VideoKind::kI420:
+          if (textureDescCount == 3) {
 
-      case VideoKind::kNone:
-        Log_Warning("NativeRenderer: No VideoKind specified.");
-        // TODO
-        break;
+            m_remoteTextures.clear();
+            try {
+              m_remoteTextures.resize(3);
+            } catch (std::bad_alloc const&) {
+              Log_Warning("Resize fail in UpdateRemoteTextures.");
+              return;
+            }
+
+            m_remoteTextures[0] = textureDescs[0];
+            m_remoteTextures[1] = textureDescs[1];
+            m_remoteTextures[2] = textureDescs[2];
+          }
+          break;
+        case VideoKind::kARGB:
+          Log_Warning("NativeRenderer: kARGB not currently supported.");
+          // TODO
+          break;
+
+        case VideoKind::kNone:
+          Log_Warning("NativeRenderer: No VideoKind specified.");
+          // TODO
+          break;
+      }
     }
   }
 }
@@ -133,45 +171,75 @@ void NativeRenderer::DisableRemoteVideo() {
 }
 
 void NativeRenderer::I420ARemoteVideoFrameCallback(
-    void* user_data,
-    const mrsI420AVideoFrame& frame) {
+  void* user_data,
+  const mrsI420AVideoFrame& frame) {
 
-    NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(user_data);
+  // It is possible for one buffer to be empty, each buffer must be checked.
+  if (frame.ydata_ == nullptr || frame.udata_ == nullptr || frame.vdata_ == nullptr) {
+    return;
+  }
 
-    // RESEARCH: Do we need to keep a frame queue or is it fine to just render
-    // the most recent frame?
+  NativeRenderer* nativeVideo = static_cast<NativeRenderer*>(user_data);
+ 
+  {
+    // Instance lock in case they get updated from UpdateRemoteTextures
+    std::lock_guard guard(nativeVideo->m_lock);
+    if (nativeVideo->m_remoteTextures.size() == 0 || (int)frame.width_ != nativeVideo->m_remoteTextures[0].width || (int)frame.height_ != nativeVideo->m_remoteTextures[0].height) {
+      if (g_textureSizeChangeCallback != nullptr) {
+        g_textureSizeChangeCallback(frame.width_, frame.height_, nativeVideo->m_handle);
+      }
+      return;
+    }
+  }
 
-    // The performance trade-off being made here is to lock g_lock two times,
-    // preferring to copy the frame buffer outside any lock. Alternatively, the
-    // copy operation could be done inside g_lock scope. This would result in a
-    // single g_lock, but the lock would be held for a longer period of time
-    // every video frame, for every video stream. RESEARCH: Which is better?
+  // Acquire a video frame buffer from the free list with the global lock.
+  std::shared_ptr<I420VideoFrame> newRemoteI420Frame = nullptr;
+  {
+    // Global lock
+    std::lock_guard guard(g_lock);
+    if (g_freeI420VideoFrames.size()) {
+        newRemoteI420Frame = std::move(g_freeI420VideoFrames.back());
+        g_freeI420VideoFrames.pop_back();
+    } 
+  }
 
-    // Acquire a video frame buffer from the free list.
+  // If no free frame could be acquired, allocate new frame.
+  if (newRemoteI420Frame == nullptr) {
+    try {
+      newRemoteI420Frame = std::make_shared<I420VideoFrame>();
+    } catch (std::bad_alloc const&) {
+      return;
+    }
+  }
+
+  if (newRemoteI420Frame->CopyFrame(frame)) {
+    std::shared_ptr<I420VideoFrame> staleRemoteI420Frame = nullptr;
+
     {
-        // Global lock
-        std::lock_guard guard(g_lock);
-        if (nativeVideo->m_nextI420RemoteVideoFrame == nullptr) {
-            // TODO: Encapsulate this logic.
-            if (g_freeI420VideoFrames.size()) {
-                nativeVideo->m_nextI420RemoteVideoFrame = g_freeI420VideoFrames.back();
-                g_freeI420VideoFrames.pop_back();
-            } else {
-                nativeVideo->m_nextI420RemoteVideoFrame = std::make_shared<I420VideoFrame>();
-            }
-        }
+      // Set new copied frame on nativeVideo while in the instance lock of the
+      // NativeVideo otherwise the render update loop may grab it pre-emptively.
+      std::lock_guard guard(nativeVideo->m_lock);
+      staleRemoteI420Frame = nativeVideo->m_nextI420RemoteVideoFrame;
+      nativeVideo->m_nextI420RemoteVideoFrame = newRemoteI420Frame;
     }
 
-    // Copy the incoming video frame to the buffer.
-    nativeVideo->m_nextI420RemoteVideoFrame->CopyFrame(frame);
-
-    // Queue the renderer for the next video update.
     {
-        // Global lock
-        std::lock_guard guard(g_lock);
-        // Register this renderer for the next video update.
-        g_nativeVideoUpdateQueue.emplace(nativeVideo);
+      std::lock_guard guard(g_lock);
+      g_nativeVideoUpdateQueue.emplace(nativeVideo);
+
+      // If there was a frame already on nativeVideo that means it was unprocessed
+      // and was replaced with newer frame, so recycle it back.
+      if (staleRemoteI420Frame != nullptr) {
+        g_freeI420VideoFrames.push_back(std::move(staleRemoteI420Frame));
+      }
     }
+  } else {
+    {
+      // If frame copy fails for any reason, recycle frame.
+      std::lock_guard guard(g_lock);
+      g_freeI420VideoFrames.push_back(newRemoteI420Frame);
+    }
+  }
 }
 
 /// Renders current frame of all queued NativeRenderers.
@@ -203,14 +271,6 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
     }
 
     if (remoteI420Frame) {
-      // Render the frame to the textures.
-      if (textures.size() < 3)
-        continue;
-
-      if (remoteI420Frame->width != textures[0].width || remoteI420Frame->height != textures[0].height) {
-        Log_Warning("NativeRenderer: I420 frame resolution changed from what it was initialized with.");
-        continue;
-      }
 
       int index = 0;
       for (const TextureDesc& textureDesc : textures) {
@@ -220,8 +280,8 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
           int copyPitch = std::min<int>(videoDesc.width, update.rowPitch);
 
           uint8_t* dst = static_cast<uint8_t*>(update.data);
-          const uint8_t* src = remoteI420Frame->GetBuffer(index).data();
 
+          const uint8_t* src = remoteI420Frame->GetBuffer(index).data();
           for (int32_t r = 0; r < textureDesc.height; ++r) {
             memcpy(dst, src, copyPitch);
             dst += update.rowPitch;
@@ -240,7 +300,7 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
       {
         // Global lock
         std::lock_guard guard(g_lock);
-        g_freeI420VideoFrames.push_back(remoteI420Frame);
+        g_freeI420VideoFrames.push_back(std::move(remoteI420Frame));
       }
     }
 
@@ -251,7 +311,7 @@ void MRS_CALL NativeRenderer::DoVideoUpdate() {
       {
         // Global lock
         std::lock_guard guard(g_lock);
-        g_freeArgbVideoFrames.push_back(remoteArgbFrame);
+        g_freeArgbVideoFrames.push_back(std::move(remoteArgbFrame));
       }
     }
   }
