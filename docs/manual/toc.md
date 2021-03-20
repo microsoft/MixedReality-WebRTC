@@ -36,7 +36,7 @@
 ## [VideoRenderer](unity/unity-mediaplayer.md)
 ## Audio
 ### [MicrophoneSource](unity/unity-localaudiosource.md)
-### [AudioReceiver](unity/unity-remoteaudiosource.md)
+### [AudioReceiver](unity/unity-audioreceiver.md)
 ## Video
 ### [WebcamSource](unity/unity-localvideosource.md)
 ### [VideoReceiver](unity/unity-remotevideosource.md)

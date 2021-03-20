@@ -34,7 +34,7 @@ For the documentation corresponding to other branches, including [the `release/1
   - [Signaler](manual/unity/unity-signaler.md)
   - Audio
     - [`MicrophoneSource`](manual/unity/unity-localaudiosource.md)
-    - [`AudioReceiver`](manual/unity/unity-remoteaudiosource.md)
+    - [`AudioReceiver`](manual/unity/unity-audioreceiver.md)
   - Video
     - [`WebcamSource`](manual/unity/unity-localvideosource.md)
     - [`VideoReceiver`](manual/unity/unity-remotevideosource.md)
