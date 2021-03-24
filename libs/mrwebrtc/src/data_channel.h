@@ -35,6 +35,9 @@ class DataChannel : public webrtc::DataChannelObserver {
   /// Callback fired on newly available data channel data.
   using MessageCallback = Callback<const void*, const uint64_t>;
 
+  /// Callback fired on newly available data channel data.
+  using MessageExCallback = Callback<const mrsMessageKind, const void*, const uint64_t>;
+
   /// Callback fired when data buffering changed.
   /// The first parameter indicates the old buffering amount in bytes, the
   /// second one the new value, and the last one indicates the limit in bytes
@@ -81,6 +84,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   MRS_NODISCARD std::string label() const;
 
   void SetMessageCallback(MessageCallback callback) noexcept;
+  void SetMessageExCallback(MessageExCallback callback) noexcept;
   void SetBufferingCallback(BufferingCallback callback) noexcept;
   void SetStateCallback(StateCallback callback) noexcept;
 
@@ -90,6 +94,9 @@ class DataChannel : public webrtc::DataChannelObserver {
 
   /// Send a blob of data through the data channel.
   bool Send(const void* data, size_t size) noexcept;
+
+  /// Send a message through the data channel with the specified message kind.
+  bool SendEx(mrsMessageKind messageKind, const void* data, size_t size) noexcept;
 
   //
   // Advanced use
@@ -127,6 +134,7 @@ class DataChannel : public webrtc::DataChannelObserver {
   rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel_;
 
   MessageCallback message_callback_ RTC_GUARDED_BY(mutex_);
+  MessageExCallback message_ex_callback_ RTC_GUARDED_BY(mutex_);
   BufferingCallback buffering_callback_ RTC_GUARDED_BY(mutex_);
   StateCallback state_callback_ RTC_GUARDED_BY(mutex_);
   mutable std::mutex mutex_;

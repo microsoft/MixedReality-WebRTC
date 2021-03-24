@@ -30,6 +30,10 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             EntryPoint = "mrsDataChannelSendMessage")]
         public static extern uint DataChannel_SendMessage(IntPtr dataChannelHandle, IntPtr data, ulong size);
 
+        [DllImport(Utils.dllPath, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi,
+            EntryPoint = "mrsDataChannelSendMessageEx")]
+        public static extern uint DataChannel_SendMessageEx(
+            IntPtr dataChannelHandle, DataChannel.MessageKind messageKind, IntPtr data, ulong size);
         #endregion
 
 
@@ -57,6 +61,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         {
             public MessageCallback messageCallback;
             public IntPtr messageUserData;
+            public MessageExCallback messageExCallback;
+            public IntPtr messageExUserData;
             public BufferingCallback bufferingCallback;
             public IntPtr bufferingUserData;
             public StateCallback stateCallback;
@@ -70,6 +76,9 @@ namespace Microsoft.MixedReality.WebRTC.Interop
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void MessageCallback(IntPtr userData, IntPtr data, ulong size);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        public delegate void MessageExCallback(IntPtr userData, int messageKind, IntPtr data, ulong size);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public delegate void BufferingCallback(IntPtr userData,
@@ -87,6 +96,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             public PeerConnection Peer;
             public DataChannel DataChannel;
             public MessageCallback MessageCallback;
+            public MessageExCallback MessageExCallback;
             public BufferingCallback BufferingCallback;
             public StateCallback StateCallback;
         }
@@ -96,6 +106,13 @@ namespace Microsoft.MixedReality.WebRTC.Interop
         {
             var args = Utils.ToWrapper<CallbackArgs>(userData);
             args.DataChannel.OnMessageReceived(data, size);
+        }
+
+        [MonoPInvokeCallback(typeof(MessageExCallback))]
+        public static void DataChannelMessageExCallback(IntPtr userData, int messageKind, IntPtr data, ulong size)
+        {
+            var args = Utils.ToWrapper<CallbackArgs>(userData);
+            args.DataChannel.OnMessageExReceived(messageKind, data, size);
         }
 
         [MonoPInvokeCallback(typeof(BufferingCallback))]
@@ -125,6 +142,7 @@ namespace Microsoft.MixedReality.WebRTC.Interop
                 Peer = parent,
                 DataChannel = null, // set below
                 MessageCallback = DataChannelMessageCallback,
+                MessageExCallback = DataChannelMessageExCallback,
                 BufferingCallback = DataChannelBufferingCallback,
                 StateCallback = DataChannelStateCallback
             };
@@ -147,6 +165,8 @@ namespace Microsoft.MixedReality.WebRTC.Interop
             {
                 messageCallback = args.MessageCallback,
                 messageUserData = argsRef,
+                messageExCallback = args.MessageExCallback,
+                messageExUserData = argsRef,
                 bufferingCallback = args.BufferingCallback,
                 bufferingUserData = argsRef,
                 stateCallback = args.StateCallback,
