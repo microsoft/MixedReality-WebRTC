@@ -428,12 +428,36 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.DataChannel.Label
   nameWithType: DataChannel.Label
+- uid: Microsoft.MixedReality.WebRTC.DataChannel.MessageKind
+  name: DataChannel.MessageKind
+  href: api/Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.html
+  commentId: T:Microsoft.MixedReality.WebRTC.DataChannel.MessageKind
+  fullName: Microsoft.MixedReality.WebRTC.DataChannel.MessageKind
+  nameWithType: DataChannel.MessageKind
+- uid: Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.Binary
+  name: Binary
+  href: api/Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.html#Microsoft_MixedReality_WebRTC_DataChannel_MessageKind_Binary
+  commentId: F:Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.Binary
+  fullName: Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.Binary
+  nameWithType: DataChannel.MessageKind.Binary
+- uid: Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.Text
+  name: Text
+  href: api/Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.html#Microsoft_MixedReality_WebRTC_DataChannel_MessageKind_Text
+  commentId: F:Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.Text
+  fullName: Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.Text
+  nameWithType: DataChannel.MessageKind.Text
 - uid: Microsoft.MixedReality.WebRTC.DataChannel.MessageReceived
   name: MessageReceived
   href: api/Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_MessageReceived
   commentId: E:Microsoft.MixedReality.WebRTC.DataChannel.MessageReceived
   fullName: Microsoft.MixedReality.WebRTC.DataChannel.MessageReceived
   nameWithType: DataChannel.MessageReceived
+- uid: Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedEx
+  name: MessageReceivedEx
+  href: api/Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_MessageReceivedEx
+  commentId: E:Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedEx
+  fullName: Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedEx
+  nameWithType: DataChannel.MessageReceivedEx
 - uid: Microsoft.MixedReality.WebRTC.DataChannel.MessageReceivedUnsafe
   name: MessageReceivedUnsafe
   href: api/Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_MessageReceivedUnsafe
@@ -501,6 +525,19 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.DataChannel.SendMessage
   nameWithType: DataChannel.SendMessage
+- uid: Microsoft.MixedReality.WebRTC.DataChannel.SendMessageEx(Microsoft.MixedReality.WebRTC.DataChannel.MessageKind,IntPtr,System.UInt64)
+  name: SendMessageEx(DataChannel.MessageKind, IntPtr, UInt64)
+  href: api/Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessageEx_Microsoft_MixedReality_WebRTC_DataChannel_MessageKind_IntPtr_System_UInt64_
+  commentId: M:Microsoft.MixedReality.WebRTC.DataChannel.SendMessageEx(Microsoft.MixedReality.WebRTC.DataChannel.MessageKind,IntPtr,System.UInt64)
+  fullName: Microsoft.MixedReality.WebRTC.DataChannel.SendMessageEx(Microsoft.MixedReality.WebRTC.DataChannel.MessageKind, IntPtr, System.UInt64)
+  nameWithType: DataChannel.SendMessageEx(DataChannel.MessageKind, IntPtr, UInt64)
+- uid: Microsoft.MixedReality.WebRTC.DataChannel.SendMessageEx*
+  name: SendMessageEx
+  href: api/Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_SendMessageEx_
+  commentId: Overload:Microsoft.MixedReality.WebRTC.DataChannel.SendMessageEx
+  isSpec: "True"
+  fullName: Microsoft.MixedReality.WebRTC.DataChannel.SendMessageEx
+  nameWithType: DataChannel.SendMessageEx
 - uid: Microsoft.MixedReality.WebRTC.DataChannel.State
   name: State
   href: api/Microsoft.MixedReality.WebRTC.DataChannel.html#Microsoft_MixedReality_WebRTC_DataChannel_State

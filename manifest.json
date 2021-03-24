@@ -162,7 +162,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.BufferingChangedDelegate.html",
-          "hash": "2PxhHVomkzRcjhYpquIv4A=="
+          "hash": "yBIu43I3Lzr7py/8N3mZSA=="
         }
       },
       "is_incremental": false,
@@ -182,11 +182,23 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.MessageKind.html",
+          "hash": "OXDnSo0H77IGeUVXCjK/rg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "../build/docs/api/Microsoft.MixedReality.WebRTC.DataChannel.yml",
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.DataChannel.html",
-          "hash": "ovX9QS+EjkIxAT2+ZxqlCQ=="
+          "hash": "F47pKrs0rUg+stOHxBRBUA=="
         }
       },
       "is_incremental": false,
@@ -1722,7 +1734,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Microsoft.MixedReality.WebRTC.html",
-          "hash": "8/JnvEaLKOnZlCDjkqyOBQ=="
+          "hash": "Cnr1bATt5lWWZCji3FvgKQ=="
         }
       },
       "is_incremental": false,
@@ -1734,7 +1746,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "Mqvofs/e28D1Os4hNXPumA=="
+          "hash": "W3Qv98ZGX4ZTKvy4Y8T9lA=="
         }
       },
       "is_incremental": false,
@@ -3006,7 +3018,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 143,
+          "total_file_count": 144,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
