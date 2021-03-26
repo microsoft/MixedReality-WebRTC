@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.WebRTC;
 
@@ -35,17 +37,23 @@ namespace TestNetCoreConsole
 
                 // Create a new peer connection automatically disposed at the end of the program
                 using var pc = new PeerConnection();
+                using var signaler = new NamedPipeSignaler.NamedPipeSignaler(pc, "testpipe");
 
                 // Initialize the connection with a STUN server to allow remote access
                 var config = new PeerConnectionConfiguration
                 {
-                    IceServers = new List<IceServer> {
+                    IceServers = new List<IceServer> { 
                             new IceServer{ Urls = { "stun:stun.l.google.com:19302" } }
                         }
                 };
+
                 await pc.InitializeAsync(config);
                 Console.WriteLine("Peer connection initialized.");
-
+                 
+                var dataChannelLabel = $"data_channel_{Guid.NewGuid()}";
+                Console.WriteLine($"Adding data channel with label '{dataChannelLabel}'");
+                await pc.AddDataChannelAsync(dataChannelLabel, true, true, CancellationToken.None);
+                
                 // Record video from local webcam, and send to remote peer
                 if (needVideo)
                 {
@@ -80,7 +88,6 @@ namespace TestNetCoreConsole
 
                 // Setup signaling
                 Console.WriteLine("Starting signaling...");
-                var signaler = new NamedPipeSignaler.NamedPipeSignaler(pc, "testpipe");
                 signaler.SdpMessageReceived += async (SdpMessage message) =>
                 {
                     await pc.SetRemoteDescriptionAsync(message);
@@ -94,7 +101,6 @@ namespace TestNetCoreConsole
                     pc.AddIceCandidate(candidate);
                 };
                 await signaler.StartAsync();
-
                 // Start peer connection
                 pc.Connected += () => { Console.WriteLine("PeerConnection: connected."); };
                 pc.IceStateChanged += (IceConnectionState newState) => { Console.WriteLine($"ICE state: {newState}"); };
@@ -123,7 +129,14 @@ namespace TestNetCoreConsole
                 Console.WriteLine("Press a key to stop recording...");
                 Console.ReadKey(true);
 
-                signaler.Stop();
+                Console.WriteLine("Removing data channels...");
+                foreach (var dataChannel in pc.DataChannels.ToImmutableArray())
+                {
+                    Console.WriteLine($"Removing DataChannel {dataChannel.Label}: State '{dataChannel.State}'");
+                    pc.RemoveDataChannel(dataChannel);
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(10));
             }
             catch (Exception e)
             {
@@ -135,10 +148,10 @@ namespace TestNetCoreConsole
 
             Console.WriteLine("Program termined.");
 
-            localAudioTrack.Dispose();
-            localVideoTrack.Dispose();
-            audioTrackSource.Dispose();
-            videoTrackSource.Dispose();
+            localAudioTrack?.Dispose();
+            localVideoTrack?.Dispose();
+            audioTrackSource?.Dispose();
+            videoTrackSource?.Dispose();
         }
     }
 }

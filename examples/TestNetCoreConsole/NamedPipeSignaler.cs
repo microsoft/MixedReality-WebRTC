@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.IO.Pipes;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Microsoft.MixedReality.WebRTC;
 
 namespace NamedPipeSignaler
@@ -19,7 +20,7 @@ namespace NamedPipeSignaler
     /// <remarks>
     /// This is a simple implementation for debugging and testing; this is not a production-ready solution.
     /// </remarks>
-    public class NamedPipeSignaler
+    public class NamedPipeSignaler : IDisposable
     {
         /// <summary>
         /// Peer connection this signaler is associated with.
@@ -83,7 +84,7 @@ namespace NamedPipeSignaler
         /// <summary>
         /// Thread-safe collection of outgoing message, with automatic blocking read.
         /// </summary>
-        private readonly BlockingCollection<string> _outgoingMessages = new BlockingCollection<string>(new ConcurrentQueue<string>());
+        private readonly BufferBlock<string> _outgoingMessages = new BufferBlock<string>();
 
         /// <summary>
         /// Construct a signaler instance for the given peer connection, with an explicit pipe name.
@@ -96,6 +97,11 @@ namespace NamedPipeSignaler
         {
             PeerConnection = peerConnection;
             _basePipeName = pipeName;
+
+            PeerConnection.DataChannelAdded += PeerConnection_DataChannelAdded;
+            PeerConnection.DataChannelRemoved += PeerConnection_DataChannelRemoved;
+            PeerConnection.LocalSdpReadytoSend += PeerConnection_LocalSdpReadytoSend;
+            PeerConnection.IceCandidateReadytoSend += PeerConnection_IceCandidateReadytoSend;
 
             // Try to create the server, if not already existing
             IsClient = false;
@@ -151,26 +157,8 @@ namespace NamedPipeSignaler
             _sendStream = new StreamWriter(_clientPipe);
             _sendStream.AutoFlush = true;
             _recvStream = new StreamReader(_serverPipe);
-            PeerConnection.LocalSdpReadytoSend += PeerConnection_LocalSdpReadytoSend;
-            PeerConnection.IceCandidateReadytoSend += PeerConnection_IceCandidateReadytoSend;
             _ = Task.Factory.StartNew(ProcessIncomingMessages, TaskCreationOptions.LongRunning);
-            _ = Task.Factory.StartNew(WriteOutgoingMessages, TaskCreationOptions.LongRunning);
-        }
-
-        /// <summary>
-        /// Stop the signaler background tasks, and dispose of all native resources.
-        /// </summary>
-        public void Stop()
-        {
-            _recvStream.Close();
-            _outgoingMessages.CompleteAdding();
-            _outgoingMessages.Dispose();
-            PeerConnection.LocalSdpReadytoSend -= PeerConnection_LocalSdpReadytoSend;
-            PeerConnection.IceCandidateReadytoSend -= PeerConnection_IceCandidateReadytoSend;
-            _sendStream.Dispose();
-            _recvStream.Dispose();
-            _clientPipe.Dispose();
-            _serverPipe.Dispose();
+            _ = Task.Run(() => WriteOutgoingMessagesAsync(CancellationToken.None));
         }
 
         /// <summary>
@@ -238,12 +226,14 @@ namespace NamedPipeSignaler
         /// Entry point for the writing task dequeuing outgoing messages and
         /// writing them to the sending pipe.
         /// </summary>
-        private void WriteOutgoingMessages()
+        private async Task WriteOutgoingMessagesAsync(CancellationToken ct)
         {
-            // GetConsumingEnumerable() will block when no message is available,
-            // until CompleteAdding() is called from Stop().
-            foreach (var msg in _outgoingMessages.GetConsumingEnumerable())
+            // OutputAvailableAsync() will wait until messages are available or
+            // until Complete() is called from Dispose().
+            while (await _outgoingMessages.OutputAvailableAsync(ct))
             {
+                var msg = await _outgoingMessages.ReceiveAsync(ct);
+
                 // Write the message and wait for the stream to be ready again
                 // for the next Write() call.
                 _sendStream.Write(msg);
@@ -262,7 +252,7 @@ namespace NamedPipeSignaler
                 // WebRTC signaler thread which is typically invoking this method through
                 // the PeerConnection signaling callbacks.
                 Console.WriteLine($"[->] {msg}");
-                _outgoingMessages.Add(msg);
+                _outgoingMessages.Post(msg);
             }
             catch (Exception e)
             {
@@ -282,6 +272,36 @@ namespace NamedPipeSignaler
             // See ProcessIncomingMessages() for the message format
             string typeStr = SdpMessage.TypeToString(message.Type);
             SendMessage($"sdp\n{typeStr}\n{message.Content}\n\n");
+        }
+
+        private void PeerConnection_DataChannelAdded(DataChannel channel)
+        {
+            Console.WriteLine($"Event: DataChannel Added {channel.Label}");
+            channel.StateChanged += () => { Console.WriteLine($"DataChannel '{channel.Label}':  StateChanged '{channel.State}'"); };
+        }
+
+        private void PeerConnection_DataChannelRemoved(DataChannel channel)
+        {
+            Console.WriteLine($"Event: DataChannel Removed {channel.Label}");
+        }
+
+        public void Dispose()
+        {
+            PeerConnection.LocalSdpReadytoSend -= PeerConnection_LocalSdpReadytoSend;
+            PeerConnection.DataChannelAdded -= PeerConnection_DataChannelAdded;
+            PeerConnection.DataChannelRemoved -= PeerConnection_DataChannelRemoved;
+            PeerConnection.IceCandidateReadytoSend -= PeerConnection_IceCandidateReadytoSend;
+
+            _recvStream.Close();
+            _outgoingMessages.Complete();
+
+            // Optional, wait for all messages to be processed.
+            _outgoingMessages.Completion.Wait();
+            
+            _clientPipe?.Dispose();
+            _serverPipe?.Dispose();
+            _sendStream?.Dispose();
+            _recvStream?.Dispose();
         }
     }
 }
