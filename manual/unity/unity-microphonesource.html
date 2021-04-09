@@ -84,7 +84,10 @@
 <h1 id="unity-microphonesource-component">Unity <code>MicrophoneSource</code> component</h1>
 
 <p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.MicrophoneSource.html"><code>MicrophoneSource</code></a> Unity component represents a single audio track obtaining its data from a local audio capture device (microphone). The component controls both the capture device and the track it feeds.</p>
-<p><img src="unity-localaudiosource.png" alt="The MicrophoneSource Unity component"></p>
+<p>The <strong>Auto Gain Control</strong> property allows enabling automated gain control (AGC), an audio processing step which dynamically raises or lowers the audio gain to attempt to maintain a constant volume.</p>
+<p><img src="unity-microphonesource.png" alt="The MicrophoneSource Unity component"></p>
+<p>The <code>MicrophoneSource</code> must be added to an audio transceiver of a <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.PeerConnection.html"><code>PeerConnection</code></a> component to allow that peer connection to send the recorded audio to the remote peer.</p>
+<p><img src="unity-microphonesource2.png" alt="Adding the MicrophoneSource Unity component to a PeerConnection component"></p>
 </article>
           </div>
           
@@ -93,7 +96,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/manual/unity/unity-localaudiosource.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/manual/unity/unity-microphonesource.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
