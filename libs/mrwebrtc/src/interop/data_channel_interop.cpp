@@ -33,6 +33,8 @@ void MRS_CALL mrsDataChannelRegisterCallbacks(
   if (auto data_channel = static_cast<DataChannel*>(handle)) {
     data_channel->SetMessageCallback(
         {callbacks->message_callback, callbacks->message_user_data});
+    data_channel->SetMessageExCallback(
+        {callbacks->message_ex_callback, callbacks->message_ex_user_data});
     data_channel->SetBufferingCallback(
         {callbacks->buffering_callback, callbacks->buffering_user_data});
     data_channel->SetStateCallback(
@@ -50,4 +52,17 @@ mrsDataChannelSendMessage(mrsDataChannelHandle dataChannelHandle,
   }
   return (data_channel->Send(data, (size_t)size) ? Result::kSuccess
                                                  : Result::kUnknownError);
+}
+
+mrsResult MRS_CALL
+mrsDataChannelSendMessageEx(mrsDataChannelHandle dataChannelHandle,
+                          mrsMessageKind messageKind,
+                          const void* data,
+                          uint64_t size) noexcept {
+  auto data_channel = static_cast<DataChannel*>(dataChannelHandle);
+  if (!data_channel) {
+    return Result::kInvalidNativeHandle;
+  }
+  return (data_channel->SendEx(messageKind, data, (size_t)size) ? Result::kSuccess
+                                                                : Result::kUnknownError);
 }

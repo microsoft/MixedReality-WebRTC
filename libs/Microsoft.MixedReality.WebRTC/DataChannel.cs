@@ -59,6 +59,22 @@ namespace Microsoft.MixedReality.WebRTC
         }
 
         /// <summary>
+        /// Type of message sent or received through the data channel.
+        /// </summary>
+        public enum MessageKind
+        {
+            /// <summary>
+            /// The message is a binary message.
+            /// </summary>
+            Binary = 1,
+
+            /// <summary>
+            /// The message is a text message (UTF-8 encoded string).
+            /// </summary>
+            Text = 2
+        }
+
+        /// <summary>
         /// Delegate for the <see cref="BufferingChanged"/> event.
         /// </summary>
         /// <param name="previous">Previous buffering size, in bytes.</param>
@@ -128,7 +144,7 @@ namespace Microsoft.MixedReality.WebRTC
         /// calls to <see cref="SendMessage(byte[])"/> do not fail. Internally the data channel contains
         /// a buffer of messages to send that could not be sent immediately, for example due to
         /// congestion control. Once this buffer is full, any further call to <see cref="SendMessage(byte[])"/>
-        /// will fail until some mesages are processed and removed to make space.
+        /// will fail until some messages are processed and removed to make space.
         /// </summary>
         /// <remarks>
         /// The code handling this event should unwind the stack before
@@ -142,6 +158,13 @@ namespace Microsoft.MixedReality.WebRTC
         /// </summary>
         /// <seealso cref="SendMessage(byte[])"/>
         public event Action<byte[]> MessageReceived;
+
+        /// <summary>
+        /// Event triggered when a message is received through the data channel,
+        /// includes information if the message is binary or text.
+        /// </summary>
+        /// <seealso cref="SendMessage(byte[])"/>
+        public event Action<MessageKind, byte[]> MessageReceivedEx;
 
         /// <summary>
         /// Event fires when a message is received through the data channel.
@@ -229,6 +252,32 @@ namespace Microsoft.MixedReality.WebRTC
             Utils.ThrowOnErrorCode(res);
         }
 
+        /// <summary>
+        /// Send a message through the data channel with the specified kind. If the message cannot be sent, for example because of congestion
+        /// control, it is buffered internally. If this buffer gets full, an exception is thrown and this call is aborted.
+        /// The internal buffering is monitored via the <see cref="BufferingChanged"/> event.
+        /// </summary>
+        /// <param name="messageKind">The kind of message to send to the remote peer.</param>
+        /// <param name="message">The message to send to the remote peer.</param>
+        /// <param name="size">The size of the message to send in octects.</param>
+        /// <exception xref="System.InvalidOperationException">The native data channel is not initialized.</exception>
+        /// <exception xref="System.Exception">The internal buffer is full.</exception>
+        /// <exception cref="DataChannelNotOpenException">The data channel is not open yet.</exception>
+        /// <seealso cref="PeerConnection.InitializeAsync"/>
+        /// <seealso cref="BufferingChanged"/>
+        public void SendMessageEx(MessageKind messageKind, IntPtr message, ulong size)
+        {
+            MainEventSource.Log.DataChannelSendMessage(ID, (int)size);
+            // Check channel state before doing a P/Invoke call which would anyway fail
+            if (State != ChannelState.Open)
+            {
+                throw new DataChannelNotOpenException();
+            }
+
+            uint res = DataChannelInterop.DataChannel_SendMessageEx(_nativeHandle, messageKind, message, size);
+            Utils.ThrowOnErrorCode(res);
+        }
+
         internal void OnMessageReceived(IntPtr data, ulong size)
         {
             MainEventSource.Log.DataChannelMessageReceived(ID, (int)size);
@@ -256,6 +305,25 @@ namespace Microsoft.MixedReality.WebRTC
             if (unsafeCallback != null)
             {
                 unsafeCallback.Invoke(data, size);
+            }
+        }
+
+        internal void OnMessageExReceived(int messageKind, IntPtr data, ulong size)
+        {
+            MainEventSource.Log.DataChannelMessageReceived(ID, (int)size);
+
+            var callback = MessageReceivedEx;
+            if (callback != null)
+            {
+                byte[] msg = new byte[size];
+                unsafe
+                {
+                    fixed (void* ptr = msg)
+                    {
+                        Utils.MemCpy(ptr, (void*)data, size);
+                    }
+                }
+                callback.Invoke((MessageKind)messageKind, msg);
             }
         }
 

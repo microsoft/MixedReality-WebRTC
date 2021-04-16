@@ -153,11 +153,17 @@ jobs:
     timeoutInMinutes: 120
 
   - ${{ if eq(parameters.buildPlatform, 'UWP') }}:
+    # Compress some to avoid out-of-disk-space error
+    - pwsh: |
+        & compact /C "/S:$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/out"
+        & compact /C "/S:$(Build.SourcesDirectory)/external/webrtc-uwp-sdk/webrtc/xplatform/webrtc/OUTPUT"
+      displayName: 'Compress webrtc.lib output folders'
+
     # Build the UWP wrapper
     - task: MSBuild@1
       displayName: 'Build Org.WebRTC WinRT wrappers'
       inputs:
-        solution: '$(projectRoot)Org.WebRtc.Universal/Org.WebRtc.vcxproj'
+        solution: '$(projectRoot)Org.WebRtc.WrapperGlue.Universal/Org.WebRtc.WrapperGlue.vcxproj'
         msbuildVersion: '15.0'
         msbuildArchitecture: x64
         platform: ${{parameters.buildArch}}

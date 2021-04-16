@@ -33,7 +33,7 @@ For the documentation corresponding to other branches, including [the `release/1
   - [Peer Connection](manual/unity/unity-peerconnection.md)
   - [Signaler](manual/unity/unity-signaler.md)
   - Audio
-    - [`MicrophoneSource`](manual/unity/unity-localaudiosource.md)
+    - [`MicrophoneSource`](manual/unity/unity-microphonesource.md)
     - [`AudioReceiver`](manual/unity/unity-audioreceiver.md)
   - Video
     - [`WebcamSource`](manual/unity/unity-localvideosource.md)
