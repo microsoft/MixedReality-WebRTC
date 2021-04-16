@@ -8,7 +8,7 @@
     <title>Unity AudioReceiver component | MixedReality-WebRTC Documentation </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Unity AudioReceiver component | MixedReality-WebRTC Documentation ">
-    <meta name="generator" content="docfx 2.56.7.0">
+    <meta name="generator" content="docfx 2.57.2.0">
     
     <link rel="shortcut icon" href="../../mr-webrtc_icon.png">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -84,10 +84,13 @@
 <h1 id="unity-audioreceiver-component">Unity <code>AudioReceiver</code> component</h1>
 
 <p>The <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.AudioReceiver.html"><code>AudioReceiver</code></a> Unity component represents a single audio track received from the remote peer through an established peer connection.</p>
-<p><img src="unity-remoteaudiosource.png" alt="The AudioReceiver Unity component"></p>
-<div class="IMPORTANT">
-<h5>Important</h5>
-<p>FIXME: This component is not currently functional. The remote audio data is currently sent directly to the local device audio output (speakers) by the internal WebRTC implementation without any configuration possible. See issue <a href="https://github.com/microsoft/MixedReality-WebRTC/issues/92">#92</a> for details.</p>
+<p><img src="unity-audioreceiver.png" alt="The AudioReceiver Unity component"></p>
+<p>The <code>AudioReceiver</code> component in itself does not render the received audio from the remote peer. Instead, it makes that audio available via the <code>IAudioSource</code> interface. To render the remote audio, add an <a class="xref" href="../../api/Microsoft.MixedReality.WebRTC.Unity.AudioRenderer.html"><code>AudioRenderer</code></a> component and assign the <code>AudioStreamStarted</code> and <code>AudioStreamStopped</code> events to its <code>StartRendering()</code> and <code>StopRendering()</code> methods, respectively.</p>
+<p><img src="unity-audioreceiver2.png" alt="Connecting the AudioReceiver Unity component to an AudioRenderer and AudioSource components for audio rendering"></p>
+<p>This will allow the <code>AudioRenderer</code> to tap into the raw audio received from the remote peer, and redirect it to an <code>AudioSource</code> component located on the same <code>GameObject</code>. Note that the <code>AudioSource</code> component does not have any <code>AudioClip</code> assigned; instead the <code>OnAudioFilterRead()</code> callback is used internally by the <code>AudioRenderer</code> to inject the audio data into the <code>AudioSource</code> component, and therefore into the Unity audio DSP pipeline.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>When using the C# library of MixedReality-WebRTC, by default remote audio tracks are automatically rendered internally to the default audio device. In Unity, the expectation instead is that all audio shall be played via the Unity DSP pipeline using the above setup. So to prevent duplicate audio playback of remote audio tracks, <code>PeerConnection.InitializePluginAsync()</code> will disable the default internal audio rendering by calling <code>OutputToDevice(false)</code> on all <code>RemoteAudioTrack</code> objects created internally.</p>
 </div>
 </article>
           </div>
@@ -97,7 +100,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/manual/unity/unity-remoteaudiosource.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/microsoft/MixedReality-WebRTC/blob/master/docs/manual/unity/unity-audioreceiver.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
