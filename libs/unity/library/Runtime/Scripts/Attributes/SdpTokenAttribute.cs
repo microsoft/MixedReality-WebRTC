@@ -16,6 +16,11 @@ namespace Microsoft.MixedReality.WebRTC.Unity
     public class SdpTokenAttribute : PropertyAttribute
     {
         /// <summary>
+        /// Regular expression that matches all characters which can't be used in an SDP token.
+        /// </summary>
+        public const string InvalidCharacters = "[^A-Za-z0-9!#$%&'*+-.^_`{|}~]";
+
+        /// <summary>
         /// Allow empty tokens, that is a string property which is <c>null</c> or an empty string.
         /// This is not valid in the RFC, but can be allowed as a property value to represent a default
         /// value generated at runtime by the implementation instead of being provided by the user.
@@ -62,13 +67,10 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 throw new ArgumentNullException("Invalid null SDP token.");
             }
 
-            var regex = new Regex("^[A-Za-z0-9!#$%&'*+-.^_`{|}~]+$");
-            if (regex.IsMatch(name))
+            if (Regex.IsMatch(name, InvalidCharacters))
             {
-                return;
+                throw new ArgumentException($"SDP token '{name}' contains invalid characters.");
             }
-
-            throw new ArgumentException($"SDP token '{name}' contains invalid characters.");
         }
     }
 }
