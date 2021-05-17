@@ -9,7 +9,7 @@ extern "C" {
 
 /// Configuration for creating a local video track.
 struct mrsLocalVideoTrackInitSettings {
-  /// Track name. This must be a valid SDP token (see |mrsSdpTokenIsValid()|),
+  /// Track name. This must be a valid SDP token (see |mrsSdpIsValidToken()|),
   /// or |nullptr| to let the implementation generate a valid unique track name.
   const char* track_name{};
 };
