@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -224,6 +225,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             {
                 LocalPeerId = SystemInfo.deviceName;
             }
+            // In any case, make sure that the peer ID is a valid SDP token
+            LocalPeerId = Regex.Replace(LocalPeerId, SdpTokenAttribute.InvalidCharacters, "_");
         }
 
         /// <summary>
