@@ -5308,6 +5308,12 @@ references:
   isSpec: "True"
   fullName: Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.AllowEmpty
   nameWithType: SdpTokenAttribute.AllowEmpty
+- uid: Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.InvalidCharacters
+  name: InvalidCharacters
+  href: api/Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.html#Microsoft_MixedReality_WebRTC_Unity_SdpTokenAttribute_InvalidCharacters
+  commentId: F:Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.InvalidCharacters
+  fullName: Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.InvalidCharacters
+  nameWithType: SdpTokenAttribute.InvalidCharacters
 - uid: Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.Validate(System.String,System.Boolean)
   name: Validate(String, Boolean)
   href: api/Microsoft.MixedReality.WebRTC.Unity.SdpTokenAttribute.html#Microsoft_MixedReality_WebRTC_Unity_SdpTokenAttribute_Validate_System_String_System_Boolean_
