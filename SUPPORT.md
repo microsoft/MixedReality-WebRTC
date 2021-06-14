@@ -10,4 +10,4 @@ As stated in the **Notice** section of the project readme file, this project is 
 
 ## Microsoft Support Policy  
 
-Support for this **PROJECT or PRODUCT** is limited to the resources listed above.
+Support for this project is limited to the resources listed above.
