@@ -16,6 +16,15 @@ MixedReality-WebRTC is a collection of libraries to help mixed reality app devel
 
 MixedReality-WebRTC is part of the collection of repositories developed and maintained by the [Mixed Reality Sharing team](https://github.com/orgs/microsoft/teams/mixed-reality-sharing).
 
+## Notice
+
+**With the announcement of Microsoft Mesh, we want to provide an update regarding our plans for the future of the MR-WebRTC project. Microsoft Mesh provides a fabric to enable collaborative scenarios for mixed reality that span across multiple platforms and endpoints and has additional features and capabilities beyond what is covered by the MR-WebRTC project. With that in mind, we have decided to scale back our development resources in the MR-WebRTC project and focus those resources into providing a great platform with Microsoft Mesh. For additional information about Microsoft Mesh, please check out our technical overview at [https://techcommunity.microsoft.com/t5/mixed-reality-blog/microsoft-mesh-a-technical-overview/ba-p/2176004](https://techcommunity.microsoft.com/t5/mixed-reality-blog/microsoft-mesh-a-technical-overview/ba-p/2176004).**
+ 
+**While we are reducing our development investment in MR-WebRTC, we will continue to host it as a project, and accept pull-requests for the project. We also encourage anyone wishing to continue to develop the project to fork it and move forward with it.**
+ 
+**If anyone has any questions, please feel free to reach out to Jesse McCulloch from our Developer Ecosystem team at [jemccull@microsoft.com](mailto:jemccull@microsoft.com).**
+
+
 ## Download
 
 NuGet (C++, C#) and UPM (Unity) packages are available for stable releases (`release/*` branches). See the [Release page on GitHub](https://github.com/microsoft/MixedReality-WebRTC/releases) or the [Download documentation page](https://microsoft.github.io/MixedReality-WebRTC/manual/download.html) for details.
