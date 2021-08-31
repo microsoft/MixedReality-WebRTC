@@ -735,22 +735,22 @@ references:
   fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource._frameRequestCallbackArgsHandle
   nameWithType: ExternalVideoTrackSource._frameRequestCallbackArgsHandle
 - uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32,System.Int64,Microsoft.MixedReality.WebRTC.Argb32VideoFrame@)
-  name: CompleteFrameRequest(UInt32, Int64, Argb32VideoFrame)
+  name: CompleteFrameRequest(UInt32, Int64, in Argb32VideoFrame)
   href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CompleteFrameRequest_System_UInt32_System_Int64_Microsoft_MixedReality_WebRTC_Argb32VideoFrame__
   commentId: M:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32,System.Int64,Microsoft.MixedReality.WebRTC.Argb32VideoFrame@)
   name.vb: CompleteFrameRequest(UInt32, Int64, ByRef Argb32VideoFrame)
-  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32, System.Int64, Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32, System.Int64, in Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
   fullName.vb: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32, System.Int64, ByRef Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
-  nameWithType: ExternalVideoTrackSource.CompleteFrameRequest(UInt32, Int64, Argb32VideoFrame)
+  nameWithType: ExternalVideoTrackSource.CompleteFrameRequest(UInt32, Int64, in Argb32VideoFrame)
   nameWithType.vb: ExternalVideoTrackSource.CompleteFrameRequest(UInt32, Int64, ByRef Argb32VideoFrame)
 - uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32,System.Int64,Microsoft.MixedReality.WebRTC.I420AVideoFrame@)
-  name: CompleteFrameRequest(UInt32, Int64, I420AVideoFrame)
+  name: CompleteFrameRequest(UInt32, Int64, in I420AVideoFrame)
   href: api/Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.html#Microsoft_MixedReality_WebRTC_ExternalVideoTrackSource_CompleteFrameRequest_System_UInt32_System_Int64_Microsoft_MixedReality_WebRTC_I420AVideoFrame__
   commentId: M:Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32,System.Int64,Microsoft.MixedReality.WebRTC.I420AVideoFrame@)
   name.vb: CompleteFrameRequest(UInt32, Int64, ByRef I420AVideoFrame)
-  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32, System.Int64, Microsoft.MixedReality.WebRTC.I420AVideoFrame)
+  fullName: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32, System.Int64, in Microsoft.MixedReality.WebRTC.I420AVideoFrame)
   fullName.vb: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest(System.UInt32, System.Int64, ByRef Microsoft.MixedReality.WebRTC.I420AVideoFrame)
-  nameWithType: ExternalVideoTrackSource.CompleteFrameRequest(UInt32, Int64, I420AVideoFrame)
+  nameWithType: ExternalVideoTrackSource.CompleteFrameRequest(UInt32, Int64, in I420AVideoFrame)
   nameWithType.vb: ExternalVideoTrackSource.CompleteFrameRequest(UInt32, Int64, ByRef I420AVideoFrame)
 - uid: Microsoft.MixedReality.WebRTC.ExternalVideoTrackSource.CompleteFrameRequest*
   name: CompleteFrameRequest
@@ -831,22 +831,22 @@ references:
   fullName: Microsoft.MixedReality.WebRTC.FrameRequest
   nameWithType: FrameRequest
 - uid: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.Argb32VideoFrame@)
-  name: CompleteRequest(Argb32VideoFrame)
+  name: CompleteRequest(in Argb32VideoFrame)
   href: api/Microsoft.MixedReality.WebRTC.FrameRequest.html#Microsoft_MixedReality_WebRTC_FrameRequest_CompleteRequest_Microsoft_MixedReality_WebRTC_Argb32VideoFrame__
   commentId: M:Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.Argb32VideoFrame@)
   name.vb: CompleteRequest(ByRef Argb32VideoFrame)
-  fullName: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
+  fullName: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(in Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
   fullName.vb: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(ByRef Microsoft.MixedReality.WebRTC.Argb32VideoFrame)
-  nameWithType: FrameRequest.CompleteRequest(Argb32VideoFrame)
+  nameWithType: FrameRequest.CompleteRequest(in Argb32VideoFrame)
   nameWithType.vb: FrameRequest.CompleteRequest(ByRef Argb32VideoFrame)
 - uid: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.I420AVideoFrame@)
-  name: CompleteRequest(I420AVideoFrame)
+  name: CompleteRequest(in I420AVideoFrame)
   href: api/Microsoft.MixedReality.WebRTC.FrameRequest.html#Microsoft_MixedReality_WebRTC_FrameRequest_CompleteRequest_Microsoft_MixedReality_WebRTC_I420AVideoFrame__
   commentId: M:Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.I420AVideoFrame@)
   name.vb: CompleteRequest(ByRef I420AVideoFrame)
-  fullName: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(Microsoft.MixedReality.WebRTC.I420AVideoFrame)
+  fullName: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(in Microsoft.MixedReality.WebRTC.I420AVideoFrame)
   fullName.vb: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest(ByRef Microsoft.MixedReality.WebRTC.I420AVideoFrame)
-  nameWithType: FrameRequest.CompleteRequest(I420AVideoFrame)
+  nameWithType: FrameRequest.CompleteRequest(in I420AVideoFrame)
   nameWithType.vb: FrameRequest.CompleteRequest(ByRef I420AVideoFrame)
 - uid: Microsoft.MixedReality.WebRTC.FrameRequest.CompleteRequest*
   name: CompleteRequest
@@ -4163,13 +4163,13 @@ references:
   nameWithType: CustomVideoSource<T>.OnEnable
   nameWithType.vb: CustomVideoSource(Of T).OnEnable
 - uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnFrameRequested(FrameRequest@)
-  name: OnFrameRequested(FrameRequest)
+  name: OnFrameRequested(in FrameRequest)
   href: api/Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource-1.html#Microsoft_MixedReality_WebRTC_Unity_CustomVideoSource_1_OnFrameRequested_FrameRequest__
   commentId: M:Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnFrameRequested(FrameRequest@)
   name.vb: OnFrameRequested(ByRef FrameRequest)
-  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnFrameRequested(FrameRequest)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource<T>.OnFrameRequested(in FrameRequest)
   fullName.vb: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource(Of T).OnFrameRequested(ByRef FrameRequest)
-  nameWithType: CustomVideoSource<T>.OnFrameRequested(FrameRequest)
+  nameWithType: CustomVideoSource<T>.OnFrameRequested(in FrameRequest)
   nameWithType.vb: CustomVideoSource(Of T).OnFrameRequested(ByRef FrameRequest)
 - uid: Microsoft.MixedReality.WebRTC.Unity.CustomVideoSource`1.OnFrameRequested*
   name: OnFrameRequested
@@ -5255,13 +5255,13 @@ references:
   fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnEnable
   nameWithType: SceneVideoSource.OnEnable
 - uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested(FrameRequest@)
-  name: OnFrameRequested(FrameRequest)
+  name: OnFrameRequested(in FrameRequest)
   href: api/Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_SceneVideoSource_OnFrameRequested_FrameRequest__
   commentId: M:Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested(FrameRequest@)
   name.vb: OnFrameRequested(ByRef FrameRequest)
-  fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested(FrameRequest)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested(in FrameRequest)
   fullName.vb: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested(ByRef FrameRequest)
-  nameWithType: SceneVideoSource.OnFrameRequested(FrameRequest)
+  nameWithType: SceneVideoSource.OnFrameRequested(in FrameRequest)
   nameWithType.vb: SceneVideoSource.OnFrameRequested(ByRef FrameRequest)
 - uid: Microsoft.MixedReality.WebRTC.Unity.SceneVideoSource.OnFrameRequested*
   name: OnFrameRequested
@@ -5517,13 +5517,13 @@ references:
   fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.Colors
   nameWithType: UniformColorVideoSource.Colors
 - uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested(FrameRequest@)
-  name: OnFrameRequested(FrameRequest)
+  name: OnFrameRequested(in FrameRequest)
   href: api/Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.html#Microsoft_MixedReality_WebRTC_Unity_UniformColorVideoSource_OnFrameRequested_FrameRequest__
   commentId: M:Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested(FrameRequest@)
   name.vb: OnFrameRequested(ByRef FrameRequest)
-  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested(FrameRequest)
+  fullName: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested(in FrameRequest)
   fullName.vb: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested(ByRef FrameRequest)
-  nameWithType: UniformColorVideoSource.OnFrameRequested(FrameRequest)
+  nameWithType: UniformColorVideoSource.OnFrameRequested(in FrameRequest)
   nameWithType.vb: UniformColorVideoSource.OnFrameRequested(ByRef FrameRequest)
 - uid: Microsoft.MixedReality.WebRTC.Unity.UniformColorVideoSource.OnFrameRequested*
   name: OnFrameRequested
