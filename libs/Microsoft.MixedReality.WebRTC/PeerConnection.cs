@@ -500,8 +500,8 @@ namespace Microsoft.MixedReality.WebRTC
         {
             switch (type)
             {
-            case SdpMessageType.Offer: return "offer";
-            case SdpMessageType.Answer: return "answer";
+                case SdpMessageType.Offer: return "offer";
+                case SdpMessageType.Answer: return "answer";
             }
             throw new ArgumentException($"Cannot convert invalid SdpMessageType value '{type}'.");
         }
@@ -1468,12 +1468,6 @@ namespace Microsoft.MixedReality.WebRTC
 
                 var res = PeerConnectionInterop.PeerConnection_RemoveDataChannel(_nativePeerhandle, dataChannel._nativeHandle);
                 Utils.ThrowOnErrorCode(res);
-
-                DataChannelRemoved?.Invoke(dataChannel);
-
-                // PeerConnection is owning the data channel, and all internal states have been
-                // updated and events triggered, so notify the data channel to clean its internal state.
-                dataChannel.DestroyNative();
             }
             else
             {
