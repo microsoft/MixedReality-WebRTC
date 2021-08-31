@@ -135,8 +135,6 @@ namespace TestNetCoreConsole
                     Console.WriteLine($"Removing DataChannel {dataChannel.Label}: State '{dataChannel.State}'");
                     pc.RemoveDataChannel(dataChannel);
                 }
-
-                await Task.Delay(TimeSpan.FromSeconds(10));
             }
             catch (Exception e)
             {
