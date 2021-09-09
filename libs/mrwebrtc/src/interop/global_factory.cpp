@@ -13,7 +13,7 @@
 
 #include <exception>
 
-#if !defined(MR_SHARING_ANDROID) && !defined(WINUWP)
+#if !defined(MR_SHARING_ANDROID) && !defined(WINUWP) && !defined(WEBRTC_LINUX)
 #pragma warning(push)
 #pragma warning(disable : 4100 4127 4244)
 #include "modules/audio_device/win/audio_device_core_win.h"
@@ -269,16 +269,16 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
 #else  // defined(WINUWP)
   network_thread_ = rtc::Thread::CreateWithSocketServer();
   RTC_CHECK(network_thread_.get());
-  network_thread_->SetName("WebRTC network thread", network_thread_.get());
+  //network_thread_->SetName("WebRTC network thread", network_thread_.get());
   network_thread_->Start();
   worker_thread_ = rtc::Thread::Create();
   RTC_CHECK(worker_thread_.get());
-  worker_thread_->SetName("WebRTC worker thread", worker_thread_.get());
+  //worker_thread_->SetName("WebRTC worker thread", worker_thread_.get());
   worker_thread_->Start();
   signaling_thread_ = rtc::Thread::Create();
   RTC_CHECK(signaling_thread_.get());
-  signaling_thread_->SetName("WebRTC signaling thread",
-                             signaling_thread_.get());
+  //signaling_thread_->SetName("WebRTC signaling thread",
+  //                           signaling_thread_.get());
   signaling_thread_->Start();
 
   // Use a null value to use the default platform implementation
