@@ -12,7 +12,7 @@
    Moreover, you won't be able to compile Mixed Reality WebRTC for linux with GNC C++ compiler, only with the clang.
 
    The m71 WebRTC version has pinned version of llvm project - 8.0.0. So you have to install the same compiler on your linux machine or use the clang compiled by WebRTC itself (it will be in output folder after libwebrtc compilation)
-    * `apt-get install clang-8-dev`
+    * `apt-get install clang-8`
     * `apt-get install clang++-8`
     * `apt-get install lld-8`
     * `apt-get install libc++-8-dev`
