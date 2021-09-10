@@ -269,16 +269,16 @@ mrsResult GlobalFactory::InitializeImplNoLock() {
 #else  // defined(WINUWP)
   network_thread_ = rtc::Thread::CreateWithSocketServer();
   RTC_CHECK(network_thread_.get());
-  //network_thread_->SetName("WebRTC network thread", network_thread_.get());
+  network_thread_->SetName("WebRTC network thread", network_thread_.get());
   network_thread_->Start();
   worker_thread_ = rtc::Thread::Create();
   RTC_CHECK(worker_thread_.get());
-  //worker_thread_->SetName("WebRTC worker thread", worker_thread_.get());
+  worker_thread_->SetName("WebRTC worker thread", worker_thread_.get());
   worker_thread_->Start();
   signaling_thread_ = rtc::Thread::Create();
   RTC_CHECK(signaling_thread_.get());
-  //signaling_thread_->SetName("WebRTC signaling thread",
-  //                           signaling_thread_.get());
+  signaling_thread_->SetName("WebRTC signaling thread",
+                             signaling_thread_.get());
   signaling_thread_->Start();
 
   // Use a null value to use the default platform implementation
@@ -373,7 +373,7 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
   peer_factory_ = nullptr;
 #if defined(WINUWP)
   impl_ = nullptr;
-#else   // defined(WINUWP)
+#else  // defined(WINUWP)
   network_thread_.reset();
   worker_thread_.reset();
   signaling_thread_.reset();
