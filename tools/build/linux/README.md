@@ -20,8 +20,6 @@
 
 ## Build MixedReality-WebRTC
 
-### Option 1: Android Studio
-
 ### Command line
 
 2. Run `cmake .`
