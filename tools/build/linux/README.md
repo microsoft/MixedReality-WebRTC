@@ -31,3 +31,5 @@
 ### Artifacts produced by the build
 
 * `/libmrwebrtc.so`
+
+Note, that to be able to run any application based on this webrtc, you should install the PulseAudio first, as during the initialization of a PeerConnection, the factory method which is used for that, will also try to initialize ADM (Audio Device Module). For more informaton, take a look on a `audio_device_impl.cc` class from the WebRTC sources.
