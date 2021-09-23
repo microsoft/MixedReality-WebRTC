@@ -12,11 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="runtimes\linux-x64\native\libmrwebrtc.so" />
+    <None Remove="runtimes\linux-x64\native\libmrwebrtc_release.so" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="runtimes\linux-x64\native\libmrwebrtc.so">
+    <Content Include="runtimes\linux-x64\native\libmrwebrtc_release.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -25,6 +25,12 @@
     <PackageReference Include="Microsoft.MixedReality.WebRTC" Version="2.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SIPSorcery.WebSocketSharp" Version="0.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="runtimes\linux-x64\native\libmrwebrtc.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

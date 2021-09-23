@@ -35,7 +35,7 @@ namespace TestReceiveAV.Linux
         {
             try
             {
-                NativeAssemblyResolver.RegisterResolver(typeof(Program).Assembly);
+                NativeAssemblyResolver.RegisterResolver(typeof(PeerConnection).Assembly);
 
                 var processStart = new ProcessStartInfo
                 {
@@ -106,22 +106,12 @@ namespace TestReceiveAV.Linux
                 Console.WriteLine("Received remote peer SDP offer.");
 
                 var config = new PeerConnectionConfiguration();
-
-                session.pc.IceCandidateReadytoSend += (candidate) =>
+                config.IceServers = new System.Collections.Generic.List<IceServer>
                 {
-                    Console.WriteLine($"Sending ice candidate: {candidate.Content}");
-                    JObject iceCandidate = new JObject {
-                        { "type", "ice" },
-                        { "candidate", candidate.Content },
-                        { "sdpMLineindex", candidate.SdpMlineIndex },
-                        { "sdpMid", candidate.SdpMid }
-                    };
-                    session.Context.WebSocket.Send(iceCandidate.ToString());
-                };
-
-                session.pc.IceStateChanged += (newState) =>
-                {
-                    Console.WriteLine($"ice connection state changed to {newState}.");
+                    new IceServer
+                    {
+                        Urls = new System.Collections.Generic.List<string> { "stun:stun.l.google.com:19302" }
+                    }
                 };
 
                 session.pc.LocalSdpReadytoSend += (sdp) =>
@@ -150,15 +140,38 @@ namespace TestReceiveAV.Linux
                         session.pc.Close();
                         session.Context.WebSocket.Close();
                     }
-                });
 
-                session.pc.VideoTrackAdded += (track) =>
-                {
-                    track.Argb32VideoFrameReady += (frame) =>
+                    session.pc.IceCandidateReadytoSend += (candidate) =>
                     {
-                        Console.WriteLine("New video frame");
+                        Console.WriteLine($"Sending ice candidate: {candidate.Content}");
+                        JObject iceCandidate = new JObject {
+                        { "type", "ice" },
+                        { "candidate", candidate.Content },
+                        { "sdpMLineindex", candidate.SdpMlineIndex },
+                        { "sdpMid", candidate.SdpMid }
                     };
-                };
+                        session.Context.WebSocket.Send(iceCandidate.ToString());
+                    };
+
+                    session.pc.IceStateChanged += (newState) =>
+                    {
+                        Console.WriteLine($"ice connection state changed to {newState}.");
+                    };
+
+                    session.pc.Connected += () =>
+                    {
+                        Console.WriteLine("Peer connection established.");
+                    };
+
+                    session.pc.VideoTrackAdded += (track) =>
+                    {
+                        Console.WriteLine($"New video track.");
+                        track.I420AVideoFrameReady += (frame) =>
+                        {
+                            Console.WriteLine("New video frame");
+                        };
+                    };
+                });                
             }
         }
     }
