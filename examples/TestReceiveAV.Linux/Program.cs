@@ -29,7 +29,7 @@ namespace TestReceiveAV.Linux
 
     class Program
     {
-        private const int WEBSOCKET_PORT = 8081;
+        private const int WEBSOCKET_PORT = 58081;
 
         static void Main()
         {
