@@ -23,6 +23,7 @@ This package contains the C# and native C++ libraries (x86, x64) for Windows Des
         <!-- mrwebrtc.dll (Desktop) -->
         <file src="bin\Win32\x86\Release\mrwebrtc.dll" target="runtimes\win10-x86\native" />
         <file src="bin\Win32\x64\Release\mrwebrtc.dll" target="runtimes\win10-x64\native" />
+		<file src="bin\Linux\x64\Release\libmrwebrtc.so" target="runtimes\linux-x64\native" />
         
         <!-- Microsoft.MixedReality.WebRTC.dll and IntelliSense .xml -->
         <file src="bin\netstandard2.0\Release\Microsoft.MixedReality.WebRTC.dll" target="lib\netstandard2.0" />

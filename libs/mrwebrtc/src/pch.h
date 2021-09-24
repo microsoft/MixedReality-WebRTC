@@ -33,7 +33,8 @@
 
 #else
 
-#error Unknown platform
+#define WEBRTC_POSIX 1
+#define WEBRTC_LINUX 1
 
 #endif
 

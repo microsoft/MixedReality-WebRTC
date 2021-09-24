@@ -29,6 +29,8 @@ This package contains the native shared libraries (x86, x64) and C++ headers for
         <file src="bin\Win32\x64\Debug\mrwebrtc.lib" target="runtimes\win10-x64\native\debug" />
         <file src="bin\Win32\x64\Release\mrwebrtc.dll" target="runtimes\win10-x64\native\release" />
         <file src="bin\Win32\x64\Release\mrwebrtc.lib" target="runtimes\win10-x64\native\release" />
+		<file src="bin\Linux\x64\Release\libmrwebrtc.so" target="runtimes\linux-x64\native\debug" />
+		<file src="bin\Linux\x64\Release\libmrwebrtc.so" target="runtimes\linux-x64\native\release" />
         
         <!-- .props -->
         <file src="tools\nuget\Desktop\mrwebrtc.props" target="build\native" />

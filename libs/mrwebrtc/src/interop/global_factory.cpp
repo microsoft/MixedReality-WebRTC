@@ -13,7 +13,7 @@
 
 #include <exception>
 
-#if !defined(MR_SHARING_ANDROID) && !defined(WINUWP)
+#if !defined(MR_SHARING_ANDROID) && !defined(WINUWP) && !defined(WEBRTC_LINUX)
 #pragma warning(push)
 #pragma warning(disable : 4100 4127 4244)
 #include "modules/audio_device/win/audio_device_core_win.h"
@@ -373,7 +373,7 @@ bool GlobalFactory::ShutdownImplNoLock(ShutdownAction shutdown_action) {
   peer_factory_ = nullptr;
 #if defined(WINUWP)
   impl_ = nullptr;
-#else   // defined(WINUWP)
+#else  // defined(WINUWP)
   network_thread_.reset();
   worker_thread_.reset();
   signaling_thread_.reset();

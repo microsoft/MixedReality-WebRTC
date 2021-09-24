@@ -271,6 +271,8 @@ function verify-webrtc-deps() {
     fi
 }
 
+# building with tests to build libpeerconnection and etc. as during the regular build
+# it won't be compiled at all, only android and iOS has direct dependency on this.
 #-----------------------------------------------------------------------------
 function configure-build() {
     local config_path="$TARGET_OS/$TARGET_CPU/$BUILD_CONFIG"
@@ -279,10 +281,10 @@ function configure-build() {
     local args="\
 is_component_build=false \
 treat_warnings_as_errors=false \
-enable_iterator_debugging=false \
+enable_iterator_debugging=false \ 
 use_rtti=true \
-rtc_include_tests=false \
-rtc_build_examples=false \
+rtc_include_tests=true \
+rtc_build_examples=true \
 rtc_build_tools=false \
 rtc_use_x11=false \
 rtc_enable_protobuf=false \

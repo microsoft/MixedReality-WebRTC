@@ -164,6 +164,7 @@ class CreateSessionDescObserver
   /// default implementation. If both versions are unimplemented, the
   /// result will be a runtime error (stack overflow). This is intentional.
   void OnFailure(webrtc::RTCError error) noexcept override {}
+  void OnFailure(const std::string& error) noexcept override {}
 
  protected:
   RefPtr<PeerConnection> peer_connection_;

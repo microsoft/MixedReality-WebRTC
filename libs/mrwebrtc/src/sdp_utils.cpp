@@ -212,11 +212,11 @@ std::string EncodeIceServers(const std::string& url,
 }
 
 absl::optional<webrtc::SdpType> SdpTypeFromString(const std::string& type_str) {
-  if (type_str == webrtc::SessionDescriptionInterface::kOffer) {
+  if (type_str == "offer") {
     return webrtc::SdpType::kOffer;
-  } else if (type_str == webrtc::SessionDescriptionInterface::kPrAnswer) {
+  } else if (type_str == "pranswer") {
     return webrtc::SdpType::kPrAnswer;
-  } else if (type_str == webrtc::SessionDescriptionInterface::kAnswer) {
+  } else if (type_str == "answer") {
     return webrtc::SdpType::kAnswer;
   } else {
     return absl::nullopt;

@@ -13,7 +13,8 @@
 #define MRS_API __attribute__((visibility("default")))
 #define MRS_CALL
 #else
-#error Unknown platform, see export.h
+#define MRS_API extern
+#define MRS_CALL
 #endif
 
 #if (__cplusplus >= 201703L)

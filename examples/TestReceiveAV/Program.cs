@@ -96,7 +96,12 @@ namespace TestReceiveAV
                     await Task.Delay(1000);
                 }
 
-                session.pc.AddIceCandidate((string)jsonMsg["sdpMLineindex"], (int)jsonMsg["sdpMid"], (string)jsonMsg["candidate"]);
+                session.pc.AddIceCandidate(new IceCandidate
+                {
+                    SdpMlineIndex = (int)jsonMsg["sdpMLineindex"],
+                    SdpMid = (string)jsonMsg["sdpMid"],
+                    Content = (string)jsonMsg["candidate"]
+                });
             }
             else if ((string)jsonMsg["type"] == "sdp")
             {
@@ -104,14 +109,14 @@ namespace TestReceiveAV
 
                 var config = new PeerConnectionConfiguration();
 
-                session.pc.IceCandidateReadytoSend += (string candidate, int sdpMlineindex, string sdpMid) =>
+                session.pc.IceCandidateReadytoSend += (candidate) =>
                 {
-                    Console.WriteLine($"Sending ice candidate: {candidate}");
+                    Console.WriteLine($"Sending ice candidate: {candidate.Content}");
                     JObject iceCandidate = new JObject {
                         { "type", "ice" },
-                        { "candidate", candidate },
-                        { "sdpMLineindex", sdpMlineindex },
-                        { "sdpMid", sdpMid}
+                        { "candidate", candidate.Content },
+                        { "sdpMLineindex", candidate.SdpMlineIndex },
+                        { "sdpMid", candidate.SdpMid }
                     };
                     session.Context.WebSocket.Send(iceCandidate.ToString());
                 };
@@ -121,21 +126,25 @@ namespace TestReceiveAV
                     Console.WriteLine($"ice connection state changed to {newState}.");
                 };
 
-                session.pc.LocalSdpReadytoSend += (string type, string sdp) =>
+                session.pc.LocalSdpReadytoSend += (sdp) =>
                 {
                     Console.WriteLine($"SDP answer ready, sending to remote peer.");
 
                     // Send our SDP answer to the remote peer.
                     JObject sdpAnswer = new JObject {
                         { "type", "sdp" },
-                        { "answer", sdp }
+                        { "answer", sdp.Content }
                     };
                     session.Context.WebSocket.Send(sdpAnswer.ToString());
                 };
 
-                await session.pc.InitializeAsync(config).ContinueWith((t) =>
+                await session.pc.InitializeAsync(config).ContinueWith(async (t) =>
                 {
-                    session.pc.SetRemoteDescription("offer", (string)jsonMsg["offer"]);
+                    await session.pc.SetRemoteDescriptionAsync(new SdpMessage
+                    {
+                        Type = SdpMessageType.Offer,
+                        Content = (string)jsonMsg["offer"]
+                    });
 
                     if (!session.pc.CreateAnswer())
                     {
@@ -158,29 +167,32 @@ namespace TestReceiveAV
                     session.Context.WebSocket.Close();
                 };
 
-                session.pc.ARGBRemoteVideoFrameReady += (frame) =>
+                session.pc.VideoTrackAdded += (track) =>
                 {
-                    var width = frame.width;
-                    var height = frame.height;
-                    var stride = frame.stride;
-                    var data = frame.data;
-
-                    if (picBox == null)
+                    track.Argb32VideoFrameReady += (frame) =>
                     {
-                        picBox = new PictureBox
+                        var width = frame.width;
+                        var height = frame.height;
+                        var stride = frame.stride;
+                        var data = frame.data;
+
+                        if (picBox == null)
                         {
-                            Size = new Size((int)width, (int)height),
-                            Location = new Point(0, 0),
-                            Visible = true
-                        };
-                        form.BeginInvoke(new Action(() => { form.Controls.Add(picBox); }));
-                    }
+                            picBox = new PictureBox
+                            {
+                                Size = new Size((int)width, (int)height),
+                                Location = new Point(0, 0),
+                                Visible = true
+                            };
+                            form.BeginInvoke(new Action(() => { form.Controls.Add(picBox); }));
+                        }
 
-                    form.BeginInvoke(new Action(() =>
-                    {
-                        System.Drawing.Bitmap bmpImage = new System.Drawing.Bitmap((int)width, (int)height, (int)stride, System.Drawing.Imaging.PixelFormat.Format32bppArgb, data);
-                        picBox.Image = bmpImage;
-                    }));
+                        form.BeginInvoke(new Action(() =>
+                        {
+                            System.Drawing.Bitmap bmpImage = new System.Drawing.Bitmap((int)width, (int)height, (int)stride, System.Drawing.Imaging.PixelFormat.Format32bppArgb, data);
+                            picBox.Image = bmpImage;
+                        }));
+                    };
                 };
 
                 Application.EnableVisualStyles();
