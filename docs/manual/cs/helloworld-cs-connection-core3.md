@@ -52,7 +52,7 @@ Continue editing the `Program.cs` file and append the following:
    ```cs
    Console.WriteLine("Press a key to terminate the application...");
    Console.ReadKey(true);
-   signaler.Stop();
+   signaler.Dispose();
    Console.WriteLine("Program termined.");
    ```
 
