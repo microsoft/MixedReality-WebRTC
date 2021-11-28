@@ -32,7 +32,7 @@ function check-host-os() {
     distro_id=$(lsb_release --id --short)
     # TODO - These are the checks for M71 only, later (master) also support more
     # recent Ubuntu releases like 19.04.
-    supported_codenames="(trusty|xenial|artful|bionic|focal)"
+    supported_codenames="(trusty|xenial|artful|bionic)"
     supported_ids="(Debian)"
     if [[ ! $distro_codename =~ $supported_codenames &&
           ! $distro_id =~ $supported_ids ]]; then
@@ -41,7 +41,6 @@ function check-host-os() {
         "\tUbuntu 16.04 LTS (xenial)\n" \
         "\tUbuntu 17.10 (artful)\n" \
         "\tUbuntu 18.04 LTS (bionic)\n" \
-        "\tUbuntu 20.04 LTS (focal)\n" \
         "\tDebian 8 (jessie) or later\n" \
         "Attempting to install anyway might fail, so aborting.\e[39m" >&2
         exit 1
