@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.10.2)
 
 # Import CMake settings for libwebrtc.a. This file is generated during
 # the libwebrtc build.
-include(../../../../../libwebrtc/.libwebrtc.cmake)
+include(../libwebrtc/.libwebrtc.cmake)
 
 # Declare and configure the library.
 add_library(
@@ -62,7 +62,7 @@ set(CMAKE_CXX_FLAGS                "-Wall -std=c++14 -stdlib=libc++ -g -DWEBRTC_
 set(CMAKE_EXE_LINKER_FLAGS         "-fuse-ld=ld.lld-8")
 
 # Base path to mrwebrtc project.
-set(mr-webrtc-native-dir ../../../../../../../libs/mrwebrtc)
+set(mr-webrtc-native-dir ../../../libs/mrwebrtc)
 
 # List of source files to compile.
 add_library(

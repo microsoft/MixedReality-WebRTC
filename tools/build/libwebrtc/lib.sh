@@ -281,7 +281,7 @@ function configure-build() {
     local args="\
 is_component_build=false \
 treat_warnings_as_errors=false \
-enable_iterator_debugging=false \ 
+enable_iterator_debugging=false \
 use_rtti=true \
 rtc_include_tests=true \
 rtc_build_examples=true \
